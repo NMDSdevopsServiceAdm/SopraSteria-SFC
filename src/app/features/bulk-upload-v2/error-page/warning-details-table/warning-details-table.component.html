@@ -1,4 +1,4 @@
-<table *ngIf="warnings" class="govuk-table">
+<table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">Warnings</th>
@@ -7,12 +7,30 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let warn of warnings">
-      <td class="govuk-table__cell">{{ warn.warning }}</td>
-      <td class="govuk-table__cell">
-        {{ warn.items.length }}
-      </td>
-      <td class="govuk-table__cell"></td>
-    </tr>
+    <ng-container *ngIf="warnings?.length > 0; else noWarnings">
+      <ng-container *ngFor="let warn of warnings">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{ warn.warning }}</td>
+          <td class="govuk-table__cell">
+            {{ warn.items.length }}
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(warn.warnCode, $event)">{{
+              openWarnings.includes(warn.warnCode) ? 'Close' : 'Open'
+            }}</a>
+          </td>
+        </tr>
+        <tr class="govuk-table__row govuk-panel--gray" scope="row" *ngIf="openWarnings.includes(warn.warnCode)">
+          <p width="100%" *ngFor="let item of warn.items">
+            For workplace called {{ item.name }} on line {{ item.lineNumber }}
+          </p>
+        </tr>
+      </ng-container>
+    </ng-container>
+    <ng-template #noWarnings>
+      <tr class="govuk-table__row" scope="row">
+        <p>There are 0 warnings in the Workplace data file.</p>
+      </tr>
+    </ng-template>
   </tbody>
 </table>

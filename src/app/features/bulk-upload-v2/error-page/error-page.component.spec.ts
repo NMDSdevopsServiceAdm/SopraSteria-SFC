@@ -31,6 +31,7 @@ describe('ErrorPageComponent', () => {
 
     return { fixture, component, http, getByText, getByTestId };
   };
+
   it('should render a ErrorPageComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -42,7 +43,7 @@ describe('ErrorPageComponent', () => {
     expect(title).toBeTruthy();
   });
 
-  it('should show a table with the correct amount of errors - establishments - 1', async () => {
+  it('should show an error summary table with the correct amount of errors', async () => {
     const { component, fixture, getByTestId } = await setup();
 
     fixture.detectChanges();
