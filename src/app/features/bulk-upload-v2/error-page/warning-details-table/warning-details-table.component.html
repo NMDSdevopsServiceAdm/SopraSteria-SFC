@@ -31,10 +31,12 @@
                         >for workplace called '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
                       >
                       <ng-container *ngSwitchCase="'Staff'"
-                        >for staff record at workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                        >for staff record '{{ item.worker }}' at workplace '{{ item.name }}' on line
+                        {{ item.lineNumber }}</ng-container
                       >
                       <ng-container *ngSwitchCase="'Training'"
-                        >for staff record at workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                        >for staff record '{{ item.worker }}' at workplace '{{ item.name }}' on line
+                        {{ item.lineNumber }}</ng-container
                       >
                     </ng-container>
                   </li>
