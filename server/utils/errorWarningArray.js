@@ -10,8 +10,8 @@ const getErrorWarningArray = (report, type) => {
     .filter((msg) => (type === 'error' ? filterErrors(msg) : filterWarnings(msg)))
     .sort((a, b) => a.lineNumber - b.lineNumber)
     .map((item) => {
-      const { lineNumber, name, source, ...uniqueInfo } = item;
-      const errWarn = { lineNumber, name, source };
+      const { lineNumber, name, source, worker, ...uniqueInfo } = item;
+      const errWarn = { lineNumber, name, source, worker };
       const existingCode =
         type === 'error'
           ? result.find((res) => res.errCode === item.errCode)

@@ -95,6 +95,7 @@ export interface Items {
   lineNumber: number;
   source: string;
   name: string;
+  worker?: string;
 }
 
 export interface ErrorReportErrorsWarnings {
