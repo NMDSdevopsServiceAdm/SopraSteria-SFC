@@ -1,16 +1,16 @@
 <table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">Warnings</th>
-      <th scope="col" class="govuk-table__header">{{ fileType }}</th>
-      <th scope="col" class="govuk-table__header">&nbsp;</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <ng-container *ngIf="warnings?.length > 0; else noWarnings">
+  <ng-container *ngIf="warnings?.length > 0; else noWarnings">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Warnings</th>
+        <th scope="col" class="govuk-table__header">{{ fileType }}</th>
+        <th scope="col" class="govuk-table__header">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
       <ng-container *ngFor="let warn of warnings">
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{ warn.warning }}</td>
+          <td class="govuk-table__cell">{{ warn.warning }}:</td>
           <td class="govuk-table__cell">
             {{ warn.items.length }}
           </td>
@@ -32,11 +32,18 @@
           </td>
         </tr>
       </ng-container>
-    </ng-container>
-    <ng-template #noWarnings>
+    </tbody>
+  </ng-container>
+  <ng-template #noWarnings>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Warnings</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
       <tr class="govuk-table__row" scope="row">
         <td class="govuk-table__cell" colspan="3">There are 0 warnings in the Workplace data file.</td>
       </tr>
-    </ng-template>
-  </tbody>
+    </tbody>
+  </ng-template>
 </table>

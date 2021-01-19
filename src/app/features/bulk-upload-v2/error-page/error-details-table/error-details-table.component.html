@@ -1,16 +1,16 @@
 <table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">Errors</th>
-      <th scope="col" class="govuk-table__header">{{ fileType }}</th>
-      <th scope="col" class="govuk-table__header">&nbsp;</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <ng-container *ngIf="errors?.length > 0; else noErrors">
+  <ng-container *ngIf="errors?.length > 0; else noErrors">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Errors</th>
+        <th scope="col" class="govuk-table__header">{{ fileType }}</th>
+        <th scope="col" class="govuk-table__header">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
       <ng-container *ngFor="let err of errors">
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{ err.error }}</td>
+          <td class="govuk-table__cell">{{ err.error }}:</td>
           <td class="govuk-table__cell">
             {{ err.items.length }}
           </td>
@@ -30,11 +30,18 @@
           </td>
         </tr>
       </ng-container>
-    </ng-container>
-    <ng-template #noErrors>
+    </tbody>
+  </ng-container>
+  <ng-template #noErrors>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Errors</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
       <tr class="govuk-table__row" scope="row">
         <td class="govuk-table__cell" colspan="3">There are 0 errors in the Workplace data file.</td>
       </tr>
-    </ng-template>
-  </tbody>
+    </tbody>
+  </ng-template>
 </table>
