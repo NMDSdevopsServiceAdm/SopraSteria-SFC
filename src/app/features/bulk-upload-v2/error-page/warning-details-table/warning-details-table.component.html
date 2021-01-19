@@ -27,7 +27,7 @@
                 <ul>
                   <li *ngFor="let item of warn.items" class="govuk-!-margin-2">
                     <ng-container [ngSwitch]="fileType">
-                      <ng-container *ngSwitchCase="'Workplaces'"
+                      <ng-container *ngSwitchCase="'Workplace'"
                         >for workplace called '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
                       >
                       <ng-container *ngSwitchCase="'Staff'"
