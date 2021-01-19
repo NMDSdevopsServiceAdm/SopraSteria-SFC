@@ -26,7 +26,17 @@
               <div class="govuk-grid-column-full">
                 <ul>
                   <li *ngFor="let item of err.items" class="govuk-!-margin-2">
-                    for workplace called '{{ item.name }}' on line {{ item.lineNumber }}
+                    <ng-container [ngSwitch]="fileType">
+                      <ng-container *ngSwitchCase="'Workplaces'"
+                        >for workplace called '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                      >
+                      <ng-container *ngSwitchCase="'Staff'"
+                        >for staff record at workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                      >
+                      <ng-container *ngSwitchCase="'Training'"
+                        >for staff record at workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                      >
+                    </ng-container>
                   </li>
                 </ul>
               </div>
