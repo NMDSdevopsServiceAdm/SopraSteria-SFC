@@ -155,6 +155,7 @@ class Training {
         errType: 'LOCALESTID_ERROR',
         error: 'LOCALESTID has not been supplied',
         source: this._currentLine.LOCALESTID,
+        column: 'LOCALESTID',
       });
       return false;
     } else if (myLocaleStId.length > MAX_LENGTH) {
@@ -166,6 +167,7 @@ class Training {
         errType: 'LOCALESTID_ERROR',
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.LOCALESTID,
+        column: 'LOCALESTID',
       });
       return false;
     } else {
@@ -187,6 +189,7 @@ class Training {
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: 'UNIQUEWORKERID has not been supplied',
         source: this._currentLine.UNIQUEWORKERID,
+        column: 'UNIQUEWORKERID',
       });
       return false;
     } else if (myUniqueId.length > MAX_LENGTH) {
@@ -198,6 +201,7 @@ class Training {
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
+        column: 'UNIQUEWORKERID',
       });
       return false;
     } else {
@@ -222,6 +226,7 @@ class Training {
           errType: 'DATE_COMPLETED_ERROR',
           error: 'DATECOMPLETED is incorrectly formatted',
           source: this._currentLine.DATECOMPLETED,
+          column: 'DATECOMPLETED',
         });
         return false;
       } else if (!actualDate.isValid()) {
@@ -233,6 +238,7 @@ class Training {
           errType: 'DATE_COMPLETED_ERROR',
           error: 'DATECOMPLETED is invalid',
           source: this._currentLine.DATECOMPLETED,
+          column: 'DATECOMPLETED',
         });
         return false;
       } else if (actualDate.isAfter(moment())) {
@@ -244,6 +250,7 @@ class Training {
           errType: 'DATE_COMPLETED_ERROR',
           error: 'DATECOMPLETED is in the future',
           source: this._currentLine.DATECOMPLETED,
+          column: 'DATECOMPLETED',
         });
         return false;
       } else {
@@ -273,6 +280,7 @@ class Training {
           errType: 'EXPIRY_DATE_ERROR',
           error: 'EXPIRYDATE is incorrectly formatted',
           source: this._currentLine.EXPIRYDATE,
+          column: 'EXPIRYDATE',
         });
         return false;
       } else if (!actualDate.isValid()) {
@@ -284,6 +292,7 @@ class Training {
           errType: 'EXPIRY_DATE_ERROR',
           error: 'EXPIRYDATE is invalid',
           source: this._currentLine.EXPIRYDATE,
+          column: 'EXPIRYDATE',
         });
         return false;
       } else if (actualDate.isSameOrBefore(actualDateCompleted, 'day')) {
@@ -295,6 +304,7 @@ class Training {
           errType: 'EXPIRY_DATE_ERROR',
           error: 'EXPIRYDATE must be after DATECOMPLETED',
           source: this._currentLine.EXPIRYDATE,
+          column: 'EXPIRYDATE/DATECOMPLETED',
         });
         return false;
       } else {
@@ -319,6 +329,7 @@ class Training {
         errType: 'DESCRIPTION_ERROR',
         error: 'DESCRIPTION has not been supplied',
         source: this._currentLine.DESCRIPTION,
+        column: 'DESCRIPTION',
       });
       return false;
     } else if (myDescription.length > MAX_LENGTH) {
@@ -330,6 +341,7 @@ class Training {
         errType: 'DESCRIPTION_ERROR',
         error: `DESCRIPTION is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.DESCRIPTION,
+        column: 'DESCRIPTION',
       });
       return false;
     } else {
@@ -350,6 +362,7 @@ class Training {
         errType: 'CATEGORY_ERROR',
         error: 'CATEGORY has not been supplied',
         source: this._currentLine.CATEGORY,
+        column: 'CATEGORY',
       });
       return false;
     } else {
@@ -371,6 +384,7 @@ class Training {
           errType: 'ACCREDITED_ERROR',
           error: 'ACCREDITED is invalid',
           source: this._currentLine.ACCREDITED,
+          column: 'ACCREDITED',
         });
         return false;
       } else {
@@ -404,6 +418,7 @@ class Training {
           errType: 'CATEGORY_ERROR',
           error: 'CATEGORY has not been supplied',
           source: this._currentLine.CATEGORY,
+          column: 'CATEGORY',
         });
       } else {
         this._category = mappedCategory;
@@ -425,6 +440,7 @@ class Training {
           errType: 'NOTES_ERROR',
           error: `NOTES is longer than ${MAX_LENGTH} characters`,
           source: this._currentLine.NOTES,
+          column: 'NOTES',
         });
         return false;
       } else {
@@ -454,6 +470,7 @@ class Training {
         errType: 'HEADERS_ERROR',
         error: `Training headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers,
+        column: '',
       });
       return false;
     }
@@ -469,6 +486,7 @@ class Training {
       errType: 'WORKER_DOB_TRAINING_WARNING',
       error: "DATECOMPLETED is before staff record's date of birth",
       source: this._currentLine.LOCALESTID,
+      column: 'DATECOMPLETED',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
@@ -482,6 +500,7 @@ class Training {
       errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
       error: 'LOCALESTID does not exist in Workplace File',
       source: this._currentLine.LOCALESTID,
+      column: 'LOCALESTID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
@@ -496,6 +515,7 @@ class Training {
       errType: 'UNCHECKED_WORKER_ERROR',
       error: 'UNIQUEWORKERID has not been supplied',
       source: this._currentLine.UNIQUEWORKERID,
+      column: 'UNIQUEWORKERID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
