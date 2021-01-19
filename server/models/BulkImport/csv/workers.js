@@ -567,6 +567,7 @@ class Worker {
         errType: 'CONTRACT_TYPE_ERROR',
         error: 'EMPLSTATUS has not been supplied',
         source: this._currentLine.EMPLSTATUS,
+        column: 'EMPLSTATUS',
       });
       return false;
     } else {
@@ -590,6 +591,7 @@ class Worker {
         errType: 'LOCAL_ID_ERROR',
         error: 'LOCALESTID has not been supplied',
         source: myLocalId,
+        column: 'LOCALESTID',
       });
       status = false;
     } else if (myLocalId.length >= MAX_LENGTH) {
@@ -599,6 +601,7 @@ class Worker {
         errType: 'LOCAL_ID_ERROR',
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
+        column: 'LOCALESTID',
       });
       status = false;
     }
@@ -626,6 +629,7 @@ class Worker {
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: 'UNIQUEWORKERID has not been supplied',
         source: this._currentLine.UNIQUEWORKERID,
+        column: 'UNIQUEWORKERID',
       });
       status = false;
     } else if (myUniqueWorkerId.length >= MAX_LENGTH) {
@@ -637,6 +641,7 @@ class Worker {
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
+        column: 'UNIQUEWORKERID',
       });
       status = false;
     }
@@ -664,6 +669,7 @@ class Worker {
         errType: 'CHANGE_UNIQUE_WORKER_ID_ERROR',
         error: `CHGUNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.CHGUNIQUEWRKID,
+        column: '',
       });
       return false;
     } else if (myChangeUniqueWorkerId && myChangeUniqueWorkerId.length > 0) {
@@ -686,6 +692,7 @@ class Worker {
         errType: 'STATUS_ERROR',
         error: 'The status you have supplied is incorrect',
         source: this._currentLine.STATUS,
+        column: 'STATUS',
       });
       return false;
     } else {
@@ -716,6 +723,7 @@ class Worker {
               error:
                 'Staff record has a STATUS of NEW but already exists, please change to one of the other statues available',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -729,6 +737,7 @@ class Worker {
               errType: 'STATUS_ERROR',
               error: 'Staff has a status of DELETE but does not exist.',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -743,6 +752,7 @@ class Worker {
               error:
                 "Staff record has a status of UNCHECKED but doesn't exist, please change to NEW if you want to add this staff record",
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -755,8 +765,9 @@ class Worker {
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error:
-                "Staff record has a status of NOCHANGE but doens't exist, please change to NEW if you want to add this staff record",
+                "Staff record has a status of NOCHANGE but doesn't exist, please change to NEW if you want to add this staff record",
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -769,8 +780,9 @@ class Worker {
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error:
-                "Staff record has a status of UPDATE but doens't exist, please change to NEW if you want to add this staff record",
+                "Staff record has a status of UPDATE but doesn't exist, please change to NEW if you want to add this staff record",
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -785,6 +797,7 @@ class Worker {
               errType: 'STATUS_ERROR',
               error: 'STATUS is CHGSUB but staff already exists in the new workplace',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -807,7 +820,8 @@ class Worker {
         errCode: Worker.DISPLAY_ID_ERROR,
         errType: 'DISPLAY_ID_ERROR',
         error: 'DISPLAYID is blank',
-        erro: this._currentLine.DISPLAYID,
+        source: this._currentLine.DISPLAYID,
+        column: 'DISPLAYID',
       });
       return false;
     } else if (myDisplayId.length >= MAX_LENGTH) {
@@ -819,6 +833,7 @@ class Worker {
         errType: 'WORKER_DISPLAY_ID_ERROR',
         error: `DISPLAYID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.DISPLAYID,
+        column: 'DISPLAYID',
       });
       return false;
     } else {
@@ -841,6 +856,7 @@ class Worker {
           warnType: 'WORKER_FLUVAC_WARNING',
           warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
           source: this._currentLine.FLUVAC,
+          column: 'FLUVAC',
         });
         return false;
       } else {
@@ -864,6 +880,7 @@ class Worker {
           errType: 'WORKER_NINUMBER_ERROR',
           error: 'NINUMBER is incorrectly formatted',
           source: this._currentLine.NINUMBER,
+          column: 'NINUMBER',
         });
         return false;
       } else {
@@ -886,6 +903,7 @@ class Worker {
         warnType: 'POSTCODE_WARNING',
         warning: 'POSTCODE is blank',
         source: myPostcode,
+        column: 'POSTCODE',
       });
       return false;
     } else if (!postcodeRegex.test(myPostcode)) {
@@ -897,6 +915,7 @@ class Worker {
         errType: 'POSTCODE ERROR',
         error: 'POSTCODE is incorrectly formatted',
         source: myPostcode,
+        column: 'POSTCODE',
       });
       return false;
     } else {
@@ -922,6 +941,7 @@ class Worker {
         warnType: 'DOB_WARNING',
         warning: 'DOB is missing',
         source: this._currentLine.DOB,
+        column: 'DOB',
       });
       return false;
     } else if (!myDobRealDate.isValid()) {
@@ -933,6 +953,7 @@ class Worker {
         warnType: 'DOB_WARNING',
         warning: 'The date of birth you have entered is incorrectly formatted and will be ignored',
         source: this._currentLine.DOB,
+        column: 'DOB',
       });
       return false;
     } else if (myDobRealDate.isBefore(minDate) || myDobRealDate.isAfter(maxDate)) {
@@ -944,6 +965,7 @@ class Worker {
         warnType: 'DOB_WARNING',
         warning: 'The date of birth you have entered is not between a valid range of 14 – 100 years old',
         source: this._currentLine.DOB,
+        column: 'DOB',
       });
       return false;
     } else {
@@ -966,6 +988,7 @@ class Worker {
           errType: 'GENDER_ERROR',
           error: 'The code you have entered for GENDER is incorrect',
           source: this._currentLine.GENDER,
+          column: 'GENDER',
         });
         return false;
       } else {
@@ -1003,6 +1026,7 @@ class Worker {
           errType: 'ETHNICITY_ERROR',
           error: 'The code you have entered for ETHNICITY is incorrect',
           source: this._currentLine.ETHNICITY,
+          column: 'ETHNICITY',
         });
         return false;
       } else {
@@ -1029,6 +1053,7 @@ class Worker {
           warnType: 'BRITISH_CITIZENSHIP_WARNING',
           warning: 'BRITISHCITIZENSHIP has been ignored as workers nationality is British',
           source: this._currentLine.BRITISHCITIZENSHIP,
+          column: 'BRITISHCITIZENSHIP',
         });
         return false;
       } else if (
@@ -1043,6 +1068,7 @@ class Worker {
           errType: 'BRITISH_CITIZENSHIP_ERROR',
           error: 'BRITISHCITIZENSHIP code is not a valid entry',
           source: this._currentLine.BRITISHCITIZENSHIP,
+          column: 'BRITISHCITIZENSHIP',
         });
         return false;
       } else {
@@ -1081,6 +1107,7 @@ class Worker {
           errType: 'YEAROFENTRY_ERROR',
           error: 'YEAROFENTRY is incorrectly formatted',
           source: this._currentLine.YEAROFENTRY,
+          column: 'YEAROFENTRY',
         });
         return false;
       } else if (thisYear < myYearOfEntry) {
@@ -1092,6 +1119,7 @@ class Worker {
           errType: 'YEAROFENTRY_ERROR',
           error: 'YEAROFENTRY is in the future',
           source: this._currentLine.YEAROFENTRY,
+          column: 'YEAROFENTRY',
         });
         return false;
       } else if (myRealDOBDate && myRealDOBDate.year() > myYearOfEntry) {
@@ -1103,6 +1131,7 @@ class Worker {
           errType: 'YEAROFENTRY_ERROR',
           error: 'YEAROFENTRY must be greater or equal to DOB',
           source: this._currentLine.YEAROFENTRY,
+          column: 'YEAROFENTRY/DOB',
         });
         return false;
       } else if (!myCountry) {
@@ -1114,6 +1143,7 @@ class Worker {
           warnType: 'YEAROFENTRY_WARNING',
           warning: 'Year of entry has been ignored as Country of Birth is missing',
           source: this._currentLine.YEAROFENTRY,
+          column: 'YEAROFENTRY/COUNTRYOFBIRTH',
         });
         return false;
       } else if (myCountry && parseInt(myCountry, 10) === 826) {
@@ -1125,6 +1155,7 @@ class Worker {
           warnType: 'YEAROFENTRY_WARNING',
           warning: 'Year of entry has been ignored as Country of Birth is British',
           source: this._currentLine.YEAROFENTRY,
+          column: 'YEAROFENTRY/COUNTRYOFBIRTH',
         });
         return false;
       } else {
@@ -1149,6 +1180,7 @@ class Worker {
           errType: 'DISABLED_ERROR',
           error: 'The code you have entered for DISABLED is incorrect',
           source: this._currentLine.DISABLED,
+          column: 'DISABLED',
         });
         return false;
       } else {
@@ -1187,6 +1219,7 @@ class Worker {
           errType: 'CARECERT_ERROR',
           error: 'The code you have entered for CARECERT is incorrect',
           source: this._currentLine.CARECERT,
+          column: 'CARECERT',
         });
         return false;
       } else {
@@ -1221,6 +1254,7 @@ class Worker {
         errType: 'RECSOURCE_ERROR',
         error: 'The code you have entered for RECSOURCE is incorrect',
         source: this._currentLine.RECSOURCE,
+        column: 'RECSOURCE',
       });
       return false;
     } else {
@@ -1251,6 +1285,7 @@ class Worker {
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is missing',
         source: this._currentLine.STARTDATE,
+        column: 'STARTDATE',
       });
       return false;
     } else if (!dateRegex.test(myStartDate)) {
@@ -1262,6 +1297,7 @@ class Worker {
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is incorrectly formatted and will be ignored',
         source: this._currentLine.STARTDATE,
+        column: 'STARTDATE',
       });
       return false;
     } else if (myRealStartDate.isAfter(today)) {
@@ -1273,6 +1309,7 @@ class Worker {
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is in the future and will be ignored',
         source: this._currentLine.STARTDATE,
+        column: 'STARTDATE',
       });
       return false;
     } else if (myRealDOBDate && myRealStartDate.diff(myRealDOBDate, 'years', false) < AGE) {
@@ -1284,6 +1321,7 @@ class Worker {
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is before workers 14th birthday and will be ignored',
         source: this._currentLine.STARTINSECT,
+        column: 'STARTDATE',
       });
       return false;
     } else if (myYearOfEntry && myRealStartDate.isBefore(myRealYearOfEntry)) {
@@ -1295,6 +1333,7 @@ class Worker {
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is before year of entry and will be ignored',
         source: this._currentLine.STARTINSECT,
+        column: 'STARTDATE',
       });
       return false;
     } else {
@@ -1318,6 +1357,7 @@ class Worker {
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is missing',
         source: this._currentLine.STARTINSECT,
+        column: 'STARTINSECT',
       });
       return false;
     } else if (!yearRegex.test(myStartInsect)) {
@@ -1329,6 +1369,7 @@ class Worker {
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is incorrectly formatted and will be ignored',
         source: this._currentLine.STARTINSECT,
+        column: 'STARTINSECT',
       });
       return false;
     } else if (this._startDate && parseInt(myStartInsect, 10) > this._startDate.year()) {
@@ -1340,6 +1381,7 @@ class Worker {
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is after STARTDATE and will be ignored',
         source: this._currentLine.STARTINSECT,
+        column: 'STARTINSECT',
       });
       return false;
     } else if (myRealDOBDate && myRealDOBDate.year() + AGE > parseInt(myStartInsect, 10)) {
@@ -1351,6 +1393,7 @@ class Worker {
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is before workers 14th birthday and will be ignored',
         source: this._currentLine.STARTINSECT,
+        column: 'STARTINSECT',
       });
       return false;
     } else {
@@ -1374,6 +1417,7 @@ class Worker {
           warnType: 'APPRENTICE_WARNING',
           warning: 'The code for APPRENTICE is incorrect and will be ignored',
           source: this._currentLine.APPRENTICE,
+          column: 'APPRENTICE',
         });
         return false;
       } else {
@@ -1410,6 +1454,7 @@ class Worker {
         warnType: 'ZERO_HRCONT_WARNING',
         warning: 'You have entered contracted hours but have not said this worker is not on a zero hours contract',
         source: this._currentLine.ZEROHRCONT,
+        column: 'ZEROHRCONT',
       });
       return false;
     } else if (!zeroHoursEmpty && (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract))) {
@@ -1421,6 +1466,7 @@ class Worker {
         errType: 'ZEROHRCONT_ERROR',
         error: 'The code you have entered for ZEROHRCONT is incorrect',
         source: this._currentLine.ZEROHRCONT,
+        column: 'ZEROHRCONT',
       });
       return false;
     } else if (myContHours > 0 && (myZeroHourContract === 999 || myZeroHourContract === 1)) {
@@ -1433,6 +1479,7 @@ class Worker {
         error:
           'The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks',
         source: this._currentLine.ZEROHRCONT,
+        column: 'CONTHOURS/ZEROHRCONT',
       });
       return false;
     } else if (myContHours === 0 && myZeroHourContract === 2) {
@@ -1444,6 +1491,7 @@ class Worker {
         warnType: 'ZERO_HRCONT_WARNING',
         warning: 'You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question',
         source: this._currentLine.ZEROHRCONT,
+        column: 'CONTHOURS/ZEROHRCONT',
       });
       return false;
     } else {
@@ -1485,6 +1533,7 @@ class Worker {
           warnType: 'DAYSSICK_ERROR',
           warning: 'DAYSSICK is out of validation range and will be ignored',
           source: this._currentLine.DAYSSICK,
+          column: 'DAYSSICK',
         });
         return false;
       } else {
@@ -1520,6 +1569,7 @@ class Worker {
         warnType: 'DAYSICK_WARNING',
         warning: 'DAYSSICK in the last 12 months has not changed please check this is correct',
         source: this._currentLine.DAYSSICK,
+        column: 'DAYSSICK',
       });
     }
   }
@@ -1539,6 +1589,7 @@ class Worker {
           errType: 'SALARYINT_ERROR',
           error: 'Salary Int (SALARYINT) must be an integer',
           source: this._currentLine.SALARYINT,
+          column: 'SALARYINT',
         });
         return false;
       } else if (!salaryIntValues.includes(parseInt(mySalaryInt, 10))) {
@@ -1550,6 +1601,7 @@ class Worker {
           errType: 'SALARYINT_ERROR',
           error: 'The code you have entered for SALARYINT is incorrect',
           source: this._currentLine.SALARYINT,
+          column: 'SALARYINT',
         });
         return false;
       } else {
@@ -1588,6 +1640,7 @@ class Worker {
           errType: 'SALARY_ERROR',
           error: 'The code you have entered for SALARYINT does not match SALARY',
           source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
+          column: 'SALARYINT',
         });
         return false;
       } else if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
@@ -1597,8 +1650,9 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARY_ERROR',
-          error: 'Salary (SALARY) must be an integer an upto 9 digits',
+          error: 'Salary (SALARY) must be an integer upto 9 digits',
           source: this._currentLine.SALARY,
+          column: 'SALARY',
         });
         return false;
       } else {
@@ -1626,6 +1680,7 @@ class Worker {
           errType: 'HOURLY_RATE_ERROR',
           error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
           source: `SALARYINT(${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
+          column: 'SALARYINT/HOURLYRATE',
         });
         return false;
       } else if (isNaN(myHourlyRate) || !digitRegex.test(this._currentLine.HOURLYRATE)) {
@@ -1637,6 +1692,7 @@ class Worker {
           errType: 'HOURLY_RATE_ERROR',
           error: 'The code you have entered for HOURLYRATE is incorrect and will be ignored',
           source: this._currentLine.HOURLYRATE,
+          column: 'HOURLYRATE',
         });
         return false;
       } else {
@@ -1661,6 +1717,7 @@ class Worker {
         errType: 'MAIN_JOB_ROLE_ERROR',
         error: 'MAINJOBROLE has not been supplied',
         source: this._currentLine.MAINJOBROLE,
+        column: 'MAINJOBROLE',
       });
       return false;
     } else {
@@ -1678,6 +1735,7 @@ class Worker {
       errCode: Worker.MAIN_JOB_ROLE_ERROR,
       errType: 'MAIN_JOB_ROLE_ERROR',
       source: this._currentLine.MAINJOBROLE,
+      column: 'MAINJOBROLE',
     };
 
     if (!cqcRegEstablishment && this.mainJobRoleId === 4) {
@@ -1706,6 +1764,7 @@ class Worker {
         errType: 'MAIN_JOB_DESC_ERROR',
         error: 'MAINJRDESC has not been supplied',
         source: this._currentLine.MAINJRDESC,
+        column: 'MAINJRDESC',
       });
       return false;
     } else if (myMainJobDesc.length >= MAX_LENGTH) {
@@ -1717,6 +1776,7 @@ class Worker {
         errType: 'MAIN_JOB_DESC_ERROR',
         error: 'MAINJRDESC is longer than 120 characters',
         source: this._currentLine.MAINJRDESC,
+        column: 'MAINJRDESC',
       });
       return false;
     } else if (
@@ -1732,6 +1792,7 @@ class Worker {
         warnType: 'MAIN_JOB_DESC_WARNING',
         warning: 'MAINJRDESC will be ignored as not required for MAINJOBROLE',
         source: this._currentLine.MAINJRDESC,
+        column: 'MAINJRDESC',
       });
       return false;
     } else {
@@ -1762,6 +1823,7 @@ class Worker {
         warnType: 'CONT_HOURS_WARNING',
         warning: `CONTHOURS will be ignored as ZEROHRCONT is ${intZeroHoursType}`,
         source: strContHours,
+        column: 'CONTHOURS',
       });
       return false;
     }
@@ -1789,6 +1851,7 @@ class Worker {
         warnType: 'CONT_HOURS_WARNING',
         warning: `CONTHOURS will be ignored as EMPLSTATUS is ${contractType}`,
         source: strContHours,
+        column: 'CONTHOURS',
       });
       return false;
     }
@@ -1808,6 +1871,7 @@ class Worker {
         warnType: 'CONT_HOURS_WARNING',
         warning: 'The code you have entered for CONTHOURS is incorrect and will be ignored',
         source: strContHours,
+        column: 'CONTHOURS',
       });
       return false;
     }
@@ -1826,6 +1890,7 @@ class Worker {
         warnType: 'CONT_HOURS_WARNING',
         warning: 'CONTHOURS is greater than 75 and will be ignored',
         source: strContHours,
+        column: 'CONTHOURS',
       });
       return false;
     }
@@ -1865,6 +1930,7 @@ class Worker {
         warnType: 'AVG_HOURS_ERROR',
         warning: `AVGHOURS will be ignored as staff record is ${contractType}`,
         source: strAvgHours,
+        column: 'AVGHOURS',
       });
       return false;
     }
@@ -1884,6 +1950,7 @@ class Worker {
         warnType: 'AVG_HOURS_ERROR',
         warning: 'The code you have entered for AVGHOURS is incorrect and will be ignored',
         source: strAvgHours,
+        column: 'AVGHOURS',
       });
       return false;
     }
@@ -1902,6 +1969,7 @@ class Worker {
         warnType: 'AVG_HOURS_ERROR',
         warning: 'AVGHOURS is greater than 75 and will be ignored',
         source: strAvgHours,
+        column: 'AVGHOURS',
       });
       return false;
     }
@@ -1925,6 +1993,7 @@ class Worker {
           errType: 'OTHER_JOB_ROLE_ERROR',
           error: 'The code you have entered for OTHERJOBROLE is incorrect',
           source: this._currentLine.OTHERJOBROLE,
+          column: 'OTHERJOBROLE',
         });
       } else if (listOfOtherJobs.length !== listOfOtherJobsDescriptions.length) {
         localValidationErrors.push({
@@ -1935,6 +2004,7 @@ class Worker {
           errType: 'OTHER_JOB_ROLE_ERROR',
           error: 'OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
+          column: 'OTHERJOBROLE/OTHERJRDESC',
         });
       } else {
         const myJobDescriptions = [];
@@ -1955,6 +2025,7 @@ class Worker {
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: `OTHERJRDESC (${index + 1}) has not been supplied`,
                 source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
+                column: 'OTHERJRDESC',
               });
               myJobDescriptions.push(null);
             } else if (myJobOther.length > MAX_LENGTH) {
@@ -1966,6 +2037,7 @@ class Worker {
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: 'OTHERJRDESC is longer than 120 characters',
                 source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
+                column: 'OTHERJRDESC',
               });
             } else {
               myJobDescriptions.push(listOfOtherJobsDescriptions[index]);
@@ -1979,6 +2051,7 @@ class Worker {
               warnType: 'OTHER_JR_DESC_WARNING',
               warning: 'OTHERJRDESC will be ignored as not required for OTHERJOBROLE',
               source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
+              column: 'OTHERJRDESC',
             });
           } else {
             myJobDescriptions.push(null);
@@ -2021,6 +2094,7 @@ class Worker {
         warnType: 'NMCREG_WARNING',
         warning: 'NMCREG has not been supplied',
         source: this._currentLine.NMCREG,
+        column: 'NMCREG',
       });
       return false;
     } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
@@ -2032,6 +2106,7 @@ class Worker {
         warnType: 'NMCREG_WARNING',
         warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
         source: this._currentLine.NMCREG,
+        column: 'NMCREG',
       });
       return false;
     } else {
@@ -2062,6 +2137,7 @@ class Worker {
           warnType: 'NURSE_SPEC_WARNING',
           warning: 'NURSESPEC has not been supplied',
           source: this._currentLine.NURSESPEC,
+          column: 'NURSESPEC',
         });
       }
 
@@ -2078,6 +2154,7 @@ class Worker {
           warning:
             'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
           source: this._currentLine.NURSESPEC,
+          column: 'NURSESPEC',
         });
       }
 
@@ -2091,6 +2168,7 @@ class Worker {
           warning:
             'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
           source: this._currentLine.NURSESPEC,
+          column: 'NURSESPEC',
         });
       }
     } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
@@ -2102,6 +2180,7 @@ class Worker {
         warnType: 'NURSE_SPEC_WARNING',
         warning: 'NURSESPEC will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE',
         source: this._currentLine.NURSESPEC,
+        column: 'NURSESPEC',
       });
       return false;
     }
@@ -2131,6 +2210,7 @@ class Worker {
           warnType: 'AMHP_WARNING',
           warning: 'AMHP has not been supplied',
           source: this._currentLine.AMHP,
+          column: 'AMHP',
         });
         return false;
       }
@@ -2144,6 +2224,7 @@ class Worker {
           warnType: 'AMHP_WARNING',
           warning: 'The code you have entered for AMHP is incorrect and will be ignored',
           source: this._currentLine.AMHP,
+          column: 'AMHP',
         });
         return false;
       }
@@ -2156,6 +2237,7 @@ class Worker {
         warnType: 'AMHP_WARNING',
         warning: 'The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE/OTHERJOBROLE',
         source: this._currentLine.AMHP,
+        column: 'AMHP',
       });
       return false;
     }
@@ -2192,6 +2274,7 @@ class Worker {
           errType: 'NATIONALITY_ERROR',
           error: 'Nationality (NATIONALITY) must be an integer',
           source: this._currentLine.NATIONALITY,
+          column: 'NATIONALITY',
         });
         return false;
       } else {
@@ -2216,6 +2299,7 @@ class Worker {
           errType: 'COUNTRY_OF_BIRTH_ERROR',
           error: 'Country of Birth (COUNTRYOFBIRTH) must be an integer',
           source: this._currentLine.COUNTRYOFBIRTH,
+          column: 'COUNTRYOFBIRTH',
         });
         return false;
       } else {
@@ -2241,6 +2325,7 @@ class Worker {
         warnType: 'SOCIALCARE_QUAL_WARNING',
         warning: 'SCQUAL is blank',
         source: this._currentLine.SCQUAL,
+        column: 'SCQUAL',
       });
     } else if (isNaN(mySocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
       this._validationErrors.push({
@@ -2251,6 +2336,7 @@ class Worker {
         errType: 'SOCIALCARE_QUAL_ERROR',
         error: 'The code you have entered for SCQUAL is incorrect',
         source: this._currentLine.SCQUAL,
+        column: 'SCQUAL',
       });
     }
 
@@ -2269,6 +2355,7 @@ class Worker {
           errType: 'SOCIALCARE_QUAL_ERROR',
           error: 'You must provide a value for SCQUAL level when SCQUAL is set to 1',
           source: this._currentLine.SCQUAL,
+          column: 'SCQUAL',
         });
       }
 
@@ -2298,6 +2385,7 @@ class Worker {
           warnType: 'SOCIALCARE_QUAL_WARNING',
           warning: 'workers MAINJOBROLE is a regulated profession therefore requires a Social Care qualification',
           source: this._currentLine.SCQUAL,
+          column: 'SCQUAL',
         });
       }
       this._socialCareQualificationlevel = mySocialCareLevel;
@@ -2323,6 +2411,7 @@ class Worker {
           errType: 'NON_SOCIALCARE_QUAL_ERROR',
           error: 'The code you have entered for NONSCQUAL is incorrect',
           source: this._currentLine.NONSCQUAL,
+          column: 'NONSCQUAL',
         });
       } else if (myNonSocialCareIndicator === 1) {
         this._nonSocialCareQualification = myNonSocialCareIndicator;
@@ -2388,6 +2477,7 @@ class Worker {
           errType: qualificationErrorName,
           error: `The code you have entered for (${qualificationName}) is incorrect`,
           source: qualification,
+          column: '',
         });
       }
 
@@ -2409,6 +2499,7 @@ class Worker {
           warnType: qualificationErrorName,
           warning: `Year achieved for ${qualificationName} is blank`,
           source: qualification,
+          column: '',
         });
       } else if (myQualification[1] !== null && (isNaN(qualificationYear) || !qualificationYearIsValid)) {
         localValidationErrors.push({
@@ -2419,6 +2510,7 @@ class Worker {
           errType: qualificationErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
+          column: '',
         });
       } else if (qualificationYear < CURRENT_YEAR - MAX_YEAR_AGE || qualificationYear > CURRENT_YEAR) {
         localValidationErrors.push({
@@ -2429,6 +2521,7 @@ class Worker {
           errType: qualificationErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
+          column: '',
         });
       }
 
@@ -2445,6 +2538,7 @@ class Worker {
             warnType: qualificationDescErrorName,
             warning: `The notes you hqve entered for (${qualificationDescName}) are over 120 characters and will be ignored`,
             source: qualificationDesc,
+            column: '',
           });
         } else {
           myQualificationDesc = qualificationDesc;
@@ -2514,6 +2608,7 @@ class Worker {
           errType: 'CONTRACT_TYPE_ERROR',
           error: 'The code you have entered for EMPLSTATUS is incorrect',
           source: this._currentLine.EMPLSTATUS,
+          column: 'EMPLSTATUS',
         });
       } else {
         this._contractType = mappedType;
@@ -2535,6 +2630,7 @@ class Worker {
           errType: 'ETHNICITY_ERROR',
           error: 'The code you have entered for ETHNICITY is incorrect',
           source: this._currentLine.ETHNICITY,
+          column: 'ETHNICITY',
         });
       } else {
         this._ethnicity = myValidatedEthnicity;
@@ -2559,6 +2655,7 @@ class Worker {
             errType: 'RECSOURCE_ERROR',
             error: 'The code you have entered for RECSOURCE is incorrect',
             source: this._currentLine.RECSOURCE,
+            column: 'RECSOURCE',
           });
         } else {
           this._recSource = myValidatedRecruitment;
@@ -2578,6 +2675,7 @@ class Worker {
         errType: 'MAIN_JOB_ROLE_ERROR',
         error: 'The code you have entered for MAINJOBROLE is incorrect',
         source: this._currentLine.MAINJOBROLE,
+        column: 'MAINJOBROLE',
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
       const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
@@ -2591,6 +2689,7 @@ class Worker {
           errType: 'MAIN_JOB_ROLE_ERROR',
           error: 'The code you have entered for MAINJOBROLE is incorrect',
           source: this._currentLine.MAINJOBROLE,
+          column: 'MAINJOBROLE',
         });
       } else {
         this._mainJobRole = mappedRole;
@@ -2614,6 +2713,7 @@ class Worker {
             errType: 'OTHER_JOB_ROLE_ERROR',
             error: 'The code you have entered for OTHERJOBROLE is incorrect',
             source: this._currentLine.OTHERJOBROLE,
+            column: 'OTHERJOBROLE',
           });
         } else {
           mappedJobs.push(myValidatedJobRole);
@@ -2652,6 +2752,7 @@ class Worker {
             warnType: 'NMCREG_WARNING',
             warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
             source: this._currentLine.NMCREG,
+            column: 'NMCREG',
           });
       }
     }
@@ -2671,6 +2772,7 @@ class Worker {
             warnType: 'NURSE_SPEC_WARNING',
             warning: `NURSESPEC the code ${specialism} you have entered has not been recognised and will be ignored`,
             source: this._currentLine.NURSESPEC,
+            column: 'NURSESPEC',
           });
         } else {
           validatedSpecialisms.push(validatedSpecialism);
@@ -2701,6 +2803,7 @@ class Worker {
             errType: 'NATIONALITY_ERROR',
             error: `Nationality code (${this._nationality}) is not a valid entry`,
             source: this._currentLine.NURSESPEC,
+            column: 'NATIONALITY',
           });
         } else {
           this._nationality = myValidatedNationality;
@@ -2730,6 +2833,7 @@ class Worker {
             errType: 'COUNTRY_OF_BIRTH_ERROR',
             error: `Country of birth code (${this._countryOfBirth}) is not a valid entry`,
             source: this._currentLine.COUNTRYOFBIRTH,
+            column: 'COUNTRYOFBIRTH',
           });
         } else {
           this._countryOfBirth = myValidatedCountry;
@@ -2751,6 +2855,7 @@ class Worker {
           warnType: 'SOCIALCARE_QUAL_ERROR',
           warning: 'The level you have entered for SCQUAL is not valid and will be ignored',
           source: this._currentLine.SCQUAL,
+          column: 'SCQUAL',
         });
       } else {
         this._socialCareQualificationlevel = myValidatedQualificationLevel;
@@ -2775,6 +2880,7 @@ class Worker {
           warnType: 'NON_SOCIALCARE_QUAL_ERROR',
           warning: 'The level you have entered for NONSCQUAL is not valid and will be ignored',
           source: this._currentLine.NONSCQUAL,
+          column: 'NONSCQUAL',
         });
       } else {
         this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
@@ -2798,6 +2904,7 @@ class Worker {
             errType: `QUAL_ACH${thisQualification.column}_ERROR`,
             error: `Qualification (QUALACH${thisQualification.column}): ${thisQualification.id} is unknown`,
             source: `${this._currentLine[`QUALACH${thisQualification.column}`]}`,
+            column: '',
           });
         } else {
           const newQual = thisQualification;
@@ -2819,6 +2926,7 @@ class Worker {
       errType: 'DUPLICATE_ERROR',
       error: `UNIQUEWORKERID ${UNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
+      column: 'UNIQUEWORKERID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
@@ -2833,6 +2941,7 @@ class Worker {
       errType: 'DUPLICATE_ERROR',
       error: `CHGUNIQUEWRKID ${CHGUNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
+      column: '',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
@@ -2847,6 +2956,7 @@ class Worker {
       errType: 'NI_WORKER_DUPLICATE_ERROR',
       error: 'NINUMBER is already associated with another full time worker record',
       source: this._currentLine.UNIQUEWORKERID,
+      column: 'NINUMBER',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.NINUMBER,
     };
@@ -2861,6 +2971,7 @@ class Worker {
       errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
       error: 'LOCALESTID does not exist in Workplace file',
       source: this._currentLine.LOCALESTID,
+      column: 'LOCALESTID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
@@ -2875,6 +2986,7 @@ class Worker {
       warning:
         'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
       source: this._currentLine.LOCALESTID,
+      column: 'SALARY',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
@@ -2914,6 +3026,7 @@ class Worker {
         errType: 'HEADERS_ERROR',
         error: `Worker headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers,
+        column: '',
       });
       return false;
     }
