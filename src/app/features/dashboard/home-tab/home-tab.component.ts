@@ -98,6 +98,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       );
     }
 
+    this.window.dataLayer.push({
+      isAdmin: this.user.role === 'Admin',
+    });
+
     if (!this?.workplace?.employerType) {
       this.window.dataLayer.push({
         firstTimeLogin: true,
