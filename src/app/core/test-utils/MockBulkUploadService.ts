@@ -73,3 +73,19 @@ export class MockBulkUploadService extends BulkUploadService {
     return of(errorReport);
   }
 }
+
+const ValidatedFileBuilder = build('ValidatedFile', {
+  fields: {
+    errors: 0,
+    filename: fake((f) => f.lorem.sentence()),
+    fileType: 'Establishment',
+    key: fake((f) => f.lorem.sentence()),
+    records: 10,
+    size: 100,
+    uploaded: '',
+    warnings: 2,
+    username: 'user',
+  },
+});
+
+export const ValidatedFile = ValidatedFileBuilder();

@@ -32,7 +32,12 @@ const MockWindow = {
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const component = await render(DashboardComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule.withRoutes([{ path: 'search-establishments', component: DashboardComponent }]),
+        HttpClientTestingModule,
+      ],
       declarations: [HomeTabComponent],
       providers: [
         {

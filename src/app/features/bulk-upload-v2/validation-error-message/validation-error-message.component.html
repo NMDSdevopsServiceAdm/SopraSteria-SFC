@@ -1,0 +1,11 @@
+<div class="govuk__flex govuk__align-items-center govuk-!-margin-top-4">
+  <img
+    *ngIf="errorMessage"
+    class="govuk-!-margin-right-2 govuk-!-margin-bottom-2"
+    src="../../../../assets/images/cross-icon.svg"
+    alt=""
+  />
+  <p class="govuk-error-message" data-testid="validationErrorMsg">
+    {{ errorMessage }}
+  </p>
+</div>

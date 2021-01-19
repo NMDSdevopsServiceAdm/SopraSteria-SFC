@@ -15,7 +15,7 @@ const parentReport = require('./parent');
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.use('/establishment/:id', isAuthorisedEstablishment, hasPermission('canViewWdfSummaryReport'));
+router.use('/establishment/:id', isAuthorisedEstablishment, hasPermission('canViewEstablishment'));
 router.route('/establishment/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
