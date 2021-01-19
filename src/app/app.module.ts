@@ -47,7 +47,6 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
-import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -94,7 +93,6 @@ if (!environment.production) {
     BrowserModule,
     CommonModule,
     HttpClientModule,
-    MomentModule,
     HighchartsChartModule,
     ReactiveFormsModule,
     SharedModule,
