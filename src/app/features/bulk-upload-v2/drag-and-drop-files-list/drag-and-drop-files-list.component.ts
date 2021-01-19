@@ -14,11 +14,10 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 import { filter, findIndex } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-
-import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 
 @Component({
   selector: 'app-drag-and-drop-files-list',
@@ -267,7 +266,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
    * Then convert to lowercase
    * @param file ValidatedFile
    */
-  private getFileId(file: ValidatedFile): string {
+  public getFileId(file: ValidatedFile): string {
     const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
     const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
     return `bulk-upload-validation-${transformedFileName}`;
