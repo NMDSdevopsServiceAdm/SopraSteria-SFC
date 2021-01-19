@@ -3,7 +3,7 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header">Warnings</th>
-        <th scope="col" class="govuk-table__header">{{ fileType }}</th>
+        <th scope="col" class="govuk-table__header">{{ fileType == 'Workplace' ? 'Workplaces' : fileType }}</th>
         <th scope="col" class="govuk-table__header">&nbsp;</th>
       </tr>
     </thead>
@@ -54,7 +54,7 @@
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row" scope="row">
-        <td class="govuk-table__cell" colspan="3">There are 0 warnings in the Workplace data file.</td>
+        <td class="govuk-table__cell" colspan="3">There are 0 warnings in the {{ fileType }} data file.</td>
       </tr>
     </tbody>
   </ng-template>
