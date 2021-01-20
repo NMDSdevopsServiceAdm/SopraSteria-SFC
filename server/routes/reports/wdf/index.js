@@ -54,7 +54,7 @@ router.route('/establishment/:id').get(async (req, res) => {
 // gets the parent wdf report in excel xlsx spreadsheet format
 router.use('/establishment/:id/parent', [
   isAuthorisedEstablishment,
-  hasPermission('canViewWdfSummaryReport'),
+  hasPermission('canDownloadWdfReport'),
   parentReport,
 ]);
 
