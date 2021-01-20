@@ -21,6 +21,6 @@ const listParents = async (req, res) => {
   }
 };
 
-router.route('/parents').get(Authorization.isAuthorised, hasPermission('editEstablishment'), listParents);
+router.route('/parents').get(Authorization.isAuthorised, hasPermission('canEditEstablishment'), listParents);
 
 module.exports = router;
