@@ -328,24 +328,6 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
     });
   });
 
-  describe('getColumnName', () => {
-    it('should be able to find column names in error messages', async () => {
-      const columnNames = ['COLUMN1', 'COLUMN2', 'COLUMN3'];
-      const errorMessage = 'COLUMN1  are NOT filled out';
-
-      const result = errorReport.getColumnName(errorMessage, columnNames);
-
-      expect(result).to.equal('COLUMN1');
-    });
-    it('should be able to find more than one column names in error messages', async () => {
-      const columnNames = ['COLUMN1', 'COLUMN2', 'COLUMN3'];
-      const errorMessage = 'COLUMN1 and COLUMN3 are NOT filled out';
-
-      const result = errorReport.getColumnName(errorMessage, columnNames);
-
-      expect(result).to.equal('COLUMN1/COLUMN3');
-    });
-  });
   describe('generateBUReport', () => {
     const establishmentId = 123;
 

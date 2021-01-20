@@ -80,15 +80,6 @@ const generateHeaderArray = (establishmentFileHeaders, workersFileHeaders, train
   allFileHeaders = allFileHeaders.concat(trainingFileHeaders.split(','));
 };
 
-const getColumnName = (errorMessage, columnNames) => {
-  const wordsArray = errorMessage.split(' ');
-
-  const result = wordsArray.filter((word) => {
-    return columnNames.includes(word);
-  });
-
-  return result.join('/');
-};
 const fillData = (WS, errorData) => {
   if (!errorData || (errorData.errors.length === 0 && errorData.warnings.length === 0)) {
     return;
@@ -104,14 +95,13 @@ const fillData = (WS, errorData) => {
 
 const printRow = (WS, data, type) => {
   const text = type === 'WARNING' ? data.warning : data.error;
-  const columnName = getColumnName(text, allFileHeaders);
   data.items.forEach((item) => {
     const workerID = item.worker ? item.worker : null;
     WS.addRow({
-      type: type,
+      type,
       workplace: item.name,
       staff: workerID,
-      columnHeader: columnName,
+      columnHeader: data.column,
       lineNumber: item.lineNumber,
       errorMessage: text,
     });
@@ -164,4 +154,3 @@ module.exports = router;
 module.exports.errorReport = errorReport;
 module.exports.getErrorReport = getErrorReport;
 module.exports.generateBUReport = generateBUReport;
-module.exports.getColumnName = getColumnName;
