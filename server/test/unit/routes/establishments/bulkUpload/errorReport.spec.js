@@ -11,7 +11,7 @@ const {
   trainingErrorsWarnings,
   establishmentErrorWarnings,
 } = require('../../../mockdata/bulkUpload');
-describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
+describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -66,6 +66,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
       });
       sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
+
         expect(value.establishments.errors.length).to.deep.equal(2);
         expect(value.establishments.warnings.length).to.deep.equal(1);
         expect(value.establishments.errors).to.deep.equal([
@@ -116,8 +117,8 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errType: 'ALL_JOBS_ERROR',
             error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
             items: [
-              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38' },
-              { lineNumber: 3, name: 'Test', source: '' },
+              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38', worker: 'STAFFREF' },
+              { lineNumber: 3, name: 'Test', source: '', worker: 'STAFFREF' },
             ],
           },
           {
@@ -125,7 +126,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errCode: 1110,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID has not been supplied',
-            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '' }],
+            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '', worker: 'STAFFREF' }],
           },
         ]);
         expect(value.establishments.errors.length).to.deep.equal(0);
@@ -157,9 +158,9 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errType: 'ALL_JOBS_ERROR',
             error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
             items: [
-              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38' },
-              { lineNumber: 3, name: 'Test', source: '' },
-              { lineNumber: 6, name: 'Test2', source: '' },
+              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38', worker: 'STAFFREF' },
+              { lineNumber: 3, name: 'Test', source: '', worker: 'STAFFREF' },
+              { lineNumber: 6, name: 'Test2', source: '', worker: 'STAFFREF' },
             ],
           },
           {
@@ -167,7 +168,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errCode: 1110,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID has not been supplied',
-            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '' }],
+            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '', worker: 'STAFFREF' }],
           },
         ]);
         expect(value.establishments.errors.length).to.deep.equal(0);
@@ -198,9 +199,9 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errType: 'ALL_JOBS_ERROR',
             error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
             items: [
-              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38' },
-              { lineNumber: 3, name: 'Test', source: '' },
-              { lineNumber: 6, name: 'Test2', source: '' },
+              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38', worker: 'STAFFREF' },
+              { lineNumber: 3, name: 'Test', source: '', worker: 'STAFFREF' },
+              { lineNumber: 6, name: 'Test2', source: '', worker: 'STAFFREF' },
             ],
           },
           {
@@ -208,7 +209,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errCode: 1110,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID has not been supplied',
-            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '' }],
+            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '', worker: 'STAFFREF' }],
           },
         ]);
         expect(value.establishments.errors.length).to.deep.equal(2);
@@ -241,8 +242,8 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errType: 'ALL_JOBS_ERROR',
             error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
             items: [
-              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38' },
-              { lineNumber: 3, name: 'Test', source: '' },
+              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38', worker: 'STAFFREF' },
+              { lineNumber: 3, name: 'Test', source: '', worker: 'STAFFREF' },
             ],
           },
           {
@@ -250,7 +251,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errCode: 1110,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID has not been supplied',
-            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '' }],
+            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '', worker: 'STAFFREF' }],
           },
         ]);
       });
@@ -277,9 +278,9 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errType: 'ALL_JOBS_ERROR',
             error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
             items: [
-              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38' },
-              { lineNumber: 3, name: 'Test', source: '' },
-              { lineNumber: 6, name: 'Test2', source: '' },
+              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38', worker: 'STAFFREF' },
+              { lineNumber: 3, name: 'Test', source: '', worker: 'STAFFREF' },
+              { lineNumber: 6, name: 'Test2', source: '', worker: 'STAFFREF' },
             ],
           },
           {
@@ -287,7 +288,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errCode: 1110,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID has not been supplied',
-            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '' }],
+            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '', worker: 'STAFFREF' }],
           },
         ]);
         expect(value.establishments.errors.length).to.deep.equal(1);
@@ -310,8 +311,8 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errType: 'ALL_JOBS_ERROR',
             error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
             items: [
-              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38' },
-              { lineNumber: 3, name: 'Test', source: '' },
+              { lineNumber: 2, name: 'SKILLS FOR CARE', source: '8;3;38', worker: 'STAFFREF' },
+              { lineNumber: 3, name: 'Test', source: '', worker: 'STAFFREF' },
             ],
           },
           {
@@ -319,7 +320,7 @@ describe.only('/server/routes/establishment/bulkUpload/errorReport.js', () => {
             errCode: 1110,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID has not been supplied',
-            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '' }],
+            items: [{ lineNumber: 2, name: 'SKILLS FOR CARE', source: '', worker: 'STAFFREF' }],
           },
         ]);
       });

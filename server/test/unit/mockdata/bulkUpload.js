@@ -45,7 +45,8 @@ const workerErrorsWarnings = `[
       "errType": "ALL_JOBS_ERROR",
       "source": "8;3;38",
       "name": "SKILLS FOR CARE",
-      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one"
+      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one",
+      "worker": "STAFFREF"
     },
     {
       "origin": "Workers",
@@ -54,7 +55,8 @@ const workerErrorsWarnings = `[
       "errType": "ALL_JOBS_ERROR",
       "source": "",
       "name": "Test",
-      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one"
+      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one",
+      "worker": "STAFFREF"
     },
     {
       "origin": "Workers",
@@ -63,7 +65,8 @@ const workerErrorsWarnings = `[
       "name": "Test",
       "warnCode": 2200,
       "warnType": "TOTAL_PERM_TEMP_WARNING",
-      "warning": "TOTALPERMTEMP (Total staff and the number of worker records) does not match"
+      "warning": "TOTALPERMTEMP (Total staff and the number of worker records) does not match",
+      "worker": "STAFFREF"
     },
     {
       "origin": "Workers",
@@ -72,7 +75,8 @@ const workerErrorsWarnings = `[
       "errType": "LOCATION_ID_ERROR",
       "error": "LOCATIONID has not been supplied",
       "source": "",
-      "name": "SKILLS FOR CARE"
+      "name": "SKILLS FOR CARE",
+      "worker": "STAFFREF"
     }
   ]`;
 
@@ -84,7 +88,8 @@ const trainingErrorsWarnings = `[
       "errType": "ALL_JOBS_ERROR",
       "source": "8;3;38",
       "name": "SKILLS FOR CARE",
-      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one"
+      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one",
+      "worker": "STAFFREF"
     },
     {
       "origin": "Training",
@@ -93,7 +98,8 @@ const trainingErrorsWarnings = `[
       "errType": "ALL_JOBS_ERROR",
       "source": "",
       "name": "Test",
-      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one"
+      "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one",
+      "worker": "STAFFREF"
     },
     {
         "origin": "Training",
@@ -102,7 +108,8 @@ const trainingErrorsWarnings = `[
         "errType": "ALL_JOBS_ERROR",
         "source": "",
         "name": "Test2",
-        "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one"
+        "error": "You do not have a staff record for a Registered Manager therefore must record a vacancy for one",
+        "worker": "STAFFREF"
     },
     {
       "origin": "Training",
@@ -111,7 +118,8 @@ const trainingErrorsWarnings = `[
       "name": "Test",
       "warnCode": 2200,
       "warnType": "TOTAL_PERM_TEMP_WARNING",
-      "warning": "TOTALPERMTEMP (Total staff and the number of worker records) does not match"
+      "warning": "TOTALPERMTEMP (Total staff and the number of worker records) does not match",
+      "worker": "STAFFREF"
     },
     {
       "origin": "Training",
@@ -120,7 +128,8 @@ const trainingErrorsWarnings = `[
       "errType": "LOCATION_ID_ERROR",
       "error": "LOCATIONID has not been supplied",
       "source": "",
-      "name": "SKILLS FOR CARE"
+      "name": "SKILLS FOR CARE",
+      "worker": "STAFFREF"
     }
   ]`;
 
