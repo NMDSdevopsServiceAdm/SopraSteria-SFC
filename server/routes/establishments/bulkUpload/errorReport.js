@@ -133,9 +133,9 @@ const generateBUReport = async (req, res) => {
   fillData(staffSheet, data.workers);
   fillData(trainingSheet, data.training);
 
-  excelUtils.autoFitColumns(workplaceSheet, 1);
-  excelUtils.autoFitColumns(staffSheet, 1);
-  excelUtils.autoFitColumns(trainingSheet, 1);
+  excelUtils.fitColumnsToSize(workplaceSheet);
+  excelUtils.fitColumnsToSize(staffSheet);
+  excelUtils.fitColumnsToSize(trainingSheet);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(
