@@ -1266,7 +1266,7 @@ class Establishment {
                   index + 1
                 }) must not be greater than ${MAX_LENGTH} characters`,
                 source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
-                column: '',
+                column: 'OTHERUSERDESC',
                 name: this._currentLine.LOCALESTID,
               });
             } else {
@@ -2420,7 +2420,7 @@ class Establishment {
       errType: 'EXPECT_JUST_ONE_ERROR',
       error: 'Expect just one establishment',
       source: '',
-      column: '',
+      column: 'LOCALESTID',
     };
   }
 
@@ -2432,7 +2432,7 @@ class Establishment {
       errType: 'MISSING_PRIMARY_ERROR',
       error: `Missing the primary establishment: ${name}`,
       source: '',
-      column: '',
+      column: 'LOCALESTID',
       name,
     };
   }

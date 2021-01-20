@@ -669,7 +669,7 @@ class Worker {
         errType: 'CHANGE_UNIQUE_WORKER_ID_ERROR',
         error: `CHGUNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.CHGUNIQUEWRKID,
-        column: '',
+        column: 'CHGUNIQUEWRKID',
       });
       return false;
     } else if (myChangeUniqueWorkerId && myChangeUniqueWorkerId.length > 0) {
@@ -690,7 +690,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.STATUS_ERROR,
         errType: 'STATUS_ERROR',
-        error: 'The status you have supplied is incorrect',
+        error: 'The STATUS you have supplied is incorrect',
         source: this._currentLine.STATUS,
         column: 'STATUS',
       });
@@ -735,7 +735,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error: 'Staff has a status of DELETE but does not exist.',
+              error: 'Staff has a STATUS of DELETE but does not exist.',
               source: myStatus,
               column: 'STATUS',
             });
@@ -750,7 +750,7 @@ class Worker {
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error:
-                "Staff record has a status of UNCHECKED but doesn't exist, please change to NEW if you want to add this staff record",
+                "Staff record has a STATUS of UNCHECKED but doesn't exist, please change to NEW if you want to add this staff record",
               source: myStatus,
               column: 'STATUS',
             });
@@ -765,7 +765,7 @@ class Worker {
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error:
-                "Staff record has a status of NOCHANGE but doesn't exist, please change to NEW if you want to add this staff record",
+                "Staff record has a STATUS of NOCHANGE but doesn't exist, please change to NEW if you want to add this staff record",
               source: myStatus,
               column: 'STATUS',
             });
@@ -780,7 +780,7 @@ class Worker {
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error:
-                "Staff record has a status of UPDATE but doesn't exist, please change to NEW if you want to add this staff record",
+                "Staff record has a STATUS of UPDATE but doesn't exist, please change to NEW if you want to add this staff record",
               source: myStatus,
               column: 'STATUS',
             });
@@ -2477,7 +2477,7 @@ class Worker {
           errType: qualificationErrorName,
           error: `The code you have entered for (${qualificationName}) is incorrect`,
           source: qualification,
-          column: '',
+          column: qualificationName,
         });
       }
 
@@ -2499,7 +2499,7 @@ class Worker {
           warnType: qualificationErrorName,
           warning: `Year achieved for ${qualificationName} is blank`,
           source: qualification,
-          column: '',
+          column: qualificationName,
         });
       } else if (myQualification[1] !== null && (isNaN(qualificationYear) || !qualificationYearIsValid)) {
         localValidationErrors.push({
@@ -2510,7 +2510,7 @@ class Worker {
           errType: qualificationErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
-          column: '',
+          column: qualificationName,
         });
       } else if (qualificationYear < CURRENT_YEAR - MAX_YEAR_AGE || qualificationYear > CURRENT_YEAR) {
         localValidationErrors.push({
@@ -2521,7 +2521,7 @@ class Worker {
           errType: qualificationErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
-          column: '',
+          column: qualificationName,
         });
       }
 
@@ -2536,9 +2536,9 @@ class Worker {
             lineNumber: this._lineNumber,
             warnCode: qualificationDescError,
             warnType: qualificationDescErrorName,
-            warning: `The notes you hqve entered for (${qualificationDescName}) are over 120 characters and will be ignored`,
+            warning: `The notes you have entered for (${qualificationDescName}) are over 120 characters and will be ignored`,
             source: qualificationDesc,
-            column: '',
+            column: qualificationDescName,
           });
         } else {
           myQualificationDesc = qualificationDesc;
@@ -2904,7 +2904,7 @@ class Worker {
             errType: `QUAL_ACH${thisQualification.column}_ERROR`,
             error: `Qualification (QUALACH${thisQualification.column}): ${thisQualification.id} is unknown`,
             source: `${this._currentLine[`QUALACH${thisQualification.column}`]}`,
-            column: '',
+            column: `QUALACH${thisQualification.column}`,
           });
         } else {
           const newQual = thisQualification;
@@ -2941,7 +2941,7 @@ class Worker {
       errType: 'DUPLICATE_ERROR',
       error: `CHGUNIQUEWRKID ${CHGUNIQUEWORKERID} is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
-      column: '',
+      column: 'CHGUNIQUEWRKID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };
