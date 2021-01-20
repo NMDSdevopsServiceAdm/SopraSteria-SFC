@@ -1,4 +1,4 @@
-<table class="govuk-table">
+<table class="govuk-table" data-testid="error-details-table">
   <ng-container *ngIf="errors?.length > 0; else noErrors">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
@@ -35,7 +35,7 @@
                         {{ item.lineNumber }}</ng-container
                       >
                       <ng-container *ngSwitchCase="'Training'"
-                        >for staff record '{{ item.worker }}' '{{ item.name }}' on line
+                        >for staff record '{{ item.worker }}' at workplace '{{ item.name }}' on line
                         {{ item.lineNumber }}</ng-container
                       >
                     </ng-container>
