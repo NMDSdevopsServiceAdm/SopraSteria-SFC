@@ -5,15 +5,27 @@ import { Observable, of } from 'rxjs';
 
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
+const itemBuilder = build('Item', {
+  fields: {
+    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    source: '',
+    name: 'SKILLS FOR CARE',
+  },
+});
+
 const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
   fields: {
     errCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
     errType: 'ERROR',
     error: fake((f) => f.lorem.sentence()),
     origin: 'Establishment',
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
-    source: '',
-    name: 'SKILLS FOR CARE',
+    items: [],
+  },
+  postBuild: (errorReportError) => {
+    errorReportError.items = Array(Math.floor(Math.random() * 10) + 1)
+      .fill(undefined)
+      .map((_) => itemBuilder());
+    return errorReportError;
   },
 });
 
@@ -23,9 +35,13 @@ const bulkUploadWarningResponseBuilder = build('ErrorReportWarning', {
     warnType: 'ERROR',
     warning: fake((f) => f.lorem.sentence()),
     origin: 'Establishment',
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
-    source: '',
-    name: 'SKILLS FOR CARE',
+    items: [],
+  },
+  postBuild: (errorReportWarning) => {
+    errorReportWarning.items = Array(fake((f) => f.random.number({ min: 2, max: 10 })))
+      .fill(undefined)
+      .map((_) => itemBuilder());
+    return errorReportWarning;
   },
 });
 
@@ -57,3 +73,19 @@ export class MockBulkUploadService extends BulkUploadService {
     return of(errorReport);
   }
 }
+
+const ValidatedFileBuilder = build('ValidatedFile', {
+  fields: {
+    errors: 0,
+    filename: fake((f) => f.lorem.sentence()),
+    fileType: 'Establishment',
+    key: fake((f) => f.lorem.sentence()),
+    records: 10,
+    size: 100,
+    uploaded: '',
+    warnings: 2,
+    username: 'user',
+  },
+});
+
+export const ValidatedFile = ValidatedFileBuilder();

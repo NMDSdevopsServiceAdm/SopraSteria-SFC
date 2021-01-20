@@ -38,6 +38,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     '=1': 'There was # error in the file',
     other: 'There were # errors in the file',
   };
+  public preValidationErrorMessage = '';
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -157,6 +158,23 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         },
       ),
     );
+  }
+
+  public preValidateCheck(): void {
+    const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
+
+    if (fileCount < 2) {
+      this.preValidationErrorMessage = 'You need to select 2 or 3 files.';
+      return;
+    }
+
+    if (fileCount > 3) {
+      this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
+      return;
+    }
+
+    this.preValidationErrorMessage = '';
+    this.validateFiles();
   }
 
   public beginCompleteUpload(): void {

@@ -31,6 +31,7 @@ describe('ErrorPageComponent', () => {
 
     return { fixture, component, http, getByText, getByTestId };
   };
+
   it('should render a ErrorPageComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -42,7 +43,7 @@ describe('ErrorPageComponent', () => {
     expect(title).toBeTruthy();
   });
 
-  it('should show a table with the correct amount of errors - establishments - 1', async () => {
+  it('should show an error summary table with the correct amount of errors', async () => {
     const { component, fixture, getByTestId } = await setup();
 
     fixture.detectChanges();
@@ -54,11 +55,21 @@ describe('ErrorPageComponent', () => {
     const trainingErrorCount = getByTestId('trainingErrorCount');
     const trainingWarningCount = getByTestId('trainingWarningCount');
 
-    expect(establishmentsErrorCount.textContent).toContain(errorReport.establishments.errors.length.toString());
-    expect(establishmentsWarningCount.textContent).toContain(errorReport.establishments.warnings.length.toString());
-    expect(workersErrorCount.textContent).toContain(errorReport.workers.errors.length.toString());
-    expect(workersWarningCount.textContent).toContain(errorReport.workers.warnings.length.toString());
-    expect(trainingErrorCount.textContent).toContain(errorReport.training.errors.length.toString());
-    expect(trainingWarningCount.textContent).toContain(errorReport.training.warnings.length.toString());
+    expect(establishmentsErrorCount.textContent).toContain(
+      component.getNumberOfItems(errorReport.establishments.errors).toString(),
+    );
+    expect(establishmentsWarningCount.textContent).toContain(
+      component.getNumberOfItems(errorReport.establishments.warnings).toString(),
+    );
+    expect(workersErrorCount.textContent).toContain(component.getNumberOfItems(errorReport.workers.errors).toString());
+    expect(workersWarningCount.textContent).toContain(
+      component.getNumberOfItems(errorReport.workers.warnings).toString(),
+    );
+    expect(trainingErrorCount.textContent).toContain(
+      component.getNumberOfItems(errorReport.training.errors).toString(),
+    );
+    expect(trainingWarningCount.textContent).toContain(
+      component.getNumberOfItems(errorReport.training.warnings).toString(),
+    );
   });
 });

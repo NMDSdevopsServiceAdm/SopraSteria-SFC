@@ -19,42 +19,41 @@
         </a>
       </li>
     </ul>
-    <table *ngIf="errorReport.establishments.errors" class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Errors</th>
-          <th scope="col" class="govuk-table__header">Workplaces</th>
-          <th scope="col" class="govuk-table__header">&nbsp;</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let err of errorReport.establishments.errors">
-          <td class="govuk-table__cell">{{ err.error }}</td>
-          <td class="govuk-table__cell">
-            {{ err.items.length }}
-          </td>
-          <td class="govuk-table__cell"></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <table *ngIf="errorReport.establishments.warnings" class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Warnings</th>
-          <th scope="col" class="govuk-table__header">Workplaces</th>
-          <th scope="col" class="govuk-table__header">&nbsp;</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let err of errorReport.establishments.warnings">
-          <td class="govuk-table__cell">{{ err.warning }}</td>
-          <td class="govuk-table__cell">
-            {{ err.items.length }}
-          </td>
-          <td class="govuk-table__cell"></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-tabs>
+          <app-tab [title]="'Workplace'">
+            <app-error-details-table
+              [errors]="errorReport?.establishments.errors"
+              [fileType]="'Workplace'"
+            ></app-error-details-table>
+            <app-warning-details-table
+              [warnings]="errorReport?.establishments.warnings"
+              [fileType]="'Workplace'"
+            ></app-warning-details-table>
+          </app-tab>
+          <app-tab [title]="'Staff'">
+            <app-error-details-table
+              [errors]="errorReport?.workers.errors"
+              [fileType]="'Staff'"
+            ></app-error-details-table>
+            <app-warning-details-table
+              [warnings]="errorReport?.workers.warnings"
+              [fileType]="'Staff'"
+            ></app-warning-details-table>
+          </app-tab>
+          <app-tab [title]="'Training'">
+            <app-error-details-table
+              [errors]="errorReport?.training.errors"
+              [fileType]="'Training'"
+            ></app-error-details-table>
+            <app-warning-details-table
+              [warnings]="errorReport?.training.warnings"
+              [fileType]="'Training'"
+            ></app-warning-details-table>
+          </app-tab>
+        </app-tabs>
+      </div>
+    </div>
   </div>
 </div>
