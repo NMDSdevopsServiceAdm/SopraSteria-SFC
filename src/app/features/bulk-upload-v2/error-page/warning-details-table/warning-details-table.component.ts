@@ -8,9 +8,9 @@ import { ErrorReportWarning } from '@core/model/bulk-upload.model';
 export class WarningDetailsTableComponent {
   @Input() warnings: ErrorReportWarning[];
   @Input() fileType: string;
-  private openWarnings: string[] = [];
+  public openWarnings: number[] = [];
 
-  public toggleDetails(warnCode: string, event) {
+  public toggleDetails(warnCode: number, event) {
     event.preventDefault();
     const indexOfWarning = this.openWarnings.indexOf(warnCode);
     indexOfWarning > -1 ? this.openWarnings.splice(indexOfWarning, 1) : this.openWarnings.push(warnCode);
