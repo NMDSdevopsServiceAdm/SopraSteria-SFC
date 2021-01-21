@@ -868,7 +868,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             index < worker.otherJobs.jobs.length - 1 ? (otherJobsDesc += ';') : (otherJobsDesc += '');
           });
         } else {
-          // expect(establishment.otherServices).to.equal(null);
           expect(worker.otherJobs.otherJobs).to.equal(null);
         }
 
