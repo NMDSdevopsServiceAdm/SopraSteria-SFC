@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
-const errorReport = require('../../../../../routes/establishments/bulkUpload/errorReport');
+const { errorReport, generateBUReport } = require('../../../../../routes/establishments/bulkUpload/errorReport');
 const httpMocks = require('node-mocks-http');
 const {
   establishmentErrorsWarnings,
@@ -52,7 +52,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
         expect(value.training.errors.length).to.deep.equal(0);
         expect(value.training.warnings.length).to.deep.equal(0);
       });
-      await errorReport.errorReport(req, res);
+      await errorReport(req, res);
     });
 
     it('should reply with 2 errors, 1 warning with 2 establishments for 1 error', async () => {
@@ -94,7 +94,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
         expect(value.training.errors.length).to.deep.equal(0);
         expect(value.training.warnings.length).to.deep.equal(0);
       });
-      await errorReport.errorReport(req, res);
+      await errorReport(req, res);
     });
 
     it('should reply with 2 errors, 1 warning with 2 workers for 1 error', async () => {
@@ -135,7 +135,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
         expect(value.training.errors.length).to.deep.equal(0);
         expect(value.training.warnings.length).to.deep.equal(0);
       });
-      await errorReport.errorReport(req, res);
+      await errorReport(req, res);
     });
 
     it('should reply with 2 errors. 1 warning with 3 types of training for 1 error', async () => {
@@ -177,7 +177,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
         expect(value.workers.errors.length).to.deep.equal(0);
         expect(value.workers.warnings.length).to.deep.equal(0);
       });
-      await errorReport.errorReport(req, res);
+      await errorReport(req, res);
     });
     it('should reply errors and warnings for all files', async () => {
       sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
@@ -256,7 +256,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           },
         ]);
       });
-      await errorReport.errorReport(req, res);
+      await errorReport(req, res);
     });
     it('should reply with 1 error and warning for establishment file', async () => {
       sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
@@ -325,7 +325,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           },
         ]);
       });
-      await errorReport.errorReport(req, res);
+      await errorReport(req, res);
     });
   });
 
@@ -353,7 +353,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: trainingErrorsWarnings };
         }
       });
-      await errorReport.generateBUReport(req, res);
+      await generateBUReport(req, res);
 
       expect(res.statusCode).to.equal(200);
       expect(res._headers['content-type']).to.equal(
