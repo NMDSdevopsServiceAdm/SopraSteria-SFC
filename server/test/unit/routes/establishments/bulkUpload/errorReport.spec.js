@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
-const { errorReport } = require('../../../../../routes/establishments/bulkUpload/errorReport');
+const { errorReport, generateBUReport } = require('../../../../../routes/establishments/bulkUpload/errorReport');
 const httpMocks = require('node-mocks-http');
 const {
   establishmentErrorsWarnings,
@@ -11,6 +11,7 @@ const {
   trainingErrorsWarnings,
   establishmentErrorWarnings,
 } = require('../../../mockdata/bulkUpload');
+
 describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
   afterEach(() => {
     sinon.restore();
@@ -325,6 +326,39 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
         ]);
       });
       await errorReport(req, res);
+    });
+  });
+
+  describe('generateBUReport', () => {
+    const establishmentId = 123;
+
+    const req = httpMocks.createRequest({
+      method: 'GET',
+      url: `/api/establishment/${establishmentId}/bulkUpload/errorReport/report`,
+      params: {
+        establishmentId,
+      },
+    });
+
+    req.establishmentId = establishmentId;
+
+    const res = httpMocks.createResponse();
+    it('should return status 200 and an excel format', async () => {
+      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+        if (url.includes('establishments')) {
+          return { data: establishmentErrorsWarnings };
+        } else if (url.includes('workers')) {
+          return { data: workerErrorsWarnings };
+        } else {
+          return { data: trainingErrorsWarnings };
+        }
+      });
+      await generateBUReport(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._headers['content-type']).to.equal(
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
     });
   });
 });

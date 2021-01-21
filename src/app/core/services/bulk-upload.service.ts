@@ -153,6 +153,13 @@ export class BulkUploadService {
       .pipe(map((status) => status.bulkUploadState));
   }
 
+  public getBUReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/errorReport/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
     return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }

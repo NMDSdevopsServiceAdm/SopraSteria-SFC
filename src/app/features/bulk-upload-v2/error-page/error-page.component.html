@@ -8,6 +8,17 @@
       Use this error report to correct the errors in your data files before you select them again for a bulk upload.
     </p>
     <app-bu-error-summary [numberOfErrorsAndWarnings]="numberOfErrorsAndWarnings"></app-bu-error-summary>
+    <ul class="govuk-list govuk-list--download">
+      <li>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-bulk_upload_report.xlsx"
+          class="govuk-body-m"
+          (click)="downloadBUReport($event)"
+        >
+          Download error report
+        </a>
+      </li>
+    </ul>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <app-tabs>

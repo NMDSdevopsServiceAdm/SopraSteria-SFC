@@ -284,7 +284,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
    * Then convert to lowercase
    * @param file ValidatedFile
    */
-  private getFileId(file: ValidatedFile): string {
+  public getFileId(file: ValidatedFile): string {
     const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
     const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
     return `bulk-upload-validation-${transformedFileName}`;

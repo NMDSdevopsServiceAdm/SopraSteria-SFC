@@ -21,7 +21,7 @@ const errorReportErrorBuilder = build('ErrorReportError', {
   },
 });
 
-fdescribe('ErrorDetailsTableComponent', () => {
+describe('ErrorDetailsTableComponent', () => {
   it('should create', async () => {
     const component = await render(ErrorDetailsTableComponent);
     expect(component).toBeTruthy();
