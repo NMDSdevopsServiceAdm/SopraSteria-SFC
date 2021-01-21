@@ -119,6 +119,64 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   }
 };
 
+// const deleteFilesS3 = async (establishmentId) => {
+//   // drop all in latest
+//   const listParams = {
+//     Bucket,
+//     Prefix: `${establishmentId}/latest/`,
+//   };
+
+//   const latestObjects = await s3.listObjects(listParams).promise();
+//   const deleteKeys = [];
+
+//   latestObjects.Contents.forEach((myFile) => {
+//     const ignoreRoot = /.*\/$/;
+//     if (!ignoreRoot.test(myFile.Key)) {
+//       deleteKeys.push({
+//         Key: myFile.Key,
+//       });
+//     }
+//   });
+
+//   listParams.Prefix = `${establishmentId}/intermediary/`;
+//   const intermediaryObjects = await s3.listObjects(listParams).promise();
+//   intermediaryObjects.Contents.forEach((myFile) => {
+//     deleteKeys.push({
+//       Key: myFile.Key,
+//     });
+//   });
+
+//   listParams.Prefix = `${establishmentId}/validation/`;
+//   const validationObjects = await s3.listObjects(listParams).promise();
+//   validationObjects.Contents.forEach((myFile) => {
+//     deleteKeys.push({
+//       Key: myFile.Key,
+//     });
+//   });
+
+//   if (deleteKeys.length > 0) {
+//     // now delete the objects in one go
+//     await s3
+//       .deleteObjects({
+//         Bucket,
+//         Delete: {
+//           Objects: deleteKeys,
+//           Quiet: true,
+//         },
+//       })
+//       .promise();
+//   }
+// };
+
+// module.exports = {
+//   s3,
+//   Bucket,
+//   uploadAsJSON,
+//   saveResponse,
+//   downloadContent,
+//   purgeBulkUploadS3Objects,
+// };
+
 module.exports = {
   s3,
   Bucket,
