@@ -72,4 +72,19 @@ describe('ErrorPageComponent', () => {
       component.getNumberOfItems(errorReport.training.warnings).toString(),
     );
   });
+
+  it('should show workplace errors and warnings tables on load', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    fixture.detectChanges();
+    const errorReport = component.errorReport;
+
+    for (const err of errorReport.establishments.errors) {
+      expect(getByText(err.error, { exact: false }));
+    }
+
+    for (const warn of errorReport.establishments.warnings) {
+      expect(getByText(warn.warning, { exact: false }));
+    }
+  });
 });
