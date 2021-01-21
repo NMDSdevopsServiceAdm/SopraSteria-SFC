@@ -76,7 +76,7 @@ describe('ErrorDetailsTableComponent', () => {
         },
       });
 
-      const itemMessage = `for workplace called '${errors[0].items[0].name}' on line ${errors[0].items[0].lineNumber}`;
+      const itemMessage = makeWorkplaceItemMessage(errors[0].items[0].name, errors[0].items[0].lineNumber);
       expect(queryByText(itemMessage, { exact: false })).toBeNull();
 
       const openCloseToggle = within(getByTestId('error-details-table')).getByText('Open');

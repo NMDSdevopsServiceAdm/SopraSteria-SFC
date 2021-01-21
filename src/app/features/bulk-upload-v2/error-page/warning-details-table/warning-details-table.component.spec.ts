@@ -38,7 +38,7 @@ const makeTrainingOrStaffItemMessage = (worker: string, name: string, lineNumber
   return `for staff record '${worker}' at workplace '${name}' on line ${lineNumber}`;
 };
 
-fdescribe('WarningDetailsTableComponent', () => {
+describe('WarningDetailsTableComponent', () => {
   it('should create', async () => {
     const component = await render(WarningDetailsTableComponent);
     expect(component).toBeTruthy();
