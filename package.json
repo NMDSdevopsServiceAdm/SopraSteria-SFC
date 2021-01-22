@@ -29,7 +29,7 @@
   "dependencies": {
     "@angular/animations": "~10.2.1",
     "@angular/cdk": "^10.2.7",
-    "@angular/cli": "~10.2.0",
+    "@angular/cli": "~11.1.0",
     "@angular/common": "~10.2.1",
     "@angular/compiler": "~10.2.1",
     "@angular/compiler-cli": "^10.2.1",
