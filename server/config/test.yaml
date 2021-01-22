@@ -13,9 +13,6 @@ db:
     min: 15
     max: 15
   ssl: true
-  client_ssl:
-    status: false
-    usingFiles: false
 
 slack:
   level: 3 # enables Slack notifications
