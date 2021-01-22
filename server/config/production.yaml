@@ -24,9 +24,6 @@ db:
     idle: 200000
   ssl: true
   username: sfcapp
-  client_ssl:
-    status: false
-    usingFiles: false
 
 notify:
   replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
