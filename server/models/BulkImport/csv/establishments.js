@@ -2666,13 +2666,13 @@ class Establishment {
     columns.push(csvQuote(entity.town));
     columns.push(csvQuote(entity.postcode));
     columns.push(entity.EmployerTypeValue ? BUDI.establishmentType(BUDI.FROM_ASC, entity.EmployerTypeValue) : '');
-    columns.push(csvQuote(entity.employerTypeOther));
+    columns.push(csvQuote(entity.EmployerTypeOther ? entity.EmployerTypeOther : ''));
 
     columns.push(entity.shareWithCQC ? 1 : 0);
     columns.push(entity.shareWithLA ? 1 : 0);
 
     const localAuthorities = entity.localAuthorities.map((localAuthority) => localAuthority.cssrId);
-    columns.push(localAuthorities.join(';'));
+    columns.push(entity.shareWithLA ? localAuthorities.join(';') : '');
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);

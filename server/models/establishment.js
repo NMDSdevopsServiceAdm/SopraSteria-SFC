@@ -999,6 +999,9 @@ module.exports = function (sequelize, DataTypes) {
           },
         ],
         archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
       },
       include: [
         {
