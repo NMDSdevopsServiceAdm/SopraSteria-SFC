@@ -6,7 +6,7 @@ const establishmentCsv = require('../../../../../models/BulkImport/csv/establish
 const workerCsv = require('../../../../../models/BulkImport/csv/workers');
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
-
+const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
   const worker = new workerCsv.Worker(currentLine, lineNumber, allCurrentEstablishments);
   worker.validate();
@@ -479,6 +479,26 @@ describe('Bulk Upload - Establishment CSV', () => {
           name: establishmentRow.LOCALESTID,
         },
       ]);
+    });
+  });
+  describe('toCSV', () => {
+    beforeEach(() => {
+      sandbox.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
+      sandbox.stub(BUDI, 'serviceUsers').callsFake((method, value) => value);
+      sandbox.stub(BUDI, 'jobRoles').callsFake((method, value) => value);
+    });
+
+    it('should return basic CSV info', async () => {
+      const establishment = apiEstablishmentBuilder();
+      const csv = establishmentCsv.toCSV(establishment);
+      expect(csv).to.contain(establishment.LocalIdentifierValue);
+      expect(csv).to.contain('UNCHECKED');
+      expect(csv).to.contain(establishment.NameValue);
+      expect(csv).to.contain(establishment.address1);
+      expect(csv).to.contain(establishment.address2);
+      expect(csv).to.contain(establishment.address3);
+      expect(csv).to.contain(establishment.town);
+      expect(csv).to.contain(establishment.postcode);
     });
   });
 });
