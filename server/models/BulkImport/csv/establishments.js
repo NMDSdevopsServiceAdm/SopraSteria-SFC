@@ -2693,7 +2693,6 @@ class Establishment {
       const utilisation = entity.capacity.find(
         (capacity) => capacity.reference.service.id === service.id && capacity.reference.type === 'Utilisation',
       );
-      console.log(capacity);
       capacities.push(capacity && capacity.answer ? capacity.answer : '');
       utilisations.push(utilisation && utilisation.answer ? utilisation.answer : '');
     });
@@ -2702,123 +2701,81 @@ class Establishment {
     columns.push(utilisations.join(';'));
 
     // all service "other" descriptions
-    // columns.push(
-    //   otherServices
-    //     .map((thisService) => (thisService.other && thisService.other.length > 0 ? thisService.other : ''))
-    //     .join(';'),
-    // );
+
+    columns.push(
+      services
+        .map((thisService) =>
+          thisService.establishmentServices && thisService.establishmentServices.other
+            ? thisService.establishmentServices.other
+            : '',
+        )
+        .join(';'),
+    );
 
     // service users and their 'other' descriptions
     const serviceUsers = Array.isArray(entity.serviceUsers) ? entity.serviceUsers : [];
     columns.push(serviceUsers.map((thisUser) => BUDI.serviceUsers(BUDI.FROM_ASC, thisUser.id)).join(';'));
     columns.push(
-      serviceUsers.map((thisUser) => (thisUser.other && thisUser.other.length > 0 ? thisUser.other : '')).join(';'),
+      serviceUsers
+        .map((thisServiceUser) =>
+          thisServiceUser.establishmentServiceUsers && thisServiceUser.establishmentServiceUsers.other
+            ? thisServiceUser.establishmentServiceUsers.other
+            : '',
+        )
+        .join(';'),
     );
 
     // total perm/temp staff
-    columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
+    columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);
 
     // all job roles, starters, leavers and vacancies
-
-    const allJobs = [];
-
-    if (entity.starters && Array.isArray(entity.starters)) {
-      entity.starters.forEach((thisStarter) => allJobs.push(thisStarter));
-    }
-
-    if (entity.leavers && Array.isArray(entity.leavers)) {
-      entity.leavers.forEach((thisLeaver) => allJobs.push(thisLeaver));
-    }
-
-    if (entity.vacancies && Array.isArray(entity.vacancies)) {
-      entity.vacancies.forEach((thisVacancy) => allJobs.push(thisVacancy));
-    }
-
     // all jobs needs to be a set of unique ids (which across starters, leavers and vacancies may be repeated)
-    const uniqueJobs = [];
-
-    allJobs.forEach((thisAllJob) => {
-      if (!uniqueJobs.includes(thisAllJob.jobId)) {
-        uniqueJobs.push(thisAllJob.jobId);
-      }
-    });
+    const uniqueJobs = entity.jobs
+      .map((job) => job.jobId)
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     columns.push(uniqueJobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
 
-    let starters = '';
-    if (entity.starters && !Array.isArray(entity.starters)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        starters = '0';
-      } else if (entity.starters === 'None') {
-        starters = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.starters === "Don't know") {
-        starters = 999;
-      }
-    } else if (entity.starters !== null) {
-      starters = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobAStarterJob = entity.starters
-            ? entity.starters.find((myStarter) => myStarter.jobId === thisJob)
-            : false;
-          if (isThisJobAStarterJob) {
-            return isThisJobAStarterJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(starters);
+    const starters = entity.jobs.filter((value) => value.type === 'Starters');
+    const leavers = entity.jobs.filter((value) => value.type === 'Leavers');
+    const vacancies = entity.jobs.filter((value) => value.type === 'Vacancies');
 
-    let leavers = '';
-    if (entity.leavers && !Array.isArray(entity.leavers)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        leavers = '0';
-      } else if (entity.leavers === 'None') {
-        leavers = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.leavers === "Don't know") {
-        leavers = 999;
-      }
-    } else if (entity.leavers !== null) {
-      leavers = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobALeaverJob = entity.leavers
-            ? entity.leavers.find((myLeaver) => myLeaver.jobId === thisJob)
-            : false;
-          if (isThisJobALeaverJob) {
-            return isThisJobALeaverJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(leavers);
+    const starterCounts = [];
+    const leaverCounts = [];
+    const vacancyCounts = [];
 
-    let vacancies = '';
-    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        vacancies = '0';
-      } else if (entity.vacancies === 'None') {
-        vacancies = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.vacancies === "Don't know") {
-        vacancies = 999;
-      }
+    uniqueJobs.map((job) => {
+      const starterCount = starters.find((starter) => starter.jobId === job);
+      const leaverCount = leavers.find((leaver) => leaver.jobId === job);
+      const vacancyCount = vacancies.find((vacancy) => vacancy.jobId === job);
+      starterCounts.push(starterCount && starterCount.total ? starterCount.total : 0);
+      leaverCounts.push(leaverCount && leaverCount.total ? leaverCount.total : 0);
+      vacancyCounts.push(vacancyCount && vacancyCount.total ? vacancyCount.total : 0);
+    });
+
+    if (entity.StartersValue === "Don't know") {
+      columns.push(999);
+    } else if (entity.StartersValue === null) {
+      columns.push('');
     } else {
-      vacancies = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobAVacancyJob = entity.vacancies
-            ? entity.vacancies.find((myVacancy) => myVacancy.jobId === thisJob)
-            : false;
-          if (isThisJobAVacancyJob) {
-            return isThisJobAVacancyJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
+      columns.push(starterCounts.join(';'));
     }
-    columns.push(vacancies);
+
+    if (entity.LeaversValue === "Don't know") {
+      columns.push(999);
+    } else if (entity.LeaversValue === null) {
+      columns.push('');
+    } else {
+      columns.push(leaverCounts.join(';'));
+    }
+
+    if (entity.VacanciesValue === "Don't know") {
+      columns.push(999);
+    } else if (entity.VacanciesValue === null) {
+      columns.push('');
+    } else {
+      columns.push(vacancyCounts.join(';'));
+    }
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
     if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {

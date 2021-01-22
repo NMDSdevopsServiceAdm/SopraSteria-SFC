@@ -976,6 +976,10 @@ module.exports = function (sequelize, DataTypes) {
         'provId',
         'locationId',
         'NumberOfStaffValue',
+        'VacanciesValue',
+        'StartersValue',
+        'LeaversValue',
+        'reasonsForLeaving',
       ],
       where: {
         [Op.or]: [
@@ -1042,7 +1046,6 @@ module.exports = function (sequelize, DataTypes) {
           as: 'localAuthorities',
         },
       ],
-      logging: console.log,
     });
   };
 
