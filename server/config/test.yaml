@@ -13,10 +13,8 @@ db:
     min: 15
     max: 15
   ssl: true
-  username: sfcapp
-  database: sfctstdb
   client_ssl:
-    status: true
+    status: false
     usingFiles: false
 
 slack:
