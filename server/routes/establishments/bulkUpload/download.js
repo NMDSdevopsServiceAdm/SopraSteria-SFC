@@ -95,7 +95,6 @@ const establishmentCsv = async (establishments, responseSend) => {
   responseSend(EstablishmentCsvValidator.headers());
 
   establishments.map((establishment) => {
-    console.log(establishment.toJSON());
     responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(establishment));
   });
 };
@@ -128,7 +127,6 @@ const downloadGet = async (req, res) => {
     try {
       switch (downloadType) {
         case 'establishments': {
-          console.log('Downloading establishments');
           const establishments = await models.establishment.downloadEstablishments(primaryEstablishmentId);
           establishmentCsv(establishments, responseSend);
           break;
