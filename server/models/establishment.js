@@ -964,9 +964,6 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.downloadEstablishments = async function (establishmentId) {
-    // 'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
-    //   'PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-    //   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
     return await this.findAll({
       attributes: [
         'LocalIdentifierValue',

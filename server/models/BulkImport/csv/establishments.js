@@ -2655,7 +2655,6 @@ class Establishment {
 
   // takes the given establishment entity and writes it out to CSV string (one line)
   static toCSV(entity) {
-    console.log(entity);
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
     columns.push(csvQuote(entity.LocalIdentifierValue)); // todo - this will be local identifier
@@ -2673,7 +2672,6 @@ class Establishment {
     columns.push(entity.shareWithLA ? 1 : 0);
 
     const localAuthorities = entity.localAuthorities.map((localAuthority) => localAuthority.cssrId);
-    console.log(localAuthorities.join(';'));
     columns.push(localAuthorities.join(';'));
 
     // CQC regulated, Prov IDand Location ID
