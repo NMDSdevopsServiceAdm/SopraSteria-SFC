@@ -2688,13 +2688,12 @@ class Establishment {
     const capacities = [];
     const utilisations = [];
 
+    const findUtilCap = (type, service, capacities) =>
+      capacities.find((capacity) => capacity.reference.service.id === service.id && capacity.reference.type === type);
+
     services.map((service) => {
-      const capacity = entity.capacity.find(
-        (capacity) => capacity.reference.service.id === service.id && capacity.reference.type === 'Capacity',
-      );
-      const utilisation = entity.capacity.find(
-        (capacity) => capacity.reference.service.id === service.id && capacity.reference.type === 'Utilisation',
-      );
+      const capacity = findUtilCap('Capacity', service, entity.capacity);
+      const utilisation = findUtilCap('Utilisation', service, entity.capacity);
       capacities.push(capacity && capacity.answer ? capacity.answer : '');
       utilisations.push(utilisation && utilisation.answer ? utilisation.answer : '');
     });
