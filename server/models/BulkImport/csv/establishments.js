@@ -2755,29 +2755,21 @@ class Establishment {
       vacancyCounts.push(vacancyCount && vacancyCount.total ? vacancyCount.total : 0);
     });
 
-    if (entity.StartersValue === "Don't know") {
-      columns.push(999);
-    } else if (entity.StartersValue === null) {
-      columns.push('');
-    } else {
-      columns.push(starterCounts.join(';'));
-    }
+    const slv = (value, counts) => {
+      if (value === "Don't know") {
+        return 999;
+      } else if (value === null) {
+        return '';
+      } else if (value === 'None') {
+        return 0;
+      } else {
+        return counts.join(';');
+      }
+    };
 
-    if (entity.LeaversValue === "Don't know") {
-      columns.push(999);
-    } else if (entity.LeaversValue === null) {
-      columns.push('');
-    } else {
-      columns.push(leaverCounts.join(';'));
-    }
-
-    if (entity.VacanciesValue === "Don't know") {
-      columns.push(999);
-    } else if (entity.VacanciesValue === null) {
-      columns.push('');
-    } else {
-      columns.push(vacancyCounts.join(';'));
-    }
+    columns.push(slv(entity.StartersValue, starterCounts));
+    columns.push(slv(entity.LeaversValue, leaverCounts));
+    columns.push(slv(entity.VacanciesValue, vacancyCounts));
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
     if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {
