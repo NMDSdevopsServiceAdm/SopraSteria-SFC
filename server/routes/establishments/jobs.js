@@ -4,10 +4,12 @@ const router = express.Router({mergeParams: true});
 const JobFormatters = require('../../models/api/jobs');
 
 const Establishment = require('../../models/classes/establishment');
+const { hasPermission } = require('../../utils/security/hasPermission');
+
 const filteredProperties = ['Name', 'Vacancies', 'Starters', 'Leavers'];
 
 // gets current job quotas for the known establishment
-router.route('/').get(async (req, res) => {
+const getJobs = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
@@ -51,11 +53,11 @@ router.route('/').get(async (req, res) => {
     console.error('establishment::jobs GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
-});
+};
 
 // updates the current jobs  for the known establishment
-router.route('/').post(async (req, res) => {
-  const establishmentId = req.establishmentId;  
+const updateJobs = async (req, res) => {
+  const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
 
@@ -80,13 +82,13 @@ router.route('/').post(async (req, res) => {
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
         await thisEstablishment.save(req.username);
-        
+
         const jsonResponse = thisEstablishment.toJSON(false, false, false, true, false, filteredProperties);
         const resultJSON = {
           ...jsonResponse,
           ...JobFormatters.combineAllJobsJSON(jsonResponse),
         };
-  
+
         // amalgamated vacancies, starters and leavers, therefore remove them from parent scope
         delete resultJSON.jobs;
         // delete resultJSON.Vacancies;
@@ -97,18 +99,18 @@ router.route('/').post(async (req, res) => {
         // delete resultJSON.TotalLeavers;
 
         // total starters, leavers and vacancies are always
-  
+
         return res.status(200).json(resultJSON);
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
+
     } else {
       // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
+
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
       console.error("Establishment::staff POST: ", err.message);
       return res.status(400).send(err.safe);
@@ -119,6 +121,9 @@ router.route('/').post(async (req, res) => {
       console.error("Unexpected exception: ", err);
     }
   }
-});
+};
+
+router.route('/').get(hasPermission('canViewEstablishment'), getJobs);
+router.route('/').post(hasPermission('canEditEstablishment'), updateJobs);
 
 module.exports = router;

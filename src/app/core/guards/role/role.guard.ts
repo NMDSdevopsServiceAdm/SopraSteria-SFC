@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -8,17 +9,17 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class RoleGuard implements CanActivate {
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router, private authService: AuthService) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     const allowedRoles = route.data.roles as Array<string>;
 
-    return this.userService.loggedInUser$.pipe(
-      map(user => allowedRoles.includes(user.role)),
+    return this.userService.getLoggedInUser().pipe(
+      map((user) => allowedRoles.includes(user.role) && allowedRoles.includes(this.authService.userInfo().role)),
       catchError(() => {
         this.router.navigate(['/dashboard']);
         return of(false);
-      })
+      }),
     );
   }
 }

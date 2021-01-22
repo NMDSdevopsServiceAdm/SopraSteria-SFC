@@ -9,7 +9,7 @@ const getPay = async function (establishmentId) {
     };
   }
 
-  return { value: parseInt(averageHourlyPay.amount * 100) };
+  return { value: parseFloat((parseFloat(averageHourlyPay.amount) * 100).toFixed(0)) };
 };
 
 const getQualifications = async function (establishmentId) {
@@ -99,6 +99,7 @@ const checkStaffNumberAndLeavers = async function (establishmentId, establishmen
 
 const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
   const cssr = await models.cssr.getCSSR(establishmentId);
+  if (!cssr) return [];
   return await benchmarksModel.findAll({
     attributes: { exclude: ['CssrID', 'MainServiceFK'] },
     where: {

@@ -5,6 +5,8 @@ const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const { getPay, getQualifications, getSickness, getTurnover } = require('./benchmarksService');
 
+const { hasPermission } = require('../../../utils/security/hasPermission');
+
 const comparisonJson = {
   value: 0,
   hasValue: false,
@@ -84,15 +86,15 @@ const buildComparisonGroupMetrics = (key, comparisonGroups) => {
 
 const buildMetric = (metricValue) => {
   const comparisonGroup = clonedeep(comparisonJson);
-  comparisonGroup.value = metricValue ? parseFloat(metricValue) : 0;
-  comparisonGroup.hasValue = metricValue !== null;
+  comparisonGroup.value = metricValue !== undefined && metricValue !== null ? parseFloat(metricValue) : 0;
+  comparisonGroup.hasValue = metricValue !== undefined && metricValue !== null;
   if (comparisonGroup.hasValue) {
     delete comparisonGroup.stateMessage;
   }
   return comparisonGroup;
 };
 
-router.route('/').get(async (req, res) => {
+const viewBenchmarks = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
     const tiles = req.query.tiles ? req.query.tiles.split(',') : [];
@@ -102,7 +104,10 @@ router.route('/').get(async (req, res) => {
     console.error(err);
     return res.status(503).send();
   }
-});
+}
+
+router.use('/', hasPermission('canViewBenchmarks'));
+router.route('/').get(viewBenchmarks);
 
 router.use('/rankings', rankings);
 

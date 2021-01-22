@@ -38,7 +38,16 @@ describe('/server/routes/reports/deleteReport/report', () => {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       );
     });
+    describe('getLastUpdate()', () => {
+      it('should return that worker has the latest update', () => {
+        const rawData = rawDataBuilder();
+        rawData.updated = moment().subtract(5, 'months').toISOString();
+        rawData.workers = [{ updated: moment().subtract(1, 'months').toISOString() }];
 
+        const result = deleteReport.getLastUpdate(rawData);
+        expect(result).to.equal(rawData.workers[0].updated);
+      });
+    });
     describe('filterData()', () => {
       it('should return only the none updated establishments', async () => {
         const rawData = [rawDataBuilder(), rawDataBuilder(), rawDataBuilder()];

@@ -799,11 +799,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findbyId = function (id) {
-    return this.findOne({
+  Establishment.findbyId = async function (id) {
+    return await this.find({ id });
+  };
+
+  Establishment.findByUid = async function (uid) {
+    return await this.find({ uid });
+  };
+
+  Establishment.find = async function (where) {
+    return await this.findOne({
       where: {
-        id: id,
         archived: false,
+        ...where,
       },
       attributes: [
         'id',
@@ -818,6 +826,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
   Establishment.closeLock = async function (LockHeldTitle, establishmentId) {
     return await this.update(
       {

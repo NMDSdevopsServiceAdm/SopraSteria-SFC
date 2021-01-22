@@ -18,6 +18,7 @@ import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 
 const routes: Routes = [
   {
@@ -70,6 +71,11 @@ const routes: Routes = [
         path: 'reset-password',
         component: ResetPasswordComponent,
         data: { title: 'Reset Password' },
+      },
+      {
+        path: 'satisfaction-survey',
+        component: SatisfactionSurveyComponent,
+        data: { title: 'Satisfaction Survey' },
       },
     ],
   },

@@ -5,15 +5,20 @@ const models = require('../../../../../../models/index');
 const otherJobsPropertyClass = require('../../../../../../models/classes/worker/properties/otherJobsProperty').WorkerOtherJobsProperty;
 
 const titles = ['', 'Activities worker or co-ordinator', 'Administrative / office staff not care-providing'];
-sinon.stub(models.job, 'findOne').callsFake((args) => {
-  return {
-    id: args.where.id,
-    title: titles[args.where.id],
-    other: false
-  };
-});
 
 describe('otherJobsProperty Property', () => {
+  beforeEach(() => {
+    sinon.stub(models.job, 'findOne').callsFake((args) => {
+      return {
+        id: args.where.id,
+        title: titles[args.where.id],
+        other: false
+      };
+    });
+  });
+  afterEach(() => {
+    sinon.restore();
+  });
   describe('restoreFromJson()', () => {
     it('should return JSON with jobs', async() => {
       const otherJobsProperty = new otherJobsPropertyClass();

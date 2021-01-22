@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -20,6 +21,13 @@ import { WorkplaceRoutingModule } from '../../workplace/workplace-routing.module
 import { WorkplaceModule } from '../../workplace/workplace.module';
 import { HomeTabComponent } from './home-tab.component';
 
+const MockWindow = {
+  dataLayer: {
+    push: () => {
+      return;
+    },
+  },
+};
 
 describe('HomeTabComponent', () => {
   async function setup() {
@@ -27,37 +35,38 @@ describe('HomeTabComponent', () => {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule.withRoutes(
-          [{path: 'workplace/4698f4a4-ab82-4906-8b0e-3f4972375927/start', component: StartComponent}]),
+        RouterTestingModule.withRoutes([
+          { path: 'workplace/4698f4a4-ab82-4906-8b0e-3f4972375927/start', component: StartComponent },
+        ]),
         WorkplaceModule,
         WorkplaceRoutingModule,
-        HttpClientTestingModule],
-      declarations: [
-        HomeTabComponent,
+        HttpClientTestingModule,
       ],
+      declarations: [HomeTabComponent],
       providers: [
         {
           provide: WorkerService,
-          useClass: MockWorkerService
+          useClass: MockWorkerService,
         },
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService]
+          deps: [HttpClient, Router, UserService],
         },
         {
           provide: UserService,
           useFactory: MockUserService.factory(1, true),
-          deps: [HttpClient]
+          deps: [HttpClient],
         },
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
+        { provide: WindowToken, useValue: MockWindow },
       ],
     });
 
@@ -67,38 +76,36 @@ describe('HomeTabComponent', () => {
     component.fixture.detectChanges();
 
     return {
-      component
+      component,
     };
   }
 
   it('should create', async () => {
     const { component } = await setup();
 
+    component.fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
-  it('should show flu jab when can add worker', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.canEditEstablishment = true;
-    component.fixture.detectChanges()
-
-    expect(component.queryByTestId('flu-jab'));
-  });
-  it('should not show flu jab when cant add worker', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.canEditEstablishment = false;
-    component.fixture.detectChanges()
-
-    expect(component.queryByTestId('flu-jab')).toBeNull();
-  });
   it('has Add Workplace Information', async () => {
     // Arrange
     const { component } = await setup();
-
     // Act
     const link = component.getByTestId('add-workplace-info');
 
     // Assert
     expect(link.innerHTML).toContain('Add workplace information');
+    expect(link.getAttribute('href')).toContain('start');
+  });
+  it('Add staff banner has correct title', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.updateStaffRecords = true;
+
+    const link = component.getByTestId('add-staff-banner');
+    // Assert
+    expect(link.innerHTML).toContain('Add staff records');
   });
 });

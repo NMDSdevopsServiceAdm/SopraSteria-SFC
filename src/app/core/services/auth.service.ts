@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { UserToken } from '@core/model/auth.model';
+import * as Sentry from '@sentry/browser';
 import { isNull } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
-import * as Sentry from '@sentry/browser';
 
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
@@ -27,13 +28,13 @@ export class AuthService {
     private router: Router,
     private establishmentService: EstablishmentService,
     private userService: UserService,
-    private permissionsService: PermissionsService
+    private permissionsService: PermissionsService,
   ) {}
 
   public get isAutheticated$(): Observable<boolean> {
     return this._isAuthenticated$.asObservable().pipe(
-      filter(authenticated => !isNull(authenticated)),
-      distinctUntilChanged()
+      filter((authenticated) => !isNull(authenticated)),
+      distinctUntilChanged(),
     );
   }
 
@@ -41,6 +42,10 @@ export class AuthService {
     const authenticated = this.token ? !this.jwt.isTokenExpired(this.token) : false;
     this._isAuthenticated$.next(authenticated);
     return this._isAuthenticated$.value;
+  }
+
+  public get isAdmin(): boolean {
+    return this.isAuthenticated() && this.userInfo().role === 'Admin';
   }
 
   public get isOnAdminScreen$(): Observable<boolean> {
@@ -60,7 +65,6 @@ export class AuthService {
   }
 
   public set token(token: string) {
-    console.log('Setting the token in localStorage');
     localStorage.setItem('auth-token', token);
   }
 
@@ -81,28 +85,25 @@ export class AuthService {
   }
 
   public authenticate(username: string, password: string) {
-    console.log('Authservice has been asked to authenticate a user');
     return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
       tap(
-        response => {
-          console.log('Got response from API');
-          console.log(response);
+        (response) => {
           this.token = response.headers.get('authorization');
-          Sentry.configureScope(scope => {
+          Sentry.configureScope((scope) => {
             scope.setUser({
-              id: response.body.uid
+              id: response.body.uid,
             });
           });
         },
-        error => console.error(error)
-      )
+        (error) => console.error(error),
+      ),
     );
   }
 
   public refreshToken() {
     return this.http
       .get<any>(`/api/login/refresh`, { observe: 'response' })
-      .pipe(tap(response => (this.token = response.headers.get('authorization'))));
+      .pipe(tap((response) => (this.token = response.headers.get('authorization'))));
   }
 
   public logout(): void {
@@ -111,40 +112,67 @@ export class AuthService {
     this.router.navigate(['/logged-out']);
   }
 
+  public logoutByUser(): void {
+    this.http.post<any>(`/api/logout`, {}).subscribe(
+      (data) => {
+        this.logoutWithSurvey(data.showSurvey);
+      },
+      (error) => {
+        this.logoutWithSurvey(false);
+      },
+    );
+  }
+
+  private logoutWithSurvey(showSurvey: boolean): void {
+    const uid = this.userService.loggedInUser.uid;
+    const wid = this.establishmentService.establishmentId;
+    this.setPreviousUser();
+    this.unauthenticate();
+    if (showSurvey) {
+      this.router.navigate(['/satisfaction-survey'], {
+        queryParams: { wid, uid },
+      });
+    } else {
+      this.router.navigate(['/logged-out']);
+    }
+  }
+
   public logoutWithoutRouting(): void {
     this.unauthenticate();
   }
 
-  private unauthenticate(): void {
+  protected unauthenticate(): void {
     localStorage.clear();
     this._isAuthenticated$.next(false);
     this.userService.loggedInUser = null;
     this.userService.resetAgreedUpdatedTermsStatus = null;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
-    Sentry.configureScope(scope => {
+    Sentry.configureScope((scope) => {
       scope.setUser({
-        id: ''
+        id: '',
       });
-   });
+    });
   }
 
   public setPreviousToken(): void {
-    if(this.previousToken === null)
-      this.previousToken = this.token
+    if (this.previousToken === null) this.previousToken = this.token;
   }
 
   public restorePreviousToken(): void {
-    if(this.previousToken !== null)
-      this.token = this.previousToken
+    if (this.previousToken !== null) this.token = this.previousToken;
   }
 
   public getPreviousToken(): any {
-    return this.jwt.decodeToken(this.previousToken)
+    return this.jwt.decodeToken(this.previousToken);
   }
 
-  private setPreviousUser(): void {
+  protected setPreviousUser(): void {
     const data = this.jwt.decodeToken(this.token);
     this.previousUser = data && data.sub ? data.sub : null;
+  }
+
+  public userInfo(): UserToken {
+    return this.jwt.decodeToken(this.token);
   }
 }

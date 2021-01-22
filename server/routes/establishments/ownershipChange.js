@@ -4,9 +4,10 @@ const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 // POST request for ownership change request
-router.route('/').post(async (req, res) => {
+const ownershipChangeRequest = async (req, res) => {
   try {
     const permissionRequestArr = ['Workplace', 'Workplace and Staff', 'None'];
     if (permissionRequestArr.indexOf(req.body.permissionRequest) === -1) {
@@ -89,10 +90,10 @@ router.route('/').post(async (req, res) => {
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
     return res.status(503).send({}); // intentionally an empty JSON response
   }
-});
+};
 
 // POST request for cancel already requested ownership
-router.route('/:id').post(async (req, res) => {
+const cancelOwnershipChangeRequest = async (req, res) => {
   try {
     if (req.body.approvalStatus === undefined || req.body.approvalStatus !== 'CANCELLED') {
       console.error('Approval status should be "CANCELLED"');
@@ -152,11 +153,10 @@ router.route('/:id').post(async (req, res) => {
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
     return res.status(503).send({}); // intentionally an empty JSON response
   }
-});
+};
 
 // GET request to fetch changeownership request Id
-
-router.route('/details').get(async (req, res) => {
+const getOwnershipChangeRequest = async (req, res) => {
   try {
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (await thisEstablishment.restore(req.establishmentId, false)) {
@@ -201,5 +201,10 @@ router.route('/details').get(async (req, res) => {
     console.error(' /establishment/:id/ownershipChange/details : ERR: ', e.message);
     return res.status(503).send({}); //intentionally an empty JSON response
   }
-});
+};
+
+router.route('/').post(hasPermission('canEditEstablishment'), ownershipChangeRequest);
+router.route('/details').get(hasPermission('canEditEstablishment'), getOwnershipChangeRequest);
+router.route('/:id').post(hasPermission('canEditEstablishment'), cancelOwnershipChangeRequest);
+
 module.exports = router;

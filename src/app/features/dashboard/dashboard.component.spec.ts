@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -20,10 +21,23 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+const MockWindow = {
+  dataLayer: {
+    push: () => {
+      return;
+    },
+  },
+};
+
 describe('DashboardComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const component = await render(DashboardComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule.withRoutes([{ path: 'search-establishments', component: DashboardComponent }]),
+        HttpClientTestingModule,
+      ],
       declarations: [HomeTabComponent],
       providers: [
         {
@@ -50,8 +64,10 @@ describe('DashboardComponent', () => {
         },
         {
           provide: AuthService,
-          useClass: MockAuthService,
+          useFactory: MockAuthService.factory(true, isAdmin),
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
+        { provide: WindowToken, useValue: MockWindow },
       ],
     });
 
