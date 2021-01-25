@@ -5,9 +5,10 @@ const s3 = require('./s3');
 
 const deleteFiles = async (req, res) => {
   const fileName = decodeURI(req.params.fileName);
-  const foundFileList = [];
+  // console.log(req.params);
   try {
-    await s3.findFilesS3(req.establishmentId, foundFileList, fileName);
+    const foundFileList = await s3.findFilesS3(req.establishmentId, fileName);
+    console.log(foundFileList);
     if (foundFileList.length > 0) {
       await s3.deleteFilesS3(req.establishmentId, fileName);
       res.status(200).send();

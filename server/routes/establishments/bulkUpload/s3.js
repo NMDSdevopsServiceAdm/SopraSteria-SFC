@@ -121,12 +121,14 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   }
 };
 
-const findFilesS3 = async (establishmentId, foundFiles, fileName) => {
+const findFilesS3 = async (establishmentId, fileName) => {
   const listParams = params(establishmentId);
 
   const latestObjects = await s3.listObjects(listParams).promise();
 
-  latestObjects.Contents.forEach((myFile) => {
+  const foundFiles = [];
+
+  latestObjects.Contents.forEach(async (myFile) => {
     const ignoreRoot = /.*\/$/;
     if (!ignoreRoot.test(myFile.Key) && myFile.Key.includes(fileName)) {
       foundFiles.push({
@@ -134,11 +136,11 @@ const findFilesS3 = async (establishmentId, foundFiles, fileName) => {
       });
     }
   });
+  return foundFiles;
 };
 
 const deleteFilesS3 = async (establishmentId, fileName) => {
-  const deleteKeys = [];
-  await findFilesS3(establishmentId, deleteKeys, fileName);
+  const deleteKeys = await findFilesS3(establishmentId, fileName);
 
   if (deleteKeys.length > 0) {
     await s3
