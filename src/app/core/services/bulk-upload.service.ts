@@ -100,6 +100,10 @@ export class BulkUploadService {
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
+  public deleteFile(workplaceUid: string, fileName: string): Observable<any> {
+    return this.http.delete(`/api/establishment/${workplaceUid}/bulkupload/delete/${fileName}`);
+  }
+
   public getFileType(fileName: string): string {
     const parts: Array<string> = fileName.split('.');
     return parts[parts.length - 1].toUpperCase();

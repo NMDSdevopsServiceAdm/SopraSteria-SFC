@@ -239,6 +239,12 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       });
   }
 
+  public deleteFile(event, fileName: string): void {
+    event.preventDefault();
+
+    this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
+  }
+
   /**
    * Encode the filename so we have valid HTML
    * @param url string

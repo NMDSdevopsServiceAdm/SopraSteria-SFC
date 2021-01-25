@@ -44,7 +44,6 @@ describe('s3', () => {
       const deleteObjects = sinon.stub(s3, 'deleteObjects');
       deleteObjects.returns({
         promise: async () => {
-          console.log(deleteFiles);
           return;
         },
       });
