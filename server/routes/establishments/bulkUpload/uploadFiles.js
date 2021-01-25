@@ -1,12 +1,10 @@
 'use strict';
 const csv = require('csvtojson');
 const config = require('../../../config/config');
-const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
-// eslint-disable-next-line no-unused-vars
-const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
+const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent } = require('./s3');
 const { buStates } = require('./states');
 
 const uploadedGet = async (req, res) => {
@@ -113,13 +111,70 @@ const uploadedPost = async (req, res) => {
   }
 };
 
+const updateMetaData = async (file, username, establishmentId) => {
+  const firstRow = 0;
+  const firstLineNumber = 1;
+  let passedCheck = false;
+  switch (file.type) {
+    case 'Establishment':
+      passedCheck = new EstablishmentCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(
+        file.header,
+      );
+      break;
+    case 'Worker':
+      passedCheck = new WorkerCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(file.header);
+      break;
+    case 'Training':
+      passedCheck = new TrainingCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(file.header);
+
+      break;
+  }
+
+  if (passedCheck) {
+    // count records and update metadata
+    file.metaData.records = file.importedData.length;
+    uploadAsJSON(
+      username,
+      establishmentId,
+      file.metaData,
+      `${establishmentId}/latest/${file.metaData.filename}.metadata.json`,
+    );
+  } else {
+    // reset metadata filetype because this is not an expected establishment
+    file.metaData.fileType = 'CSV';
+  }
+};
+const createMyFileObject = (myfile, type) => {
+  return {
+    data: myfile.data,
+    type: type,
+    metaData: {
+      filename: myfile.filename,
+      fileType: type,
+      userName: myfile.username,
+      size: myfile.size,
+      key: myfile.key,
+      lastModified: myfile.lastModified,
+    },
+  };
+};
+const generateReturnData = (metaData) => ({
+  filename: metaData.filename,
+  uploaded: metaData.lastModified,
+  username: metaData.userName ? metaData.userName : null,
+  records: metaData.records ? metaData.records : null,
+  errors: 0,
+  warnings: 0,
+  fileType: metaData.fileType,
+  size: metaData.size,
+  key: metaData.key,
+});
+
 const uploadedPut = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
-  const myDownloads = {};
-  const establishmentMetadata = new MetaData();
-  const workerMetadata = new MetaData();
-  const trainingMetadata = new MetaData();
+  const myDownloads = [];
+  const returnData = [];
 
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
@@ -145,174 +200,44 @@ const uploadedPut = async (req, res) => {
 
     allContent.forEach((myfile) => {
       if (EstablishmentCsvValidator.isContent(myfile.data)) {
-        myDownloads.establishments = myfile.data;
-        establishmentMetadata.filename = myfile.filename;
-        establishmentMetadata.fileType = 'Establishment';
-        establishmentMetadata.userName = myfile.username;
-        establishmentMetadata.size = myfile.size;
-        establishmentMetadata.key = myfile.key;
-        establishmentMetadata.lastModified = myfile.lastModified;
+        myDownloads.push(createMyFileObject(myfile, 'Establishment'));
       } else if (WorkerCsvValidator.isContent(myfile.data)) {
-        myDownloads.workers = myfile.data;
-        workerMetadata.filename = myfile.filename;
-        workerMetadata.fileType = 'Worker';
-        workerMetadata.userName = myfile.username;
-        workerMetadata.size = myfile.size;
-        workerMetadata.key = myfile.key;
-        workerMetadata.lastModified = myfile.lastModified;
+        myDownloads.push(createMyFileObject(myfile, 'Worker'));
       } else if (TrainingCsvValidator.isContent(myfile.data)) {
-        myDownloads.trainings = myfile.data;
-        trainingMetadata.filename = myfile.filename;
-        trainingMetadata.fileType = 'Training';
-        trainingMetadata.userName = myfile.username;
-        trainingMetadata.size = myfile.size;
-        trainingMetadata.key = myfile.key;
-        trainingMetadata.lastModified = myfile.lastModified;
+        myDownloads.push(createMyFileObject(myfile, 'Training'));
+      } else {
+        myDownloads.push(createMyFileObject(myfile, 'CSV'));
       }
     });
 
-    let workerHeaders;
-    let establishmentHeaders;
-    let trainingHeaders;
-    let importedWorkers = null;
-    let importedEstablishments = null;
-    let importedTraining = null;
-
-    const headerPromises = [];
-
-    if (myDownloads.establishments) {
-      importedEstablishments = await csv().fromString(myDownloads.establishments);
-      const positionOfNewline = myDownloads.establishments.indexOf('\n');
-      const headerLine = myDownloads.establishments.substring(0, positionOfNewline);
-      establishmentHeaders = headerLine.trim();
-    }
-
-    if (myDownloads.workers) {
-      importedWorkers = await csv().fromString(myDownloads.workers);
-      const positionOfNewline = myDownloads.workers.indexOf('\n');
-      const headerLine = myDownloads.workers.substring(0, positionOfNewline);
-      workerHeaders = headerLine.trim();
-    }
-
-    if (myDownloads.trainings) {
-      importedTraining = await csv().fromString(myDownloads.trainings);
-      const positionOfNewline = myDownloads.trainings.indexOf('\n');
-      const headerLine = myDownloads.trainings.substring(0, positionOfNewline);
-      trainingHeaders = headerLine.trim();
-    }
-
-    await Promise.all(headerPromises);
-
-    // ////////////////////////////
-    const firstRow = 0;
-    const firstLineNumber = 1;
-    const metadataS3Promises = [];
-
-    if (importedEstablishments) {
-      if (
-        new EstablishmentCsvValidator(importedEstablishments[firstRow], firstLineNumber).preValidate(
-          establishmentHeaders,
-        )
-      ) {
-        // count records and update metadata
-        establishmentMetadata.records = importedEstablishments.length;
-        metadataS3Promises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            establishmentMetadata,
-            `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`,
-          ),
-        );
-      } else {
-        // reset metadata filetype because this is not an expected establishment
-        establishmentMetadata.fileType = null;
-      }
-    }
-
-    if (importedWorkers) {
-      if (new WorkerCsvValidator(importedWorkers[firstRow], firstLineNumber).preValidate(workerHeaders)) {
-        // count records and update metadata
-        workerMetadata.records = importedWorkers.length;
-        metadataS3Promises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            workerMetadata,
-            `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`,
-          ),
-        );
-      } else {
-        // reset metadata filetype because this is not an expected establishment
-        workerMetadata.fileType = null;
-      }
-    }
-
-    if (importedTraining) {
-      if (new TrainingCsvValidator(importedTraining[firstRow], firstLineNumber).preValidate(trainingHeaders)) {
-        // count records and update metadata
-        trainingMetadata.records = importedTraining.length;
-        metadataS3Promises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            trainingMetadata,
-            `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`,
-          ),
-        );
-      } else {
-        // reset metadata filetype because this is not an expected establishment
-        trainingMetadata.fileType = null;
-      }
-    }
-
-    // ////////////////////////////////////
-    await Promise.all(metadataS3Promises);
-
-    const generateReturnData = (metaData) => ({
-      filename: metaData.filename,
-      uploaded: metaData.lastModified,
-      username: metaData.userName ? metaData.userName : null,
-      records: metaData.records,
-      errors: 0,
-      warnings: 0,
-      fileType: metaData.fileType,
-      size: metaData.size,
-      key: metaData.key,
-    });
-
-    const returnData = [];
-
-    // now forn response for each file
-    data.Contents.forEach((myFile) => {
-      const ignoreMetaDataObjects = /.*metadata.json$/;
-      const ignoreRoot = /.*\/$/;
-      if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
-        if (myFile.Key === establishmentMetadata.key) {
-          returnData.push(generateReturnData(establishmentMetadata));
-        } else if (myFile.Key === workerMetadata.key) {
-          returnData.push(generateReturnData(workerMetadata));
-        } else if (myFile.Key === trainingMetadata.key) {
-          returnData.push(generateReturnData(trainingMetadata));
-        } else {
-          const fileNameElements = myFile.Key.split('/');
-          const fileName = fileNameElements[fileNameElements.length - 1];
-
-          returnData.push(
-            generateReturnData({
-              filename: fileName,
-              uploaded: myFile.LastModified,
-              username: myFile.username,
-              records: 0,
-              errors: 0,
-              warnings: 0,
-              fileType: null,
-              size: myFile.size,
-              key: myFile.Key,
-            }),
-          );
+    await Promise.all(
+      myDownloads.map(async (file) => {
+        if (!['Worker', 'Establishment', 'Training'].includes(file.type)) {
+          return;
         }
-      }
+        file.importedData = await csv().fromString(file.data);
+        const lastpos = file.data.indexOf('\n') > -1 ? file.data.indexOf('\n') : file.data.length;
+        file.header = file.data.substring(0, lastpos).trim();
+      }),
+    );
+
+    await Promise.all(
+      myDownloads.map(async (file) => {
+        if (!['Worker', 'Establishment', 'Training'].includes(file.type)) {
+          return;
+        }
+        await updateMetaData(file, username, establishmentId);
+      }),
+    );
+
+    // for (const file of myDownloads) {
+    //   if(!['Worker','Establishment','Training'].includes(file.type)){ return; }
+    //   await updateMetaData(file,username,establishmentId);
+    // }
+
+    // now form response for each file
+    myDownloads.forEach((file) => {
+      returnData.push(generateReturnData(file.metaData));
     });
 
     await saveResponse(req, res, 200, returnData);
@@ -352,7 +277,7 @@ const uploadedStarGet = async (req, res) => {
     if (err.code && err.code === 'NotFound') {
       await saveResponse(req, res, 404, {});
     } else {
-      console.log(err);
+      console.error(err);
       await saveResponse(req, res, 503, {});
     }
   }
