@@ -18,6 +18,5 @@ const ValidatedFileBuilder = build('ValidatedFile', {
 });
 
 export const ValidatedFile = ValidatedFileBuilder();
-
 @Injectable()
 export class MockBulkUploadService extends BulkUploadService {}

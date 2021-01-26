@@ -1,7 +1,7 @@
 <table
   class="govuk-table govuk-!-margin-top-6 govuk-!-margin-bottom-2"
   [class.govuk-error-table]="hasErrors"
-  *ngIf="this.uploadedFiles"
+  *ngIf="this.uploadedFiles.length"
 >
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">

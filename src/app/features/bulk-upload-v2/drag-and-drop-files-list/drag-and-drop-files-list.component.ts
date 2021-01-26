@@ -31,7 +31,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public preValidationError: boolean;
   public totalErrors = 0;
   public totalWarnings = 0;
-  public uploadedFiles: ValidatedFile[];
+  public uploadedFiles: ValidatedFile[] = [];
   public validationErrors: Array<ErrorDefinition> = [];
   public validationComplete = false;
   public pluralMap: { [key: string]: string } = {
@@ -241,8 +241,10 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
   public deleteFile(event, fileName: string): void {
     event.preventDefault();
-
-    this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
+    this.uploadedFiles = this.uploadedFiles.filter((file: ValidatedFile) => file.filename !== fileName);
+    this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe(() => {
+      this.validationComplete = false;
+    });
   }
 
   /**
