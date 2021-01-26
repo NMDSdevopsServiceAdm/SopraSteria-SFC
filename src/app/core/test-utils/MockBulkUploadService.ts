@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
-
-const { build, fake } = require('@jackfranklin/test-data-bot');
+import { build, fake } from '@jackfranklin/test-data-bot';
 
 const ValidatedFileBuilder = build('ValidatedFile', {
   fields: {
@@ -17,7 +16,24 @@ const ValidatedFileBuilder = build('ValidatedFile', {
   },
 });
 
-export const ValidatedFile = ValidatedFileBuilder();
+export const TrainingFile = ValidatedFileBuilder({
+  overrides: {
+    fileType: 'Training',
+  },
+});
+
+export const EstablishmentFile = ValidatedFileBuilder();
+
+export const WorkerFile = ValidatedFileBuilder({
+  overrides: {
+    fileType: 'Worker',
+  },
+});
+export const OtherFile = ValidatedFileBuilder({
+  overrides: {
+    fileType: 'CSV',
+  },
+});
 
 @Injectable()
 export class MockBulkUploadService extends BulkUploadService {}

@@ -94,7 +94,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
             this.checkForInvalidFiles(response);
-            this.checkForDuplicateTypes(response);
 
             this.uploadedFiles = response;
           },
@@ -129,24 +128,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         this.preValidationError = true;
       }
     });
-    this.bulkUploadService.validationErrors$.next(this.validationErrors);
-  }
-  private checkForDuplicateTypes(response: ValidatedFile[]) {
-    const fileTypesArr = response.map(function (file) {
-      return file.fileType;
-    });
-    const isDuplicate = fileTypesArr.some(function (item, idx) {
-      return fileTypesArr.indexOf(item) != idx;
-    });
-
-    if (isDuplicate) {
-      file.errors = 1;
-      this.validationErrors.push({
-        name: this.getFileId(file),
-        message: 'The file was not recognised',
-      });
-      this.preValidationError = true;
-    }
     this.bulkUploadService.validationErrors$.next(this.validationErrors);
   }
 
@@ -192,9 +173,24 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
       return;
     }
-
+    if (this.checkForDuplicateTypes()) {
+      this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
+      return;
+    }
     this.preValidationErrorMessage = '';
+
     this.validateFiles();
+  }
+
+  private checkForDuplicateTypes(): boolean {
+    const fileTypesArr = this.uploadedFiles.map(function (file) {
+      return file.fileType;
+    });
+    const isDuplicate = fileTypesArr.some(function (item, idx) {
+      return fileTypesArr.indexOf(item) != idx;
+    });
+
+    return isDuplicate;
   }
 
   public beginCompleteUpload(): void {
