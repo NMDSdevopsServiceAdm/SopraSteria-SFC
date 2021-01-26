@@ -31,7 +31,7 @@ const errorReportWarningBuilder = build('ErrorReportWarning', {
 });
 
 const makeWorkplaceItemMessage = (name: string, lineNumber: number) => {
-  return `for workplace called '${name}' on line ${lineNumber}`;
+  return `for workplace '${name}' on line ${lineNumber}`;
 };
 
 const makeTrainingOrStaffItemMessage = (worker: string, name: string, lineNumber: number) => {
