@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
-import { build, fake } from '@jackfranklin/test-data-bot';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const ValidatedFileBuilder = build('ValidatedFile', {
   fields: {
