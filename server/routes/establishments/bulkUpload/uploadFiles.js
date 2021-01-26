@@ -216,8 +216,8 @@ const uploadedPut = async (req, res) => {
           return;
         }
         file.importedData = await csv().fromString(file.data);
-        const lastpos = file.data.indexOf('\n') > -1 ? file.data.indexOf('\n') : file.data.length;
-        file.header = file.data.substring(0, lastpos).trim();
+        const lastPos = file.data.indexOf('\n') > -1 ? file.data.indexOf('\n') : file.data.length;
+        file.header = file.data.substring(0, lastPos).trim();
       }),
     );
 
@@ -230,12 +230,7 @@ const uploadedPut = async (req, res) => {
       }),
     );
 
-    // for (const file of myDownloads) {
-    //   if(!['Worker','Establishment','Training'].includes(file.type)){ return; }
-    //   await updateMetaData(file,username,establishmentId);
-    // }
-
-    // now form response for each file
+    // now from response for each file
     myDownloads.forEach((file) => {
       returnData.push(generateReturnData(file.metaData));
     });

@@ -94,6 +94,8 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
             this.checkForInvalidFiles(response);
+            this.checkForDuplicateTypes(response);
+
             this.uploadedFiles = response;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
@@ -127,6 +129,24 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         this.preValidationError = true;
       }
     });
+    this.bulkUploadService.validationErrors$.next(this.validationErrors);
+  }
+  private checkForDuplicateTypes(response: ValidatedFile[]) {
+    const fileTypesArr = response.map(function (file) {
+      return file.fileType;
+    });
+    const isDuplicate = fileTypesArr.some(function (item, idx) {
+      return fileTypesArr.indexOf(item) != idx;
+    });
+
+    if (isDuplicate) {
+      file.errors = 1;
+      this.validationErrors.push({
+        name: this.getFileId(file),
+        message: 'The file was not recognised',
+      });
+      this.preValidationError = true;
+    }
     this.bulkUploadService.validationErrors$.next(this.validationErrors);
   }
 
