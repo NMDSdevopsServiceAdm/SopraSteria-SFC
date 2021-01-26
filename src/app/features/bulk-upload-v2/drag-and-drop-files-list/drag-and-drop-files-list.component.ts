@@ -242,9 +242,9 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public deleteFile(event, fileName: string): void {
     event.preventDefault();
     this.uploadedFiles = this.uploadedFiles.filter((file: ValidatedFile) => file.filename !== fileName);
-    this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe(() => {
-      this.validationComplete = false;
-    });
+    this.validationComplete = false;
+
+    this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
   }
 
   /**
