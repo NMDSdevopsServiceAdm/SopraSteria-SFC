@@ -110,16 +110,16 @@ describe('DragAndDropFilesListComponent', () => {
       expect(component.fixture.componentInstance.uploadedFiles).not.toContain(fileToDelete);
     });
 
-    xit('should call the deleteFile function in BulkUploadService', async () => {
+    it('should call the deleteFile function in BulkUploadService', async () => {
       const { component, http } = await setup();
       const event = new Event('click');
       const filenameToDelete = 'filename';
-      const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
+      const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
 
       component.fixture.componentInstance.deleteFile(event, filenameToDelete);
       component.fixture.detectChanges();
 
-      http.expectOne(`/api/establishment//bulkupload/delete/${filenameToDelete}`);
+      http.expectOne(`/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`);
     });
   });
 });
