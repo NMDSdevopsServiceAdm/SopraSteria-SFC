@@ -40,7 +40,7 @@
     "@angular/router": "~10.2.1",
     "@auth0/angular-jwt": "^5.0.2",
     "@sentry/apm": "^5.19.2",
-    "@sentry/browser": "^5.19.2",
+    "@sentry/browser": "^6.0.2",
     "@sentry/node": "^6.0.2",
     "ajv": "^6.12.6",
     "angulartics2": "^10.0.0",
