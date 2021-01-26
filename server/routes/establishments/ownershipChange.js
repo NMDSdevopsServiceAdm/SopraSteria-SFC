@@ -4,7 +4,6 @@ const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
-const { hasPermission } = require('../../utils/security/hasPermission');
 
 // POST request for ownership change request
 const ownershipChangeRequest = async (req, res) => {
@@ -203,8 +202,8 @@ const getOwnershipChangeRequest = async (req, res) => {
   }
 };
 
-router.route('/').post(hasPermission('canEditEstablishment'), ownershipChangeRequest);
-router.route('/details').get(hasPermission('canEditEstablishment'), getOwnershipChangeRequest);
-router.route('/:id').post(hasPermission('canEditEstablishment'), cancelOwnershipChangeRequest);
+router.route('/').post(ownershipChangeRequest);
+router.route('/details').get(getOwnershipChangeRequest);
+router.route('/:id').post(cancelOwnershipChangeRequest);
 
 module.exports = router;

@@ -14,11 +14,10 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 import { filter, findIndex } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-
-import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 
 @Component({
   selector: 'app-drag-and-drop-files-list',
@@ -39,6 +38,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     '=1': 'There was # error in the file',
     other: 'There were # errors in the file',
   };
+  public preValidationErrorMessage = '';
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -178,6 +178,23 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         },
       ),
     );
+  }
+
+  public preValidateCheck(): void {
+    const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
+
+    if (fileCount < 2) {
+      this.preValidationErrorMessage = 'You need to select 2 or 3 files.';
+      return;
+    }
+
+    if (fileCount > 3) {
+      this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
+      return;
+    }
+
+    this.preValidationErrorMessage = '';
+    this.validateFiles();
   }
 
   public beginCompleteUpload(): void {
