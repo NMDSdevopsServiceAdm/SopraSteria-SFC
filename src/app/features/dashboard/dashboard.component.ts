@@ -9,7 +9,9 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -71,19 +73,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
           },
         ),
       );
-      this.subscriptions.add(
-        this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-          (workers) => {
-            this.workerService.setWorkers(workers);
-            if (workers.length > 0) {
-              this.trainingAlert = workers[0].trainingAlert;
-            }
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        ),
-      );
+      if (this.canViewListOfWorkers) {
+        this.subscriptions.add(
+          this.workerService.getAllWorkers(this.workplace.uid).subscribe(
+            (workers) => {
+              this.workerService.setWorkers(workers);
+              if (workers.length > 0) {
+                this.trainingAlert = workers[0].trainingAlert;
+              }
+            },
+            (error) => {
+              console.error(error.error);
+            },
+          ),
+        );
+      }
 
       this.subscriptions.add(
         this.userService.getEstablishments().subscribe((res) => {
