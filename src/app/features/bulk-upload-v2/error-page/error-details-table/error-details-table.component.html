@@ -22,21 +22,21 @@
         </tr>
         <tr class="govuk-table__row govuk-panel--gray" scope="row" *ngIf="openErrors.includes(err.errCode)">
           <td colspan="3">
-            <div class="govuk-grid-row govuk-!-margin-2">
+            <div class="govuk-grid-row">
               <div class="govuk-grid-column-full">
                 <ul>
                   <li *ngFor="let item of err.items" class="govuk-!-margin-2">
                     <ng-container [ngSwitch]="fileType">
                       <ng-container *ngSwitchCase="'Workplace'"
-                        >for workplace called '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                        >for workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
                       >
-                      <ng-container *ngSwitchCase="'Staff'"
-                        >for staff record '{{ item.worker }}' at workplace '{{ item.name }}' on line
-                        {{ item.lineNumber }}</ng-container
+                      <ng-container *ngSwitchCase="'Staff'">
+                        <ng-container *ngIf="item.worker">for staff record '{{ item.worker }}' </ng-container>at
+                        workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
                       >
                       <ng-container *ngSwitchCase="'Training'"
-                        >for staff record '{{ item.worker }}' at workplace '{{ item.name }}' on line
-                        {{ item.lineNumber }}</ng-container
+                        ><ng-container *ngIf="item.worker">for staff record '{{ item.worker }}' </ng-container>at
+                        workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
                       >
                     </ng-container>
                   </li>
