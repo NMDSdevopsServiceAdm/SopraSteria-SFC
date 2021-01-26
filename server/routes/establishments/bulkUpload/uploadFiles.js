@@ -126,7 +126,6 @@ const updateMetaData = async (file, username, establishmentId) => {
       break;
     case 'Training':
       passedCheck = new TrainingCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(file.header);
-
       break;
   }
 
@@ -230,7 +229,6 @@ const uploadedPut = async (req, res) => {
       }),
     );
 
-    // now from response for each file
     myDownloads.forEach((file) => {
       returnData.push(generateReturnData(file.metaData));
     });
