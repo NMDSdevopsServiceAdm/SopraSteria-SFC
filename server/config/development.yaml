@@ -14,9 +14,6 @@ db:
     max: 15
   ssl: true
   username: sfcapp
-  client_ssl:
-    status: true
-    usingFiles: false
 
 slack:
   level: 3 # enables Slack notifications

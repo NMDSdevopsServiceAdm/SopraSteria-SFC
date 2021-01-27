@@ -91,57 +91,6 @@ const config = convict({
       default: false,
       env: 'DB_SSL',
     },
-    client_ssl: {
-      status: {
-        doc: 'Client SSL enabled or not',
-        format: 'Boolean',
-        default: false,
-        env: 'DB_CLIENT_SSL_STATUS',
-      },
-      usingFiles: {
-        doc:
-          'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
-        format: 'Boolean',
-        default: true,
-      },
-      files: {
-        certificate: {
-          doc: 'The full path location of the client certificate file',
-          format: String,
-          default: 'TBC',
-          env: 'DB_CLIENT_SSL_CERTIFICATE',
-        },
-        key: {
-          doc: 'The full path location of the client key file',
-          format: String,
-          default: 'TBC',
-          env: 'DB_CLIENT_SSL_KEY',
-        },
-        ca: {
-          doc: 'The full path location of the server certificate (authority - ca) file',
-          format: String,
-          default: 'TBC',
-          env: 'DB_CLIENT_SSL_CA',
-        },
-      },
-      data: {
-        certificate: {
-          doc: 'The client certificate',
-          format: String,
-          default: 'TBC',
-        },
-        key: {
-          doc: 'The client key',
-          format: String,
-          default: 'TBC',
-        },
-        ca: {
-          doc: 'The server certificate (authority - ca)',
-          format: String,
-          default: 'TBC',
-        },
-      },
-    },
     pool: {
       min: {
         doc: 'Minimum number of connections in the pool',
@@ -497,14 +446,14 @@ const config = convict({
     timeSpan: {
       doc: 'The amount of time to look back and see whether the survey should be shown',
       format: Number,
-      default: 90
+      default: 90,
     },
     unit: {
       doc: 'The unit of time to use (e.g days in moment format)',
       format: String,
-      default: 'd'
-    }
-  }
+      default: 'd',
+    },
+  },
 });
 
 // Load environment dependent configuration
@@ -522,16 +471,10 @@ config.validate({ allowed: 'strict' });
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
-  AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then((ret) => {
+  AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then(() => {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
-
-    if (config.get('db.client_ssl.status')) {
-      config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, '\n'));
-      config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, '\n'));
-      config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, '\n'));
-    }
 
     // external APIs
     config.set('slack.url', AWSSecrets.slackUrl());

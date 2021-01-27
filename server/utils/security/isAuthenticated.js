@@ -31,6 +31,7 @@ const isAuthorised = (req, res, next) => {
           id: claim.EstblishmentId,
           uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null,
         };
+        req.establishmentId = claim.EstblishmentId;
         next();
       }
     });
