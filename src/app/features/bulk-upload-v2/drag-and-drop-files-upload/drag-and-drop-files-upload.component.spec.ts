@@ -6,8 +6,8 @@ import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-uplo
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { render } from '@testing-library/angular';
-import { BulkUploadV2Module } from '../bulk-upload.module';
 
+import { BulkUploadV2Module } from '../bulk-upload.module';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
 
 describe('DragAndDropFilesUploadComponent', () => {
@@ -64,18 +64,14 @@ describe('DragAndDropFilesUploadComponent', () => {
   });
 
   describe('file upload', () => {
-    afterEach(() => {
-      TestBed.inject(HttpTestingController).verify();
-    });
-
     it('should post the files to be uploaded', async () => {
       const { triggerFileInput, http } = await setup();
 
       triggerFileInput();
 
-      const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
-      http.expectOne(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
-      http.expectOne(`/api/establishment//bulkupload/uploadFiles`);
+      const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
+      const requests = http.match(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
+      expect(requests.length).toEqual(1);
     });
   });
 });

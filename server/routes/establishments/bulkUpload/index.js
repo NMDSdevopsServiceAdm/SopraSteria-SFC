@@ -9,6 +9,7 @@ router.use('/signedUrl', require('./signedUrl'));
 router.use('/uploaded', require('./uploaded'));
 router.use('/uploadFiles', require('./uploadFiles'));
 router.use('/download', require('./download'));
+router.use('/delete', require('./delete'));
 router.use('/validate', require('./validate'));
 router.use('/complete', require('./complete'));
 router.use('/report', require('./report'));
