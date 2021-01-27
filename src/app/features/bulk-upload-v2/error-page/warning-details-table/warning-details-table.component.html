@@ -10,11 +10,11 @@
     <tbody class="govuk-table__body">
       <ng-container *ngFor="let warn of warnings">
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{ warn.warning }}:</td>
+          <td class="govuk-table__cell govuk-!-padding-right-8">{{ warn.warning }}:</td>
           <td class="govuk-table__cell">
             {{ warn.items.length }}
           </td>
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <td class="govuk-table__cell govuk-util__align-right govuk-!-font-weight-regular">
             <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(warn.warnCode, $event)">{{
               openWarnings.includes(warn.warnCode) ? 'Close' : 'Open'
             }}</a>
