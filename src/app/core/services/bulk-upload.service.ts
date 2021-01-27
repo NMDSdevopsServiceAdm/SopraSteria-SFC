@@ -5,6 +5,7 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
+  ErrorReport,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -156,6 +157,13 @@ export class BulkUploadService {
       .pipe(map((status) => status.bulkUploadState));
   }
 
+  public getBUReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/errorReport/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
     return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }
@@ -190,6 +198,16 @@ export class BulkUploadService {
       observe: 'body',
       responseType: 'json',
     });
+  }
+
+  public errorReport(workplaceUid: string): Observable<ErrorReport> {
+    return this.checkLockStatus(
+      () => this.http.get<ErrorReport>(`/api/establishment/${workplaceUid}/bulkupload/errorReport`),
+      {
+        observe: 'response',
+        responseType: 'json',
+      },
+    ).pipe(map((response) => response.body));
   }
 
   public resetBulkUpload(): void {

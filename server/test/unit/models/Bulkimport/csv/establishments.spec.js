@@ -75,6 +75,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           errType: 'ALL_JOBS_ERROR',
           error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
           source: '',
+          column: 'ALLJOBROLES',
           name: establishmentRow.LOCALESTID,
         },
       ]);
@@ -476,6 +477,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'The total number of REASONNOS you have entered does not equal the total number of LEAVERS',
           source: '3;5 (8) - 2 (2)',
+          column: 'REASONNOS/LEAVERS',
           name: establishmentRow.LOCALESTID,
         },
       ]);
