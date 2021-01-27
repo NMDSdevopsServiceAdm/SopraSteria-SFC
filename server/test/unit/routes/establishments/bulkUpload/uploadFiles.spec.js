@@ -56,7 +56,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
             Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
             LastModified: '2021-01-26T14:28:35.000Z',
             ContentLength: 171,
-            ETag: '"b32bcfbaea701f82478b57b18da0f65f"',
+            ETag: '""',
             VersionId: 'null',
             ContentType: 'application/json',
             Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
@@ -79,7 +79,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.spy(S3, 'saveResponse');
+      const saveResponse = sinon.stub(S3, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -94,6 +94,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         200,
         returnData,
       ]);
+
     });
 
     it('Identifies Training files', async () => {
@@ -127,7 +128,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
             Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
             LastModified: '2021-01-26T14:28:35.000Z',
             ContentLength: 171,
-            ETag: '"b32bcfbaea701f82478b57b18da0f65f"',
+            ETag: '""',
             VersionId: 'null',
             ContentType: 'application/json',
             Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
@@ -150,7 +151,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.spy(S3, 'saveResponse');
+      const saveResponse = sinon.stub(S3, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -198,7 +199,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
             Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
             LastModified: '2021-01-26T14:28:35.000Z',
             ContentLength: 171,
-            ETag: '"b32bcfbaea701f82478b57b18da0f65f"',
+            ETag: '""',
             VersionId: 'null',
             ContentType: 'application/json',
             Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
@@ -221,7 +222,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.spy(S3, 'saveResponse');
+      const saveResponse = sinon.stub(S3, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -230,6 +231,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
         {},
       );
+
       expect(saveResponse.getCalls()[0].args).to.deep.equal([
         { establishmentId: '2000', username: 'test123' },
         {},
@@ -263,7 +265,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
             Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
             LastModified: '2021-01-26T14:28:35.000Z',
             ContentLength: 171,
-            ETag: '"b32bcfbaea701f82478b57b18da0f65f"',
+            ETag: '""',
             VersionId: 'null',
             ContentType: 'application/json',
             Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
@@ -286,7 +288,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.spy(S3, 'saveResponse');
+      const saveResponse = sinon.stub(S3, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
