@@ -76,6 +76,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   private preValidateFilesSubscription(): void {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
+        this.preValidationErrorMessage = '';
         if (preValidateFiles) {
           this.validationComplete = false;
           this.preValidateFiles();
