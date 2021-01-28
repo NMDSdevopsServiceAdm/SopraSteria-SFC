@@ -463,8 +463,8 @@ class Training {
     // only run once for first line, so check _lineNumber
     if (_headers_v1 !== headers) {
       this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
+        worker: this._currentLine ? this._currentLine.UNIQUEWORKERID : null,
+        name: this._currentLine ? this._currentLine.LOCALESTID : null,
         lineNumber: 1,
         errCode: Training.HEADERS_ERROR,
         errType: 'HEADERS_ERROR',

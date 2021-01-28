@@ -76,6 +76,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   private preValidateFilesSubscription(): void {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
+        this.preValidationErrorMessage = '';
         if (preValidateFiles) {
           this.validationComplete = false;
           this.preValidateFiles();
@@ -94,6 +95,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
             this.checkForInvalidFiles(response);
+
             this.uploadedFiles = response;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
@@ -130,15 +132,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.bulkUploadService.validationErrors$.next(this.validationErrors);
   }
 
-  public getErrorMessage(file: ValidatedFile) {
-    const errorDefinition = this.validationErrors.find((validatedFile) => validatedFile.name === this.getFileId(file));
-    return errorDefinition ? errorDefinition.message : this.i18nPluralPipe.transform(file.errors, this.pluralMap);
-  }
-
-  public getFileType(fileName: string): string {
-    return this.bulkUploadService.getFileType(fileName);
-  }
-
   public validateFiles(): void {
     this.totalErrors = 0;
     this.totalWarnings = 0;
@@ -172,9 +165,22 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
       return;
     }
-
+    if (this.checkForDuplicateTypes()) {
+      this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
+      return;
+    }
     this.preValidationErrorMessage = '';
+
     this.validateFiles();
+  }
+
+  private checkForDuplicateTypes(): boolean {
+    const fileTypesArr = this.uploadedFiles.map(function (file) {
+      return file.fileType;
+    });
+    return fileTypesArr.some(function (item, idx) {
+      return fileTypesArr.indexOf(item) != idx;
+    });
   }
 
   public beginCompleteUpload(): void {

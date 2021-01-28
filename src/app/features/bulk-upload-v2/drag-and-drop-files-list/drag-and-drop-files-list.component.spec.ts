@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { ValidatedFile as ValFile } from '@core/test-utils/MockBulkUploadService';
+import { TrainingFile, EstablishmentFile, WorkerFile, OtherFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
@@ -58,7 +58,7 @@ describe('DragAndDropFilesListComponent', () => {
 
   it('should pass if there are two files', async () => {
     const { component } = await setup();
-    const dummyFiles = [ValFile, ValFile];
+    const dummyFiles = [EstablishmentFile, WorkerFile];
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
@@ -67,7 +67,7 @@ describe('DragAndDropFilesListComponent', () => {
 
   it('should change the error message if there is only one file', async () => {
     const { component } = await setup();
-    const dummyFiles = [ValFile];
+    const dummyFiles = [EstablishmentFile];
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
@@ -78,13 +78,27 @@ describe('DragAndDropFilesListComponent', () => {
 
   it('should change the error message if are more than 3 files', async () => {
     const { component } = await setup();
-    const dummyFiles = [ValFile, ValFile, ValFile, ValFile];
+    const dummyFiles = [EstablishmentFile, TrainingFile, WorkerFile, OtherFile];
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You can only upload 2 or 3 files.');
+  });
+
+  it('should show an error message if there are two of the same type', async () => {
+    const { component } = await setup();
+
+    const dummyFiles = [EstablishmentFile, EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You can only upload 1 of each file type.');
+    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
+      'You can only upload 1 of each file type.',
+    );
   });
 
   describe('DeleteFile', () => {
@@ -102,7 +116,7 @@ describe('DragAndDropFilesListComponent', () => {
         warnings: 2,
         username: 'user',
       };
-      const dummyFiles = [fileToDelete, ValFile, ValFile, ValFile];
+      const dummyFiles = [fileToDelete, EstablishmentFile, TrainingFile, WorkerFile];
       component.fixture.componentInstance.uploadedFiles = dummyFiles;
       component.fixture.componentInstance.deleteFile(event, fileToDelete.filename);
       component.fixture.detectChanges();
