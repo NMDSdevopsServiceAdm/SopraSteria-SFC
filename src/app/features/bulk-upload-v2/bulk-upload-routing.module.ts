@@ -3,12 +3,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { BulkUploadGuard } from '@core/guards/bulk-upload/bulk-upload.guard';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
-import { WorkplaceReferencesPageComponent } from '@features/bulk-upload//workplace-references-page/workplace-references-page.component';
+import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-page/bulk-upload-page.component';
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
-import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references-created-page/references-created-page.component';
+import {
+  ReferencesCreatedPageComponent,
+} from '@features/bulk-upload/references-created-page/references-created-page.component';
 import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
-import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
+
+import {
+  WorkplaceReferencesComponent,
+} from './bulk-upload-references/workplace-references/workplace-references-page.component';
 
 const routes: Routes = [
   {
@@ -29,7 +34,7 @@ const routes: Routes = [
   },
   {
     path: 'workplace-references',
-    component: WorkplaceReferencesPageComponent,
+    component: WorkplaceReferencesComponent,
     resolve: { workplaceReferences: WorkplacesReferencesResolver },
     data: { title: 'Workplace references' },
   },

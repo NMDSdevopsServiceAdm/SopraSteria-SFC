@@ -1,20 +1,23 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { BulkUploadV2RoutingModule } from '@features/bulk-upload-v2/bulk-upload-routing.module';
+import { FileErrorMessageComponent } from '@features/bulk-upload-v2/file_error_message/file-error-message.component';
 import { SharedModule } from '@shared/shared.module';
-import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 
+import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
-import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
-import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
+import {
+  WorkplaceReferencesComponent,
+} from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
-import { FileErrorMessageComponent } from '@features/bulk-upload-v2/file_error_message/file-error-message.component';
+import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
+import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
 
@@ -27,6 +30,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     BulkUploadModule,
     OverlayModule,
     NgxDropzoneModule,
+    FormsModule,
   ],
   declarations: [
     BulkUploadPageV2Component,
@@ -36,6 +40,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     FileErrorMessageComponent,
     FileValidateStatusComponent,
     ValidationErrorMessageComponent,
+    WorkplaceReferencesComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
