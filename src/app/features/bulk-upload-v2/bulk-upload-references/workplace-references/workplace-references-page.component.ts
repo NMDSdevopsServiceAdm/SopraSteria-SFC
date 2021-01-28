@@ -1,6 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -24,7 +24,8 @@ import { take } from 'rxjs/operators';
   styleUrls: ['workplace-references.component.html'],
   providers: [I18nPluralPipe],
 })
-export class WorkplaceReferencesComponent implements OnInit {
+export class WorkplaceReferencesComponent implements OnInit, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
   private maxLength = 50;
   public form: FormGroup;
   public references: Workplace[] = [];
@@ -60,6 +61,10 @@ export class WorkplaceReferencesComponent implements OnInit {
     });
     this.setupForm();
     this.setServerErrors();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setupForm(): void {
