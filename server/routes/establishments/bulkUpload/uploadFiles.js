@@ -7,6 +7,46 @@ const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
+const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
+
+
+const createMyFileObject = (myfile, type) => {
+  return {
+    data: myfile.data,
+    type: type,
+    metaData: {
+      filename: myfile.filename,
+      fileType: type,
+      userName: myfile.username,
+      size: myfile.size,
+      key: myfile.key,
+      lastModified: myfile.lastModified,
+      records: null
+    },
+  };
+};
+const updateMetaData = async (file, username, establishmentId) => {
+  const firstRow = 0;
+  const firstLineNumber = 1;
+
+  const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
+  const passedCheck = validator.preValidate(file.header);
+
+  if (!passedCheck) {
+    file.metaData.fileType = '';
+  }else{
+    file.metaData.records = file.importedData.length;
+  }
+
+  // count records and update metadata
+  S3.uploadAsJSON(
+    username,
+    establishmentId,
+    file.metaData,
+    `${establishmentId}/latest/${file.metaData.filename}.metadata.json`,
+  );
+};
+
 const uploadedGet = async (req, res) => {
   try {
     const ignoreMetaDataObjects = /.*metadata.json$/;
@@ -68,7 +108,6 @@ const uploadedGet = async (req, res) => {
     await S3.saveResponse(req, res, 503, {});
   }
 };
-
 const uploadedPost = async (req, res) => {
   const establishmentId = String(req.establishmentId);
   const username = req.username;
@@ -109,65 +148,6 @@ const uploadedPost = async (req, res) => {
     await S3.saveResponse(req, res, 503, {});
   }
 };
-
-const updateMetaData = async (file, username, establishmentId) => {
-  const firstRow = 0;
-  const firstLineNumber = 1;
-  let passedCheck = false;
-  switch (file.type) {
-    case 'Establishment':
-      passedCheck = new EstablishmentCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(
-        file.header,
-      );
-      break;
-    case 'Worker':
-      passedCheck = new WorkerCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(file.header);
-      break;
-    case 'Training':
-      passedCheck = new TrainingCsvValidator(file.importedData[firstRow], firstLineNumber).preValidate(file.header);
-      break;
-  }
-
-  if (passedCheck) {
-    // count records and update metadata
-    file.metaData.records = file.importedData.length;
-    S3.uploadAsJSON(
-      username,
-      establishmentId,
-      file.metaData,
-      `${establishmentId}/latest/${file.metaData.filename}.metadata.json`,
-    );
-  } else {
-    // reset metadata filetype because this is not an expected establishment
-    file.metaData.fileType = 'CSV';
-  }
-};
-const createMyFileObject = (myfile, type) => {
-  return {
-    data: myfile.data,
-    type: type,
-    metaData: {
-      filename: myfile.filename,
-      fileType: type,
-      userName: myfile.username,
-      size: myfile.size,
-      key: myfile.key,
-      lastModified: myfile.lastModified,
-    },
-  };
-};
-const generateReturnData = (metaData) => ({
-  filename: metaData.filename,
-  uploaded: metaData.lastModified,
-  username: metaData.userName ? metaData.userName : null,
-  records: metaData.records ? metaData.records : null,
-  errors: 0,
-  warnings: 0,
-  fileType: metaData.fileType,
-  size: metaData.size,
-  key: metaData.key,
-});
-
 const uploadedPut = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -203,31 +183,38 @@ const uploadedPut = async (req, res) => {
       } else if (TrainingCsvValidator.isContent(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Training'));
       } else {
-        myDownloads.push(createMyFileObject(myfile, 'CSV'));
+        myDownloads.push(createMyFileObject(myfile, ''));
       }
     });
 
     await Promise.all(
-      myDownloads.map(async (file) => {
-        if (!['Worker', 'Establishment', 'Training'].includes(file.type)) {
-          return;
-        }
-        file.importedData = await csv().fromString(file.data);
-        const lastPos = file.data.indexOf('\n') > -1 ? file.data.indexOf('\n') : file.data.length;
-        file.header = file.data.substring(0, lastPos).trim();
+      myDownloads
+        .filter((file) => {
+          return ['Worker', 'Establishment', 'Training'].includes(file.type);
+        })
+        .map(async (file) => {
+          file.importedData = await csv().fromString(file.data);
+          const lastPos = file.data.indexOf('\n') > -1 ? file.data.indexOf('\n') : file.data.length;
+          file.header = file.data.substring(0, lastPos).trim();
+
+          await updateMetaData(file, username, establishmentId);
       }),
     );
 
-    await Promise.all(
-      myDownloads.map(async (file) => {
-        if (!['Worker', 'Establishment', 'Training'].includes(file.type)) {
-          return;
-        }
-        await updateMetaData(file, username, establishmentId);
-      }),
-    );
     myDownloads.forEach((file) => {
-      returnData.push(generateReturnData(file.metaData));
+      const { key, filename, fileType, size, lastModified: uploaded, userName: username, records } = file.metaData;
+
+      returnData.push({
+        key,
+        filename,
+        fileType,
+        size,
+        uploaded,
+        username,
+        records,
+        errors: 0,
+        warnings: 0,
+      });
     });
     await S3.saveResponse(req, res, 200, returnData);
   } catch (err) {
@@ -235,7 +222,6 @@ const uploadedPut = async (req, res) => {
     await S3.saveResponse(req, res, 503, {});
   }
 };
-
 const uploadedStarGet = async (req, res) => {
   const Key = req.params['0'];
   const elements = Key.split('/');
