@@ -178,11 +178,9 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     const fileTypesArr = this.uploadedFiles.map(function (file) {
       return file.fileType;
     });
-    const isDuplicate = fileTypesArr.some(function (item, idx) {
+    return fileTypesArr.some(function (item, idx) {
       return fileTypesArr.indexOf(item) != idx;
     });
-
-    return isDuplicate;
   }
 
   public beginCompleteUpload(): void {
