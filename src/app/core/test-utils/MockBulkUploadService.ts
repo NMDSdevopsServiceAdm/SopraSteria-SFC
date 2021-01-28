@@ -107,5 +107,3 @@ export const OtherFile = ValidatedFileBuilder({
   },
 });
 
-@Injectable()
-export class MockBulkUploadService extends BulkUploadService {}

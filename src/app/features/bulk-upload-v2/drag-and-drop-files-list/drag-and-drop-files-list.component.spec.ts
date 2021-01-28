@@ -9,7 +9,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { TrainingFile, EstablishmentFile, WorkerFile, OtherFile } from '@core/test-utils/MockBulkUploadService';
-import { ValidatedFile as ValFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
@@ -117,7 +116,7 @@ describe('DragAndDropFilesListComponent', () => {
         warnings: 2,
         username: 'user',
       };
-      const dummyFiles = [fileToDelete, ValFile, ValFile, ValFile];
+      const dummyFiles = [fileToDelete, EstablishmentFile, TrainingFile, WorkerFile];
       component.fixture.componentInstance.uploadedFiles = dummyFiles;
       component.fixture.componentInstance.deleteFile(event, fileToDelete.filename);
       component.fixture.detectChanges();
