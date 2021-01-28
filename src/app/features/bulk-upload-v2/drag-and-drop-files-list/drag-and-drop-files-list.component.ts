@@ -132,15 +132,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.bulkUploadService.validationErrors$.next(this.validationErrors);
   }
 
-  public getErrorMessage(file: ValidatedFile) {
-    const errorDefinition = this.validationErrors.find((validatedFile) => validatedFile.name === this.getFileId(file));
-    return errorDefinition ? errorDefinition.message : this.i18nPluralPipe.transform(file.errors, this.pluralMap);
-  }
-
-  public getFileType(fileName: string): string {
-    return this.bulkUploadService.getFileType(fileName);
-  }
-
   public validateFiles(): void {
     this.totalErrors = 0;
     this.totalWarnings = 0;
