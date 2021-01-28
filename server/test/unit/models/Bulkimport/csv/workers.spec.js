@@ -15,8 +15,6 @@ const testUtils = require('../../../../../utils/testUtils');
 const csv = require('csvtojson');
 const { build } = require('@jackfranklin/test-data-bot');
 
-const BUDI_TO_ASC = 100;
-
 function mapCsvToWorker(worker, headers) {
   const mapped = {};
   headers.forEach((header, index) => {
@@ -27,49 +25,49 @@ function mapCsvToWorker(worker, headers) {
 
 const buildWorkerCsv = build('WorkerCSV', {
   fields: {
-    AMHP: "",
-    APPRENTICE: "2",
-    AVGHOURS: "",
-    BRITISHCITIZENSHIP: "",
-    CARECERT: "3",
-    CONTHOURS: "23",
-    COUNTRYOFBIRTH: "826",
-    DAYSSICK: "1",
-    DISABLED: "0",
-    DISPLAYID: "Aaron Russell",
-    DOB: "10/12/1982",
-    EMPLSTATUS: "1",
-    ETHNICITY: "41",
-    GENDER: "1",
-    HOURLYRATE: "",
-    LOCALESTID: "MARMA",
-    MAINJOBROLE: "4",
-    MAINJRDESC: "",
-    NATIONALITY: "826",
-    FLUVAC: "",
-    NINUMBER: "JA622112A",
-    NMCREG: "",
-    NONSCQUAL: "2",
-    NURSESPEC: "",
-    OTHERJOBROLE: "10",
-    OTHERJRDESC: "",
-    POSTCODE: "LS1 1AA",
-    QUALACH01: "",
-    QUALACH01NOTES: "",
-    QUALACH02: "",
-    QUALACH02NOTES: "",
-    QUALACH03: "",
-    QUALACH03NOTES: "",
-    RECSOURCE: "16",
-    SALARY: "20000",
-    SALARYINT: "1",
-    SCQUAL: "2",
-    STARTDATE: "12/11/2001",
-    STARTINSECT: "2001",
-    STATUS: "UPDATE",
-    UNIQUEWORKERID: "3",
-    YEAROFENTRY: "",
-    ZEROHRCONT: "2"
+    AMHP: '',
+    APPRENTICE: '2',
+    AVGHOURS: '',
+    BRITISHCITIZENSHIP: '',
+    CARECERT: '3',
+    CONTHOURS: '23',
+    COUNTRYOFBIRTH: '826',
+    DAYSSICK: '1',
+    DISABLED: '0',
+    DISPLAYID: 'Aaron Russell',
+    DOB: '10/12/1982',
+    EMPLSTATUS: '1',
+    ETHNICITY: '41',
+    GENDER: '1',
+    HOURLYRATE: '',
+    LOCALESTID: 'MARMA',
+    MAINJOBROLE: '4',
+    MAINJRDESC: '',
+    NATIONALITY: '826',
+    FLUVAC: '',
+    NINUMBER: 'JA622112A',
+    NMCREG: '',
+    NONSCQUAL: '2',
+    NURSESPEC: '',
+    OTHERJOBROLE: '10',
+    OTHERJRDESC: '',
+    POSTCODE: 'LS1 1AA',
+    QUALACH01: '',
+    QUALACH01NOTES: '',
+    QUALACH02: '',
+    QUALACH02NOTES: '',
+    QUALACH03: '',
+    QUALACH03NOTES: '',
+    RECSOURCE: '16',
+    SALARY: '20000',
+    SALARYINT: '1',
+    SCQUAL: '2',
+    STARTDATE: '12/11/2001',
+    STARTINSECT: '2001',
+    STATUS: 'UPDATE',
+    UNIQUEWORKERID: '3',
+    YEAROFENTRY: '',
+    ZEROHRCONT: '2',
   },
 });
 
@@ -78,13 +76,13 @@ const buildWorkerRecord = build('WorkerRecord', {
     _properties: {
       get() {
         return { changedAt: moment() };
-      }
+      },
     },
     daysSick: {
-      days: 1
-    }
-  }
-})
+      days: 1,
+    },
+  },
+});
 
 const buildEstablishmentRecord = build('EstablishmentRecord', {
   _validations: [],
@@ -126,59 +124,51 @@ const buildEstablishmentRecord = build('EstablishmentRecord', {
     _propertyTypes: [Array],
     _auditEvents: null,
     _modifiedProperties: [],
-    _additionalModels: null
+    _additionalModels: null,
   },
   _isNew: false,
-  _workerEntities: {
-  },
+  _workerEntities: {},
   _readyForDeletionWorkers: null,
   _status: 'NEW',
   _logLevel: 300,
   daysSick: {
-    days: 1
-  }
+    days: 1,
+  },
 });
 
-const buildSecondEstablishmentRecord = () => buildEstablishmentRecord({
-  overrides: {
-    _id: 1446,
-    _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-    _isRegulated: true,
-    _status: 'COMPLETE',
-    _parentId: 479,
-    _dataOwner: 'Parent'
-  }
-})
+const buildSecondEstablishmentRecord = () =>
+  buildEstablishmentRecord({
+    overrides: {
+      _id: 1446,
+      _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
+      _isRegulated: true,
+      _status: 'COMPLETE',
+      _parentId: 479,
+      _dataOwner: 'Parent',
+    },
+  });
 
 const getUnitInstance = () => {
-  const ALL_CAPACITIES = null;
-  const ALL_UTILISATIONS = null;
-  const BUDI_TO_ASC = 100;
-
-  const bulkUpload = testUtils.sandBox(
-    filename,
-    {
-      locals: {
-        require: testUtils.wrapRequire({
-          '../BUDI': {
-            BUDI
-          }, 'moment': {
-            moment
-          }
-        })
-      }
-    }
-  );
+  const bulkUpload = testUtils.sandBox(filename, {
+    locals: {
+      require: testUtils.wrapRequire({
+        '../BUDI': {
+          BUDI,
+        },
+        moment: {
+          moment,
+        },
+      }),
+    },
+  });
 
   expect(bulkUpload).to.have.property('Worker');
 
   expect(bulkUpload.Worker).to.be.a('function');
 
-  return new (bulkUpload.Worker)();
+  return new bulkUpload.Worker();
 };
 describe('/server/models/Bulkimport/csv/workers.js', () => {
-  const workertoCSV = getUnitInstance();
-  let columnHeaders = null;
   describe('get headers', () => {
     it('should return a string of headers seperated by a comma', () => {
       const bulkUpload = getUnitInstance();
@@ -194,739 +184,669 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       expect(result).to.be.a('string');
 
       expect(result.split(',')).to.deep.equal(knownHeaders);
-
     });
   });
 
   describe('validations', () => {
     it('should emit an error if REGTYPE is not 2 (CQC) but worker has registered manager main job role', async () => {
-        const bulkUpload = new (testUtils.sandBox(
-          filename,
-          {
-            locals: {
-              require: testUtils.wrapRequire({
-                '../BUDI': {
-                  BUDI
-                },
-                'moment': moment
-              }),
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
             },
-          }
-        ).Worker)(
-          buildWorkerCsv(),
-          2,
-          [
-            buildEstablishmentRecord(),
-            buildSecondEstablishmentRecord()
-          ]);
-
-        expect(bulkUpload).to.have.property('crossValidate');
-
-        const csvWorkerSchemaErrors = [];
-
-        const myEstablishments = [{
-          key: 'MARMA',
-          status: 'UPDATE',
-          regtype: 1
-        }];
-
-        // Regular validation has to run first for the establishment to populate the internal properties correctly
-        await bulkUpload.validate();
-
-        // call the method
-        await bulkUpload.crossValidate({
-          csvWorkerSchemaErrors,
-          myEstablishments,
-        });
-
-        // assert a error was returned
-        expect(csvWorkerSchemaErrors.length).to.equal(1);
-
-        expect(csvWorkerSchemaErrors[0]).to.deep.equal({
-          lineNumber: 2,
-          name: 'MARMA',
-          source: '4',
-          worker: "3",
-          errCode: 1280,
-          errType: 'MAIN_JOB_ROLE_ERROR',
-          error: 'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role'
-        });
-      });
-      it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
-        const bulkUpload = new (testUtils.sandBox(
-          filename,
-          {
-            locals: {
-              require: testUtils.wrapRequire({
-                '../BUDI': {
-                  BUDI
-                },
-                'moment': moment
-              }),
-            },
-          }
-        ).Worker)(
-          buildWorkerCsv(),
-          2,
-          [
-            buildEstablishmentRecord({
-              overrides: {
-                _isRegulated: true
-              }
-            }),
-            buildSecondEstablishmentRecord()
-          ]);
-
-        expect(bulkUpload).to.have.property('crossValidate');
-
-        const csvWorkerSchemaErrors = [];
-
-        const myEstablishments = [{
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 2
-        }];
-
-        // Regular validation has to run first for the establishment to populate the internal properties correctly
-        await bulkUpload.validate();
-
-        // call the method
-        await bulkUpload.crossValidate({
-          csvWorkerSchemaErrors,
-          myEstablishments,
-        });
-
-        // assert a error was returned
-        expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-        expect(csvWorkerSchemaErrors).to.deep.equal([]);
-      });
-    it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
-        const bulkUpload = new (testUtils.sandBox(
-          filename,
-          {
-            locals: {
-              require: testUtils.wrapRequire({
-                '../BUDI': {
-                  BUDI
-                },
-                'moment': moment
-              }),
-            },
-          }
-        ).Worker)(
-          buildWorkerCsv(),
-          2,
-          [
-            buildEstablishmentRecord({
-              overrides: {
-                _isRegulated: true
-              }
-            }),
-            buildSecondEstablishmentRecord()
-          ]);
-
-        expect(bulkUpload).to.have.property('crossValidate');
-
-        const csvWorkerSchemaErrors = [];
-
-        const myEstablishments = [{
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 2
-        }];
-
-        // Regular validation has to run first for the establishment to populate the internal properties correctly
-        await bulkUpload.validate();
-
-        // call the method
-        await bulkUpload.crossValidate({
-          csvWorkerSchemaErrors,
-          myEstablishments,
-        });
-
-        // assert a error was returned
-        expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-        expect(csvWorkerSchemaErrors).to.deep.equal([]);
-      });
-      it('should not emit an error if REGTYPE is 2 (CQC) but worker doesn\'t have registered manager main job role', async () => {
-        const bulkUpload = new (testUtils.sandBox(
-          filename,
-          {
-            locals: {
-              require: testUtils.wrapRequire({
-                '../BUDI': {
-                  BUDI
-                },
-                'moment': moment
-              }),
-            },
-          }
-        ).Worker)(
-          buildWorkerCsv({
-            overrides: {
-              MAINJOBROLE: "3"
-            }
+            moment: moment,
           }),
-          2,
-          [
-            buildEstablishmentRecord({
-              overrides: {
-                _isRegulated: true
-              }
-            }),
-            buildSecondEstablishmentRecord()
-          ]);
+        },
+      }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord(), buildSecondEstablishmentRecord()]);
 
-        expect(bulkUpload).to.have.property('crossValidate');
+      expect(bulkUpload).to.have.property('crossValidate');
 
-        const csvWorkerSchemaErrors = [];
+      const csvWorkerSchemaErrors = [];
 
-        const myEstablishments = [{
+      const myEstablishments = [
+        {
           key: 'MARMA',
           status: 'UPDATE',
-          regType: 2
-        }];
+          regtype: 1,
+        },
+      ];
 
-        // Regular validation has to run first for the establishment to populate the internal properties correctly
-        await bulkUpload.validate();
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
 
-        // call the method
-        await bulkUpload.crossValidate({
-          csvWorkerSchemaErrors,
-          myEstablishments,
-        });
-
-        // assert a error was returned
-        expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-        expect(csvWorkerSchemaErrors).to.deep.equal([]);
-      });
-      it('should not emit an error if REGTYPE is not 2 (CQC) but worker doesn\'t have registered manager main job role', async () => {
-        const bulkUpload = new (testUtils.sandBox(
-          filename,
-          {
-            locals: {
-              require: testUtils.wrapRequire({
-                '../BUDI': {
-                  BUDI
-                },
-                'moment': moment
-              }),
-            },
-          }
-        ).Worker)(
-          buildWorkerCsv({
-            overrides: {
-              MAINJOBROLE: "3"
-            }
-          }),
-          2,
-          [
-            buildEstablishmentRecord({
-              overrides: {
-                _isRegulated: true
-              }
-            }),
-            buildSecondEstablishmentRecord()
-          ]);
-
-        expect(bulkUpload).to.have.property('crossValidate');
-
-        const csvWorkerSchemaErrors = [];
-
-        const myEstablishments = [{
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 1
-        }];
-
-        // Regular validation has to run first for the establishment to populate the internal properties correctly
-        await bulkUpload.validate();
-
-        // call the method
-        await bulkUpload.crossValidate({
-          csvWorkerSchemaErrors,
-          myEstablishments,
-        });
-
-        // assert a error was returned
-        expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-        expect(csvWorkerSchemaErrors).to.deep.equal([]);
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
       });
 
-      describe('days sick', () => {
-        it('should emit a warning when days sick not already changed today', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv(),
-            2,
-            [
-              buildEstablishmentRecord()
-            ]
-          );
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(1);
 
-          bulkUpload._currentWorker = buildWorkerRecord({
-            overrides: {
-              _properties: {
-                get() {
-                  return { savedAt: moment().add(-1, 'days') };
-                }
-              }
-            }
-          });
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          // assert a error was returned
-          expect(bulkUpload.validationErrors.map(err => err.warning)).to.include('DAYSSICK in the last 12 months has not changed please check this is correct');
-        });
-
-        it('should not emit a warning when days sick already changed today', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv(),
-            2,
-            [
-              buildEstablishmentRecord()
-            ]
-          );
-
-          bulkUpload._currentWorker = buildWorkerRecord();
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          // assert a error was returned
-          expect(bulkUpload.validationErrors.map(err => err.warning)).not.to.include('DAYSSICK in the last 12 months has not changed please check this is correct');
-        });
-      })
-      describe('flu jab', () => {
-        const codesToTest = ['1', '2', '999'];
-        codesToTest.forEach(code => {
-          it('should not emit an warning if FLUVAC is not ' + code, async () => {
-            const bulkUpload = new (testUtils.sandBox(
-              filename,
-              {
-                locals: {
-                  require: testUtils.wrapRequire({
-                    '../BUDI': {
-                      BUDI
-                    },
-                    'moment': moment
-                  }),
-                },
-              }
-            ).Worker)(
-              buildWorkerCsv({
-                overrides: {
-                  STATUS: 'NEW',
-                  FLUVAC: code
-                }
-              }),
-              2,
-              [
-                buildEstablishmentRecord(),
-                buildSecondEstablishmentRecord()
-              ]);
-
-            expect(bulkUpload).to.have.property('crossValidate');
-
-            // Regular validation has to run first for the establishment to populate the internal properties correctly
-            await bulkUpload.validate();
-
-            const validationErrors = bulkUpload._validationErrors;
-
-            // assert a error was returned
-            expect(validationErrors.length).to.equal(0);
-          });
-        });
-        it('should emit an warning if FLUVAC is not in 1, 2, 999, null', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                FLUVAC: '8'
-              }
-            }),
-            2,
-            [
-              buildEstablishmentRecord(),
-              buildSecondEstablishmentRecord()
-            ]);
-
-          expect(bulkUpload).to.have.property('crossValidate');
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          const validationErrors = bulkUpload._validationErrors;
-
-          // assert a error was returned
-          expect(validationErrors.length).to.equal(1);
-          expect(validationErrors).to.deep.equal([
-            {
-              worker: '3',
-              name: 'MARMA',
-              lineNumber: 2,
-              warnCode: 3055,
-              warnType: 'WORKER_FLUVAC_WARNING',
-              warning:
-              'FLUVAC the code you have selected has not been recognised and will be ignored',
-              source: '8'
-            }
-          ]);
-        });
-      });
-
-      describe('nurse specialisms', () => {
-        it('should not emit a warning for any combination of specialisms 1-6', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                MAINJOBROLE: "16",
-                NMCREG: '1',
-                NURSESPEC: '1;2;3;4;5;6'
-              }
-            }),
-            2,
-            [
-              buildEstablishmentRecord(),
-              buildSecondEstablishmentRecord()
-            ]);
-
-          expect(bulkUpload).to.have.property('crossValidate');
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          const validationErrors = bulkUpload._validationErrors;
-
-          // assert a error was returned
-          expect(validationErrors.length).to.equal(0);
-        });
-
-        it('should not emit a warning when either specialism 7 or 8', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                MAINJOBROLE: "16",
-                NMCREG: '1',
-                NURSESPEC: '7'
-              }
-            }),
-            2,
-            [
-              buildEstablishmentRecord(),
-              buildSecondEstablishmentRecord()
-            ]);
-
-          expect(bulkUpload).to.have.property('crossValidate');
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          const validationErrors = bulkUpload._validationErrors;
-
-          // assert a error was returned
-          expect(validationErrors.length).to.equal(0);
-        });
-
-        it('should emit a warning when any combination of specialisms 1-6 along with either 7 or 8', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                MAINJOBROLE: "16",
-                NMCREG: '1',
-                NURSESPEC: '1;2;3;8'
-              }
-            }),
-            2,
-            [
-              buildEstablishmentRecord(),
-              buildSecondEstablishmentRecord()
-            ]);
-
-          expect(bulkUpload).to.have.property('crossValidate');
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          const validationErrors = bulkUpload._validationErrors;
-
-          // assert a error was returned
-          expect(validationErrors.length).to.equal(1);
-          expect(validationErrors).to.deep.equal([
-            {
-              worker: '3',
-              name: 'MARMA',
-              lineNumber: 2,
-              warnCode: 3350,
-              warnType: 'NURSE_SPEC_WARNING',
-              warning:
-              'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
-              source: '1;2;3;8'
-            }
-          ]);
-        });
-
-        it('should emit a warning when both specialisms 7 and 8', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                MAINJOBROLE: "16",
-                NMCREG: '1',
-                NURSESPEC: '7;8'
-              }
-            }),
-            2,
-            [
-              buildEstablishmentRecord(),
-              buildSecondEstablishmentRecord()
-            ]);
-
-          expect(bulkUpload).to.have.property('crossValidate');
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          const validationErrors = bulkUpload._validationErrors;
-
-          // assert a error was returned
-          expect(validationErrors.length).to.equal(1);
-          expect(validationErrors).to.deep.equal([
-            {
-              worker: '3',
-              name: 'MARMA',
-              lineNumber: 2,
-              warnCode: 3350,
-              warnType: 'NURSE_SPEC_WARNING',
-              warning:
-              'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
-              source: '7;8'
-            }
-          ]);
-        });
-
-        it('should emit a warning when specialism is not any of 1-8', async () => {
-          const bulkUpload = new (testUtils.sandBox(
-            filename,
-            {
-              locals: {
-                require: testUtils.wrapRequire({
-                  '../BUDI': {
-                    BUDI
-                  },
-                  'moment': moment
-                }),
-              },
-            }
-          ).Worker)(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                MAINJOBROLE: "16",
-                NMCREG: '1',
-                NURSESPEC: '1;2;9'
-              }
-            }),
-            2,
-            [
-              buildEstablishmentRecord(),
-              buildSecondEstablishmentRecord()
-            ]);
-
-          expect(bulkUpload).to.have.property('crossValidate');
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await bulkUpload.validate();
-
-          await bulkUpload.transform();
-
-          const validationErrors = bulkUpload._validationErrors;
-
-          // assert a error was returned
-          expect(validationErrors.length).to.equal(1);
-          expect(validationErrors).to.deep.equal([
-            {
-              worker: '3',
-              name: 'MARMA',
-              lineNumber: 2,
-              warnCode: 3350,
-              warnType: 'NURSE_SPEC_WARNING',
-              warning:
-              'NURSESPEC the code 9 you have entered has not been recognised and will be ignored',
-              source: '1;2;9'
-            }
-          ]);
-        });
-      });
-
-    const countryCodesToTest = [262, 418, 995];
-    countryCodesToTest.forEach(countryCode => {
-        it('should validate for COUNTRYOFBIRTH ' + countryCode, async () => {
-          const validator = new WorkerCsvValidator(
-            buildWorkerCsv({
-              overrides: {
-                MAINJOBROLE: "3",
-                COUNTRYOFBIRTH: `${countryCode}`,
-                NATIONALITY: "862",
-                STATUS: "NEW"
-              }
-            }),
-            2,
-            []);
-
-          const myEstablishments = [{
-            key: 'MARMA',
-            status: 'UPDATE',
-            regType: 1
-          }];
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await validator.validate();
-
-          // call the method
-          await validator.transform();
-
-          // assert a error was returned
-          expect(validator._validationErrors).to.deep.equal([]);
-          expect(validator._validationErrors.length).to.equal(0);
-        });
-
-        it('should validate for NATIONALITY ' + countryCode, async () => {
-          const validator = new WorkerCsvValidator(
-            buildWorkerCsv({
-              overrides: {
-                MAINJOBROLE: "3",
-                COUNTRYOFBIRTH: "826",
-                NATIONALITY: `${countryCode}`,
-                STATUS: "NEW",
-              }
-            }),
-            2,
-            []);
-
-          const myEstablishments = [{
-            key: 'MARMA',
-            status: 'UPDATE',
-            regType: 1
-          }];
-
-          // Regular validation has to run first for the establishment to populate the internal properties correctly
-          await validator.validate();
-
-          // call the method
-          await validator.transform();
-
-          // assert a error was returned
-          expect(validator._validationErrors).to.deep.equal([]);
-          expect(validator._validationErrors.length).to.equal(0);
-        });
+      expect(csvWorkerSchemaErrors[0]).to.deep.equal({
+        lineNumber: 2,
+        name: 'MARMA',
+        source: '4',
+        column: 'MAINJOBROLE',
+        worker: '3',
+        errCode: 1280,
+        errType: 'MAIN_JOB_ROLE_ERROR',
+        error:
+          'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
       });
     });
+    it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            moment: moment,
+          }),
+        },
+      }).Worker)(buildWorkerCsv(), 2, [
+        buildEstablishmentRecord({
+          overrides: {
+            _isRegulated: true,
+          },
+        }),
+        buildSecondEstablishmentRecord(),
+      ]);
+
+      expect(bulkUpload).to.have.property('crossValidate');
+
+      const csvWorkerSchemaErrors = [];
+
+      const myEstablishments = [
+        {
+          key: 'MARMA',
+          status: 'UPDATE',
+          regType: 2,
+        },
+      ];
+
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
+
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(0);
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([]);
+    });
+    it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            moment: moment,
+          }),
+        },
+      }).Worker)(buildWorkerCsv(), 2, [
+        buildEstablishmentRecord({
+          overrides: {
+            _isRegulated: true,
+          },
+        }),
+        buildSecondEstablishmentRecord(),
+      ]);
+
+      expect(bulkUpload).to.have.property('crossValidate');
+
+      const csvWorkerSchemaErrors = [];
+
+      const myEstablishments = [
+        {
+          key: 'MARMA',
+          status: 'UPDATE',
+          regType: 2,
+        },
+      ];
+
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
+
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(0);
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([]);
+    });
+    it("should not emit an error if REGTYPE is 2 (CQC) but worker doesn't have registered manager main job role", async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            moment: moment,
+          }),
+        },
+      }).Worker)(
+        buildWorkerCsv({
+          overrides: {
+            MAINJOBROLE: '3',
+          },
+        }),
+        2,
+        [
+          buildEstablishmentRecord({
+            overrides: {
+              _isRegulated: true,
+            },
+          }),
+          buildSecondEstablishmentRecord(),
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('crossValidate');
+
+      const csvWorkerSchemaErrors = [];
+
+      const myEstablishments = [
+        {
+          key: 'MARMA',
+          status: 'UPDATE',
+          regType: 2,
+        },
+      ];
+
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
+
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(0);
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([]);
+    });
+    it("should not emit an error if REGTYPE is not 2 (CQC) but worker doesn't have registered manager main job role", async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            moment: moment,
+          }),
+        },
+      }).Worker)(
+        buildWorkerCsv({
+          overrides: {
+            MAINJOBROLE: '3',
+          },
+        }),
+        2,
+        [
+          buildEstablishmentRecord({
+            overrides: {
+              _isRegulated: true,
+            },
+          }),
+          buildSecondEstablishmentRecord(),
+        ],
+      );
+
+      expect(bulkUpload).to.have.property('crossValidate');
+
+      const csvWorkerSchemaErrors = [];
+
+      const myEstablishments = [
+        {
+          key: 'MARMA',
+          status: 'UPDATE',
+          regType: 1,
+        },
+      ];
+
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
+
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(0);
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([]);
+    });
+
+    describe('days sick', () => {
+      it('should emit a warning when days sick not already changed today', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
+
+        bulkUpload._currentWorker = buildWorkerRecord({
+          overrides: {
+            _properties: {
+              get() {
+                return { savedAt: moment().add(-1, 'days') };
+              },
+            },
+          },
+        });
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        // assert a error was returned
+        expect(bulkUpload.validationErrors.map((err) => err.warning)).to.include(
+          'DAYSSICK in the last 12 months has not changed please check this is correct',
+        );
+      });
+
+      it('should not emit a warning when days sick already changed today', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
+
+        bulkUpload._currentWorker = buildWorkerRecord();
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        // assert a error was returned
+        expect(bulkUpload.validationErrors.map((err) => err.warning)).not.to.include(
+          'DAYSSICK in the last 12 months has not changed please check this is correct',
+        );
+      });
+    });
+    describe('flu jab', () => {
+      const codesToTest = ['1', '2', '999'];
+      codesToTest.forEach((code) => {
+        it('should not emit an warning if FLUVAC is not ' + code, async () => {
+          const bulkUpload = new (testUtils.sandBox(filename, {
+            locals: {
+              require: testUtils.wrapRequire({
+                '../BUDI': {
+                  BUDI,
+                },
+                moment: moment,
+              }),
+            },
+          }).Worker)(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                FLUVAC: code,
+              },
+            }),
+            2,
+            [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          );
+
+          expect(bulkUpload).to.have.property('crossValidate');
+
+          // Regular validation has to run first for the establishment to populate the internal properties correctly
+          await bulkUpload.validate();
+
+          const validationErrors = bulkUpload._validationErrors;
+
+          // assert a error was returned
+          expect(validationErrors.length).to.equal(0);
+        });
+      });
+      it('should emit an warning if FLUVAC is not in 1, 2, 999, null', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              FLUVAC: '8',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        expect(bulkUpload).to.have.property('crossValidate');
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        const validationErrors = bulkUpload._validationErrors;
+
+        // assert a error was returned
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3055,
+            warnType: 'WORKER_FLUVAC_WARNING',
+            warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
+            source: '8',
+            column: 'FLUVAC',
+          },
+        ]);
+      });
+    });
+
+    describe('nurse specialisms', () => {
+      it('should not emit a warning for any combination of specialisms 1-6', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              MAINJOBROLE: '16',
+              NMCREG: '1',
+              NURSESPEC: '1;2;3;4;5;6',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        expect(bulkUpload).to.have.property('crossValidate');
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        const validationErrors = bulkUpload._validationErrors;
+
+        // assert a error was returned
+        expect(validationErrors.length).to.equal(0);
+      });
+
+      it('should not emit a warning when either specialism 7 or 8', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              MAINJOBROLE: '16',
+              NMCREG: '1',
+              NURSESPEC: '7',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        expect(bulkUpload).to.have.property('crossValidate');
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        const validationErrors = bulkUpload._validationErrors;
+
+        // assert a error was returned
+        expect(validationErrors.length).to.equal(0);
+      });
+
+      it('should emit a warning when any combination of specialisms 1-6 along with either 7 or 8', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              MAINJOBROLE: '16',
+              NMCREG: '1',
+              NURSESPEC: '1;2;3;8',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        expect(bulkUpload).to.have.property('crossValidate');
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        const validationErrors = bulkUpload._validationErrors;
+
+        // assert a error was returned
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3350,
+            warnType: 'NURSE_SPEC_WARNING',
+            warning:
+              'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
+            source: '1;2;3;8',
+            column: 'NURSESPEC',
+          },
+        ]);
+      });
+
+      it('should emit a warning when both specialisms 7 and 8', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              MAINJOBROLE: '16',
+              NMCREG: '1',
+              NURSESPEC: '7;8',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        expect(bulkUpload).to.have.property('crossValidate');
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        const validationErrors = bulkUpload._validationErrors;
+
+        // assert a error was returned
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3350,
+            warnType: 'NURSE_SPEC_WARNING',
+            warning:
+              'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
+            source: '7;8',
+            column: 'NURSESPEC',
+          },
+        ]);
+      });
+
+      it('should emit a warning when specialism is not any of 1-8', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              MAINJOBROLE: '16',
+              NMCREG: '1',
+              NURSESPEC: '1;2;9',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        expect(bulkUpload).to.have.property('crossValidate');
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+
+        await bulkUpload.transform();
+
+        const validationErrors = bulkUpload._validationErrors;
+
+        // assert a error was returned
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3350,
+            warnType: 'NURSE_SPEC_WARNING',
+            warning: 'NURSESPEC the code 9 you have entered has not been recognised and will be ignored',
+            source: '1;2;9',
+            column: 'NURSESPEC',
+          },
+        ]);
+      });
+    });
+
+    const countryCodesToTest = [262, 418, 995];
+    countryCodesToTest.forEach((countryCode) => {
+      it('should validate for COUNTRYOFBIRTH ' + countryCode, async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              MAINJOBROLE: '3',
+              COUNTRYOFBIRTH: `${countryCode}`,
+              NATIONALITY: '862',
+              STATUS: 'NEW',
+            },
+          }),
+          2,
+          [],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await validator.validate();
+
+        // call the method
+        await validator.transform();
+
+        // assert a error was returned
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should validate for NATIONALITY ' + countryCode, async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              MAINJOBROLE: '3',
+              COUNTRYOFBIRTH: '826',
+              NATIONALITY: `${countryCode}`,
+              STATUS: 'NEW',
+            },
+          }),
+          2,
+          [],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await validator.validate();
+
+        // call the method
+        await validator.transform();
+
+        // assert a error was returned
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+    });
+  });
   workers.forEach((worker, index) => {
     describe('toCSV(establishmentId, entity, MAX_QUALIFICATIONS) with worker ' + index, () => {
       it('should match the header values', async () => {
-
         let workerCSV = getUnitInstance();
         const columnHeaders = workerCSV.headers(maxquals).split(',');
         workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
         expect(typeof workerCSV).to.equal('string');
 
-        workerCSV = (await csv({
-          noheader: true,
-          output: 'csv'
-        }).fromString(workerCSV))[0];
+        workerCSV = (
+          await csv({
+            noheader: true,
+            output: 'csv',
+          }).fromString(workerCSV)
+        )[0];
 
         expect(Array.isArray(workerCSV)).to.equal(true);
 
@@ -941,14 +861,13 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         if (Array.isArray(worker.otherJobs.jobs)) {
           worker.otherJobs.jobs.forEach((job, index) => {
             otherJobs += job.budi;
-            if (job.other){
+            if (job.other) {
               otherJobsDesc += job.other;
             }
-            index < (worker.otherJobs.jobs.length - 1) ? otherJobs += ';' : otherJobs += '';
-            index < (worker.otherJobs.jobs.length - 1) ? otherJobsDesc += ';' : otherJobsDesc += '';
+            index < worker.otherJobs.jobs.length - 1 ? (otherJobs += ';') : (otherJobs += '');
+            index < worker.otherJobs.jobs.length - 1 ? (otherJobsDesc += ';') : (otherJobsDesc += '');
           });
         } else {
-          expect(establishment.otherServices).to.equal(null);
           expect(worker.otherJobs.otherJobs).to.equal(null);
         }
 
@@ -956,14 +875,14 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           scqual += worker.socialCareQualificationId;
         }
         if (worker.socialCareQualificationLevel) {
-          scqual += ";";
+          scqual += ';';
           scqual += worker.socialCareQualificationLevel.budi;
         }
         if (worker.nonSocialCareQualification) {
           nonscqual += worker.nonSocialCareQualificationId;
         }
         if (worker.nonSocialCareQualificationLevel) {
-          nonscqual += ";";
+          nonscqual += ';';
           nonscqual += worker.nonSocialCareQualificationLevel.budi;
         }
         expect(mappedCsv.LOCALESTID).to.equal(establishmentId);
@@ -1036,7 +955,9 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         }
         if (worker.mainJobStartDate) {
           const mainJobStartDateParts = worker.mainJobStartDate.split('-');
-          expect(mappedCsv.STARTDATE).to.equal(`${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`);
+          expect(mappedCsv.STARTDATE).to.equal(
+            `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`,
+          );
         } else {
           expect(mappedCsv.STARTDATE).to.equal('');
         }
@@ -1067,7 +988,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(mappedCsv.DAYSSICK).to.equal('');
         }
         if (worker.annualHourlyPay) {
-          const salaryMap = [1,worker.annualHourlyPay.rate,''];
+          const salaryMap = [1, worker.annualHourlyPay.rate, ''];
           expect(mappedCsv.SALARYINT).to.equal(String(salaryMap[0]));
           expect(mappedCsv.SALARY).to.equal(String(salaryMap[1]));
           expect(mappedCsv.HOURLYRATE).to.equal(String(salaryMap[2]));
@@ -1092,13 +1013,22 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         } else {
           expect(mappedCsv.MAINJRDESC).to.equal('');
         }
-        if (worker.contract && ['Permanent', 'Temporary'].includes(worker.contract) && worker.zeroContractHours !== 'Yes' && worker.contractedHours) {
+        if (
+          worker.contract &&
+          ['Permanent', 'Temporary'].includes(worker.contract) &&
+          worker.zeroContractHours !== 'Yes' &&
+          worker.contractedHours
+        ) {
           expect(mappedCsv.CONTHOURS).to.equal(worker.contractedHours.hours);
         } else {
           expect(mappedCsv.CONTHOURS).to.equal('');
         }
-        if (((worker.contract && ['Pool/Bank', 'Agency', 'Other'].includes(worker.contract)) || worker.zeroContractHours === 'Yes') && worker.averageHours) {
-            expect(parseInt(mappedCsv.AVGHOURS)).to.equal(worker.averageHours.hours);
+        if (
+          ((worker.contract && ['Pool/Bank', 'Agency', 'Other'].includes(worker.contract)) ||
+            worker.zeroContractHours === 'Yes') &&
+          worker.averageHours
+        ) {
+          expect(parseInt(mappedCsv.AVGHOURS)).to.equal(worker.averageHours.hours);
         } else {
           expect(mappedCsv.AVGHOURS).to.equal('');
         }
@@ -1133,7 +1063,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         for (var i = 0; i < maxquals; i++) {
           if (worker.qualifications[i]) {
             const year = worker.qualifications[i].year ? worker.qualifications[i].year : '';
-            expect(mappedCsv['QUALACH0' + (i + 1)]).to.equal(worker.qualifications[i].qualification.budi + ";" + year);
+            expect(mappedCsv['QUALACH0' + (i + 1)]).to.equal(worker.qualifications[i].qualification.budi + ';' + year);
             if (worker.qualifications[i].notes) {
               expect(mappedCsv['QUALACH0' + (i + 1) + 'NOTES']).to.equal(worker.qualifications[i].notes);
             } else {
@@ -1146,15 +1076,18 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         }
       });
     });
-    yesNoDontKnow.forEach(apprenticeshipType => {
-      it('should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value, async () => {
-        worker.apprenticeship = apprenticeshipType.value;
-        let workerCSV = getUnitInstance();
-        workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
-        const output = workerCSV.split(',');
-        // 19 column is apprenticeship
-        expect(output[19]).to.deep.equal(apprenticeshipType.code);
-      });
+    yesNoDontKnow.forEach((apprenticeshipType) => {
+      it(
+        'should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value,
+        async () => {
+          worker.apprenticeship = apprenticeshipType.value;
+          let workerCSV = getUnitInstance();
+          workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
+          const output = workerCSV.split(',');
+          // 19 column is apprenticeship
+          expect(output[19]).to.deep.equal(apprenticeshipType.code);
+        },
+      );
     });
   });
   describe('isContent()', () => {
@@ -1166,7 +1099,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       const header = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,';
       expect(WorkerCsvValidator.isContent(header)).to.deep.equal(true);
     });
-    it('return false when headings don\'t match', async () => {
+    it("return false when headings don't match", async () => {
       const header = 'NOTATALLWHATWEEXPECT,HOWCOULDYOUUPLOADTHISFILE,';
       expect(WorkerCsvValidator.isContent(header)).to.deep.equal(false);
     });

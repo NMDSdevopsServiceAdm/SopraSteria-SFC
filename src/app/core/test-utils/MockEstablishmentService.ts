@@ -102,7 +102,7 @@ export class MockEstablishmentService extends EstablishmentService {
       totalStarters: 0,
       totalVacancies: 0,
       totalWorkers: 0,
-      uid: '',
+      uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
       updated: undefined,
       updatedBy: '',
       vacancies: undefined,

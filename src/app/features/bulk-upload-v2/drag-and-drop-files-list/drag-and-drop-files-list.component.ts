@@ -31,7 +31,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public preValidationError: boolean;
   public totalErrors = 0;
   public totalWarnings = 0;
-  public uploadedFiles: ValidatedFile[];
+  public uploadedFiles: ValidatedFile[] = [];
   public validationErrors: Array<ErrorDefinition> = [];
   public validationComplete = false;
   public pluralMap: { [key: string]: string } = {
@@ -256,6 +256,14 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       });
   }
 
+  public deleteFile(event, fileName: string): void {
+    event.preventDefault();
+    this.uploadedFiles = this.uploadedFiles.filter((file: ValidatedFile) => file.filename !== fileName);
+    this.validationComplete = false;
+
+    this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
+  }
+
   /**
    * Encode the filename so we have valid HTML
    * @param url string
@@ -301,7 +309,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
    * Then convert to lowercase
    * @param file ValidatedFile
    */
-  private getFileId(file: ValidatedFile): string {
+  public getFileId(file: ValidatedFile): string {
     const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
     const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
     return `bulk-upload-validation-${transformedFileName}`;
