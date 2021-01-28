@@ -24,6 +24,7 @@ import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/erro
 import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
+import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
 
 @NgModule({
   imports: [
@@ -50,6 +51,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     BulkUploadInfoComponent,
     AboutBulkUploadComponent,
     BulkUploadStartPageComponent,
+    CodesAndGuidanceComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
