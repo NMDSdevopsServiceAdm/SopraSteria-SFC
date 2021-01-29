@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable } from '@angular/core';
-import { Integrations as ApmIntegrations } from '@sentry/apm';
 import * as Sentry from '@sentry/browser';
+import { Integrations } from '@sentry/tracing';
 
 import { environment } from '../environments/environment';
 
@@ -14,7 +14,7 @@ Sentry.init({
     new Sentry.Integrations.TryCatch({
       XMLHttpRequest: false,
     }),
-    new ApmIntegrations.Tracing(),
+    new Integrations.BrowserTracing(),
   ],
   environment: environment.environmentName,
   tracesSampleRate: environment.tracesSampleRate,
