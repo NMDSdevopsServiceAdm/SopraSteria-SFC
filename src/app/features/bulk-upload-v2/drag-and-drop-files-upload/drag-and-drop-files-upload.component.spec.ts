@@ -23,8 +23,9 @@ describe('DragAndDropFilesUploadComponent', () => {
   };
 
   const setup = async () => {
-    const { fixture } = await getDragAndDropFilesUploadComponent();
-    const component = fixture.componentInstance;
+    const component = await getDragAndDropFilesUploadComponent();
+    const fixture = component.fixture;
+    const compInst = component.fixture.componentInstance;
     const fileInput = fixture.debugElement.query(By.css('#drag-and-drop input'));
 
     const triggerFileInput = () => {
@@ -45,22 +46,49 @@ describe('DragAndDropFilesUploadComponent', () => {
         },
       });
     };
+    const triggerInvalidFileInput = () => {
+      fileInput.triggerEventHandler('change', {
+        target: {
+          files: {
+            item: () => {
+              return new File(['some file content'], 'Photo.png');
+            },
+            length: 1,
+          },
+        },
+        preventDefault: () => {
+          // dummy function
+        },
+        stopPropagation: () => {
+          // dummy function
+        },
+      });
+    };
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component, triggerFileInput, http };
+    return { fixture, component,compInst, triggerFileInput,triggerInvalidFileInput, http };
   };
 
   describe('ngx dropzone', () => {
     it('should dispatch event to handler on component', async () => {
-      const { component, triggerFileInput } = await setup();
-
-      spyOn(component, 'onSelect');
+      const { compInst, triggerFileInput } = await setup();
+      spyOn(compInst, 'onSelect');
 
       triggerFileInput();
 
-      expect(component.onSelect).toHaveBeenCalled();
+      expect(compInst.onSelect).toHaveBeenCalled();
     });
+  });
+
+  it('should display error if wrong type uploaded', async () => {
+    const { component,fixture, triggerInvalidFileInput} = await setup();
+
+    triggerInvalidFileInput();
+    fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+
+    expect(validationMsg.innerHTML).toContain('You can only upload CSV files.');
   });
 
   describe('file upload', () => {
