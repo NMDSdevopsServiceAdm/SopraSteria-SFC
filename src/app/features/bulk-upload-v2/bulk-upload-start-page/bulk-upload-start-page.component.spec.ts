@@ -1,25 +1,36 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { render } from '@testing-library/angular';
 
+import { BulkUploadInfoComponent } from '../bulk-upload-info/bulk-upload-info.component';
+import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page.component';
 
-describe('BulkUploadStartPageComponent', () => {
-  let component: BulkUploadStartPageComponent;
-  let fixture: ComponentFixture<BulkUploadStartPageComponent>;
+describe('BulkUploadStartPage', () => {
+  const setup = async () => {
+    const { fixture, getByText } = await render(BulkUploadStartPageComponent, {
+      imports: [RouterTestingModule],
+      providers: [],
+      declarations: [BulkUploadStartPageComponent, BulkUploadInfoComponent, CodesAndGuidanceComponent],
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BulkUploadStartPageComponent ]
-    })
-    .compileComponents();
-  });
+    return { component, getByText };
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BulkUploadStartPageComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should render a StartPageComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should navigate to workplace references page when Continue button is clicked', async () => {
+    const { getByText } = await setup();
+    const continueButton = getByText('Continue');
+    expect(continueButton.getAttribute('href')).toBe('/workplace-references');
+  });
+
+  it('should return to home page(dashboard) when Cancel link is clicked', async () => {
+    const { getByText } = await setup();
+    const cancelButton = getByText('Cancel');
+    expect(cancelButton.getAttribute('href')).toBe('/dashboard');
   });
 });
