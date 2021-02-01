@@ -95,6 +95,9 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.getPresignedUrls();
   }
+  onRemove(event) {
+    this.selectedFiles.splice(this.selectedFiles.indexOf(event), 1);
+  }
 
   private getPresignedUrlsRequest(): PresignedUrlsRequest {
     const request: PresignedUrlsRequest = { files: [] };
