@@ -1,7 +1,6 @@
 import { RouterTestingModule } from '@angular/router/testing';
 import { render } from '@testing-library/angular';
 
-import { BulkUploadInfoComponent } from '../bulk-upload-info/bulk-upload-info.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page.component';
 
@@ -10,7 +9,7 @@ describe('BulkUploadStartPage', () => {
     const { fixture, getByText } = await render(BulkUploadStartPageComponent, {
       imports: [RouterTestingModule],
       providers: [],
-      declarations: [BulkUploadStartPageComponent, BulkUploadInfoComponent, CodesAndGuidanceComponent],
+      declarations: [BulkUploadStartPageComponent, CodesAndGuidanceComponent],
     });
     const component = fixture.componentInstance;
 
