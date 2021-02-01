@@ -78,7 +78,7 @@ const ValidatedFileBuilder = build('ValidatedFile', {
   fields: {
     errors: 0,
     filename: fake((f) => f.lorem.sentence()),
-    fileType: 'Establishment',
+    fileType: null,
     key: fake((f) => f.lorem.sentence()),
     records: 10,
     size: 100,
@@ -94,7 +94,11 @@ export const TrainingFile = ValidatedFileBuilder({
   },
 });
 
-export const EstablishmentFile = ValidatedFileBuilder();
+export const EstablishmentFile = ValidatedFileBuilder({
+  overrides: {
+  fileType: "Establishment",
+  },
+});
 
 export const WorkerFile = ValidatedFileBuilder({
   overrides: {
@@ -103,7 +107,7 @@ export const WorkerFile = ValidatedFileBuilder({
 });
 export const OtherFile = ValidatedFileBuilder({
   overrides: {
-    fileType: 'CSV',
+    fileType: null,
   },
 });
 
