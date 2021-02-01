@@ -16,7 +16,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 import { filter, findIndex } from 'lodash';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -56,16 +56,18 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   }
 
   private getUploadedFiles(): void {
+    const files$ = this.bulkUploadService.uploadedFiles$;
+    const state$ = this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid);
+
     this.subscriptions.add(
-      this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
-        if (uploadedFiles) {
-          this.uploadedFiles = uploadedFiles;
-          this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
+      combineLatest([files$, state$]).subscribe(([uploadedFiles, state]) => {
+        if (!uploadedFiles) {
+          return;
         }
-      }),
-    );
-    this.subscriptions.add(
-      this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid).subscribe((state) => {
+
+        this.uploadedFiles = uploadedFiles;
+        this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
+
         if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {
           this.validationComplete = true;
         }
