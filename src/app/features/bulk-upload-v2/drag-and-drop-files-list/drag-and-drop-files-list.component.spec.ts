@@ -101,6 +101,17 @@ describe('DragAndDropFilesListComponent', () => {
     );
   });
 
+  fit('should show an error message if there is a invalid csv', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.uploadedFiles =  [OtherFile,EstablishmentFile];
+    console.log(component.fixture.componentInstance.uploadedFiles);
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
+  });
+
   describe('DeleteFile', () => {
     it("should filter to only show files that haven't been deleted", async () => {
       const { component } = await setup();

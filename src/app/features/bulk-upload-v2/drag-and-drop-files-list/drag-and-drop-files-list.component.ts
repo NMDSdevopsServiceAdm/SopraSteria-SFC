@@ -151,14 +151,15 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
       return;
     }
-    if (this.checkForDuplicateTypes()) {
-      this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
-      return;
-    }
     if(this.checkForInvalidFiles()){
       this.showPreValidateErrorMessage = true;
       return;
     }
+    if (this.checkForDuplicateTypes()) {
+      this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
+      return;
+    }
+
     this.preValidationErrorMessage = '';
 
     this.validateFiles();
