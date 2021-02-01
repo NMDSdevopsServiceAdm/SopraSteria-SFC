@@ -33,7 +33,7 @@ const updateMetaData = async (file, username, establishmentId) => {
   const passedCheck = validator.preValidate(file.header);
 
   if (!passedCheck) {
-    file.metaData.fileType = '';
+    file.metaData.fileType = null;
   }else{
     file.metaData.records = file.importedData.length;
   }
@@ -183,7 +183,7 @@ const uploadedPut = async (req, res) => {
       } else if (TrainingCsvValidator.isContent(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Training'));
       } else {
-        myDownloads.push(createMyFileObject(myfile, ''));
+        myDownloads.push(createMyFileObject(myfile, null));
       }
     });
 
