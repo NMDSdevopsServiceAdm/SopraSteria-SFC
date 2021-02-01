@@ -88,4 +88,22 @@ const ValidatedFileBuilder = build('ValidatedFile', {
   },
 });
 
-export const ValidatedFile = ValidatedFileBuilder();
+export const TrainingFile = ValidatedFileBuilder({
+  overrides: {
+    fileType: 'Training',
+  },
+});
+
+export const EstablishmentFile = ValidatedFileBuilder();
+
+export const WorkerFile = ValidatedFileBuilder({
+  overrides: {
+    fileType: 'Worker',
+  },
+});
+export const OtherFile = ValidatedFileBuilder({
+  overrides: {
+    fileType: 'CSV',
+  },
+});
+
