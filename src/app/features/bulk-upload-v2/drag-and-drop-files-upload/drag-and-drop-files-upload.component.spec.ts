@@ -45,10 +45,28 @@ describe('DragAndDropFilesUploadComponent', () => {
         },
       });
     };
+    const triggerInvalidFileInput = () => {
+      fileInput.triggerEventHandler('change', {
+        target: {
+          files: {
+            item: () => {
+              return new File(['some file content'], 'Photo.png');
+            },
+            length: 1,
+          },
+        },
+        preventDefault: () => {
+          // dummy function
+        },
+        stopPropagation: () => {
+          // dummy function
+        },
+      });
+    };
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component, triggerFileInput, http };
+    return { fixture, component, triggerFileInput,triggerInvalidFileInput, http };
   };
 
   describe('ngx dropzone', () => {
@@ -61,6 +79,14 @@ describe('DragAndDropFilesUploadComponent', () => {
 
       expect(component.onSelect).toHaveBeenCalled();
     });
+  });
+
+  it('should display Error if wrong type uploaded', async () => {
+    const { component, triggerInvalidFileInput} = await setup();
+
+    triggerInvalidFileInput();
+
+    expect(component.showInvalidFileError).toEqual(true);
   });
 
   describe('file upload', () => {

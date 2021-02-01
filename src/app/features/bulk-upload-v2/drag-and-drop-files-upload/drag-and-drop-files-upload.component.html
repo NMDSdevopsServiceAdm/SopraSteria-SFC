@@ -1,6 +1,7 @@
+<app-validation-error-message *ngIf="this.showInvalidFileError" [errorMessage]="'You can only upload CSV files.'"></app-validation-error-message>
 <form #formEl novalidate [formGroup]="form" id="server-error">
   <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="form.invalid && submitted">
-    <label class="govuk-label govuk-visually-hidden" for="fileUpload"> Drag and drop files </label>
+    <label class="govuk-label govuk-visually-hidden" for="drag-and-drop"> Drag and drop files </label>
     <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
     </span>
