@@ -282,7 +282,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
           records: null,
           errors: 0,
           warnings: 0,
-          fileType: '',
+          fileType: null,
           size: 294,
           key: '2351/latest/2021-01-26-MyTaxes.csv',
         },
