@@ -1,6 +1,6 @@
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
-const Apm = require('@sentry/apm');
+const { Integrations } = require('@sentry/tracing');
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: 'sfc',
@@ -84,7 +84,7 @@ if (config.get('sentry.dsn')) {
     dsn: config.get('sentry.dsn'),
     integrations: [
       // enable Express.js middleware tracing
-      new Apm.Integrations.Express({ app }),
+      new Integrations.Express({ app }),
     ],
     environment: config.get('env'),
   });
