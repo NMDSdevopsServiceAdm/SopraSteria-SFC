@@ -11,8 +11,11 @@ import { SharedModule } from '@shared/shared.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
+import { AboutBulkUploadComponent } from './about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
+import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
+import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { ErrorDetailsTableComponent } from './error-page/error-details-table/error-details-table.component';
@@ -44,6 +47,9 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     ErrorDetailsTableComponent,
     WarningDetailsTableComponent,
     ValidationErrorMessageComponent,
+    AboutBulkUploadComponent,
+    BulkUploadStartPageComponent,
+    CodesAndGuidanceComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
