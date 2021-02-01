@@ -39,7 +39,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     other: 'There were # errors in the file',
   };
   public preValidationErrorMessage = '';
-
+  public showPreValidateErrorMessage = false;
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -77,6 +77,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
         this.preValidationErrorMessage = '';
+        this.showPreValidateErrorMessage = false;
         if (preValidateFiles) {
           this.validationComplete = false;
           this.preValidateFiles();
@@ -94,8 +95,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           (response: ValidatedFile[]) => {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
-            this.checkForInvalidFiles(response);
-
             this.uploadedFiles = response;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
@@ -118,19 +117,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.bulkUploadService.preValidationError$.next(this.preValidationError);
   }
 
-  private checkForInvalidFiles(response: ValidatedFile[]) {
-    response.forEach((file) => {
-      if (!file.fileType || file.fileType === null) {
-        file.errors = 1;
-        this.validationErrors.push({
-          name: this.getFileId(file),
-          message: 'The file was not recognised',
-        });
-        this.preValidationError = true;
-      }
-    });
-    this.bulkUploadService.validationErrors$.next(this.validationErrors);
-  }
 
   public validateFiles(): void {
     this.totalErrors = 0;
@@ -169,9 +155,18 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
       return;
     }
+    if(this.checkForInvalidFiles()){
+      this.showPreValidateErrorMessage = true;
+      return;
+    }
     this.preValidationErrorMessage = '';
 
     this.validateFiles();
+  }
+  private checkForInvalidFiles() {
+    return this.uploadedFiles.some(function (item) {
+      return item.fileType === null;
+    });
   }
 
   private checkForDuplicateTypes(): boolean {
