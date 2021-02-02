@@ -146,16 +146,6 @@ describe('DragAndDropFilesListComponent', () => {
     expect(validationMsg.innerHTML).toContain('You need to select your staff and workplace files.');
   });
 
-  it('should display the file count error message when too many of all file types uploaded', async () => {
-    const { component } = await setup();
-    const dummyFiles = [EstablishmentFile, WorkerFile, TrainingFile, TrainingFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
-    component.fixture.componentInstance.preValidateCheck();
-    component.fixture.detectChanges();
-    const validationMsg = component.getByTestId('validationErrorMsg');
-    expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
-  });
-
   describe('DeleteFile', () => {
     it("should filter to only show files that haven't been deleted", async () => {
       const { component } = await setup();
