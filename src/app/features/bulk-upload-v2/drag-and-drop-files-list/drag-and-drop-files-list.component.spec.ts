@@ -17,7 +17,7 @@ import { render } from '@testing-library/angular';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
 
-fdescribe('DragAndDropFilesListComponent', () => {
+describe('DragAndDropFilesListComponent', () => {
   async function setup() {
     const component = await render(DragAndDropFilesListComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
@@ -73,7 +73,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select 2 or 3 files.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You need to select 2 or 3 files.');
   });
 
   it('should change the error message if are more than 3 files', async () => {
@@ -84,7 +83,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You can only upload 2 or 3 files.');
   });
 
   it('should show an error message if there are two of the same type', async () => {
@@ -96,9 +94,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You can only upload 1 of each file type.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
-      'You can only upload 1 of each file type.',
-    );
   });
 
   it('should show an error message if there is a invalid csv', async () => {
@@ -129,9 +124,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select your workplace file.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
-      'You need to select your workplace file.',
-    );
   });
 
   it("should display the file type error message when staff file isn't uploaded and there is only one file", async () => {
@@ -142,9 +134,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select your staff file.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
-      'You need to select your staff file.',
-    );
   });
 
   it('should display the file type error message when only training file is uploaded', async () => {
@@ -155,9 +144,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select your staff and workplace files.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
-      'You need to select your staff and workplace files.',
-    );
   });
 
   it('should display the file count error message when too many of all file types uploaded', async () => {
@@ -168,9 +154,6 @@ fdescribe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
-      'You can only upload 2 or 3 files.',
-    );
   });
 
   describe('DeleteFile', () => {
