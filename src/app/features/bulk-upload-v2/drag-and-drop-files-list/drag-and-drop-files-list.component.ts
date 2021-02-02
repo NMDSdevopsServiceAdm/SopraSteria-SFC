@@ -150,7 +150,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public preValidateCheck(): void {
     const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
 
-    if (fileCount < 2) {
+    if (fileCount == 0) {
       this.preValidationErrorMessage = 'You need to select 2 or 3 files.';
       return;
     }
@@ -159,11 +159,17 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
       return;
     }
+
     if(this.checkForInvalidFiles()){
       return;
     }
+    
     if (this.checkForDuplicateTypes()) {
       this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
+      return;
+    }
+
+    if (this.checkFileType()) {
       return;
     }
 
@@ -190,6 +196,29 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return fileTypesArr.some(function (item, idx) {
       return fileTypesArr.indexOf(item) != idx;
     });
+  }
+
+  private checkFileType(): boolean {
+    const fileTypes = [];
+    this.uploadedFiles.forEach((file) => {
+      fileTypes.push(file.fileType);
+    });
+
+    if (!fileTypes.includes('Worker') && !fileTypes.includes('Establishment')) {
+      this.preValidationErrorMessage = 'You need to select your staff and workplace files.';
+      return true;
+    }
+
+    if (!fileTypes.includes('Worker')) {
+      this.preValidationErrorMessage = 'You need to select your staff file.';
+      return true;
+    }
+
+    if (!fileTypes.includes('Establishment')) {
+      this.preValidationErrorMessage = 'You need to select your workplace file.';
+      return true;
+    }
+    return false;
   }
 
   public beginCompleteUpload(): void {

@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { TrainingFile, EstablishmentFile, WorkerFile, OtherFile } from '@core/test-utils/MockBulkUploadService';
+import { EstablishmentFile, OtherFile, TrainingFile, WorkerFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
@@ -17,7 +17,7 @@ import { render } from '@testing-library/angular';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
 
-describe('DragAndDropFilesListComponent', () => {
+fdescribe('DragAndDropFilesListComponent', () => {
   async function setup() {
     const component = await render(DragAndDropFilesListComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
@@ -65,9 +65,9 @@ describe('DragAndDropFilesListComponent', () => {
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('');
   });
 
-  it('should change the error message if there is only one file', async () => {
+  it('should change the error message if there are no files', async () => {
     const { component } = await setup();
-    const dummyFiles = [EstablishmentFile];
+    const dummyFiles = [];
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
@@ -104,20 +104,73 @@ describe('DragAndDropFilesListComponent', () => {
   it('should show an error message if there is a invalid csv', async () => {
     const { component } = await setup();
 
-    component.fixture.componentInstance.uploadedFiles =  [OtherFile,EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles =  [OtherFile, EstablishmentFile];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
   });
+
   it('should show invalid file type error before duplicate error', async () => {
     const { component } = await setup();
 
-    component.fixture.componentInstance.uploadedFiles =  [OtherFile,EstablishmentFile,EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles =  [OtherFile, EstablishmentFile, EstablishmentFile];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
+  });
+
+  it("should display the file type error message when workplace file isn't uploaded", async () => {
+    const { component } = await setup();
+    const dummyFiles = [WorkerFile, TrainingFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select your workplace file.');
+    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
+      'You need to select your workplace file.',
+    );
+  });
+
+  it("should display the file type error message when staff file isn't uploaded and there is only one file", async () => {
+    const { component } = await setup();
+    const dummyFiles = [EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select your staff file.');
+    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
+      'You need to select your staff file.',
+    );
+  });
+
+  it('should display the file type error message when only training file is uploaded', async () => {
+    const { component } = await setup();
+    const dummyFiles = [TrainingFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select your staff and workplace files.');
+    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
+      'You need to select your staff and workplace files.',
+    );
+  });
+
+  it('should display the file count error message when too many of all file types uploaded', async () => {
+    const { component } = await setup();
+    const dummyFiles = [EstablishmentFile, WorkerFile, TrainingFile, TrainingFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
+    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
+      'You can only upload 2 or 3 files.',
+    );
   });
 
   describe('DeleteFile', () => {
