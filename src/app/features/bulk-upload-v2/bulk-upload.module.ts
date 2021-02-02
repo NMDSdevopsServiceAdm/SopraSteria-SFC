@@ -12,9 +12,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
-import {
-  WorkplaceReferencesComponent,
-} from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
+import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
@@ -41,6 +40,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     FileValidateStatusComponent,
     ValidationErrorMessageComponent,
     WorkplaceReferencesComponent,
+    StaffReferencesComponent,
   ],
   providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver],
 })
