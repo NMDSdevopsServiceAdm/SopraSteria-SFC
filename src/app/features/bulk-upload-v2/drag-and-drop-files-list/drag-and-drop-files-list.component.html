@@ -20,9 +20,9 @@
           <app-file-validate-status [warnings]="file.warnings" [errors]="file.errors"></app-file-validate-status>
         </td>
       </tr>
-      <tr *ngIf="showPreValidateErrorMessage && file.fileType === null">
+      <tr *ngIf="!preValidationErrorMessage && this.getFileErrors(file)">
         <td colspan="5">
-          <app-validation-error-message  [errorMessage]="'This file was not recognised.  Use the guidance to check it\'s set up correctly.'"></app-validation-error-message>
+          <app-validation-error-message  [errorMessage]="this.getFileErrors(file)"></app-validation-error-message>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row">

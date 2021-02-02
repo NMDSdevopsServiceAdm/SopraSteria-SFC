@@ -29,6 +29,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public bulkUploadFileTypeEnum = BulkUploadFileType;
   public preValidationError: boolean;
+  public fileErrors: Array<string> = [];
   public totalErrors = 0;
   public totalWarnings = 0;
   public uploadedFiles: ValidatedFile[] = [];
@@ -77,6 +78,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
         this.preValidationErrorMessage = '';
+        this.fileErrors =[];
         this.showPreValidateErrorMessage = false;
         if (preValidateFiles) {
           this.validationComplete = false;
@@ -84,6 +86,10 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  public getFileErrors(file: ValidatedFile): string {
+    return this.fileErrors[file.key];
   }
 
   private preValidateFiles(): void {
@@ -152,7 +158,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return;
     }
     if(this.checkForInvalidFiles()){
-      this.showPreValidateErrorMessage = true;
       return;
     }
     if (this.checkForDuplicateTypes()) {
@@ -164,10 +169,16 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
     this.validateFiles();
   }
-  private checkForInvalidFiles() {
-    return this.uploadedFiles.some(function (item) {
+  private checkForInvalidFiles(): boolean {
+    const invalidFiles = this.uploadedFiles.filter(function (item) {
       return item.fileType === null;
     });
+
+    invalidFiles.map((item: ValidatedFile)  => {
+      this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
+    });
+
+    return invalidFiles.length > 0;
   }
 
   private checkForDuplicateTypes(): boolean {
