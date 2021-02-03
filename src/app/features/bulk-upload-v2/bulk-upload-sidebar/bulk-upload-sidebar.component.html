@@ -1,7 +1,7 @@
 <h2 class="govuk-heading-s">Related content</h2>
 <ul class="govuk-list">
   <li>
-    <a [routerLink]="['/dev', 'bulk-upload', 'about-bulk-upload']">About bulk upload</a>
+    <a [routerLink]="['../about-bulk-upload']">About bulk upload</a>
   </li>
   <li>
     <a [routerLink]="['/dev', 'bulk-upload', 'workplace-references']">View workplace and staff references</a>
@@ -34,21 +34,5 @@
     </a>
   </li>
 </ul>
-<h2 class="govuk-!-margin-top-6 govuk-heading-s">Download codes and guidance</h2>
-<ul class="govuk-list govuk-list--download">
-  <li>
-    <a href="/public/download/BUDI_Staff_Records_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
-      Staff codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
-    </a>
-  </li>
-  <li>
-    <a href="/public/download/BUDI_Workplace_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
-      Workplace codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
-    </a>
-  </li>
-  <li>
-    <a href="/public/download/BUDI_Training_Records_Codes_and_Guidance_ACSWDS.pdf" target="_blank">
-      Training codes and guidance<span class="govuk-visually-hidden">, (opens in a new window)</span>
-    </a>
-  </li>
-</ul>
+
+<app-codes-and-guidance></app-codes-and-guidance>

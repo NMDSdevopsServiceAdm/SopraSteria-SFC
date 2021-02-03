@@ -6,8 +6,8 @@ import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-uplo
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { render } from '@testing-library/angular';
-import { BulkUploadV2Module } from '../bulk-upload.module';
 
+import { BulkUploadV2Module } from '../bulk-upload.module';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
 
 describe('DragAndDropFilesUploadComponent', () => {
@@ -23,8 +23,9 @@ describe('DragAndDropFilesUploadComponent', () => {
   };
 
   const setup = async () => {
-    const { fixture } = await getDragAndDropFilesUploadComponent();
-    const component = fixture.componentInstance;
+    const component = await getDragAndDropFilesUploadComponent();
+    const fixture = component.fixture;
+    const compInst = component.fixture.componentInstance;
     const fileInput = fixture.debugElement.query(By.css('#drag-and-drop input'));
 
     const triggerFileInput = () => {
@@ -45,37 +46,60 @@ describe('DragAndDropFilesUploadComponent', () => {
         },
       });
     };
+    const triggerInvalidFileInput = () => {
+      fileInput.triggerEventHandler('change', {
+        target: {
+          files: {
+            item: () => {
+              return new File(['some file content'], 'Photo.png');
+            },
+            length: 1,
+          },
+        },
+        preventDefault: () => {
+          // dummy function
+        },
+        stopPropagation: () => {
+          // dummy function
+        },
+      });
+    };
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component, triggerFileInput, http };
+    return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http };
   };
 
   describe('ngx dropzone', () => {
     it('should dispatch event to handler on component', async () => {
-      const { component, triggerFileInput } = await setup();
-
-      spyOn(component, 'onSelect');
+      const { compInst, triggerFileInput } = await setup();
+      spyOn(compInst, 'onSelect');
 
       triggerFileInput();
 
-      expect(component.onSelect).toHaveBeenCalled();
+      expect(compInst.onSelect).toHaveBeenCalled();
     });
   });
 
-  describe('file upload', () => {
-    afterEach(() => {
-      TestBed.inject(HttpTestingController).verify();
-    });
+  it('should display error if wrong type uploaded', async () => {
+    const { component, fixture, triggerInvalidFileInput } = await setup();
 
+    triggerInvalidFileInput();
+    fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+
+    expect(validationMsg.innerHTML).toContain('You can only upload CSV files.');
+  });
+
+  describe('file upload', () => {
     it('should post the files to be uploaded', async () => {
       const { triggerFileInput, http } = await setup();
 
       triggerFileInput();
 
-      const establishmentId = TestBed.inject(EstablishmentService).establishmentId;
-      http.expectOne(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
-      http.expectOne(`/api/establishment//bulkupload/uploadFiles`);
+      const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
+      const requests = http.match(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
+      expect(requests.length).toEqual(1);
     });
   });
 });

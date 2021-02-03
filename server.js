@@ -1,6 +1,6 @@
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
-const Apm = require('@sentry/apm');
+const { Integrations } = require('@sentry/tracing');
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: 'sfc',
@@ -84,7 +84,7 @@ if (config.get('sentry.dsn')) {
     dsn: config.get('sentry.dsn'),
     integrations: [
       // enable Express.js middleware tracing
-      new Apm.Integrations.Express({ app }),
+      new Integrations.Express({ app }),
     ],
     environment: config.get('env'),
   });
@@ -236,7 +236,7 @@ app.get('*', function (req, res) {
 
 app.use(Sentry.Handlers.errorHandler());
 // Optional fallthrough error handler
-app.use(function onError(err, req, res, next) {
+app.use(function onError(err, req, res) {
   // The error id is attached to `res.sentry` to be returned
   // and optionally displayed to the user for support.
   res.statusCode = 500;
@@ -254,7 +254,7 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) {
+  app.use(function (err, req, res) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -265,7 +265,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

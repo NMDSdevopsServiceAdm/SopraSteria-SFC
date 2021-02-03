@@ -5,6 +5,7 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
+  ErrorReport,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -100,6 +101,10 @@ export class BulkUploadService {
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
+  public deleteFile(workplaceUid: string, fileName: string): Observable<any> {
+    return this.http.delete(`/api/establishment/${workplaceUid}/bulkupload/delete/${fileName}`);
+  }
+
   public getFileType(fileName: string): string {
     const parts: Array<string> = fileName.split('.');
     return parts[parts.length - 1].toUpperCase();
@@ -152,6 +157,13 @@ export class BulkUploadService {
       .pipe(map((status) => status.bulkUploadState));
   }
 
+  public getBUReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/errorReport/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
     return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }
@@ -186,6 +198,16 @@ export class BulkUploadService {
       observe: 'body',
       responseType: 'json',
     });
+  }
+
+  public errorReport(workplaceUid: string): Observable<ErrorReport> {
+    return this.checkLockStatus(
+      () => this.http.get<ErrorReport>(`/api/establishment/${workplaceUid}/bulkupload/errorReport`),
+      {
+        observe: 'response',
+        responseType: 'json',
+      },
+    ).pipe(map((response) => response.body));
   }
 
   public resetBulkUpload(): void {

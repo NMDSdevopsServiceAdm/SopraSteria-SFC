@@ -10,6 +10,7 @@ import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references
 
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 const routes: Routes = [
   {
@@ -48,6 +49,11 @@ const routes: Routes = [
     path: 'workplace-and-staff-references/success',
     component: ReferencesCreatedPageComponent,
     data: { title: 'Workplace and staff references complete' },
+  },
+  {
+    path: 'error-report',
+    component: ErrorPageComponent,
+    data: { title: 'Error Report' },
   },
 ];
 
