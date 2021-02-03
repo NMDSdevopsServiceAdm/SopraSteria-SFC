@@ -1,11 +1,10 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment, LocalIdentifiersRequest } from '@core/model/establishment.model';
+import { Establishment } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
@@ -26,15 +25,8 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
   providers: [I18nPluralPipe],
 })
 export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
-  public maxLength = 50;
-  public form: FormGroup;
-  public references: Workplace[] = [];
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public formErrorsMap: ErrorDetails[] = [];
-  public serverError: string;
-  public serverErrorsMap: ErrorDefinition[] = [];
-  public submitted = false;
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
 
   constructor(
@@ -47,7 +39,7 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
   ) {
-    super(errorSummaryService);
+    super(errorSummaryService, formBuilder);
   }
 
   ngOnInit(): void {
@@ -64,56 +56,6 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     this.references = orderBy(this.references, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
     this.setupForm();
     this.setServerErrors();
-  }
-
-  protected setupForm(): void {
-    this.submitted = false;
-    this.form = this.formBuilder.group({}, { validator: this.checkDuplicates });
-    this.references.forEach((reference: Workplace) => {
-      this.form.addControl(
-        `reference-${reference.uid}`,
-        new FormControl(reference.localIdentifier, [Validators.required, Validators.maxLength(this.maxLength)]),
-      );
-
-      this.formErrorsMap.push({
-        item: `reference-${reference.uid}`,
-        type: [
-          {
-            name: 'required',
-            message: `Enter the missing workplace reference.`,
-          },
-          {
-            name: 'maxlength',
-            message: `The reference must be ${this.maxLength} characters or less.`,
-          },
-          {
-            name: 'duplicate',
-            message: `Enter a different workplace reference.`,
-          },
-        ],
-      });
-    });
-  }
-
-  public onSubmit(event: Event): void {
-    event.preventDefault();
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.valid) {
-      this.save();
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
-  }
-
-  protected onError(response: HttpErrorResponse): void {
-    if (response.status === 400) {
-      this.serverErrorsMap[1].message += ` '${response.error.duplicateValue}' has previously been used.`;
-    }
-
-    this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
-    this.errorSummaryService.scrollToErrorSummary();
   }
 
   private setServerErrors() {
@@ -136,7 +78,7 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
         .pipe(take(1))
         .subscribe(
           (data) => {
-            const updatedReferences = this.references.map((workplace) => {
+            const updatedReferences = this.references.map((workplace: Workplace) => {
               const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
               return {
                 ...workplace,
@@ -153,19 +95,5 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
 
   public setReturn(): void {
     this.bulkUploadService.setReturnTo({ url: ['/dev/bulk-upload/workplace-references'] });
-  }
-
-  public getFirstErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  protected generateRequest(): LocalIdentifiersRequest {
-    return {
-      localIdentifiers: Object.keys(this.form.value).map((key) => ({
-        uid: key.replace('reference-', ''),
-        value: this.form.value[key],
-      })),
-    };
   }
 }
