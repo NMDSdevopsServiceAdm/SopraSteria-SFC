@@ -64,3 +64,37 @@ exports.autoFitColumns = function (ws, headerRow) {
     column.width = endWidth;
   });
 };
+
+exports.fitColumnsToSize = function (ws) {
+  eachColumnInRange(ws, 1, 25, (column) => {
+    const cellsWidth = [];
+    column.eachCell((cell) => {
+      if (!cell.isMerged && cell.value) {
+        // doesn't handle merged cells
+
+        let text = '';
+        if (typeof cell.value != 'object') {
+          // string, number, ...
+          text = cell.value.toString();
+        } else if (cell.value.richText) {
+          // richText
+          text = cell.value.richText.reduce((text, obj) => text + obj.text.toString(), '');
+        }
+
+        // handle new lines -> don't forget to set wrapText: true
+        let values = text.split(/[\n\r]+/);
+
+        for (let value of values) {
+          let width = value.length;
+
+          cellsWidth.push(width);
+        }
+      }
+    });
+
+    let endWidth = Math.max(...cellsWidth);
+    endWidth += 0.71; // compensate for observed reduction
+    endWidth += 1.5; // buffer space
+    column.width = endWidth;
+  });
+};

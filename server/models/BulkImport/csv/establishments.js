@@ -388,6 +388,7 @@ class Establishment {
         errType: 'LOCAL_ID_ERROR',
         error: 'LOCALESTID has not been supplied',
         source: myLocalId,
+        column: 'LOCALESTID',
       });
       status = false;
     } else if (myLocalId.length >= MAX_LENGTH) {
@@ -397,6 +398,7 @@ class Establishment {
         errType: 'LOCAL_ID_ERROR',
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
+        column: 'LOCALESTID',
       });
       status = false;
     }
@@ -422,6 +424,7 @@ class Establishment {
         errType: 'STATUS_ERROR',
         error: 'STATUS is blank',
         source: this._currentLine.STATUS,
+        column: 'STATUS',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -433,6 +436,7 @@ class Establishment {
         errType: 'STATUS_ERROR',
         error: 'The code you have entered for STATUS is incorrect',
         source: this._currentLine.STATUS,
+        column: 'STATUS',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -451,6 +455,7 @@ class Establishment {
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of NEW but already exists, please use one of the other statuses',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -462,8 +467,9 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error: 'Workplace has a status of DELETE but does not exist',
+              error: 'Workplace has a STATUS of DELETE but does not exist',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -477,6 +483,7 @@ class Establishment {
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of UNCHECKED but does not exist, please change to NEW to add it',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -490,6 +497,7 @@ class Establishment {
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of NOCHANGE but does not exist, please change to NEW to add it',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -503,6 +511,7 @@ class Establishment {
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it',
               source: myStatus,
+              column: 'STATUS',
             });
           }
           break;
@@ -526,6 +535,7 @@ class Establishment {
         errType: 'NAME_ERROR',
         error: 'ESTNAME has not been supplied',
         source: myName,
+        column: 'ESTNAME',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -536,6 +546,7 @@ class Establishment {
         errType: 'NAME_ERROR',
         error: `ESTNAME is longer than ${MAX_LENGTH} characters`,
         source: myName,
+        column: 'ESTNAME',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -575,6 +586,7 @@ class Establishment {
         errCode: Establishment.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'ADDRESS1 is blank',
+        column: 'ADDRESS1',
         name: this._currentLine.LOCALESTID,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
@@ -584,6 +596,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS1 is longer than ${MAX_LENGTH} characters`,
         source: myAddress1,
+        column: 'ADDRESS1',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -595,6 +608,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS2 is longer than ${MAX_LENGTH} characters`,
         source: myAddress2,
+        column: 'ADDRESS2',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -606,6 +620,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS3 is longer than ${MAX_LENGTH} characters`,
         source: myAddress3,
+        column: 'ADDRESS3',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -617,6 +632,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: `POSTTOWN is longer than ${MAX_LENGTH} characters`,
         source: myTown,
+        column: 'POSTTOWN',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -630,6 +646,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: 'POSTCODE has not been supplied',
         source: myPostcode,
+        column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
@@ -639,6 +656,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: `POSTCODE is longer than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
+        column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (!postcodeRegex.test(myPostcode)) {
@@ -648,6 +666,7 @@ class Establishment {
         errType: 'ADDRESS_ERROR',
         error: 'POSTCODE is incorrectly formatted',
         source: myPostcode,
+        column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (this._status === 'NEW' && !postcodeExists.length) {
@@ -655,8 +674,9 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
-        error: 'The Postcode for this workplace cannot be found in our database and must be registered manually.',
+        error: 'The POSTCODE for this workplace cannot be found in our database and must be registered manually.',
         source: myPostcode,
+        column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
       this._ignore = true;
@@ -667,6 +687,7 @@ class Establishment {
         warnType: 'ADDRESS_ERROR',
         warning: 'The POSTCODE cannot be found in our database and will be ignored.',
         source: myPostcode,
+        column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
       ignorePostcode = true;
@@ -701,6 +722,7 @@ class Establishment {
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: 'ESTTYPE has not been supplied',
         source: this._currentLine.ESTTYPE,
+        column: 'ESTTYPE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (Number.isNaN(myEstablishmentType)) {
@@ -710,6 +732,7 @@ class Establishment {
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: 'The code you have entered for ESTTYPE is incorrect',
         source: this._currentLine.ESTTYPE,
+        column: 'ESTTYPE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType < 1 || myEstablishmentType > 8) {
@@ -719,6 +742,7 @@ class Establishment {
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: 'The code you have entered for ESTTYPE is incorrect',
         source: this._currentLine.ESTTYPE,
+        column: 'ESTTYPE',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -733,6 +757,7 @@ class Establishment {
         warnType: 'ESTABLISHMENT_TYPE_WARNING',
         warning: 'OTHERTYPE has not been supplied',
         source: myOtherEstablishmentType,
+        column: 'OTHERTYPE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType === 8 && myOtherEstablishmentType.length > MAX_LENGTH) {
@@ -742,6 +767,7 @@ class Establishment {
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: `OTHERTYPE is longer than ${MAX_LENGTH} characters`,
         source: myOtherEstablishmentType,
+        column: 'OTHERTYPE',
         name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType === 8) {
@@ -753,6 +779,7 @@ class Establishment {
         warnType: 'ESTABLISHMENT_TYPE_WARNING',
         warning: 'OTHERTYPE will be ignored as not required',
         source: myOtherEstablishmentType,
+        column: 'OTHERTYPE',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -777,6 +804,7 @@ class Establishment {
         errType: 'SHARE_WITH_ERROR',
         error: 'PERMCQC has not been supplied',
         source: this._currentLine.PERMCQC,
+        column: 'PERMCQC',
         name: this._currentLine.PERMCQC,
       });
       return false;
@@ -787,6 +815,7 @@ class Establishment {
         errType: 'SHARE_WITH_ERROR',
         error: 'The code you have entered for PERMCQC is incorrect',
         source: this._currentLine.PERMCQC,
+        column: 'PERMCQC',
         name: this._currentLine.PERMCQC,
       });
       return false;
@@ -797,6 +826,7 @@ class Establishment {
         errType: 'SHARE_WITH_ERROR',
         error: 'The code you have entered for PERMCQC is incorrect',
         source: myShareWithCqc,
+        column: 'PERMCQC',
         name: this._currentLine.PERMCQC,
       });
       return false;
@@ -817,6 +847,7 @@ class Establishment {
         errType: 'SHARE_WITH_ERROR',
         error: 'PERMLA has not been supplied',
         source: this._currentLine.PERMLA,
+        column: 'PERMLA',
         name: this._currentLine.PERMLA,
       });
       return false;
@@ -827,6 +858,7 @@ class Establishment {
         errType: 'SHARE_WITH_ERROR',
         error: 'The code you have entered for PERMLA is incorrect',
         source: this._currentLine.PERMLA,
+        column: 'PERMLA',
         name: this._currentLine.PERMLA,
       });
       return false;
@@ -837,6 +869,7 @@ class Establishment {
         errType: 'SHARE_WITH_ERROR',
         error: 'The code you have entered for PERMLA is incorrect',
         source: myShareWithLa,
+        column: 'PERMLA',
         name: this._currentLine.PERMLA,
       });
       return false;
@@ -859,6 +892,7 @@ class Establishment {
           errType: 'LOCAL_AUTHORITIES_ERROR',
           error: 'An entry for code in SHARELA will be ignored as this is invalid',
           source: this._currentLine.SHARELA,
+          column: 'SHARELA',
           name: this._currentLine.LOCALESTID,
         });
         return false;
@@ -869,6 +903,7 @@ class Establishment {
           errType: 'LOCAL_AUTHORITIES_WARNING',
           error: 'SHARELAS will be ignored',
           source: this._currentLine.SHARELA,
+          column: 'SHARELA',
           name: this._currentLine.LOCALESTID,
         });
       } else {
@@ -892,6 +927,7 @@ class Establishment {
         errType: 'REGTYPE_ERROR',
         error: 'REGTYPE has not been supplied',
         source: this._currentLine.REGTYPE,
+        column: 'REGTYPE',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -902,6 +938,7 @@ class Establishment {
         errType: 'REGTYPE_ERROR',
         error: 'The code you have entered for REGTYPE is incorrect',
         source: this._currentLine.REGTYPE,
+        column: 'REGTYPE',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -917,6 +954,7 @@ class Establishment {
         error:
           'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
         source: this._currentLine.REGTYPE,
+        column: 'REGTYPE/MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -938,6 +976,7 @@ class Establishment {
         errType: 'PROV_ID_ERROR',
         error: 'PROVNUM has not been supplied',
         source: myprovID,
+        column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -948,6 +987,7 @@ class Establishment {
         errType: 'PROV_ID_ERROR',
         error: 'PROVNUM is incorrectly formatted',
         source: myprovID,
+        column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -961,6 +1001,7 @@ class Establishment {
         warnType: 'PROV_ID_WARNING',
         warning: 'PROVNUM will be ignored as not required for this REGTYPE',
         source: myprovID,
+        column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -995,6 +1036,7 @@ class Establishment {
               errType: 'LOCATION_ID_ERROR',
               error: 'LOCATIONID has not been supplied',
               source: myLocationID,
+              column: 'LOCATIONID',
               name: this._currentLine.LOCALESTID,
             });
             return false;
@@ -1005,6 +1047,7 @@ class Establishment {
               errType: 'LOCATION_ID_ERROR',
               error: 'LOCATIONID is incorrectly formatted',
               source: myLocationID,
+              column: 'LOCATIONID',
               name: this._currentLine.LOCALESTID,
             });
             return false;
@@ -1017,6 +1060,7 @@ class Establishment {
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
             source: myLocationID,
+            column: 'LOCATIONID',
             name: this._currentLine.LOCALESTID,
           });
           return false;
@@ -1031,6 +1075,7 @@ class Establishment {
           warnType: 'LOCATION_ID_WARNING',
           warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
           source: myLocationID,
+          column: 'LOCATIONID',
           name: this._currentLine.LOCALESTID,
         });
         return false;
@@ -1050,6 +1095,7 @@ class Establishment {
         errType: 'MAIN_SERVICE_ERROR',
         error: 'MAINSERVICE has not been supplied',
         source: this._currentLine.MAINSERVICE,
+        column: 'MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -1060,6 +1106,7 @@ class Establishment {
         errType: 'MAIN_SERVICE_ERROR',
         error: 'MAINSERVICE has not been supplied',
         source: this._currentLine.MAINSERVICE,
+        column: 'MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -1080,6 +1127,7 @@ class Establishment {
         errType: 'ALL_SERVICES_ERROR',
         error: 'MAINSERVICE is not included in ALLSERVICES',
         source: this._currentLine.ALLSERVICES,
+        column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
 
@@ -1101,6 +1149,7 @@ class Establishment {
         errType: 'ALL_SERVICES_ERROR',
         error: 'There is an empty element in ALLSERVICES',
         source: this._currentLine.ALLSERVICES,
+        column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
     } else if (listOfServices.length !== listOfServiceDescriptions.length) {
@@ -1111,6 +1160,7 @@ class Establishment {
         error:
           'ALLSERVICES/CAPACITY/UTILISATION/SERVICEDESC do not have the same number of items (i.e. numbers and/or semi colons)',
         source: this._currentLine.SERVICEDESC,
+        column: 'ALLSERVICES/CAPACITY/UTILISATION/SERVICEDESC',
         name: this._currentLine.LOCALESTID,
       });
     } else {
@@ -1130,6 +1180,7 @@ class Establishment {
               errType: 'ALL_SERVICES_ERROR',
               error: `SERVICEDESC(${index + 1}) is longer than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+              column: 'SERVICEDESC',
               name: this._currentLine.LOCALESTID,
             });
           } else {
@@ -1172,6 +1223,7 @@ class Establishment {
           warnType: 'SERVICE_USERS_WARNING',
           warning: 'Entry for code in SERVICEUSERS you have supplied will be ignored as this is invalid',
           source: this._currentLine.SERVICEUSERS,
+          column: 'SERVICEUSERS',
           name: this._currentLine.LOCALESTID,
         });
       } else if (listOfServiceUsers.length !== listOfServiceUsersDescriptions.length) {
@@ -1181,6 +1233,7 @@ class Establishment {
           errType: 'SERVICE_USERS_ERROR',
           error: 'SERVICEUSERS/OTHERUSERDESC do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
+          column: 'SERVICEUSERS/OTHERUSERDESC',
           name: this._currentLine.LOCALESTID,
         });
       } else if (isValid) {
@@ -1200,6 +1253,7 @@ class Establishment {
                 warnType: 'SERVICE_USERS_WARNING',
                 warning: `OTHERUSERDESC(${index + 1}) has not been supplied`,
                 source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+                column: 'OTHERUSERDESC',
                 name: this._currentLine.LOCALESTID,
               });
               myServiceUsersDescriptions.push(null);
@@ -1212,6 +1266,7 @@ class Establishment {
                   index + 1
                 }) must not be greater than ${MAX_LENGTH} characters`,
                 source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+                column: 'OTHERUSERDESC',
                 name: this._currentLine.LOCALESTID,
               });
             } else {
@@ -1252,6 +1307,7 @@ class Establishment {
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: 'Capacities (CAPACITY) must be a semi-colon delimited list of whole numbers',
         source: this._currentLine.CAPACITY,
+        column: 'CAPACITY',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1263,6 +1319,7 @@ class Establishment {
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: 'Utilisations (UTILISATION) must be a semi-colon delimited list of whole numbers',
         source: this._currentLine.UTILISATION,
+        column: 'UTILISATION',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1274,6 +1331,7 @@ class Establishment {
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: 'Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal',
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
+        column: 'CAPACITY/UTILISATION',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1287,6 +1345,7 @@ class Establishment {
         error:
           'Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)',
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION} - ${this._currentLine.ALLSERVICES}`,
+        column: 'CAPACITY/UTILISATION',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1309,6 +1368,7 @@ class Establishment {
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: `All capacities (CAPACITY) must be whole numbers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
+        column: 'CAPACITY',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1327,6 +1387,7 @@ class Establishment {
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: `All utilisations (UTILISATION) must be whole numbers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
+        column: 'UTILISATION',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1370,6 +1431,7 @@ class Establishment {
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: 'TOTALPERMTEMP is missing',
         source: this._currentLine.PERMCQC,
+        column: 'TOTALPERMTEMP',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -1380,6 +1442,7 @@ class Establishment {
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: `TOTALPERMTEMP must be a number from 0 to ${MAX_TOTAL} if this is correct call support on 0113 241 0969`,
         source: myTotalPermTemp,
+        column: 'TOTALPERMTEMP',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -1390,6 +1453,7 @@ class Establishment {
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: 'Total Permanent and Temporary (TOTALPERMTEMP) cannot be 0 except when MAINSERVICE is head office',
         source: myTotalPermTemp,
+        column: 'TOTALPERMTEMP',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -1407,6 +1471,7 @@ class Establishment {
       errType: 'DUPLICATE_ERROR',
       error: 'LOCATIONID is not unique',
       source: this._currentLine.LOCATIONID,
+      column: 'LOCATIONID',
       name: this._currentLine.LOCALESTID,
     };
   }
@@ -1441,6 +1506,7 @@ class Establishment {
           warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
           warnType: 'TOTAL_PERM_TEMP_WARNING',
           warning: 'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
+          column: 'TOTALPERMTEMP',
         }),
       );
     } else if (this._totalPermTemp === totalStaff) {
@@ -1451,6 +1517,7 @@ class Establishment {
             warnType: 'STARTERS_WARNING',
             warning:
               'STARTERS data you have entered does not fall within the expected range please ensure this is correct',
+            column: 'STARTERS',
           }),
         );
       }
@@ -1461,6 +1528,7 @@ class Establishment {
             warnType: 'LEAVERS_WARNING',
             warning:
               'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
+            column: 'LEAVERS',
           }),
         );
       }
@@ -1471,6 +1539,7 @@ class Establishment {
             warnType: 'VACANCIES_WARNING',
             warning:
               'VACANCIES data you have entered does not fall within the expected range please ensure this is correct',
+            column: 'VACANCIES',
           }),
         );
       }
@@ -1515,6 +1584,7 @@ class Establishment {
           errType: 'ALL_JOBS_ERROR',
           error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
           source: this._currentLine.ALLJOBROLES,
+          column: 'ALLJOBROLES',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1528,6 +1598,7 @@ class Establishment {
           errType: 'ALL_JOBS_ERROR',
           error: 'All Job Roles (ALLJOBROLES) must be whole numbers',
           source: this._currentLine.ALLJOBROLES,
+          column: 'ALLJOBROLES',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1538,6 +1609,7 @@ class Establishment {
           warnType: 'ALL_JOBS_WARNING',
           warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
           source: this._currentLine.ALLJOBROLES,
+          column: 'VACANCY',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1592,6 +1664,7 @@ class Establishment {
       csvEstablishmentSchemaErrors.unshift(
         Object.assign(template, {
           error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+          column: 'VACANCY',
         }),
       );
     }
@@ -1639,6 +1712,7 @@ class Establishment {
         errType: 'VACANCIES_ERROR',
         error: 'ALLJOBROLES and VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
+        column: 'ALLJOBROLES/VACANCIES',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1650,6 +1724,7 @@ class Establishment {
         errType: 'STARTERS_ERROR',
         error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
+        column: 'ALLJOBROLES/STARTERS',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1661,6 +1736,7 @@ class Establishment {
         errType: 'LEAVERS_ERROR',
         error: 'ALLJOBROLES and LEAVERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
+        column: 'ALLJOBROLES/LEAVERS',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1683,6 +1759,7 @@ class Establishment {
         errType: 'VACANCIES_ERROR',
         error: `Vacancies (VACANCIES) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.VACANCIES}`,
+        column: 'VACANCIES',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1701,6 +1778,7 @@ class Establishment {
         errType: 'STARTERS_ERROR',
         error: `Starters (STARTERS) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.STARTERS}`,
+        column: 'STARTERS',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1719,6 +1797,7 @@ class Establishment {
         errType: 'LEAVERS_ERROR',
         error: `Leavers (LEAVERS) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.LEAVERS}`,
+        column: 'LEAVERS',
         name: this._currentLine.LOCALESTID,
       });
     }
@@ -1828,6 +1907,7 @@ class Establishment {
       warnType: 'STARTERS_WARNING',
       warning: 'STARTERS in the last 12 months has not changed please check this is correct',
       source: this.starters,
+      column: 'STARTERS',
       name: this._currentLine.LOCALESTID,
     };
   }
@@ -1838,6 +1918,7 @@ class Establishment {
       warnType: 'VACANCIES_WARNING',
       warning: 'VACANCIES value has not changed please check this is correct',
       source: this.vacancies,
+      column: 'VACANCIES',
       name: this._currentLine.LOCALESTID,
     };
   }
@@ -1848,6 +1929,7 @@ class Establishment {
       warnType: 'LEAVERS_WARNING',
       warning: 'LEAVERS in the last 12 months has not changed please check this is correct',
       source: this.leavers,
+      column: 'LEAVERS',
       name: this._currentLine.LOCALESTID,
     };
   }
@@ -1872,6 +1954,7 @@ class Establishment {
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'The REASONS you have supplied has an incorrect code',
           source: `${this._currentLine.REASONS}`,
+          column: 'REASONS',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1883,6 +1966,7 @@ class Establishment {
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'REASONS/REASONNOS do not have the same number of items (i.e. numbers and/or semi colons)',
           source: this._currentLine.REASONNOS,
+          column: 'REASONS/REASONNOS',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1900,6 +1984,7 @@ class Establishment {
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: `Reasons for Leaving Counts (REASONNOS) values must be whole numbers and ${MIN_COUNT} or more`,
           source: `${this._currentLine.REASONNOS}`,
+          column: 'REASONNOS',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1912,6 +1997,7 @@ class Establishment {
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'REASONS/REASONNOS do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+          column: 'REASONS/REASONNOS',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1928,6 +2014,7 @@ class Establishment {
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'The total number of REASONNOS you have entered does not equal the total number of LEAVERS',
           source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+          column: 'REASONNOS/LEAVERS',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1975,6 +2062,7 @@ class Establishment {
           errType: 'MAIN_SERVICE_ERROR',
           error: 'The code you have entered for MAINSERVICE is incorrect',
           source: this._currentLine.MAINSERVICE,
+          column: 'MAINSERVICE',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -1997,6 +2085,7 @@ class Establishment {
             errType: 'ALL_SERVICES_ERROR',
             error: `All Services (ALLSERVICES): ${thisService} is unknown`,
             source: this._currentLine.ALLSERVICES,
+            column: 'ALLSERVICES',
             name: this._currentLine.LOCALESTID,
           });
         }
@@ -2022,6 +2111,7 @@ class Establishment {
             warnType: 'SERVICE_USERS_ERROR',
             warning: `Entry for code ${thisService} in SERVICEUSERS will be ignored as this is invalid`,
             source: this._currentLine.SERVICEUSERS,
+            column: 'SERVICEUSERS',
             name: this._currentLine.LOCALESTID,
           });
         }
@@ -2041,6 +2131,7 @@ class Establishment {
           errType: 'ESTABLISHMENT_TYPE_ERROR',
           error: `Establishment Type (ESTTYPE): ${this._establishmentType} is unknown`,
           source: this._currentLine.ESTTYPE,
+          column: 'ESTTYPE',
           name: this._currentLine.LOCALESTID,
         });
       }
@@ -2064,6 +2155,7 @@ class Establishment {
             errType: 'LOCAL_AUTHORITIES_ERROR',
             error: `The code ${thisLA} in SHARELA will be ignored as this is invalid`,
             source: this._currentLine.SHARELA,
+            column: 'SHARELA',
             name: this._currentLine.LOCALESTID,
           });
         }
@@ -2100,6 +2192,7 @@ class Establishment {
                 index + 1
               } is unexpected capacity (no expected capacity for given service: ${thisMappedCapacity})`,
               source: this._currentLine.CAPACITY,
+              column: 'CAPACITY',
               name: this._currentLine.LOCALESTID,
             });
           }
@@ -2136,6 +2229,7 @@ class Establishment {
               errType: 'CAPACITY_UTILISATION_ERROR',
               error: `UTILISATION for SERVICETYPE ${serviceType} will be ignored as it is not required for this service`,
               source: this._currentLine.UTILISATION,
+              column: 'UTILISATION',
               name: this._currentLine.LOCALESTID,
             });
           }
@@ -2162,6 +2256,7 @@ class Establishment {
             errType: 'ALL_JOBS_ERROR',
             error: 'The code you have entered for ALLJOBROLES is incorrect',
             source: this._currentLine.ALLJOBROLES,
+            column: 'ALLJOBROLES',
             name: this._currentLine.LOCALESTID,
           });
         }
@@ -2253,6 +2348,7 @@ class Establishment {
             errType: 'REASONS_FOR_LEAVING_ERROR',
             error: `Reason for Leaving (REASONS): ${thisReason.id} is unknown`,
             source: this._currentLine.REASONS,
+            column: 'REASONS',
             name: this._currentLine.LOCALESTID,
           });
         }
@@ -2280,6 +2376,7 @@ class Establishment {
         errType: 'HEADERS_ERROR',
         error: `Establishment headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers,
+        column: '',
         name: this._currentLine.LOCALESTID,
       });
       return false;
@@ -2296,6 +2393,7 @@ class Establishment {
       errType: 'DUPLICATE_ERROR',
       error: 'LOCALESTID is not unique',
       source: this._currentLine.LOCALESTID,
+      column: 'LOCALESTID',
       name: this._currentLine.LOCALESTID,
     };
   }
@@ -2309,6 +2407,7 @@ class Establishment {
       errType: 'NOT_OWNER_ERROR',
       error: 'Not the owner',
       source: this._currentLine.LOCALESTID,
+      column: '',
       name: this._currentLine.LOCALESTID,
     };
   }
@@ -2321,6 +2420,7 @@ class Establishment {
       errType: 'EXPECT_JUST_ONE_ERROR',
       error: 'Expect just one establishment',
       source: '',
+      column: 'LOCALESTID',
     };
   }
 
@@ -2332,6 +2432,7 @@ class Establishment {
       errType: 'MISSING_PRIMARY_ERROR',
       error: `Missing the primary establishment: ${name}`,
       source: '',
+      column: 'LOCALESTID',
       name,
     };
   }
@@ -2344,6 +2445,7 @@ class Establishment {
       errType: 'CANNOT_DELETE_PRIMARY_ERROR',
       error: `STATUS cannot be DELETE for primary establishment: ${name}`,
       source: '',
+      column: 'STATUS',
       name,
     };
   }
@@ -2897,3 +2999,4 @@ class Establishment {
 }
 
 module.exports.Establishment = Establishment;
+module.exports.EstablishmentFileHeaders = _headers_v1;

@@ -366,7 +366,7 @@ const updateEstablishment = async (req, res) => {
   }
 };
 
-router.route('/:id').get(hasPermission('canViewEstablishment'), getEstablishment);
+router.route('/:id').get(getEstablishment);
 router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);
 router.route('/:id').put(hasPermission('canEditEstablishment'), updateEstablishment);
 router.route('/:id').delete(hasPermission('canDeleteEstablishment'), deleteEstablishment);

@@ -1,5 +1,5 @@
 import { HttpEventType } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
@@ -23,10 +23,10 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public filesUploading = false;
-  @Output() public filesUploaded: EventEmitter<boolean> = new EventEmitter<boolean>();
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
+  public showInvalidFileError = false;
   public stopPolling: boolean;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
@@ -67,7 +67,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         .getUploadedFiles(this.establishmentService.primaryWorkplace.uid)
         .subscribe((response: ValidatedFile[]) => {
           if (response.length) {
-            this.filesUploaded.emit(true);
             this.bulkUploadService.uploadedFiles$.next(response);
           }
           this.checkForPreValidationError();
@@ -91,11 +90,11 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   }
 
   onSelect(event) {
+    this.showInvalidFileError = event.rejectedFiles.length > 0;
     this.selectedFiles = event.addedFiles;
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.getPresignedUrls();
   }
-
   onRemove(event) {
     this.selectedFiles.splice(this.selectedFiles.indexOf(event), 1);
   }
@@ -175,7 +174,6 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
         () => {
           this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
-          this.filesUploaded.emit(true);
         },
       );
   }

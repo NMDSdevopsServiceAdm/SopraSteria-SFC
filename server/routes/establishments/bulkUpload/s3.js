@@ -5,6 +5,13 @@ const s3 = new (require('aws-sdk').S3)({
 });
 const Bucket = String(config.get('bulkupload.bucketname'));
 
+const params = (establishmentId) => {
+  return {
+    Bucket,
+    Prefix: `${establishmentId}/latest/`,
+  };
+};
+
 const uploadAsJSON = async (username, establishmentId, content, key) => {
   try {
     await s3
@@ -71,11 +78,7 @@ const downloadContent = async (key, size, lastModified) => {
 };
 
 const purgeBulkUploadS3Objects = async (establishmentId) => {
-  // drop all in latest
-  const listParams = {
-    Bucket,
-    Prefix: `${establishmentId}/latest/`,
-  };
+  const listParams = params(establishmentId);
 
   const latestObjects = await s3.listObjects(listParams).promise();
   const deleteKeys = [];
@@ -106,7 +109,40 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   });
 
   if (deleteKeys.length > 0) {
-    // now delete the objects in one go
+    await s3
+      .deleteObjects({
+        Bucket,
+        Delete: {
+          Objects: deleteKeys,
+          Quiet: true,
+        },
+      })
+      .promise();
+  }
+};
+
+const findFilesS3 = async (establishmentId, fileName) => {
+  const listParams = params(establishmentId);
+
+  const latestObjects = await s3.listObjects(listParams).promise();
+
+  const foundFiles = [];
+
+  latestObjects.Contents.forEach(async (myFile) => {
+    const ignoreRoot = /.*\/$/;
+    if (!ignoreRoot.test(myFile.Key) && myFile.Key.includes(fileName)) {
+      foundFiles.push({
+        Key: myFile.Key,
+      });
+    }
+  });
+  return foundFiles;
+};
+
+const deleteFilesS3 = async (establishmentId, fileName) => {
+  const deleteKeys = await findFilesS3(establishmentId, fileName);
+
+  if (deleteKeys.length > 0) {
     await s3
       .deleteObjects({
         Bucket,
@@ -126,4 +162,6 @@ module.exports = {
   saveResponse,
   downloadContent,
   purgeBulkUploadS3Objects,
+  deleteFilesS3,
+  findFilesS3,
 };
