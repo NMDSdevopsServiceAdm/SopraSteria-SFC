@@ -181,17 +181,19 @@ describe('DragAndDropFilesListComponent', () => {
       http.expectOne(`/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`);
     });
 
-    it('should should show validation as not complete after deleting a file', async () => {
+    it('should should show validation as not complete after deleting a file and clear error message', async () => {
       const { component } = await setup();
       const event = new Event('click');
       const filenameToDelete = 'filename';
 
       component.fixture.componentInstance.validationComplete = true;
+      component.fixture.componentInstance.preValidationErrorMessage = '';
       component.fixture.detectChanges();
       component.fixture.componentInstance.deleteFile(event, filenameToDelete);
       component.fixture.detectChanges();
 
       expect(component.fixture.componentInstance.validationComplete).toEqual(false);
+      expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('');
     });
   });
 });

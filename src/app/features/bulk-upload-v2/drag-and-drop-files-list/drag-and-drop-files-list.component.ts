@@ -163,7 +163,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     if(this.checkForInvalidFiles()){
       return;
     }
-    
+
     if (this.checkForDuplicateTypes()) {
       this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
       return;
@@ -287,6 +287,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.uploadedFiles = this.uploadedFiles.filter((file: ValidatedFile) => file.filename !== fileName);
     this.validationComplete = false;
+    this.preValidationErrorMessage = '';
 
     this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
   }
