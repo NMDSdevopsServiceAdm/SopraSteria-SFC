@@ -1,6 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -22,12 +22,11 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 @Component({
   selector: 'app-bu-workplace-references-page',
   templateUrl: 'workplace-references.component.html',
-  styleUrls: ['workplace-references.component.html'],
+  styleUrls: ['workplace-references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit, AfterViewInit {
-  @ViewChild('formEl') formEl: ElementRef;
-  private maxLength = 50;
+export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
+  public maxLength = 50;
   public form: FormGroup;
   public references: Workplace[] = [];
   private primaryWorkplace: Establishment;
@@ -48,7 +47,7 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
   ) {
-    super();
+    super(errorSummaryService);
   }
 
   ngOnInit(): void {
@@ -67,14 +66,9 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     this.setServerErrors();
   }
 
-  ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
-  }
-
   protected setupForm(): void {
     this.submitted = false;
     this.form = this.formBuilder.group({}, { validator: this.checkDuplicates });
-    this.references = this.references.filter((item) => item);
     this.references.forEach((reference: Workplace) => {
       this.form.addControl(
         `reference-${reference.uid}`,

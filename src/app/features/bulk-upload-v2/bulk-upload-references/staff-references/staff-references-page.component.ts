@@ -1,6 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -23,11 +23,10 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 @Component({
   selector: 'app-bu-staff-references-page',
   templateUrl: 'staff-references.component.html',
-  styleUrls: ['staff-references.component.html'],
+  styleUrls: ['staff-references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class StaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit, AfterViewInit {
-  @ViewChild('formEl') formEl: ElementRef;
+export class StaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private maxLength = 50;
   public form: FormGroup;
   public references: Worker[] = [];
@@ -51,7 +50,7 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
   ) {
-    super();
+    super(errorSummaryService);
   }
 
   ngOnInit(): void {
@@ -66,10 +65,6 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     );
     this.setupForm();
     this.setServerErrors();
-  }
-
-  ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setupForm(): void {
