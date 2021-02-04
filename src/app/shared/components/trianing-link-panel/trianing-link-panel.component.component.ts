@@ -3,9 +3,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
-import { saveAs } from 'file-saver';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -26,6 +26,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private router: Router,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit() {
@@ -35,27 +36,20 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
       this.fromStaffRecord = true;
       this.establishmentService.isMandatoryTrainingView.next(true);
     }
-
-    this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(data => {
-        if (data && data.id !== undefined) {
-          this.establishmentUid = data.uid;
-          this.subscriptions.add(
-            this.workerService.getAllWorkers(data.uid).subscribe(
-              workers => {
-                workers.forEach((worker: Worker) => {
-                  if (worker.trainingCount > 0) {
-                    if (this.lastUpdated === undefined || this.lastUpdated < worker.trainingLastUpdated) {
-                      this.lastUpdated = worker.trainingLastUpdated;
-                    }
-                  }
-                });
+    this.establishmentUid = this.establishmentService.establishmentId;
+    if (this.permissionsService.can(this.establishmentUid, 'canViewListOfWorkers')) {
+      this.subscriptions.add(
+        this.workerService.getAllWorkers(this.establishmentUid).subscribe((workers) => {
+          workers.forEach((worker: Worker) => {
+            if (worker.trainingCount > 0) {
+              if (this.lastUpdated === undefined || this.lastUpdated < worker.trainingLastUpdated) {
+                this.lastUpdated = worker.trainingLastUpdated;
               }
-            ),
-          )
-        }
-      }),
-    );
+            }
+          });
+        }),
+      );
+    }
   }
 
   //Download Training Report
@@ -63,7 +57,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.subscriptions.add(
       this.reportService.getTrainingReport(this.establishmentUid).subscribe(
-        response => this.saveFile(response),
+        (response) => this.saveFile(response),
         () => {},
       ),
     );
