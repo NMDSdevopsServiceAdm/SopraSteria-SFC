@@ -82,7 +82,7 @@ describe('WorkplaceReferencesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show missing workplace error when submitting with empty field', async () => {
+  it('should show missing workplace error when submitting with empty field(2 messages - 1 top, 1 under field)', async () => {
     const workplace = establishmentBuilder() as Workplace;
     const references = [workplace];
     const { component } = await setup(references);
@@ -98,7 +98,7 @@ describe('WorkplaceReferencesComponent', () => {
     expect(form.controls[`reference-${workplace.uid}`].errors).toEqual({ required: true });
   });
 
-  it('should show maxlength error when submitting with field which is too long', async () => {
+  it('should show maxlength error when submitting with field which is too long(2 messages - 1 top, 1 under field)', async () => {
     const workplace = establishmentBuilder() as Workplace;
     const references = [workplace];
     const { component } = await setup(references);
@@ -121,7 +121,7 @@ describe('WorkplaceReferencesComponent', () => {
     });
   });
 
-  it('should show duplicate error when submitting with same input in multiple boxes', async () => {
+  it('should show duplicate error when submitting with same input in multiple boxes(4 messages - 2 top, 2 under fields)', async () => {
     const workplaces = [establishmentBuilder(), establishmentBuilder()] as Workplace[];
     const references = workplaces;
     const { component } = await setup(references);

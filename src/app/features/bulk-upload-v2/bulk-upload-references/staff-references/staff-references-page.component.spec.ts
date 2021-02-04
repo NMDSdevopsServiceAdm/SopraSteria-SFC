@@ -79,14 +79,12 @@ describe('WorkplaceReferencesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show missing worker error when submitting with empty field', async () => {
+  it('should show missing worker error when submitting with empty field(2 messages - 1 top, 1 under field)', async () => {
     const worker = workerBuilder();
     const references = [worker] as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'Enter the missing workplace reference.';
-
-    console.log(references);
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${worker.uid}`].setValue('');
@@ -120,7 +118,7 @@ describe('WorkplaceReferencesComponent', () => {
     });
   });
 
-  it('should show duplicate error when submitting with same input in multiple boxes(4 messages - 2 top, 2 under field)', async () => {
+  it('should show duplicate error when submitting with same input in multiple boxes(4 messages - 2 top, 2 under fields)', async () => {
     const workers = [workerBuilder(), workerBuilder()];
     const references = workers as Worker[];
     const { component } = await setup(references);
