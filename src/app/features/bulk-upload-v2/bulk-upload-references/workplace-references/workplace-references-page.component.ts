@@ -45,13 +45,11 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference) => {
+    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
-      if (this.primaryWorkplace.isParent) {
+      if (this.primaryWorkplace.isParent)
         return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
-      } else {
-        return reference.dataOwner === WorkplaceDataOwner.Workplace;
-      }
+      return reference.dataOwner === WorkplaceDataOwner.Workplace;
     });
     this.references = orderBy(this.references, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
     this.setupForm();
