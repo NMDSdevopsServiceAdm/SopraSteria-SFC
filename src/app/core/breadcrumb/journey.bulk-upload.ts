@@ -22,7 +22,7 @@ export const bulkUploadJourney: JourneyRoute = {
           path: Path.WORKPLACE_REFERENCES,
           children: [
             {
-              title: 'Staff References',
+              title: 'Staff references',
               path: Path.STAFF_REFERENCES,
             },
           ],
