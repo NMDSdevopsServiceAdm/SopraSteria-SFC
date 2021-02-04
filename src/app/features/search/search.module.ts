@@ -11,6 +11,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { CqcStatusChangeComponent } from './cqc-status-change/cqc-status-change.component';
 import { CqcStatusChangesComponent } from './cqc-status-changes/cqc-status-changes.component';
+import { EmailsComponent } from './emails/emails.component';
 import { ParentRequestComponent } from './parent-request/parent-request.component';
 import { ParentRequestsComponent } from './parent-requests/parent-requests.component';
 import { RegistrationComponent } from './registration/registration.component';
@@ -38,7 +39,8 @@ import { SearchComponent } from './search.component';
     ParentRequestComponent,
     ParentRequestsComponent,
     CqcStatusChangeComponent,
-    CqcStatusChangesComponent
+    CqcStatusChangesComponent,
+    EmailsComponent,
   ],
 })
 export class SearchModule { }

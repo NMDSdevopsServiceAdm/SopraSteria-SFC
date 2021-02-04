@@ -76,7 +76,7 @@
 
       <section
         class="govuk-tabs__panel has-border"
-        *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes'"
+        *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes' && form.type !== 'emails'"
       >
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
@@ -543,5 +543,6 @@
     <app-registrations *ngIf="form.type === 'registrations'"></app-registrations>
     <app-parent-requests *ngIf="form.type === 'parent-requests'"></app-parent-requests>
     <app-cqc-status-changes *ngIf="form.type === 'cqc-status-changes'"></app-cqc-status-changes>
+    <app-emails *ngIf="form.type ==='emails'"></app-emails>
   </div>
 </div>
