@@ -83,11 +83,11 @@ describe('WorkplaceReferencesComponent', () => {
   });
 
   it('should show missing workplace error when submitting with empty field(2 messages - 1 top, 1 under field)', async () => {
-    const workplace = establishmentBuilder() as Workplace;
-    const references = [workplace];
+    const workplace = establishmentBuilder();
+    const references = [workplace] as Workplace[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter the missing workplace reference.';
+    const errorMessage = `Enter a unique reference for ${workplace.name}`;
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${workplace.uid}`].setValue('');
@@ -98,13 +98,32 @@ describe('WorkplaceReferencesComponent', () => {
     expect(form.controls[`reference-${workplace.uid}`].errors).toEqual({ required: true });
   });
 
+  it('should hide missing workplace error after filling empty field and resubmitting', async () => {
+    const workplace = establishmentBuilder();
+    const references = [workplace] as Workplace[];
+    const { component } = await setup(references);
+    const form = component.fixture.componentInstance.form;
+    console.log(workplace);
+    const errorMessage = `Enter a unique reference for ${workplace.name}`;
+
+    form.controls[`reference-${workplace.uid}`].setValue('');
+    component.fixture.componentInstance.onSubmit(event);
+    component.fixture.detectChanges();
+    expect(form.invalid).toBeTruthy();
+
+    form.controls[`reference-${workplace.uid}`].setValue('valid');
+    component.fixture.componentInstance.onSubmit(event);
+    component.fixture.detectChanges();
+    expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+  });
+
   it('should show maxlength error when submitting with field which is too long(2 messages - 1 top, 1 under field)', async () => {
     const workplace = establishmentBuilder() as Workplace;
     const references = [workplace];
     const { component } = await setup(references);
     const maxLength = component.fixture.componentInstance.maxLength;
     const workplaceReference = 'This is over fifty characters................................................';
-    const errorMessage = `The reference must be ${maxLength} characters or less.`;
+    const errorMessage = `Reference must be ${maxLength} characters or fewer`;
     const form = component.fixture.componentInstance.form;
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
@@ -126,7 +145,7 @@ describe('WorkplaceReferencesComponent', () => {
     const references = workplaces;
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different workplace reference.';
+    const errorMessage = 'Enter a different reference, this one has already been used';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${workplaces[0].uid}`].setValue('abc');

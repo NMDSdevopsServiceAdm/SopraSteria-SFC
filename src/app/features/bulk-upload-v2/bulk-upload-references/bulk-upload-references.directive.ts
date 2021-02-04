@@ -27,11 +27,19 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
   protected setupForm(): void {
     this.submitted = false;
-    this.form = this.formBuilder.group({}, { validator: this.checkDuplicates });
+    this.form = this.formBuilder.group(
+      {},
+      {
+        validator: this.checkDuplicates,
+      },
+    );
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         `reference-${reference.uid}`,
-        new FormControl(reference.localIdentifier, [Validators.required, Validators.maxLength(this.maxLength)]),
+        new FormControl(reference.localIdentifier, {
+          validators: [Validators.required, Validators.maxLength(this.maxLength)],
+          updateOn: 'submit',
+        }),
       );
 
       this.formErrorsMap.push({
@@ -39,15 +47,15 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
         type: [
           {
             name: 'required',
-            message: `Enter the missing workplace reference.`,
+            message: `Enter a unique reference for ${reference['name'] ? reference['name'] : reference['nameOrId']}`,
           },
           {
             name: 'maxlength',
-            message: `The reference must be ${this.maxLength} characters or less.`,
+            message: `Reference must be ${this.maxLength} characters or fewer`,
           },
           {
             name: 'duplicate',
-            message: `Enter a different workplace reference.`,
+            message: `Enter a different reference, this one has already been used`,
           },
         ],
       });
@@ -56,8 +64,17 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
   public checkDuplicates(group: FormGroup): void {
     const controls = Object.values(group.controls);
+    controls.map((control) => {
+      if (control?.errors?.duplicate) {
+        if (Object.keys(control.errors).length > 1) {
+          delete control.errors.duplicate;
+        } else {
+          control.setErrors(null);
+        }
+      }
+    });
     const dupes = ArrayUtil.getDuplicates(controls, 'value');
-    dupes.forEach((dupe: AbstractControl) => dupe.setErrors({ duplicate: true }));
+    dupes.map((dupe: AbstractControl) => dupe.setErrors({ ...dupe.errors, duplicate: true }));
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -74,6 +91,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected save(): void {}
 
   public onSubmit(event: Event): void {
@@ -90,7 +108,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
   protected onError(response: HttpErrorResponse): void {
     if (response.status === 400) {
-      this.serverErrorsMap[1].message += ` '${response.error.duplicateValue}' has previously been used.`;
+      this.serverErrorsMap[1].message += `Enter a different reference, this one has already been used`;
     }
 
     this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
