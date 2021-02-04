@@ -31,7 +31,7 @@ const establishmentBuilder = build('Workplace', {
   },
 });
 
-fdescribe('WorkplaceReferencesComponent', () => {
+describe('WorkplaceReferencesComponent', () => {
   async function setup(references: Workplace[] = []) {
     const component = await render(WorkplaceReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
