@@ -123,6 +123,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345678',
         name: 'Workplace 2',
+        column: 'LOCATIONID',
       });
     });
     it('can check for multiple duplicate location IDs', async () => {
@@ -167,6 +168,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345678',
         name: 'Workplace 2',
+        column: 'LOCATIONID',
       });
       expect(csvEstablishmentSchemaErrors[1]).to.eql({
         origin: 'Establishments',
@@ -176,6 +178,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345679',
         name: 'Workplace 4',
+        column: 'LOCATIONID',
       });
     });
     it('doesnt give duplicate location ID error on UNCHECKED', async () => {
@@ -234,6 +237,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345678',
         name: 'Workplace 1',
+        column: 'LOCATIONID',
       });
     });
   });
@@ -304,6 +308,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         name: 'foo',
         source: 'Worker 2',
         worker: 'Worker 2',
+        column: 'CHGUNIQUEWRKID',
       });
     });
   });
@@ -356,6 +361,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: 'foo',
         worker: 'PTE',
         name: 'foo',
+        column: 'SALARY',
       });
     });
     it('shouldnt error when two worker has the same salary, different job and one is FTE and one is PTE ', async () => {
@@ -571,6 +577,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: 'foo',
         worker: 'PTE',
         name: 'foo',
+        column: 'SALARY',
       });
       expect(csvWorkerSchemaErrors[1]).to.eql({
         origin: 'Workers',
@@ -582,6 +589,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: 'foo',
         worker: 'PTE 2',
         name: 'foo',
+        column: 'SALARY',
       });
     });
   });

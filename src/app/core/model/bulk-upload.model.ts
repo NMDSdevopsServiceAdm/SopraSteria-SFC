@@ -65,7 +65,7 @@ export interface UploadedFilesRequestToDownloadResponse {
 export interface ValidatedFile {
   errors: number;
   filename: string;
-  fileType: ValidatedFileType;
+  fileType: ValidatedFileType | null;
   key: string;
   records: number;
   size: number;
@@ -74,6 +74,53 @@ export interface ValidatedFile {
   warnings: number;
   username: string;
   deleted?: number;
+}
+export interface ErrorReportError {
+  origin: string;
+  errCode: number;
+  errType: string;
+  items: Items[];
+  error: string;
+}
+
+export interface ErrorReportWarning {
+  origin: string;
+  warnCode: number;
+  warnType: string;
+  items: Items[];
+  warning: string;
+}
+
+export interface Items {
+  lineNumber: number;
+  source: string;
+  name: string;
+  worker?: string;
+}
+
+export interface ErrorReportErrorsWarnings {
+  errors: ErrorReportError[];
+  warnings: ErrorReportWarning[];
+}
+export interface ErrorReport {
+  establishments: ErrorReportErrorsWarnings;
+  workers: ErrorReportErrorsWarnings;
+  training: ErrorReportErrorsWarnings;
+}
+
+export interface NumberOfErrorsAndWarnings {
+  establishments: {
+    errors: number;
+    warnings: number;
+  };
+  workers: {
+    errors: number;
+    warnings: number;
+  };
+  training: {
+    errors: number;
+    warnings: number;
+  };
 }
 
 export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';
