@@ -483,24 +483,61 @@ describe('Bulk Upload - Establishment CSV', () => {
       ]);
     });
   });
-  describe('toCSV', () => {
+  describe.only('toCSV', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'serviceUsers').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'jobRoles').callsFake((method, value) => value);
     });
 
-    it('should return basic CSV info', async () => {
+    it('should return basic CSV info in expected order', async () => {
       const establishment = apiEstablishmentBuilder();
       const csv = establishmentCsv.toCSV(establishment);
-      expect(csv).to.contain(establishment.LocalIdentifierValue);
-      expect(csv).to.contain('UNCHECKED');
-      expect(csv).to.contain(establishment.NameValue);
-      expect(csv).to.contain(establishment.address1);
-      expect(csv).to.contain(establishment.address2);
-      expect(csv).to.contain(establishment.address3);
-      expect(csv).to.contain(establishment.town);
-      expect(csv).to.contain(establishment.postcode);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[0]).to.equal(establishment.LocalIdentifierValue);
+      expect(csvAsArray[1]).to.equal('UNCHECKED');
+      expect(csvAsArray[2]).to.equal(establishment.NameValue);
+      expect(csvAsArray[3]).to.equal(establishment.address1);
+      expect(csvAsArray[4]).to.equal(establishment.address2);
+      expect(csvAsArray[5]).to.equal(establishment.address3);
+      expect(csvAsArray[6]).to.equal(establishment.town);
+      expect(csvAsArray[7]).to.equal(establishment.postcode);
+    });
+
+    it('should return more CSV info', async () => {
+      const establishment = apiEstablishmentBuilder();
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[8]).to.equal(establishment.EmployerTypeValue.toString());
+      expect(csvAsArray[9]).to.equal(establishment.EmployerTypeOther.toString());
+      // expect(csv).to.contain(establishment.isRegulated);
+      expect(csv).to.contain(establishment.mainService.reportingID);
+      expect(csv).to.contain(establishment.NumberOfStaffValue);
+    });
+
+    it('should have 0s in PERMCQC, PERMLACSV and REGTYPE columns when shareWithCQC, shareWithLA and isRegulated are false', async () => {
+      const establishment = apiEstablishmentBuilder();
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[10]).to.equal('0');
+      expect(csvAsArray[11]).to.equal('0');
+      expect(csvAsArray[13]).to.equal('0');
+    });
+
+    it('should have 1s in PERMCQC, PERMLACSV and 2 in REGTYPE column when shareWithCQC, shareWithLA and isRegulated are true', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.shareWithCQC = true;
+      establishment.shareWithLA = true;
+      establishment.isRegulated = true;
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[10]).to.equal('1');
+      expect(csvAsArray[11]).to.equal('1');
+      expect(csvAsArray[13]).to.equal('2');
     });
   });
 });

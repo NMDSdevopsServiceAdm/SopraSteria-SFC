@@ -3,7 +3,7 @@ const { oneOf, fake, build, perBuild } = require('@jackfranklin/test-data-bot');
 module.exports.apiEstablishmentBuilder = build('Establishment', {
   fields: {
     LocalIdentifierValue: fake((f) => f.lorem.words(1)),
-    NameValue: fake((f) => f.company.companyName()),
+    NameValue: fake((f) => f.company.companyName().replace(/,+/, '')),
     address1: fake((f) => f.address.streetName()),
     address2: fake((f) => f.address.state()),
     address3: fake((f) => f.address.county()),
@@ -16,19 +16,19 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     localAuthorities: perBuild(() => {
       return [
         {
-          cssrId: fake((f) => f.random.number(1, 200)),
+          cssrId: fake((f) => f.random.number({ min: 1, max: 200 })),
         },
       ];
     }),
     isRegulated: false,
     otherServices: [],
     mainService: {
-      reportingID: fake((f) => f.random.number(1, 75)),
+      reportingID: fake((f) => f.random.number({ min: 1, max: 75 })),
     },
     capacity: [],
     serviceUsers: [],
-    NumberOfStaffValue: fake((f) => f.random.number(10, 300)),
+    NumberOfStaffValue: fake((f) => f.random.number({ min: 10, max: 300 })),
     jobs: [],
-    reasonsRorLeaving: '',
+    reasonsForLeaving: '',
   },
 });
