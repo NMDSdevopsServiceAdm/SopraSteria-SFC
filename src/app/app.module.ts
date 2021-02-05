@@ -55,6 +55,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { DevelopmentRoutingModule } from './development-routing.module';
 import { environment } from 'src/environments/environment';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 const developmentModules = [];
 if (!environment.production) {
@@ -133,6 +134,7 @@ if (!environment.production) {
     LoggedInUserResolver,
     PrimaryWorkplaceResolver,
     NotificationsListResolver,
+    FeatureFlagsService
   ],
   bootstrap: [AppComponent],
 })
