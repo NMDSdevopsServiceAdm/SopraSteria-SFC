@@ -483,7 +483,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       ]);
     });
   });
-  describe.only('toCSV', () => {
+  describe('toCSV', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'serviceUsers').callsFake((method, value) => value);
@@ -512,9 +512,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       expect(csvAsArray[8]).to.equal(establishment.EmployerTypeValue.toString());
       expect(csvAsArray[9]).to.equal(establishment.EmployerTypeOther.toString());
-      // expect(csv).to.contain(establishment.isRegulated);
-      expect(csv).to.contain(establishment.mainService.reportingID);
-      expect(csv).to.contain(establishment.NumberOfStaffValue);
     });
 
     it('should have 0s in PERMCQC, PERMLACSV and REGTYPE columns when shareWithCQC, shareWithLA and isRegulated are false', async () => {
