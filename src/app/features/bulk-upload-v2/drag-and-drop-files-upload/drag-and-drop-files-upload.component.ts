@@ -26,6 +26,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   public submitted = false;
   public selectedFiles: File[];
   public bulkUploadStatus: string;
+  public showInvalidFileError = false;
   public stopPolling: boolean;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
@@ -89,11 +90,11 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   }
 
   onSelect(event) {
+    this.showInvalidFileError = event.rejectedFiles.length > 0;
     this.selectedFiles = event.addedFiles;
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.getPresignedUrls();
   }
-
   onRemove(event) {
     this.selectedFiles.splice(this.selectedFiles.indexOf(event), 1);
   }

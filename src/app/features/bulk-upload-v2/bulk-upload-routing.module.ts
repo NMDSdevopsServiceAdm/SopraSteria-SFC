@@ -6,10 +6,10 @@ import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-referenc
 import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-page/bulk-upload-page.component';
 import { WorkplaceReferencesPageComponent } from '@features/bulk-upload//workplace-references-page/workplace-references-page.component';
-import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
 import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references-created-page/references-created-page.component';
 import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
 
+import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 
 const routes: Routes = [

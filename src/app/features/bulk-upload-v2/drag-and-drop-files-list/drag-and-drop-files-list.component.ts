@@ -16,7 +16,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
 import { filter, findIndex } from 'lodash';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -29,6 +29,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public bulkUploadFileTypeEnum = BulkUploadFileType;
   public preValidationError: boolean;
+  public fileErrors: Array<string> = [];
   public totalErrors = 0;
   public totalWarnings = 0;
   public uploadedFiles: ValidatedFile[] = [];
@@ -39,7 +40,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     other: 'There were # errors in the file',
   };
   public preValidationErrorMessage = '';
-
+  public showPreValidateErrorMessage = false;
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -56,16 +57,18 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   }
 
   private getUploadedFiles(): void {
+    const files$ = this.bulkUploadService.uploadedFiles$;
+    const state$ = this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid);
+
     this.subscriptions.add(
-      this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
-        if (uploadedFiles) {
-          this.uploadedFiles = uploadedFiles;
-          this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
+      combineLatest([files$, state$]).subscribe(([uploadedFiles, state]) => {
+        if (!uploadedFiles) {
+          return;
         }
-      }),
-    );
-    this.subscriptions.add(
-      this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid).subscribe((state) => {
+
+        this.uploadedFiles = uploadedFiles;
+        this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
+
         if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {
           this.validationComplete = true;
         }
@@ -77,12 +80,18 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
         this.preValidationErrorMessage = '';
+        this.fileErrors =[];
+        this.showPreValidateErrorMessage = false;
         if (preValidateFiles) {
           this.validationComplete = false;
           this.preValidateFiles();
         }
       }),
     );
+  }
+
+  public getFileErrors(file: ValidatedFile): string {
+    return this.fileErrors[file.key];
   }
 
   private preValidateFiles(): void {
@@ -94,8 +103,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           (response: ValidatedFile[]) => {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
-            this.checkForInvalidFiles(response);
-
             this.uploadedFiles = response;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
@@ -118,19 +125,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.bulkUploadService.preValidationError$.next(this.preValidationError);
   }
 
-  private checkForInvalidFiles(response: ValidatedFile[]) {
-    response.forEach((file) => {
-      if (!file.fileType || file.fileType === null) {
-        file.errors = 1;
-        this.validationErrors.push({
-          name: this.getFileId(file),
-          message: 'The file was not recognised',
-        });
-        this.preValidationError = true;
-      }
-    });
-    this.bulkUploadService.validationErrors$.next(this.validationErrors);
-  }
 
   public validateFiles(): void {
     this.totalErrors = 0;
@@ -156,7 +150,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public preValidateCheck(): void {
     const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
 
-    if (fileCount < 2) {
+    if (fileCount == 0) {
       this.preValidationErrorMessage = 'You need to select 2 or 3 files.';
       return;
     }
@@ -165,13 +159,34 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       this.preValidationErrorMessage = 'You can only upload 2 or 3 files.';
       return;
     }
+
+    if(this.checkForInvalidFiles()){
+      return;
+    }
+
     if (this.checkForDuplicateTypes()) {
       this.preValidationErrorMessage = 'You can only upload 1 of each file type.';
       return;
     }
+
+    if (this.checkFileType()) {
+      return;
+    }
+
     this.preValidationErrorMessage = '';
 
     this.validateFiles();
+  }
+  private checkForInvalidFiles(): boolean {
+    const invalidFiles = this.uploadedFiles.filter(function (item) {
+      return item.fileType === null;
+    });
+
+    invalidFiles.map((item: ValidatedFile)  => {
+      this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
+    });
+
+    return invalidFiles.length > 0;
   }
 
   private checkForDuplicateTypes(): boolean {
@@ -181,6 +196,29 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return fileTypesArr.some(function (item, idx) {
       return fileTypesArr.indexOf(item) != idx;
     });
+  }
+
+  private checkFileType(): boolean {
+    const fileTypes = [];
+    this.uploadedFiles.forEach((file) => {
+      fileTypes.push(file.fileType);
+    });
+
+    if (!fileTypes.includes('Worker') && !fileTypes.includes('Establishment')) {
+      this.preValidationErrorMessage = 'You need to select your staff and workplace files.';
+      return true;
+    }
+
+    if (!fileTypes.includes('Worker')) {
+      this.preValidationErrorMessage = 'You need to select your staff file.';
+      return true;
+    }
+
+    if (!fileTypes.includes('Establishment')) {
+      this.preValidationErrorMessage = 'You need to select your workplace file.';
+      return true;
+    }
+    return false;
   }
 
   public beginCompleteUpload(): void {
@@ -249,6 +287,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.uploadedFiles = this.uploadedFiles.filter((file: ValidatedFile) => file.filename !== fileName);
     this.validationComplete = false;
+    this.preValidationErrorMessage = '';
 
     this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
   }

@@ -65,7 +65,7 @@ export interface UploadedFilesRequestToDownloadResponse {
 export interface ValidatedFile {
   errors: number;
   filename: string;
-  fileType: ValidatedFileType;
+  fileType: ValidatedFileType | null;
   key: string;
   records: number;
   size: number;

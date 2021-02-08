@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { TrainingFile, EstablishmentFile, WorkerFile, OtherFile } from '@core/test-utils/MockBulkUploadService';
+import { EstablishmentFile, OtherFile, TrainingFile, WorkerFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
@@ -65,15 +65,14 @@ describe('DragAndDropFilesListComponent', () => {
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('');
   });
 
-  it('should change the error message if there is only one file', async () => {
+  it('should change the error message if there are no files', async () => {
     const { component } = await setup();
-    const dummyFiles = [EstablishmentFile];
+    const dummyFiles = [];
     component.fixture.componentInstance.uploadedFiles = dummyFiles;
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select 2 or 3 files.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You need to select 2 or 3 files.');
   });
 
   it('should change the error message if are more than 3 files', async () => {
@@ -84,7 +83,6 @@ describe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You can only upload 2 or 3 files.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('You can only upload 2 or 3 files.');
   });
 
   it('should show an error message if there are two of the same type', async () => {
@@ -96,9 +94,56 @@ describe('DragAndDropFilesListComponent', () => {
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You can only upload 1 of each file type.');
-    expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual(
-      'You can only upload 1 of each file type.',
-    );
+  });
+
+  it('should show an error message if there is a invalid csv', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.uploadedFiles =  [OtherFile, EstablishmentFile];
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
+  });
+
+  it('should show invalid file type error before duplicate error', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.uploadedFiles =  [OtherFile, EstablishmentFile, EstablishmentFile];
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
+  });
+
+  it("should display the file type error message when workplace file isn't uploaded", async () => {
+    const { component } = await setup();
+    const dummyFiles = [WorkerFile, TrainingFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select your workplace file.');
+  });
+
+  it("should display the file type error message when staff file isn't uploaded and there is only one file", async () => {
+    const { component } = await setup();
+    const dummyFiles = [EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select your staff file.');
+  });
+
+  it('should display the file type error message when only training file is uploaded', async () => {
+    const { component } = await setup();
+    const dummyFiles = [TrainingFile];
+    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.preValidateCheck();
+    component.fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+    expect(validationMsg.innerHTML).toContain('You need to select your staff and workplace files.');
   });
 
   describe('DeleteFile', () => {
@@ -136,17 +181,19 @@ describe('DragAndDropFilesListComponent', () => {
       http.expectOne(`/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`);
     });
 
-    it('should should show validation as not complete after deleting a file', async () => {
+    it('should should show validation as not complete after deleting a file and clear error message', async () => {
       const { component } = await setup();
       const event = new Event('click');
       const filenameToDelete = 'filename';
 
       component.fixture.componentInstance.validationComplete = true;
+      component.fixture.componentInstance.preValidationErrorMessage = '';
       component.fixture.detectChanges();
       component.fixture.componentInstance.deleteFile(event, filenameToDelete);
       component.fixture.detectChanges();
 
       expect(component.fixture.componentInstance.validationComplete).toEqual(false);
+      expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('');
     });
   });
 });
