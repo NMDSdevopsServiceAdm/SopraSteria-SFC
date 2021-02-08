@@ -1,6 +1,6 @@
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 
-fdescribe('openEndedAnswerPipe', () => {
+describe('openEndedAnswerPipe', () => {
   it('create an instance', () => {
     const pipe = new BulkUploadFileTypePipePipe();
     expect(pipe).toBeTruthy();
