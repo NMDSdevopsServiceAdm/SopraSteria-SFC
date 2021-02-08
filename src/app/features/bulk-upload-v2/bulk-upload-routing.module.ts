@@ -11,6 +11,7 @@ import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-refere
 
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 
 const routes: Routes = [
   {
@@ -54,6 +55,7 @@ const routes: Routes = [
     path: 'error-report',
     component: ErrorPageComponent,
     data: { title: 'Error Report' },
+    resolve: { buErrors: BulkUploadErrorsResolver }
   },
 ];
 

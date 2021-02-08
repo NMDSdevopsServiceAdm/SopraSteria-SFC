@@ -5,14 +5,15 @@ import { of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 import { ErrorReport } from '@core/model/bulk-upload.model';
 import {BulkUploadService} from '@core/services/bulk-upload.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 
 @Injectable()
-export class StaffReferencesResolver implements Resolve<any> {
-  constructor(private router: Router, private bulkUploadService: BulkUploadService) {}
+export class BulkUploadErrorsResolver implements Resolve<any> {
+  constructor(private router: Router, private bulkUploadService: BulkUploadService,private establishmentService:EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const workplaceId = route.paramMap.get('uid');
 
+    const workplaceId = this.establishmentService.establishmentId;
     return this.bulkUploadService.errorReport(workplaceId).pipe(
       catchError(() => {
         this.router.navigate(['/bulk-upload'], { fragment: '' });
