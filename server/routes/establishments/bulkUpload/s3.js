@@ -87,11 +87,9 @@ const saveLastBulkUpload = async (establishmentId) => {
   };
   listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
 
-  const clearFolder = await getKeysFromFolder(listParams);
+  deleteParams.Delete.Objects = await getKeysFromFolder(listParams);
 
-  deleteParams.Delete.Objects = clearFolder;
-
-  if (clearFolder.length > 0) {
+  if (deleteParams.Delete.Objects.length > 0) {
     await s3
       .deleteObjects(deleteParams)
       .promise();
@@ -161,7 +159,7 @@ const moveFolders = async(folderToMove,destinationFolder) => {
       })
     );
   } catch (err) {
-    console.error(err); // error handling
+    console.error(err);
   }
   return results;
 };
@@ -177,14 +175,11 @@ const getKeysFromFolder = async (listParams) =>{
        });
      }
   });
-
   return results;
-
 };
 const listMetaData = async (establishmentId, folder) => {
   const findMetaDataObjects = /.*metadata.json$/;
   const toDownload = [];
-
 
   folder = folder[0] !== '/' ? '/' + folder : folder;
   const listParams = {
@@ -200,20 +195,16 @@ const listMetaData = async (establishmentId, folder) => {
 
   const allMetaFiles = await Promise.all(toDownload);
 
-  const result = allMetaFiles.map(file => {
+  return allMetaFiles.map(file => {
     file.data = JSON.parse(file.data);
-    file.data.key = file.key.replace('.metadata.json','');
+    file.data.key = file.key.replace('.metadata.json', '');
     return file;
   });
-
-  return result;
 };
 
 const findFilesS3 = async (establishmentId, fileName) => {
   const listParams = params(establishmentId);
-
   const latestObjects = await s3.listObjects(listParams).promise();
-
   const foundFiles = [];
 
   latestObjects.Contents.forEach(async (myFile) => {

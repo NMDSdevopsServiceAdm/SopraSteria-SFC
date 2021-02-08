@@ -23,7 +23,6 @@ export class LastBulkUploadComponent {
   public files: [lastBulkUploadFile] = this.route.snapshot.data.lastBulkUpload;
 
   ngOnInit() {
-  console.log(this.files);
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
   }
   public returnToStart(){
