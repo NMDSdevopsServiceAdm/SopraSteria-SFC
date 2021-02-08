@@ -18,6 +18,7 @@ import { RegistrationComponent } from './registration/registration.component';
 import { RegistrationsComponent } from './registrations/registrations.component';
 import { SearchRoutingModule } from './search-routing.module';
 import { SearchComponent } from './search.component';
+import { SendEmailsConfirmationDialogComponent } from './emails/dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { SearchComponent } from './search.component';
     CqcStatusChangeComponent,
     CqcStatusChangesComponent,
     EmailsComponent,
+    SendEmailsConfirmationDialogComponent,
   ],
 })
 export class SearchModule { }

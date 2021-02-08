@@ -9,7 +9,9 @@
 
 <div class="govuk__flex">
   <div class="govuk-!-margin-top-6 govuk">
-    <button class="govuk-button govuk-!-margin-right-9" type="submit">Send emails</button>
+    <button class="govuk-button govuk-!-margin-right-9" (click)="confirmSendEmails($event)" type="submit">
+      Send emails
+    </button>
   </div>
   <div class="govuk-!-margin-top-4 govuk__flex govuk-util__vertical-align-center">
     <a class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center" href="#">
