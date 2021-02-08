@@ -138,7 +138,7 @@ describe('s3', () => {
           return intermediaryFiles;
         }
       });
-      
+
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
       deleteObjects.returns({
         promise: async () => {
@@ -161,8 +161,6 @@ describe('s3', () => {
           Quiet: true
         }
       };
-      console.log("EXPECTED");
-      console.log(expectedResult.Delete.Objects);
       await S3.purgeBulkUploadS3Objects(1);
 
       sinon.assert.calledWith(deleteObjects, expectedResult);
