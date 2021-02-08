@@ -34,7 +34,7 @@
           </p>
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
-          {{ file.fileType ? file.fileType : '-' }}
+          {{ file.fileType ? getFrontEndVocab(file.fileType) : '-' }}
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           {{ file.records ? file.records : '-' }}
