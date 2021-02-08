@@ -7,7 +7,7 @@ const getLastBulkUploadFiles =async (req, res)=> {
     return res.status(200).json(results);
   }catch(err){
     console.error('get Latest Bulk Upload Files - failed', err.message);
-    return res.status(503).send(err);
+    return res.status(503).send();
   }
 };
 router.route('/').get(getLastBulkUploadFiles);
