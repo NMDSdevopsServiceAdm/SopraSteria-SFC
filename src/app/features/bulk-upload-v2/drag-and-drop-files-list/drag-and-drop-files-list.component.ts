@@ -64,10 +64,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return this.totalErrors > 0;
   }
 
-  public getFrontEndVocab(word){
-    return this.bulkUploadFileTypeEnum[word];
-  }
-
   public validateFiles(): void {
     this.totalErrors = 0;
     this.totalWarnings = 0;

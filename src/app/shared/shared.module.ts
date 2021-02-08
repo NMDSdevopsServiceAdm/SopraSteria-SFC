@@ -72,6 +72,7 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { BulkUploadFileTypePipePipe } from '@shared/pipes/front-end-wording.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -94,6 +95,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     EmploymentComponent,
     ErrorSummaryComponent,
     FileValueAccessorDirective,
+    BulkUploadFileTypePipePipe,
     WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
@@ -212,6 +214,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ParentConfirmationDialogComponent,
     CqcConfirmationDialogComponent,
     TotalStaffComponent,
+    BulkUploadFileTypePipePipe
   ],
   providers: [DialogService, TotalStaffComponent],
 })
