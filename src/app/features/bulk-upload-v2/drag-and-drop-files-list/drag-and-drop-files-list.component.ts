@@ -64,6 +64,13 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return this.totalErrors > 0;
   }
 
+  public showFileRecords(file): string {
+    if (file.fileType === null){
+      return "-"
+    }
+    return file.records === null ? "0" : file.records
+  }
+
   public validateFiles(): void {
     this.totalErrors = 0;
     this.totalWarnings = 0;
