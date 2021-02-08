@@ -46,6 +46,7 @@ describe('StaffReferencesComponent', () => {
             snapshot: {
               data: {
                 references: references,
+                workplaceReferences: [{ uid: 123 }],
               },
               paramMap: {
                 get(uid) {
@@ -84,7 +85,6 @@ describe('StaffReferencesComponent', () => {
     const references = [worker] as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    console.log(worker);
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
@@ -101,7 +101,6 @@ describe('StaffReferencesComponent', () => {
     const references = [worker] as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    console.log(worker);
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
 
     form.controls[`reference-${worker.uid}`].setValue('');

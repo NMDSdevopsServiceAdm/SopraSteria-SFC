@@ -30,6 +30,7 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
   private establishmentUid: string;
+  public workplaceName: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -50,6 +51,7 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
     this.references = this.activatedRoute.snapshot.data.references;
+
     this.references = orderBy(
       this.activatedRoute.snapshot.data.references,
       [(worker: Worker) => worker.nameOrId.toLowerCase()],
@@ -57,6 +59,7 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     );
     this.setupForm();
     this.setServerErrors();
+    this.getWorkplaceName();
   }
 
   private setServerErrors() {
@@ -70,6 +73,12 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
         message: `Unable to update staff reference.`,
       },
     ];
+  }
+
+  private getWorkplaceName(): void {
+    this.workplaceName = this.activatedRoute.snapshot.data.workplaceReferences.find(
+      ({ uid }) => uid === this.establishmentUid,
+    ).name;
   }
 
   protected save(): void {
