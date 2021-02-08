@@ -76,6 +76,32 @@ const downloadContent = async (key, size, lastModified) => {
   }
 };
 
+const saveLastBulkUpload = async (establishmentId) => {
+  const listParams = params(establishmentId);
+  const deleteParams = {
+    Bucket,
+    Delete: {
+      Objects: [],
+      Quiet: true,
+    },
+  };
+  listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
+
+  const clearFolder = await getKeysFromFolder(listParams);
+
+  deleteParams.Delete.Objects = clearFolder;
+
+  if (clearFolder.length > 0) {
+    await s3
+      .deleteObjects(deleteParams)
+      .promise();
+  }
+
+  const originFolder = `${establishmentId}/latest/`;
+  const destinationFolder = `${establishmentId}/lastBulkUpload/`;
+
+  await moveFolders(originFolder,destinationFolder);
+};
 const purgeBulkUploadS3Objects = async (establishmentId) => {
   const listParams = params(establishmentId);
   let deleteKeys = [];
@@ -88,41 +114,19 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
     },
   };
 
-  listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
-  deleteKeys.push(await getKeysFromFolder(listParams));
-  deleteParams.Delete.Objects = deleteKeys;
-
-  if (deleteKeys.length > 0) {
-    await s3
-      .deleteObjects(deleteParams)
-      .promise();
-  }
-
-  deleteKeys = [];
-  const latestObjects = await s3.listObjects(listParams).promise();
-
-  const folderToMove = `${establishmentId}/latest/`;
-  const destinationFolder = `${establishmentId}/lastBulkUpload/`;
-
-  deleteKeys.push(moveFolders(folderToMove,destinationFolder));
-
-  latestObjects.Contents.forEach((myFile) => {
-    const ignoreRoot = /.*\/$/;
-    if (!ignoreRoot.test(myFile.Key)) {
-      deleteKeys.push({
-        Key: myFile.Key,
-      });
-    }
-  });
+  listParams.Prefix = `${establishmentId}/latest/`;
+  deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
 
   listParams.Prefix = `${establishmentId}/validation/`;
-   deleteKeys.push(await getKeysFromFolder(listParams));
+  deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
 
   listParams.Prefix = `${establishmentId}/intermediary/`;
-  deleteKeys.push(await getKeysFromFolder(listParams));
+  deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
 
   deleteParams.Delete.Objects = deleteKeys;
+
   if (deleteKeys.length > 0) {
+
     await s3
       .deleteObjects(deleteParams)
       .promise();
@@ -163,12 +167,19 @@ const moveFolders = async(folderToMove,destinationFolder) => {
 };
 const getKeysFromFolder = async (listParams) =>{
   const results = [];
+
   const filesInFolder = await s3.listObjects(listParams).promise();
-  return filesInFolder.Contents.forEach((myFile) => {
-    results.push({
-      Key: myFile.Key,
-    });
+   filesInFolder.Contents.forEach((myFile) => {
+     const ignoreRoot = /.*\/$/;
+     if (!ignoreRoot.test(myFile.Key)) {
+       results.push({
+         Key: myFile.Key,
+       });
+     }
   });
+
+  return results;
+
 };
 const listMetaData = async (establishmentId, folder) => {
   const findMetaDataObjects = /.*metadata.json$/;
@@ -237,6 +248,7 @@ module.exports = {
   Bucket,
   uploadAsJSON,
   saveResponse,
+  saveLastBulkUpload,
   downloadContent,
   purgeBulkUploadS3Objects,
   deleteFilesS3,

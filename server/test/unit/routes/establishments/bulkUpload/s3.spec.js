@@ -2,6 +2,72 @@ const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const expect = require('chai').expect;
 
+const extraData = {
+  LastModified: '2021-02-03T14:39:08.000Z',
+  Size: 431,
+};
+
+const latestFiles = {
+  Contents: [
+    {
+      Key: 'EstablishmentFile',
+      ...extraData
+    },
+    {
+      Key: 'EstablishmentFile.metadata.json',
+      ...extraData
+    },
+    {
+      Key: 'WorkerFile',
+      ...extraData
+    },
+    {
+      Key: 'WorkerFile.metadata.json',
+      ...extraData
+    },
+  ],
+};
+const intermediaryFiles = {
+  Contents: [
+    {
+      Key: 'intermediary1',
+      ...extraData
+    },
+    {
+      Key: 'intermediary1.metadata.json',
+      ...extraData
+    },
+    {
+      Key: 'intermediary2',
+      ...extraData
+    },
+    {
+      Key: 'intermediary2.metadata.json',
+      ...extraData
+    },
+  ],
+};
+const validationFiles = {
+  Contents: [
+    {
+      Key: 'OldFile1',
+      ...extraData
+    },
+    {
+      Key: 'OldFile1.metadata.json',
+      ...extraData
+    },
+    {
+      Key: 'OldFile2',
+      ...extraData
+    },
+    {
+      Key: 'OldFile2.metadata.json',
+      ...extraData
+    },
+  ],
+};
+
 const filesToDelete = [
   {
     Key: 'filename1',
@@ -51,41 +117,62 @@ describe('s3', () => {
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
   });
+  describe('purgeBulkUploadS3Objects', () => {
+
+    const listObjects = sinon.stub(S3.s3, 'listObjects');
+
+    listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '2351/latest/' }).returns({
+      promise: async () => {
+        return latestFiles;
+      }
+    });
+    listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '2351/validation/' }).returns({
+      promise: async () => {
+        return validationFiles;
+      }
+    });
+    listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '2351/intermediary/' }).returns({
+      promise: async () => {
+        return intermediaryFiles;
+      }
+    });
+    it('should delete all the files', async () => {
+      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+      deleteObjects.returns({
+        promise: async () => {
+          return;
+        },
+      });
+
+      const consolidateFiles = [
+        ...latestFiles.Contents,
+        ...validationFiles.Contents,
+        ...intermediaryFiles.Contents,
+    ];
+      const justTheKeys = consolidateFiles.map(file => {return {Key: file.Key}});
+
+      const expectedResult = {
+        Bucket: 'sfcbulkuploadfiles',
+        Delete: {
+          Objects: justTheKeys,
+          Quiet: true
+        }
+      };
+      await S3.purgeBulkUploadS3Objects(2351);
+
+      sinon.assert.calledWith(deleteObjects, expectedResult);
+
+    });
+  });
   describe('listMetaData', () => {
-    const extraData = {
-      LastModified: '2021-02-03T14:39:08.000Z',
-      Size: 431,
-    };
 
-    const listObjects = {
-      Contents: [
-        {
-          Key: 'EstablishmentFile',
-         ...extraData
-        },
-        {
-          Key: 'EstablishmentFile.metadata.json',
-          ...extraData
-        },
-        {
-          Key: 'WorkerFile',
-          ...extraData
-        },
-        {
-          Key: 'WorkerFile.metadata.json',
-          ...extraData
-        },
-      ],
-    };
-
-    it.only('should list the files from s3', async () => {
+    it('should list the files from s3', async () => {
       sinon.stub(S3.s3, 'listObjects').returns({
         promise: async () => {
-          return listObjects;
+          return latestFiles;
         },
       });
       const getObject = sinon.stub(S3.s3, 'getObject');
-
 
       var workerFileBuffer = Buffer.from('{\n' + '  "username": "george-benchmarking",\n' +
         '  "filename": "WorkerFile.csv",\n' +
@@ -179,8 +266,6 @@ describe('s3', () => {
       ];
 
       expect(results).to.deep.equal(expectedResult);
-
-      console.log(results);
     });
   });
 });
