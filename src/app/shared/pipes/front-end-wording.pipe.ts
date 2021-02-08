@@ -8,9 +8,7 @@ export class BulkUploadFileTypePipePipe implements PipeTransform {
   public bulkUploadFileTypeEnum = BulkUploadFileType;
 
   transform(value: string): string {
-    if (this.bulkUploadFileTypeEnum[value] ) {
-      return this.bulkUploadFileTypeEnum[value]
-    }
-    return  value;
+    const valueCapitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+    return this.bulkUploadFileTypeEnum[valueCapitalized] ? this.bulkUploadFileTypeEnum[valueCapitalized] : value;
   }
 }
