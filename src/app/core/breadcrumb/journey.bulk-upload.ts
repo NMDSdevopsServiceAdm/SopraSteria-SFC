@@ -18,7 +18,7 @@ export const bulkUploadJourney: JourneyRoute = {
           path: Path.ABOUT_BULK_UPLOAD,
         },
         {
-          title: 'View last bulk upload',
+          title: 'Last bulk upload',
           path: Path.LAST_BULK_UPLOAD,
         },
       ],
