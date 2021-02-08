@@ -3,7 +3,7 @@
   <ng-container *ngIf="warnings" [ngPlural]="warnings">
     <ng-template ngPluralCase="=1">This file has passed, but there is {{ warnings }} warning.</ng-template>
     <ng-template ngPluralCase="other">This file has passed, but there are {{ warnings }} warnings.</ng-template>
-    <a href="#">View warnings</a></ng-container
+    <a [routerLink]="['error-report']" >View warnings</a></ng-container
   >
 </p>
 <p *ngIf="errors" class="govuk-file-validate-status--error">
