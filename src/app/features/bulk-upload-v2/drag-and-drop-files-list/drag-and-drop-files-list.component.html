@@ -1,0 +1,88 @@
+<table
+  class="govuk-table govuk-!-margin-top-6 govuk-!-margin-bottom-2"
+  [class.govuk-error-table]="hasErrors"
+  *ngIf="this.uploadedFiles.length"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">File name</th>
+      <th class="govuk-table__header" scope="col">Type</th>
+      <th class="govuk-table__header" scope="col">Records</th>
+      <th class="govuk-table__header" scope="col">Actioned by</th>
+      <th class="govuk-table__header" scope="col">Date</th>
+      <th class="govuk-table__header" scope="col"></th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container *ngFor="let file of uploadedFiles">
+      <tr *ngIf="validationComplete">
+        <td colspan="5">
+          <app-file-validate-status [warnings]="file.warnings" [errors]="file.errors"></app-file-validate-status>
+        </td>
+      </tr>
+      <tr *ngIf="!preValidationErrorMessage && this.getFileErrors(file)">
+        <td colspan="5">
+          <app-validation-error-message  [errorMessage]="this.getFileErrors(file)"></app-validation-error-message>
+        </td>
+      </tr>
+      <tr [id]="getFileId(file)" class="govuk-table__row">
+        <td class="govuk-table__cell govuk-table__cell--file-name">
+          <p class="govuk-!-margin-bottom-0">
+            <a href="/bulk-upload/download/{{ encodeUrl(file.filename) }}" (click)="downloadFile($event, file.key)">
+              {{ file.filename }}
+            </a>
+          </p>
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{ file.fileType ? file.fileType : '-' }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{ file.records ? file.records : '-' }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{ file.username ? file.username : '-' }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          {{
+            file.uploaded ? (file.uploaded | date: 'd MMM yyyy, h:mm') + (file.uploaded | date: 'a' | lowercase) : '-'
+          }}
+        </td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
+          <a href="#" (click)="deleteFile($event, file.filename)">Delete</a>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+
+<ng-container *ngIf="preValidationErrorMessage">
+  <app-validation-error-message [errorMessage]="preValidationErrorMessage"></app-validation-error-message>
+</ng-container>
+
+<div class="govuk-!-margin-top-6">
+  <ng-container *ngIf="!validationComplete; else completeUpload">
+    <button type="button" class="govuk-button govuk-!-margin-right-9" (click)="preValidateCheck()">
+      Validate files
+    </button>
+  </ng-container>
+
+  <ng-template #completeUpload>
+    <button
+      *ngIf="!hasErrors; else errorReport"
+      type="button"
+      class="govuk-button govuk-button--primary govuk-!-margin-right-9"
+      (click)="beginCompleteUpload()"
+    >
+      Complete the upload
+    </button>
+
+    <ng-template #errorReport>
+      <a [routerLink]="['error-report']" class="govuk-button govuk-button--warning govuk-!-margin-right-9">
+        View error report
+      </a>
+    </ng-template>
+  </ng-template>
+
+  <span class="govuk-visually-hidden">or</span>
+  <a [routerLink]="['/dashboard']" class="govuk-button govuk-button--link">Exit</a>
+</div>

@@ -13,11 +13,6 @@ db:
     min: 15
     max: 15
   ssl: true
-  username: sfcapp
-  database: sfctstdb
-  client_ssl:
-    status: true
-    usingFiles: false
 
 slack:
   level: 3 # enables Slack notifications
@@ -49,3 +44,6 @@ locks:
 public:
   download:
     baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download
+satisfactionSurvey:
+  timeSpan: 5
+  unit: m

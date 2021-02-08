@@ -1,3 +1,5 @@
+import { Roles } from './roles.enum';
+
 export interface Auth {
   agreedUpdatedTerms: boolean;
   establishment: {
@@ -22,4 +24,17 @@ export interface Auth {
   role: string;
   uid: string;
   username: string;
+}
+
+export interface UserToken {
+  EstblishmentId: number;
+  EstablishmentUID: string;
+  role: Roles;
+  isParent: boolean;
+  userUid: string;
+  sub: string;
+  aud: string;
+  iss: string;
+  iat: number;
+  exp: number;
 }

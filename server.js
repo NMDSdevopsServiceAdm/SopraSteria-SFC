@@ -1,6 +1,6 @@
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
-const Apm = require('@sentry/apm');
+const { Integrations } = require('@sentry/tracing');
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: 'sfc',
@@ -48,6 +48,7 @@ var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
+var logout = require('./server/routes/logout');
 var ethnicity = require('./server/routes/ethnicity');
 var country = require('./server/routes/country');
 var nationality = require('./server/routes/nationalities');
@@ -60,6 +61,7 @@ var workingTrainingCategories = require('./server/routes/workerTrainingCategorie
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 var approvals = require('./server/routes/approvals');
+var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -82,7 +84,7 @@ if (config.get('sentry.dsn')) {
     dsn: config.get('sentry.dsn'),
     integrations: [
       // enable Express.js middleware tracing
-      new Apm.Integrations.Express({ app }),
+      new Integrations.Express({ app }),
     ],
     environment: config.get('env'),
   });
@@ -211,6 +213,7 @@ app.use('/api/locations', [cacheMiddleware.nocache, locations]);
 app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
 app.use('/api/registration', [cacheMiddleware.nocache, registration]);
 app.use('/api/login', [cacheMiddleware.nocache, login]);
+app.use('/api/logout', [cacheMiddleware.nocache, logout]);
 app.use('/api/establishment', [cacheMiddleware.nocache, establishments]);
 app.use('/api/ownershipRequest', [cacheMiddleware.nocache, ownershipRequest]);
 app.use('/api/parentLinkingDetails', [cacheMiddleware.nocache, linkParent]);
@@ -218,9 +221,14 @@ app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache, testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
+app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
+
+app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
+  res.sendFile(path.join(__dirname, 'loaderio-63e80cd3c669177f22e9ec997ea2594d.txt'));
+});
 
 app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

@@ -2,7 +2,7 @@ import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
+import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -32,15 +32,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private reportsService: ReportService,
     private userService: UserService,
-    private permissionsService: PermissionsService
+    private permissionsService: PermissionsService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.REPORTS);
-    this.isAdmin = [Roles.Admin].includes(this.userService.loggedInUser.role);
+    this.isAdmin = this.authService.isAdmin;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(workplace => {
+      this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
         this.workplace = workplace;
         this.isParent = this.primaryWorkplace ? this.primaryWorkplace.isParent : workplace.isParent;
         this.workplaceUid = this.primaryWorkplace ? this.primaryWorkplace.uid : workplace.uid;
@@ -49,30 +50,30 @@ export class ReportsComponent implements OnInit, OnDestroy {
           this.isParent &&
           this.isLocalAuthority &&
           this.permissionsService.can(this.workplaceUid, 'canRunLocalAuthorityReport');
-      })
+      }),
     );
   }
 
   public downloadWdfSummaryReport(event: Event) {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportsService.getWdfSummaryReport().subscribe(response => this.saveFile(response), () => {})
-    );
+    this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
+  }
+  public downloadDeleteReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
   }
 
   public downloadLocalAuthorityReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportsService
-        .getLocalAuthorityReport(this.workplace.uid)
-        .subscribe(response => this.saveFile(response), () => {})
+      this.reportsService.getLocalAuthorityReport(this.workplace.uid).subscribe((response) => this.saveFile(response)),
     );
   }
 
   public downloadLocalAuthorityAdminReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportsService.getLocalAuthorityAdminReport().subscribe(response => this.saveFile(response), () => {})
+      this.reportsService.getLocalAuthorityAdminReport().subscribe((response) => this.saveFile(response)),
     );
   }
 

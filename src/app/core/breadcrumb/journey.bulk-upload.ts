@@ -2,6 +2,7 @@ import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
   BULK_UPLOAD = '/bulk-upload',
+  ABOUT_BULK_UPLOAD = '/bulk-upload/about-bulk-upload',
 }
 
 export const bulkUploadJourney: JourneyRoute = {
@@ -9,6 +10,12 @@ export const bulkUploadJourney: JourneyRoute = {
     {
       title: 'Bulk upload',
       path: Path.BULK_UPLOAD,
+      children: [
+        {
+          title: 'About bulk upload',
+          path: Path.ABOUT_BULK_UPLOAD,
+        },
+      ],
     },
   ],
 };

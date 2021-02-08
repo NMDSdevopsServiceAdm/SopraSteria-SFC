@@ -1,0 +1,18 @@
+<div class="govuk-grid-row">
+  <div [ngClass]="{ 'govuk-grid-column-full': !smallText, 'govuk-grid-column-two-thirds-from-desktop': smallText }">
+    <p [ngClass]="{ 'govuk-!-font-size-27': !smallText }" *ngIf="showRank; else noRank">
+      Your workplace is ranked {{ rank }} in your comparison group.
+    </p>
+    <ng-template #noRank>
+      <p class="govuk-body govuk-!-margin-bottom-8" [ngClass]="{ 'govuk-!-font-size-27': !smallText }">
+        <ng-container *ngIf="showNoRankMessage; else noComparisonData">
+          <span [innerHTML]="message"></span> We cannot show where you rank.
+        </ng-container>
+        <ng-template #noComparisonData>
+          We do not have enough data to show this comparison yet. Your workplace cannot be ranked without a comparison
+          group.
+        </ng-template>
+      </p>
+    </ng-template>
+  </div>
+</div>

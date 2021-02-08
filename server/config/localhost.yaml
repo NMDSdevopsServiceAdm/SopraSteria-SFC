@@ -20,9 +20,7 @@ db:
     max: 15
   ssl: false
   username: sfcadmin
-  client_ssl:
-    status: false
-    usingFiles: false
+
 log:
   sequelize: false
 
@@ -36,3 +34,6 @@ bulkupload:
     timeout: 600
 sentry:
   sample_rate: 0.0
+satisfactionSurvey:
+  timeSpan: 1
+  unit: m

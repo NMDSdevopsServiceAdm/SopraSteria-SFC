@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BenchmarkValue, Metric, Tile } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ export class BarchartOptionsBuilder {
   private defaultOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      margin: [30, 0, 100, 0],
+      margin: [40, 0, 100, 0],
       scrollablePlotArea: {
         minWidth: 960,
       },
@@ -42,10 +42,10 @@ export class BarchartOptionsBuilder {
       type: 'category',
       labels: {
         align: 'left',
-        x: -100,
+        x: -110,
         useHTML: true,
         style: {
-          width: 200,
+          width: 220,
         },
         formatter: this.formatLabel(),
       },
@@ -102,7 +102,8 @@ export class BarchartOptionsBuilder {
       ],
     };
 
-    return merge(this.defaultOptions, source);
+    const options = cloneDeep(this.defaultOptions);
+    return merge(options, source);
   }
 
   public buildEmptyChartOptions(altDescription: string): Highcharts.Options {
@@ -122,8 +123,7 @@ export class BarchartOptionsBuilder {
 
   private formatLabel(): Highcharts.AxisLabelsFormatterCallbackFunction {
     return function () {
-      const bold = this.isFirst ? 'govuk-!-font-weight-bold' : 'govuk-!-font-weight-regular';
-      return '<span class="govuk-body ' + bold + '">' + this.value + '</span>';
+      return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">' + this.value + '</span>';
     };
   }
 
@@ -148,7 +148,7 @@ export class BarchartOptionsBuilder {
   private addEmptyStates(noData: string): Highcharts.ChartLoadCallbackFunction {
     return function () {
       const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
-      let width = categoryWidth - 40;
+      let width = categoryWidth - 30;
 
       this.series[0].points.forEach((point, index) => {
         if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
@@ -166,7 +166,7 @@ export class BarchartOptionsBuilder {
             message = noData;
           }
 
-          const offset = point.x * categoryWidth + width / 2 + 20;
+          const offset = point.x * categoryWidth + width / 2 + 10;
           const text = this.renderer
             .text('<span class="govuk-body no-data">' + message + '</span>', -999, -999, true)
             .css({

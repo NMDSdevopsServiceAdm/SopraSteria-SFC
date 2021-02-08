@@ -1,12 +1,32 @@
-<span class="govuk-caption-xl">Benchmarks</span>
-<h1 class="govuk-heading-xl">{{ title }}</h1>
-<app-barchart [type]="type" [tile]="tile" [noData]="noData">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <span class="govuk-caption-l">Benchmarks</span>
+    <h1 class="govuk-heading-l">{{ title }}</h1>
+  </div>
+  <div class="govuk-grid-column-one-half govuk-!-padding-top-7">
+    <a
+      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+      role="button"
+      draggable="false"
+      href="javascript:void(0);"
+      data-html2canvas-ignore
+      data-testid="download-button"
+      (click)="downloadAsPDF($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download {{ title }} PDF (200KB, 1 page)
+      </span>
+    </a>
+  </div>
+</div>
+
+<app-barchart *ngIf="tile" [type]="type" [tile]="tile" [noData]="noData">
   <ng-container metric-desc>{{ description }}</ng-container>
 </app-barchart>
 
 <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-5" />
 
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-bottom-9">
   <div class="govuk-grid-column-two-thirds">
     <p *ngIf="metaDataAvailable; else noMetaData">
       <strong>Your comparison group</strong> for {{ title | lowercase }} is {{ numberOfStaff | number }} staff from
@@ -19,6 +39,12 @@
   </div>
 </div>
 
-<!--<app-gauge [maxRank]="10" [currentRank]="2">
-  <ng-container your-rank>Your workplace is ranked 2 in your comparison group.</ng-container>
-</app-gauge>-->
+<app-gauge *ngIf="rankings" [maxRank]="rankings.maxRank" [currentRank]="rankings.currentRank">
+  <ng-container your-rank>
+    <app-ranking-content *ngIf="rankingContent" [content]="rankingContent"></app-ranking-content>
+  </ng-container>
+</app-gauge>
+
+<hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" />
+
+<p><a [routerLink]="['..', 'rankings']" [fragment]="metric" data-html2canvas-ignore>View your other rankings</a></p>

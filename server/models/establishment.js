@@ -764,7 +764,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.turnOverData = function (establishmentId) {
+  Establishment.turnoverData = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id', 'NumberOfStaffValue', 'LeaversValue'],
     });
@@ -797,11 +797,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findbyId = function (id) {
-    return this.findOne({
+  Establishment.findbyId = async function (id) {
+    return await this.find({ id });
+  };
+
+  Establishment.findByUid = async function (uid) {
+    return await this.find({ uid });
+  };
+
+  Establishment.find = async function (where) {
+    return await this.findOne({
       where: {
-        id: id,
         archived: false,
+        ...where,
       },
       attributes: [
         'id',
@@ -816,6 +824,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
   Establishment.closeLock = async function (LockHeldTitle, establishmentId) {
     return await this.update(
       {
@@ -854,56 +863,6 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         id: establishmentId,
       },
-    });
-  };
-
-  Establishment.getBenchmarkData = async function (establishmentId) {
-    const postcode = await this.findOne({
-      attributes: ['postcode', 'id'],
-      where: { id: establishmentId },
-    });
-    if (!postcode) {
-      return {};
-    }
-    let cssr = await sequelize.models.pcodedata.findOne({
-      attributes: ['uprn', 'postcode'],
-      include: [
-        {
-          model: sequelize.models.cssr,
-          attributes: ['id'],
-          as: 'theAuthority',
-        },
-      ],
-      where: {
-        postcode: postcode.postcode,
-      },
-    });
-    if (cssr && cssr.theAuthority && cssr.theAuthority.id){
-      cssr = cssr.theAuthority.id;
-    } else {
-      cssr = await sequelize.models.cssr.getIdFromDistrict(postcode.postcode);
-      if (!cssr) {
-        return {};
-      }
-    }
-    return await this.findOne({
-      attributes: ['id'],
-      where: { id: establishmentId },
-      include: [
-        {
-          model: sequelize.models.services,
-          as: 'mainService',
-          include: [
-            {
-              model: sequelize.models.benchmarks,
-              where: {
-                CssrID: cssr,
-              },
-              as: 'benchmarksData',
-            },
-          ],
-        },
-      ],
     });
   };
 
@@ -956,6 +915,47 @@ module.exports = function (sequelize, DataTypes) {
               attributes: ['username', 'status'],
             },
           ],
+        },
+      ],
+    });
+  };
+  Establishment.generateDeleteReportData = async function () {
+    return await this.findAll({
+      attributes: [
+        'uid',
+        'id',
+        'NameValue',
+        'nmdsId',
+        'isRegulated',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'county',
+        'postcode',
+        'locationId',
+        'updated',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+      ],
+      order: [['NameValue', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['id', 'uid'],
+          order: [['updated', 'DESC']],
+        },
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+        {
+          model: sequelize.models.establishment,
+          as: 'Parent',
+          attributes: ['NameValue'],
+          required: false,
         },
       ],
     });

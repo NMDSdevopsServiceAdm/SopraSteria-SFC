@@ -139,5 +139,35 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Benchmarks.getBenchmarkData = async function (establishmentId) {
+    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+    if (!cssr) return {};
+    return await this.findOne({
+      where: {
+        CssrID: cssr,
+      },
+      include: [
+        {
+          attributes: ['id', 'reportingID'],
+          model: sequelize.models.services,
+          as: 'BenchmarkToService',
+          include: [
+            {
+              attributes: ['id'],
+              model: sequelize.models.establishment,
+              where: {
+                id: establishmentId,
+              },
+              as: 'establishmentsMainService',
+              required: true,
+            },
+          ],
+          required: true,
+        },
+      ],
+      raw: true,
+    });
+  };
+
   return Benchmarks;
 };

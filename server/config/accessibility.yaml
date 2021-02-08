@@ -13,9 +13,6 @@ db:
     ssl: true
     username: sfcdemoadmin
     database: sfcdemodb
-    client_ssl:
-        status: true
-        usingFiles: false
 
 slack:
     level : 3     # enables Slack notifications

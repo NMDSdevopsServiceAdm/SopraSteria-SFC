@@ -10,6 +10,7 @@ import { BenchmarksUtil } from '@core/utils/benchmarks-util';
 export class BenchmarkTileComponent {
   @Input() public content: MetricsContent;
   @Input() public tile: Tile;
+  @Input() public workplaceID: string;
 
   public metrics = Metric;
 
@@ -17,8 +18,8 @@ export class BenchmarkTileComponent {
     return this.content?.title;
   }
 
-  get description() {
-    return this.content?.description;
+  get tileDescription() {
+    return this.content?.tileDescription;
   }
 
   get workplaceHasValue(): boolean {
@@ -39,5 +40,9 @@ export class BenchmarkTileComponent {
 
   get noDataMessage() {
     return this.content.noData[this.tile?.workplaceValue?.stateMessage];
+  }
+
+  get type(): string {
+    return Metric[this.content.type];
   }
 }

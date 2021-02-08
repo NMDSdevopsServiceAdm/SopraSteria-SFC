@@ -8,6 +8,10 @@ import {
   benchmarkMetricQualificationsJourney,
   benchmarkMetricSicknessJourney,
   benchmarkMetricTurnoverJourney,
+  benchmarkRankingPayJourney,
+  benchmarkRankingQualificationsJourney,
+  benchmarkRankingSicknessJourney,
+  benchmarkRankingTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_metric';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
@@ -190,6 +194,22 @@ export class BreadcrumbService {
       }
       case JourneyType.BENCHMARK_METRIC_QUALIFICATIONS: {
         routes = benchmarkMetricQualificationsJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_RANKINGS_PAY: {
+        routes = benchmarkRankingPayJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_RANKINGS_TURNOVER: {
+        routes = benchmarkRankingTurnoverJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_RANKINGS_SICKNESS: {
+        routes = benchmarkRankingSicknessJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS: {
+        routes = benchmarkRankingQualificationsJourney;
         break;
       }
       default: {

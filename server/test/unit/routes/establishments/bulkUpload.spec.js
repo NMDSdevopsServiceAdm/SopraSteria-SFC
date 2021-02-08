@@ -9,7 +9,24 @@ const slack = require('../../../../utils/slack/slack-logger');
 const dbmodels = require('../../../../models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 
-const bulkUpload = require('../../../../routes/establishments/bulkUpload');
+const { printLine } = require('../../../../routes/establishments/bulkUpload/report');
+
+const {
+  validateEstablishmentCsv,
+} = require('../../../../routes/establishments/bulkUpload/validate/validateEstablishmentCsv');
+const {
+  validateDuplicateLocations,
+} = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateLocations');
+const {
+  validateDuplicateWorkerID,
+} = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateWorkerID');
+const {
+  validatePartTimeSalary,
+} = require('../../../../routes/establishments/bulkUpload/validate/validatePartTimeSalary');
+
+const { exportToCsv } = require('../../../../routes/establishments/bulkUpload/download');
+const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
+
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
 const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
@@ -38,7 +55,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       };
       const sep = ';';
       const reportType = 'training';
-      bulkUpload.printLine(readable, reportType, errors, sep);
+      printLine(readable, reportType, errors, sep);
       expect(readable.length).equals(2);
       expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
       expect(readable[1]).to.eql(
@@ -52,7 +69,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       };
       const sep = ';';
       const reportType = 'establishments';
-      bulkUpload.printLine(readable, reportType, errors, sep);
+      printLine(readable, reportType, errors, sep);
       expect(readable.length).equals(2);
       expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
       expect(readable[1]).to.eql(
@@ -66,7 +83,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       };
       const sep = ';';
       const reportType = 'workers';
-      bulkUpload.printLine(readable, reportType, errors, sep);
+      printLine(readable, reportType, errors, sep);
       expect(readable.length).equals(2);
       expect(readable[0]).to.eql(`${sep}${Object.keys(errors)[0]}${sep}`);
       expect(readable[1]).to.eql(
@@ -75,7 +92,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
     });
   });
 
-  describe('checkDuplicateLocations', () => {
+  describe('validateDuplicateLocations', () => {
     it('can check for duplicate location IDs', async () => {
       const csvEstablishmentSchemaErrors = [];
       const myEstablishments = [
@@ -95,7 +112,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
 
       expect(csvEstablishmentSchemaErrors.length).equals(1);
       expect(csvEstablishmentSchemaErrors[0]).to.eql({
@@ -106,6 +123,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345678',
         name: 'Workplace 2',
+        column: 'LOCATIONID',
       });
     });
     it('can check for multiple duplicate location IDs', async () => {
@@ -139,7 +157,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber, []);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
 
       expect(csvEstablishmentSchemaErrors.length).equals(2);
       expect(csvEstablishmentSchemaErrors[0]).to.eql({
@@ -150,6 +168,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345678',
         name: 'Workplace 2',
+        column: 'LOCATIONID',
       });
       expect(csvEstablishmentSchemaErrors[1]).to.eql({
         origin: 'Establishments',
@@ -159,6 +178,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345679',
         name: 'Workplace 4',
+        column: 'LOCATIONID',
       });
     });
     it('doesnt give duplicate location ID error on UNCHECKED', async () => {
@@ -181,7 +201,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
 
       expect(csvEstablishmentSchemaErrors.length).equals(0);
     });
@@ -204,7 +224,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
       });
 
-      await bulkUpload.checkDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
+      await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
         { localIdentifier: 'Workplace 2', locationId: '1-12345678' },
       ]);
 
@@ -217,11 +237,12 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         error: 'LOCATIONID is not unique',
         source: '1-12345678',
         name: 'Workplace 1',
+        column: 'LOCATIONID',
       });
     });
   });
 
-  describe('checkDuplicateWorkerID()', () => {
+  describe('validateDuplicateWorkerID()', () => {
     it('errors when CHGUNIQUEWRKID is not unique', async () => {
       const csvWorkerSchemaErrors = [];
       const allWorkersByKey = {};
@@ -258,7 +279,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           : null;
 
         if (
-          bulkUpload.checkDuplicateWorkerID(
+          validateDuplicateWorkerID(
             myWorkers[1],
             allKeys,
             changeKeyNoWhitespace,
@@ -287,10 +308,11 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         name: 'foo',
         source: 'Worker 2',
         worker: 'Worker 2',
+        column: 'CHGUNIQUEWRKID',
       });
     });
   });
-  describe('checkPartTimeSalary()', () => {
+  describe('validatePartTimeSalary()', () => {
     // FTE / PTE : Full / Part Time Employee . FTE > 36 hours a week, PTE < 37
     it('errors when one worker has the same salary as a FTE but works PTE', async () => {
       const csvWorkerSchemaErrors = [];
@@ -326,7 +348,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(1);
       expect(csvWorkerSchemaErrors[0]).to.eql({
@@ -339,6 +361,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: 'foo',
         worker: 'PTE',
         name: 'foo',
+        column: 'SALARY',
       });
     });
     it('shouldnt error when two worker has the same salary, different job and one is FTE and one is PTE ', async () => {
@@ -375,7 +398,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       console.log(csvWorkerSchemaErrors);
       expect(csvWorkerSchemaErrors.length).equals(0);
@@ -414,7 +437,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -453,7 +476,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -492,7 +515,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(0);
     });
@@ -541,7 +564,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       });
 
       myWorkers.forEach((thisWorker) => {
-        bulkUpload.checkPartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
       });
       expect(csvWorkerSchemaErrors.length).equals(2);
       expect(csvWorkerSchemaErrors[0]).to.eql({
@@ -554,6 +577,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: 'foo',
         worker: 'PTE',
         name: 'foo',
+        column: 'SALARY',
       });
       expect(csvWorkerSchemaErrors[1]).to.eql({
         origin: 'Workers',
@@ -565,6 +589,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         source: 'foo',
         worker: 'PTE 2',
         name: 'foo',
+        column: 'SALARY',
       });
     });
   });
@@ -622,7 +647,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         return 'omar3';
       });
 
-      await bulkUpload.validateEstablishmentCsv(
+      await validateEstablishmentCsv(
         {
           LOCALESTID: 'omar3',
           STATUS: 'NEW',
@@ -796,7 +821,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         true,
       );
 
-      await bulkUpload.exportToCsv(
+      await exportToCsv(
         '',
         [establishment],
         'foo',
@@ -851,7 +876,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         true,
       );
 
-      await bulkUpload.exportToCsv(
+      await exportToCsv(
         '',
         [establishment],
         'foo',
@@ -910,7 +935,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(Establishment.prototype, 'restore');
 
       const spy = sinon.spy(slack, 'info');
-      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+      await sendCountToSlack(username, primaryId, differenceReport);
 
       expect(spy.called).to.deep.equal(true);
     });
@@ -930,7 +955,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(Establishment.prototype, 'restore');
 
       const spy = sinon.spy(slack, 'info');
-      await bulkUpload.sendCountToSlack(username, primaryId, differenceReport);
+      await sendCountToSlack(username, primaryId, differenceReport);
 
       expect(spy.called).to.deep.equal(false);
     });
