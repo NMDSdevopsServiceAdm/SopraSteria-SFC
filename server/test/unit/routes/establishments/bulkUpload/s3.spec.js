@@ -119,24 +119,26 @@ describe('s3', () => {
   });
   describe('purgeBulkUploadS3Objects', () => {
 
-    const listObjects = sinon.stub(S3.s3, 'listObjects');
 
-    listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '2351/latest/' }).returns({
-      promise: async () => {
-        return latestFiles;
-      }
-    });
-    listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '2351/validation/' }).returns({
-      promise: async () => {
-        return validationFiles;
-      }
-    });
-    listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '2351/intermediary/' }).returns({
-      promise: async () => {
-        return intermediaryFiles;
-      }
-    });
     it('should delete all the files', async () => {
+      const listObjects = sinon.stub(S3.s3, 'listObjects');
+
+      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/latest/' }).returns({
+        promise: async () => {
+          return latestFiles;
+        }
+      });
+      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/validation/' }).returns({
+        promise: async () => {
+          return validationFiles;
+        }
+      });
+      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/intermediary/' }).returns({
+        promise: async () => {
+          return intermediaryFiles;
+        }
+      });
+      
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
       deleteObjects.returns({
         promise: async () => {
@@ -149,7 +151,8 @@ describe('s3', () => {
         ...validationFiles.Contents,
         ...intermediaryFiles.Contents,
     ];
-      const justTheKeys = consolidateFiles.map(file => {return {Key: file.Key}});
+
+      const justTheKeys = consolidateFiles.map(file => {return {Key: file.Key};});
 
       const expectedResult = {
         Bucket: 'sfcbulkuploadfiles',
@@ -158,7 +161,9 @@ describe('s3', () => {
           Quiet: true
         }
       };
-      await S3.purgeBulkUploadS3Objects(2351);
+      console.log("EXPECTED");
+      console.log(expectedResult.Delete.Objects);
+      await S3.purgeBulkUploadS3Objects(1);
 
       sinon.assert.calledWith(deleteObjects, expectedResult);
 
