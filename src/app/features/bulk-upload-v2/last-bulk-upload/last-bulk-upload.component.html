@@ -1,8 +1,8 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-l ">
-      <span  class="govuk-caption-l govuk-!-margin-bottom-3">Bulk Upload</span>
-      Last Bulk Upload
+      <span  class="govuk-caption-l govuk-!-margin-bottom-3">Bulk upload</span>
+      View last bulk upload
     </h1>
     <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -21,9 +21,11 @@
         <td class="govuk-table__cell">{{file.username}}</td>
         <td class="govuk-table__cell">{{(file.lastModified | date: 'd MMM yyyy, h:mm') + (file.lastModified | date: 'a' | lowercase) }}</td>
         <td class="govuk-table__cell link-download">
+          <div >
             <a href="/bulk-upload/download/{{ encodeUrl(file.data.filename) }}" (click)="downloadFile($event, file.data.key)">
               {{ file.data.fileType }}
             </a>
+          </div>
         </td>
       </tr>
     </ng-container>

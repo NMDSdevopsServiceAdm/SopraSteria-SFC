@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Bulk upload</h1>
     <p class="govuk-!-font-size-16 govuk-!-margin-bottom-6" *ngIf="this.establishment?.lastBulkUploaded">
-      Last bulk upload {{ this.establishment.lastBulkUploaded | date: 'd MMMM y' }}
+      View last bulk upload {{ this.establishment.lastBulkUploaded | date: 'd MMMM y' }}
     </p>
 
     <app-details [title]="'Who should do bulk uploads?'">
