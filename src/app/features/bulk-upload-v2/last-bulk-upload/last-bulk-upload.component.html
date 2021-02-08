@@ -32,13 +32,9 @@
     </tbody>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full govuk-!-margin-top-6">
-      <button
-        type="button"
-        class="govuk-button govuk-button--primary govuk-!-margin-right-9"
-        (click)="returnToStart()"
-      >
+      <a role="button" draggable="false" class="govuk-button govuk-button--primary govuk-!-margin-right-9" [routerLink]="['/bulk-upload']">
         Return to bulk upload
-      </button>
+      </a>
     </div>
     </div>
 </div>
