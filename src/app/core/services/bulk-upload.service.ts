@@ -164,7 +164,7 @@ export class BulkUploadService {
     });
   }
 
-  public  getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
+  public getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
     return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`)
   }
 

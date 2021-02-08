@@ -10,9 +10,7 @@ export class LastBulkUploadResolver implements Resolve<any> {
   constructor(private router: Router, private bulkUploadService: BulkUploadService,private establishmentService: EstablishmentService) {}
   resolve(route: ActivatedRouteSnapshot) {
     const establishmentId = this.establishmentService.establishmentId;
-    console.log("resolver");
 
-    console.log(establishmentId);
     return this.bulkUploadService.getLastBulkUpload(establishmentId).pipe(
       catchError(() => {
         this.router.navigate(['/bulk-upload'], { fragment: '' });
