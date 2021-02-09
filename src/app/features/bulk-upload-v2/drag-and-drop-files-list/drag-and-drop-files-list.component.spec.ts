@@ -59,7 +59,7 @@ describe('DragAndDropFilesListComponent', () => {
   it('should pass if there are two files', async () => {
     const { component } = await setup();
     const dummyFiles = [EstablishmentFile, WorkerFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     expect(component.fixture.componentInstance.preValidationErrorMessage).toEqual('');
@@ -68,7 +68,7 @@ describe('DragAndDropFilesListComponent', () => {
   it('should change the error message if there are no files', async () => {
     const { component } = await setup();
     const dummyFiles = [];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
@@ -78,7 +78,7 @@ describe('DragAndDropFilesListComponent', () => {
   it('should change the error message if are more than 3 files', async () => {
     const { component } = await setup();
     const dummyFiles = [EstablishmentFile, TrainingFile, WorkerFile, OtherFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
@@ -89,7 +89,7 @@ describe('DragAndDropFilesListComponent', () => {
     const { component } = await setup();
 
     const dummyFiles = [EstablishmentFile, EstablishmentFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
@@ -99,27 +99,35 @@ describe('DragAndDropFilesListComponent', () => {
   it('should show an error message if there is a invalid csv', async () => {
     const { component } = await setup();
 
-    component.fixture.componentInstance.uploadedFiles =  [OtherFile, EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles = [OtherFile, EstablishmentFile] as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
-    expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
+    expect(validationMsg.innerHTML).toContain(
+      "This file was not recognised.  Use the guidance to check it's set up correctly.",
+    );
   });
 
   it('should show invalid file type error before duplicate error', async () => {
     const { component } = await setup();
 
-    component.fixture.componentInstance.uploadedFiles =  [OtherFile, EstablishmentFile, EstablishmentFile];
+    component.fixture.componentInstance.uploadedFiles = [
+      OtherFile,
+      EstablishmentFile,
+      EstablishmentFile,
+    ] as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
-    expect(validationMsg.innerHTML).toContain('This file was not recognised.  Use the guidance to check it\'s set up correctly.');
+    expect(validationMsg.innerHTML).toContain(
+      "This file was not recognised.  Use the guidance to check it's set up correctly.",
+    );
   });
 
   it("should display the file type error message when workplace file isn't uploaded", async () => {
     const { component } = await setup();
     const dummyFiles = [WorkerFile, TrainingFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
@@ -129,7 +137,7 @@ describe('DragAndDropFilesListComponent', () => {
   it("should display the file type error message when staff file isn't uploaded and there is only one file", async () => {
     const { component } = await setup();
     const dummyFiles = [EstablishmentFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
@@ -139,7 +147,7 @@ describe('DragAndDropFilesListComponent', () => {
   it('should display the file type error message when only training file is uploaded', async () => {
     const { component } = await setup();
     const dummyFiles = [TrainingFile];
-    component.fixture.componentInstance.uploadedFiles = dummyFiles;
+    component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
@@ -162,7 +170,7 @@ describe('DragAndDropFilesListComponent', () => {
         username: 'user',
       };
       const dummyFiles = [fileToDelete, EstablishmentFile, TrainingFile, WorkerFile];
-      component.fixture.componentInstance.uploadedFiles = dummyFiles;
+      component.fixture.componentInstance.uploadedFiles = dummyFiles as ValidatedFile[];
       component.fixture.componentInstance.deleteFile(event, fileToDelete.filename);
       component.fixture.detectChanges();
       expect(component.fixture.componentInstance.uploadedFiles.length).toEqual(3);

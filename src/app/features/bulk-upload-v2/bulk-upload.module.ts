@@ -1,7 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -13,6 +13,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 import { AboutBulkUploadComponent } from './about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
+import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
+import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
@@ -37,6 +39,7 @@ import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.res
     BulkUploadModule,
     OverlayModule,
     NgxDropzoneModule,
+    FormsModule,
   ],
   declarations: [
     BulkUploadPageV2Component,
@@ -50,6 +53,8 @@ import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.res
     ErrorDetailsTableComponent,
     WarningDetailsTableComponent,
     ValidationErrorMessageComponent,
+    WorkplaceReferencesComponent,
+    StaffReferencesComponent,
     AboutBulkUploadComponent,
     BulkUploadStartPageComponent,
     CodesAndGuidanceComponent,

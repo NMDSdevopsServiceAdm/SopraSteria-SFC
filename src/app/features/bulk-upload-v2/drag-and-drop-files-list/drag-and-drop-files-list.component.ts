@@ -56,14 +56,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.preValidateFilesSubscription();
   }
 
-  get hasWarnings() {
-    return this.totalWarnings > 0;
-  }
-
-  get hasErrors() {
-    return this.totalErrors > 0;
-  }
-
   public showFileRecords(file): string {
     if (file.fileType === null){
       return "-"
@@ -105,7 +97,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(this.checkForInvalidFiles()){
+    if (this.checkForInvalidFiles()) {
       return;
     }
 
@@ -121,18 +113,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.preValidationErrorMessage = '';
 
     this.validateFiles();
-  }
-
-  /**
-   * Strip off file extension
-   * Replace white spaces with '-'
-   * Then convert to lowercase
-   * @param file ValidatedFile
-   */
-  public getFileId(file: ValidatedFile): string {
-    const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
-    const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
-    return `bulk-upload-validation-${transformedFileName}`;
   }
 
   public getFileErrors(file: ValidatedFile): string {
@@ -189,6 +169,17 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       name: this.getFileId(file),
       message: this.i18nPluralPipe.transform(file.errors, this.pluralMap),
     };
+  }
+  /**
+   * Strip off file extension
+   * Replace white spaces with '-'
+   * Then convert to lowercase
+   * @param file ValidatedFile
+   */
+  public getFileId(file: ValidatedFile): string {
+    const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
+    const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
+    return `bulk-upload-validation-${transformedFileName}`;
   }
 
   public downloadFile(event: Event, key: string) {
