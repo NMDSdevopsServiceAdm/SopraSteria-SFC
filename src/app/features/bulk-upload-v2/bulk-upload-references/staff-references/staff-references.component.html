@@ -43,7 +43,7 @@
         </label>
         <span
           id="reference-{{ reference.uid }}-error"
-          class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
+          class="govuk-error-message govuk__grid-row-start-1 asc__reference-grid-error"
           *ngIf="form.get('reference-' + reference.uid)?.errors && submitted"
         >
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
