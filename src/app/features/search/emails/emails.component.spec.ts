@@ -1,25 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DialogService } from '@core/services/dialog.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { EmailsComponent } from './emails.component';
 
 describe('EmailsComponent', () => {
-  let component: EmailsComponent;
-  let fixture: ComponentFixture<EmailsComponent>;
+  async function setup() {
+    return render(EmailsComponent, {
+      imports: [
+        SharedModule,
+      ],
+      providers: [
+        DialogService,
+      ],
+    });
+  }
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ EmailsComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EmailsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should create', async () => {
+    const component = await setup();
     expect(component).toBeTruthy();
   });
 });
