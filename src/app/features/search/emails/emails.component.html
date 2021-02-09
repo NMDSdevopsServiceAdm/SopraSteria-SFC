@@ -21,20 +21,22 @@
   </div>
 </div>
 
-<ng-container *ngIf="history">
-  <h2>History</h2>
-  <table class="govuk-table">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Date</th>
-        <th class="govuk-table__header" scope="col">Total emails sent</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-      <tr class="govuk-table__row" *ngFor="let row of history">
-        <td class="govuk-table__cell">{{ row.date }}</td>
-        <td class="govuk-table__cell">{{ row.emails }}</td>
-      </tr>
-    </tbody>
-  </table>
-</ng-container>
+<h2>History</h2>
+<table class="govuk-table" *ngIf="history.length > 0; else noHistory">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Date</th>
+      <th class="govuk-table__header" scope="col">Total emails sent</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row" *ngFor="let row of history">
+      <td class="govuk-table__cell">{{ row.date | date: 'dd/MM/yyyy' }}</td>
+      <td class="govuk-table__cell">{{ row.emails | number }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noHistory>
+  <p>No emails have been sent yet.</p>
+</ng-template>
