@@ -1,11 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SearchModule } from '@features/search/search.module';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: SearchModule,
-})
+@Injectable()
 export class EmailCampaignService {
   constructor(private http: HttpClient) {}
 

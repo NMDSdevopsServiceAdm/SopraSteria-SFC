@@ -9,6 +9,7 @@ describe('EmailCampaignService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [EmailCampaignService],
     });
     service = TestBed.inject(EmailCampaignService);
   });
