@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
+const models = require('../../models');
 
 // POST request for ownership change request
 const ownershipChangeRequest = async (req, res) => {
@@ -77,6 +78,23 @@ const ownershipChangeRequest = async (req, res) => {
           } else {
             let resp = await ownership.lastOwnershipRequest(params);
             return res.status(201).send(resp[0]);
+          }
+        } else {
+          if (req.role === 'Admin') {
+            try {
+              let workplace = await models.establishment.findbyId(params.subEstablishmentId);
+              if (workplace) {
+                workplace.dataOwner = 'Parent';
+                await workplace.save();
+                res.status(200).send();
+              } else {
+                res.status(404).send();
+                throw `Can't find workplace with id ${params.subEstablishmentId}`;
+              }
+            } catch (err) {
+              console.error(err);
+              res.status(503).send();
+            }
           }
         }
       }
