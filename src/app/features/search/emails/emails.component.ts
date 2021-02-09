@@ -19,7 +19,7 @@ export class EmailsComponent implements OnInit {
 
     this.dialogService.open(SendEmailsConfirmationDialogComponent, {}).afterClosed.subscribe((hasConfirmed) => {
       if (hasConfirmed) {
-        console.log('confirmed');
+
       }
     });
   }
