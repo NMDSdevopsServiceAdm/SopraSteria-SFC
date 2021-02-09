@@ -3,6 +3,9 @@
   <li>
     <a [routerLink]="['../about-bulk-upload']">About bulk upload</a>
   </li>
+  <li *ngIf="isAdminUser()">
+    <a [routerLink]="['../last-bulk-upload']">View last bulk upload</a>
+  </li>
   <li>
     <a [routerLink]="['/dev', 'bulk-upload', 'workplace-references']">View references</a>
   </li>

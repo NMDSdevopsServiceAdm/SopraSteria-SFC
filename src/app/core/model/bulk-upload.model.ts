@@ -62,6 +62,26 @@ export interface UploadedFilesRequestToDownloadResponse {
   };
 }
 
+export interface lastBulkUploadFile {
+  key:string;
+  data: metaData;
+  filename: string;
+  username: string;
+  size: number;
+  lastModified: string;
+}
+
+export interface metaData {
+  key:string;
+  username:string;
+  filename:string;
+  fileType: ValidatedFileType | null;
+  records: number;
+  errors: number;
+  warnings:2;
+  deleted: number;
+}
+
 export interface ValidatedFile {
   errors: number;
   filename: string;
