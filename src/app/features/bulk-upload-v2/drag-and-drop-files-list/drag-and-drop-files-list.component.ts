@@ -60,8 +60,18 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return this.totalWarnings > 0;
   }
 
-  get hasErrors() {
-    return this.totalErrors > 0;
+  private preValidateFilesSubscription(): void {
+    this.subscriptions.add(
+      this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
+        this.preValidationErrorMessage = '';
+        this.fileErrors = [];
+        this.showPreValidateErrorMessage = false;
+        if (preValidateFiles) {
+          this.validationComplete = false;
+          this.preValidateFiles();
+        }
+      }),
+    );
   }
 
   public showFileRecords(file): string {
@@ -105,7 +115,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(this.checkForInvalidFiles()){
+    if (this.checkForInvalidFiles()) {
       return;
     }
 
@@ -123,16 +133,11 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.validateFiles();
   }
 
-  /**
-   * Strip off file extension
-   * Replace white spaces with '-'
-   * Then convert to lowercase
-   * @param file ValidatedFile
-   */
-  public getFileId(file: ValidatedFile): string {
-    const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
-    const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
-    return `bulk-upload-validation-${transformedFileName}`;
+    invalidFiles.map((item: ValidatedFile) => {
+      this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
+    });
+
+    return invalidFiles.length > 0;
   }
 
   public getFileErrors(file: ValidatedFile): string {

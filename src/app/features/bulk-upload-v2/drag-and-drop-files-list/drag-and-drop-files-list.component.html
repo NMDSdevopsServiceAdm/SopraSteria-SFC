@@ -22,7 +22,7 @@
       </tr>
       <tr *ngIf="!preValidationErrorMessage && this.getFileErrors(file)">
         <td colspan="5">
-          <app-validation-error-message  [errorMessage]="this.getFileErrors(file)"></app-validation-error-message>
+          <app-validation-error-message [errorMessage]="this.getFileErrors(file)"></app-validation-error-message>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row">
