@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { EmailCampaignService } from './email-campaign.service';
@@ -6,7 +7,9 @@ describe('EmailCampaignService', () => {
   let service: EmailCampaignService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    });
     service = TestBed.inject(EmailCampaignService);
   });
 
