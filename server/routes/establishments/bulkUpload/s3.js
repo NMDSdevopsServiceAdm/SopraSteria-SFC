@@ -78,21 +78,19 @@ const downloadContent = async (key, size, lastModified) => {
 
 const saveLastBulkUpload = async (establishmentId) => {
   const listParams = params(establishmentId);
-  const deleteParams = {
-    Bucket,
-    Delete: {
-      Objects: [],
-      Quiet: true,
-    },
-  };
   listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
 
-  deleteParams.Delete.Objects = await getKeysFromFolder(listParams);
+  const existingFiles = await getKeysFromFolder(listParams);
+  if (existingFiles.length > 0) {
+    const deleteParams = {
+      Bucket,
+      Delete: {
+        Objects: existingFiles,
+        Quiet: true,
+      },
+    };
 
-  if (deleteParams.Delete.Objects.length > 0) {
-    await s3
-      .deleteObjects(deleteParams)
-      .promise();
+    await s3.deleteObjects(deleteParams).promise();
   }
 
   const originFolder = `${establishmentId}/latest/`;
@@ -132,7 +130,6 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 };
 
 const moveFolders = async(folderToMove,destinationFolder) => {
-  const results = [];
   try {
     const listObjectsResponse = await s3.listObjects({
       Bucket,
@@ -152,16 +149,12 @@ const moveFolders = async(folderToMove,destinationFolder) => {
             CopySource: `${Bucket}/${fileInfo.Key}`,  // old file Key
             Key: `${destinationFolder}${fileInfo.Key.replace(folderPrefix, '')}`, // new file Key
           }).promise();
-          results.push({
-            Key: fileInfo.Key,
-          });
         }
       })
     );
   } catch (err) {
     console.error(err);
   }
-  return results;
 };
 const getKeysFromFolder = async (listParams) =>{
   const results = [];
