@@ -80,7 +80,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
         this.preValidationErrorMessage = '';
-        this.fileErrors =[];
+        this.fileErrors = [];
         this.showPreValidateErrorMessage = false;
         if (preValidateFiles) {
           this.validationComplete = false;
@@ -125,7 +125,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.bulkUploadService.preValidationError$.next(this.preValidationError);
   }
 
-
   public validateFiles(): void {
     this.totalErrors = 0;
     this.totalWarnings = 0;
@@ -160,7 +159,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(this.checkForInvalidFiles()){
+    if (this.checkForInvalidFiles()) {
       return;
     }
 
@@ -182,7 +181,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return item.fileType === null;
     });
 
-    invalidFiles.map((item: ValidatedFile)  => {
+    invalidFiles.map((item: ValidatedFile) => {
       this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
     });
 

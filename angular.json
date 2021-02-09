@@ -34,9 +34,7 @@
                 "output": "./assets/"
               }
             ],
-            "styles": [
-              "./src/styles.scss"
-            ],
+            "styles": ["./src/styles.scss"],
             "allowedCommonJsDependencies": [
               "@babel",
               "raf",
@@ -53,7 +51,8 @@
               "@babel/runtime/helpers/toConsumableArray",
               "@babel/runtime/helpers/get",
               "@babel/runtime/regenerator",
-              "@babel/runtime-corejs3"
+              "@babel/runtime-corejs3",
+              "pako"
             ]
           },
           "configurations": {
@@ -125,14 +124,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ]
+            "assets": ["src/favicon.ico", "src/assets"]
           }
         }
       }

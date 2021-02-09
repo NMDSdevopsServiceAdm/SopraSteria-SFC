@@ -56,7 +56,7 @@
         </label>
         <span
           id="reference-{{ reference.uid }}-error"
-          class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
+          class="govuk-error-message govuk__grid-row-start-1 asc__reference-grid-error"
           *ngIf="form.get('reference-' + reference.uid).errors && submitted"
         >
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
@@ -84,9 +84,7 @@
     <div class="govuk-grid-row" *ngIf="!references.length">
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <ng-container *ngIf="referenceType === referenceTypeEnum.Establishment; else staffRecordsNextSteps">
-          <p class="govuk-!-margin-top-4">
-            There are no workplaces editable
-          </p>
+          <p class="govuk-!-margin-top-4">There are no workplaces editable</p>
         </ng-container>
         <ng-template #staffRecordsNextSteps>
           <p class="govuk-!-margin-top-4">

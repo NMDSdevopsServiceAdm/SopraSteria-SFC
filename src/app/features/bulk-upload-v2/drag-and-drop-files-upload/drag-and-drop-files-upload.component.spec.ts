@@ -67,7 +67,7 @@ describe('DragAndDropFilesUploadComponent', () => {
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component,compInst, triggerFileInput,triggerInvalidFileInput, http };
+    return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http };
   };
 
   describe('ngx dropzone', () => {
@@ -82,7 +82,7 @@ describe('DragAndDropFilesUploadComponent', () => {
   });
 
   it('should display error if wrong type uploaded', async () => {
-    const { component,fixture, triggerInvalidFileInput} = await setup();
+    const { component, fixture, triggerInvalidFileInput } = await setup();
 
     triggerInvalidFileInput();
     fixture.detectChanges();
