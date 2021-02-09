@@ -5,14 +5,14 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
-  ErrorReport,
+  ErrorReport, lastBulkUploadFile,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
   UploadedFilesRequestToDownloadResponse,
   UploadedFilesResponse,
   ValidatedFile,
-  ValidatedFilesResponse,
+  ValidatedFilesResponse
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
@@ -162,6 +162,10 @@ export class BulkUploadService {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
+  }
+
+  public getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
+    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`)
   }
 
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {

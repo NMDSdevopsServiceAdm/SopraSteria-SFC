@@ -11,6 +11,10 @@ import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-refere
 
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { LastBulkUploadComponent } from '@features/bulk-upload-v2/last-bulk-upload/last-bulk-upload.component';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
+import { Roles } from '@core/model/roles.enum';
 
 const routes: Routes = [
   {
@@ -28,6 +32,13 @@ const routes: Routes = [
     path: 'about-bulk-upload',
     component: AboutBulkUploadComponent,
     data: { title: 'About bulk upload' },
+  },
+  {
+    path: 'last-bulk-upload',
+    component: LastBulkUploadComponent,
+    data: { title: 'Last bulk upload',roles: [Roles.Admin], },
+    canActivate: [RoleGuard],
+    resolve: { lastBulkUpload: LastBulkUploadResolver },
   },
   {
     path: 'workplace-references',
