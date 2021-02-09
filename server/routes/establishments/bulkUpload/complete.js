@@ -4,7 +4,7 @@ const timerLog = require('../../../utils/timerLog');
 const { sendCountToSlack } = require('./slack');
 const { Establishment } = require('../../../models/classes/establishment');
 const { buStates } = require('./states');
-const { saveResponse, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
+const { saveResponse, downloadContent, purgeBulkUploadS3Objects ,saveLastBulkUpload} = require('./s3');
 const { restoreExistingEntities, restoreOnloadEntities } = require('./entities');
 
 const completeNewEstablishment = async (
@@ -267,6 +267,10 @@ const completePost = async (req, res) => {
           restoredOnLoadStateTime,
           completeSaveTime,
         );
+        //  Saves the bulk upload files  to lastBulkUpload
+        await saveLastBulkUpload(primaryEstablishmentId);
+
+        keepAlive('saveLastBulkUpload');
 
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects

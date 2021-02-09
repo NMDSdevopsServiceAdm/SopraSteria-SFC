@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ErrorReport } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
-
-const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const itemBuilder = build('Item', {
   fields: {
@@ -61,11 +60,12 @@ const getErrorsWarnings = () => {
   return errWarn;
 };
 
-const errorReport = {
+export const errorReport = {
   establishments: getErrorsWarnings(),
   workers: getErrorsWarnings(),
   training: getErrorsWarnings(),
 };
+
 
 @Injectable()
 export class MockBulkUploadService extends BulkUploadService {
@@ -96,7 +96,7 @@ export const TrainingFile = ValidatedFileBuilder({
 
 export const EstablishmentFile = ValidatedFileBuilder({
   overrides: {
-  fileType: "Establishment",
+    fileType: 'Establishment',
   },
 });
 
@@ -110,4 +110,3 @@ export const OtherFile = ValidatedFileBuilder({
     fileType: null,
   },
 });
-

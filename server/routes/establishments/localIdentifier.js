@@ -101,7 +101,9 @@ const updateMultipleLocalIdentifiers = async (req, res) => {
 
   // validate input
   const givenLocalIdentifiers = req.body.localIdentifiers;
-  if (!givenLocalIdentifiers || !Array.isArray(givenLocalIdentifiers)) {
+  const values = givenLocalIdentifiers.map((id) => id.value);
+  const isDuplicate = values.some((item, idx) => values.indexOf(item) != idx);
+  if (!givenLocalIdentifiers || !Array.isArray(givenLocalIdentifiers) || isDuplicate) {
     return res.status(400).send({});
   }
 

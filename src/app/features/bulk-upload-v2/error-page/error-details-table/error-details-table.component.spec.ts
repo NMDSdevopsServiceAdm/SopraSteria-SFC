@@ -1,9 +1,8 @@
-import { ErrorReportError } from '@core/model/bulk-upload.model';
+import { ErrorReportError, Items } from '@core/model/bulk-upload.model';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { ErrorDetailsTableComponent } from './error-details-table.component';
-
-const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const itemBuilder = build('Item', {
   fields: {
@@ -48,7 +47,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show a list of errors', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [itemBuilder()];
+      errors[0].items = [itemBuilder() as Items];
 
       const fileType = 'Workplace';
 
@@ -65,7 +64,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show a dropdown after clicking Open and toggle to say Close', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [itemBuilder()];
+      errors[0].items = [itemBuilder() as Items];
 
       const fileType = 'Workplace';
 
@@ -90,7 +89,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should hide the dropdown and toggle to say Open after clicking Close', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [itemBuilder()];
+      errors[0].items = [itemBuilder() as Items];
       const openErrors = [errors[0].errCode];
 
       const fileType = 'Workplace';
@@ -117,8 +116,8 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show both dropdowns after clicking Open on two errors', async () => {
       const errors = [errorReportErrorBuilder(), errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [itemBuilder()];
-      errors[1].items = [itemBuilder()];
+      errors[0].items = [itemBuilder() as Items];
+      errors[1].items = [itemBuilder() as Items];
 
       const fileType = 'Workplace';
 
@@ -150,7 +149,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show all item messages when dropdown open', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [itemBuilder(), itemBuilder(), itemBuilder()];
+      errors[0].items = [itemBuilder() as Items, itemBuilder() as Items, itemBuilder() as Items];
       const openErrors = [errors[0].errCode];
 
       const fileType = 'Workplace';
@@ -181,9 +180,9 @@ describe('ErrorDetailsTableComponent', () => {
         errorReportErrorBuilder(),
       ] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
-      errors[1].items = [workerItemBuilder()];
-      errors[2].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
+      errors[1].items = [workerItemBuilder() as Items];
+      errors[2].items = [workerItemBuilder() as Items];
 
       const fileType = 'Staff';
 
@@ -201,7 +200,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show a dropdown after clicking Open and toggle to say Close', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
 
       const fileType = 'Staff';
 
@@ -231,7 +230,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should hide the dropdown and toggle to say Open after clicking Close', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
       const openErrors = [errors[0].errCode];
 
       const fileType = 'Staff';
@@ -263,8 +262,8 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show both dropdowns after clicking Open on two errors', async () => {
       const errors = [errorReportErrorBuilder(), errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
-      errors[1].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
+      errors[1].items = [workerItemBuilder() as Items];
 
       const fileType = 'Staff';
 
@@ -304,7 +303,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show all item messages when dropdown open', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder(), workerItemBuilder(), workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items, workerItemBuilder() as Items, workerItemBuilder() as Items];
       const openErrors = [errors[0].errCode];
 
       const fileType = 'Staff';
@@ -347,9 +346,9 @@ describe('ErrorDetailsTableComponent', () => {
         errorReportErrorBuilder(),
       ] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
-      errors[1].items = [workerItemBuilder()];
-      errors[2].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
+      errors[1].items = [workerItemBuilder() as Items];
+      errors[2].items = [workerItemBuilder() as Items];
 
       const fileType = 'Training';
 
@@ -367,7 +366,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show a dropdown after clicking Open and toggle to say Close', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
 
       const fileType = 'Training';
 
@@ -397,7 +396,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should hide the dropdown and toggle to say Open after clicking Close', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
       const openErrors = [errors[0].errCode];
 
       const fileType = 'Training';
@@ -428,8 +427,8 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show both dropdowns after clicking Open on two errors', async () => {
       const errors = [errorReportErrorBuilder(), errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder()];
-      errors[1].items = [workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items];
+      errors[1].items = [workerItemBuilder() as Items];
 
       const fileType = 'Training';
 
@@ -469,7 +468,7 @@ describe('ErrorDetailsTableComponent', () => {
     it('should show all item messages when dropdown open', async () => {
       const errors = [errorReportErrorBuilder()] as ErrorReportError[];
 
-      errors[0].items = [workerItemBuilder(), workerItemBuilder(), workerItemBuilder()];
+      errors[0].items = [workerItemBuilder() as Items, workerItemBuilder() as Items, workerItemBuilder() as Items];
       const openErrors = [errors[0].errCode];
 
       const fileType = 'Training';
