@@ -31,15 +31,6 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
   public getNumberOfItems(errorsOrWarnings) {
     return errorsOrWarnings.reduce((num, errorInfo) => num + errorInfo.items.length, 0);
   }
-  //
-  // private getErrorReport() {
-  //   this.subscriptions.add(
-  //     this.bulkuploadService.errorReport(this.workplaceId).subscribe((errorReport: ErrorReport) => {
-  //       this.errorReport = errorReport;
-  //       this.getNumberOfErrorsAndWarnings();
-  //     }),
-  //   );
-  // }
 
   public downloadBUReport(event: Event) {
     event.preventDefault();
