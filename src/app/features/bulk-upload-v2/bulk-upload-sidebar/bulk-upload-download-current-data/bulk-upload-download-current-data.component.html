@@ -1,0 +1,27 @@
+<h2 class="govuk-!-margin-top-6 govuk-heading-s">Download your current data</h2>
+<ul class="govuk-list govuk-list--download">
+  <li>
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Worker)"
+    >
+      Staff
+    </a>
+  </li>
+  <li>
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workplace.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Establishment)"
+    >
+      Workplace
+    </a>
+  </li>
+  <li>
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-training.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Training)"
+    >
+      Training
+    </a>
+  </li>
+</ul>

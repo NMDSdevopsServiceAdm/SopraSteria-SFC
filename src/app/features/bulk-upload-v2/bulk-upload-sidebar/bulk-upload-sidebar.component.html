@@ -1,41 +1,5 @@
-<h2 class="govuk-heading-s">Related content</h2>
-<ul class="govuk-list">
-  <li>
-    <a [routerLink]="['../about-bulk-upload']">About bulk upload</a>
-  </li>
-  <li *ngIf="isAdminUser()">
-    <a [routerLink]="['../last-bulk-upload']">View last bulk upload</a>
-  </li>
-  <li>
-    <a [routerLink]="['/dev', 'bulk-upload', 'workplace-references']">View references</a>
-  </li>
-</ul>
-<h2 class="govuk-!-margin-top-6 govuk-heading-s">Download your current data</h2>
-<ul class="govuk-list govuk-list--download">
-  <li>
-    <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
-      (click)="downloadFile($event, BulkUploadFileType.Worker)"
-    >
-      Staff
-    </a>
-  </li>
-  <li>
-    <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workplace.csv"
-      (click)="downloadFile($event, BulkUploadFileType.Establishment)"
-    >
-      Workplace
-    </a>
-  </li>
-  <li>
-    <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-training.csv"
-      (click)="downloadFile($event, BulkUploadFileType.Training)"
-    >
-      Training
-    </a>
-  </li>
-</ul>
+<app-bulk-upload-related-content [showAll]="true"></app-bulk-upload-related-content>
+
+<app-bulk-upload-download-current-data></app-bulk-upload-download-current-data>
 
 <app-codes-and-guidance></app-codes-and-guidance>
