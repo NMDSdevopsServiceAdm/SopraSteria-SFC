@@ -6,11 +6,15 @@ import { Observable } from 'rxjs';
 export class EmailCampaignService {
   constructor(private http: HttpClient) {}
 
-  getHistory(): Observable<any> {
-    return this.http.get<any>(`/api/admin/email-campaigns/inactive-workplaces/history`);
+  getInactiveWorkplaces(): Observable<any> {
+    return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces');
   }
 
   createCampaign(): Observable<any> {
-    return this.http.post<any>(`/api/admin/email-campaigns/inactive-workplaces`, {});
+    return this.http.post<any>('/api/admin/email-campaigns/inactive-workplaces', {});
+  }
+
+  getHistory(): Observable<any> {
+    return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/history');
   }
 }

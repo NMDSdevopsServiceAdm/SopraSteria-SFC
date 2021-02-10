@@ -1,6 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
+const getInactiveWorkplaces = async (_, res) => {
+  const data = {
+    inactiveWorkplaces: 4208,
+  };
+
+  return res.json(data);
+}
+
+const createCampaign = async (_, res) => {
+  const newCampaign = {
+    date: '2021-02-05',
+    emails: 5673,
+  };
+
+  return res.json(newCampaign);
+}
+
 const getHistory = async (_, res) => {
   const history = [
     {
@@ -16,16 +33,8 @@ const getHistory = async (_, res) => {
   return res.json(history);
 }
 
-const createCampaign = async (_, res) => {
-  const newCampaign = {
-    date: '2021-02-05',
-    emails: 381,
-  };
-
-  return res.json(newCampaign);
-}
-
-router.route('/inactive-workplaces/history').get(getHistory);
+router.route('/inactive-workplaces').get(getInactiveWorkplaces);
 router.route('/inactive-workplaces').post(createCampaign);
+router.route('/inactive-workplaces/history').get(getHistory);
 
 module.exports = router;

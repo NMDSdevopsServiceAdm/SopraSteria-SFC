@@ -1,5 +1,5 @@
 import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
@@ -26,7 +26,7 @@ import { SearchComponent } from './search.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, SearchRoutingModule, FormsModule],
-  providers: [DialogService, EmailCampaignHistoryResolver, EmailCampaignService],
+  providers: [DialogService, EmailCampaignHistoryResolver, EmailCampaignService, DecimalPipe],
   declarations: [
     SearchComponent,
     AdminUnlockConfirmationDialogComponent,
