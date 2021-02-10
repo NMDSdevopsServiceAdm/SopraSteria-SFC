@@ -9,4 +9,8 @@ export class EmailCampaignService {
   getHistory(): Observable<any> {
     return this.http.get<any>(`/api/admin/email-campaigns/inactive-workplaces/history`);
   }
+
+  createCampaign(): Observable<any> {
+    return this.http.post<any>(`/api/admin/email-campaigns/inactive-workplaces`, {});
+  }
 }

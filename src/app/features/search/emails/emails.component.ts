@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { DialogService } from '@core/services/dialog.service';
 
 import {
@@ -11,8 +12,14 @@ import {
   templateUrl: './emails.component.html',
 })
 export class EmailsComponent implements OnInit {
-  constructor(private route: ActivatedRoute, private dialogService: DialogService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialogService: DialogService,
+    private emailCampaignService: EmailCampaignService,
+  ) {}
 
+  public inactiveWorkplaces = 5673;
   public history = this.route.snapshot.data.emailCampaignHistory;
 
   ngOnInit(): void {}
@@ -22,7 +29,15 @@ export class EmailsComponent implements OnInit {
 
     this.dialogService.open(SendEmailsConfirmationDialogComponent, {}).afterClosed.subscribe((hasConfirmed) => {
       if (hasConfirmed) {
+        this.sendEmails();
       }
+    });
+  }
+
+  private sendEmails(): void {
+    this.emailCampaignService.createCampaign().subscribe((latestCampaign) => {
+      this.history.unshift(latestCampaign);
+      this.inactiveWorkplaces = 0;
     });
   }
 }

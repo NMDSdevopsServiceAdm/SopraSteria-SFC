@@ -10,12 +10,22 @@ const getHistory = async (_, res) => {
     {
       date: '2020-12-05',
       emails: 278,
-    }
+    },
   ];
 
   return res.json(history);
 }
 
+const createCampaign = async (_, res) => {
+  const newCampaign = {
+    date: '2021-02-05',
+    emails: 381,
+  };
+
+  return res.json(newCampaign);
+}
+
 router.route('/inactive-workplaces/history').get(getHistory);
+router.route('/inactive-workplaces').post(createCampaign);
 
 module.exports = router;
