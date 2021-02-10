@@ -22,7 +22,7 @@ export class EmailsComponent implements OnInit {
     private decimalPipe: DecimalPipe,
   ) {}
 
-  public inactiveWorkplaces = 5673;
+  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
   public history = this.route.snapshot.data.emailCampaignHistory;
 
   ngOnInit(): void {}

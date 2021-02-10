@@ -3,6 +3,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
+import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { DialogService } from '@core/services/dialog.service';
 import {
@@ -26,7 +27,13 @@ import { SearchComponent } from './search.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, SearchRoutingModule, FormsModule],
-  providers: [DialogService, EmailCampaignHistoryResolver, EmailCampaignService, DecimalPipe],
+  providers: [
+    DialogService,
+    EmailCampaignHistoryResolver,
+    InactiveWorkplacesResolver,
+    EmailCampaignService,
+    DecimalPipe,
+  ],
   declarations: [
     SearchComponent,
     AdminUnlockConfirmationDialogComponent,
