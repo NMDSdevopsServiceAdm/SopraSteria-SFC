@@ -1,16 +1,22 @@
+import { DecimalPipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
+import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
+import { WindowRef } from '@core/services/window.ref';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { EmailsComponent } from './emails.component';
 
-describe('EmailsComponent', () => {
+fdescribe('EmailsComponent', () => {
   async function setup() {
     return render(EmailsComponent, {
-      imports: [SharedModule],
+      imports: [SharedModule, HttpClientTestingModule, RouterTestingModule],
       providers: [
-        DialogService,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -20,6 +26,15 @@ describe('EmailsComponent', () => {
               },
             },
           },
+        },
+        DialogService,
+        EmailCampaignService,
+        AlertService,
+        DecimalPipe,
+        HttpClient,
+        {
+          provide: WindowRef,
+          useClass: WindowRef,
         },
       ],
     });
