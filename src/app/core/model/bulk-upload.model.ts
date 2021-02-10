@@ -143,6 +143,11 @@ export interface NumberOfErrorsAndWarnings {
   };
 }
 
+export interface MissingReferences {
+  establishment:number;
+  worker: number;
+}
+
 export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';
 
 export type ReportTypeRequestItem = 'establishments' | 'training' | 'workers';

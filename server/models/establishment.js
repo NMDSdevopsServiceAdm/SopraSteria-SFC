@@ -960,6 +960,49 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+  Establishment.getMissingEstablishmentRefCount = async function(establishmentId) {
+    return await this.count({
+      where: {
+        LocalIdentifierValue: {
+          [sequelize.Op.is]:  null
+        },
+        [sequelize.Op.or]: [
+          {
+            id: establishmentId
+          },
+          {
+            parentId: establishmentId
+          }
+        ]
+      }
+    });
+  };
+  Establishment.getMissingWorkerRefCount = async function(establishmentId) {
+    return await this.count({
+      include:
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          where:{
+            LocalIdentifierValue: {
+                [sequelize.Op.is]:  null
+            },
+          },
+        },
+      where: {
+        [sequelize.Op.or]: [
+          {
+            id: establishmentId
+          },
+          {
+            parentId: establishmentId
+          }
+        ]
+      }
+    });
+  };
+
+
 
   return Establishment;
 };

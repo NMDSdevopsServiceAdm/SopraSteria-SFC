@@ -5,7 +5,7 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
-  ErrorReport, lastBulkUploadFile,
+  ErrorReport, lastBulkUploadFile, MissingReferences,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -166,6 +166,10 @@ export class BulkUploadService {
 
   public getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
     return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`)
+  }
+
+  public getMissingRef(workplaceUid:string): Observable<MissingReferences>{
+    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/bulkupload/references/missing`)
   }
 
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
