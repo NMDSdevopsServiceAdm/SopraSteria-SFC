@@ -1,6 +1,17 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Bulk upload</h1>
+    <app-inset-text [color]="'todo'">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <p><b>You have missing references</b></p>
+          <p>
+            You still need to add {{ this.missingRefCount?.establishment }} workplace references and
+            {{ this.missingRefCount?.worker }} staff references.
+          </p>
+        </div>
+      </div>
+    </app-inset-text>
     <p>There needs to be a unique reference for each workplace and for each staff record.</p>
   </div>
   <div class="govuk-grid-column-one-third">

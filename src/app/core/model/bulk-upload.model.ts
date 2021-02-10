@@ -63,7 +63,7 @@ export interface UploadedFilesRequestToDownloadResponse {
 }
 
 export interface lastBulkUploadFile {
-  key:string;
+  key: string;
   data: metaData;
   filename: string;
   username: string;
@@ -72,13 +72,13 @@ export interface lastBulkUploadFile {
 }
 
 export interface metaData {
-  key:string;
-  username:string;
-  filename:string;
+  key: string;
+  username: string;
+  filename: string;
   fileType: ValidatedFileType | null;
   records: number;
   errors: number;
-  warnings:2;
+  warnings: 2;
   deleted: number;
 }
 
@@ -144,7 +144,7 @@ export interface NumberOfErrorsAndWarnings {
 }
 
 export interface MissingReferences {
-  establishment:number;
+  establishment: number;
   worker: number;
 }
 

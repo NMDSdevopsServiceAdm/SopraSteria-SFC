@@ -8,7 +8,7 @@ import { render } from '@testing-library/angular';
 
 import { BulkUploadRelatedContentComponent } from './bulk-upload-related-content.component';
 
-fdescribe('BulkUploadRelatedContentComponent', () => {
+describe('BulkUploadRelatedContentComponent', () => {
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText } = await render(BulkUploadRelatedContentComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadV2Module],
