@@ -1,0 +1,38 @@
+<h1 class="govuk-heading-xl">Inactive Workplaces</h1>
+
+<dl class="govuk-list--definition">
+  <dt>Total number of inactive workplaces</dt>
+  <dd>
+    {{ '5,723' }}
+  </dd>
+</dl>
+
+<div class="govuk__flex">
+  <div class="govuk-!-margin-top-6 govuk">
+    <button class="govuk-button govuk-!-margin-right-9" (click)="confirmSendEmails($event)" type="submit">
+      Send emails
+    </button>
+  </div>
+  <div class="govuk-!-margin-top-4 govuk__flex govuk-util__vertical-align-center">
+    <a class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center" href="#">
+      <img alt="" src="/assets/images/icon-download.svg" />
+      <span class="govuk-!-margin-left-1">Download report</span>
+    </a>
+  </div>
+</div>
+
+<h2>History</h2>
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Date</th>
+      <th class="govuk-table__header" scope="col">Total emails sent</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">05/01/2021</td>
+      <td class="govuk-table__cell">1,263</td>
+    </tr>
+  </tbody>
+</table>
