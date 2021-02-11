@@ -12,7 +12,7 @@ import { render } from '@testing-library/angular';
 
 import { EmailsComponent } from './emails.component';
 
-fdescribe('EmailsComponent', () => {
+describe('EmailsComponent', () => {
   async function setup() {
     return render(EmailsComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterTestingModule],
@@ -23,6 +23,7 @@ fdescribe('EmailsComponent', () => {
             snapshot: {
               data: {
                 emailCampaignHistory: [],
+                inactiveWorkplaces: { inactiveWorkplaces: 10 },
               },
             },
           },
