@@ -109,6 +109,12 @@ describe('EmailsComponent', () => {
       }),
     );
 
+    spyOn(emailCampaignService, 'getInactiveWorkplaces').and.returnValue(
+      of({
+        inactiveWorkplaces: 0,
+      }),
+    );
+
     const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
 
     const dialog = await within(document.body).findByRole('dialog');
@@ -118,5 +124,8 @@ describe('EmailsComponent', () => {
       type: 'success',
       message: '2,500 emails sent successfully.',
     });
+
+    const numInactiveWorkplaces = component.getByTestId('inactiveWorkplaces');
+    expect(numInactiveWorkplaces.innerHTML).toContain('0');
   });
 });
