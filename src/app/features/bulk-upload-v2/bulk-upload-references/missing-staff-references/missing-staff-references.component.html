@@ -9,9 +9,28 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">
       <span class="govuk-caption-l">Bulk upload</span>
-      Staff references: {{ this.workplaceName }}
+      Add staff references: {{ this.workplaceName }}
     </h1>
-    <p>There needs to be a unique reference for each staff record. For example, myworkplace1, myworkplace2.</p>
+    <p>
+      You need to add a unique reference for each staff record. Payroll numbers make good staff references. For example,
+      staffmember007.
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <ng-container [ngSwitch]="showMissing">
+      <a *ngSwitchCase="true" (click)="toggleShowAll()" class="govuk-button govuk-button--link">Show all references</a>
+      <p *ngSwitchCase="false" class="govuk-util__inline-block govuk-!-margin-top-2">Show all references</p>
+    </ng-container>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <ng-container [ngSwitch]="showMissing">
+      <a *ngSwitchCase="false" class="govuk-button govuk-button--link" (click)="toggleShowAll()"
+        >Show missing references</a
+      >
+      <p *ngSwitchCase="true" class="govuk-util__inline-block govuk-!-margin-top-2">Show missing references</p>
+    </ng-container>
   </div>
 </div>
 <div class="govuk-grid-row">
@@ -33,30 +52,32 @@
           <strong>Reference</strong>
         </p>
       </div>
-      <div
-        class="govuk-form-group govuk__grid govuk__grid-container"
-        *ngFor="let reference of references"
-        [class.govuk-form-group--error]="form.get('reference-' + reference.uid)?.errors && submitted"
-      >
-        <label class="govuk-label govuk-!-margin-bottom-0 govuk__grid-column-1" for="reference-{{ reference.uid }}">
-          {{ reference.nameOrId }}
-        </label>
-        <span
-          id="reference-{{ reference.uid }}-error"
-          class="govuk-error-message govuk__grid-row-start-1 asc__reference-grid-error"
-          *ngIf="form.get('reference-' + reference.uid)?.errors && submitted"
+      <ng-container *ngFor="let reference of references">
+        <div
+          class="govuk-form-group govuk__grid govuk__grid-container"
+          [ngClass]="{ 'govuk-visually-hidden': reference.localIdentifier && showMissing }"
+          [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
-        </span>
-        <input
-          class="govuk-input govuk__grid-column-2"
-          [class.govuk-input--error]="form.get('reference-' + reference.uid)?.errors && submitted"
-          id="reference-{{ reference.uid }}"
-          name="reference-{{ reference.uid }}"
-          type="text"
-          [formControlName]="'reference-' + reference.uid"
-        />
-      </div>
+          <label class="govuk-label govuk-!-margin-bottom-0 govuk__grid-column-1" for="reference-{{ reference.uid }}">
+            {{ reference.nameOrId }}
+          </label>
+          <span
+            id="reference-{{ reference.uid }}-error"
+            class="govuk-error-message govuk__grid-row-start-1 asc__reference-grid-error"
+            *ngIf="form.get('reference-' + reference.uid)?.errors && submitted"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
+          </span>
+          <input
+            class="govuk-input govuk__grid-column-2"
+            [class.govuk-input--error]="form.get('reference-' + reference.uid)?.errors && submitted"
+            id="reference-{{ reference.uid }}"
+            name="reference-{{ reference.uid }}"
+            type="text"
+            [formControlName]="'reference-' + reference.uid"
+          />
+        </div>
+      </ng-container>
 
       <div class="govuk-grid-row" *ngIf="!references.length">
         <div class="govuk-grid-column-two-thirds-from-desktop">

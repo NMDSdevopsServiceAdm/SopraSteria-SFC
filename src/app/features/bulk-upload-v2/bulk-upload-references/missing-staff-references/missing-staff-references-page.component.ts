@@ -31,6 +31,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
   private establishmentUid: string;
   public workplaceName: string;
+  public showMissing = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -60,6 +61,10 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     this.setupForm();
     this.setServerErrors();
     this.getWorkplaceName();
+  }
+
+  public toggleShowAll() {
+    this.showMissing = !this.showMissing;
   }
 
   private setServerErrors() {

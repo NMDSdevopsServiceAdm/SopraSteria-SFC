@@ -29,6 +29,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
   public showMissing = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     protected establishmentService: EstablishmentService,
@@ -55,9 +56,11 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.setupForm();
     this.setServerErrors();
   }
-  public toggleShowAll(){
-    this.showMissing = !this.showMissing
+
+  public toggleShowAll() {
+    this.showMissing = !this.showMissing;
   }
+
   private setServerErrors() {
     this.serverErrorsMap = [
       {

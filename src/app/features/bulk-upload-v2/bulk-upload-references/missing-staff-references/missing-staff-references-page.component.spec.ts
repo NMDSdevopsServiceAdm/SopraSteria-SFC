@@ -17,11 +17,11 @@ import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module'
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { StaffReferencesComponent } from './staff-references-page.component';
+import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
 
-describe('StaffReferencesComponent', () => {
+describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
-    const component = await render(StaffReferencesComponent, {
+    const component = await render(MissingStaffReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
       providers: [
         {

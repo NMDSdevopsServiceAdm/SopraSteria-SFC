@@ -17,7 +17,7 @@ import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { WorkplaceReferencesComponent } from './workplace-references-page.component';
+import { MissingWorkplaceReferencesComponent } from './missing-workplace-references-page.component';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -31,9 +31,9 @@ const establishmentBuilder = build('Workplace', {
   },
 });
 
-describe('WorkplaceReferencesComponent', () => {
+describe('MissingWorkplaceReferencesComponent', () => {
   async function setup(references: Workplace[] = []) {
-    const component = await render(WorkplaceReferencesComponent, {
+    const component = await render(MissingWorkplaceReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
       providers: [
         {
