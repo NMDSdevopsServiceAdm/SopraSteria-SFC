@@ -15,7 +15,19 @@
   </div>
 
   <div class="govuk-grid-column-two-thirds">
-    <p>{{ workplace.mainService }}</p>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p>
+          {{ workplace.mainService }}
+        </p>
+      </div>
+      <div class="govuk-grid-column-one-third" *ngIf="isAdminUser() && isLoggedIn()">
+        <span class="govuk-util__float-right">
+          <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
+        </span>
+      </div>
+    </div>
+
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <p class="govuk-!-margin-bottom-1">
