@@ -22,7 +22,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 @Component({
   selector: 'app-bu-staff-references-page',
   templateUrl: 'staff-references.component.html',
-  styleUrls: ['staff-references.component.scss'],
+  styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
 export class StaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {

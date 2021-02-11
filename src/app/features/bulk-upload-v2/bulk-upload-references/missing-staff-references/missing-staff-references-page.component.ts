@@ -5,29 +5,32 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
+import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { filter, find, orderBy } from 'lodash';
+import { WorkerService } from '@core/services/worker.service';
+import { orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-  selector: 'app-bu-workplace-references-page',
-  templateUrl: 'workplace-references.component.html',
+  selector: 'app-bu-missing-staff-references-page',
+  templateUrl: 'missing-staff-references.component.html',
   styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
+export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
+  private establishmentUid: string;
+  public workplaceName: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -38,6 +41,7 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     protected formBuilder: FormBuilder,
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
+    private workerService: WorkerService,
   ) {
     super(errorSummaryService, formBuilder);
   }
@@ -45,15 +49,17 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
-      if (reference.ustatus === 'PENDING') return false;
-      if (this.primaryWorkplace.isParent)
-        return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
-      return reference.dataOwner === WorkplaceDataOwner.Workplace;
-    });
-    this.references = orderBy(this.references, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
+    this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
+    this.references = this.activatedRoute.snapshot.data.references;
+
+    this.references = orderBy(
+      this.activatedRoute.snapshot.data.references,
+      [(worker: Worker) => worker.nameOrId.toLowerCase()],
+      ['asc'],
+    );
     this.setupForm();
     this.setServerErrors();
+    this.getWorkplaceName();
   }
 
   private setServerErrors() {
@@ -64,34 +70,28 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
       },
       {
         name: 400,
-        message: `Unable to update workplace reference.`,
+        message: `Unable to update staff reference.`,
       },
     ];
   }
 
+  private getWorkplaceName(): void {
+    this.workplaceName = this.activatedRoute.snapshot.data.workplaceReferences.find(
+      ({ uid }) => uid === this.establishmentUid,
+    ).name;
+  }
+
   protected save(): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateLocalIdentifiers(this.generateRequest())
+      this.workerService
+        .updateLocalIdentifiers(this.establishmentUid, this.generateRequest())
         .pipe(take(1))
         .subscribe(
-          (data) => {
-            const updatedReferences = this.references.map((workplace: Workplace) => {
-              const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
-              return {
-                ...workplace,
-                ...{ localIdentifier: updated.value },
-              };
-            }) as Workplace[];
-            this.bulkUploadService.setWorkplaceReferences(updatedReferences);
-            this.router.navigate(this.return.url);
+          () => {
+            this.router.navigate(['/dev', 'bulk-upload', 'workplace-references']);
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),
     );
-  }
-
-  public setReturn(): void {
-    this.bulkUploadService.setReturnTo({ url: ['/dev/bulk-upload/workplace-references'] });
   }
 }

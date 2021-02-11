@@ -33,4 +33,30 @@
     <app-bulk-upload-related-content [showAll]="false"></app-bulk-upload-related-content>
     <app-codes-and-guidance class="govuk-util__block"></app-codes-and-guidance>
   </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-row govuk-!-margin-top-6">
+        <div class="govuk-grid-column-one-third">
+          <a
+            [routerLink]="['/dev/bulk-upload/missing-workplace-references']"
+            role="button"
+            draggable="false"
+            class="govuk-button"
+          >
+            Add references
+          </a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <a
+              [routerLink]="['/dashboard']"
+              role="button"
+              draggable="false"
+              class="govuk-button govuk-button--link"
+            >
+              Cancel
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

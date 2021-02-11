@@ -19,16 +19,16 @@ import { take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-  selector: 'app-bu-workplace-references-page',
-  templateUrl: 'workplace-references.component.html',
+  selector: 'app-bu-missing-workplace-references-page',
+  templateUrl: 'missing-workplace-references.component.html',
   styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
+export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
-
+  public showMissing = false;
   constructor(
     private activatedRoute: ActivatedRoute,
     protected establishmentService: EstablishmentService,
@@ -55,7 +55,9 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     this.setupForm();
     this.setServerErrors();
   }
-
+  public toggleShowAll(){
+    this.showMissing = !this.showMissing
+  }
   private setServerErrors() {
     this.serverErrorsMap = [
       {

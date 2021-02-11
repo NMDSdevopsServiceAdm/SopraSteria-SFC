@@ -32,6 +32,8 @@ import { FileValidateStatusComponent } from './file-validate-status/file-validat
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
 import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
+import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
 
 @NgModule({
   imports: [
@@ -58,6 +60,8 @@ import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bu
     ValidationErrorMessageComponent,
     WorkplaceReferencesComponent,
     StaffReferencesComponent,
+    MissingWorkplaceReferencesComponent,
+    MissingStaffReferencesComponent,
     AboutBulkUploadComponent,
     BulkUploadStartPageComponent,
     CodesAndGuidanceComponent,

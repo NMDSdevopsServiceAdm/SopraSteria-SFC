@@ -17,6 +17,8 @@ import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-uploa
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
 
 const routes: Routes = [
   {
@@ -46,6 +48,22 @@ const routes: Routes = [
     data: { title: 'Last bulk upload', roles: [Roles.Admin] },
     canActivate: [RoleGuard],
     resolve: { lastBulkUpload: LastBulkUploadResolver },
+  },
+  {
+    path: 'missing-workplace-references',
+    component: MissingWorkplaceReferencesComponent,
+    resolve: { workplaceReferences: WorkplacesReferencesResolver },
+    data: { title: 'Workplace references' },
+  },
+  {
+    path: ':uid/missing-staff-references',
+    component: MissingStaffReferencesComponent,
+    resolve: {
+      references: StaffReferencesResolver,
+      workplaceReferences: WorkplacesReferencesResolver,
+    },
+    data: { title: 'Staff references' },
+    runGuardsAndResolvers: 'always',
   },
   {
     path: 'workplace-references',
