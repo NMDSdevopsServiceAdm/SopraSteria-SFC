@@ -1,23 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { WindowRef } from '@core/services/window.ref';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { SearchModule } from '../search.module';
 import { EmailsComponent } from './emails.component';
-
-const emailHistory = [
-  {
-    date: '2021-01-05',
-    emails: 351,
-  },
-  {
-    date: '2020-12-05',
-    emails: 772,
-  },
-];
 
 describe('EmailsComponent', () => {
   async function setup() {
@@ -50,16 +42,30 @@ describe('EmailsComponent', () => {
 
   it('should display the total number of inactive workplaces', async () => {
     const component = await setup();
+
     component.fixture.componentInstance.inactiveWorkplaces = 1250;
-    component.fixture.detectChanges(true);
+    component.fixture.detectChanges();
+
     const numInactiveWorkplaces = component.getByTestId('inactiveWorkplaces');
     expect(numInactiveWorkplaces.innerHTML).toContain('1,250');
   });
 
   it('should display all existing history', async () => {
     const component = await setup();
-    component.fixture.componentInstance.history = emailHistory;
-    component.fixture.detectChanges(true);
+
+    component.fixture.componentInstance.history = [
+      {
+        date: '2021-01-05',
+        emails: 351,
+      },
+      {
+        date: '2020-12-05',
+        emails: 772,
+      },
+    ];
+
+    component.fixture.detectChanges();
+
     const numInactiveWorkplaces = component.getByTestId('emailCampaignHistory');
     expect(numInactiveWorkplaces.innerHTML).toContain('05/01/2021');
     expect(numInactiveWorkplaces.innerHTML).toContain('772');
@@ -69,25 +75,48 @@ describe('EmailsComponent', () => {
 
   it('should display a message when no emails have been sent', async () => {
     const component = await setup();
-    // component.fixture.componentInstance.history = [];
-    // component.fixture.detectChanges(true);
+
     const numInactiveWorkplaces = component.getByTestId('emailCampaignHistory');
     expect(numInactiveWorkplaces.innerHTML).toContain('No emails have been sent yet.');
   });
 
   it('should call confirmSendEmails when the "Send emails" button is clicked', async () => {
     const component = await setup();
-    const spy = spyOn(component.fixture.componentInstance, 'confirmSendEmails').and.callFake(() => {
-      return true;
-    });
 
     component.fixture.componentInstance.inactiveWorkplaces = 25;
-    component.fixture.detectChanges(true);
+    component.fixture.detectChanges();
+
     fireEvent.click(component.getByText('Send emails', { exact: false }));
 
-    expect(component.fixture.componentInstance.confirmSendEmails).toHaveBeenCalled();
+    const dialog = await within(document.body).findByRole('dialog');
+    const dialogHeader = within(dialog).getByTestId('send-emails-confirmation-header');
 
-    // const dialog = await within(document.body).findByRole('dialog');
-    // const confirm = within(dialog).getByText('Are you sure you want to send these emails?');
+    expect(dialogHeader).toBeTruthy();
+  });
+
+  it('should display an alert when the "Send emails" button is clicked', async () => {
+    const component = await setup();
+
+    component.fixture.componentInstance.inactiveWorkplaces = 2500;
+    component.fixture.detectChanges();
+
+    fireEvent.click(component.getByText('Send emails', { exact: false }));
+
+    const emailCampaignService = TestBed.inject(EmailCampaignService);
+    spyOn(emailCampaignService, 'createCampaign').and.returnValue(
+      of({
+        emails: 2500,
+      }),
+    );
+
+    const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
+
+    const dialog = await within(document.body).findByRole('dialog');
+    within(dialog).getByText('Send emails').click();
+
+    expect(addAlert).toHaveBeenCalledWith({
+      type: 'success',
+      message: '2,500 emails sent successfully.',
+    });
   });
 });

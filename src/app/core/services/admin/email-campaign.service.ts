@@ -11,6 +11,8 @@ export class EmailCampaignService {
   }
 
   createCampaign(): Observable<any> {
+    console.log('creating a campaign');
+
     return this.http.post<any>('/api/admin/email-campaigns/inactive-workplaces', {});
   }
 

@@ -15,10 +15,10 @@ import {
 })
 export class EmailsComponent implements OnInit {
   constructor(
+    public alertService: AlertService,
+    public dialogService: DialogService,
     private route: ActivatedRoute,
-    private dialogService: DialogService,
     private emailCampaignService: EmailCampaignService,
-    private alertService: AlertService,
     private decimalPipe: DecimalPipe,
   ) {}
 
@@ -29,7 +29,7 @@ export class EmailsComponent implements OnInit {
 
   public confirmSendEmails(event: Event): void {
     event.preventDefault();
-    console.log('pressed send emails');
+
     this.dialogService
       .open(SendEmailsConfirmationDialogComponent, { inactiveWorkplaces: this.inactiveWorkplaces })
       .afterClosed.subscribe((hasConfirmed) => {
