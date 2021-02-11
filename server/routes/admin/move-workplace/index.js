@@ -15,6 +15,10 @@ const moveWorkplaceAdmin = async (req, res) => {
     return res.status(406).send();
   }
 
+  sub.parentUid = parent.uid;
+  sub.parentId = parent.id;
+  sub.save();
+
   res.status(200).send();
 };
 

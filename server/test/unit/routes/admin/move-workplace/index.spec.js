@@ -12,6 +12,11 @@ const { cloneDeep } = require('lodash');
 
 describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
   const parentEstablishment = establishmentBuilder();
+  parentEstablishment.isParent = true;
+
+  const nonParentEstablishment = establishmentBuilder();
+  nonParentEstablishment.isParent = false;
+
   const subEstablishment = establishmentBuilder();
   let parentStub, subStub;
 
@@ -34,21 +39,30 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
     parentStub = stub.onFirstCall().callsFake(async (id) => {
       if (id === parentEstablishment.uid) {
         return parentEstablishment;
+      } else if (id === nonParentEstablishment.uid) {
+        return nonParentEstablishment;
       } else {
         return null;
       }
     });
 
-    subStub = stub.onSecondCall().callsFake(async (id) => {
-      if (id === subEstablishment.uid) {
-        return subEstablishment;
-      } else {
-        return null;
-      }
-    });
+    subStub = stub
+      .onSecondCall()
+      .callsFake(async (id) => {
+        if (id === subEstablishment.uid) {
+          return subEstablishment;
+        } else {
+          return null;
+        }
+      })
+      .returns({
+        save: () => {
+          console.log('woooooooo');
+        },
+      });
   });
 
-  it('should return status 200', async () => {
+  it.only('should return status 200', async () => {
     const req = httpMocks.createRequest(request);
     const res = httpMocks.createResponse();
 
@@ -91,12 +105,20 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
   });
 
   it('returns a 406 if parent is not a parent', async () => {
-    const req = httpMocks.createRequest(request);
+    const nonParentRequest = {
+      method: 'POST',
+      url: '/api/admin/move-workplace',
+      body: {
+        parentUid: nonParentEstablishment.uid,
+        subUid: subEstablishment.uid,
+      },
+    };
+
+    const req = httpMocks.createRequest(nonParentRequest);
     const res = httpMocks.createResponse();
 
     await moveWorkplaceAdmin(req, res);
 
     expect(res.statusCode).to.deep.equal(406);
   });
-  it('verifies that sub parent details matches that of the parent', async () => {});
 });
