@@ -961,48 +961,99 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
   Establishment.getMissingEstablishmentRefCount = async function(establishmentId) {
-    return await this.count({
-      where: {
-        LocalIdentifierValue: {
-          [sequelize.Op.is]:  null
-        },
-        [sequelize.Op.or]: [
-          {
-            id: establishmentId
-          },
-          {
-            parentId: establishmentId
-          }
-        ]
-      }
+    const isParent = this.findOne({
+      attributes:['isParent'],
+      where:{id:establishmentId}
     });
+    if (isParent){
+      return await this.count({
+        where: {
+          LocalIdentifierValue: {
+            [sequelize.Op.is]:  null
+          },
+          ustatus:{
+            [sequelize.Op.is]: null,
+          },
+          [sequelize.Op.or]: [
+            {
+              id: establishmentId
+            },
+            {
+              parentId: establishmentId,
+              dataOwner: 'Parent',
+            }
+          ],
+        }
+      });
+    }else{
+      return await this.count({
+        where: {
+          LocalIdentifierValue: {
+            [sequelize.Op.is]:  null
+          },
+          ustatus:{
+            [sequelize.Op.is]: null,
+          },
+          id: establishmentId
+        }
+      });
+    }
+
   };
   Establishment.getMissingWorkerRefCount = async function(establishmentId) {
-    return await this.count({
-      include:
-        {
-          model: sequelize.models.worker,
-          as: 'workers',
-          where:{
-            LocalIdentifierValue: {
-                [sequelize.Op.is]:  null
+    const isParent = this.findOne({
+      attributes: ['isParent'],
+      where: { id: establishmentId }
+    });
+    if (isParent) {
+      return await this.count({
+        include:
+          {
+            model: sequelize.models.worker,
+            as: 'workers',
+            where: {
+              LocalIdentifierValue: {
+                [sequelize.Op.is]: null
+              },
+
             },
           },
-        },
-      where: {
-        [sequelize.Op.or]: [
-          {
-            id: establishmentId
+        where: {
+          [sequelize.Op.or]: [
+            {
+              id: establishmentId
+            },
+            {
+              parentId: establishmentId,
+              dataOwner: 'Parent',
+            }
+          ],
+          ustatus: {
+            [sequelize.Op.is]: null,
           },
+        }
+      });
+    } else {
+      return await this.count({
+        include:
           {
-            parentId: establishmentId
-          }
-        ]
-      }
-    });
+            model: sequelize.models.worker,
+            as: 'workers',
+            where: {
+              LocalIdentifierValue: {
+                [sequelize.Op.is]: null
+              },
+            },
+          },
+        where: {
+          id: establishmentId,
+          ustatus: {
+            [sequelize.Op.is]: null,
+          },
+          },
+      });
+    }
   };
-
-
 
   return Establishment;
 };
