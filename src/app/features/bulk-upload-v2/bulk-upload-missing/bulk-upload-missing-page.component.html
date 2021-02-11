@@ -5,10 +5,29 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           <p><b>You have missing references</b></p>
-          <p>
-            You still need to add {{ this.missingRefCount?.establishment }} workplace references and
-            {{ this.missingRefCount?.worker }} staff references.
-          </p>
+          <ng-container *ngIf="this.missingRefCount?.establishment || this.missingRefCount?.worker">
+            <p>
+              You still need to add
+              <ng-container [ngPlural]="this.missingRefCount?.establishment">
+                <ng-template ngPluralCase="=0"></ng-template>
+                <ng-template ngPluralCase="=1"
+                  >{{ this.missingRefCount?.establishment }} workplace reference
+                </ng-template>
+                <ng-template ngPluralCase=">1"
+                  >{{ this.missingRefCount?.establishment }} workplace references
+                </ng-template>
+              </ng-container>
+              <ng-container *ngIf="this.missingRefCount?.establishment > 0 && this.missingRefCount?.worker > 0">
+                and
+              </ng-container>
+              <ng-container [ngPlural]="this.missingRefCount?.worker">
+                <ng-template ngPluralCase="=0"></ng-template>
+                <ng-template ngPluralCase="=1">{{ this.missingRefCount?.worker }} staff reference</ng-template>
+                <ng-template ngPluralCase=">1">{{ this.missingRefCount?.worker }} staff references</ng-template>
+              </ng-container>
+              <span>.</span>
+            </p>
+          </ng-container>
         </div>
       </div>
     </app-inset-text>
