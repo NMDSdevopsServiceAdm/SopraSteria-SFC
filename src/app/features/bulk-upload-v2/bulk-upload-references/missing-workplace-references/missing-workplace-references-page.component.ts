@@ -55,6 +55,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.references = orderBy(this.references, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
     this.setupForm();
     this.setServerErrors();
+    this.showToggles = this.anyFilledReferences();
   }
 
   public toggleShowAll() {

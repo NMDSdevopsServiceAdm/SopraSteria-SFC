@@ -18,6 +18,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   public formErrorsMap: ErrorDetails[] = [];
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
+  public showToggles = false;
 
   constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}
 
@@ -113,5 +114,9 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
     this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
+  }
+
+  protected anyFilledReferences(): boolean {
+    return this.references.some((reference) => reference.localIdentifier !== null);
   }
 }

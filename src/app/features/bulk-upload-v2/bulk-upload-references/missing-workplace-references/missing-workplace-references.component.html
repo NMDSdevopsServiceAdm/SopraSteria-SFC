@@ -14,7 +14,7 @@
     <p>You need to add a unique reference for each workplace. For example, myworkplace1, myworkplace2.</p>
   </div>
 </div>
-<div class="govuk-grid-row">
+<div *ngIf="showToggles" class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <ng-container [ngSwitch]="showMissing">
       <a *ngSwitchCase="true" (click)="toggleShowAll()" class="govuk-button govuk-button--link">Show all references</a>
@@ -80,11 +80,7 @@
           <p class="govuk-!-margin-top-4">There are no workplaces editable</p>
         </div>
       </div>
-      <app-submit-exit-buttons
-        [cta]="'Save and continue'"
-        [exit]="'Cancel'"
-        [return]="return"
-      ></app-submit-exit-buttons>
+      <app-submit-exit-buttons [cta]="'Save and continue'" [exit]="'Exit'" [return]="return"></app-submit-exit-buttons>
     </form>
   </div>
 </div>

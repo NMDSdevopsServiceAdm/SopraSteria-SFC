@@ -17,19 +17,29 @@
     </p>
   </div>
 </div>
-<div class="govuk-grid-row">
+<div *ngIf="showToggles" class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
     <ng-container [ngSwitch]="showMissing">
-      <a *ngSwitchCase="true" (click)="toggleShowAll()" class="govuk-button govuk-button--link">Show all references</a>
-      <p *ngSwitchCase="false" class="govuk-util__inline-block govuk-!-margin-top-2">Show all references</p>
+      <a
+        *ngSwitchCase="true"
+        (click)="toggleShowAll()"
+        class="govuk-button govuk-button--link govuk-!-padding-left-0 govuk-!-padding-top-4"
+        >Show all references</a
+      >
+      <p *ngSwitchCase="false" class="govuk-util__inline-block govuk-!-padding-top-4">Show all references</p>
     </ng-container>
   </div>
   <div class="govuk-grid-column-one-third">
     <ng-container [ngSwitch]="showMissing">
-      <a *ngSwitchCase="false" class="govuk-button govuk-button--link" (click)="toggleShowAll()"
+      <a
+        *ngSwitchCase="false"
+        class="govuk-button govuk-button--link govuk-!-padding-left-0 govuk-!-padding-top-4"
+        (click)="toggleShowAll()"
         >Show missing references</a
       >
-      <p *ngSwitchCase="true" class="govuk-util__inline-block govuk-!-margin-top-2">Show missing references</p>
+      <p *ngSwitchCase="true" class="govuk-util__inline-block govuk-!-padding-left-0 govuk-!-padding-top-4">
+        Show missing references
+      </p>
     </ng-container>
   </div>
 </div>
@@ -84,7 +94,7 @@
           <p class="govuk-!-margin-top-4">There are no workplaces editable</p>
         </div>
       </div>
-      <app-submit-exit-buttons [cta]="'Save and return'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
+      <app-submit-exit-buttons [cta]="'Save and continue'" [exit]="'Exit'" [return]="return"></app-submit-exit-buttons>
     </form>
   </div>
 </div>

@@ -61,6 +61,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     this.setupForm();
     this.setServerErrors();
     this.getWorkplaceName();
+    this.showToggles = this.anyFilledReferences();
   }
 
   public toggleShowAll() {
