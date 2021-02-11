@@ -1,21 +1,21 @@
 'use strict';
 const router = require('express').Router();
 const { celebrate, Joi, errors } = require('celebrate');
+const models = require('../../../models');
 
 const moveWorkplaceAdmin = async (req, res) => {
-  // const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  const parent = await models.establishment.findByUid(req.body.parentUid);
+  const sub = await models.establishment.findByUid(req.body.subUid);
 
-  // if (!uuidRegex.test(req.body.parentUid.toUpperCase())) {
-  //   console.error('Invalid Parent UUID');
-  //   return res.status(400).send();
-  // }
+  if (!parent || !sub) {
+    return res.status(404).send();
+  }
 
-  // if (!uuidRegex.test(req.body.subsidUid.toUpperCase())) {
-  //   console.error('Invalid Subsiduary UUID');
-  //   return res.status(400).send();
-  // }
+  if (!parent.isParent) {
+    return res.status(406).send();
+  }
 
-  res.status(200).send;
+  res.status(200).send();
 };
 
 router.route('/').post(
