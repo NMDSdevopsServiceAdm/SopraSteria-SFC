@@ -536,5 +536,41 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(csvAsArray[11]).to.equal('1');
       expect(csvAsArray[13]).to.equal('2');
     });
+
+    it('should have the same number in MAINSERVICE column and ALLSERVICES column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[17]).to.include(csvAsArray[16]);
+    });
+
+    it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.otherServices = [{reportingID: 23}, {reportingID: 12}];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[17]).to.include('23');
+      expect(csvAsArray[17]).to.include('12');
+    });
+
+    it('should put correct number of staff in TOTALPERMTEMP column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[23]).to.equal(establishment.NumberOfStaffValue.toString());
+    });
+
+    it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.otherServices = [{reportingID: 23}, {reportingID: 12}];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[17]).to.include('23');
+      expect(csvAsArray[17]).to.include('12');
+    });
   });
 });
