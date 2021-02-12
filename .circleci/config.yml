@@ -121,6 +121,8 @@ commands:
 
 orbs:
   node: circleci/node@3.0.0
+  feature-flag-reference-validator: configcat/feature-flag-reference-validator@2.0.2
+
 
 jobs:
   install:
@@ -319,6 +321,12 @@ workflows:
             requires:
               - install
         - performance:
+            filters:
+               tags:
+                 only: /^v[0-9]+(\.[0-9]+)*$/
+            requires:
+              - install
+        - configcat/validate-flag-references:
             filters:
                tags:
                  only: /^v[0-9]+(\.[0-9]+)*$/
