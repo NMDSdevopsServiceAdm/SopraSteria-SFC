@@ -18,7 +18,9 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
   nonParentEstablishment.isParent = false;
 
   const subEstablishment = establishmentBuilder();
-  let parentStub, subStub;
+  subEstablishment.save = () => {};
+
+  let parentStub, subStub, saveStub;
 
   const request = {
     method: 'POST',
@@ -29,12 +31,9 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
     },
   };
 
-  afterEach(() => {
-    sinon_sandbox.restore();
-  });
-
   beforeEach(async () => {
     const stub = sinon_sandbox.stub(models.establishment, 'findByUid');
+    saveStub = sinon_sandbox.stub(subEstablishment, 'save');
 
     parentStub = stub.onFirstCall().callsFake(async (id) => {
       if (id === parentEstablishment.uid) {
@@ -46,27 +45,29 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
       }
     });
 
-    subStub = stub
-      .onSecondCall()
-      .callsFake(async (id) => {
-        if (id === subEstablishment.uid) {
-          return subEstablishment;
-        } else {
-          return null;
-        }
-      })
-      .returns({
-        save: () => {
-          console.log('woooooooo');
-        },
-      });
+    subStub = stub.onSecondCall().callsFake(async (id) => {
+      if (id === subEstablishment.uid) {
+        return subEstablishment;
+      } else {
+        return null;
+      }
+    });
   });
 
-  it.only('should return status 200', async () => {
+  afterEach(() => {
+    sinon_sandbox.restore();
+  });
+
+  it('should return status 200 when sub is updated and saved', async () => {
     const req = httpMocks.createRequest(request);
     const res = httpMocks.createResponse();
 
     await moveWorkplaceAdmin(req, res);
+
+    expect(subEstablishment.parentUid).to.equal(parentEstablishment.uid);
+    expect(subEstablishment.parentId).to.equal(parentEstablishment.id);
+    expect(saveStub.calledOnce).be.true;
+
     expect(res.statusCode).to.deep.equal(200);
   });
 
