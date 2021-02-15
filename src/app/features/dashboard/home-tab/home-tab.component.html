@@ -23,7 +23,7 @@
         </div>
       </app-inset-text>
     </ng-container>
-    <ng-container *ngIf="workplace && canEditEstablishment && canAddWorker">
+    <ng-container *ngIf="workplace && canViewListOfWorkers">
       <app-inset-text *ngIf="workplace.numberOfStaff < workersCount" [color]="'todo'" data-testid="morerecords">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds">

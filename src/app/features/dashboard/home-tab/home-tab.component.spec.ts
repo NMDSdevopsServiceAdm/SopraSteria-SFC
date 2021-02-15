@@ -121,12 +121,40 @@ fdescribe('HomeTabComponent', () => {
     // Assert
     expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
   });
-  it('should not show the more staff records banner', async () => {
+  it('should not show the more staff records banner if there are less staff records', async () => {
     // Arrange
     const { component } = await setup();
     // Act
     component.fixture.componentInstance.workersCount = 10;
     component.fixture.componentInstance.workplace.numberOfStaff = 11;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.queryAllByTestId('morerecords');
+    // Assert
+    expect(moreRecords.length).toEqual(0);
+  });
+  it('should not show the more staff records banner if there are equal staff records', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.queryAllByTestId('morerecords');
+    // Assert
+    expect(moreRecords.length).toEqual(0);
+  });
+  it('should not show the more staff records banner if the user does not have persmission to viewListOfWorkers', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.componentInstance.canViewListOfWorkers = false;
 
     component.fixture.detectChanges();
 
