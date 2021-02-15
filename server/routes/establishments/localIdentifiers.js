@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const models = require('./../../models');
 
 const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
@@ -34,7 +35,30 @@ const missingLocalIdentifiers = async (req, res) => {
     return res.status(503).send(thisError.safe);
   }
 };
+const getMissingLocalIdentifiers = async (req, res) => {
+  try {
+    const establishmentCount = await models.establishment.getMissingEstablishmentRefCount(req.establishmentId);
+    const workerCount = await models.establishment.getMissingWorkerRefCount(req.establishmentId);
+    const establishmentsWithMissingWorkerRef = await models.establishment.getEstablishmentsWithMissingWorkerRef(req.establishmentId);
+
+    const uniqueEstablishments = establishmentsWithMissingWorkerRef.map(f => {
+      return {uid: f.uid,
+      name: f.NameValue};
+    });
+
+    return res.status(200).json({
+      establishment: establishmentCount,
+      worker: workerCount,
+      establishmentList: uniqueEstablishments
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(503).send();
+  }
+};
 
 router.route('/').get(hasPermission('canBulkUpload'), missingLocalIdentifiers);
+router.route('/missing').get(hasPermission('canBulkUpload'), getMissingLocalIdentifiers);
 
 module.exports = router;
+module.exports.getMissingLocalIdentifiers = getMissingLocalIdentifiers;

@@ -5,7 +5,7 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
-  ErrorReport, lastBulkUploadFile, MissingReferences,
+  ErrorReport, EstablishmentList, lastBulkUploadFile, MissingReferences,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -22,6 +22,7 @@ import { BehaviorSubject, from, interval, Observable } from 'rxjs';
 import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
+import { Alert } from '@core/model/alert.model';
 
 export interface NullLocalIdentifiersResponse {
   establishments: Array<{
@@ -46,6 +47,10 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+  public establishmentsWithMissingWorkerIds$ = new BehaviorSubject<[EstablishmentList]>(null);
+  private _alert$: BehaviorSubject<Alert> = new BehaviorSubject<Alert>(null);
+  public alert$: Observable<Alert> = this._alert$.asObservable();
+
   protected endpoint = 'uploaded';
 
   constructor(
@@ -53,6 +58,10 @@ export class BulkUploadService {
     private establishmentService: EstablishmentService,
     private userService: UserService,
   ) {}
+
+  public get alert(): Alert {
+    return this._alert$.value as Alert;
+  }
 
   public get workPlaceReferences$() {
     return this.userService.getEstablishments().pipe(
@@ -70,6 +79,25 @@ export class BulkUploadService {
         this.setWorkplaceReferences(references);
       }),
     );
+  }
+
+  public setMissingNavigation(workplaces: [EstablishmentList]){
+    this.establishmentsWithMissingWorkerIds$.next(workplaces);
+  }
+
+  public getMissingNavigation(){
+    return this.establishmentsWithMissingWorkerIds$.value;
+  }
+
+  public nextMissingNavigation(){
+    const establishments = this.establishmentsWithMissingWorkerIds$.value;
+    if(!establishments.length){
+      this._alert$.next({
+        type: 'success',
+        message: "All workplace and staff references have been added."});
+      return ['/dev','bulk-upload'];
+    }
+    return ['/dev','bulk-upload', establishments[0].uid, 'missing-staff-references'];
   }
 
   public setWorkplaceReferences(references: Workplace[]) {
@@ -97,7 +125,6 @@ export class BulkUploadService {
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    console.log('Trying to upload');
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
@@ -169,7 +196,7 @@ export class BulkUploadService {
   }
 
   public getMissingRef(workplaceUid:string): Observable<MissingReferences>{
-    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/bulkupload/references/missing`)
+    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`)
   }
 
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {

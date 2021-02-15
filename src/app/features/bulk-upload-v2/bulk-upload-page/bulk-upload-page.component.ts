@@ -9,6 +9,8 @@ import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-uplo
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { AlertService } from '@core/services/alert.service';
+import { Alert } from '@core/model/alert.model';
 
 @Component({
   selector: 'app-bulk-upload-page',
@@ -23,12 +25,14 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   public uploadValidationErrors: Array<ErrorDefinition>;
   public serverError: string;
   public showErrorSummary: boolean;
+  public alert:Alert = null;
 
   constructor(
     private establishmentService: EstablishmentService,
     private bulkUploadService: BulkUploadService,
     private errorSummaryService: ErrorSummaryService,
     private breadcrumbService: BreadcrumbService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit() {
@@ -39,7 +43,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
     this.setupSubscription();
     this.bulkUploadService.setReturnTo(null);
   }
-
   public setupFormErrorsMap(): void {
     this.formErrorsMap = this.bulkUploadService.formErrorsMap();
   }
@@ -72,6 +75,13 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
         }
       }),
     );
+    this.subscriptions.add(
+      this.bulkUploadService.alert$.subscribe((alert: Alert) => {
+        if (alert) {
+          this.alertService.addAlert(alert);
+        }
+      })
+    )
   }
 
   /**

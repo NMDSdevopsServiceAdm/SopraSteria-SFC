@@ -1,10 +1,9 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
@@ -15,9 +14,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
+import { EstablishmentList } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-bu-missing-staff-references-page',
@@ -25,13 +25,13 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
   styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
-  private primaryWorkplace: Establishment;
+export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
   private establishmentUid: string;
   public workplaceName: string;
   public showMissing = false;
+  private establishmentsToDo: [EstablishmentList];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -45,23 +45,34 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     private workerService: WorkerService,
   ) {
     super(errorSummaryService, formBuilder);
+    this.subscriptions.add(
+      this.router.events
+        .pipe(
+          filter(event => event instanceof NavigationEnd),
+          map(() => this.activatedRoute),
+          filter(route => !route.snapshot.fragment),
+          map(route => route.snapshot.data)
+        )
+        .subscribe(data => {
+          this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
+          this.references = orderBy(
+            data.references,
+            [(worker: Worker) => worker.nameOrId.toLowerCase()],
+            ['asc'],
+          );
+          this.getWorkplaceName();
+          this.setupForm();
+          this.setServerErrors();
+          this.showToggles = this.anyFilledReferences();
+        })
+    );
   }
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
-    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
-    this.references = this.activatedRoute.snapshot.data.references;
-
-    this.references = orderBy(
-      this.activatedRoute.snapshot.data.references,
-      [(worker: Worker) => worker.nameOrId.toLowerCase()],
-      ['asc'],
-    );
-    this.setupForm();
-    this.setServerErrors();
-    this.getWorkplaceName();
-    this.showToggles = this.anyFilledReferences();
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   public toggleShowAll() {
@@ -82,9 +93,8 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   private getWorkplaceName(): void {
-    this.workplaceName = this.activatedRoute.snapshot.data.workplaceReferences.find(
-      ({ uid }) => uid === this.establishmentUid,
-    ).name;
+   this.establishmentsToDo = this.bulkUploadService.getMissingNavigation();
+   this.workplaceName = this.establishmentsToDo[0].name;
   }
 
   protected save(): void {
@@ -94,7 +104,9 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
         .pipe(take(1))
         .subscribe(
           () => {
-            this.router.navigate(['/dev', 'bulk-upload', 'workplace-references']);
+            this.establishmentsToDo.shift();
+            this.bulkUploadService.setMissingNavigation(this.establishmentsToDo);
+            this.router.navigate(this.bulkUploadService.nextMissingNavigation());
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),

@@ -1000,6 +1000,48 @@ module.exports = function (sequelize, DataTypes) {
     }
 
   };
+  Establishment.getEstablishmentsWithMissingWorkerRef = async function(establishmentId) {
+    const isParent = this.findOne({
+      attributes: ['isParent'],
+      where: { id: establishmentId }
+    });
+    if (isParent) {
+      return this.findAll({
+        attributes: [
+          'uid',
+          'NameValue'
+        ],
+        include:
+          {
+            attributes: ['id'],
+              model: sequelize.models.worker,
+            as: 'workers',
+            where: {
+              LocalIdentifierValue: {
+                [sequelize.Op.is]: null
+              },
+              archived: false
+            },
+          },
+        where: {
+          [sequelize.Op.or]: [
+            {
+              id: establishmentId
+            },
+            {
+              parentId: establishmentId,
+              dataOwner: 'Parent',
+            }
+          ],
+          ustatus: {
+            [sequelize.Op.is]: null,
+          },
+        }
+      });
+    }else{
+      return this.getMissingWorkerRefCount(establishmentId) > 0  ? [establishmentId]: [];
+    }
+  };
   Establishment.getMissingWorkerRefCount = async function(establishmentId) {
     const isParent = this.findOne({
       attributes: ['isParent'],
@@ -1015,7 +1057,7 @@ module.exports = function (sequelize, DataTypes) {
               LocalIdentifierValue: {
                 [sequelize.Op.is]: null
               },
-
+              archived:false,
             },
           },
         where: {
