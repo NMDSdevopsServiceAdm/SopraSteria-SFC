@@ -63,6 +63,7 @@ const getHistory = async (_, res) => {
 router.route('/').get(getInactiveWorkplaces);
 router.route('/').post(createCampaign);
 router.route('/history').get(getHistory);
+router.use('/report', require('./report'));
 
 module.exports = router;
 module.exports.findInactiveWorkplaces = findInactiveWorkplaces;

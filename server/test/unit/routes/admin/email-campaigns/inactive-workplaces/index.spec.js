@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { findInactiveWorkplaces } = require('../../../../../routes/admin/email-campaigns/inactive-workplaces');
+const { findInactiveWorkplaces } = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
