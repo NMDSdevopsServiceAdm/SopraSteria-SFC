@@ -142,8 +142,7 @@ describe('MissingWorkplaceReferencesComponent', () => {
 
   it('should show duplicate error when submitting with same input in multiple boxes(4 messages - 2 top, 2 under fields)', async () => {
     const workplaces = [establishmentBuilder(), establishmentBuilder()] as Workplace[];
-    const references = workplaces;
-    const { component } = await setup(references);
+    const { component } = await setup(workplaces);
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'Enter a different reference, this one has already been used';
 
