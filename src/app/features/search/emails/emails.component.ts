@@ -1,3 +1,7 @@
+import { DecimalPipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
+import { AlertService } from '@core/services/alert.service';
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from '@core/services/dialog.service';
 
@@ -10,17 +14,43 @@ import {
   templateUrl: './emails.component.html',
 })
 export class EmailsComponent implements OnInit {
-  constructor(private dialogService: DialogService) {}
+  constructor(
+    public alertService: AlertService,
+    public dialogService: DialogService,
+    private route: ActivatedRoute,
+    private emailCampaignService: EmailCampaignService,
+    private decimalPipe: DecimalPipe,
+  ) {}
+
+  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public history = this.route.snapshot.data.emailCampaignHistory;
 
   ngOnInit(): void {}
 
   public confirmSendEmails(event: Event): void {
     event.preventDefault();
 
-    this.dialogService.open(SendEmailsConfirmationDialogComponent, {}).afterClosed.subscribe((hasConfirmed) => {
-      if (hasConfirmed) {
+    this.dialogService
+      .open(SendEmailsConfirmationDialogComponent, { inactiveWorkplaces: this.inactiveWorkplaces })
+      .afterClosed.subscribe((hasConfirmed) => {
+        if (hasConfirmed) {
+          this.sendEmails();
+        }
+      });
+  }
 
-      }
+  private sendEmails(): void {
+    this.emailCampaignService.createCampaign().subscribe((latestCampaign) => {
+      this.history.unshift(latestCampaign);
+
+      this.alertService.addAlert({
+        type: 'success',
+        message: `${this.decimalPipe.transform(latestCampaign.emails)} emails sent successfully.`,
+      });
+
+      this.emailCampaignService.getInactiveWorkplaces().subscribe(({ inactiveWorkplaces }) => {
+        this.inactiveWorkplaces = inactiveWorkplaces;
+      });
     });
   }
 }

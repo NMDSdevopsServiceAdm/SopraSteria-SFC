@@ -1,9 +1,9 @@
 <h1 class="govuk-heading-xl">Inactive Workplaces</h1>
 
 <dl class="govuk-list--definition">
-  <dt>Total number of inactive workplaces</dt>
-  <dd>
-    {{ '5,723' }}
+  <dt>Total number of inactive workplaces to email</dt>
+  <dd data-testid="inactiveWorkplaces">
+    {{ inactiveWorkplaces | number }}
   </dd>
 </dl>
 
@@ -21,18 +21,24 @@
   </div>
 </div>
 
-<h2>History</h2>
-<table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Date</th>
-      <th class="govuk-table__header" scope="col">Total emails sent</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell">05/01/2021</td>
-      <td class="govuk-table__cell">1,263</td>
-    </tr>
-  </tbody>
-</table>
+<div data-testid="emailCampaignHistory">
+  <h2>History</h2>
+  <table class="govuk-table" *ngIf="history.length > 0; else noHistory">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Date</th>
+        <th class="govuk-table__header" scope="col">Total emails sent</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row" *ngFor="let row of history">
+        <td class="govuk-table__cell">{{ row.date | date: 'dd/MM/yyyy' }}</td>
+        <td class="govuk-table__cell">{{ row.emails | number }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noHistory>
+    <p>No emails have been sent yet.</p>
+  </ng-template>
+</div>
