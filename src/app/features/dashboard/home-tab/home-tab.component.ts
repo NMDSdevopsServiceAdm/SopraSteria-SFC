@@ -62,6 +62,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
   public workers: any[];
+  public workersCount: number;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -86,6 +87,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
             this.updateStaffRecords = !(workers.length > 0);
+            this.workersCount = workers.length;
           }),
         );
       }

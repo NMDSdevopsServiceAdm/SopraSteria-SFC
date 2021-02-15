@@ -23,6 +23,26 @@
         </div>
       </app-inset-text>
     </ng-container>
+    <ng-container *ngIf="workplace && canEditEstablishment && canAddWorker">
+      <app-inset-text *ngIf="workplace.numberOfStaff < workersCount" [color]="'todo'" data-testid="morerecords">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <h3 class="govuk-heading-s govuk-!-margin-top-0">You've more staff records than staff</h3>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <a href="#" class="govuk-util__float-right" (click)="selectStaffTab($event)">View staff records</a>
+          </div>
+        </div>
+        <p>
+          You said the total number of staff at your workplace was {{ workplace.numberOfStaff }}, but
+          {{ workersCount }} staff records have been added.
+        </p>
+        <p>
+          You either need to delete {{ workersCount - workplace.numberOfStaff }} staff records or change the total
+          number of staff for your workplace.
+        </p>
+      </app-inset-text>
+    </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
