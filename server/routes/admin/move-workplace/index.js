@@ -15,11 +15,17 @@ const moveWorkplaceAdmin = async (req, res) => {
     return res.status(406).send();
   }
 
-  sub.parentUid = parent.uid;
-  sub.parentId = parent.id;
-  sub.save();
+  try {
+    sub.parentUid = parent.uid;
+    sub.parentId = parent.id;
+    sub.save();
 
-  res.status(200).send();
+    res.status(200).send();
+  } catch (error) {
+    console.error(error);
+
+    res.status(503).send();
+  }
 };
 
 router.route('/').post(

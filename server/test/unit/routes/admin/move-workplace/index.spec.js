@@ -20,7 +20,7 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
   const subEstablishment = establishmentBuilder();
   subEstablishment.save = () => {};
 
-  let parentStub, subStub, saveStub;
+  let parentStub, subStub;
 
   const request = {
     method: 'POST',
@@ -33,7 +33,6 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
 
   beforeEach(async () => {
     const stub = sinon_sandbox.stub(models.establishment, 'findByUid');
-    saveStub = sinon_sandbox.stub(subEstablishment, 'save');
 
     parentStub = stub.onFirstCall().callsFake(async (id) => {
       if (id === parentEstablishment.uid) {
@@ -61,6 +60,7 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
   it('should return status 200 when sub is updated and saved', async () => {
     const req = httpMocks.createRequest(request);
     const res = httpMocks.createResponse();
+    const saveStub = sinon_sandbox.stub(subEstablishment, 'save');
 
     await moveWorkplaceAdmin(req, res);
 
@@ -69,6 +69,17 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
     expect(saveStub.calledOnce).be.true;
 
     expect(res.statusCode).to.deep.equal(200);
+  });
+
+  it('should return a 503 when the save fails', async () => {
+    const req = httpMocks.createRequest(request);
+    const res = httpMocks.createResponse();
+    const saveStub = sinon_sandbox.stub(subEstablishment, 'save').throws();
+
+    await moveWorkplaceAdmin(req, res);
+
+    expect(saveStub.calledOnce).be.true;
+    expect(res.statusCode).to.deep.equal(503);
   });
 
   it('Finds the correct parent and child workplace', async () => {

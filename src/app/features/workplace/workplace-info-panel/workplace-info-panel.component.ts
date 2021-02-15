@@ -149,10 +149,5 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public moveWorkplaceAdmin($event: Event): void {
     $event.preventDefault();
     const dialog = this.dialogService.open(MoveWorkplaceDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      // if (confirmToClose) {
-      //   this.linkToParentRequestedStatus = true;
-      // }
-    });
   }
 }

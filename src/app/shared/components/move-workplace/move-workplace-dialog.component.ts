@@ -107,16 +107,20 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
-        message: 'We could not send request to parent. You can try again or contact us.',
+        name: 403,
+        message: 'Invalid request parameters.',
       },
       {
-        name: 400,
-        message: 'Unable to send request to parent.',
+        name: 406,
+        message: 'The requested parent is not a parent.',
       },
       {
         name: 404,
-        message: 'Send request to parent service not found. You can try again or contact us.',
+        message: 'Parent or Sub not found.',
+      },
+      {
+        name: 503,
+        message: 'Failed to save updates.',
       },
     ];
   }
