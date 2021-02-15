@@ -60,11 +60,12 @@ const getErrorsWarnings = () => {
   return errWarn;
 };
 
-const errorReport = {
+export const errorReport = {
   establishments: getErrorsWarnings(),
   workers: getErrorsWarnings(),
   training: getErrorsWarnings(),
 };
+
 
 @Injectable()
 export class MockBulkUploadService extends BulkUploadService {

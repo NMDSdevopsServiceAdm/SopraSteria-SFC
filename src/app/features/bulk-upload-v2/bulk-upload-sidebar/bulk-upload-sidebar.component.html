@@ -14,7 +14,7 @@
 <ul class="govuk-list govuk-list--download">
   <li>
     <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workers.csv"
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
       (click)="downloadFile($event, BulkUploadFileType.Worker)"
     >
       Staff
@@ -22,7 +22,7 @@
   </li>
   <li>
     <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-establishments.csv"
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workplace.csv"
       (click)="downloadFile($event, BulkUploadFileType.Establishment)"
     >
       Workplace

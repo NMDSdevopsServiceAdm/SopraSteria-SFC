@@ -28,6 +28,7 @@ import { FileValidateStatusComponent } from './file-validate-status/file-validat
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
 import { LastBulkUploadComponent } from '@features/bulk-upload-v2/last-bulk-upload/last-bulk-upload.component';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
+import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 
 @NgModule({
   imports: [
@@ -59,6 +60,6 @@ import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolve
     CodesAndGuidanceComponent,
     LastBulkUploadComponent
   ],
-  providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver,LastBulkUploadResolver],
+  providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver,LastBulkUploadResolver,BulkUploadErrorsResolver],
 })
 export class BulkUploadV2Module {}
