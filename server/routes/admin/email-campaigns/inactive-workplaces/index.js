@@ -29,11 +29,11 @@ const findInactiveWorkplaces = async () => {
 }
 
 const getInactiveWorkplaces = async (_, res) => {
-  const data = {
-    inactiveWorkplaces: 4208,
-  };
+  const inactiveWorkplaces = await findInactiveWorkplaces();
 
-  return res.json(data);
+  return res.json({
+    inactiveWorkplaces: inactiveWorkplaces.length,
+  });
 }
 
 const createCampaign = async (_, res) => {
