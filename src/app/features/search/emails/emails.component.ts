@@ -1,8 +1,8 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
+import { Component, OnInit } from '@angular/core';
 import { DialogService } from '@core/services/dialog.service';
 
 import {
