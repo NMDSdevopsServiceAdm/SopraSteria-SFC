@@ -31,6 +31,7 @@ describe('EmailsComponent', () => {
             },
           },
         },
+      ],
     });
   }
 
@@ -38,7 +39,6 @@ describe('EmailsComponent', () => {
     const component = await setup();
     expect(component).toBeTruthy();
   });
-
 
   it('should display the total number of inactive workplaces', async () => {
     const component = await setup();
