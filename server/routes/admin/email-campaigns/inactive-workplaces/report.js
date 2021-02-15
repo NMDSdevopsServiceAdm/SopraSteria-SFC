@@ -2,8 +2,6 @@ const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
 
-const headers = ['Workplace name', 'Workplace ID', 'Date last updated', 'Email template', 'Data owner', 'Name of user', 'User email'];
-
 const generateReport = async (_, res) => {
   let workbook = new excelJS.Workbook();
 
@@ -11,6 +9,8 @@ const generateReport = async (_, res) => {
   workbook.properties.date1904 = true;
 
   const worksheet = workbook.addWorksheet('Inactive workplaces');
+  worksheet.columns = ['Workplace name', 'Workplace ID', 'Date last updated', 'Email template', 'Data owner', 'Name of user', 'User email'];
+  worksheet.getRow(1).font = { bold: true, name: 'Calibri' };
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-inactiveWorkplaces.xlsx');
