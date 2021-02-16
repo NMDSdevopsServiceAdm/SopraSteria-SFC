@@ -61,7 +61,6 @@ const routes: Routes = [
     component: MissingStaffReferencesComponent,
     resolve: {
       references: StaffReferencesResolver,
-      workplaceReferences: WorkplacesReferencesResolver,
     },
     data: { title: 'Staff references' },
     runGuardsAndResolvers: 'always',

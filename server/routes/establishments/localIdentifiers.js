@@ -39,20 +39,20 @@ const getMissingLocalIdentifiers = async (req, res) => {
   try {
     const establishmentCount = await models.establishment.getMissingEstablishmentRefCount(req.establishmentId);
     const workerCount = await models.establishment.getMissingWorkerRefCount(req.establishmentId);
-    const establishmentsWithMissingWorkerRef = await models.establishment.getEstablishmentsWithMissingWorkerRef(req.establishmentId);
+    const establishmentsWithMissingWorkerRef = await models.establishment.getEstablishmentsWithMissingWorkerRef(
+      req.establishmentId,
+    );
 
-    const uniqueEstablishments = establishmentsWithMissingWorkerRef.map(f => {
-      return {uid: f.uid,
-      name: f.NameValue};
+    const uniqueEstablishments = establishmentsWithMissingWorkerRef.map((f) => {
+      return { uid: f.uid, name: f.NameValue };
     });
 
     return res.status(200).json({
       establishment: establishmentCount,
       worker: workerCount,
-      establishmentList: uniqueEstablishments
+      establishmentList: uniqueEstablishments,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (_) {
     return res.status(503).send();
   }
 };

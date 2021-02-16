@@ -25,7 +25,7 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
   public uploadValidationErrors: Array<ErrorDefinition>;
   public serverError: string;
   public showErrorSummary: boolean;
-  public alert:Alert = null;
+  public alert: Alert = null;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -75,13 +75,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
         }
       }),
     );
-    this.subscriptions.add(
-      this.bulkUploadService.alert$.subscribe((alert: Alert) => {
-        if (alert) {
-          this.alertService.addAlert(alert);
-        }
-      })
-    )
   }
 
   /**

@@ -3,10 +3,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { EstablishmentList } from '@core/model/bulk-upload.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -41,10 +41,11 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, alertService);
     this.subscriptions.add(
       this.router.events
         .pipe(
@@ -60,7 +61,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
             [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
             ['asc'],
           );
-
+          this.establishmentsToDo = this.bulkUploadService.getMissingNavigation();
           this.getWorkplaceName();
           this.setupForm();
           this.setServerErrors();
@@ -70,7 +71,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
+    this.setBackLink(['/dashboard']);
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -94,7 +95,6 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   private getWorkplaceName(): void {
-    this.establishmentsToDo = this.bulkUploadService.getMissingNavigation();
     this.workplaceName = this.establishmentsToDo[0].name;
   }
 
@@ -107,7 +107,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
           () => {
             this.establishmentsToDo.shift();
             this.bulkUploadService.setMissingNavigation(this.establishmentsToDo);
-            this.router.navigate(this.bulkUploadService.nextMissingNavigation());
+            this.nextMissingPage(this.bulkUploadService.nextMissingNavigation());
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),

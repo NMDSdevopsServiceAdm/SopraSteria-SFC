@@ -7,6 +7,8 @@ import { Workplace } from '@core/model/my-workplaces.model';
 import { Worker } from '@core/model/worker.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ArrayUtil } from '@core/utils/array-util';
+import { BackService } from '@core/services/back.service';
+import { Router } from '@angular/router';
 
 @Directive()
 export class BulkUploadReferencesDirective implements AfterViewInit {
@@ -19,8 +21,14 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public showToggles = false;
+  protected backService: BackService;
+  protected router: Router;
 
-  constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}
+  constructor(
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected alertService,
+  ) {}
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
@@ -118,5 +126,18 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
   protected anyFilledReferences(): boolean {
     return this.references.some((reference) => reference.localIdentifier !== null);
+  }
+  protected setBackLink(returnTo): void {
+    this.backService.setBackLink(returnTo);
+  }
+  protected nextMissingPage(url): void {
+    this.router.navigate(url).then(() => {
+      if (url[url.length - 1] === 'bulk-upload') {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'All workplace and staff references have been added.',
+        });
+      }
+    });
   }
 }

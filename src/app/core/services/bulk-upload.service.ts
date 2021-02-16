@@ -5,14 +5,17 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
-  ErrorReport, EstablishmentList, lastBulkUploadFile, MissingReferences,
+  ErrorReport,
+  EstablishmentList,
+  lastBulkUploadFile,
+  MissingReferences,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
   UploadedFilesRequestToDownloadResponse,
   UploadedFilesResponse,
   ValidatedFile,
-  ValidatedFilesResponse
+  ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
@@ -81,23 +84,20 @@ export class BulkUploadService {
     );
   }
 
-  public setMissingNavigation(workplaces: [EstablishmentList]){
+  public setMissingNavigation(workplaces: [EstablishmentList]) {
     this.establishmentsWithMissingWorkerIds$.next(workplaces);
   }
 
-  public getMissingNavigation(){
+  public getMissingNavigation() {
     return this.establishmentsWithMissingWorkerIds$.value;
   }
 
-  public nextMissingNavigation(){
+  public nextMissingNavigation() {
     const establishments = this.establishmentsWithMissingWorkerIds$.value;
-    if(!establishments.length){
-      this._alert$.next({
-        type: 'success',
-        message: "All workplace and staff references have been added."});
-      return ['/dev','bulk-upload'];
+    if (!establishments.length) {
+      return ['/dev', 'bulk-upload'];
     }
-    return ['/dev','bulk-upload', establishments[0].uid, 'missing-staff-references'];
+    return ['/dev', 'bulk-upload', establishments[0].uid, 'missing-staff-references'];
   }
 
   public setWorkplaceReferences(references: Workplace[]) {
@@ -191,12 +191,12 @@ export class BulkUploadService {
     });
   }
 
-  public getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
-    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`)
+  public getLastBulkUpload(workplaceUid: string): Observable<[lastBulkUploadFile]> {
+    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`);
   }
 
-  public getMissingRef(workplaceUid:string): Observable<MissingReferences>{
-    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`)
+  public getMissingRef(workplaceUid: string): Observable<MissingReferences> {
+    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`);
   }
 
   public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {

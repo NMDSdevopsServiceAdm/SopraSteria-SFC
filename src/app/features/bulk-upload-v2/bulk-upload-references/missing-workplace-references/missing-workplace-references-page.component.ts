@@ -3,12 +3,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -29,7 +28,6 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
   public showMissing = false;
-  public nextPage: URLStructure;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -39,13 +37,13 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    private breadcrumbService: BreadcrumbService,
+    protected alertService: AlertService,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, alertService);
   }
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
+    this.setBackLink(['/dashboard']);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
@@ -64,7 +62,6 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.setupForm();
     this.setServerErrors();
     this.showToggles = this.anyFilledReferences();
-    this.nextPage = { url: this.bulkUploadService.nextMissingNavigation() };
   }
 
   public toggleShowAll() {
@@ -99,7 +96,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
               };
             }) as Workplace[];
             this.bulkUploadService.setWorkplaceReferences(updatedReferences);
-            this.router.navigate(this.nextPage.url);
+            this.nextMissingPage(this.bulkUploadService.nextMissingNavigation());
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),

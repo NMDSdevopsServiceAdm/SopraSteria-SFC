@@ -6,10 +6,15 @@ enum Path {
   WORKPLACE_REFERENCES = '/bulk-upload/workplace-references',
   STAFF_REFERENCES = '/bulk-upload/workplace-references/:uid/staff-references',
   LAST_BULK_UPLOAD = '/bulk-upload/last-bulk-upload',
+  MISSING_REFERENCES = '/bulk-upload/missing',
 }
 
 export const bulkUploadJourney: JourneyRoute = {
   children: [
+    {
+      title: 'Bulk Upload',
+      path: Path.MISSING_REFERENCES,
+    },
     {
       title: 'Bulk upload',
       path: Path.BULK_UPLOAD,
@@ -28,11 +33,11 @@ export const bulkUploadJourney: JourneyRoute = {
             },
           ],
         },
-        {
-          title: 'Last bulk upload',
-          path: Path.LAST_BULK_UPLOAD,
-        },
       ],
+    },
+    {
+      title: 'Last bulk upload',
+      path: Path.LAST_BULK_UPLOAD,
     },
   ],
 };
