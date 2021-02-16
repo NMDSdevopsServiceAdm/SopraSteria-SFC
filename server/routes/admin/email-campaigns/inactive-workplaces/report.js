@@ -1,35 +1,8 @@
 const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
-// const { findInactiveWorkplaces } = require('./index');
+const findInactiveWorkplaces = require('./findInactiveWorkplaces');
 const excelUtils = require('../../../../utils/excelUtils');
-
-const findInactiveWorkplaces = async () => {
-  return [
-    {
-      name: 'Workplace Name',
-      nmdsId: 'J1234567',
-      lastUpdated: '2020-06-01',
-      emailTemplate: 6,
-      dataOwner: 'Workplace',
-      user: {
-        name: 'Test Name',
-        email: 'test@example.com',
-      },
-    },
-    {
-      name: 'Second Workplace Name',
-      nmdsId: 'A0012345',
-      lastUpdated: '2020-01-01',
-      emailTemplate: 12,
-      dataOwner: 'Workplace',
-      user: {
-        name: 'Name McName',
-        email: 'name@mcname.com',
-      },
-    }
-  ];
-}
 
 const printRow = (worksheet, item) => {
     worksheet.addRow({
@@ -64,7 +37,6 @@ const generateReport = async (_, res) => {
   headerRow.font = { bold: true, name: 'Calibri' };
 
   const inactiveWorkplaces = await findInactiveWorkplaces();
-  // console.log(inactiveWorkplaces);
   inactiveWorkplaces.forEach(workplace => {
     printRow(worksheet, workplace);
   });

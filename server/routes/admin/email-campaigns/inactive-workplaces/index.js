@@ -1,32 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const findInactiveWorkplaces = async () => {
-  return [
-    {
-      name: 'Workplace Name',
-      nmdsId: 'J1234567',
-      lastUpdated: '2020-06-01',
-      emailTemplate: 6,
-      dataOwner: 'Workplace',
-      user: {
-        name: 'Test Name',
-        email: 'test@example.com',
-      },
-    },
-    {
-      name: 'Second Workplace Name',
-      nmdsId: 'A0012345',
-      lastUpdated: '2020-01-01',
-      emailTemplate: 12,
-      dataOwner: 'Workplace',
-      user: {
-        name: 'Name McName',
-        email: 'name@mcname.com',
-      },
-    }
-  ];
-}
+const findInactiveWorkplaces = require('./findInactiveWorkplaces');
 
 const getInactiveWorkplaces = async (_, res) => {
   const inactiveWorkplaces = await findInactiveWorkplaces();
@@ -66,4 +41,3 @@ router.route('/history').get(getHistory);
 router.use('/report', require('./report'));
 
 module.exports = router;
-module.exports.findInactiveWorkplaces = findInactiveWorkplaces;
