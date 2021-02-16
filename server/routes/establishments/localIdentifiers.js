@@ -51,8 +51,7 @@ const getMissingLocalIdentifiers = async (req, res) => {
       worker: workerCount,
       establishmentList: uniqueEstablishments
     });
-  } catch (err) {
-    console.log(err);
+  } catch(_){
     return res.status(503).send();
   }
 };

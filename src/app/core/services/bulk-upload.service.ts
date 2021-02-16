@@ -92,9 +92,6 @@ export class BulkUploadService {
   public nextMissingNavigation(){
     const establishments = this.establishmentsWithMissingWorkerIds$.value;
     if(!establishments.length){
-      this._alert$.next({
-        type: 'success',
-        message: "All workplace and staff references have been added."});
       return ['/dev','bulk-upload'];
     }
     return ['/dev','bulk-upload', establishments[0].uid, 'missing-staff-references'];

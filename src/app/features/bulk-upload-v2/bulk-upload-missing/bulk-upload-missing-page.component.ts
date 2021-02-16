@@ -4,6 +4,8 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { URLStructure } from '@core/model/url.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 @Component({
   selector: 'app-bulk-upload-missing-page',
