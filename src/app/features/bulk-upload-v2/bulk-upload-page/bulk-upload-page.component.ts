@@ -75,13 +75,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
         }
       }),
     );
-    this.subscriptions.add(
-      this.bulkUploadService.alert$.subscribe((alert: Alert) => {
-        if (alert) {
-          this.alertService.addAlert(alert);
-        }
-      })
-    )
   }
 
   /**
