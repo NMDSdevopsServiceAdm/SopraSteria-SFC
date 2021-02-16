@@ -8,7 +8,6 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -27,7 +26,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 })
 export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
+  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'missing'] };
   private establishmentUid: string;
   public workplaceName: string;
   public showMissing = false;
@@ -42,10 +41,9 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected alertService: AlertService,
-    private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
   ) {
-    super(errorSummaryService, formBuilder, alertService);
+    super(errorSummaryService, formBuilder, alertService, backService, router);
     this.subscriptions.add(
       this.router.events
         .pipe(
@@ -71,7 +69,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   ngOnInit(): void {
-    this.setBackLink(['/dashboard']);
+    this.setBackLink(this.return);
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

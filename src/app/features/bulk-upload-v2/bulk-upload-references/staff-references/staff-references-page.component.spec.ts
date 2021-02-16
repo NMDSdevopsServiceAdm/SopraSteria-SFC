@@ -98,7 +98,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should hide missing worker error after filling empty field and resubmitting', async () => {
     const worker = workerBuilder();
-    const references = [worker] as Worker[];
+    const references = ([worker] as unknown) as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
@@ -184,7 +184,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
     const workers = [workerBuilder(), workerBuilder()];
-    const references = workers as Worker[];
+    const references = workers;
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'Enter a different reference, this one has already been used';

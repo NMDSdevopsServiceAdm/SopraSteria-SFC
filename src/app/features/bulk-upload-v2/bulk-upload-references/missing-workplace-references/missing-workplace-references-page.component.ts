@@ -26,7 +26,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'missing'] };
   public showMissing = false;
 
   constructor(
@@ -39,11 +39,11 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     protected router: Router,
     protected alertService: AlertService,
   ) {
-    super(errorSummaryService, formBuilder, alertService);
+    super(errorSummaryService, formBuilder, alertService, backService, router);
   }
 
   ngOnInit(): void {
-    this.setBackLink(['/dashboard']);
+    this.setBackLink(this.return);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
@@ -101,9 +101,5 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
           (error: HttpErrorResponse) => this.onError(error),
         ),
     );
-  }
-
-  public setReturn(): void {
-    this.bulkUploadService.setReturnTo({ url: ['/dev/bulk-upload/workplace-references'] });
   }
 }

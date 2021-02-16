@@ -1,14 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ArrayUtil } from '@core/utils/array-util';
-import { BackService } from '@core/services/back.service';
-import { Router } from '@angular/router';
 
 @Directive()
 export class BulkUploadReferencesDirective implements AfterViewInit {
@@ -21,13 +22,13 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public showToggles = false;
-  protected backService: BackService;
-  protected router: Router;
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected alertService,
+    protected alertService: AlertService,
+    protected backService: BackService,
+    protected router: Router,
   ) {}
 
   ngAfterViewInit(): void {

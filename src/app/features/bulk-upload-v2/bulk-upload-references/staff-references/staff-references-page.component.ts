@@ -7,6 +7,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -42,8 +43,9 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
+    protected alertService: AlertService,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, alertService, backService, router);
   }
 
   ngOnInit(): void {

@@ -7,6 +7,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -38,8 +39,9 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     protected formBuilder: FormBuilder,
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
+    protected alertService: AlertService,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, alertService, backService, router);
   }
 
   ngOnInit(): void {
