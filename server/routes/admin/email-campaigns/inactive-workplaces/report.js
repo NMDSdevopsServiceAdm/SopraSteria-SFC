@@ -1,7 +1,47 @@
 const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
+// const { findInactiveWorkplaces } = require('./index');
 const excelUtils = require('../../../../utils/excelUtils');
+
+const findInactiveWorkplaces = async () => {
+  return [
+    {
+      name: 'Workplace Name',
+      nmdsId: 'J1234567',
+      lastUpdated: '2020-06-01',
+      emailTemplate: 6,
+      dataOwner: 'Workplace',
+      user: {
+        name: 'Test Name',
+        email: 'test@example.com',
+      },
+    },
+    {
+      name: 'Second Workplace Name',
+      nmdsId: 'A0012345',
+      lastUpdated: '2020-01-01',
+      emailTemplate: 12,
+      dataOwner: 'Workplace',
+      user: {
+        name: 'Name McName',
+        email: 'name@mcname.com',
+      },
+    }
+  ];
+}
+
+const printRow = (worksheet, item) => {
+    worksheet.addRow({
+      workplace: item.name,
+      workplaceId: item.nmdsId,
+      lastUpdated: item.lastUpdated,
+      emailTemplate: item.emailTemplate,
+      dataOwner: item.dataOwner,
+      nameOfUser: item.user.name,
+      userEmail: item.user.email,
+    });
+};
 
 const generateReport = async (_, res) => {
   const workbook = new excelJS.Workbook();
@@ -11,17 +51,23 @@ const generateReport = async (_, res) => {
 
   const worksheet = workbook.addWorksheet('Inactive workplaces');
   worksheet.columns = [
-    { header: 'Workplace name' },
-    { header: 'Workplace ID' },
-    { header: 'Date last updated' },
-    { header: 'Email template' },
-    { header: 'Data owner' },
-    { header: 'Name of user' },
-    { header: 'User email' },
+    { header: 'Workplace name', key: 'workplace' },
+    { header: 'Workplace ID', key: 'workplaceId' },
+    { header: 'Date last updated', key: 'lastUpdated' },
+    { header: 'Email template', key: 'emailTemplate' },
+    { header: 'Data owner', key: 'dataOwner' },
+    { header: 'Name of user', key: 'nameOfUser' },
+    { header: 'User email', key: 'userEmail' },
   ];
 
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
+
+  const inactiveWorkplaces = await findInactiveWorkplaces();
+  // console.log(inactiveWorkplaces);
+  inactiveWorkplaces.forEach(workplace => {
+    printRow(worksheet, workplace);
+  });
 
   excelUtils.fitColumnsToSize(worksheet);
 
