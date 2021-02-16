@@ -1,13 +1,12 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { URLStructure } from '@core/model/url.model';
 
-const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
-
-export const  workerBuilder = build('Worker', {
+export const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
@@ -15,19 +14,19 @@ export const  workerBuilder = build('Worker', {
     mainJob: {
       id: sequence(),
       title: fake((f) => f.lorem.sentence()),
-      other: null
+      other: null,
     },
     contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'),
     localIdentifier: fake((f) => f.name.findName()),
-    zeroHoursContract: oneOf('Yes', 'No', 'Don\'t know'),
+    zeroHoursContract: oneOf('Yes', 'No', "Don't know"),
     weeklyHoursAverage: null,
     weeklyHoursContracted: {
       value: 'Yes',
-      hours: fake((f) => f.random.number())
+      hours: fake((f) => f.random.number()),
     },
     annualHourlyPay: {
       value: 'Hourly',
-      rate: 8.98
+      rate: 8.98,
     },
     careCertificate: 'Yes',
     apprenticeshipTraining: null,
@@ -45,8 +44,8 @@ export const  workerBuilder = build('Worker', {
     expiringTrainingCount: 0,
     missingMandatoryTrainingCount: 0,
     qualificationCount: 0,
-    fluJab: null
-  }
+    fluJab: null,
+  },
 });
 
 const worker = workerBuilder();
@@ -54,17 +53,6 @@ const worker = workerBuilder();
 @Injectable()
 export class MockWorkerService extends WorkerService {
   private _worker;
-
-  public static factory(worker) {
-    return (httpClient: HttpClient) => {
-      const service = new MockWorkerService(httpClient);
-      if (worker) {
-        service.worker = worker;
-        service.worker$ = of(worker as Worker);
-      }
-      return service;
-    };
-  }
 
   public get worker() {
     return this._worker;
@@ -77,7 +65,7 @@ export class MockWorkerService extends WorkerService {
   public get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
-      fragment: 'workplace'
+      fragment: 'workplace',
     };
   }
 
@@ -89,10 +77,21 @@ export class MockWorkerService extends WorkerService {
       trainingLastUpdated: '2020-01-01T00:00:00Z',
       mainJob: {
         jobId: 8,
-        other: null
-      }
-    }
+        other: null,
+      },
+    },
   ] as Worker[]);
+
+  public static factory(worker) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerService(httpClient);
+      if (worker) {
+        service.worker = worker;
+        service.worker$ = of(worker as Worker);
+      }
+      return service;
+    };
+  }
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
     return of([
@@ -102,9 +101,9 @@ export class MockWorkerService extends WorkerService {
         trainingLastUpdated: '2020-01-01T00:00:00Z',
         mainJob: {
           jobId: 8,
-          other: null
-        }
-      }
+          other: null,
+        },
+      },
     ] as Worker[]);
   }
 }

@@ -146,11 +146,11 @@ export interface NumberOfErrorsAndWarnings {
 export interface MissingReferences {
   establishment: number;
   worker: number;
-  establishmentList: [EstablishmentList];
+  establishmentList?: [EstablishmentList];
 }
 export interface EstablishmentList {
-    uid: string;
-    name: string;
+  uid: string;
+  name: string;
 }
 
 export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';

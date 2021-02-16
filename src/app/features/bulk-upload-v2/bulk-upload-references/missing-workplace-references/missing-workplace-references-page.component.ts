@@ -29,7 +29,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
   public showMissing = false;
-  public nextPage:URLStructure;
+  public nextPage: URLStructure;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -53,11 +53,18 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
         return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
       return reference.dataOwner === WorkplaceDataOwner.Workplace;
     });
-    this.references = orderBy(this.references, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
+    this.references = orderBy(
+      this.references,
+      [
+        (workplace: Workplace) => workplace.localIdentifier !== null,
+        (workplace: Workplace) => workplace.name.toLowerCase(),
+      ],
+      ['asc'],
+    );
     this.setupForm();
     this.setServerErrors();
     this.showToggles = this.anyFilledReferences();
-    this.nextPage = {url:this.bulkUploadService.nextMissingNavigation()};
+    this.nextPage = { url: this.bulkUploadService.nextMissingNavigation() };
   }
 
   public toggleShowAll() {
