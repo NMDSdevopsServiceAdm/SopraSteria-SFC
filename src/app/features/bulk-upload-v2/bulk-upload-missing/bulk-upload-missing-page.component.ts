@@ -16,9 +16,14 @@ export class BulkUploadMissingPageComponent implements OnInit, OnDestroy {
   public missingRefCount: MissingReferences;
   public nextPage:URLStructure;
 
-  constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
+
+  constructor(
+    private bulkUploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit(): void {
+    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.subscriptions.add(
       this.bulkUploadService
         .getMissingRef(this.establishmentService.establishmentId)
