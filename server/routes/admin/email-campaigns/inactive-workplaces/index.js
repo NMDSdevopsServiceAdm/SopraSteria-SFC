@@ -41,3 +41,5 @@ router.route('/history').get(getHistory);
 router.use('/report', require('./report'));
 
 module.exports = router;
+module.exports.createCampaign = createCampaign;
+module.exports.getHistory = getHistory;
