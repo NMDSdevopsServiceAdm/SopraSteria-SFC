@@ -148,9 +148,6 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
   }
 
   private moveWorkplaceAdmin(): void {
-    // Do stuff
-    console.log('whoops');
-
     if (this.form.valid) {
       this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null;
     }
@@ -162,13 +159,13 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
 
     this.subscriptions.add(
       this.establishmentService.adminMoveWorkplace(parentAndSubWorkplaces).subscribe(
-        (data) => {
-          if (data) {
+        () => {
+          {
+            this.router.navigate(['/dashboard']);
             const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
-
             this.alertService.addAlert({
               type: 'success',
-              message: `Request to link to ${parentName} has been sent.`,
+              message: `${this.workplace.name} is now linked to ${parentName}.`,
             });
             this.closeDialogWindow(event, true);
           }

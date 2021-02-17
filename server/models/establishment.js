@@ -813,6 +813,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       attributes: [
         'id',
+        'uid',
         'ustatus',
         'locationId',
         'provId',

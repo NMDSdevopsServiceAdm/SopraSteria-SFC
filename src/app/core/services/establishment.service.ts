@@ -283,7 +283,7 @@ export class EstablishmentService {
   }
 
   //Move workplace as an admin
-  public adminMoveWorkplace(data: adminMoveWorkplace): Observable<adminMoveWorkplace> {
+  public adminMoveWorkplace(data: adminMoveWorkplace): Observable<any> {
     return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 }
