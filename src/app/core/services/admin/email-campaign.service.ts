@@ -17,4 +17,11 @@ export class EmailCampaignService {
   getHistory(): Observable<any> {
     return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/history');
   }
+
+  getReport(): Observable<any> {
+    return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/report', {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
 }

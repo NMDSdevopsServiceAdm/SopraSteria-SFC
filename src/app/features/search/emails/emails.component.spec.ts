@@ -128,4 +128,20 @@ describe('EmailsComponent', () => {
     const numInactiveWorkplaces = component.getByTestId('inactiveWorkplaces');
     expect(numInactiveWorkplaces.innerHTML).toContain('0');
   });
+
+  it('should download a report when the "Download report" button is clicked', async () => {
+    const component = await setup();
+
+    const emailCampaignService = TestBed.inject(EmailCampaignService);
+    const getReport = spyOn(emailCampaignService, 'getReport').and.callFake(() => of(null));
+    const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {});
+
+    component.fixture.componentInstance.inactiveWorkplaces = 25;
+    component.fixture.detectChanges();
+
+    fireEvent.click(component.getByText('Download report', { exact: false }));
+
+    expect(getReport).toHaveBeenCalled();
+    expect(saveAs).toHaveBeenCalled();
+  });
 });

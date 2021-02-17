@@ -48,4 +48,13 @@ describe('EmailCampaignService', () => {
 
     expect(req.request.method).toBe('GET');
   });
+
+  it('should get a report of inactive workplaces', () => {
+    service.getReport().subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces/report');
+
+    expect(req.request.method).toBe('GET');
+  });
 });
