@@ -51,14 +51,17 @@ describe('MissingStaffReferencesComponent', () => {
             snapshot: {
               data: {
                 references: references,
-                workplaceReferences: [{ uid: 123 }],
+                workplaceReferences:
+                  {establishment: 1, worker: 2,
+                     establishmentList: [{ uid: "123" ,name:"Workplace Steve"}]
+                  },
               },
               paramMap: {
                 get(uid) {
                   return 123;
                 },
               },
-            },
+            }
           },
         },
         BackService,

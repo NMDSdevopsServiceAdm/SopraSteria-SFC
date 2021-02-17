@@ -44,32 +44,21 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     private workerService: WorkerService,
   ) {
     super(errorSummaryService, formBuilder, alertService, backService, router);
-    this.subscriptions.add(
-      this.router.events
-        .pipe(
-          filter((event) => event instanceof NavigationEnd),
-          map(() => this.activatedRoute),
-          filter((route) => !route.snapshot.fragment),
-          map((route) => route.snapshot.data),
-        )
-        .subscribe((data) => {
-          this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
-          this.references = orderBy(
-            data.references,
-            [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
-            ['asc'],
-          );
-          this.establishmentsToDo = data.workplaceReferences?.establishmentList;
-          this.getWorkplaceName();
-          this.setupForm();
-          this.setServerErrors();
-          this.showToggles = this.anyFilledReferences();
-        }),
-    );
-  }
+   }
 
   ngOnInit(): void {
     this.setBackLink(this.return);
+    this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
+    this.references = orderBy(
+      this.activatedRoute.snapshot.data.references,
+      [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
+      ['asc'],
+    );
+    this.establishmentsToDo = this.activatedRoute.snapshot.data.workplaceReferences.establishmentList;
+    this.getWorkplaceName();
+    this.setupForm();
+    this.setServerErrors();
+    this.showToggles = this.anyFilledReferences();
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
