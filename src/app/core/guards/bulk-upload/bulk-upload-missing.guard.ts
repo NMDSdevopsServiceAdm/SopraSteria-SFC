@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, UrlTree } from '@angular/router';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ export class BulkUploadMissingGuard implements CanActivate {
     private router: Router,
   ) {}
 
-  canActivate(): Observable<boolean> {
+  canActivate(): Observable<boolean | UrlTree> {
     const workplaceID = this.establishmentService.primaryWorkplace
       ? this.establishmentService.primaryWorkplace.uid
       : this.establishmentService.establishmentId;
@@ -23,8 +23,8 @@ export class BulkUploadMissingGuard implements CanActivate {
     return this.bulkUploadService.getMissingRef(workplaceID).pipe(
       map((response) => {
         if (response.establishment > 0 || response.worker > 0) {
-          this.router.navigate(['/dev', 'bulk-upload', 'missing']);
-          return false;
+          const redirect: UrlTree = this.router.parseUrl('/dev/bulk-upload/missing');
+          return redirect;
         }
         return true;
       }),
