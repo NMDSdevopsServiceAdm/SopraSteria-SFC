@@ -108,6 +108,20 @@
 .asc-warning-banner {
   background-color: rgba(govuk-colour('orange'), 0.25);
 
+  @include govuk-media-query($from: desktop) {
+    .govuk-summary-list__value {
+      white-space: nowrap;
+      p {
+        left: -75%;
+        width: 100%;
+        position: relative;
+      }
+    }
+  }
+  .govuk-summary-list__actions {
+    padding-right: govuk-spacing(2);
+  }
+
   /* &::before, */
   &::after {
     content: '\0a0';
