@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-const sinon = require('sinon')
 const httpMocks = require('node-mocks-http');
 
 const findInactiveWorkplaces = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
