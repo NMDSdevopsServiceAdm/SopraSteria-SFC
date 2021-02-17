@@ -8,6 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workplace-summary',
@@ -24,9 +25,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public cqcStatusRequested: boolean;
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
+  public canViewListOfWorkers: boolean;
+  public workerCount: number;
 
   @Input() wdfView = false;
-  @Input() workerCount?: number;
 
   @Input()
   set workplace(workplace: any) {
@@ -35,12 +37,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
     if (this._workplace && this._workplace.capacities) {
       const temp = [];
-      this._workplace.capacities.forEach(capacity => {
+      this._workplace.capacities.forEach((capacity) => {
         temp[capacity.question] = temp[capacity.question] ? temp[capacity.question] + capacity.answer : capacity.answer;
       });
 
       if (Object.keys(temp).length) {
-        Object.keys(temp).forEach(key => {
+        Object.keys(temp).forEach((key) => {
           if (this.pluralMap[key]) {
             const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
             this.capacityMessages.push(message);
@@ -68,7 +70,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
-    private cqcStatusChangeService: CqcStatusChangeService
+    private cqcStatusChangeService: CqcStatusChangeService,
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
       '=1': '# bed available',
@@ -93,33 +95,39 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.subscriptions.add(
-      this.establishmentService.getCapacity(this.workplace.uid, true).subscribe(response => {
+      this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
-      })
+      }),
     );
-    this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe(hasPermissions => {
-        if (hasPermissions && hasPermissions.permissions) {
-          this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
-          this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-        }
-      })
-    );
+
+    if (this.canViewListOfWorkers) {
+      this.subscriptions.add(
+        this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
+          this.workerCount = workers.length;
+        }),
+      );
+    }
+
     this.cqcStatusRequested = false;
     this.subscriptions.add(
-      this.cqcStatusChangeService.getCqcRequestByEstablishmentId(this.workplace.id).subscribe(cqcStatus => {
+      this.cqcStatusChangeService.getCqcRequestByEstablishmentId(this.workplace.id).subscribe((cqcStatus) => {
         if (cqcStatus != null) {
           this.cqcStatusRequested = true;
           this.requestedServiceName = cqcStatus.data.requestedService.name;
           this.requestedServiceOtherName = cqcStatus.data.requestedService.other;
         }
-      })
+      }),
     );
   }
 
   public filterAndSortOtherServices(services: Service[]) {
-    return sortBy(services.filter(service => service.name !== this.workplace.mainService.name), 'id');
+    return sortBy(
+      services.filter((service) => service.name !== this.workplace.mainService.name),
+      'id',
+    );
   }
 
   public isArray(variable): boolean {
@@ -129,6 +137,13 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
     this.workerService.setReturnTo(this.return);
+  }
+
+  public selectStaffTab(event: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+    this.workerService.tabChanged.next(true);
   }
 
   ngOnDestroy() {

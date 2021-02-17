@@ -1,10 +1,9 @@
-.asc-summarylist-border-top{
+.asc-summarylist-border-top {
   border-top: 1px solid $govuk-border-colour;
 }
-.asc-summarylist-border-bottom{
-   border-bottom:1px solid $govuk-border-colour;
- }
-
+.asc-summarylist-border-bottom {
+  border-bottom: 1px solid $govuk-border-colour;
+}
 
 //NOTE: Non-offical govuk css:
 
@@ -99,5 +98,42 @@
 
   .govuk-summary-list__value {
     width: 60%;
+  }
+}
+
+.asc-no-border {
+  border: none;
+}
+
+.asc-warning-banner {
+  background-color: rgba(govuk-colour('orange'), 0.25);
+
+  /* &::before, */
+  &::after {
+    content: '\0a0';
+    line-height: 3em;
+  }
+
+  .govuk-summary-list__key {
+    border-left: 10px solid govuk-colour('orange');
+  }
+
+  .govuk-summary-list__key,
+  .govuk-summary-list__value,
+  .govuk-summary-list__actions {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    vertical-align: middle;
+    background: none;
+    border-bottom: none;
+  }
+}
+
+.spacer {
+  height: 15px;
+  div {
+    border-bottom: 1px solid govuk-colour('mid-grey');
+    height: 100%;
+    display: table-cell;
   }
 }

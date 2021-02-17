@@ -1,8 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
-import { render, within } from '@testing-library/angular';
+import { within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { EligibilityIconComponent } from '../eligibility-icon/eligibility-icon.component';
@@ -22,7 +27,14 @@ describe('WorkplaceSummaryComponent', () => {
         InsetTextComponent,
         SummaryRecordValueComponent,
         NumericAnswerPipe,
-        EligibilityIconComponent
+        EligibilityIconComponent,
+      ],
+      providers: [
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
       ],
     }).compileComponents();
   }));
@@ -31,8 +43,9 @@ describe('WorkplaceSummaryComponent', () => {
     fixture = TestBed.createComponent(WorkplaceSummaryComponent);
     component = fixture.componentInstance;
     component.workplace = Establishment;
-    component.requestedServiceName = "Requested service name";
+    component.requestedServiceName = 'Requested service name';
     component.canEditEstablishment = true;
+    component.canViewListOfWorkers = true;
     fixture.detectChanges();
   });
 
@@ -42,25 +55,27 @@ describe('WorkplaceSummaryComponent', () => {
 
   it('should show Pending on main service when non-CQC to CQC main service change has been requested', async () => {
     component.cqcStatusRequested = true;
+    component.canEditEstablishment = true;
     fixture.detectChanges();
 
-    const mainServiceChangeOrPending = await within(document.body).findByTestId('main-service-change-or-pending');
-    expect(mainServiceChangeOrPending.innerHTML).toContain("Pending");
+    const mainServiceChangeOrPending = within(document.body).queryByTestId('main-service-change-or-pending');
+    expect(mainServiceChangeOrPending.innerHTML).toContain('Pending');
   });
 
   it('should show Change on main service when non-CQC to CQC main service change has NOT been requested', async () => {
     component.cqcStatusRequested = false;
+    component.canEditEstablishment = true;
     fixture.detectChanges();
 
-    const mainServiceChangeOrPending = await within(document.body).findByTestId('main-service-change-or-pending');
-    expect(mainServiceChangeOrPending.innerHTML).toContain("Change");
+    const mainServiceChangeOrPending = within(document.body).queryByTestId('main-service-change-or-pending');
+    expect(mainServiceChangeOrPending.innerHTML).toContain('Change');
   });
 
   it('should show requested service name when non-CQC to CQC main service change has been requested', async () => {
     component.cqcStatusRequested = true;
     fixture.detectChanges();
 
-    const mainServiceName = await within(document.body).findByTestId('main-service-name');
+    const mainServiceName = within(document.body).queryByTestId('main-service-name');
     expect(mainServiceName.innerHTML).toContain(component.requestedServiceName);
     expect(mainServiceName.innerHTML).not.toContain(component.workplace.mainService.name);
   });
@@ -69,8 +84,58 @@ describe('WorkplaceSummaryComponent', () => {
     component.cqcStatusRequested = false;
     fixture.detectChanges();
 
-    const mainServiceName = await within(document.body).findByTestId('main-service-name');
+    const mainServiceName = within(document.body).queryByTestId('main-service-name');
     expect(mainServiceName.innerHTML).toContain(component.workplace.mainService.name);
     expect(mainServiceName.innerHTML).not.toContain(component.requestedServiceName);
+  });
+  it('should show banner if you have more staff records', async () => {
+    component.workerCount = 10;
+    component.workplace.numberOfStaff = 9;
+    component.wdfView = false;
+    component.canViewListOfWorkers = true;
+    fixture.detectChanges();
+    const moreRecords = within(document.body).queryByTestId('morerecords');
+    expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
+    expect(moreRecords.innerHTML).toContain('View staff records');
+  });
+
+  it('should not show banner if you have more total staff', async () => {
+    component.workerCount = 8;
+    component.workplace.numberOfStaff = 9;
+    component.wdfView = false;
+    component.canViewListOfWorkers = true;
+    fixture.detectChanges();
+    const moreRecords = within(document.body).queryByTestId('morerecords');
+    expect(moreRecords).toBe(null);
+  });
+
+  it('should not show banner if you have more total staff', async () => {
+    component.workerCount = 10;
+    component.workplace.numberOfStaff = 9;
+    component.wdfView = false;
+    component.canViewListOfWorkers = false;
+    fixture.detectChanges();
+    const moreRecords = within(document.body).queryByTestId('morerecords');
+    expect(moreRecords).toBe(null);
+  });
+
+  it("should not show banner if you don't have permission to list workers", async () => {
+    component.workerCount = 10;
+    component.workplace.numberOfStaff = 9;
+    component.wdfView = false;
+    component.canViewListOfWorkers = false;
+    fixture.detectChanges();
+    const moreRecords = within(document.body).queryByTestId('morerecords');
+    expect(moreRecords).toBe(null);
+  });
+
+  it('should not show banner if it is the WDF View', async () => {
+    component.workerCount = 10;
+    component.workplace.numberOfStaff = 9;
+    component.wdfView = true;
+    component.canViewListOfWorkers = true;
+    fixture.detectChanges();
+    const moreRecords = within(document.body).queryByTestId('morerecords');
+    expect(moreRecords).toBe(null);
   });
 });
