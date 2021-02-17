@@ -29,6 +29,7 @@ const establishmentBuilder = build('Workplace', {
     dataPermissions: '',
     dataOwnerPermissions: '',
     isParent: bool(),
+    localIdentifier: null,
   },
 });
 
@@ -177,7 +178,6 @@ describe('MissingWorkplaceReferencesComponent', () => {
     workplaces[0].localIdentifier = 'hello';
     const { component } = await setup(workplaces);
     const filledReferenceRow = component.getByTestId('reference-1');
-
     expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
 
     const showMissingReferencesToggle = component.getByText('Show missing references');
