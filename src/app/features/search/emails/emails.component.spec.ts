@@ -47,7 +47,19 @@ describe('EmailsComponent', () => {
     component.fixture.detectChanges();
 
     const numInactiveWorkplaces = component.getByTestId('inactiveWorkplaces');
+    const sendEmailsButton = component.fixture.nativeElement.querySelector('button');
     expect(numInactiveWorkplaces.innerHTML).toContain('1,250');
+    expect(sendEmailsButton.disabled).toBeFalsy();
+  });
+
+  it('should disable the "Send emails" button when there are no inactive workplaces', async () => {
+    const component = await setup();
+
+    component.fixture.componentInstance.inactiveWorkplaces = 0;
+    component.fixture.detectChanges();
+
+    const sendEmailsButton = component.fixture.nativeElement.querySelector('button');
+    expect(sendEmailsButton.disabled).toBeTruthy();
   });
 
   it('should display all existing history', async () => {
