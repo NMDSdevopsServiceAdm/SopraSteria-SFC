@@ -1,9 +1,12 @@
 import { DecimalPipe } from '@angular/common';
+import { HttpResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
-import { Component, OnInit } from '@angular/core';
 import { DialogService } from '@core/services/dialog.service';
+import { saveAs } from 'file-saver';
+import { Subscription } from 'rxjs';
 
 import {
   SendEmailsConfirmationDialogComponent,
@@ -14,6 +17,10 @@ import {
   templateUrl: './emails.component.html',
 })
 export class EmailsComponent implements OnInit {
+  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public history = this.route.snapshot.data.emailCampaignHistory;
+  private subscriptions: Subscription = new Subscription();
+
   constructor(
     public alertService: AlertService,
     public dialogService: DialogService,
@@ -22,10 +29,11 @@ export class EmailsComponent implements OnInit {
     private decimalPipe: DecimalPipe,
   ) {}
 
-  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
-  public history = this.route.snapshot.data.emailCampaignHistory;
-
   ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
   public confirmSendEmails(event: Event): void {
     event.preventDefault();
@@ -52,5 +60,25 @@ export class EmailsComponent implements OnInit {
         this.inactiveWorkplaces = inactiveWorkplaces;
       });
     });
+  }
+
+  public downloadReport(event: Event): void {
+    event.preventDefault();
+
+    this.subscriptions.add(
+      this.emailCampaignService.getReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public saveFile(response: HttpResponse<Blob>) {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+
+    saveAs(blob, filename);
   }
 }
