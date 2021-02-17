@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
+const models = require('../../models');
 
 // POST request for ownership change request
 const ownershipChangeRequest = async (req, res) => {
@@ -33,7 +34,7 @@ const ownershipChangeRequest = async (req, res) => {
         let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
         if (checkAlreadyRequestedOwnership.length) {
           return res.status(400).send({
-            message: `Ownership is already requested for posted establishment id`,
+            message: 'Ownership is already requested for posted establishment id',
           });
         }
         let getRecipientUserDetails;
@@ -77,6 +78,25 @@ const ownershipChangeRequest = async (req, res) => {
           } else {
             let resp = await ownership.lastOwnershipRequest(params);
             return res.status(201).send(resp[0]);
+          }
+        } else {
+          if (req.role === 'Admin') {
+            try {
+              let workplace = await models.establishment.findbyId(params.subEstablishmentId);
+              if (workplace) {
+                workplace.dataOwner = 'Parent';
+                workplace.dataPermissions = req.body.permissionRequest;
+                await workplace.save();
+                res.status(200).send({});
+              } else {
+                res.status(404).send({
+                  message: 'Establishment is not found',
+                });
+              }
+            } catch (err) {
+              console.error(err);
+              res.status(503).send({});
+            }
           }
         }
       }
@@ -122,7 +142,7 @@ const cancelOwnershipChangeRequest = async (req, res) => {
         let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnershipWithUID(params);
         if (!checkAlreadyRequestedOwnership.length) {
           return res.status(400).send({
-            message: `Ownership details cannot be found or already Approved/Rejected.`,
+            message: 'Ownership details cannot be found or already Approved/Rejected.',
           });
         } else {
           let changeRequestResp = await ownership.cancelOwnershipRequest(params);
@@ -184,7 +204,7 @@ const getOwnershipChangeRequest = async (req, res) => {
 
           if (!owenershipChangeRequestDetails.length) {
             return res.status(400).send({
-              message: `Ownership change request details not found.`,
+              message: 'Ownership change request details not found.',
             });
           } else {
             return res.status(200).send(owenershipChangeRequestDetails);
