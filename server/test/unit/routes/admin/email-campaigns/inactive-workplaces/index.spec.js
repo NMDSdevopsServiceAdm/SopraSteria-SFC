@@ -1,9 +1,26 @@
 const expect = require('chai').expect;
+const sinon = require('sinon')
 const httpMocks = require('node-mocks-http');
+
 const findInactiveWorkplaces = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const { createCampaign, getHistory, getInactiveWorkplaces } = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
+  it('should get the number of inactive workplaces', async () => {
+    const req = httpMocks.createRequest({
+      method: 'GET',
+      url: `/api/admin/email-campaigns/inactive-workplaces`,
+    });
+
+    req.role = 'Admin';
+
+    const res = httpMocks.createResponse();
+    await getInactiveWorkplaces(req, res);
+    const response = res._getJSONData();
+
+    expect(response.inactiveWorkplaces).to.deep.equal(2);
+  });
+
   it('should create a campaign', async () => {
     const req = httpMocks.createRequest({
       method: 'POST',

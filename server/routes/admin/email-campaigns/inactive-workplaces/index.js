@@ -43,3 +43,4 @@ router.use('/report', require('./report'));
 module.exports = router;
 module.exports.createCampaign = createCampaign;
 module.exports.getHistory = getHistory;
+module.exports.getInactiveWorkplaces = getInactiveWorkplaces;
