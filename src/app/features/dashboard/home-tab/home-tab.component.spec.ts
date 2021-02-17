@@ -29,7 +29,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('HomeTabComponent', () => {
+describe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [
