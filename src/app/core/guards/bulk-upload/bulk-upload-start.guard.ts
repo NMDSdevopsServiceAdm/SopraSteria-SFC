@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class BulkUploadGuard implements CanActivate {
+export class BulkUploadStartGuard implements CanActivate {
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -24,7 +24,7 @@ export class BulkUploadGuard implements CanActivate {
       map((response) => {
         response.establishments = response.establishments.filter((item) => item.status !== 'PENDING');
         if (response.establishments.length > 0) {
-          const redirect: UrlTree = this.router.parseUrl('/dev/bulk-upload/start');
+          const redirect: UrlTree = this.router.parseUrl('/bulk-upload/start');
           return redirect;
         }
         return true;
