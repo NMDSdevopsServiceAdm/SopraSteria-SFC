@@ -9,6 +9,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -18,7 +19,6 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceReferencesComponent } from './workplace-references-page.component';
-import { WindowRef } from '@core/services/window.ref';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -51,7 +51,7 @@ describe('WorkplaceReferencesComponent', () => {
         },
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
         {
           provide: ActivatedRoute,
