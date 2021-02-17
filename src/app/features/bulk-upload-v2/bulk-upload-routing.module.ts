@@ -20,6 +20,7 @@ import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-uploa
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 
 const routes: Routes = [
   {
@@ -61,6 +62,8 @@ const routes: Routes = [
     component: MissingStaffReferencesComponent,
     resolve: {
       references: StaffReferencesResolver,
+      workplaceReferences: MissingWorkplacesReferencesResolver,
+
     },
     data: { title: 'Staff references' },
     runGuardsAndResolvers: 'always',

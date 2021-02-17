@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { EstablishmentList } from '@core/model/bulk-upload.model';
+import { EstablishmentList, MissingReferences } from '@core/model/bulk-upload.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -59,7 +59,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
             [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
             ['asc'],
           );
-          this.establishmentsToDo = this.bulkUploadService.getMissingNavigation();
+          this.establishmentsToDo = data.workplaceReferences?.establishmentList;
           this.getWorkplaceName();
           this.setupForm();
           this.setServerErrors();

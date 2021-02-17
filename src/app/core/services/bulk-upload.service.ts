@@ -51,8 +51,6 @@ export class BulkUploadService {
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
   public establishmentsWithMissingWorkerIds$ = new BehaviorSubject<[EstablishmentList]>(null);
-  private _alert$: BehaviorSubject<Alert> = new BehaviorSubject<Alert>(null);
-  public alert$: Observable<Alert> = this._alert$.asObservable();
 
   protected endpoint = 'uploaded';
 
@@ -61,10 +59,6 @@ export class BulkUploadService {
     private establishmentService: EstablishmentService,
     private userService: UserService,
   ) {}
-
-  public get alert(): Alert {
-    return this._alert$.value as Alert;
-  }
 
   public get workPlaceReferences$() {
     return this.userService.getEstablishments().pipe(

@@ -18,6 +18,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
+import { WindowRef } from '@core/services/window.ref';
 
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -35,6 +36,10 @@ describe('MissingStaffReferencesComponent', () => {
         {
           provide: BulkUploadService,
           useClass: MockBulkUploadService,
+        },
+        {
+          provide: WindowRef,
+          useClass: WindowRef
         },
         {
           provide: BreadcrumbService,

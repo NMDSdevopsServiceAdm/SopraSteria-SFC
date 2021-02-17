@@ -18,6 +18,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceReferencesComponent } from './workplace-references-page.component';
+import { WindowRef } from '@core/services/window.ref';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -47,6 +48,10 @@ describe('WorkplaceReferencesComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: WindowRef,
+          useClass: WindowRef
         },
         {
           provide: ActivatedRoute,

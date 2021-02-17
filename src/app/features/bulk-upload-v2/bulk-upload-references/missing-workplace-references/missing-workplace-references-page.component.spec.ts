@@ -18,6 +18,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { MissingWorkplaceReferencesComponent } from './missing-workplace-references-page.component';
+import { WindowRef } from '@core/services/window.ref';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -43,6 +44,10 @@ describe('MissingWorkplaceReferencesComponent', () => {
         {
           provide: BulkUploadService,
           useClass: MockBulkUploadService,
+        },
+        {
+          provide: WindowRef,
+          useClass: WindowRef
         },
         {
           provide: BreadcrumbService,

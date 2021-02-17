@@ -18,6 +18,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StaffReferencesComponent } from './staff-references-page.component';
+import { WindowRef } from '@core/services/window.ref';
 
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -39,6 +40,10 @@ describe('StaffReferencesComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: WindowRef,
+          useClass: WindowRef
         },
         {
           provide: ActivatedRoute,
