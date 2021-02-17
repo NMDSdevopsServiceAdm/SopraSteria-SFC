@@ -149,7 +149,35 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
 
   private moveWorkplaceAdmin(): void {
     // Do stuff
-    this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null;
+    console.log('whoops');
+
+    if (this.form.valid) {
+      this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null;
+    }
+
+    const parentAndSubWorkplaces = {
+      parentUid: this.parentWorkplaceId,
+      subUid: this.workplace.uid,
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.adminMoveWorkplace(parentAndSubWorkplaces).subscribe(
+        (data) => {
+          if (data) {
+            const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
+
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Request to link to ${parentName} has been sent.`,
+            });
+            this.closeDialogWindow(event, true);
+          }
+        },
+        (error) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        },
+      ),
+    );
   }
 
   /**

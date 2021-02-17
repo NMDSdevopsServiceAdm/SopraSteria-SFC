@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  adminMoveWorkplace,
   allMandatoryTrainingCategories,
   CancelOwnerShip,
   ChangeOwner,
@@ -279,5 +280,10 @@ export class EstablishmentService {
   //update mandatory training
   public updateMandatoryTraining(establishmentId, data: mandatoryTraining[]) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
+  }
+
+  //Move workplace as an admin
+  public adminMoveWorkplace(data: adminMoveWorkplace): Observable<adminMoveWorkplace> {
+    return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 }
