@@ -34,6 +34,7 @@ import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-up
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
 import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
 import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
+import { MissingReferencesToggleComponent } from './bulk-upload-references/missing-references-toggle/missing-references-toggle.component';
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-u
     BulkUploadMissingPageComponent,
     BulkUploadRelatedContentComponent,
     BulkUploadDownloadCurrentDataComponent,
+    MissingReferencesToggleComponent,
   ],
   providers: [
     DialogService,
