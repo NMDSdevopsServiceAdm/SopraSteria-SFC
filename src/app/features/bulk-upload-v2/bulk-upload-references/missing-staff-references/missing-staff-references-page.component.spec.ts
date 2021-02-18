@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
@@ -20,6 +20,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
+import { Subject } from 'rxjs';
 
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -74,12 +75,12 @@ describe('MissingStaffReferencesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const router = injector.inject(Router) as Router;
+    const event = new NavigationEnd(42,'/','/');
+    (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
 
     return {
       component,
       establishmentService,
-      router,
     };
   }
 
@@ -96,14 +97,15 @@ describe('MissingStaffReferencesComponent', () => {
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
+    component.fixture.detectChanges();
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
-    form.controls[`reference-${worker.uid}`].setValue('');
+   form.controls[`reference-${worker.uid}`].setValue('');
     component.fixture.componentInstance.onSubmit(event);
     component.fixture.detectChanges();
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(2);
-    expect(form.controls[`reference-${worker.uid}`].errors).toEqual({ required: true });
+   expect(form.controls[`reference-${worker.uid}`].errors).toEqual({ required: true });
   });
 
   it('should hide missing worker error after filling empty field and resubmitting', async () => {
@@ -254,6 +256,8 @@ describe('MissingStaffReferencesComponent', () => {
     const workers = [workerBuilder(), workerBuilder()] as Worker[];
     workers[0].localIdentifier = 'hello';
     const { component } = await setup(workers);
+    component.fixture.detectChanges();
+
     const firstReferenceRow = component.getByTestId('reference-0');
     const workerNameWithEmptyReference = workers[1].nameOrId;
 
@@ -264,11 +268,11 @@ describe('MissingStaffReferencesComponent', () => {
     const workers = [workerBuilder(), workerBuilder()] as Worker[];
     workers[0].localIdentifier = 'hello';
     const { component } = await setup(workers);
+    component.fixture.detectChanges();
     const filledReferenceRow = component.getByTestId('reference-1');
     expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
 
     const showMissingReferencesToggle = component.getByText('Show missing references');
-
     fireEvent.click(showMissingReferencesToggle);
     component.fixture.detectChanges();
 
