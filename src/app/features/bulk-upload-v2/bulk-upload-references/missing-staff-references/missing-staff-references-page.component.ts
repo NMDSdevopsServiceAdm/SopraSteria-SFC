@@ -63,7 +63,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
             [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
             ['asc'],
           );
-          this.establishmentsToDo = data.workplaceReferences.establishmentList;
+          this.establishmentsWithMissingReferences = data.workplaceReferences.establishmentList;
           this.getWorkplaceName();
           this.setupForm();
           this.setServerErrors();
