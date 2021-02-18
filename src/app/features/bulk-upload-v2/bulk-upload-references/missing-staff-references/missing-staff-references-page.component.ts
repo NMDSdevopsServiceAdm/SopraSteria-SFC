@@ -65,10 +65,6 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     this.subscriptions.unsubscribe();
   }
 
-  public toggleShowAll() {
-    this.showMissing = !this.showMissing;
-  }
-
   private setServerErrors() {
     this.serverErrorsMap = [
       {

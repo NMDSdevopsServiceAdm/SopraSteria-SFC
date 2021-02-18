@@ -1,0 +1,33 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
+      <ng-container [ngSwitch]="showMissing">
+        <a
+          *ngSwitchCase="true"
+          (click)="toggleShowAll()"
+          class="govuk-button govuk-button--link govuk-!-padding-left-0 govuk-!-padding-top-4 govuk-!-margin-bottom-0"
+          >Show all references</a
+        >
+        <p *ngSwitchCase="false" class="govuk-util__inline-block govuk-!-padding-top-4 govuk-!-margin-bottom-0">
+          Show all references
+        </p>
+      </ng-container>
+    </div>
+    <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
+      <ng-container [ngSwitch]="showMissing">
+        <a
+          *ngSwitchCase="false"
+          class="govuk-button govuk-button--link govuk-!-padding-left-0 govuk-!-padding-top-4 govuk-!-margin-bottom-0"
+          (click)="toggleShowAll()"
+          >Show missing references</a
+        >
+        <p
+          *ngSwitchCase="true"
+          class="govuk-util__inline-block govuk-!-padding-left-0 govuk-!-padding-top-4 govuk-!-margin-bottom-0"
+        >
+          Show missing references
+        </p>
+      </ng-container>
+    </div>
+  </div>
+</div>

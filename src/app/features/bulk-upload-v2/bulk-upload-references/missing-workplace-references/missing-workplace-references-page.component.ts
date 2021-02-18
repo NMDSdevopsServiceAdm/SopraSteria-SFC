@@ -68,10 +68,6 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.showToggles = this.anyFilledReferences();
   }
 
-  public toggleShowAll() {
-    this.showMissing = !this.showMissing;
-  }
-
   private setServerErrors() {
     this.serverErrorsMap = [
       {
