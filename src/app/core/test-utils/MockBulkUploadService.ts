@@ -72,7 +72,7 @@ export class MockBulkUploadService extends BulkUploadService {
     return of(errorReport);
   }
 
-  public nextMissingNavigation(): string[] {
+  public nextMissingReferencesNavigation(): string[] {
     return ['1'];
   }
 }

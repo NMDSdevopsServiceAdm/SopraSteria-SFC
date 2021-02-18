@@ -27,7 +27,7 @@ import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 import { UserService } from './user.service';
 
 export interface isFirstBulkupload {
-  isFirstBulkUpload: boolean
+  isFirstBulkUpload: boolean;
 }
 
 @Injectable({
@@ -71,15 +71,15 @@ export class BulkUploadService {
     );
   }
 
-  public setMissingNavigation(workplaces: [EstablishmentList]) {
+  public setMissingReferencesNavigation(workplaces: [EstablishmentList]) {
     this.establishmentsWithMissingWorkerIds$.next(workplaces);
   }
 
-  public getMissingNavigation() {
+  public getMissingReferencesNavigation() {
     return this.establishmentsWithMissingWorkerIds$.value;
   }
 
-  public nextMissingNavigation() {
+  public nextMissingReferencesNavigation() {
     const establishments = this.establishmentsWithMissingWorkerIds$.value;
     if (!establishments.length) {
       return ['/dev', 'bulk-upload'];
