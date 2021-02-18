@@ -60,6 +60,9 @@ describe('MissingWorkplaceReferencesComponent', () => {
             snapshot: {
               data: {
                 workplaceReferences: references,
+                nextWorkplace: {establishment: 1, worker: 2,
+                  establishmentList: [{ uid: "123" ,name:"Workplace Steve"}]
+                },
               },
             },
           },

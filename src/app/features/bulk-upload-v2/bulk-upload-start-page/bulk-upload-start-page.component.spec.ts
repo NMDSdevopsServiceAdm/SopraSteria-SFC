@@ -24,7 +24,7 @@ describe('BulkUploadStartPage', () => {
   it('should navigate to workplace references page when Continue button is clicked', async () => {
     const { getByText } = await setup();
     const continueButton = getByText('Continue');
-    expect(continueButton.getAttribute('href')).toBe('/workplace-references');
+    expect(continueButton.getAttribute('href')).toBe('/missing-workplace-references');
   });
 
   it('should return to home page(dashboard) when Cancel link is clicked', async () => {
