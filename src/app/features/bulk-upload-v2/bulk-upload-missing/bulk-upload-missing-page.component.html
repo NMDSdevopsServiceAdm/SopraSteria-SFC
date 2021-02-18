@@ -10,8 +10,12 @@
               You still need to add
               <ng-container [ngPlural]="this.missingRefCount?.establishment">
                 <ng-template ngPluralCase="=0"></ng-template>
-                <ng-template ngPluralCase="=1">{{ this.missingRefCount?.establishment }} workplace reference</ng-template>
-                <ng-template ngPluralCase="other">{{ this.missingRefCount?.establishment }} workplace references</ng-template>
+                <ng-template ngPluralCase="=1"
+                  >{{ this.missingRefCount?.establishment }} workplace reference</ng-template
+                >
+                <ng-template ngPluralCase="other"
+                  >{{ this.missingRefCount?.establishment }} workplace references</ng-template
+                >
               </ng-container>
               <ng-container *ngIf="this.missingRefCount?.establishment > 0 && this.missingRefCount?.worker > 0">
                 and
@@ -33,29 +37,17 @@
     <app-bulk-upload-related-content [showAll]="false"></app-bulk-upload-related-content>
     <app-codes-and-guidance class="govuk-util__block"></app-codes-and-guidance>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-grid-row govuk-!-margin-top-6">
-        <div class="govuk-grid-column-one-third">
-          <a
-            [routerLink]="this.nextPage?.url"
-            role="button"
-            draggable="false"
-            class="govuk-button"
-          >
-            Add references
-          </a>
-        </div>
-        <div class="govuk-grid-column-one-third">
-            <a
-              [routerLink]="['/dashboard']"
-              role="button"
-              draggable="false"
-              class="govuk-button govuk-button--link"
-            >
-              Cancel
-            </a>
-        </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row govuk-!-margin-top-6">
+      <div class="govuk-grid-column-one-third">
+        <a [routerLink]="this.nextPage?.url" role="button" draggable="false" class="govuk-button"> Add references </a>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <a [routerLink]="['/dashboard']" role="button" draggable="false" class="govuk-button govuk-button--link">
+          Cancel
+        </a>
       </div>
     </div>
   </div>
