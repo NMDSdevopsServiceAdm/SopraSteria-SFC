@@ -14,7 +14,7 @@ import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-
 import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
 import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
 import { LastBulkUploadComponent } from '@features/bulk-upload-v2/last-bulk-upload/last-bulk-upload.component';
-import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
+import { BulkUploadStartPageComponent } from '@features/bulk-upload-v2/bulk-upload-start-page/bulk-upload-start-page.component';
 import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references-created-page/references-created-page.component';
 
 import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-upload-missing-page.component';
@@ -54,7 +54,10 @@ const routes: Routes = [
   {
     path: 'missing-workplace-references',
     component: MissingWorkplaceReferencesComponent,
-    resolve: { workplaceReferences: WorkplacesReferencesResolver },
+    resolve: {
+      workplaceReferences: WorkplacesReferencesResolver,
+      nextWorkplace: MissingWorkplacesReferencesResolver,
+    },
     data: { title: 'Workplace references' },
   },
   {

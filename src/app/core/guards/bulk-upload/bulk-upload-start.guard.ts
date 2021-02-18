@@ -24,7 +24,7 @@ export class BulkUploadStartGuard implements CanActivate {
       map((response) => {
         response.establishments = response.establishments.filter((item) => item.status !== 'PENDING');
         if (response.establishments.length > 0) {
-          const redirect: UrlTree = this.router.parseUrl('/bulk-upload/start');
+          const redirect: UrlTree = this.router.parseUrl('/dev/bulk-upload/start');
           return redirect;
         }
         return true;
