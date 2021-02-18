@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BulkUploadMissingGuard } from '@core/guards/bulk-upload/bulk-upload-missing.guard';
-import { BulkUploadGuard } from '@core/guards/bulk-upload/bulk-upload.guard';
+import { BulkUploadStartGuard } from '@core/guards/bulk-upload/bulk-upload-start.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
+import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
@@ -20,13 +21,12 @@ import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-uploa
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
-import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 
 const routes: Routes = [
   {
     path: '',
     component: BulkUploadPageV2Component,
-    canActivate: [BulkUploadGuard, BulkUploadMissingGuard],
+    canActivate: [BulkUploadStartGuard, BulkUploadMissingGuard],
     data: { title: 'Home' },
   },
   {
@@ -63,7 +63,6 @@ const routes: Routes = [
     resolve: {
       references: StaffReferencesResolver,
       workplaceReferences: MissingWorkplacesReferencesResolver,
-
     },
     data: { title: 'Staff references' },
     runGuardsAndResolvers: 'always',
