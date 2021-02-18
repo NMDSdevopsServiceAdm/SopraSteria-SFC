@@ -3,11 +3,13 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
@@ -15,10 +17,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
-import { WindowRef } from '@core/services/window.ref';
 
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -39,7 +40,7 @@ describe('MissingStaffReferencesComponent', () => {
         },
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
         {
           provide: BreadcrumbService,
@@ -51,17 +52,18 @@ describe('MissingStaffReferencesComponent', () => {
             snapshot: {
               data: {
                 references: references,
-                workplaceReferences:
-                  {establishment: 1, worker: 2,
-                     establishmentList: [{ uid: "123" ,name:"Workplace Steve"}]
-                  },
+                workplaceReferences: {
+                  establishment: 1,
+                  worker: 2,
+                  establishmentList: [{ uid: '123', name: 'Worker Steve' }],
+                },
               },
               paramMap: {
                 get(uid) {
                   return 123;
                 },
               },
-            }
+            },
           },
         },
         BackService,
@@ -246,5 +248,30 @@ describe('MissingStaffReferencesComponent', () => {
     expect(component.queryByText(lengthErrorMessage, { exact: false })).toBeNull();
     expect(form.controls[`reference-${workers[0].uid}`].errors).toEqual(null);
     expect(form.controls[`reference-${workers[1].uid}`].errors).toEqual(null);
+  });
+
+  it('should show empty references at top of table on page load', async () => {
+    const workers = [workerBuilder(), workerBuilder()] as Worker[];
+    workers[0].localIdentifier = 'hello';
+    const { component } = await setup(workers);
+    const firstReferenceRow = component.getByTestId('reference-0');
+    const workerNameWithEmptyReference = workers[1].nameOrId;
+
+    expect(firstReferenceRow.textContent.includes(workerNameWithEmptyReference));
+  });
+
+  it('should show filled references on page load and hide them after clicking Show missing references', async () => {
+    const workers = [workerBuilder(), workerBuilder()] as Worker[];
+    workers[0].localIdentifier = 'hello';
+    const { component } = await setup(workers);
+    const filledReferenceRow = component.getByTestId('reference-1');
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
+
+    const showMissingReferencesToggle = component.getByText('Show missing references');
+
+    fireEvent.click(showMissingReferencesToggle);
+    component.fixture.detectChanges();
+
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
   });
 });
