@@ -148,12 +148,8 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
   }
 
   private moveWorkplaceAdmin(): void {
-    if (this.form.valid) {
-      this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null;
-    }
-
     const parentAndSubWorkplaces = {
-      parentUid: this.parentWorkplaceId,
+      parentUid: this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid'),
       subUid: this.workplace.uid,
     };
 

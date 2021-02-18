@@ -36,7 +36,7 @@ router.route('/').post(
           version: ['uuidv4'],
         })
         .required(),
-      subsidUid: Joi.string()
+      subUid: Joi.string()
         .uuid({
           version: ['uuidv4'],
         })
