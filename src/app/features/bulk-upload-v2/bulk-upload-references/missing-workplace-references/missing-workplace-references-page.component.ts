@@ -30,7 +30,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
   public exit: URLStructure = { url: ['/dashboard'] };
   public showMissing = false;
-  private establishmentsToDo: [EstablishmentList];
+  private establishmentsWithMissingReferences: [EstablishmentList];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -48,7 +48,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   ngOnInit(): void {
     this.setBackLink(this.return);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.establishmentsToDo = this.activatedRoute.snapshot.data.nextWorkplace.establishmentList;
+    this.establishmentsWithMissingReferences = this.activatedRoute.snapshot.data.nextWorkplace.establishmentList;
     this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
       if (this.primaryWorkplace.isParent)
@@ -88,8 +88,8 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
         .pipe(take(1))
         .subscribe(
           (data) => {
-            this.bulkUploadService.setMissingNavigation(this.establishmentsToDo);
-            this.nextMissingPage(this.bulkUploadService.nextMissingNavigation());
+            this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
+            this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),
