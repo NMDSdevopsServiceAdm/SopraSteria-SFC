@@ -41,7 +41,7 @@
       [formGroup]="form"
       id="server-error"
     >
-      <div class="govuk__grid govuk__grid-container">
+      <div class="govuk__grid asc__references-grid-container">
         <p class="govuk-!-margin-bottom-0 govuk__grid-column-1">
           <strong> Workplaces </strong>
         </p>
@@ -51,7 +51,7 @@
       </div>
       <ng-container *ngFor="let reference of references; index as i">
         <div
-          class="govuk-form-group govuk__grid govuk__grid-container"
+          class="govuk-form-group govuk__grid asc__references-grid-container"
           [ngClass]="{ 'govuk-visually-hidden': reference.localIdentifier && showMissing }"
           [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
           [attr.data-testid]="'reference-' + i"

@@ -44,7 +44,7 @@
   </div>
 </div>
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  <div class="govuk-grid-column-two-thirds">
     <form
       #formEl
       *ngIf="references.length"
@@ -54,7 +54,7 @@
       [formGroup]="form"
       id="server-error"
     >
-      <div class="govuk__grid govuk__grid-container">
+      <div class="govuk__grid asc__references-grid-container">
         <p class="govuk-!-margin-bottom-0 govuk__grid-column-1">
           <strong> Name or ID number </strong>
         </p>
@@ -64,7 +64,7 @@
       </div>
       <ng-container *ngFor="let reference of references; index as i">
         <div
-          class="govuk-form-group govuk__grid govuk__grid-container"
+          class="govuk-form-group govuk__grid asc__references-grid-container"
           [ngClass]="{ 'govuk-visually-hidden': reference.localIdentifier && showMissing }"
           [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
           [attr.data-testid]="'reference-' + i"
