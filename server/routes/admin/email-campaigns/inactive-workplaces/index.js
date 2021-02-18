@@ -39,6 +39,7 @@ router.route('/').get(getInactiveWorkplaces);
 router.route('/').post(createCampaign);
 router.route('/history').get(getHistory);
 router.use('/report', require('./report'));
+router.use('/sendEmail', require('./sendEmail'));
 
 module.exports = router;
 module.exports.createCampaign = createCampaign;
