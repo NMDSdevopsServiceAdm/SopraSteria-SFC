@@ -45,57 +45,57 @@ const ownershipChangeRequest = async (req, res) => {
         } else {
           getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
         }
-        if (getRecipientUserDetails.length) {
-          for (let i = 0; i < getRecipientUserDetails.length; i++) {
-            //save records
-            params.ownerRequestChangeUid = uuid.v4();
-            if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
-              console.error('Invalid owner change request UUID');
-              return res.status(400).send();
+        if (req.role === 'Admin') {
+          try {
+            let workplace = await models.establishment.findbyId(params.subEstablishmentId);
+            if (workplace) {
+              workplace.dataOwner = 'Parent';
+              workplace.dataPermissions = req.body.permissionRequest;
+              await workplace.save();
+              res.status(200).send({});
+            } else {
+              res.status(404).send({
+                message: 'Establishment is not found',
+              });
             }
-            params.recipientUserUid = getRecipientUserDetails[i].UserUID;
-            params.type = 'OWNERCHANGE';
-            let changeRequestResp = await ownership.changeOwnershipRequest(params);
-            if (!changeRequestResp) {
+          } catch (err) {
+            console.error(err);
+            res.status(503).send({});
+          }
+        } else {
+          if (getRecipientUserDetails.length) {
+            for (let i = 0; i < getRecipientUserDetails.length; i++) {
+              //save records
+              params.ownerRequestChangeUid = uuid.v4();
+              if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
+                console.error('Invalid owner change request UUID');
+                return res.status(400).send();
+              }
+              params.recipientUserUid = getRecipientUserDetails[i].UserUID;
+              params.type = 'OWNERCHANGE';
+              let changeRequestResp = await ownership.changeOwnershipRequest(params);
+              if (!changeRequestResp) {
+                return res.status(400).send({
+                  message: 'Invalid request',
+                });
+              } else {
+                params.notificationUid = uuid.v4();
+                if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
+                  console.error('Invalid notification UUID');
+                  return res.status(400).send();
+                }
+                await notifications.insertNewNotification(params);
+              }
+            }
+            params.timeValue = 'NOW()';
+            let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
+            if (!saveDataOwnershipRequested) {
               return res.status(400).send({
                 message: 'Invalid request',
               });
             } else {
-              params.notificationUid = uuid.v4();
-              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-                console.error('Invalid notification UUID');
-                return res.status(400).send();
-              }
-              await notifications.insertNewNotification(params);
-            }
-          }
-          params.timeValue = 'NOW()';
-          let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
-          if (!saveDataOwnershipRequested) {
-            return res.status(400).send({
-              message: 'Invalid request',
-            });
-          } else {
-            let resp = await ownership.lastOwnershipRequest(params);
-            return res.status(201).send(resp[0]);
-          }
-        } else {
-          if (req.role === 'Admin') {
-            try {
-              let workplace = await models.establishment.findbyId(params.subEstablishmentId);
-              if (workplace) {
-                workplace.dataOwner = 'Parent';
-                workplace.dataPermissions = req.body.permissionRequest;
-                await workplace.save();
-                res.status(200).send({});
-              } else {
-                res.status(404).send({
-                  message: 'Establishment is not found',
-                });
-              }
-            } catch (err) {
-              console.error(err);
-              res.status(503).send({});
+              let resp = await ownership.lastOwnershipRequest(params);
+              return res.status(201).send(resp[0]);
             }
           }
         }
