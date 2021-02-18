@@ -31,7 +31,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   private establishmentUid: string;
   public workplaceName: string;
   public showMissing = false;
-  private establishmentsToDo: [EstablishmentList];
+  private establishmentsWithMissingReferences: [EstablishmentList];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -91,7 +91,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   private getWorkplaceName(): void {
-    this.workplaceName = this.establishmentsToDo[0].name;
+    this.workplaceName = this.establishmentsWithMissingReferences[0].name;
   }
 
   protected save(): void {
@@ -101,9 +101,9 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
         .pipe(take(1))
         .subscribe(
           () => {
-            this.establishmentsToDo.shift();
-            this.bulkUploadService.setMissingNavigation(this.establishmentsToDo);
-            this.nextMissingPage(this.bulkUploadService.nextMissingNavigation());
+            this.establishmentsWithMissingReferences.shift();
+            this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
+            this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),

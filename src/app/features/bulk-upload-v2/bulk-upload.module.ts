@@ -7,6 +7,8 @@ import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolve
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
+import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
 import { BulkUploadV2RoutingModule } from '@features/bulk-upload-v2/bulk-upload-routing.module';
 import { FileErrorMessageComponent } from '@features/bulk-upload-v2/file_error_message/file-error-message.component';
 import { LastBulkUploadComponent } from '@features/bulk-upload-v2/last-bulk-upload/last-bulk-upload.component';
@@ -17,9 +19,11 @@ import { BulkUploadModule } from '../bulk-upload/bulk-upload.module';
 import { AboutBulkUploadComponent } from './about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-upload-missing-page.component';
 import { BulkUploadPageV2Component } from './bulk-upload-page/bulk-upload-page.component';
+import { MissingReferencesToggleComponent } from './bulk-upload-references/missing-references-toggle/missing-references-toggle.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
-import { BulkUploadSidebarComponent } from './bulk-upload-sidebar/bulk-upload-sidebar.component';
+import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
+import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
@@ -30,11 +34,6 @@ import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/erro
 import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
-import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
-import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
-import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
-import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
-import { MissingReferencesToggleComponent } from './bulk-upload-references/missing-references-toggle/missing-references-toggle.component';
 
 @NgModule({
   imports: [
@@ -51,7 +50,6 @@ import { MissingReferencesToggleComponent } from './bulk-upload-references/missi
     BulkUploadPageV2Component,
     DragAndDropFilesUploadComponent,
     DragAndDropFilesListComponent,
-    BulkUploadSidebarComponent,
     ErrorPageComponent,
     BulkUploadErrorSummaryComponent,
     FileErrorMessageComponent,
