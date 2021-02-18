@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
+import { EstablishmentList } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-bu-missing-workplace-references-page',
@@ -28,6 +29,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload', 'missing'] };
   public showMissing = false;
+  private establishmentsToDo: [EstablishmentList];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -45,6 +47,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   ngOnInit(): void {
     this.setBackLink(this.return);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.establishmentsToDo = this.activatedRoute.snapshot.data.nextWorkplace.establishmentList;
     this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
       if (this.primaryWorkplace.isParent)
@@ -95,7 +98,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
                 ...{ localIdentifier: updated.value },
               };
             }) as Workplace[];
-            this.bulkUploadService.setWorkplaceReferences(updatedReferences);
+            this.bulkUploadService.setMissingNavigation(this.establishmentsToDo);
             this.nextMissingPage(this.bulkUploadService.nextMissingNavigation());
           },
           (error: HttpErrorResponse) => this.onError(error),
