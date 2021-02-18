@@ -26,7 +26,8 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 })
 export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'missing'] };
+  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public exit: URLStructure = { url: ['/dashboard'] };
   private establishmentUid: string;
   public workplaceName: string;
   public showMissing = false;
@@ -44,7 +45,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     private workerService: WorkerService,
   ) {
     super(errorSummaryService, formBuilder, alertService, backService, router);
-   }
+  }
 
   ngOnInit(): void {
     this.setBackLink(this.return);

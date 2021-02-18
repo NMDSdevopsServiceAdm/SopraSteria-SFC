@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EstablishmentList } from '@core/model/bulk-upload.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
@@ -11,12 +12,11 @@ import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { filter, find, orderBy } from 'lodash';
+import { filter, orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
-import { EstablishmentList } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-bu-missing-workplace-references-page',
@@ -27,7 +27,8 @@ import { EstablishmentList } from '@core/model/bulk-upload.model';
 export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'missing'] };
+  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public exit: URLStructure = { url: ['/dashboard'] };
   public showMissing = false;
   private establishmentsToDo: [EstablishmentList];
 
@@ -91,13 +92,6 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
         .pipe(take(1))
         .subscribe(
           (data) => {
-            const updatedReferences = this.references.map((workplace: Workplace) => {
-              const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
-              return {
-                ...workplace,
-                ...{ localIdentifier: updated.value },
-              };
-            }) as Workplace[];
             this.bulkUploadService.setMissingNavigation(this.establishmentsToDo);
             this.nextMissingPage(this.bulkUploadService.nextMissingNavigation());
           },
