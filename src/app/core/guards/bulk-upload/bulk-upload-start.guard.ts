@@ -20,10 +20,9 @@ export class BulkUploadStartGuard implements CanActivate {
       ? this.establishmentService.primaryWorkplace.uid
       : this.establishmentService.establishmentId;
 
-    return this.bulkUploadService.getNullLocalIdentifiers(workplaceID).pipe(
+    return this.bulkUploadService.isFirstBulkUpload(workplaceID).pipe(
       map((response) => {
-        response.establishments = response.establishments.filter((item) => item.status !== 'PENDING');
-        if (response.establishments.length > 0) {
+        if (response.isFirstBulkUpload) {
           const redirect: UrlTree = this.router.parseUrl('/dev/bulk-upload/start');
           return redirect;
         }

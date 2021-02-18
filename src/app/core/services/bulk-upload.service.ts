@@ -25,16 +25,9 @@ import { BehaviorSubject, from, interval, Observable } from 'rxjs';
 import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
-import { Alert } from '@core/model/alert.model';
 
-export interface NullLocalIdentifiersResponse {
-  establishments: Array<{
-    uid: string;
-    name: string;
-    status?: string;
-    missing: boolean;
-    workers: number;
-  }>;
+export interface isFirstBulkupload {
+  isFirstBulkUpload: boolean
 }
 
 @Injectable({
@@ -193,8 +186,8 @@ export class BulkUploadService {
     return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`);
   }
 
-  public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
-    return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
+  public isFirstBulkUpload(workplaceUid: string): Observable<isFirstBulkupload> {
+    return this.http.get<isFirstBulkupload>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }
 
   public getDataCSV(workplaceUid: string, type: BulkUploadFileType): Observable<any> {
