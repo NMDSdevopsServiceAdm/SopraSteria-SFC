@@ -171,7 +171,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   public sendRequestToParent() {
     if (this.form.valid) {
       this.permissionType = this.form.value.dataPermission;
-      this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null; //
+      this.parentWorkplaceId = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'uid') || null;
       const setLinkAndPermission = {
         parentWorkplaceId: this.parentWorkplaceId,
         permissionToSet: this.permissionType,
