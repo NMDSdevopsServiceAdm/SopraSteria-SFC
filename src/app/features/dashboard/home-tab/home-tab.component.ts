@@ -62,6 +62,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
   public workers: any[];
+  public workersCount: number;
+  public canViewListOfWorkers: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -86,6 +88,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
             this.updateStaffRecords = !(workers.length > 0);
+            this.workersCount = workers.length;
           }),
         );
       }
@@ -286,6 +289,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
+    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
