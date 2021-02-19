@@ -20,7 +20,8 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import 'rxjs/add/observable/from';
 
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -50,6 +51,7 @@ describe('MissingStaffReferencesComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
+            params: Observable.from([{uid: 123}]) ,
             snapshot: {
               data: {
                 references: references,

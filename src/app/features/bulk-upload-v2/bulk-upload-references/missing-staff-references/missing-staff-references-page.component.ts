@@ -24,7 +24,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
   styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy {
+export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy,OnInit {
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
   public exit: URLStructure = { url: ['/dashboard'] };
@@ -45,33 +45,37 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     private workerService: WorkerService,
   ) {
     super(errorSummaryService, formBuilder, alertService, backService, router);
-    console.log("here");
-    this.router.events.subscribe(console.log);
+  }
+
+  ngOnInit():void{
     this.subscriptions.add(
       this.router.events
         .pipe(
           filter(event => event instanceof NavigationEnd),
           map(() => this.activatedRoute),
-          filter(route => !route.snapshot.fragment),
           map(route => route.snapshot.data)
         )
         .subscribe(data => {
           this.setBackLink(this.return);
-          this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
-          this.references = orderBy(
-            data.references,
-            [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
-            ['asc'],
-          );
-          this.establishmentsWithMissingReferences = data.workplaceReferences.establishmentList;
-          this.getWorkplaceName();
-          this.setupForm();
-          this.setServerErrors();
-          this.showToggles = this.anyFilledReferences();
         })
     );
-  }
 
+    this.activatedRoute.params.subscribe((data) => {
+      this.setBackLink(this.return);
+
+      this.establishmentUid = data.uid;
+      this.references = orderBy(
+        this.activatedRoute.snapshot.data.references,
+        [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
+        ['asc'],
+      );
+      this.establishmentsWithMissingReferences = this.activatedRoute.snapshot.data.workplaceReferences.establishmentList;
+      this.getWorkplaceName();
+      this.setupForm();
+      this.setServerErrors();
+      this.showToggles = this.anyFilledReferences();
+    });
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
