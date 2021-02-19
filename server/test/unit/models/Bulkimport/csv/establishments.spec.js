@@ -547,7 +547,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
       const establishment = apiEstablishmentBuilder();
-      establishment.otherServices = [{reportingID: 23}, {reportingID: 12}];
+      establishment.otherServices = [{ reportingID: 23 }, { reportingID: 12 }];
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
@@ -565,12 +565,20 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
       const establishment = apiEstablishmentBuilder();
-      establishment.otherServices = [{reportingID: 23}, {reportingID: 12}];
+      establishment.otherServices = [{ reportingID: 23 }, { reportingID: 12 }];
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[17]).to.include('23');
       expect(csvAsArray[17]).to.include('12');
+    });
+
+    it('should store NumberOfStaffValue in TOTALPERMTEMP column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[23]).to.include(establishment.NumberOfStaffValue);
     });
   });
 });
