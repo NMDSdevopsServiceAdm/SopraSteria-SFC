@@ -16,10 +16,10 @@ apiKey.apiKey = config.get('sendInBlue.apiKey');
 //   console.error(error);
 // });
 
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 const sendEmail = async (to, templateId, params) => {
   try {
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
     sendSmtpEmail.to = [to];
