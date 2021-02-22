@@ -74,11 +74,7 @@ export class BulkUploadService {
   public setMissingReferencesNavigation(workplaces: [EstablishmentList]) {
     this.establishmentsWithMissingWorkerIds$.next(workplaces);
   }
-
-  public getMissingReferencesNavigation() {
-    return this.establishmentsWithMissingWorkerIds$.value;
-  }
-
+  
   public nextMissingReferencesNavigation() {
     const establishments = this.establishmentsWithMissingWorkerIds$.value;
     if (!establishments.length) {
