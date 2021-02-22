@@ -62,7 +62,6 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
 
     this.activatedRoute.params.subscribe((data) => {
       this.setBackLink(this.return);
-
       this.establishmentUid = data.uid;
       this.references = orderBy(
         this.activatedRoute.snapshot.data.references,
@@ -72,26 +71,13 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
       this.establishmentsWithMissingReferences = this.activatedRoute.snapshot.data.workplaceReferences.establishmentList;
       this.getWorkplaceName();
       this.setupForm();
-      this.setServerErrors();
+      this.setWorkerServerErrors();
       this.showToggles = this.anyFilledReferences();
     });
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  private setServerErrors() {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Service unavailable.',
-      },
-      {
-        name: 400,
-        message: `Unable to update staff reference.`,
-      },
-    ];
   }
 
   private getWorkplaceName(): void {

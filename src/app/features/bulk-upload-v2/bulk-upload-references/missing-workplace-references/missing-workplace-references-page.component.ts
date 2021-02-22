@@ -49,37 +49,13 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.setBackLink(this.return);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishmentsWithMissingReferences = this.activatedRoute.snapshot.data.nextWorkplace.establishmentList;
-    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
-      if (reference.ustatus === 'PENDING') return false;
-      if (this.primaryWorkplace.isParent)
-        return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
-      return reference.dataOwner === WorkplaceDataOwner.Workplace;
-    });
-    this.references = orderBy(
-      this.references,
-      [
-        (workplace: Workplace) => workplace.localIdentifier !== null,
-        (workplace: Workplace) => workplace.name.toLowerCase(),
-      ],
-      ['asc'],
-    );
+    this.filterWorkplaceReferences(this.activatedRoute.snapshot.data.workplaceReferences,this.primaryWorkplace,true);
     this.setupForm();
-    this.setServerErrors();
+    this.setWorkplaceServerErrors();
     this.showToggles = this.anyFilledReferences();
   }
 
-  private setServerErrors() {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Service unavailable.',
-      },
-      {
-        name: 400,
-        message: `Unable to update workplace reference.`,
-      },
-    ];
-  }
+
 
   protected save(): void {
     this.subscriptions.add(

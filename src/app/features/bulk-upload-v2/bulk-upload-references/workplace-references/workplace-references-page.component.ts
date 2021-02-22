@@ -5,7 +5,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -13,7 +13,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { filter, find, orderBy } from 'lodash';
+import {  find } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -47,28 +47,9 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.references = filter(this.activatedRoute.snapshot.data.workplaceReferences, (reference: Workplace) => {
-      if (reference.ustatus === 'PENDING') return false;
-      if (this.primaryWorkplace.isParent)
-        return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === this.primaryWorkplace.uid;
-      return reference.dataOwner === WorkplaceDataOwner.Workplace;
-    });
-    this.references = orderBy(this.references, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
+    this.filterWorkplaceReferences(this.activatedRoute.snapshot.data.workplaceReferences,this.primaryWorkplace,false);
     this.setupForm();
-    this.setServerErrors();
-  }
-
-  private setServerErrors() {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Service unavailable.',
-      },
-      {
-        name: 400,
-        message: `Unable to update workplace reference.`,
-      },
-    ];
+    this.setWorkplaceServerErrors();
   }
 
   protected save(): void {

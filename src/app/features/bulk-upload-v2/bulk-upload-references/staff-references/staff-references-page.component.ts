@@ -60,22 +60,11 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
       ['asc'],
     );
     this.setupForm();
-    this.setServerErrors();
+    this.setWorkerServerErrors();
     this.getWorkplaceName();
   }
 
-  private setServerErrors() {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Service unavailable.',
-      },
-      {
-        name: 400,
-        message: `Unable to update staff reference.`,
-      },
-    ];
-  }
+
 
   private getWorkplaceName(): void {
     this.workplaceName = this.activatedRoute.snapshot.data.workplaceReferences.find(
