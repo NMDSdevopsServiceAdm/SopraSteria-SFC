@@ -1,3 +1,5 @@
+import 'rxjs/add/observable/from';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
@@ -18,10 +20,9 @@ import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerSer
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { Observable, Subject } from 'rxjs';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
-import { Observable, Subject } from 'rxjs';
-import 'rxjs/add/observable/from';
 
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -51,7 +52,7 @@ describe('MissingStaffReferencesComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.from([{uid: 123}]) ,
+            params: Observable.from([{ uid: 123 }]),
             snapshot: {
               data: {
                 references: references,
@@ -77,8 +78,8 @@ describe('MissingStaffReferencesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const event = new NavigationEnd(42,'/','/');
-    (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
+    const event = new NavigationEnd(42, '/', '/');
+    ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
 
     return {
       component,
@@ -102,12 +103,12 @@ describe('MissingStaffReferencesComponent', () => {
     component.fixture.detectChanges();
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
-   form.controls[`reference-${worker.uid}`].setValue('');
+    form.controls[`reference-${worker.uid}`].setValue('');
     component.fixture.componentInstance.onSubmit(event);
     component.fixture.detectChanges();
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(2);
-   expect(form.controls[`reference-${worker.uid}`].errors).toEqual({ required: true });
+    expect(form.controls[`reference-${worker.uid}`].errors).toEqual({ required: true });
   });
 
   it('should hide missing worker error after filling empty field and resubmitting', async () => {
@@ -266,18 +267,18 @@ describe('MissingStaffReferencesComponent', () => {
     expect(firstReferenceRow.textContent.includes(workerNameWithEmptyReference));
   });
 
-  it('should show filled references on page load and hide them after clicking Show missing references', async () => {
+  it('should hide filled references on page load and show them after clicking Show all references', async () => {
     const workers = [workerBuilder(), workerBuilder()] as Worker[];
     workers[0].localIdentifier = 'hello';
     const { component } = await setup(workers);
     component.fixture.detectChanges();
     const filledReferenceRow = component.getByTestId('reference-1');
-    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
 
-    const showMissingReferencesToggle = component.getByText('Show missing references');
-    fireEvent.click(showMissingReferencesToggle);
+    const showAllReferencesToggle = component.getByText('Show all references');
+    fireEvent.click(showAllReferencesToggle);
     component.fixture.detectChanges();
 
-    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
   });
 });

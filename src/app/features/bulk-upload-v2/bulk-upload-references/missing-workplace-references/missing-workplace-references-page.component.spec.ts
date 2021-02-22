@@ -178,18 +178,18 @@ describe('MissingWorkplaceReferencesComponent', () => {
     expect(firstReferenceRow.textContent.includes(workplaceNameWithEmptyReference));
   });
 
-  it('should show filled references on page load and hide them after clicking Show missing references', async () => {
+  it('should hide filled references on page load and show them after clicking Show all references', async () => {
     const workplaces = [establishmentBuilder(), establishmentBuilder()] as Workplace[];
     workplaces[0].localIdentifier = 'hello';
     const { component } = await setup(workplaces);
     const filledReferenceRow = component.getByTestId('reference-1');
-    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
 
-    const showMissingReferencesToggle = component.getByText('Show missing references');
+    const showAllReferencesToggle = component.getByText('Show all references');
 
-    fireEvent.click(showMissingReferencesToggle);
+    fireEvent.click(showAllReferencesToggle);
     component.fixture.detectChanges();
 
-    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
   });
 });
