@@ -30,7 +30,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   public exit: URLStructure = { url: ['/dashboard'] };
   private establishmentUid: string;
   public workplaceName: string;
-  public showMissing = false;
+  public showMissing = true;
   private establishmentsWithMissingReferences: [EstablishmentList];
 
   constructor(

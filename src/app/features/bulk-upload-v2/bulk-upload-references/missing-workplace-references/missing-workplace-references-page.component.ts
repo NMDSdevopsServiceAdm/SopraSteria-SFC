@@ -29,7 +29,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
   public exit: URLStructure = { url: ['/dashboard'] };
-  public showMissing = false;
+  public showMissing = true;
   private establishmentsWithMissingReferences: [EstablishmentList];
 
   constructor(
