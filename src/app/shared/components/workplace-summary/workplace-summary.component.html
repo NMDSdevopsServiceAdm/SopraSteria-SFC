@@ -241,11 +241,11 @@
       [class.asc-no-border]="canViewListOfWorkers && !wdfView && workplace.numberOfStaff < workerCount"
     >
       <a [routerLink]="['/workplace', workplace.uid, 'total-staff']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.numberOfStaff">
+        <ng-container *ngIf="!isNumber(workplace.numberOfStaff)">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.numberOfStaff"> Change </ng-container>
+        <ng-container *ngIf="isNumber(workplace.numberOfStaff)"> Change </ng-container>
         <span class="govuk-visually-hidden"> total number of staff</span>
       </a>
     </dd>
