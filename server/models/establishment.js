@@ -8,339 +8,339 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        field: '"EstablishmentID"',
+        field: '"EstablishmentID"'
       },
       uid: {
         type: DataTypes.UUID,
         allowNull: false,
         unique: true,
-        field: '"EstablishmentUID"',
+        field: '"EstablishmentUID"'
       },
       ustatus: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Status"',
+        field: '"Status"'
       },
       address1: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address1"',
+        field: '"Address1"'
       },
       Address1SavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"Address1SavedAt"',
+        field: '"Address1SavedAt"'
       },
       Address1ChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"Address1ChangedAt"',
+        field: '"Address1ChangedAt"'
       },
       Address1SavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address1SavedBy"',
+        field: '"Address1SavedBy"'
       },
       Address1ChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address1ChangedBy"',
+        field: '"Address1ChangedBy"'
       },
       address2: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address2"',
+        field: '"Address2"'
       },
       Address2SavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"Address2SavedAt"',
+        field: '"Address2SavedAt"'
       },
       Address2ChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"Address2ChangedAt"',
+        field: '"Address2ChangedAt"'
       },
       Address2SavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address2SavedBy"',
+        field: '"Address2SavedBy"'
       },
       Address2ChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address2ChangedBy"',
+        field: '"Address2ChangedBy"'
       },
       address3: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address3"',
+        field: '"Address3"'
       },
       Address3SavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"Address3SavedAt"',
+        field: '"Address3SavedAt"'
       },
       Address3ChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"Address3ChangedAt"',
+        field: '"Address3ChangedAt"'
       },
       Address3SavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address3SavedBy"',
+        field: '"Address3SavedBy"'
       },
       Address3ChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Address3ChangedBy"',
+        field: '"Address3ChangedBy"'
       },
       town: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"Town"',
+        field: '"Town"'
       },
       TownSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"TownSavedAt"',
+        field: '"TownSavedAt"'
       },
       TownChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"TownChangedAt"',
+        field: '"TownChangedAt"'
       },
       TownSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"TownSavedBy"',
+        field: '"TownSavedBy"'
       },
       TownChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"TownChangedBy"',
+        field: '"TownChangedBy"'
       },
       county: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"County"',
+        field: '"County"'
       },
       CountySavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"CountySavedAt"',
+        field: '"CountySavedAt"'
       },
       CountyChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"CountyChangedAt"',
+        field: '"CountyChangedAt"'
       },
       CountySavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"CountySavedBy"',
+        field: '"CountySavedBy"'
       },
       CountyChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"CountyChangedBy"',
+        field: '"CountyChangedBy"'
       },
       locationId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: '"LocationID"',
+        field: '"LocationID"'
       },
       LocationIdSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LocationIdSavedAt"',
+        field: '"LocationIdSavedAt"'
       },
       LocationIdChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LocationIdChangedAt"',
+        field: '"LocationIdChangedAt"'
       },
       LocationIdSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"LocationIdSavedBy"',
+        field: '"LocationIdSavedBy"'
       },
       LocationIdChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"LocationIdChangedBy"',
+        field: '"LocationIdChangedBy"'
       },
       provId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: '"ProvID"',
+        field: '"ProvID"'
       },
       postcode: {
         type: DataTypes.TEXT,
         allowNull: false,
-        field: '"PostCode"',
+        field: '"PostCode"'
       },
       PostcodeSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"PostcodeSavedAt"',
+        field: '"PostcodeSavedAt"'
       },
       PostcodeChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"PostcodeChangedAt"',
+        field: '"PostcodeChangedAt"'
       },
       PostcodeSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"PostcodeSavedBy"',
+        field: '"PostcodeSavedBy"'
       },
       PostcodeChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"PostcodeChangedBy"',
+        field: '"PostcodeChangedBy"'
       },
       Latitude: {
         type: DataTypes.DOUBLE,
         allowNull: true,
-        field: '"Latitude"',
+        field: '"Latitude"'
       },
       Longitude: {
         type: DataTypes.DOUBLE,
         allowNull: true,
-        field: '"Longitude"',
+        field: '"Longitude"'
       },
       isRegulated: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        field: '"IsRegulated"',
+        field: '"IsRegulated"'
       },
       IsRegulatedSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"IsRegulatedSavedAt"',
+        field: '"IsRegulatedSavedAt"'
       },
       IsRegulatedChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"IsRegulatedChangedAt"',
+        field: '"IsRegulatedChangedAt"'
       },
       IsRegulatedSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"IsRegulatedSavedBy"',
+        field: '"IsRegulatedSavedBy"'
       },
       IsRegulatedChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"IsRegulatedChangedBy"',
+        field: '"IsRegulatedChangedBy"'
       },
       overallWdfEligibility: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"OverallWdfEligibility"',
+        field: '"OverallWdfEligibility"'
       },
       establishmentWdfEligibility: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EstablishmentWdfEligibility"',
+        field: '"EstablishmentWdfEligibility"'
       },
       staffWdfEligibility: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"StaffWdfEligibility"',
+        field: '"StaffWdfEligibility"'
       },
       lastWdfEligibility: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LastWdfEligibility"',
+        field: '"LastWdfEligibility"'
       },
       isParent: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         default: false,
-        field: '"IsParent"',
+        field: '"IsParent"'
       },
       parentId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: '"ParentID"',
+        field: '"ParentID"'
       },
       parentUid: {
         type: DataTypes.UUID,
         allowNull: true,
-        field: '"ParentUID"',
+        field: '"ParentUID"'
       },
       dataOwner: {
         type: DataTypes.ENUM,
         allowNull: false,
         values: ['Workplace', 'Parent'],
         field: '"DataOwner"',
-        default: 'Workplace',
+        default: 'Workplace'
       },
       dataPermissions: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Workplace', 'Workplace and Staff', 'None'],
-        field: '"DataPermissions"',
+        field: '"DataPermissions"'
       },
       NameValue: {
         type: DataTypes.TEXT,
         allowNull: false,
         unique: true,
-        field: '"NameValue"',
+        field: '"NameValue"'
       },
       NameSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"NameSavedAt"',
+        field: '"NameSavedAt"'
       },
       NameChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"NameChangedAt"',
+        field: '"NameChangedAt"'
       },
       NameSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NameSavedBy"',
+        field: '"NameSavedBy"'
       },
       NameChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NameChangedBy"',
+        field: '"NameChangedBy"'
       },
       MainServiceFKValue: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: '"MainServiceFKValue"',
+        field: '"MainServiceFKValue"'
       },
       MainServiceFKSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"MainServiceFKSavedAt"',
+        field: '"MainServiceFKSavedAt"'
       },
       MainServiceFKChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"MainServiceFKChangedAt"',
+        field: '"MainServiceFKChangedAt"'
       },
       MainServiceFKSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"MainServiceFKSavedBy"',
+        field: '"MainServiceFKSavedBy"'
       },
       MainServiceFKChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"MainServiceFKChangedBy"',
+        field: '"MainServiceFKChangedBy"'
       },
       MainServiceFkOther: {
         type: DataTypes.TEXT,
         allowNull: true,
         primaryKey: false,
-        field: '"MainServiceFkOther"',
+        field: '"MainServiceFkOther"'
       },
       EmployerTypeValue: {
         type: DataTypes.ENUM,
@@ -350,427 +350,466 @@ module.exports = function (sequelize, DataTypes) {
           'Voluntary / Charity',
           'Other',
           'Local Authority (generic/other)',
-          'Local Authority (adult services)',
+          'Local Authority (adult services)'
         ],
-        field: '"EmployerTypeValue"',
+        field: '"EmployerTypeValue"'
       },
       EmployerTypeSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EmployerTypeSavedAt"',
+        field: '"EmployerTypeSavedAt"'
       },
       EmployerTypeChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EmployerTypeChangedAt"',
+        field: '"EmployerTypeChangedAt"'
       },
       EmployerTypeSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"EmployerTypeSavedBy"',
+        field: '"EmployerTypeSavedBy"'
       },
       EmployerTypeChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"EmployerTypeChangedBy"',
+        field: '"EmployerTypeChangedBy"'
       },
       EmployerTypeOther: {
         type: DataTypes.TEXT,
         allowNull: true,
         primaryKey: false,
-        field: '"EmployerTypeOther"',
+        field: '"EmployerTypeOther"'
       },
       NumberOfStaffValue: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: '"NumberOfStaffValue"',
+        field: '"NumberOfStaffValue"'
       },
       NumberOfStaffSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"NumberOfStaffSavedAt"',
+        field: '"NumberOfStaffSavedAt"'
       },
       NumberOfStaffChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"NumberOfStaffChangedAt"',
+        field: '"NumberOfStaffChangedAt"'
       },
       NumberOfStaffSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NumberOfStaffSavedBy"',
+        field: '"NumberOfStaffSavedBy"'
       },
       NumberOfStaffChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NumberOfStaffChangedBy"',
+        field: '"NumberOfStaffChangedBy"'
       },
       OtherServicesSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"OtherServicesSavedAt"',
+        field: '"OtherServicesSavedAt"'
       },
       OtherServicesChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"OtherServicesChangedAt"',
+        field: '"OtherServicesChangedAt"'
       },
       OtherServicesSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"OtherServicesSavedBy"',
+        field: '"OtherServicesSavedBy"'
       },
       OtherServicesChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"OtherServicesChangedBy"',
+        field: '"OtherServicesChangedBy"'
       },
       ServiceUsersSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"ServiceUsersSavedAt"',
+        field: '"ServiceUsersSavedAt"'
       },
       ServiceUsersChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"ServiceUsersChangedAt"',
+        field: '"ServiceUsersChangedAt"'
       },
       ServiceUsersSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ServiceUsersSavedBy"',
+        field: '"ServiceUsersSavedBy"'
       },
       ServiceUsersChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ServiceUsersChangedBy"',
+        field: '"ServiceUsersChangedBy"'
       },
       CapacityServicesSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"CapacityServicesSavedAt"',
+        field: '"CapacityServicesSavedAt"'
       },
       CapacityServicesChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"CapacityServicesChangedAt"',
+        field: '"CapacityServicesChangedAt"'
       },
       CapacityServicesSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"CapacityServicesSavedBy"',
+        field: '"CapacityServicesSavedBy"'
       },
       CapacityServicesChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"CapacityServicesChangedBy"',
+        field: '"CapacityServicesChangedBy"'
       },
       ShareDataValue: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        field: '"ShareDataValue"',
+        field: '"ShareDataValue"'
       },
       ShareDataSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"ShareDataSavedAt"',
+        field: '"ShareDataSavedAt"'
       },
       ShareDataChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"ShareDataChangedAt"',
+        field: '"ShareDataChangedAt"'
       },
       ShareDataSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ShareDataSavedBy"',
+        field: '"ShareDataSavedBy"'
       },
       ShareDataChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ShareDataChangedBy"',
+        field: '"ShareDataChangedBy"'
       },
       shareWithCQC: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        field: '"ShareDataWithCQC"',
+        field: '"ShareDataWithCQC"'
       },
       shareWithLA: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        field: '"ShareDataWithLA"',
+        field: '"ShareDataWithLA"'
       },
       ShareWithLASavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"ShareWithLASavedAt"',
+        field: '"ShareWithLASavedAt"'
       },
       ShareWithLAChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"ShareWithLAChangedAt"',
+        field: '"ShareWithLAChangedAt"'
       },
       ShareWithLASavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ShareWithLASavedBy"',
+        field: '"ShareWithLASavedBy"'
       },
       ShareWithLAChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ShareWithLAChangedBy"',
+        field: '"ShareWithLAChangedBy"'
       },
       VacanciesValue: {
         type: DataTypes.ENUM,
         allowNull: true,
-        values: ['None', "Don't know", 'With Jobs'],
-        field: '"VacanciesValue"',
+        values: ['None', 'Don\'t know', 'With Jobs'],
+        field: '"VacanciesValue"'
       },
       VacanciesSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"VacanciesSavedAt"',
+        field: '"VacanciesSavedAt"'
       },
       VacanciesChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"VacanciesChangedAt"',
+        field: '"VacanciesChangedAt"'
       },
       VacanciesSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"VacanciesSavedBy"',
+        field: '"VacanciesSavedBy"'
       },
       VacanciesChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"VacanciesChangedBy"',
+        field: '"VacanciesChangedBy"'
       },
       StartersValue: {
         type: DataTypes.ENUM,
         allowNull: true,
-        values: ['None', "Don't know", 'With Jobs'],
-        field: '"StartersValue"',
+        values: ['None', 'Don\'t know', 'With Jobs'],
+        field: '"StartersValue"'
       },
       StartersSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"StartersSavedAt"',
+        field: '"StartersSavedAt"'
       },
       StartersChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"StartersChangedAt"',
+        field: '"StartersChangedAt"'
       },
       StartersSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"StartersSavedBy"',
+        field: '"StartersSavedBy"'
       },
       StartersChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"StartersChangedBy"',
+        field: '"StartersChangedBy"'
       },
       LeaversValue: {
         type: DataTypes.ENUM,
         allowNull: true,
-        values: ['None', "Don't know", 'With Jobs'],
-        field: '"LeaversValue"',
+        values: ['None', 'Don\'t know', 'With Jobs'],
+        field: '"LeaversValue"'
       },
       LeaversSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LeaversSavedAt"',
+        field: '"LeaversSavedAt"'
       },
       LeaversChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LeaversChangedAt"',
+        field: '"LeaversChangedAt"'
       },
       LeaversSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"LeaversSavedBy"',
+        field: '"LeaversSavedBy"'
       },
       LeaversChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"LeaversChangedBy"',
+        field: '"LeaversChangedBy"'
       },
       LocalIdentifierValue: {
         type: DataTypes.TEXT,
         allowNull: true,
         unique: true,
-        field: '"LocalIdentifierValue"',
+        field: '"LocalIdentifierValue"'
       },
       LocalIdentifierSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LocalIdentifierSavedAt"',
+        field: '"LocalIdentifierSavedAt"'
       },
       LocalIdentifierChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LocalIdentifierChangedAt"',
+        field: '"LocalIdentifierChangedAt"'
       },
       LocalIdentifierSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"LocalIdentifierSavedBy"',
+        field: '"LocalIdentifierSavedBy"'
       },
       LocalIdentifierChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"LocalIdentifierChangedBy"',
+        field: '"LocalIdentifierChangedBy"'
       },
       archived: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         field: '"Archived"',
-        defaultValue: false,
+        defaultValue: false
       },
       nmdsId: {
         type: DataTypes.TEXT,
         allowNull: false,
-        field: '"NmdsID"',
+        field: '"NmdsID"'
       },
       source: {
         type: DataTypes.ENUM,
         allowNull: false,
         values: ['Online', 'Bulk'],
         default: 'Online',
-        field: '"DataSource"',
+        field: '"DataSource"'
       },
       lastBulkUploaded: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LastBulkUploaded"',
+        field: '"LastBulkUploaded"'
       },
       dataOwnershipRequested: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"DataOwnershipRequested"',
+        field: '"DataOwnershipRequested"'
       },
       linkToParentRequested: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"LinkToParentRequested"',
+        field: '"LinkToParentRequested"'
       },
       reasonsForLeaving: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"ReasonsForLeaving"',
+        field: '"ReasonsForLeaving"'
       },
       created: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
-        field: 'created',
+        field: 'created'
       },
       updated: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
-        field: 'updated',
+        field: 'updated'
       },
       updatedBy: {
         type: DataTypes.TEXT,
         allowNull: false,
-        field: 'updatedby',
+        field: 'updatedby'
       },
       trainingReportLockHeld: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
-        field: 'TrainingReportLockHeld',
+        field: 'TrainingReportLockHeld'
       },
       laReportLockHeld: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
-        field: 'LaReportLockHeld',
-      },
+        field: 'LaReportLockHeld'
+      }
     },
     {
       defaultScope: {
         where: {
-          archived: false,
+          archived: false
+        }
+      },
+      scopes: {
+        noUstatus: {
+          where: {
+            ustatus: {
+              [sequelize.Op.is]: null
+            }
+          }
         },
+        noLocalIdentifier: {
+          where: {
+            LocalIdentifierValue: {
+              [sequelize.Op.is]: null
+            }
+          }
+        },
+        parentAndChildWorkplaces: function(establishmentId) {
+          return {
+            where: {
+              [sequelize.Op.or]: [
+                {
+                  id: establishmentId
+                },
+                {
+                  parentId: establishmentId,
+                  dataOwner: 'Parent'
+                }
+              ]
+            }
+          };
+        },
+        withEstablishmentId: function(establishmentId) {
+          return {
+            where:
+              {
+                id: establishmentId
+              }
+          };
+        }
       },
       tableName: '"Establishment"',
       schema: 'cqc',
       createdAt: false,
-      updatedAt: false,
-    },
+      updatedAt: false
+    }
   );
 
   Establishment.associate = (models) => {
     Establishment.belongsTo(models.establishment, {
       as: 'Parent',
       foreignKey: 'ParentID',
-      targetKey: 'id',
+      targetKey: 'id'
     });
 
     Establishment.hasMany(models.user, {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
-      as: 'users',
+      as: 'users'
     });
     Establishment.belongsTo(models.services, {
       foreignKey: 'MainServiceFKValue',
       targetKey: 'id',
-      as: 'mainService',
+      as: 'mainService'
     });
     Establishment.belongsToMany(models.services, {
       through: 'establishmentServices',
       foreignKey: 'establishmentId',
       targetKey: 'id',
-      as: 'otherServices',
+      as: 'otherServices'
     });
     Establishment.belongsToMany(models.serviceUsers, {
       through: 'establishmentServiceUsers',
       foreignKey: 'establishmentId',
       targetKey: 'id',
-      as: 'serviceUsers',
+      as: 'serviceUsers'
     });
     Establishment.hasMany(models.establishmentCapacity, {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
-      as: 'capacity',
+      as: 'capacity'
     });
     Establishment.hasMany(models.establishmentJobs, {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
-      as: 'jobs',
+      as: 'jobs'
     });
     Establishment.hasMany(models.establishmentLocalAuthority, {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
-      as: 'localAuthorities',
+      as: 'localAuthorities'
     });
     Establishment.hasMany(models.establishmentAudit, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
       as: 'auditEvents',
       hooks: true,
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
     Establishment.hasMany(models.worker, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
       as: 'workers',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
   };
 
-  Establishment.turnoverData = function (establishmentId) {
+  Establishment.turnoverData = function(establishmentId) {
     return this.findByPk(establishmentId, {
-      attributes: ['id', 'NumberOfStaffValue', 'LeaversValue'],
+      attributes: ['id', 'NumberOfStaffValue', 'LeaversValue']
     });
   };
 
-  Establishment.findWithWorkersAndTraining = function (establishmentId) {
+  Establishment.findWithWorkersAndTraining = function(establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],
       include: {
@@ -778,38 +817,38 @@ module.exports = function (sequelize, DataTypes) {
         attributes: ['id', 'uid', 'NameOrIdValue'],
         as: 'workers',
         where: {
-          archived: false,
+          archived: false
         },
         include: [
           {
             model: sequelize.models.job,
             as: 'mainJob',
             attributes: ['id', 'title'],
-            required: false,
+            required: false
           },
           {
             model: sequelize.models.workerTraining,
             as: 'workerTraining',
-            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk'],
-          },
-        ],
-      },
+            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk']
+          }
+        ]
+      }
     });
   };
 
-  Establishment.findbyId = async function (id) {
+  Establishment.findbyId = async function(id) {
     return await this.find({ id });
   };
 
-  Establishment.findByUid = async function (uid) {
+  Establishment.findByUid = async function(uid) {
     return await this.find({ uid });
   };
 
-  Establishment.find = async function (where) {
+  Establishment.find = async function(where) {
     return await this.findOne({
       where: {
         archived: false,
-        ...where,
+        ...where
       },
       attributes: [
         'id',
@@ -820,53 +859,54 @@ module.exports = function (sequelize, DataTypes) {
         'isParent',
         'parentId',
         'NameValue',
-        'nmdsId',
-      ],
+        'nmdsId'
+      ]
     });
   };
 
-  Establishment.closeLock = async function (LockHeldTitle, establishmentId) {
+
+  Establishment.closeLock = async function(LockHeldTitle, establishmentId) {
     return await this.update(
       {
-        [LockHeldTitle]: true,
+        [LockHeldTitle]: true
       },
       {
         where: {
           id: establishmentId,
-          [LockHeldTitle]: false,
-        },
-      },
+          [LockHeldTitle]: false
+        }
+      }
     );
   };
-  Establishment.openLock = async function (LockHeldTitle, establishmentId) {
+  Establishment.openLock = async function(LockHeldTitle, establishmentId) {
     return await this.update(
       {
-        [LockHeldTitle]: false,
+        [LockHeldTitle]: false
       },
       {
         where: {
-          id: establishmentId,
-        },
-      },
+          id: establishmentId
+        }
+      }
     );
   };
 
-  Establishment.workers = async function (establishmentId, where, attribute) {
+  Establishment.workers = async function(establishmentId, where, attribute) {
     return this.findOne({
       attributes: ['id'],
       include: {
         model: sequelize.models.worker,
         attributes: ['id', 'uid', ...attribute],
         as: 'workers',
-        where,
+        where
       },
       where: {
-        id: establishmentId,
-      },
+        id: establishmentId
+      }
     });
   };
 
-  Establishment.searchEstablishments = async function (where) {
+  Establishment.searchEstablishments = async function(where) {
     return await this.findAll({
       attributes: [
         'id',
@@ -884,13 +924,13 @@ module.exports = function (sequelize, DataTypes) {
         'dataOwner',
         'updated',
         'EmployerTypeValue',
-        'EmployerTypeOther',
+        'EmployerTypeOther'
       ],
       where: {
         ustatus: {
-          [sequelize.Op.is]: null,
+          [sequelize.Op.is]: null
         },
-        ...where,
+        ...where
       },
       order: [['NameValue', 'ASC']],
       include: [
@@ -898,7 +938,7 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishment,
           attributes: ['id', 'uid', 'nmdsId'],
           as: 'Parent',
-          required: false,
+          required: false
         },
         {
           model: sequelize.models.user,
@@ -907,19 +947,19 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
           where: {
             UserRoleValue: 'Edit',
-            archived: false,
+            archived: false
           },
           include: [
             {
               model: sequelize.models.login,
-              attributes: ['username', 'status'],
-            },
-          ],
-        },
-      ],
+              attributes: ['username', 'status']
+            }
+          ]
+        }
+      ]
     });
   };
-  Establishment.generateDeleteReportData = async function () {
+  Establishment.generateDeleteReportData = async function() {
     return await this.findAll({
       attributes: [
         'uid',
@@ -936,7 +976,7 @@ module.exports = function (sequelize, DataTypes) {
         'locationId',
         'updated',
         'EmployerTypeValue',
-        'EmployerTypeOther',
+        'EmployerTypeOther'
       ],
       order: [['NameValue', 'ASC']],
       include: [
@@ -944,69 +984,46 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.worker,
           as: 'workers',
           attributes: ['id', 'uid'],
-          order: [['updated', 'DESC']],
+          order: [['updated', 'DESC']]
         },
         {
           model: sequelize.models.services,
           as: 'mainService',
-          attributes: ['name'],
+          attributes: ['name']
         },
         {
           model: sequelize.models.establishment,
           as: 'Parent',
           attributes: ['NameValue'],
-          required: false,
-        },
-      ],
+          required: false
+        }
+      ]
     });
   };
+  
   Establishment.getMissingEstablishmentRefCount = async function(establishmentId) {
     const isParent = this.findOne({
-      attributes:['isParent'],
-      where:{id:establishmentId}
+      attributes: ['isParent'],
+      where: { id: establishmentId }
     });
-    if (isParent){
-      return await this.count({
-        where: {
-          LocalIdentifierValue: {
-            [sequelize.Op.is]:  null
-          },
-          ustatus:{
-            [sequelize.Op.is]: null,
-          },
-          [sequelize.Op.or]: [
-            {
-              id: establishmentId
-            },
-            {
-              parentId: establishmentId,
-              dataOwner: 'Parent',
-            }
-          ],
-        }
-      });
-    }else{
-      return await this.count({
-        where: {
-          LocalIdentifierValue: {
-            [sequelize.Op.is]:  null
-          },
-          ustatus:{
-            [sequelize.Op.is]: null,
-          },
-          id: establishmentId
-        }
-      });
-    }
+    const scopes = ['defaultScope', 'noUstatus','noLocalIdentifier'];
 
+    if (isParent) {
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
+    } else {
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
+    }
+    return await this.scope(scopes).count();
   };
+
   Establishment.getEstablishmentsWithMissingWorkerRef = async function(establishmentId) {
     const isParent = this.findOne({
       attributes: ['isParent'],
       where: { id: establishmentId }
     });
+
     if (isParent) {
-      return this.findAll({
+      return this.scope(['defaultScope', 'noUstatus',{ method: ['parentAndChildWorkplaces', establishmentId] }]).findAll({
         attributes: [
           'uid',
           'NameValue'
@@ -1014,87 +1031,35 @@ module.exports = function (sequelize, DataTypes) {
         include:
           {
             attributes: ['id'],
-              model: sequelize.models.worker,
-            as: 'workers',
-            where: {
-              LocalIdentifierValue: {
-                [sequelize.Op.is]: null
-              },
-              archived: false
-            },
+            model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+            as: 'workers'
           },
-        where: {
-          [sequelize.Op.or]: [
-            {
-              id: establishmentId
-            },
-            {
-              parentId: establishmentId,
-              dataOwner: 'Parent',
-            }
-          ],
-          ustatus: {
-            [sequelize.Op.is]: null,
-          },
-        }
+
       });
-    }else{
-      return this.getMissingWorkerRefCount(establishmentId) > 0  ? [establishmentId]: [];
+    } else {
+      return this.getMissingWorkerRefCount(establishmentId) > 0 ? [establishmentId] : [];
     }
   };
+
   Establishment.getMissingWorkerRefCount = async function(establishmentId) {
     const isParent = this.findOne({
       attributes: ['isParent'],
       where: { id: establishmentId }
     });
+    const scopes = ['defaultScope', 'noUstatus'];
+
     if (isParent) {
-      return await this.count({
-        include:
-          {
-            model: sequelize.models.worker,
-            as: 'workers',
-            where: {
-              LocalIdentifierValue: {
-                [sequelize.Op.is]: null
-              },
-              archived:false,
-            },
-          },
-        where: {
-          [sequelize.Op.or]: [
-            {
-              id: establishmentId
-            },
-            {
-              parentId: establishmentId,
-              dataOwner: 'Parent',
-            }
-          ],
-          ustatus: {
-            [sequelize.Op.is]: null,
-          },
-        }
-      });
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
     } else {
-      return await this.count({
-        include:
-          {
-            model: sequelize.models.worker,
-            as: 'workers',
-            where: {
-              LocalIdentifierValue: {
-                [sequelize.Op.is]: null
-              },
-            },
-          },
-        where: {
-          id: establishmentId,
-          ustatus: {
-            [sequelize.Op.is]: null,
-          },
-          },
-      });
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
     }
+    return await this.scope(scopes).count({
+      include:
+        {
+          model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+          as: 'workers'
+        }
+    });
   };
 
   return Establishment;
