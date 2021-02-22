@@ -73,7 +73,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
         }
       }
     });
-    const dupes = ArrayUtil.getDuplicates(controls, 'value');
+    const dupes = ArrayUtil.getDuplicates(controls, 'value').filter((dupe) => dupe.dirty);
     dupes.map((dupe: AbstractControl) => dupe.setErrors({ ...dupe.errors, duplicate: true }));
   }
 
