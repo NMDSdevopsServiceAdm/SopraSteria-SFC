@@ -8,9 +8,6 @@ import { AuthService } from '@core/services/auth.service';
 export class BulkUploadRelatedContentComponent {
   @Input() showAll: boolean;
 
-  constructor(private authService: AuthService) {}
+  constructor(public authService: AuthService) {}
 
-  public isAdminUser(): boolean {
-    return this.authService.isAdmin;
-  }
 }
