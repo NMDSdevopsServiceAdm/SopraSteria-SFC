@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const findInactiveWorkplaces = require('./findInactiveWorkplaces');
+const sendGroupEmail = require('./sendEmail');
 
 const getInactiveWorkplaces = async (_, res) => {
   const inactiveWorkplaces = await findInactiveWorkplaces();
@@ -12,12 +13,20 @@ const getInactiveWorkplaces = async (_, res) => {
 }
 
 const createCampaign = async (_, res) => {
-  const newCampaign = {
-    date: '2021-02-05',
-    emails: 5673,
-  };
+  try {
+    const inactiveWorkplaces = await findInactiveWorkplaces();
+    sendGroupEmail(inactiveWorkplaces, 1);
 
-  return res.json(newCampaign);
+    const newCampaign = {
+      date: '2021-02-05',
+      emails: 5673,
+    };
+
+    return res.json(newCampaign);
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send();
+  }
 }
 
 const getHistory = async (_, res) => {

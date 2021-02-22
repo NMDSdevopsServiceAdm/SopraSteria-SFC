@@ -1,18 +1,13 @@
-const express = require('express');
 const { sendEmail } = require('../../../../utils/email/sendInBlueEmail');
-const findInactiveWorkplaces = require('./findInactiveWorkplaces');
 
-const sendGroupEmail = async (_, res) => {
-  const inactiveWorkplaces = await findInactiveWorkplaces();
-
-  inactiveWorkplaces.map(async (workplace) => {
-    console.log(workplace);
-    await sendEmail(
+const sendGroupEmail = async (inactiveWorkplaces, templateId) => {
+  inactiveWorkplaces.map((workplace) => {
+    sendEmail(
       {
         email: workplace.user.email,
         name: workplace.user.name,
       },
-      1, // workplace.emailTemplate
+      templateId,
       {
         name: workplace.name,
         workplaceId: workplace.nmdsId,
@@ -20,13 +15,7 @@ const sendGroupEmail = async (_, res) => {
         nameOfUser: workplace.user.name,
       },
     );
-    // add email to history?
   });
-  return res.status(200);
 };
 
-const router = express.Router();
-router.route('/').post(sendGroupEmail);
-
-module.exports = router;
-module.exports.sendGroupEmail = sendGroupEmail;
+module.exports = sendGroupEmail;
