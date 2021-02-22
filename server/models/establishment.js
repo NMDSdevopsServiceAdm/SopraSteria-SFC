@@ -999,16 +999,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.isParent = async function (establishmentId) {
-    return this.findOne({
-      attributes: ['isParent'],
-      where: { id: establishmentId },
-    });
-  };
-
-  Establishment.getMissingEstablishmentRefCount = async function (establishmentId) {
-    const isParent = await this.isParent(establishmentId);
-
+  Establishment.getMissingEstablishmentRefCount = async function (establishmentId, isParent) {
     const scopes = ['defaultScope', 'noUstatus', 'noLocalIdentifier'];
 
     if (isParent) {
@@ -1019,9 +1010,7 @@ module.exports = function (sequelize, DataTypes) {
     return await this.scope(scopes).count();
   };
 
-  Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId) {
-    const isParent = await this.isParent(establishmentId);
-
+  Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
     if (isParent) {
       return this.scope([
         'defaultScope',
@@ -1040,9 +1029,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
-  Establishment.getMissingWorkerRefCount = async function (establishmentId) {
-    const isParent = await this.isParent(establishmentId);
-
+  Establishment.getMissingWorkerRefCount = async function (establishmentId, isParent) {
     const scopes = ['defaultScope', 'noUstatus'];
 
     if (isParent) {

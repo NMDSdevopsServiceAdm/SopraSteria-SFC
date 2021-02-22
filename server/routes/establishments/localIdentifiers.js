@@ -11,11 +11,11 @@ const isFirstBulkUpload = async (req, res) => {
 
   try {
     if (await thisEstablishment.restore(establishmentId, false)) {
-      if(thisEstablishment.localIdentifier){
+      if (thisEstablishment.localIdentifier) {
         return res.status(200).json({
           isFirstBulkUpload: false,
         });
-      }else{
+      } else {
         return res.status(200).json({
           isFirstBulkUpload: true,
         });
@@ -38,13 +38,16 @@ const isFirstBulkUpload = async (req, res) => {
   }
 };
 
-
 const getMissingLocalIdentifierCount = async (req, res) => {
   try {
-    const establishmentCount = await models.establishment.getMissingEstablishmentRefCount(req.establishmentId);
-    const workerCount = await models.establishment.getMissingWorkerRefCount(req.establishmentId);
+    const establishmentCount = await models.establishment.getMissingEstablishmentRefCount(
+      req.establishmentId,
+      req.isParent,
+    );
+    const workerCount = await models.establishment.getMissingWorkerRefCount(req.establishmentId, req.isParent);
     const establishmentsWithMissingWorkerRef = await models.establishment.getEstablishmentsWithMissingWorkerRef(
       req.establishmentId,
+      req.isParent,
     );
 
     const uniqueEstablishments = establishmentsWithMissingWorkerRef.map((f) => {
@@ -60,7 +63,6 @@ const getMissingLocalIdentifierCount = async (req, res) => {
     return res.status(503).send();
   }
 };
-
 
 router.route('/').get(hasPermission('canBulkUpload'), isFirstBulkUpload);
 router.route('/missing').get(hasPermission('canBulkUpload'), getMissingLocalIdentifierCount);
