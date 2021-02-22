@@ -3,7 +3,7 @@ import { AfterViewInit, Directive, ElementRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { LocalIdentifiersRequest } from '@core/model/establishment.model';
+import { Establishment, LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -37,7 +37,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected filterWorkplaceReferences(references: [Workplace],primaryWorkplace:Workplace,withLocalIdNull: boolean){
+  protected filterWorkplaceReferences(references: [Workplace],primaryWorkplace:Establishment,withLocalIdNull: boolean){
     const filteredRef = filter(references, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
       if (primaryWorkplace.isParent)
