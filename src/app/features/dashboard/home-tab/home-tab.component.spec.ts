@@ -103,6 +103,7 @@ describe('HomeTabComponent', () => {
     const { component } = await setup();
     // Act
     component.fixture.componentInstance.updateStaffRecords = true;
+    component.fixture.detectChanges();
 
     const link = component.getByTestId('add-staff-banner');
     // Assert
