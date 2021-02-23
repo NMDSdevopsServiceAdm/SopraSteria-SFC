@@ -10,11 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     emailCampaignID: DataTypes.INTEGER,
     establishmentID: DataTypes.INTEGER,
-    dataOwner: DataTypes.STRING,
-    lastUpdated: DataTypes.DATE,
     template: DataTypes.STRING,
+    data: DataTypes.JSONB,
     sentToName: DataTypes.STRING,
-    sentToEmail: DataTypes.STRING
+    sentToEmail: DataTypes.STRING,
   });
 
   EmailCampaignHistory.associate = function(models) {

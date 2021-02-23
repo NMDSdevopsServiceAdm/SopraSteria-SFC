@@ -30,14 +30,14 @@ module.exports = {
             key: 'EstablishmentID',
           },
         },
-        dataOwner: {
+        type: {
           type: Sequelize.STRING,
-        },
-        lastUpdated: {
-          type: Sequelize.DATE,
         },
         template: {
           type: Sequelize.STRING,
+        },
+        data: {
+          type: Sequelize.JSONB,
         },
         sentToName: {
           type: Sequelize.STRING,
