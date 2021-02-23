@@ -169,7 +169,7 @@ describe('StaffReferencesComponent', () => {
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${workers[0].uid}`].markAsDirty();
@@ -189,7 +189,7 @@ describe('StaffReferencesComponent', () => {
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${workers[0].uid}`].markAsDirty();
@@ -209,7 +209,7 @@ describe('StaffReferencesComponent', () => {
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
     form.controls[`reference-${workers[0].uid}`].markAsDirty();
     form.controls[`reference-${workers[1].uid}`].markAsDirty();
@@ -232,7 +232,7 @@ describe('StaffReferencesComponent', () => {
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const uniqueErrorMessage = 'Enter a different reference, this one has already been used';
+    const uniqueErrorMessage = 'This reference matches another, it needs to be unique';
     const maxLength = component.fixture.componentInstance.maxLength;
     const lengthErrorMessage = `Reference must be ${maxLength} characters or fewer`;
     const overMaxValue = 'abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc';

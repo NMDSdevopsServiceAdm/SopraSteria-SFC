@@ -145,7 +145,7 @@ describe('WorkplaceReferencesComponent', () => {
     const references = workplaces;
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${workplaces[0].uid}`].markAsDirty();
@@ -165,7 +165,7 @@ describe('WorkplaceReferencesComponent', () => {
     const references = workplaces;
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${workplaces[0].uid}`].markAsDirty();
