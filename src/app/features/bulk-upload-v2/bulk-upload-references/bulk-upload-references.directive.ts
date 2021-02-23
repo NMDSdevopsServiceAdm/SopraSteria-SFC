@@ -10,8 +10,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ArrayUtil } from '@core/utils/array-util';
-import {  filter, orderBy } from 'lodash';
-
+import { filter, orderBy } from 'lodash';
 
 @Directive()
 export class BulkUploadReferencesDirective implements AfterViewInit {
@@ -37,7 +36,11 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected filterWorkplaceReferences(references: [Workplace],primaryWorkplace:Establishment,withLocalIdNull: boolean){
+  protected filterWorkplaceReferences(
+    references: [Workplace],
+    primaryWorkplace: Establishment,
+    withLocalIdNull: boolean,
+  ) {
     const filteredRef = filter(references, (reference: Workplace) => {
       if (reference.ustatus === 'PENDING') return false;
       if (primaryWorkplace.isParent)

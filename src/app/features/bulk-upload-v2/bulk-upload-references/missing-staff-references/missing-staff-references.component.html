@@ -72,7 +72,12 @@
           <p class="govuk-!-margin-top-4">There are no workplaces editable</p>
         </div>
       </div>
-      <app-submit-exit-buttons [cta]="'Save and continue'" [exit]="'Exit'" [return]="exit"></app-submit-exit-buttons>
+      <app-missing-refs-submit-exit-buttons
+        (skip)="skipPage()"
+        [cta]="'Save and continue'"
+        [exit]="'Exit'"
+        [return]="exit"
+      ></app-missing-refs-submit-exit-buttons>
     </form>
   </div>
 </div>

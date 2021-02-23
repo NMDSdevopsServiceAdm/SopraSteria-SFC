@@ -84,6 +84,12 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     this.workplaceName = this.establishmentsWithMissingReferences[0].name;
   }
 
+  public skipPage(): void {
+    this.establishmentsWithMissingReferences.shift();
+    this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
+  }
+
   protected save(): void {
     this.subscriptions.add(
       this.workerService

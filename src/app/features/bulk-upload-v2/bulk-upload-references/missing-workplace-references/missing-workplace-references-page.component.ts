@@ -47,13 +47,17 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.setBackLink(this.return);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishmentsWithMissingReferences = this.activatedRoute.snapshot.data.nextWorkplace.establishmentList;
-    this.filterWorkplaceReferences(this.activatedRoute.snapshot.data.workplaceReferences,this.primaryWorkplace,true);
+    this.filterWorkplaceReferences(this.activatedRoute.snapshot.data.workplaceReferences, this.primaryWorkplace, true);
     this.setupForm();
     this.setWorkplaceServerErrors();
     this.showToggles = this.anyFilledReferences();
   }
 
-
+  public skipPage(): void {
+    this.establishmentsWithMissingReferences.shift();
+    this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
+  }
 
   protected save(): void {
     this.subscriptions.add(
