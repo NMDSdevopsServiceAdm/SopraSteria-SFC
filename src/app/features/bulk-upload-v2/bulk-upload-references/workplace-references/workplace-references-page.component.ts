@@ -28,7 +28,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public return: URLStructure = { url: ['/bulk-upload'] };
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -75,6 +75,6 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
   }
 
   public setReturn(): void {
-    this.bulkUploadService.setReturnTo({ url: ['/dev/bulk-upload/workplace-references'] });
+    this.bulkUploadService.setReturnTo({ url: ['/bulk-upload/workplace-references'] });
   }
 }

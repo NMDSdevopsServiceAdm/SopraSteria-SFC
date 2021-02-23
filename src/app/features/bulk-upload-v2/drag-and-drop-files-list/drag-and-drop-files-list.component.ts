@@ -41,6 +41,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   };
   public preValidationErrorMessage = '';
   public showPreValidateErrorMessage = false;
+  public disableButton = false;
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -54,6 +55,12 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getUploadedFiles();
     this.preValidateFilesSubscription();
+    this.subscriptions.add(
+      this.bulkUploadService.selectedFiles$.subscribe(() => {
+        this.disableButton = true;
+        })
+    );
+    this.disableButton = false;
   }
 
   public showFileRecords(file): string {
@@ -160,10 +167,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       );
   }
 
-  public displayDownloadReportLink(file: ValidatedFile) {
-    return file.errors > 0 || file.warnings > 0;
-  }
-
   public getValidationError(file: ValidatedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
@@ -239,7 +242,10 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         if (preValidateFiles) {
           this.validationComplete = false;
           this.preValidateFiles();
+        }else{
+           this.disableButton = false;
         }
+
       }),
     );
   }
@@ -254,6 +260,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
             this.uploadedFiles = response;
+            this.disableButton = false;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
         ),

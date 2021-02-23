@@ -23,7 +23,7 @@ export class BulkUploadStartGuard implements CanActivate {
     return this.bulkUploadService.isFirstBulkUpload(workplaceID).pipe(
       map((response) => {
         if (response.isFirstBulkUpload) {
-          const redirect: UrlTree = this.router.parseUrl('/dev/bulk-upload/start');
+          const redirect: UrlTree = this.router.parseUrl('/bulk-upload/start');
           return redirect;
         }
         return true;
