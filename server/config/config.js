@@ -454,6 +454,15 @@ const config = convict({
       default: 'd',
     },
   },
+  sendInBlue: {
+    apiKey: {
+      doc: 'Send in Blue API Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'SEND_IN_BLUE_KEY',
+    },
+  },
 });
 
 // Load environment dependent configuration
