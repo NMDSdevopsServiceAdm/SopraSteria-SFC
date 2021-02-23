@@ -149,4 +149,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
+
+  public isNumber(value: unknown): boolean {
+    return typeof value === 'number';
+  }
 }
