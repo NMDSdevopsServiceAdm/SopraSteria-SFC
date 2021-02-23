@@ -31,7 +31,7 @@ export class BulkUploadMissingPageComponent implements OnInit, OnDestroy {
           this.missingRefCount = missingRef;
           this.bulkUploadService.setMissingReferencesNavigation(missingRef.establishmentList);
           if (this.missingRefCount.establishment > 0) {
-            this.nextPage = { url: ['/dev', 'bulk-upload', 'missing-workplace-references'] };
+            this.nextPage = { url: ['/bulk-upload', 'missing-workplace-references'] };
           } else {
             this.nextPage = { url: this.bulkUploadService.nextMissingReferencesNavigation() };
           }

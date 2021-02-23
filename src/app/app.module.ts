@@ -53,13 +53,6 @@ import { AppComponent } from './app.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
-import { DevelopmentRoutingModule } from './development-routing.module';
-import { environment } from 'src/environments/environment';
-
-const developmentModules = [];
-if (!environment.production) {
-  developmentModules.push(DevelopmentRoutingModule);
-}
 
 @NgModule({
   declarations: [
@@ -88,7 +81,6 @@ if (!environment.production) {
         clearIds: true,
       },
     }),
-    ...developmentModules,
     AppRoutingModule,
     BrowserModule,
     CommonModule,

@@ -23,7 +23,7 @@ export class BulkUploadMissingGuard implements CanActivate {
     return this.bulkUploadService.getMissingRef(workplaceID).pipe(
       map((response) => {
         if (response.establishment > 0 || response.worker > 0) {
-          const redirect: UrlTree = this.router.parseUrl('/dev/bulk-upload/missing');
+          const redirect: UrlTree = this.router.parseUrl('/bulk-upload/missing');
           return redirect;
         }
         return true;
