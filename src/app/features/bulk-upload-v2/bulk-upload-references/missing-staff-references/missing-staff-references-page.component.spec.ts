@@ -1,13 +1,17 @@
+import 'rxjs/add/observable/from';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
@@ -15,14 +19,14 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { Observable, Subject } from 'rxjs';
 
-import { StaffReferencesComponent } from './staff-references-page.component';
-import { WindowRef } from '@core/services/window.ref';
+import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
 
-describe('StaffReferencesComponent', () => {
+describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
-    const component = await render(StaffReferencesComponent, {
+    const component = await render(MissingStaffReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
       providers: [
         {
@@ -38,20 +42,25 @@ describe('StaffReferencesComponent', () => {
           useClass: MockBulkUploadService,
         },
         {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+        {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
         {
-          provide: WindowRef,
-          useClass: WindowRef
-        },
-        {
           provide: ActivatedRoute,
           useValue: {
+            params: Observable.from([{ uid: 123 }]),
             snapshot: {
               data: {
                 references: references,
-                workplaceReferences: [{ uid: 123 }],
+                workplaceReferences: {
+                  establishment: 1,
+                  worker: 2,
+                  establishmentList: [{ uid: '123', name: 'Worker Steve' }],
+                },
               },
               paramMap: {
                 get(uid) {
@@ -69,12 +78,12 @@ describe('StaffReferencesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const router = injector.inject(Router) as Router;
+    const event = new NavigationEnd(42, '/', '/');
+    ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
 
     return {
       component,
       establishmentService,
-      router,
     };
   }
 
@@ -91,6 +100,7 @@ describe('StaffReferencesComponent', () => {
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
+    component.fixture.detectChanges();
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
     form.controls[`reference-${worker.uid}`].setValue('');
@@ -103,7 +113,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should hide missing worker error after filling empty field and resubmitting', async () => {
     const worker = workerBuilder();
-    const references = ([worker] as unknown) as Worker[];
+    const references = [worker] as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
@@ -189,7 +199,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
     const workers = [workerBuilder(), workerBuilder()];
-    const references = workers;
+    const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'Enter a different reference, this one has already been used';
@@ -243,5 +253,32 @@ describe('StaffReferencesComponent', () => {
     expect(component.queryByText(lengthErrorMessage, { exact: false })).toBeNull();
     expect(form.controls[`reference-${workers[0].uid}`].errors).toEqual(null);
     expect(form.controls[`reference-${workers[1].uid}`].errors).toEqual(null);
+  });
+
+  it('should show empty references at top of table on page load', async () => {
+    const workers = [workerBuilder(), workerBuilder()] as Worker[];
+    workers[0].localIdentifier = 'hello';
+    const { component } = await setup(workers);
+    component.fixture.detectChanges();
+
+    const firstReferenceRow = component.getByTestId('reference-0');
+    const workerNameWithEmptyReference = workers[1].nameOrId;
+
+    expect(firstReferenceRow.textContent.includes(workerNameWithEmptyReference));
+  });
+
+  it('should hide filled references on page load and show them after clicking Show all references', async () => {
+    const workers = [workerBuilder(), workerBuilder()] as Worker[];
+    workers[0].localIdentifier = 'hello';
+    const { component } = await setup(workers);
+    component.fixture.detectChanges();
+    const filledReferenceRow = component.getByTestId('reference-1');
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
+
+    const showAllReferencesToggle = component.getByText('Show all references');
+    fireEvent.click(showAllReferencesToggle);
+    component.fixture.detectChanges();
+
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
   });
 });

@@ -1,12 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { LocalIdentifiersRequest } from '@core/model/establishment.model';
-import { Workplace } from '@core/model/my-workplaces.model';
+import { Establishment, LocalIdentifiersRequest } from '@core/model/establishment.model';
+import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ArrayUtil } from '@core/utils/array-util';
+import {  filter, orderBy } from 'lodash';
+
 
 @Directive()
 export class BulkUploadReferencesDirective implements AfterViewInit {
@@ -18,13 +23,64 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   public formErrorsMap: ErrorDetails[] = [];
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
+  public showToggles = false;
 
-  constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}
+  constructor(
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected alertService: AlertService,
+    protected backService: BackService,
+    protected router: Router,
+  ) {}
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  protected filterWorkplaceReferences(references: [Workplace],primaryWorkplace:Establishment,withLocalIdNull: boolean){
+    const filteredRef = filter(references, (reference: Workplace) => {
+      if (reference.ustatus === 'PENDING') return false;
+      if (primaryWorkplace.isParent)
+        return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === primaryWorkplace.uid;
+      return reference.dataOwner === WorkplaceDataOwner.Workplace;
+    });
+    if (withLocalIdNull) {
+      this.references = orderBy(
+        filteredRef,
+        [
+          (workplace: Workplace) => workplace.localIdentifier !== null,
+          (workplace: Workplace) => workplace.name.toLowerCase(),
+        ],
+        ['asc'],
+      );
+      return;
+    }
+    this.references = orderBy(filteredRef, [(workplace: Workplace) => workplace.name.toLowerCase()], ['asc']);
+  }
+  protected setWorkerServerErrors() {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Service unavailable.',
+      },
+      {
+        name: 400,
+        message: `Unable to update staff reference.`,
+      },
+    ];
+  }
+  protected setWorkplaceServerErrors() {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Service unavailable.',
+      },
+      {
+        name: 400,
+        message: `Unable to update workplace reference.`,
+      },
+    ];
+  }
   protected setupForm(): void {
     this.submitted = false;
     this.form = this.formBuilder.group(
@@ -113,5 +169,22 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
     this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
+  }
+
+  protected anyFilledReferences(): boolean {
+    return this.references.some((reference) => reference.localIdentifier !== null);
+  }
+  protected setBackLink(returnTo): void {
+    this.backService.setBackLink(returnTo);
+  }
+  protected nextMissingPage(url): void {
+    this.router.navigate(url).then(() => {
+      if (url[url.length - 1] === 'bulk-upload') {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'All workplace and staff references have been added.',
+        });
+      }
+    });
   }
 }

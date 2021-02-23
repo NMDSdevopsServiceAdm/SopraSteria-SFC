@@ -5,14 +5,17 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
-  ErrorReport, lastBulkUploadFile,
+  ErrorReport,
+  EstablishmentList,
+  lastBulkUploadFile,
+  MissingReferences,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
   UploadedFilesRequestToDownloadResponse,
   UploadedFilesResponse,
   ValidatedFile,
-  ValidatedFilesResponse
+  ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
@@ -23,14 +26,8 @@ import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
 
-export interface NullLocalIdentifiersResponse {
-  establishments: Array<{
-    uid: string;
-    name: string;
-    status?: string;
-    missing: boolean;
-    workers: number;
-  }>;
+export interface isFirstBulkupload {
+  isFirstBulkUpload: boolean;
 }
 
 @Injectable({
@@ -46,6 +43,8 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+  public establishmentsWithMissingWorkerIds$ = new BehaviorSubject<[EstablishmentList]>(null);
+
   protected endpoint = 'uploaded';
 
   constructor(
@@ -70,6 +69,18 @@ export class BulkUploadService {
         this.setWorkplaceReferences(references);
       }),
     );
+  }
+
+  public setMissingReferencesNavigation(workplaces: [EstablishmentList]) {
+    this.establishmentsWithMissingWorkerIds$.next(workplaces);
+  }
+  
+  public nextMissingReferencesNavigation() {
+    const establishments = this.establishmentsWithMissingWorkerIds$.value;
+    if (!establishments.length) {
+      return ['/dev', 'bulk-upload'];
+    }
+    return ['/dev', 'bulk-upload', establishments[0].uid, 'missing-staff-references'];
   }
 
   public setWorkplaceReferences(references: Workplace[]) {
@@ -97,7 +108,6 @@ export class BulkUploadService {
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    console.log('Trying to upload');
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
@@ -164,12 +174,16 @@ export class BulkUploadService {
     });
   }
 
-  public getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
-    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`)
+  public getLastBulkUpload(workplaceUid: string): Observable<[lastBulkUploadFile]> {
+    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`);
   }
 
-  public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
-    return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
+  public getMissingRef(workplaceUid: string): Observable<MissingReferences> {
+    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`);
+  }
+
+  public isFirstBulkUpload(workplaceUid: string): Observable<isFirstBulkupload> {
+    return this.http.get<isFirstBulkupload>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }
 
   public getDataCSV(workplaceUid: string, type: BulkUploadFileType): Observable<any> {
