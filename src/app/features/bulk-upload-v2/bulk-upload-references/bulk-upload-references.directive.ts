@@ -111,7 +111,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
           },
           {
             name: 'duplicate',
-            message: `Enter a different reference, this one has already been used`,
+            message: `This reference matches another, it needs to be unique`,
           },
         ],
       });
@@ -129,7 +129,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
         }
       }
     });
-    const dupes = ArrayUtil.getDuplicates(controls, 'value');
+    const dupes = ArrayUtil.getDuplicates(controls, 'value').filter((dupe) => dupe.dirty);
     dupes.map((dupe: AbstractControl) => dupe.setErrors({ ...dupe.errors, duplicate: true }));
   }
 
@@ -164,7 +164,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
   protected onError(response: HttpErrorResponse): void {
     if (response.status === 400) {
-      this.serverErrorsMap[1].message += `Enter a different reference, this one has already been used`;
+      this.serverErrorsMap[1].message += `This reference matches another, it needs to be unique`;
     }
 
     this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
