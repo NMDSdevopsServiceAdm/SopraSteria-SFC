@@ -22,8 +22,8 @@ const createCampaign = async (req, res) => {
     });
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    inactiveWorkplaces.map(async (workplace) => {
-      models.EmailCampaignHistory.create({
+    const history = inactiveWorkplaces.map((workplace) => {
+      return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
         type: 'inactiveWorkplaces',
@@ -34,10 +34,11 @@ const createCampaign = async (req, res) => {
         },
         sentToName: workplace.user.name,
         sentToEmail: workplace.user.email,
-      });
-
-      sendEmail.sendEmail(workplace);
+      };
     });
+
+    models.EmailCampaignHistory.bulkCreate(history);
+    inactiveWorkplaces.map(sendEmail.sendEmail);
 
     return res.json({
       date: emailCampaign.createdAt,

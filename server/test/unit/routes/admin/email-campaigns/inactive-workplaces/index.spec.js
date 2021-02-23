@@ -73,7 +73,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         createdAt: '2021-01-01',
         updatedAt: '2021-01-01',
       });
-      const createEmailCampaignHistoryMock = sinon.stub(models.EmailCampaignHistory, 'create');
+      const createEmailCampaignHistoryMock = sinon.stub(models.EmailCampaignHistory, 'bulkCreate');
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -95,7 +95,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         emails: 2,
       });
 
-      sinon.assert.calledTwice(createEmailCampaignHistoryMock);
+      sinon.assert.calledOnce(createEmailCampaignHistoryMock);
       sinon.assert.calledWith(userMock, '1402bf74-bf25-46d3-a080-a633f748b441');
       sinon.assert.calledWith(createEmailCampaignMock, {
         userID: 1,
@@ -107,7 +107,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     it('should get the email campaign history', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
-        url: `/api/admin/email-campaigns/inactive-workplaces/history`,
+        url: '/api/admin/email-campaigns/inactive-workplaces/history',
       });
 
       req.role = 'Admin';
