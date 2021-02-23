@@ -160,10 +160,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       );
   }
 
-  public displayDownloadReportLink(file: ValidatedFile) {
-    return file.errors > 0 || file.warnings > 0;
-  }
-
   public getValidationError(file: ValidatedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
