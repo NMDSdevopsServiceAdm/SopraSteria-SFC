@@ -17,8 +17,14 @@ module.exports = (sequelize, DataTypes) => {
 
   EmailCampaign.associate = function(models) {
     EmailCampaign.belongsTo(models.user, {
-      foreignKey : 'userId',
+      foreignKey : 'userID',
       targetKey: 'id',
+    });
+
+    EmailCampaign.hasMany(models.EmailCampaignHistory, {
+      foreignKey: 'emailCampaignID',
+      sourceKey: 'id',
+      as: 'emailCampaignHistories',
     });
   };
 
