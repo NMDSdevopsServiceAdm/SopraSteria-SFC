@@ -10,7 +10,7 @@ import { MissingRefsSubmitExitButtonsComponent } from './missing-refs-submit-exi
 
 describe('MissingRefsSubmitExitButtonsComponent', () => {
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
-    const { fixture, getByText } = await render(MissingRefsSubmitExitButtonsComponent, {
+    const { fixture, getByText, queryByText } = await render(MissingRefsSubmitExitButtonsComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadV2Module],
       providers: [
         {
@@ -22,11 +22,21 @@ describe('MissingRefsSubmitExitButtonsComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, getByText };
+    return { component, queryByText };
   };
 
   it('should render a MissingRefsSubmitExitButtonsComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should not render Skip button if user is not admin', async () => {
+    const { queryByText } = await setup();
+    expect(queryByText('Skip')).toBeFalsy();
+  });
+
+  it('should render Skip button when user is admin', async () => {
+    const { queryByText } = await setup(true);
+    expect(queryByText('Skip')).toBeTruthy();
   });
 });
