@@ -1,20 +1,42 @@
-const expect = require('chai').expect;
-const httpMocks = require('node-mocks-http');
-const { sendGroupEmail } = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/sendEmail');
+const sinon = require('sinon');
+const sendEmail = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/sendEmail');
+const sendInBlueEmail = require('../../../../../../utils/email/sendInBlueEmail');
 
-describe.only('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', () => {
-  it('should send emails to inactive workplaces', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: `/api/admin/email-campaigns/inactive-workplaces/sendEmail`,
-    });
+describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
 
-    req.role = 'Admin';
+  it('should call sendEmails for inactive workplace', async () => {
+    const inactiveWorkplace =
+      {
+        name: 'Workplace Name',
+        nmdsId: 'J1234567',
+        lastUpdated: '2020-06-01',
+        emailTemplateId: 6,
+        dataOwner: 'Workplace',
+        user: {
+          name: 'Test Name',
+          email: 'test@example.com',
+        },
+      };
 
-    const res = httpMocks.createResponse();
+    const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
 
-    await sendGroupEmail(req, res);
+    await sendEmail.sendEmail(inactiveWorkplace);
 
-    expect(res.statusCode).to.equal(200);
+    sinon.assert.calledWith(sendEmailStub,
+      {
+        email: 'test@example.com',
+        name: 'Test Name',
+      },
+      6,
+      {
+        name: 'Workplace Name',
+        workplaceId: 'J1234567',
+        lastUpdated: '2020-06-01',
+        nameOfUser: 'Test Name',
+      },
+    );
   });
 });

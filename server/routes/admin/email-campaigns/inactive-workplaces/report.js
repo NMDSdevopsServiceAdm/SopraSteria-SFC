@@ -36,7 +36,7 @@ const generateReport = async (_, res) => {
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
 
-  const inactiveWorkplaces = await findInactiveWorkplaces();
+  const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
   inactiveWorkplaces.forEach(workplace => {
     printRow(worksheet, workplace);
   });
