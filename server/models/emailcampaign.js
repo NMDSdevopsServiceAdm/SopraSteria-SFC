@@ -8,10 +8,12 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       field: '"id"',
     },
-    userId: DataTypes.INTEGER,
+    userID: DataTypes.INTEGER,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
-  }, {});
+  }, {
+    schema: 'cqc'
+  });
 
   EmailCampaign.associate = function(models) {
     EmailCampaign.belongsTo(models.user, {

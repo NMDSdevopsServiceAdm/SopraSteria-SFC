@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const models = require('../../../../models');
 const findInactiveWorkplaces = require('./findInactiveWorkplaces');
 const sendEmail = require('./sendEmail');
 
@@ -12,17 +13,36 @@ const getInactiveWorkplaces = async (_, res) => {
   });
 }
 
-const createCampaign = async (_, res) => {
+const createCampaign = async (req, res) => {
   try {
+    const user = await models.user.findByUUID(req.userUid);
+
+    const emailCampaign = await models.EmailCampaign.create({
+      userID: user.id,
+    });
+
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    inactiveWorkplaces.map(sendEmail.sendEmail);
+    inactiveWorkplaces.map(async (workplace) => {
+      models.EmailCampaignHistory.create({
+        emailCampaignID: emailCampaign.id,
+        establishmentID: workplace.id,
+        type: 'inactiveWorkplaces',
+        template: workplace.emailTemplateId,
+        data: {
+          dataOwner: workplace.dataOwner,
+          lastUpdated: workplace.lastUpdated,
+        },
+        sentToName: workplace.user.name,
+        sentToEmail: workplace.user.email,
+      });
 
-    const newCampaign = {
-      date: '2021-02-05',
-      emails: 5673,
-    };
+      sendEmail.sendEmail(workplace);
+    });
 
-    return res.json(newCampaign);
+    return res.json({
+      date: emailCampaign.createdAt,
+      emails: inactiveWorkplaces.length,
+    });
   } catch (err) {
     console.error(err);
     return res.status(503).json();
