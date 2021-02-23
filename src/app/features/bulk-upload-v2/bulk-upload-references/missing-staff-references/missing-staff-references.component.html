@@ -39,7 +39,7 @@
       </div>
       <ng-container *ngFor="let reference of references; index as i">
         <div
-          class="govuk-form-group govuk__grid asc__references-grid-container "
+          class="govuk-form-group govuk__grid asc__references-grid-container"
           [ngClass]="{ 'govuk-visually-hidden': reference.localIdentifier && showMissing }"
           [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
           [class.govuk-!-margin-bottom-1]="form.get('reference-' + reference.uid).errors && submitted"
