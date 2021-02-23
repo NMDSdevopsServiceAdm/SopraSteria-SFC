@@ -9,7 +9,12 @@
 
 <div class="govuk__flex">
   <div class="govuk-!-margin-top-6 govuk">
-    <button class="govuk-button govuk-!-margin-right-9" (click)="confirmSendEmails($event)" type="submit">
+    <button
+      class="govuk-button govuk-!-margin-right-9"
+      [disabled]="!inactiveWorkplaces"
+      (click)="confirmSendEmails($event)"
+      type="submit"
+    >
       Send emails
     </button>
   </div>
