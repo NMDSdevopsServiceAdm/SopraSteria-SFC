@@ -172,6 +172,8 @@ describe('StaffReferencesComponent', () => {
     const errorMessage = 'Enter a different reference, this one has already been used';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[1].uid}`].markAsDirty();
     form.controls[`reference-${workers[0].uid}`].setValue('abc');
     form.controls[`reference-${workers[1].uid}`].setValue('abc');
     component.fixture.componentInstance.onSubmit(event);
@@ -182,6 +184,26 @@ describe('StaffReferencesComponent', () => {
     expect(form.controls[`reference-${workers[1].uid}`].errors).toEqual({ duplicate: true });
   });
 
+  it('should only show 1 duplicate error when submitting with same input in 2 box when 1 dirty', async () => {
+    const workers = [workerBuilder(), workerBuilder()];
+    const references = workers as Worker[];
+    const { component } = await setup(references);
+    const form = component.fixture.componentInstance.form;
+    const errorMessage = 'Enter a different reference, this one has already been used';
+
+    expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[0].uid}`].setValue('abc');
+    form.controls[`reference-${workers[1].uid}`].setValue('abc');
+    component.fixture.detectChanges();
+    component.fixture.componentInstance.onSubmit(event);
+    component.fixture.detectChanges();
+    expect(form.invalid).toBeTruthy();
+    expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(2);
+    expect(form.controls[`reference-${workers[0].uid}`].errors).toEqual({ duplicate: true });
+    expect(form.controls[`reference-${workers[1].uid}`].errors).toEqual(null);
+  });
+
   it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
     const workers = [workerBuilder(), workerBuilder()];
     const references = workers as Worker[];
@@ -189,6 +211,8 @@ describe('StaffReferencesComponent', () => {
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'Enter a different reference, this one has already been used';
 
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[1].uid}`].markAsDirty();
     form.controls[`reference-${workers[0].uid}`].setValue('abc');
     form.controls[`reference-${workers[1].uid}`].setValue('abc');
     component.fixture.componentInstance.onSubmit(event);
@@ -213,6 +237,8 @@ describe('StaffReferencesComponent', () => {
     const lengthErrorMessage = `Reference must be ${maxLength} characters or fewer`;
     const overMaxValue = 'abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc';
 
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[1].uid}`].markAsDirty();
     form.controls[`reference-${workers[0].uid}`].setValue(overMaxValue);
     form.controls[`reference-${workers[1].uid}`].setValue(overMaxValue);
     component.fixture.componentInstance.onSubmit(event);

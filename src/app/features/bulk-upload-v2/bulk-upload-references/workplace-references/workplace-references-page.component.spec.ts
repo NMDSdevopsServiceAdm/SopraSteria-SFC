@@ -148,6 +148,8 @@ describe('WorkplaceReferencesComponent', () => {
     const errorMessage = 'Enter a different reference, this one has already been used';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+    form.controls[`reference-${workplaces[0].uid}`].markAsDirty();
+    form.controls[`reference-${workplaces[1].uid}`].markAsDirty();
     form.controls[`reference-${workplaces[0].uid}`].setValue('abc');
     form.controls[`reference-${workplaces[1].uid}`].setValue('abc');
     component.fixture.componentInstance.onSubmit(event);
@@ -156,5 +158,24 @@ describe('WorkplaceReferencesComponent', () => {
     expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(4);
     expect(form.controls[`reference-${workplaces[0].uid}`].errors).toEqual({ duplicate: true });
     expect(form.controls[`reference-${workplaces[1].uid}`].errors).toEqual({ duplicate: true });
+  });
+
+  it('should show duplicate error when submitting with same input in 1 box when 1 dirty', async () => {
+    const workplaces = [establishmentBuilder(), establishmentBuilder()] as Workplace[];
+    const references = workplaces;
+    const { component } = await setup(references);
+    const form = component.fixture.componentInstance.form;
+    const errorMessage = 'Enter a different reference, this one has already been used';
+
+    expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+    form.controls[`reference-${workplaces[0].uid}`].markAsDirty();
+    form.controls[`reference-${workplaces[0].uid}`].setValue('abc');
+    form.controls[`reference-${workplaces[1].uid}`].setValue('abc');
+    component.fixture.componentInstance.onSubmit(event);
+    component.fixture.detectChanges();
+    expect(form.invalid).toBeTruthy();
+    expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(2);
+    expect(form.controls[`reference-${workplaces[0].uid}`].errors).toEqual({ duplicate: true });
+    expect(form.controls[`reference-${workplaces[1].uid}`].errors).toEqual(null);
   });
 });
