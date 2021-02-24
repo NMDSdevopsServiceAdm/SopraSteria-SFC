@@ -44,38 +44,53 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   }
 
   ngOnInit() {
-    this.getMyAllWorkPlaces();
+    this.getAllValidWorkplaces();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
 
-  //function is use to get all available workplaces
-  private getMyAllWorkPlaces() {
+  // //function is use to get all available workplaces
+  // private getMyAllWorkPlaces() {
+  //   this.subscriptions.add(
+  //     this.userService.getEstablishments().subscribe(
+  //       (myAllEstablishment) => {
+  //         let allEstablishments;
+  //         const { primary, subsidaries } = myAllEstablishment;
+  //         const subsidaryEstablishments = subsidaries.count > 0 ? subsidaries.establishments : [];
+  //         allEstablishments = subsidaryEstablishments;
+  //         if (subsidaries.count > 0) {
+  //           allEstablishments = subsidaryEstablishments.concat([primary]);
+  //         }
+  //         const currentWorkplaceUid = this.data.workplace.uid;
+  //         this.availableWorkPlaces = allEstablishments
+  //           .filter((wp) => wp.uid !== currentWorkplaceUid)
+  //           .map((wp) => {
+  //             wp.nameAndPostCode = wp.name + ', ' + wp.postCode;
+  //             return wp;
+  //           });
+  //         this.availableWorkPlaces = this.availableWorkPlaces.filter(
+  //           (item) => item.dataOwner === 'Parent' && item.ustatus !== 'PENDING',
+  //         );
+  //         if (currentWorkplaceUid !== this.data.primaryWorkplaceUid) {
+  //           this.availableWorkPlaces.push(primary);
+  //         }
+  //       },
+
+  //       (error) => {
+  //         if (error.error.message) {
+  //           this.serverError = error.error.message;
+  //         }
+  //       },
+  //     ),
+  //   );
+  // }
+
+  private getAllValidWorkplaces() {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
-        (myAllEstablishment) => {
-          let allEstablishments;
-          const { primary, subsidaries } = myAllEstablishment;
-          const subsidaryEstablishments = subsidaries.count > 0 ? subsidaries.establishments : [];
-          allEstablishments = subsidaryEstablishments;
-          if (subsidaries.count > 0) {
-            allEstablishments = subsidaryEstablishments.concat([primary]);
-          }
-          const currentWorkplaceUid = this.data.workplace.uid;
-          this.availableWorkPlaces = allEstablishments
-            .filter((wp) => wp.uid !== currentWorkplaceUid)
-            .map((wp) => {
-              wp.nameAndPostCode = wp.name + ', ' + wp.postCode;
-              return wp;
-            });
-          this.availableWorkPlaces = this.availableWorkPlaces.filter(
-            (item) => item.dataOwner === 'Parent' && item.ustatus !== 'PENDING',
-          );
-          if (currentWorkplaceUid !== this.data.primaryWorkplaceUid) {
-            this.availableWorkPlaces.push(primary);
-          }
+        (allEstablishments) => {
+          this.availableWorkPlaces = this.getValidEstablishments(allEstablishments, this.data.workplace.uid);
         },
-
         (error) => {
           if (error.error.message) {
             this.serverError = error.error.message;
@@ -83,6 +98,31 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
         },
       ),
     );
+  }
+
+  private getValidEstablishments(establishments, currentWorkplaceUid) {
+    const { primary, subsidaries } = establishments;
+    const establishmentArray = [primary];
+
+    if (subsidaries.count > 0) {
+      subsidaries.establishments.forEach((establishment) => establishmentArray.push(establishment));
+    }
+
+    const validEstablishments = establishmentArray.filter((wp) => wp.uid !== currentWorkplaceUid);
+
+    const establishmentsWithNameAndPostcode = this.addNameAndPostcodeAttribute(validEstablishments);
+
+    return establishmentsWithNameAndPostcode;
+  }
+
+  private addNameAndPostcodeAttribute(validEstablishments) {
+    const modifiedEstablishments = validEstablishments.map((establishment) => {
+      establishment.nameAndPostCode = establishment.name + ', ' + establishment.postCode;
+
+      return establishment;
+    });
+
+    return modifiedEstablishments;
   }
 
   /**
