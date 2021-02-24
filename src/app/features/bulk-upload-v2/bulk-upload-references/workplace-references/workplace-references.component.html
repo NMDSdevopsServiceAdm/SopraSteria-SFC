@@ -57,7 +57,7 @@
           [formControlName]="'reference-' + reference.uid"
         />
         <p class="govuk-!-margin-bottom-0 govuk__justify-self-end govuk__grid-column-3">
-          <a [routerLink]="['/dev', 'bulk-upload', reference.uid, 'staff-references']">
+          <a [routerLink]="['/bulk-upload', reference.uid, 'staff-references']">
             <span class="govuk-visually-hidden">{{ reference.name }}</span>
             View staff references
           </a>

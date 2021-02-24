@@ -26,7 +26,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 })
 export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy, OnInit {
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public return: URLStructure = { url: ['/bulk-upload'] };
   public exit: URLStructure = { url: ['/dashboard'] };
   private establishmentUid: string;
   public workplaceName: string;

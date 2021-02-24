@@ -5,23 +5,31 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 @Component({
   selector: 'app-error-page',
   templateUrl: './error-page.component.html',
 })
 export class ErrorPageComponent implements OnInit, OnDestroy {
-  public errorReport: ErrorReport  = this.route.snapshot.data.buErrors;
+  public errorReport: ErrorReport = this.route.snapshot.data.buErrors;
   public workplaceId: string;
   public now: Date = new Date();
   public numberOfErrorsAndWarnings: NumberOfErrorsAndWarnings;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private bulkuploadService: BulkUploadService, private establishmentService: EstablishmentService,protected route:ActivatedRoute) {}
+  constructor(
+    private bulkuploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
+    protected route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
+  ) {}
 
   ngOnInit(): void {
     this.workplaceId = this.establishmentService.primaryWorkplace.uid;
     this.getNumberOfErrorsAndWarnings();
+    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
   }
 
   ngOnDestroy(): void {

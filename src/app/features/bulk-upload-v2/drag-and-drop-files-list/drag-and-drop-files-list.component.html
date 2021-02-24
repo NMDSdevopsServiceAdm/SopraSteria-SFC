@@ -61,16 +61,22 @@
 
 <div class="govuk-!-margin-top-6">
   <ng-container *ngIf="!validationComplete; else completeUpload">
-    <button type="button" class="govuk-button govuk-!-margin-right-9" (click)="preValidateCheck()">
+    <button
+      type="button"
+      [disabled]="disableButton"
+      class="govuk-button govuk-!-margin-right-9"
+      (click)="preValidateCheck()"
+    >
       Validate files
     </button>
   </ng-container>
 
   <ng-template #completeUpload>
     <button
-      *ngIf="!hasErrors; else errorReport"
+      *ngIf="!totalErrors; else errorReport"
       type="button"
       class="govuk-button govuk-button--primary govuk-!-margin-right-9"
+      [disabled]="disableButton"
       (click)="beginCompleteUpload()"
     >
       Complete the upload

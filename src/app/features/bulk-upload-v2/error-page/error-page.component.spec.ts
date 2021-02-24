@@ -11,6 +11,8 @@ import { render } from '@testing-library/angular';
 import { BulkUploadV2Module } from '../bulk-upload.module';
 import { ErrorPageComponent } from './error-page.component';
 import { ActivatedRoute } from '@angular/router';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
 describe('ErrorPageComponent', () => {
   const getErrorPageComponent = async () => {
@@ -20,21 +22,21 @@ describe('ErrorPageComponent', () => {
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: MockBulkUploadService },
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+
         {
           provide: ActivatedRoute,
-          useValue:
-            {
-              snapshot:
-                {
-                  data: {
-                    buErrors : errorReport
-                  }
-                },
-            }
-        }
+          useValue: {
+            snapshot: {
+              data: {
+                buErrors: errorReport,
+              },
+            },
+          },
+        },
       ],
     });
-   };
+  };
 
   const setup = async () => {
     const { fixture, getByText, getByTestId } = await getErrorPageComponent();
