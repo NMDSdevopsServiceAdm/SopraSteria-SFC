@@ -42,7 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       include: [{
         model: sequelize.models.EmailCampaignHistory,
-        attributes: [], as: 'emailCampaignHistories'
+        attributes: [],
+        as: 'emailCampaignHistories',
       }],
       group: [
         'EmailCampaign.id',
