@@ -256,7 +256,7 @@
       </a>
     </dd>
   </div>
-  <ng-container *ngIf="canViewListOfWorkers && !wdfView && workplace.numberOfStaff !== workerCount">
+  <ng-container *ngIf="canViewListOfWorkers && !wdfView && workplace.numberOfStaff !== workerCount && (workerCount && workplace.numberOfStaff)">
     <div class="govuk-summary-list__row spacer"></div>
     <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
       <dt class="govuk-summary-list__key">
