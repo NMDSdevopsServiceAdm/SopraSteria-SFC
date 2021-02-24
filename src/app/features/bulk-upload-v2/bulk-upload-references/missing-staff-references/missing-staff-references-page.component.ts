@@ -81,13 +81,18 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   private getWorkplaceName(): void {
-    this.workplaceName = this.establishmentsWithMissingReferences[0].name;
+    const currentEstablishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
+    this.workplaceName = this.establishmentsWithMissingReferences.find(
+      ({ uid }) => uid === currentEstablishmentUid,
+    ).name;
   }
 
   public skipPage(): void {
-    this.establishmentsWithMissingReferences.shift();
     this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
-    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
+    const currentEstablishmentIndex = this.establishmentsWithMissingReferences.findIndex(
+      (establishment) => establishment.uid === this.establishmentUid,
+    );
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(currentEstablishmentIndex + 1));
   }
 
   protected save(): void {
