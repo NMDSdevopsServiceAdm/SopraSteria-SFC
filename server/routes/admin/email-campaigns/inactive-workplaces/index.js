@@ -18,16 +18,18 @@ const createCampaign = async (req, res) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
 
+    const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
     const emailCampaign = await models.EmailCampaign.create({
       userID: user.id,
+      type: type,
     });
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
     const history = inactiveWorkplaces.map((workplace) => {
+
       return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
-        type: 'inactiveWorkplaces',
         template: workplace.emailTemplateId,
         data: {
           dataOwner: workplace.dataOwner,
@@ -52,21 +54,8 @@ const createCampaign = async (req, res) => {
 }
 
 const getHistory = async (_, res) => {
-  const emailCampaigns = await models.EmailCampaign.findAll({
-    attributes: [
-      'createdAt',
-      [
-        models.sequelize.fn('COUNT', models.sequelize.col('"emailCampaignHistories"."id"')), 'emails'
-      ],
-    ],
-    include: [{
-      model: models.EmailCampaignHistory,
-      attributes: [], as: 'emailCampaignHistories'
-    }],
-    group: [
-      'EmailCampaign.id',
-    ]
-  });
+  const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
+  const emailCampaigns = await models.EmailCampaign.getHistory(type);
 
   const history = emailCampaigns.map((campaign) => {
     const { createdAt, emails } = campaign.toJSON();

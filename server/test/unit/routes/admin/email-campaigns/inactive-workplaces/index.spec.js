@@ -96,6 +96,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       sinon.assert.calledWith(userMock, '1402bf74-bf25-46d3-a080-a633f748b441');
       sinon.assert.calledWith(createEmailCampaignMock, {
         userID: 1,
+        type: 'inactiveWorkplaces',
       });
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[0]);
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[1]);
