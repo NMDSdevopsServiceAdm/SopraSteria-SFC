@@ -12,8 +12,11 @@
     </div>
     <ng-container *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'">
       <p>
-        You said the total number of staff at your workplace was {{ numberOfStaff }}, but <ng-container *ngIf="this.type=='moreStaff'">only</ng-container>
-        {{ workersCount }} staff records have been added.
+        You said the total number of staff at your workplace was {{ numberOfStaff }}, but <ng-container *ngIf="this.type=='moreStaff'">only</ng-container> {{ workersCount }} staff
+        <ng-container [ngPlural]="this.workersCount">
+          <ng-template ngPluralCase="=1"> record has </ng-template>
+          <ng-template ngPluralCase="other"> records have </ng-template>
+        </ng-container>been added.
       </p>
       <p>
         You either need to
@@ -21,7 +24,10 @@
         <span *ngSwitchCase="'moreStaffRecords'">delete</span>
         <span *ngSwitchCase="'moreStaff'">add</span>
       </ng-container>
-        {{this.difference}} staff records or change the total
+        {{this.difference}} staff <ng-container [ngPlural]="this.difference">
+        <ng-template ngPluralCase="=1"> record </ng-template>
+        <ng-template ngPluralCase="other"> records </ng-template>
+      </ng-container>or change the total
         number of staff for your workplace.
       </p>
       <p *ngIf="this.type == 'moreStaff'">It doesnt take long to create a staff record, just add a name or ID number, a main job role and a contract type. You can add extra details when you've got more time</p>
