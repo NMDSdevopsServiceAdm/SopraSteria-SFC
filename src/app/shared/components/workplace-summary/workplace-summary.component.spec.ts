@@ -99,24 +99,15 @@ describe('WorkplaceSummaryComponent', () => {
     expect(moreRecords.innerHTML).toContain('View staff records');
   });
 
-  it('should not show banner if you have more total staff', async () => {
+  it('should show banner if you have more total staff', async () => {
     component.workerCount = 8;
     component.workplace.numberOfStaff = 9;
     component.wdfView = false;
     component.canViewListOfWorkers = true;
     fixture.detectChanges();
     const moreRecords = within(document.body).queryByTestId('morerecords');
-    expect(moreRecords).toBe(null);
-  });
+    expect(moreRecords.innerHTML).toContain("You've more staff than staff records");
 
-  it('should not show banner if you have more total staff', async () => {
-    component.workerCount = 10;
-    component.workplace.numberOfStaff = 9;
-    component.wdfView = false;
-    component.canViewListOfWorkers = false;
-    fixture.detectChanges();
-    const moreRecords = within(document.body).queryByTestId('morerecords');
-    expect(moreRecords).toBe(null);
   });
 
   it("should not show banner if you don't have permission to list workers", async () => {
