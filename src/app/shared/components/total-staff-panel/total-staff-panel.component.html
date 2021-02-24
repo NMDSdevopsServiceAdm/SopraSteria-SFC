@@ -23,8 +23,8 @@
     {{ totalWorkers }}
   </dd>
   <ng-container *ngIf="totalStaff !== totalWorkers">
-    <dt class="asc-list-warning" data-testid="changeText">
-      <img src="/assets/images/flag-orange.svg" alt="Warning" /> Staff
+    <dt data-testid="changeText">
+      Staff
       <ng-container [ngPlural]="totalStaff - totalWorkers">
         <ng-template ngPluralCase="=-1">record</ng-template>
         <ng-template ngPluralCase="=1">record</ng-template>
@@ -35,8 +35,9 @@
       <ng-template #deleteText>delete</ng-template>
     </dt>
     <dd data-testid="changeNumber">
-      <ng-container *ngIf="totalStaff > totalWorkers; else totalDelete">{{ totalStaff - totalWorkers }}</ng-container>
-      <ng-template #totalDelete>{{ totalWorkers - totalStaff }}</ng-template>
+      <img src="/assets/images/flag-orange.svg" alt="Warning" />
+      <ng-container *ngIf="totalStaff > totalWorkers; else totalDelete"> {{ totalStaff - totalWorkers }} </ng-container>
+      <ng-template #totalDelete> {{ totalWorkers - totalStaff }} </ng-template>
     </dd>
   </ng-container>
 </dl>

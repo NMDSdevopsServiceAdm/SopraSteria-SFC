@@ -22,7 +22,6 @@
   }
 
   dt {
-    $p: &;
     @include govuk-responsive-padding(3, 'left');
     @include govuk-responsive-padding(3, 'right');
     @include govuk-responsive-padding(3, 'bottom');
@@ -109,16 +108,6 @@
           }
         }
       }
-    }
-  }
-  .asc-list-warning {
-    padding-left: 40px;
-    img {
-      scale: 0.9;
-      margin-top: 5px;
-      position: absolute;
-      left: 10px;
-      top: -5px;
     }
   }
 }
