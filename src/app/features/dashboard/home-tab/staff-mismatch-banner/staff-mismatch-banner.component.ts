@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 @Component({
   selector: 'app-staff-mismatch-banner',
   templateUrl: './staff-mismatch-banner.component.html',
-  styleUrls: ['./staff-mismatch-banner.component.scss']
 })
 export class StaffMismatchBannerComponent implements OnInit, OnChanges {
   @Input() workersCount:number;
