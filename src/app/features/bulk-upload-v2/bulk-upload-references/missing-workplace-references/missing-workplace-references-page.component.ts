@@ -25,7 +25,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload'] };
+  public return: URLStructure = { url: ['/bulk-upload'] };
   public exit: URLStructure = { url: ['/dashboard'] };
   public showMissing = true;
   private establishmentsWithMissingReferences: [EstablishmentList];

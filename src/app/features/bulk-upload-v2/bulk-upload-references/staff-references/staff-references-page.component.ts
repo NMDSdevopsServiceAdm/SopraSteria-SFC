@@ -29,7 +29,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 export class StaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
+  public return: URLStructure = { url: ['/bulk-upload', 'workplace-references'] };
   private establishmentUid: string;
   public workplaceName: string;
 
@@ -79,7 +79,7 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
         .pipe(take(1))
         .subscribe(
           () => {
-            this.router.navigate(['/dev', 'bulk-upload', 'workplace-references']);
+            this.router.navigate(['/bulk-upload', 'workplace-references']);
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),
