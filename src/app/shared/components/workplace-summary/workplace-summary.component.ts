@@ -26,7 +26,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
   public canViewListOfWorkers: boolean;
-  public workerCount: number;
+  public workerCount: number = 0;
 
   @Input() wdfView = false;
 
@@ -57,11 +57,17 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   @Input() return: URLStructure = null;
-
   get totalStaffWarning() {
     return (
       (this.workplace.numberOfStaff > 0 || this.workplace.totalWorkers > 0) &&
       this.workplace.numberOfStaff !== this.workplace.totalWorkers
+    );
+  }
+
+  get totalStaffWarningNonWDF() {
+    return (
+      (this.workplace.numberOfStaff != null || this.workplace.totalWorkers !== null) &&
+      this.workplace.numberOfStaff !== this.workerCount
     );
   }
 
@@ -106,7 +112,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
         this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
-          this.workerCount = workers.length;
+          this.workerCount = workers.length? workers.length : 0;
         }),
       );
     }

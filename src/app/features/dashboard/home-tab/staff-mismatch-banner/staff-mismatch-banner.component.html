@@ -1,18 +1,20 @@
-  <app-inset-text *ngIf="numberOfStaff && workersCount" [color]="'todo'">
+  <app-inset-text [color]="'todo'">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <ng-container [ngSwitch]="this.type">
           <h3 *ngSwitchCase="'moreStaffRecords'"  class="govuk-heading-s govuk-!-margin-top-0">You've more staff records than staff</h3>
           <h3 *ngSwitchCase="'moreStaff'"class="govuk-heading-s govuk-!-margin-top-0">You've more staff than staff records</h3>
+          <h3 *ngSwitchCase="'noStaff'"class="govuk-heading-s govuk-!-margin-top-0">The total number of staff is missing</h3>
         </ng-container>
       </div>
       <div class="govuk-grid-column-one-third">
-        <a href="#" class="govuk-util__float-right" (click)="clickedSelectStaff($event)">View staff records</a>
+        <a *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'" href="#" class="govuk-util__float-right" (click)="clickedSelectStaff($event)">View staff records</a>
+        <a *ngIf="this.type=='noStaff'" href="#" class="govuk-util__float-right" (click)="clickedTotalStaff($event)">Add total number of staff</a>
       </div>
     </div>
     <ng-container *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'">
       <p>
-        You said the total number of staff at your workplace was {{ numberOfStaff }}, but <ng-container *ngIf="this.type=='moreStaff'">only</ng-container> {{ workersCount }} staff
+        You said the total number of staff at your workplace was {{ numberOfStaff }}, but <ng-container *ngIf="this.type=='moreStaff' && this.workersCount">only</ng-container> {{ workersCount }} staff
         <ng-container [ngPlural]="this.workersCount">
           <ng-template ngPluralCase="=1"> record has </ng-template>
           <ng-template ngPluralCase="other"> records have </ng-template>
@@ -31,5 +33,9 @@
         number of staff for your workplace.
       </p>
       <p *ngIf="this.type == 'moreStaff'">It doesnt take long to create a staff record, just add a name or ID number, a main job role and a contract type. You can add extra details when you've got more time</p>
+    </ng-container>
+    <ng-container *ngIf="this.type=='noStaff'">
+      <p>You still need to add the total number of staff for your workplace.</p>
+      <p>Both care-providing and none care-providing staff should be included in the total, and you need to add the same number of staff records</p>
     </ng-container>
   </app-inset-text>

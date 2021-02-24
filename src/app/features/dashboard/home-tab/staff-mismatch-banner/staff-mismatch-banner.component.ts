@@ -8,6 +8,8 @@ export class StaffMismatchBannerComponent implements OnInit, OnChanges {
   @Input() workersCount:number;
   @Input() numberOfStaff:number;
   @Output() selectStaffTab: EventEmitter<Event> = new EventEmitter();
+  @Output() selectTotalStaff: EventEmitter<Event> = new EventEmitter();
+
   public type: string;
   public difference: number;
   constructor() { }
@@ -16,24 +18,35 @@ export class StaffMismatchBannerComponent implements OnInit, OnChanges {
     if ('workersCount' in changes) {
       this.recalculate()
     }
+    if ('numberOfStaff' in changes) {
+      this.recalculate()
+    }
   }
 
   ngOnInit(): void {
-    this.recalculate()
+    this.recalculate();
   }
 
-  public recalculate(){
-    if (this.numberOfStaff < this.workersCount) {
+  public recalculate() {
+    this.workersCount = !this.workersCount ? 0 : this.workersCount;
+    if(this.numberOfStaff === null){
+      this.type= "noStaff"
+      return;
+    }else if (this.numberOfStaff < this.workersCount) {
       this.type = "moreStaffRecords";
-      this.difference = this.workersCount  - this.numberOfStaff
-
+      this.difference = this.workersCount  - this.numberOfStaff;
+      return;
     }else if(this.numberOfStaff > this.workersCount){
       this.type = "moreStaff";
-      this.difference = this.numberOfStaff  - this.workersCount
+      this.difference = this.numberOfStaff  - this.workersCount;
+      return;
     }
   }
   clickedSelectStaff($event) {
     this.selectStaffTab.emit($event);
+  }
+  clickedTotalStaff($event){
+    this.selectTotalStaff.emit($event);
   }
 
 }
