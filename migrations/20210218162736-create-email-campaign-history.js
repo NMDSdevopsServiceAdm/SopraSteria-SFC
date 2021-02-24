@@ -30,9 +30,6 @@ module.exports = {
             key: 'EstablishmentID',
           },
         },
-        type: {
-          type: Sequelize.STRING,
-        },
         template: {
           type: Sequelize.STRING,
         },

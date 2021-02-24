@@ -18,6 +18,9 @@ module.exports = {
           key: 'RegistrationID'
         },
       },
+      type: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
