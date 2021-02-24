@@ -26,7 +26,6 @@ const createCampaign = async (req, res) => {
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
     const history = inactiveWorkplaces.map((workplace) => {
-
       return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
