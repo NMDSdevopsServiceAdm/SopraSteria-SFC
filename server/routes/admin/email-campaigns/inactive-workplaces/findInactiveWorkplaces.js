@@ -1,6 +1,7 @@
 const findInactiveWorkplaces = async () => {
   return [
     {
+      id: 478,
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
@@ -12,6 +13,7 @@ const findInactiveWorkplaces = async () => {
       },
     },
     {
+      id: 479,
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastUpdated: '2020-01-01',
