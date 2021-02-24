@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     emailCampaignID: DataTypes.INTEGER,
     establishmentID: DataTypes.INTEGER,
-    type: DataTypes.STRING,
     template: DataTypes.STRING,
     data: DataTypes.JSONB,
     sentToName: DataTypes.STRING,

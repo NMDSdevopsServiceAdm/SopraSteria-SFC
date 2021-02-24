@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       field: '"id"',
     },
     userID: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {
@@ -27,6 +28,34 @@ module.exports = (sequelize, DataTypes) => {
       as: 'emailCampaignHistories',
     });
   };
+
+  EmailCampaign.getHistory = async function (type) {
+    return this.findAll({
+      attributes: [
+        'createdAt',
+        [
+          sequelize.fn('COUNT', sequelize.col('"emailCampaignHistories"."id"')), 'emails'
+        ],
+      ],
+      where: {
+        type,
+      },
+      include: [{
+        model: sequelize.models.EmailCampaignHistory,
+        attributes: [],
+        as: 'emailCampaignHistories',
+      }],
+      group: [
+        'EmailCampaign.id',
+      ]
+    });
+  }
+
+  EmailCampaign.types = () => {
+    return {
+      INACTIVE_WORKPLACES: 'inactiveWorkplaces',
+    }
+  }
 
   return EmailCampaign;
 };

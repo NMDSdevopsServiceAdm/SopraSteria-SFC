@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 
 const models = require('../../../../models');
 const findInactiveWorkplaces = require('./findInactiveWorkplaces');
@@ -17,8 +18,10 @@ const createCampaign = async (req, res) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
 
+    const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
     const emailCampaign = await models.EmailCampaign.create({
       userID: user.id,
+      type: type,
     });
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
@@ -26,7 +29,6 @@ const createCampaign = async (req, res) => {
       return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
-        type: 'inactiveWorkplaces',
         template: workplace.emailTemplateId,
         data: {
           dataOwner: workplace.dataOwner,
@@ -51,16 +53,17 @@ const createCampaign = async (req, res) => {
 }
 
 const getHistory = async (_, res) => {
-  const history = [
-    {
-      date: '2021-01-05',
-      emails: 1356,
-    },
-    {
-      date: '2020-12-05',
-      emails: 278,
-    },
-  ];
+  const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
+  const emailCampaigns = await models.EmailCampaign.getHistory(type);
+
+  const history = emailCampaigns.map((campaign) => {
+    const { createdAt, emails } = campaign.toJSON();
+
+    return {
+      date: moment(createdAt).format('YYYY-MM-DD'),
+      emails: emails,
+    };
+  });
 
   return res.json(history);
 }
