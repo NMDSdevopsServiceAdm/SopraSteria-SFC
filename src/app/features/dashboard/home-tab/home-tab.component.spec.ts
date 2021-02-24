@@ -22,7 +22,6 @@ import { WorkplaceModule } from '../../workplace/workplace.module';
 import { HomeTabComponent } from './home-tab.component';
 import { By } from '@angular/platform-browser';
 import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
-import { child } from 'winston';
 
 const MockWindow = {
   dataLayer: {
