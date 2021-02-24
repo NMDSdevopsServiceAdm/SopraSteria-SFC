@@ -256,14 +256,15 @@
       </a>
     </dd>
   </div>
-  <ng-container *ngIf="canViewListOfWorkers && !wdfView && workplace.numberOfStaff < workerCount">
+  <ng-container *ngIf="canViewListOfWorkers && !wdfView && workplace.numberOfStaff !== workerCount">
     <div class="govuk-summary-list__row spacer"></div>
     <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
       </dt>
-      <dd class="govuk-summary-list__value">
-        <p>You've more staff records than staff</p>
+      <dd  class="govuk-summary-list__value">
+        <p *ngIf=" workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
+        <p *ngIf=" workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
       </dd>
       <dd class="govuk-summary-list__actions">
         <a href="#" (click)="selectStaffTab($event)">View staff records</a>
