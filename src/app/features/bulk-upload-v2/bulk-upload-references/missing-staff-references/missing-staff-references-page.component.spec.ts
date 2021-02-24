@@ -70,7 +70,7 @@ describe('MissingStaffReferencesComponent', () => {
               },
               paramMap: {
                 get(uid) {
-                  return 123;
+                  return '123';
                 },
               },
             },
