@@ -1,0 +1,29 @@
+  <app-inset-text *ngIf="numberOfStaff && workersCount" [color]="'todo'">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <ng-container [ngSwitch]="this.type">
+          <h3 *ngSwitchCase="'moreStaffRecords'"  class="govuk-heading-s govuk-!-margin-top-0">You've more staff records than staff</h3>
+          <h3 *ngSwitchCase="'moreStaff'"class="govuk-heading-s govuk-!-margin-top-0">You've more staff than staff records</h3>
+        </ng-container>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <a href="#" class="govuk-util__float-right" (click)="clickedSelectStaff($event)">View staff records</a>
+      </div>
+    </div>
+    <ng-container *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'">
+      <p>
+        You said the total number of staff at your workplace was {{ numberOfStaff }}, but <ng-container *ngIf="this.type=='moreStaff'">only</ng-container>
+        {{ workersCount }} staff records have been added.
+      </p>
+      <p>
+        You either need to
+        <ng-container [ngSwitch]="this.type">
+        <span *ngSwitchCase="'moreStaffRecords'">delete</span>
+        <span *ngSwitchCase="'moreStaff'">add</span>
+      </ng-container>
+        {{this.difference}} staff records or change the total
+        number of staff for your workplace.
+      </p>
+      <p *ngIf="this.type == 'moreStaff'">It doesnt take long to create a staff record, just add a name or ID number, a main job role and a contract type. You can add extra details when you've got more time</p>
+    </ng-container>
+  </app-inset-text>

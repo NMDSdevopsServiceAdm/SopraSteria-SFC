@@ -55,6 +55,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { DevelopmentRoutingModule } from './development-routing.module';
 import { environment } from 'src/environments/environment';
+import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 
 const developmentModules = [];
 if (!environment.production) {
@@ -81,6 +82,7 @@ if (!environment.production) {
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
+    StaffMismatchBannerComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
