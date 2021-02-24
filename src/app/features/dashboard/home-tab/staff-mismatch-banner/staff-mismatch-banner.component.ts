@@ -29,8 +29,8 @@ export class StaffMismatchBannerComponent implements OnInit, OnChanges {
 
   public recalculate() {
     this.workersCount = !this.workersCount ? 0 : this.workersCount;
-    if(this.numberOfStaff === null){
-      this.type= "noStaff"
+    if(!this.numberOfStaff && this.numberOfStaff !== 0){
+      this.type= "noStaff";
       return;
     }else if (this.numberOfStaff < this.workersCount) {
       this.type = "moreStaffRecords";
