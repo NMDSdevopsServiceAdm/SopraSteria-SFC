@@ -102,6 +102,27 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     });
 
     it('should get the email campaign history', async () => {
+      const findAllMock = sinon.stub(models.EmailCampaign, 'findAll').returns([
+        {
+          toJSON: () => {
+            return {
+              id: 1,
+              createdAt: '2021-01-05 09:00:00',
+              emails: 1356,
+            }
+          }
+        },
+        {
+          toJSON: () => {
+            return {
+              id: 2,
+              createdAt: '2020-12-05 10:00:00',
+              emails: 278,
+            }
+          }
+        },
+      ]);
+
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/admin/email-campaigns/inactive-workplaces/history',
@@ -113,6 +134,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       await inactiveWorkplaceRoutes.getHistory(req, res);
       const response = res._getJSONData();
 
+      sinon.assert.called(findAllMock);
       expect(response).to.deep.equal([
         {
           date: '2021-01-05',

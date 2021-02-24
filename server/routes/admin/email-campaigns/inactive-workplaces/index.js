@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 
 const models = require('../../../../models');
 const findInactiveWorkplaces = require('./findInactiveWorkplaces');
@@ -51,16 +52,30 @@ const createCampaign = async (req, res) => {
 }
 
 const getHistory = async (_, res) => {
-  const history = [
-    {
-      date: '2021-01-05',
-      emails: 1356,
-    },
-    {
-      date: '2020-12-05',
-      emails: 278,
-    },
-  ];
+  const emailCampaigns = await models.EmailCampaign.findAll({
+    attributes: [
+      'createdAt',
+      [
+        models.sequelize.fn('COUNT', models.sequelize.col('"emailCampaignHistories"."id"')), 'emails'
+      ],
+    ],
+    include: [{
+      model: models.EmailCampaignHistory,
+      attributes: [], as: 'emailCampaignHistories'
+    }],
+    group: [
+      'EmailCampaign.id',
+    ]
+  });
+
+  const history = emailCampaigns.map((campaign) => {
+    const { createdAt, emails } = campaign.toJSON();
+
+    return {
+      date: moment(createdAt).format('YYYY-MM-DD'),
+      emails: emails,
+    };
+  });
 
   return res.json(history);
 }
