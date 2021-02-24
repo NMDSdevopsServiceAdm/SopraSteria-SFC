@@ -81,9 +81,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       });
 
       req.role = 'Admin';
-      req.establishment = {
-        id: 1,
-      }
       req.userUid = '1402bf74-bf25-46d3-a080-a633f748b441';
 
       const res = httpMocks.createResponse();
