@@ -25,7 +25,7 @@ export const bulkUploadJourney: JourneyRoute = {
           path: Path.LAST_BULK_UPLOAD,
         },
         {
-          title: 'Error Report',
+          title: 'Error report',
           path: Path.ERROR_REPORT,
         },
         {
