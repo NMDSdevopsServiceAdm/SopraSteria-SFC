@@ -1012,22 +1012,22 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
+    const scopes = ['defaultScope', 'noUstatus'];
+
     if (isParent) {
-      return this.scope([
-        'defaultScope',
-        'noUstatus',
-        { method: ['parentAndChildWorkplaces', establishmentId] },
-      ]).findAll({
-        attributes: ['uid', 'NameValue'],
-        include: {
-          attributes: ['id'],
-          model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
-          as: 'workers',
-        },
-      });
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
     } else {
-      return this.getMissingWorkerRefCount(establishmentId) > 0 ? [establishmentId] : [];
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
     }
+
+    return this.scope(scopes).findAll({
+      attributes: ['uid', 'NameValue'],
+      include: {
+        attributes: ['id'],
+        model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+        as: 'workers',
+      },
+    });
   };
 
   Establishment.getMissingWorkerRefCount = async function (establishmentId, isParent) {
