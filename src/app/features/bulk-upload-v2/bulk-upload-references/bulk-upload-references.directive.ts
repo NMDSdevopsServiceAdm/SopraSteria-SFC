@@ -182,7 +182,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   }
   protected nextMissingPage(url): void {
     this.router.navigate(url).then(() => {
-      if (url[url.length - 1] === 'bulk-upload') {
+      if (url[url.length - 1] === '/bulk-upload') {
         this.alertService.addAlert({
           type: 'success',
           message: 'All workplace and staff references have been added.',
