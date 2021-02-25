@@ -2,18 +2,18 @@
 <ul class="govuk-list govuk-list--download">
   <li>
     <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
-      (click)="downloadFile($event, BulkUploadFileType.Worker)"
-    >
-      Staff
-    </a>
-  </li>
-  <li>
-    <a
       href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workplace.csv"
       (click)="downloadFile($event, BulkUploadFileType.Establishment)"
     >
       Workplace
+    </a>
+  </li>
+  <li>
+    <a
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
+      (click)="downloadFile($event, BulkUploadFileType.Worker)"
+    >
+      Staff
     </a>
   </li>
   <li>
