@@ -83,7 +83,6 @@ const routes: Routes = [
       workplaceReferences: WorkplacesReferencesResolver,
     },
     data: { title: 'Staff references' },
-    runGuardsAndResolvers: 'always',
   },
   {
     path: 'workplace-and-staff-references/success',
