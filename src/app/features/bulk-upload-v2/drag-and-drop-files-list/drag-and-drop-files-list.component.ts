@@ -310,7 +310,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     });
 
     if (!fileTypes.includes('Worker') && !fileTypes.includes('Establishment')) {
-      this.preValidationErrorMessage = 'You need to select your staff and workplace files.';
+      this.preValidationErrorMessage = 'You need to select your workplace and staff files.';
       return true;
     }
 
