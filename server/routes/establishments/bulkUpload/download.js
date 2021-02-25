@@ -105,7 +105,7 @@ const downloadGet = async (req, res) => {
 
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
   const renameDownloadType = {
-    'establishments': 'workplaces',
+    'establishments': 'workplace',
     'workers': 'staff',
     'training' : 'training'
   };
