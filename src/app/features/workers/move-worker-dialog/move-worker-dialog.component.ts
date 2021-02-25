@@ -53,7 +53,6 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
         (allEstablishments) => {
-          console.log(allEstablishments.subsidaries.establishments);
           this.availableWorkPlaces = this.getValidEstablishments(allEstablishments, this.data.workplace.uid);
         },
         (error) => {
@@ -66,18 +65,12 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   }
 
   private getValidEstablishments(establishments, currentWorkplaceUid) {
-    console.log('QQQcurrentWorkplaceUid', currentWorkplaceUid);
-
     const establishmentArray = this.constructEstablishmentsArray(establishments);
-
-    console.log('QQQestablishmentArray', establishmentArray);
 
     const validEstablishments = establishmentArray
       .filter((wp) => wp.uid !== currentWorkplaceUid)
       .filter((wp) => wp.dataOwner === 'Parent' && wp.ustatus !== 'PENDING')
       .map((wp) => this.addNameAndPostcodeAttribute(wp));
-
-    console.log('QQQvalidEstablishments', validEstablishments);
 
     return validEstablishments;
   }
@@ -232,8 +225,6 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
       const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.toLowerCase();
       return this.availableWorkPlaces
         .filter((wp) => {
-          console.log('Qworkplace', wp);
-
           return (
             wp.name.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
             wp.postCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
