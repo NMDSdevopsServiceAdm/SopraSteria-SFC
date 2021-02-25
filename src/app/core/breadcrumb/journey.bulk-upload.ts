@@ -13,7 +13,7 @@ enum Path {
 export const bulkUploadJourney: JourneyRoute = {
   children: [
     {
-      title: 'Bulk Upload',
+      title: 'Bulk upload',
       path: Path.MISSING_REFERENCES,
     },
     {
