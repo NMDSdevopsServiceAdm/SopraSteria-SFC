@@ -580,5 +580,183 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       expect(csvAsArray[23]).to.include(establishment.NumberOfStaffValue);
     });
+
+    it('should store capacity in the CAPACITY column and utilisation in the UTILISATION column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.otherServices = [
+        { reportingID: 23, id: 23 },
+        { reportingID: 12, id: 12 },
+      ];
+      establishment.capacity = [
+        {
+          answer: 2,
+          reference: {
+            type: 'Capacity',
+            service: {
+              id: 23,
+            },
+          },
+        },
+        {
+          answer: 3,
+          reference: {
+            type: 'Utilisation',
+            service: {
+              id: 12,
+            },
+          },
+        },
+      ];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[18]).to.include(';' + establishment.capacity[0].answer + ';');
+      expect(csvAsArray[19]).to.include(';;' + establishment.capacity[1].answer);
+    });
+
+    it('should include all other descriptions from other services in SERVICEDESC column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.otherServices = [
+        { reportingID: 23, establishmentServices: { other: 'Care without care' } },
+        { reportingID: 12, establishmentServices: { other: 'Caring less' } },
+      ];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[20]).to.include(establishment.otherServices[1].establishmentServices.other);
+      expect(csvAsArray[20]).to.include(establishment.otherServices[2].establishmentServices.other);
+    });
+
+    it('should include all service users in SERVICEUSERS column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.serviceUsers = [
+        {
+          id: 2,
+        },
+      ];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[21]).to.include(establishment.serviceUsers[0].id);
+    });
+
+    it('should include all service users in SERVICEUSERS column and OTHERUSERDESC if theres an other', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.serviceUsers = [
+        {
+          id: 2,
+          establishmentServiceUsers: {
+            other: 'This is a service user',
+          },
+        },
+      ];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[21]).to.include(establishment.serviceUsers[0].id);
+      expect(csvAsArray[22]).to.include(establishment.serviceUsers[0].establishmentServiceUsers.other);
+    });
+
+    it('should include all jobs users in ALLJOBROLES column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.jobs = [
+        {
+          jobId: 7,
+        },
+        {
+          jobId: 16,
+        },
+      ];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[24]).to.include(establishment.jobs[0].jobId);
+      expect(csvAsArray[24]).to.include(establishment.jobs[1].jobId);
+    });
+
+    it('should include all jobs users in ALLJOBROLES, STARTERS, LEAVERS and VACANCIES column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.jobs = [
+        {
+          jobId: 7,
+          type: 'Starters',
+          total: 2,
+        },
+        {
+          jobId: 16,
+          type: 'Starters',
+          total: 4,
+        },
+        {
+          jobId: 16,
+          type: 'Leavers',
+          total: 1,
+        },
+        {
+          jobId: 18,
+          type: 'Vacancies',
+          total: 12,
+        },
+      ];
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[24]).to.include(establishment.jobs[0].jobId);
+      expect(csvAsArray[24]).to.include(establishment.jobs[1].jobId);
+      expect(csvAsArray[24]).to.include(establishment.jobs[2].jobId);
+      expect(csvAsArray[24]).to.include(establishment.jobs[3].jobId);
+      expect(csvAsArray[25]).to.include(establishment.jobs[0].total);
+      expect(csvAsArray[25]).to.include(establishment.jobs[1].total);
+      expect(csvAsArray[26]).to.include(establishment.jobs[2].total);
+      expect(csvAsArray[27]).to.include(establishment.jobs[3].total);
+    });
+
+    ['Starters', 'Leavers', 'Vacancies'].forEach((slv, index) => {
+      it(`should show 999 if "Don't know" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
+        const column = 25 + index;
+        const establishment = apiEstablishmentBuilder();
+        establishment[`${slv}Value`] = "Don't know";
+
+        const csv = establishmentCsv.toCSV(establishment);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[column]).to.include('999');
+      });
+
+      it(`should show nothing if null the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
+        const column = 25 + index;
+        const establishment = apiEstablishmentBuilder();
+        establishment[`${slv}Value`] = null;
+
+        const csv = establishmentCsv.toCSV(establishment);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[column]).to.deep.equal('');
+      });
+
+      it(`should show 0 if "None" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
+        const column = 25 + index;
+        const establishment = apiEstablishmentBuilder();
+        establishment[`${slv}Value`] = 'None';
+
+        const csv = establishmentCsv.toCSV(establishment);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[column]).to.include('0');
+      });
+    });
+
+    it('should include reasons for leaving in REASONS and REASONNOS column', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.reasonsForLeaving = '34:|18:Hello|29:Test';
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[28]).to.include('34');
+      expect(csvAsArray[28]).to.include('18');
+      expect(csvAsArray[29]).to.include('Hello');
+      expect(csvAsArray[28]).to.include('29');
+      expect(csvAsArray[29]).to.include('Test');
+    });
   });
 });
