@@ -1,6 +1,6 @@
 <dl class="govuk-list--definition">
-  <dt>Total number of staff</dt>
-  <dd>
+  <dt data-testid="totalStaffText">Total number of staff</dt>
+  <dd data-testid="totalStaffNumber">
     {{ totalStaff }}
     <a
       *ngIf="canEditEstablishment"
@@ -11,15 +11,33 @@
       Change <span class="govuk-visually-hidden"> total number of staff</span>
     </a>
   </dd>
+  <dt data-testid="staffAddedText">
+    Staff
+    <ng-container [ngPlural]="totalWorkers">
+      <ng-template ngPluralCase="=1">record</ng-template>
+      <ng-template ngPluralCase="other">records</ng-template>
+    </ng-container>
+    added
+  </dt>
+  <dd data-testid="staffAddedNumber">
+    {{ totalWorkers }}
+  </dd>
   <ng-container *ngIf="totalStaff !== totalWorkers">
-    <dt>Staff records added</dt>
-    <dd>
-      <img *ngIf="totalStaff < totalWorkers" src="/assets/images/flag-orange.svg" alt="Warning" /> {{ totalWorkers }}
-    </dd>
-    <dt>Staff records missing</dt>
-    <dd>
-      <img *ngIf="totalStaff > totalWorkers" src="/assets/images/flag-orange.svg" alt="Warning" />
-      {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
+    <dt data-testid="changeText">
+      Staff
+      <ng-container [ngPlural]="totalStaff - totalWorkers">
+        <ng-template ngPluralCase="=-1">record</ng-template>
+        <ng-template ngPluralCase="=1">record</ng-template>
+        <ng-template ngPluralCase="other">records</ng-template>
+      </ng-container>
+      to
+      <ng-container *ngIf="totalStaff > totalWorkers; else deleteText">add</ng-container>
+      <ng-template #deleteText>delete</ng-template>
+    </dt>
+    <dd data-testid="changeNumber">
+      <img src="/assets/images/flag-orange.svg" alt="Warning" />
+      <ng-container *ngIf="totalStaff > totalWorkers; else totalDelete"> {{ totalStaff - totalWorkers }} </ng-container>
+      <ng-template #totalDelete> {{ totalWorkers - totalStaff }} </ng-template>
     </dd>
   </ng-container>
 </dl>

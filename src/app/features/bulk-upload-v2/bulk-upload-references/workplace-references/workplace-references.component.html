@@ -1,0 +1,75 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [serverError]="serverError"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-l">Bulk upload</span>
+      References
+    </h1>
+    <p>There needs to be a unique reference for each workplace. For example, myworkplace1, myworkplace2.</p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <form
+      #formEl
+      *ngIf="references.length"
+      class="govuk-!-margin-top-6"
+      novalidate
+      (ngSubmit)="onSubmit($event)"
+      [formGroup]="form"
+      id="server-error"
+    >
+      <div class="govuk__grid govuk__grid-container">
+        <p class="govuk-!-margin-bottom-0 govuk__grid-column-1">
+          <strong> Workplace </strong>
+        </p>
+        <p class="govuk-!-margin-bottom-0 govuk__grid-column-2">
+          <strong>Reference</strong>
+        </p>
+      </div>
+      <div
+        class="govuk-form-group govuk__grid govuk__grid-container"
+        *ngFor="let reference of references"
+        [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
+      >
+        <label class="govuk-label govuk-!-margin-bottom-0 govuk__grid-column-1" for="reference-{{ reference.uid }}">
+          {{ reference.name }}
+        </label>
+        <span
+          id="reference-{{ reference.uid }}-error"
+          class="govuk-error-message govuk__grid-row-start-1 asc__reference-grid-error"
+          *ngIf="form.get('reference-' + reference.uid).errors && submitted"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
+        </span>
+        <input
+          class="govuk-input govuk__grid-column-2"
+          [class.govuk-input--error]="form.get('reference-' + reference.uid).errors && submitted"
+          id="reference-{{ reference.uid }}"
+          name="reference-{{ reference.uid }}"
+          type="text"
+          [formControlName]="'reference-' + reference.uid"
+        />
+        <p class="govuk-!-margin-bottom-0 govuk__justify-self-end govuk__grid-column-3">
+          <a [routerLink]="['/bulk-upload', reference.uid, 'staff-references']">
+            <span class="govuk-visually-hidden">{{ reference.name }}</span>
+            View staff references
+          </a>
+        </p>
+      </div>
+
+      <div class="govuk-grid-row" *ngIf="!references.length">
+        <div class="govuk-grid-column-two-thirds-from-desktop">
+          <p class="govuk-!-margin-top-4">There are no workplaces editable</p>
+        </div>
+      </div>
+      <app-submit-exit-buttons [cta]="'Save and return'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
+    </form>
+  </div>
+</div>

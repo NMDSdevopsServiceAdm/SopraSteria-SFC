@@ -14,13 +14,25 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -48,7 +60,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public isParent: boolean;
-  public updateStaffRecords = true;
+  public updateStaffRecords: boolean;
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
@@ -62,6 +74,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
   public workers: any[];
+  public workersCount: number;
+  public canViewListOfWorkers: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -86,6 +100,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
             this.updateStaffRecords = !(workers.length > 0);
+            this.workersCount = workers.length;
           }),
         );
       }
@@ -286,6 +301,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
+    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =

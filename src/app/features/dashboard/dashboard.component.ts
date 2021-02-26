@@ -9,9 +9,7 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 

@@ -1,0 +1,45 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 id="dialogHeading" class="govuk-fieldset__heading">Move workplace to a parent organisation</h1>
+      </legend>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="parentNameOrPostCode">Parent name or postcode</label>
+        <span
+          *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
+          id="parentNameOrPostCode-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFirstErrorMessage('parentNameOrPostCode') }}
+        </span>
+
+        <app-auto-suggest
+          [formGroup]="form"
+          [dataProvider]="parentNameOrPostCodeFilter"
+          [formControlName]="'parentNameOrPostCode'"
+        ></app-auto-suggest>
+      </div>
+    </fieldset>
+  </div>
+  <p>
+    <strong>This is an admin action. Approval from the parent organisation will not be requested.</strong>
+  </p>
+
+  <button type="submit" class="govuk-button govuk-button--warning">Move workplace</button>
+  <a
+    href="#"
+    class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+    (click)="closeDialogWindow($event, null)"
+    >Cancel</a
+  >
+</form>

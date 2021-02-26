@@ -700,6 +700,44 @@ module.exports = function (sequelize, DataTypes) {
           archived: false,
         },
       },
+      scopes: {
+        noUstatus: {
+          where: {
+            ustatus: {
+              [sequelize.Op.is]: null,
+            },
+          },
+        },
+        noLocalIdentifier: {
+          where: {
+            LocalIdentifierValue: {
+              [sequelize.Op.is]: null,
+            },
+          },
+        },
+        parentAndChildWorkplaces: function (establishmentId) {
+          return {
+            where: {
+              [sequelize.Op.or]: [
+                {
+                  id: establishmentId,
+                },
+                {
+                  parentId: establishmentId,
+                  dataOwner: 'Parent',
+                },
+              ],
+            },
+          };
+        },
+        withEstablishmentId: function (establishmentId) {
+          return {
+            where: {
+              id: establishmentId,
+            },
+          };
+        },
+      },
       tableName: '"Establishment"',
       schema: 'cqc',
       createdAt: false,
@@ -815,6 +853,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       attributes: [
         'id',
+        'uid',
         'ustatus',
         'locationId',
         'provId',
@@ -960,6 +999,52 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
         },
       ],
+    });
+  };
+
+  Establishment.getMissingEstablishmentRefCount = async function (establishmentId, isParent) {
+    const scopes = ['defaultScope', 'noUstatus', 'noLocalIdentifier'];
+
+    if (isParent) {
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
+    } else {
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
+    }
+    return await this.scope(scopes).count();
+  };
+
+  Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
+    if (isParent) {
+      return this.scope([
+        'defaultScope',
+        'noUstatus',
+        { method: ['parentAndChildWorkplaces', establishmentId] },
+      ]).findAll({
+        attributes: ['uid', 'NameValue'],
+        include: {
+          attributes: ['id'],
+          model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+          as: 'workers',
+        },
+      });
+    } else {
+      return this.getMissingWorkerRefCount(establishmentId) > 0 ? [establishmentId] : [];
+    }
+  };
+
+  Establishment.getMissingWorkerRefCount = async function (establishmentId, isParent) {
+    const scopes = ['defaultScope', 'noUstatus'];
+
+    if (isParent) {
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
+    } else {
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
+    }
+    return await this.scope(scopes).count({
+      include: {
+        model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+        as: 'workers',
+      },
     });
   };
 

@@ -103,9 +103,83 @@ describe('HomeTabComponent', () => {
     const { component } = await setup();
     // Act
     component.fixture.componentInstance.updateStaffRecords = true;
+    component.fixture.detectChanges();
 
     const link = component.getByTestId('add-staff-banner');
     // Assert
     expect(link.innerHTML).toContain('Add staff records');
+  });
+  it('should show the more staff records banner', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workplace.numberOfStaff = 9;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.getByTestId('morerecords');
+    // Assert
+    expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
+  });
+  it('should not show the more staff records banner if there are less staff records', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workplace.numberOfStaff = 11;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.queryAllByTestId('morerecords');
+    // Assert
+    expect(moreRecords.length).toEqual(0);
+  });
+  it('should not show the more staff records banner if there are equal staff records', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.queryAllByTestId('morerecords');
+    // Assert
+    expect(moreRecords.length).toEqual(0);
+  });
+  it('should not show the more staff records banner if the user does not have persmission to viewListOfWorkers', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.componentInstance.canViewListOfWorkers = false;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.queryAllByTestId('morerecords');
+    // Assert
+    expect(moreRecords.length).toEqual(0);
+  });
+  it('should contain the workplace and worker numbers', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 14;
+    component.fixture.componentInstance.workplace.numberOfStaff = 11;
+
+    component.fixture.detectChanges();
+
+    const moreRecords = component.getByTestId('morerecords');
+    // Assert
+    expect(moreRecords.innerHTML).toContain(String(component.fixture.componentInstance.workersCount));
+    expect(moreRecords.innerHTML).toContain(String(component.fixture.componentInstance.workplace.numberOfStaff));
+    expect(moreRecords.innerHTML).toContain(
+      String(
+        component.fixture.componentInstance.workersCount - component.fixture.componentInstance.workplace.numberOfStaff,
+      ),
+    );
   });
 });

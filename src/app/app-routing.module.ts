@@ -19,6 +19,36 @@ import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
+import { environment } from '../environments/environment';
+
+const bulkUploadRouting =  {
+  other:
+    {
+      path: 'bulk-upload',
+      loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
+      data: {
+        title: 'Bulk Upload',
+      }
+    },
+  test:
+    {
+      path: 'bulk-upload',
+      loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
+      data: {
+        title: 'Bulk Upload',
+      }
+    },
+  production:
+    {
+      path: 'bulk-upload',
+      loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
+      data: {
+        title: 'Bulk Upload',
+      }
+    }
+}[environment.environmentName];
+
+
 
 const routes: Routes = [
   {
@@ -100,6 +130,7 @@ const routes: Routes = [
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
       },
+
       {
         path: 'reports',
         loadChildren: () => import('@features/reports/reports.module').then((m) => m.ReportsModule),
@@ -125,15 +156,7 @@ const routes: Routes = [
         component: DashboardComponent,
         data: { title: 'Dashboard' },
       },
-      {
-        path: 'bulk-upload',
-        loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canBulkUpload'],
-          title: 'Bulk Upload',
-        },
-      },
+      bulkUploadRouting,
       {
         path: 'search-users',
         loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
