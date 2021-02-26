@@ -7,7 +7,7 @@ const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Wor
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 
 const { buStates } = require('./states');
-const { saveResponse } = require('./s3');
+const s3 = require('./s3');
 
 const NEWLINE = '\r\n';
 
@@ -160,7 +160,7 @@ const downloadGet = async (req, res) => {
 
       const filename = renameDownloadType[downloadType];
 
-      await saveResponse(req, res, 200, responseText.join(''), {
+      await s3.saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',
         'Content-disposition': `attachment; filename=${
           new Date().toISOString().split('T')[0]
@@ -172,13 +172,13 @@ const downloadGet = async (req, res) => {
         err,
       );
 
-      await saveResponse(req, res, 503, {
+      await s3.saveResponse(req, res, 503, {
         message: 'Failed to retrieve establishment data',
       });
     }
   } else {
     console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
-    await saveResponse(req, res, 400, {
+    await s3.saveResponse(req, res, 400, {
       message: `Unexpected download type: ${downloadType}`,
     });
   }
@@ -191,3 +191,4 @@ router.route('/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.
 
 module.exports = router;
 module.exports.exportToCsv = exportToCsv;
+module.exports.downloadGet = downloadGet;
