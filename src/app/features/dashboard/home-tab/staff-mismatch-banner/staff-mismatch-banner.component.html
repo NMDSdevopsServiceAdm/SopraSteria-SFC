@@ -1,12 +1,14 @@
 <app-inset-text [color]="'todo'">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <ng-container [ngSwitch]="type">
-        <h3 *ngSwitchCase="'moreStaffZeroRecords'" class="govuk-heading-s govuk-!-margin-top-0">You've more staff records than staff</h3>
-        <h3 *ngSwitchCase="'moreStaffRecords'" class="govuk-heading-s govuk-!-margin-top-0">You've more staff records than staff</h3>
-        <h3 *ngSwitchCase="'moreStaff'" class="govuk-heading-s govuk-!-margin-top-0">You've more staff than staff records</h3>
-        <h3 *ngSwitchCase="'noStaff'" class="govuk-heading-s govuk-!-margin-top-0">The total number of staff is missing</h3>
-      </ng-container>
+      <h3 class="govuk-heading-s govuk-!-margin-top-0">
+        <ng-container [ngSwitch]="type">
+          <span *ngSwitchCase="'moreStaffZeroRecords'">You've more staff records than staff</span>
+          <span *ngSwitchCase="'moreStaffRecords'">You've more staff records than staff</span>
+          <span *ngSwitchCase="'moreStaff'"> You've more staff than staff records</span>
+          <span *ngSwitchCase="'noStaff'">The total number of staff is missing</span>
+        </ng-container>
+      </h3>
     </div>
     <div class="govuk-grid-column-one-third  govuk-!-padding-left-0">
       <a *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'|| this.type=='moreStaffZeroRecords'" href="#" class="govuk-util__float-right" (click)="clickedSelectStaff($event)">View staff records</a>
