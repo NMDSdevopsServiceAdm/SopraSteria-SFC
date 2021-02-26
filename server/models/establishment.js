@@ -1107,7 +1107,6 @@ module.exports = function (sequelize, DataTypes) {
         },
         {
           model: sequelize.models.serviceUsers,
-          // attributes: ['serviceUserId', 'other'],
           as: 'serviceUsers',
         },
         {
