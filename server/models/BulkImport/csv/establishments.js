@@ -2775,7 +2775,7 @@ class Establishment {
   static toCSV(entity) {
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(csvQuote(entity.LocalIdentifierValue)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.LocalIdentifierValue));
     columns.push('UNCHECKED');
     columns.push(csvQuote(entity.NameValue));
     columns.push(csvQuote(entity.address1));
