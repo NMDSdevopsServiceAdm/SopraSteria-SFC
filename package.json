@@ -75,7 +75,7 @@
     "jszip": "^3.5.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.32",
+    "moment-timezone": "^0.5.33",
     "morgan": "^1.10.0",
     "ngx-dropzone": "^2.3.0",
     "notifications-node-client": "^5.1.0",
