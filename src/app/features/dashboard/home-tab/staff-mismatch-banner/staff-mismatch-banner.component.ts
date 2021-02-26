@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
   selector: 'app-staff-mismatch-banner',
   templateUrl: './staff-mismatch-banner.component.html',
 })
-export class StaffMismatchBannerComponent implements OnInit, OnChanges {
+export class StaffMismatchBannerComponent implements OnChanges {
   @Input() workersCount:number;
   @Input() numberOfStaff:number;
   @Output() selectStaffTab: EventEmitter<Event> = new EventEmitter();
@@ -16,15 +16,11 @@ export class StaffMismatchBannerComponent implements OnInit, OnChanges {
 
   public ngOnChanges(changes: SimpleChanges) {
     if ('workersCount' in changes) {
-      this.recalculate()
+      this.recalculate();
     }
     if ('numberOfStaff' in changes) {
       this.recalculate()
     }
-  }
-
-  ngOnInit(): void {
-    this.recalculate();
   }
 
   public recalculate() {
@@ -32,11 +28,17 @@ export class StaffMismatchBannerComponent implements OnInit, OnChanges {
     if(!this.numberOfStaff && this.numberOfStaff !== 0){
       this.type= "noStaff";
       return;
-    }else if (this.numberOfStaff < this.workersCount) {
+    }
+    if(this.numberOfStaff === 0 &&  this.workersCount > 0 ){
+      this.type = "moreStaffZeroRecords";
+      return;
+    }
+    if (this.numberOfStaff < this.workersCount) {
       this.type = "moreStaffRecords";
       this.difference = this.workersCount  - this.numberOfStaff;
       return;
-    }else if(this.numberOfStaff > this.workersCount){
+    }
+    if(this.numberOfStaff > this.workersCount){
       this.type = "moreStaff";
       this.difference = this.numberOfStaff  - this.workersCount;
       return;
