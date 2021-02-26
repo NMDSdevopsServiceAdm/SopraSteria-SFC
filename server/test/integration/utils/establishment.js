@@ -1,7 +1,8 @@
-const { oneOf, fake, build, perBuild } = require('@jackfranklin/test-data-bot');
+const { oneOf, fake, build, perBuild, sequence } = require('@jackfranklin/test-data-bot');
 
 module.exports.apiEstablishmentBuilder = build('Establishment', {
   fields: {
+    id: sequence(),
     LocalIdentifierValue: fake((f) => f.lorem.words(1)),
     NameValue: fake((f) => f.company.companyName().replace(/,+/, '')),
     address1: fake((f) => f.address.streetName()),
