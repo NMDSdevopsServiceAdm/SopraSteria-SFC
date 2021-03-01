@@ -1,17 +1,16 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { URLStructure } from '@core/model/url.model';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
+import { SubmitExitButtonsComponent } from '@shared/components/submit-exit-buttons/submit-exit-buttons.component';
 
 @Component({
   selector: 'app-missing-refs-submit-exit-buttons',
   templateUrl: './missing-refs-submit-exit-buttons.component.html',
 })
-export class MissingRefsSubmitExitButtonsComponent {
-  constructor(public authService: AuthService) {}
+export class MissingRefsSubmitExitButtonsComponent extends SubmitExitButtonsComponent {
+  constructor(public authService: AuthService) {
+    super();
+  }
 
-  @Input() public cta?: string;
-  @Input() public exit?: string;
-  @Input() public return?: URLStructure;
   @Output() public skip: EventEmitter<any> = new EventEmitter();
 
   onSkip(): void {
