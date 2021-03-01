@@ -674,7 +674,6 @@ class User {
               null,
               this.uid,
               this.fullname,
-              err,
               `Failed to update resulting user record with id: ${this._id}`,
             );
           }
@@ -724,7 +723,7 @@ class User {
           include: [
             {
               model: models.login,
-              attributes: ['username', 'lastLogin', 'agreedUpdatedTerms'],
+              attributes: ['username', 'lastLogin', 'agreedUpdatedTerms', 'status'],
               where: {
                 username: uname,
               },
@@ -795,7 +794,7 @@ class User {
     }
   }
 
-  async delete(deletedBy, externalTransaction = null, associatedEntities = false) {
+  async delete(deletedBy, externalTransaction = null) {
     try {
       const updatedTimestamp = new Date();
 
@@ -892,7 +891,6 @@ class User {
             null,
             this.uid,
             null,
-            err,
             `Failed to update (archive) user record with uid: ${this._uid}`,
           );
         }
@@ -943,7 +941,7 @@ class User {
       include: [
         {
           model: models.login,
-          attributes: ['username', 'lastLogin', 'status'],
+          attributes: ['username', 'lastLogin'],
         },
       ],
       attributes: [
@@ -976,6 +974,7 @@ class User {
         });
       });
 
+      console.log('QQQQQ');
       allUsers = allUsers.map((user) => {
         return Object.assign(user, {
           status: user.username == null ? 'Pending' : user.status !== null ? user.status : 'Active',
@@ -989,6 +988,16 @@ class User {
     }
 
     return allUsers;
+  }
+
+  statusTranslator(thisUser) {
+    if (thisUser.login && thisUser.login.status) {
+      return thisUser.login.status;
+    } else if (thisUser.username) {
+      return 'Active';
+    } else {
+      return 'Pending';
+    }
   }
 
   // helper returns a set 'json ready' objects for representing a User's overall
