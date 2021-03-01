@@ -35,7 +35,6 @@ import {
 } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { URLStructure } from '@core/model/url.model';
 
 declare global {
   interface Window {
@@ -352,7 +351,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       event.preventDefault();
     }
     this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
-    this.router.navigate( ['/workplace',this.workplace.uid , 'total-staff']);
+    this.router.navigate(['/workplace', this.workplace.uid, 'total-staff']);
   }
 
   ngOnDestroy(): void {
