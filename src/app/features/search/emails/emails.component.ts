@@ -7,6 +7,7 @@ import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 import {
   SendEmailsConfirmationDialogComponent,
@@ -38,28 +39,42 @@ export class EmailsComponent implements OnInit {
   public confirmSendEmails(event: Event): void {
     event.preventDefault();
 
-    this.dialogService
-      .open(SendEmailsConfirmationDialogComponent, { inactiveWorkplaces: this.inactiveWorkplaces })
-      .afterClosed.subscribe((hasConfirmed) => {
-        if (hasConfirmed) {
-          this.sendEmails();
-        }
-      });
+    this.subscriptions.add(
+      this.dialogService
+        .open(SendEmailsConfirmationDialogComponent, { inactiveWorkplaces: this.inactiveWorkplaces })
+        .afterClosed.subscribe((hasConfirmed) => {
+          if (hasConfirmed) {
+            this.sendEmails();
+          }
+        }),
+    );
   }
 
   private sendEmails(): void {
-    this.emailCampaignService.createCampaign().subscribe((latestCampaign) => {
-      this.history.unshift(latestCampaign);
+    this.subscriptions.add(
+      this.emailCampaignService
+        .createCampaign()
+        .pipe(
+          switchMap((latestCampaign) => {
+            return this.emailCampaignService.getInactiveWorkplaces().pipe(
+              map(({ inactiveWorkplaces }) => ({
+                latestCampaign,
+                inactiveWorkplaces,
+              })),
+            );
+          }),
+        )
+        .subscribe(({ latestCampaign, inactiveWorkplaces }) => {
+          this.history.unshift(latestCampaign);
 
-      this.alertService.addAlert({
-        type: 'success',
-        message: `${this.decimalPipe.transform(latestCampaign.emails)} emails sent successfully.`,
-      });
+          this.alertService.addAlert({
+            type: 'success',
+            message: `${this.decimalPipe.transform(latestCampaign.emails)} emails sent successfully.`,
+          });
 
-      this.emailCampaignService.getInactiveWorkplaces().subscribe(({ inactiveWorkplaces }) => {
-        this.inactiveWorkplaces = inactiveWorkplaces;
-      });
-    });
+          this.inactiveWorkplaces = inactiveWorkplaces;
+        }),
+    );
   }
 
   public downloadReport(event: Event): void {

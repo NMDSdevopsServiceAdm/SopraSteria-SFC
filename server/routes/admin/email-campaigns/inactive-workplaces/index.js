@@ -39,7 +39,7 @@ const createCampaign = async (req, res) => {
       };
     });
 
-    models.EmailCampaignHistory.bulkCreate(history);
+    await models.EmailCampaignHistory.bulkCreate(history);
     inactiveWorkplaces.map(sendEmail.sendEmail);
 
     return res.json({
