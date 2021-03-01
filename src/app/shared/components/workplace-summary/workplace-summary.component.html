@@ -1,9 +1,7 @@
 <dl
   *ngIf="workplace"
   class="govuk-summary-list"
-  [class.govuk-summary-list--contains-warnings]="
-    totalStaffWarning || (canViewListOfWorkers && !wdfView && totalStaffWarningNonWDF)
-  "
+  [class.govuk-summary-list--contains-warnings]="totalStaffWarning || shouldShowStaffBanner()"
 >
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -227,16 +225,8 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt
-      class="govuk-summary-list__key"
-      [class.asc-no-border]="canViewListOfWorkers && !wdfView && totalStaffWarningNonWDF"
-    >
-      Total number of staff
-    </dt>
-    <dd
-      class="govuk-summary-list__value"
-      [class.asc-no-border]="canViewListOfWorkers && !wdfView && totalStaffWarningNonWDF"
-    >
+    <dt class="govuk-summary-list__key" [class.asc-no-border]="shouldShowStaffBanner()">Total number of staff</dt>
+    <dd class="govuk-summary-list__value" [class.asc-no-border]="shouldShowStaffBanner()">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
@@ -244,7 +234,7 @@
     <dd
       *ngIf="canEditEstablishment"
       class="govuk-summary-list__actions"
-      [class.asc-no-border]="canViewListOfWorkers && !wdfView && totalStaffWarningNonWDF"
+      [class.asc-no-border]="shouldShowStaffBanner()"
     >
       <a [routerLink]="['/workplace', workplace.uid, 'total-staff']" (click)="setReturn()">
         <ng-container *ngIf="!isNumber(workplace.numberOfStaff)">
@@ -256,16 +246,16 @@
       </a>
     </dd>
   </div>
-  <ng-container *ngIf="canViewListOfWorkers && !wdfView && totalStaffWarningNonWDF ">
+  <ng-container *ngIf="shouldShowStaffBanner()">
     <div class="govuk-summary-list__row spacer"></div>
     <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
       </dt>
-      <dd  class="govuk-summary-list__value">
-        <p *ngIf=" workplace.numberOfStaff > workerCount ">You've more staff than staff records</p>
-        <p *ngIf=" workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
-        <p *ngIf=" workplace.numberOfStaff == null ">The total number of staff is missing</p>
+      <dd class="govuk-summary-list__value">
+        <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
+        <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
+        <p *ngIf="workplace.numberOfStaff == null">The total number of staff is missing</p>
       </dd>
       <dd class="govuk-summary-list__actions">
         <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>

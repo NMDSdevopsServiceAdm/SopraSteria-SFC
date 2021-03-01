@@ -25,7 +25,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
   public canViewListOfWorkers: boolean;
-  public workerCount: number = 0;
+  public workerCount: number;
 
   @Input() wdfView = false;
 
@@ -157,5 +157,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public isNumber(value: unknown): boolean {
     return typeof value === 'number';
+  }
+
+  public shouldShowStaffBanner(): boolean {
+    return (
+      this.canViewListOfWorkers && this.isNumber(this.workerCount) && !this.wdfView && this.totalStaffWarningNonWDF
+    );
   }
 }
