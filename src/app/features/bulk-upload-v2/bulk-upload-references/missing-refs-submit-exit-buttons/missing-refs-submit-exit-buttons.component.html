@@ -13,8 +13,8 @@
       <span class="govuk-visually-hidden">or</span>
     </div>
   </ng-container>
-  <div class="govuk-grid-column-one-third" [ngClass]="{ 'govuk-!-padding-left-9': !this.authService.isAdmin }">
-    <ng-container *ngIf="return">
+  <ng-container *ngIf="return">
+    <div class="govuk-grid-column-one-third" [ngClass]="{ 'govuk-!-padding-left-9': !this.authService.isAdmin }">
       <span class="govuk-visually-hidden">or</span>
       <a
         [routerLink]="return.url"
@@ -28,6 +28,6 @@
         </ng-container>
         <ng-template #defaultexit>Exit</ng-template>
       </a>
-    </ng-container>
-  </div>
+    </div>
+  </ng-container>
 </div>
