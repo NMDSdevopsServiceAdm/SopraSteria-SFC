@@ -44,38 +44,17 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   }
 
   ngOnInit() {
-    this.getMyAllWorkPlaces();
+    this.getAllValidWorkplaces();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
 
-  //function is use to get all available workplaces
-  private getMyAllWorkPlaces() {
+  private getAllValidWorkplaces() {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
-        (myAllEstablishment) => {
-          let allEstablishments;
-          const { primary, subsidaries } = myAllEstablishment;
-          const subsidaryEstablishments = subsidaries.count > 0 ? subsidaries.establishments : [];
-          allEstablishments = subsidaryEstablishments;
-          if (subsidaries.count > 0) {
-            allEstablishments = subsidaryEstablishments.concat([primary]);
-          }
-          const currentWorkplaceUid = this.data.workplace.uid;
-          this.availableWorkPlaces = allEstablishments
-            .filter((wp) => wp.uid !== currentWorkplaceUid)
-            .map((wp) => {
-              wp.nameAndPostCode = wp.name + ', ' + wp.postCode;
-              return wp;
-            });
-          this.availableWorkPlaces = this.availableWorkPlaces.filter(
-            (item) => item.dataOwner === 'Parent' && item.ustatus !== 'PENDING',
-          );
-          if (currentWorkplaceUid !== this.data.primaryWorkplaceUid) {
-            this.availableWorkPlaces.push(primary);
-          }
+        (allEstablishments) => {
+          this.availableWorkPlaces = this.getValidEstablishments(allEstablishments, this.data.workplace.uid);
         },
-
         (error) => {
           if (error.error.message) {
             this.serverError = error.error.message;
@@ -83,6 +62,32 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
         },
       ),
     );
+  }
+
+  private getValidEstablishments(establishments, currentWorkplaceUid) {
+    const establishmentArray = this.constructEstablishmentsArray(establishments);
+
+    const validEstablishments = establishmentArray
+      .filter((wp) => wp.uid !== currentWorkplaceUid)
+      .filter((wp) => wp.dataOwner === 'Parent' && wp.ustatus !== 'PENDING')
+      .map((wp) => this.addNameAndPostcodeAttribute(wp));
+
+    return validEstablishments;
+  }
+
+  private constructEstablishmentsArray({ primary, subsidaries }) {
+    const establishmentArray = [];
+
+    establishmentArray.push(primary);
+    subsidaries.establishments?.forEach((establishment) => establishmentArray.push(establishment));
+
+    return establishmentArray;
+  }
+
+  private addNameAndPostcodeAttribute(establishment) {
+    establishment.nameAndPostCode = establishment.name + ', ' + establishment.postCode;
+
+    return establishment;
   }
 
   /**
@@ -219,12 +224,13 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     if (this.availableWorkPlaces && workplaceNameOrPostCode && workplaceNameOrPostCode.length) {
       const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.toLowerCase();
       return this.availableWorkPlaces
-        .filter(
-          (wp) =>
+        .filter((wp) => {
+          return (
             wp.name.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
             wp.postCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
-            wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase),
-        )
+            wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase)
+          );
+        })
         .filter((wp) => wp.nameAndPostCode.toLowerCase() !== workplaceNameOrPostCodeLowerCase)
         .map((wp) => wp.nameAndPostCode);
     }
