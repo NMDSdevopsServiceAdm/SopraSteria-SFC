@@ -8,13 +8,18 @@ enum Path {
   LAST_BULK_UPLOAD = '/bulk-upload/last-bulk-upload',
   MISSING_REFERENCES = '/bulk-upload/missing',
   ERROR_REPORT = '/bulk-upload/error-report',
+  START_PAGE = '/bulk-upload/start',
 }
 
 export const bulkUploadJourney: JourneyRoute = {
   children: [
     {
-      title: 'Bulk Upload',
+      title: 'Bulk upload',
       path: Path.MISSING_REFERENCES,
+    },
+    {
+      title: 'Bulk Upload',
+      path: Path.START_PAGE,
     },
     {
       title: 'Bulk upload',
@@ -25,7 +30,7 @@ export const bulkUploadJourney: JourneyRoute = {
           path: Path.LAST_BULK_UPLOAD,
         },
         {
-          title: 'Error Report',
+          title: 'Error report',
           path: Path.ERROR_REPORT,
         },
         {
@@ -44,6 +49,5 @@ export const bulkUploadJourney: JourneyRoute = {
         },
       ],
     },
-
   ],
 };

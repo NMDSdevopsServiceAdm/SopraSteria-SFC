@@ -25,12 +25,12 @@
     </p>
     <p class="govuk-inset-text">References are used by ASC-WDS to match staff records to a workplace.</p>
     <p>
-      After you've added your references, download your current data into each file type you want to upload (staff,
-      workplace and training) and update the records in those files if necessary.
+      After you've added your references, download your current data into each file type you want to upload (workplace,
+      staff and training) and update the records in those files if necessary.
     </p>
     <p>You always need to upload a staff file with a workplace file, but the training file is optional.</p>
     <p class="govuk-inset-text">
-      You can download codes and guidance for each file type you need to update (staff, workplace and training).
+      You can download codes and guidance for each file type you need to update (workplace, staff and training).
     </p>
     <p>
       You'll use ASC-WDS to validate your CSV files and will be able to view any errors and warnings in an error report.
@@ -47,7 +47,7 @@
 </div>
 <div class="govuk-grid-row govuk-!-margin-top-6">
   <div class="govuk-grid-column-one-third">
-    <a role="button" draggable="false" class="govuk-button" [routerLink]="['../missing-workplace-references']"> Continue </a>
+    <a role="button" draggable="false" class="govuk-button" [routerLink]="this.nextPage?.url"> Continue </a>
     <span class="govuk-visually-hidden">or</span>
     <a [routerLink]="['/dashboard']" class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
       >Cancel</a

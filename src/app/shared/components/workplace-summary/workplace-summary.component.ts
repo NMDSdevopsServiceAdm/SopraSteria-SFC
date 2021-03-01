@@ -8,7 +8,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workplace-summary',
@@ -111,9 +110,9 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
-        this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
-          this.workerCount = workers.length? workers.length : 0;
-        }),
+        this.workerService
+          .getAllWorkers(this.workplace.uid)
+          .subscribe((workers) => (this.workerCount = workers.length ? workers.length : 0)),
       );
     }
 

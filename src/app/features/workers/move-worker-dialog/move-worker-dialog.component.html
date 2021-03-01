@@ -23,6 +23,7 @@
           {{ getFirstErrorMessage('workplaceNameOrPostCode') }}
         </span>
         <app-auto-suggest
+          data-testid="autocomplete-result"
           [formGroup]="form"
           class="300px;"
           [dataProvider]="workplaceNameOrPostCodeFilter"
