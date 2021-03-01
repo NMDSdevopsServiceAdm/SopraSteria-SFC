@@ -1,32 +1,69 @@
+const models = require('../../../../models');
+
 const findInactiveWorkplaces = async () => {
-  return [
+  const inactiveWorkplaces = await models.sequelize.query(
+    `
+  SELECT
+	"EstablishmentID",
+  "NmdsID",
+  "DataOwner",
+  "PrimaryUserName",
+  "PrimaryUserEmail",
+	"LastUpdated",
+	(
+		SELECT
+			MAX(ech. "createdAt")
+		FROM
+			cqc."EmailCampaignHistories" ech
+		WHERE
+			ech. "establishmentID" = e. "EstablishmentID") AS "LastEmailedDate", (
+			SELECT
+				COUNT(*)
+			FROM
+				cqc."EmailCampaignHistories" ech
+      JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
+			WHERE
+				ec."type" = 'inactiveWorkplaces'
+				AND ech."establishmentID" = e."EstablishmentID"
+				AND ech."createdAt" > "LastUpdated") AS EmailCount
+		FROM
+			cqc. "LastUpdatedEstablishments" e
+		WHERE
+      "ParentID" IS NULL
+      AND "IsParent" = FALSE
+			AND "LastUpdated" < '2020-08-01'
+			AND NOT EXISTS (
+				SELECT
+					ech. "establishmentID"
+				FROM
+					cqc."EmailCampaignHistories" ech
+        JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
+				WHERE
+          ec."type" = 'inactiveWorkplaces'
+					AND ech."createdAt" > '2020-08-01'
+					AND ech. "establishmentID" = e. "EstablishmentID")
+			ORDER BY
+				EmailCount DESC;`,
     {
-      id: 478,
-      name: 'Workplace Name',
-      nmdsId: 'J1234567',
-      lastUpdated: '2020-06-01',
-      emailTemplateId: 6,
-      dataOwner: 'Workplace',
-      user: {
-        name: 'Test Name',
-        email: 'test@example.com',
-      },
+      type: models.sequelize.QueryTypes.SELECT,
     },
-    {
-      id: 479,
-      name: 'Second Workplace Name',
-      nmdsId: 'A0012345',
-      lastUpdated: '2020-01-01',
-      emailTemplateId: 12,
-      dataOwner: 'Workplace',
+  );
+
+  return inactiveWorkplaces.map(inactiveWorkplace => {
+    return {
+      id: inactiveWorkplace.EstablishmentID,
+      nmdsId: inactiveWorkplace.NmdsID,
+      lastUpdated: inactiveWorkplace.LastUpdated,
+      emailTemplateId: 6,
+      dataOwner: inactiveWorkplace.DataOwner,
       user: {
-        name: 'Name McName',
-        email: 'name@mcname.com',
-      },
+        name: inactiveWorkplace.PrimaryUserName,
+        email: inactiveWorkplace.PrimaryUserEmail,
+      }
     }
-  ];
-}
+  });
+};
 
 module.exports = {
-  findInactiveWorkplaces
+  findInactiveWorkplaces,
 };
