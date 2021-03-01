@@ -723,7 +723,7 @@ class User {
           include: [
             {
               model: models.login,
-              attributes: ['username', 'lastLogin', 'agreedUpdatedTerms', 'status'],
+              attributes: ['username', 'lastLogin', 'agreedUpdatedTerms'],
               where: {
                 username: uname,
               },
