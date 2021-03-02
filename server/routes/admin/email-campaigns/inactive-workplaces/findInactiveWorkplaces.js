@@ -1,6 +1,10 @@
+const moment = require('moment');
+
 const models = require('../../../../models');
 
 const findInactiveWorkplaces = async () => {
+  const lastUpdated = moment().subtract(6, 'months').format('YYYY-MM-DD');
+
   const inactiveWorkplaces = await models.sequelize.query(
     `
   SELECT
@@ -32,7 +36,7 @@ const findInactiveWorkplaces = async () => {
 		WHERE
       "ParentID" IS NULL
       AND "IsParent" = FALSE
-			AND "LastUpdated" < '2020-08-01'
+			AND "LastUpdated" < :lastUpdated
 			AND NOT EXISTS (
 				SELECT
 					ech. "establishmentID"
@@ -41,10 +45,11 @@ const findInactiveWorkplaces = async () => {
         JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
 				WHERE
           ec."type" = 'inactiveWorkplaces'
-					AND ech."createdAt" > '2020-08-01'
+					AND ech."createdAt" > :lastUpdated
 					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
+      replacements: { lastUpdated }
     },
   );
 
