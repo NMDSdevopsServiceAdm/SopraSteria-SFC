@@ -970,14 +970,7 @@ class User {
           updated: thisUser.updated.toJSON(),
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
-          status: thisUser.login && thisUser.login.status ? thisUser.login.status : null,
-        });
-      });
-
-      console.log('QQQQQ');
-      allUsers = allUsers.map((user) => {
-        return Object.assign(user, {
-          status: user.username == null ? 'Pending' : user.status !== null ? user.status : 'Active',
+          status: this.statusTranslator(thisUser),
         });
       });
 
@@ -988,16 +981,6 @@ class User {
     }
 
     return allUsers;
-  }
-
-  statusTranslator(thisUser) {
-    if (thisUser.login && thisUser.login.status) {
-      return thisUser.login.status;
-    } else if (thisUser.username) {
-      return 'Active';
-    } else {
-      return 'Pending';
-    }
   }
 
   // helper returns a set 'json ready' objects for representing a User's overall
@@ -1211,6 +1194,17 @@ class User {
     if (filters) throw new Error('Filters not implemented');
     const primaryEstablishmentId = this._establishmentId;
     return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF);
+  }
+
+  // Maps the correct status depending on a user's login state
+  static statusTranslator(thisUser) {
+    if (thisUser.login?.status) {
+      return thisUser.login.status;
+    } else if (thisUser.login?.username) {
+      return 'Active';
+    } else {
+      return 'Pending';
+    }
   }
 }
 
