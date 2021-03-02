@@ -3,7 +3,7 @@ const moment = require('moment');
 const models = require('../../../../models');
 
 const findInactiveWorkplaces = async () => {
-  const lastUpdated = moment().subtract(6, 'months').format('YYYY-MM-DD');
+  await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
 
   const inactiveWorkplaces = await models.sequelize.query(
     `
@@ -49,7 +49,7 @@ const findInactiveWorkplaces = async () => {
 					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
-      replacements: { lastUpdated },
+      replacements: { lastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD') },
     },
   );
 
