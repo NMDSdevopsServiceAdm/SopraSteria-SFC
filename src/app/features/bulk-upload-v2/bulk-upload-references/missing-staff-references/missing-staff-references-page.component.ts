@@ -92,7 +92,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     const currentEstablishmentIndex = this.establishmentsWithMissingReferences.findIndex(
       (establishment) => establishment.uid === this.establishmentUid,
     );
-    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(currentEstablishmentIndex + 1));
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(currentEstablishmentIndex + 1), true);
   }
 
   protected save(): void {
