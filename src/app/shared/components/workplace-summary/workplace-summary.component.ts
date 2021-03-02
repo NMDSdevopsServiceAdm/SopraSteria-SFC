@@ -145,9 +145,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public selectStaffTab(event: Event): void {
-    if (event) {
-      event.preventDefault();
-    }
+    event.preventDefault();
     this.workerService.tabChanged.next(true);
   }
 
