@@ -5,6 +5,7 @@ const findInactiveWorkplaces = async () => {
     `
   SELECT
 	"EstablishmentID",
+  "NameValue",
   "NmdsID",
   "DataOwner",
   "PrimaryUserName",
@@ -52,6 +53,7 @@ const findInactiveWorkplaces = async () => {
   return inactiveWorkplaces.map(inactiveWorkplace => {
     return {
       id: inactiveWorkplace.EstablishmentID,
+      name: inactiveWorkplace.NameValue,
       nmdsId: inactiveWorkplace.NmdsID,
       lastUpdated: inactiveWorkplace.LastUpdated,
       emailTemplateId: 6,

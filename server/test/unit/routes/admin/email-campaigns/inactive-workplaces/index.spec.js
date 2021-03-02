@@ -30,16 +30,18 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastUpdated: '2020-01-01',
-      emailTemplateId: 12,
+      emailTemplateId: 6,
       dataOwner: 'Workplace',
       user: {
         name: 'Name McName',
         email: 'name@mcname.com',
       },
-    }
-  ]
+    },
+  ];
 
   it('should get the number of inactive workplaces', async () => {
+    sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+
     const req = httpMocks.createRequest({
       method: 'GET',
       url: '/api/admin/email-campaigns/inactive-workplaces',
@@ -55,6 +57,33 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   });
 
   it('should return inactive workplaces', async () => {
+    sinon
+      .stub(models.sequelize, 'query')
+      .returns([
+        {
+          EstablishmentID: 478,
+          NameValue: 'Workplace Name',
+          NmdsID: 'J1234567',
+          DataOwner: 'Workplace',
+          PrimaryUserName: 'Test Name',
+          PrimaryUserEmail: 'test@example.com',
+          LastUpdated: '2020-06-01',
+          LastEmailedDate: '2020-12-01',
+          EmailCount: 1,
+        },
+        {
+          EstablishmentID: 479,
+          NameValue: 'Second Workplace Name',
+          NmdsID: 'A0012345',
+          DataOwner: 'Workplace',
+          PrimaryUserName: 'Name McName',
+          PrimaryUserEmail: 'name@mcname.com',
+          LastUpdated: '2020-01-01',
+          LastEmailedDate: '2020-06-01',
+          EmailCount: 1,
+        },
+      ]);
+
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
 
     expect(inactiveWorkplaces).to.deep.equal(dummyInactiveWorkplaces);
@@ -110,8 +139,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
               id: 1,
               createdAt: '2021-01-05 09:00:00',
               emails: 1356,
-            }
-          }
+            };
+          },
         },
         {
           toJSON: () => {
@@ -119,8 +148,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
               id: 2,
               createdAt: '2020-12-05 10:00:00',
               emails: 278,
-            }
-          }
+            };
+          },
         },
       ]);
 
