@@ -53,6 +53,7 @@ import { AppComponent } from './app.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
+import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 
 @NgModule({
   declarations: [
@@ -74,6 +75,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
+    StaffMismatchBannerComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

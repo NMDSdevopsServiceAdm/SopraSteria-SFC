@@ -338,12 +338,20 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       !this.parentStatusRequested &&
       !this.linkToParentRequestedStatus;
   }
-  //open Staff Tab
+
   public selectStaffTab(event: Event) {
     if (event) {
       event.preventDefault();
     }
     this.workerService.tabChanged.next(true);
+  }
+
+  public selectTotalStaff(event: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+    this.router.navigate(['/workplace', this.workplace.uid, 'total-staff']);
   }
 
   ngOnDestroy(): void {

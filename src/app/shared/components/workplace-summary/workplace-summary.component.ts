@@ -56,11 +56,17 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   @Input() return: URLStructure = null;
-
   get totalStaffWarning() {
     return (
       (this.workplace.numberOfStaff > 0 || this.workplace.totalWorkers > 0) &&
       this.workplace.numberOfStaff !== this.workplace.totalWorkers
+    );
+  }
+
+  get totalStaffWarningNonWDF() {
+    return (
+      (this.workplace.numberOfStaff != null || this.workplace.totalWorkers !== null) &&
+      this.workplace.numberOfStaff !== this.workerCount
     );
   }
 
@@ -106,7 +112,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.workerService
           .getAllWorkers(this.workplace.uid)
-          .subscribe((workers) => (this.workerCount = workers.length)),
+          .subscribe((workers) => (this.workerCount = workers.length ? workers.length : 0)),
       );
     }
 
@@ -139,9 +145,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public selectStaffTab(event: Event): void {
-    if (event) {
-      event.preventDefault();
-    }
+    event.preventDefault();
     this.workerService.tabChanged.next(true);
   }
 
@@ -151,5 +155,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public isNumber(value: unknown): boolean {
     return typeof value === 'number';
+  }
+
+  public staffMismatchWarning(): boolean {
+    return (
+      this.canViewListOfWorkers && this.isNumber(this.workerCount) && !this.wdfView && this.totalStaffWarningNonWDF
+    );
   }
 }
