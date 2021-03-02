@@ -18,7 +18,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
-      emailTemplateId: 6,
+      emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
         name: 'Test Name',
@@ -30,7 +30,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastUpdated: '2020-01-01',
-      emailTemplateId: 6,
+      emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
         name: 'Name McName',
