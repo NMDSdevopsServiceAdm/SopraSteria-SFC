@@ -48,8 +48,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
     await generateReport(req, res);
 
     expect(res.statusCode).to.equal(200);
-    expect(res._headers['content-type']).to.equal(
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
+    expect(res._headers['content-type']).to.equal('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   });
 });

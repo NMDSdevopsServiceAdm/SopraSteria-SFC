@@ -9,9 +9,7 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import {
-  SendEmailsConfirmationDialogComponent,
-} from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-emails',

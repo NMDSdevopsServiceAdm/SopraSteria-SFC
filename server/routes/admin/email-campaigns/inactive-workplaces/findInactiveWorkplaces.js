@@ -49,23 +49,23 @@ const findInactiveWorkplaces = async () => {
 					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
-      replacements: { lastUpdated }
+      replacements: { lastUpdated },
     },
   );
 
-  return inactiveWorkplaces.map(inactiveWorkplace => {
+  return inactiveWorkplaces.map((inactiveWorkplace) => {
     return {
       id: inactiveWorkplace.EstablishmentID,
       name: inactiveWorkplace.NameValue,
       nmdsId: inactiveWorkplace.NmdsID,
       lastUpdated: inactiveWorkplace.LastUpdated,
-      emailTemplateId: 6,
+      emailTemplateId: 13,
       dataOwner: inactiveWorkplace.DataOwner,
       user: {
         name: inactiveWorkplace.PrimaryUserName,
         email: inactiveWorkplace.PrimaryUserEmail,
-      }
-    }
+      },
+    };
   });
 };
 

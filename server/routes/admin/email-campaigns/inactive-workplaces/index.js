@@ -12,7 +12,7 @@ const getInactiveWorkplaces = async (_, res) => {
   return res.json({
     inactiveWorkplaces: inactiveWorkplaces.length,
   });
-}
+};
 
 const createCampaign = async (req, res) => {
   try {
@@ -50,7 +50,7 @@ const createCampaign = async (req, res) => {
     console.error(err);
     return res.status(503).json();
   }
-}
+};
 
 const getHistory = async (_, res) => {
   const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
@@ -66,7 +66,7 @@ const getHistory = async (_, res) => {
   });
 
   return res.json(history);
-}
+};
 
 router.route('/').get(getInactiveWorkplaces);
 router.route('/').post(createCampaign);

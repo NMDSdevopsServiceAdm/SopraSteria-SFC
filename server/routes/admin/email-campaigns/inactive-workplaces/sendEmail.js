@@ -14,5 +14,5 @@ const sendEmail = async (workplace) => {
 };
 
 module.exports = {
-  sendEmail
+  sendEmail,
 };
