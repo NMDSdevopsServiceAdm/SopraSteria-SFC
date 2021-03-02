@@ -30,7 +30,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         email: 'test@example.com',
         name: 'Test Name',
       },
-      6,
+      13,
       {
         WORKPLACE_ID: 'J1234567',
       },
