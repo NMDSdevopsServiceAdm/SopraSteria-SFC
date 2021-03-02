@@ -32,6 +32,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   public workplaceName: string;
   public showMissing = true;
   private establishmentsWithMissingReferences: [EstablishmentList];
+  private currentEstablishmentIndex: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -73,6 +74,9 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
       this.setupForm();
       this.setWorkerServerErrors();
       this.showToggles = this.anyFilledReferences();
+      this.currentEstablishmentIndex = this.establishmentsWithMissingReferences.findIndex(
+        (establishment) => establishment.uid === this.establishmentUid,
+      );
     });
   }
 
@@ -89,10 +93,10 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
 
   public skipPage(): void {
     this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
-    const currentEstablishmentIndex = this.establishmentsWithMissingReferences.findIndex(
-      (establishment) => establishment.uid === this.establishmentUid,
+    this.nextMissingPage(
+      this.bulkUploadService.nextMissingReferencesNavigation(this.currentEstablishmentIndex + 1),
+      true,
     );
-    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(currentEstablishmentIndex + 1), true);
   }
 
   protected save(): void {
@@ -102,9 +106,13 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
         .pipe(take(1))
         .subscribe(
           () => {
-            this.establishmentsWithMissingReferences.shift();
+            this.establishmentsWithMissingReferences.splice(this.currentEstablishmentIndex, 1);
+            const missingReferencesLeft = this.establishmentsWithMissingReferences.length > 0;
             this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
-            this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
+            this.nextMissingPage(
+              this.bulkUploadService.nextMissingReferencesNavigation(this.currentEstablishmentIndex),
+              missingReferencesLeft,
+            );
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),
