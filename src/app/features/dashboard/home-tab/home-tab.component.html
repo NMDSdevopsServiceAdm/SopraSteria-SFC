@@ -24,7 +24,12 @@
       </app-inset-text>
     </ng-container>
     <ng-container *ngIf="workplace && canViewListOfWorkers && workersCount !== workplace.numberOfStaff">
-    <app-staff-mismatch-banner (selectStaffTab)="selectStaffTab($event)" (selectTotalStaff)="selectTotalStaff($event)"[workersCount]="workersCount" [numberOfStaff] ="workplace.numberOfStaff"></app-staff-mismatch-banner>
+      <app-staff-mismatch-banner
+        (selectStaffTab)="selectStaffTab($event)"
+        (selectTotalStaff)="selectTotalStaff($event)"
+        [workersCount]="workersCount"
+        [numberOfStaff]="workplace.numberOfStaff"
+      ></app-staff-mismatch-banner>
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">

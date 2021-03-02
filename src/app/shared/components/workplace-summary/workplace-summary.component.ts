@@ -159,7 +159,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     return typeof value === 'number';
   }
 
-  public shouldShowStaffBanner(): boolean {
+  public staffMismatchWarning(): boolean {
     return (
       this.canViewListOfWorkers && this.isNumber(this.workerCount) && !this.wdfView && this.totalStaffWarningNonWDF
     );
