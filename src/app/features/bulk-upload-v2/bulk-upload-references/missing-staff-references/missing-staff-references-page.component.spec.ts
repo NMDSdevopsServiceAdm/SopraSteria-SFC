@@ -6,6 +6,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
+import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -13,6 +14,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -50,6 +52,10 @@ describe('MissingStaffReferencesComponent', () => {
           useClass: MockBreadcrumbService,
         },
         {
+          provide: AuthService,
+          useFactory: MockAuthService.factory(true, false),
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             params: Observable.from([{ uid: 123 }]),
@@ -64,7 +70,7 @@ describe('MissingStaffReferencesComponent', () => {
               },
               paramMap: {
                 get(uid) {
-                  return 123;
+                  return '123';
                 },
               },
             },

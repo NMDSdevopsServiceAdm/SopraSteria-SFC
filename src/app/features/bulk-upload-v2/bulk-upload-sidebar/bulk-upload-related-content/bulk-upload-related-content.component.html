@@ -1,11 +1,11 @@
 <h2 class="govuk-heading-s">Related content</h2>
 <ul class="govuk-list">
   <li>
-    <a [routerLink]="['/bulk-upload','about-bulk-upload']">About bulk upload</a>
+    <a [routerLink]="['/bulk-upload', 'about-bulk-upload']">About bulk upload</a>
   </li>
   <ng-container *ngIf="showAll">
-    <li *ngIf=" this.authService.isAdmin;">
-      <a [routerLink]="['/bulk-upload','last-bulk-upload']">View last bulk upload</a>
+    <li *ngIf="this.authService.isAdmin">
+      <a [routerLink]="['/bulk-upload', 'last-bulk-upload']">View last bulk upload</a>
     </li>
     <li>
       <a [routerLink]="['/bulk-upload', 'workplace-references']">View references</a>

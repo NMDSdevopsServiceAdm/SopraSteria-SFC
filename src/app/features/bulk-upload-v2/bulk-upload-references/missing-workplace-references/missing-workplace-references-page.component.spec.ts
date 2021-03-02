@@ -4,12 +4,14 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Workplace } from '@core/model/my-workplaces.model';
+import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -53,6 +55,10 @@ describe('MissingWorkplaceReferencesComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: AuthService,
+          useFactory: MockAuthService.factory(true, false),
         },
         {
           provide: ActivatedRoute,

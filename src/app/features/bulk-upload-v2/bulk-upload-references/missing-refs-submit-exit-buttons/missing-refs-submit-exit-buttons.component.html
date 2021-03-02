@@ -7,8 +7,14 @@
       <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
     </button>
   </div>
+  <ng-container *ngIf="this.authService.isAdmin">
+    <div class="govuk-grid-column-one-third govuk-!-padding-left-9">
+      <a (click)="onSkip()" class="govuk-button govuk-button--link">Skip</a>
+      <span class="govuk-visually-hidden">or</span>
+    </div>
+  </ng-container>
   <ng-container *ngIf="return">
-    <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-third" [ngClass]="{ 'govuk-!-padding-left-9': !this.authService.isAdmin }">
       <span class="govuk-visually-hidden">or</span>
       <a
         [routerLink]="return.url"

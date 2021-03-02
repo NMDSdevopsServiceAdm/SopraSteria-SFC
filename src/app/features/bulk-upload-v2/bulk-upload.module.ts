@@ -34,6 +34,7 @@ import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/erro
 import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
+import { MissingRefsSubmitExitButtonsComponent } from './bulk-upload-references/missing-refs-submit-exit-buttons/missing-refs-submit-exit-buttons.component';
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     BulkUploadRelatedContentComponent,
     BulkUploadDownloadCurrentDataComponent,
     MissingReferencesToggleComponent,
+    MissingRefsSubmitExitButtonsComponent,
   ],
   providers: [
     DialogService,

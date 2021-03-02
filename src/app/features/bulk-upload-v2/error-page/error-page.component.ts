@@ -13,13 +13,18 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
   templateUrl: './error-page.component.html',
 })
 export class ErrorPageComponent implements OnInit, OnDestroy {
-  public errorReport: ErrorReport  = this.route.snapshot.data.buErrors;
+  public errorReport: ErrorReport = this.route.snapshot.data.buErrors;
   public workplaceId: string;
   public now: Date = new Date();
   public numberOfErrorsAndWarnings: NumberOfErrorsAndWarnings;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private bulkuploadService: BulkUploadService, private establishmentService: EstablishmentService,protected route:ActivatedRoute, private breadcrumbService:BreadcrumbService) {}
+  constructor(
+    private bulkuploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
+    protected route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
+  ) {}
 
   ngOnInit(): void {
     this.workplaceId = this.establishmentService.primaryWorkplace.uid;

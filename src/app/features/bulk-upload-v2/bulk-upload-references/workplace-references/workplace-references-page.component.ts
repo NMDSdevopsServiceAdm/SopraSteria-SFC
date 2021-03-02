@@ -13,7 +13,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {  find } from 'lodash';
+import { find } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -47,7 +47,7 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.filterWorkplaceReferences(this.activatedRoute.snapshot.data.workplaceReferences,this.primaryWorkplace,false);
+    this.filterWorkplaceReferences(this.activatedRoute.snapshot.data.workplaceReferences, this.primaryWorkplace, false);
     this.setupForm();
     this.setWorkplaceServerErrors();
   }

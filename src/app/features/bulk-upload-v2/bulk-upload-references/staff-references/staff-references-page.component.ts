@@ -64,8 +64,6 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     this.getWorkplaceName();
   }
 
-
-
   private getWorkplaceName(): void {
     this.workplaceName = this.activatedRoute.snapshot.data.workplaceReferences.find(
       ({ uid }) => uid === this.establishmentUid,

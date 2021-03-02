@@ -75,12 +75,12 @@ export class BulkUploadService {
     this.establishmentsWithMissingWorkerIds$.next(workplaces);
   }
 
-  public nextMissingReferencesNavigation() {
+  public nextMissingReferencesNavigation(index: number = 0) {
     const establishments = this.establishmentsWithMissingWorkerIds$.value;
-    if (!establishments.length) {
+    if (!establishments.length || index > establishments.length - 1) {
       return ['/bulk-upload'];
     }
-    return ['/bulk-upload', establishments[0].uid, 'missing-staff-references'];
+    return ['/bulk-upload', establishments[index].uid, 'missing-staff-references'];
   }
 
   public setWorkplaceReferences(references: Workplace[]) {

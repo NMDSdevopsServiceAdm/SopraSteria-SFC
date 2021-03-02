@@ -53,6 +53,11 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     this.showToggles = this.anyFilledReferences();
   }
 
+  public skipPage(): void {
+    this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
+  }
+
   protected save(): void {
     this.subscriptions.add(
       this.establishmentService

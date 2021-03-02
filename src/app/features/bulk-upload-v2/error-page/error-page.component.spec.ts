@@ -22,23 +22,21 @@ describe('ErrorPageComponent', () => {
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: MockBulkUploadService },
-        { provide: BreadcrumbService , useClass: MockBreadcrumbService },
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
 
         {
           provide: ActivatedRoute,
-          useValue:
-            {
-              snapshot:
-                {
-                  data: {
-                    buErrors : errorReport
-                  }
-                },
-            }
-        }
+          useValue: {
+            snapshot: {
+              data: {
+                buErrors: errorReport,
+              },
+            },
+          },
+        },
       ],
     });
-   };
+  };
 
   const setup = async () => {
     const { fixture, getByText, getByTestId } = await getErrorPageComponent();

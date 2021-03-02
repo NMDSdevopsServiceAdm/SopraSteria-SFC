@@ -24,7 +24,7 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
   styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
-export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy,OnInit {
+export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy, OnInit {
   private subscriptions: Subscription = new Subscription();
   public return: URLStructure = { url: ['/bulk-upload'] };
   public exit: URLStructure = { url: ['/dashboard'] };
@@ -47,17 +47,17 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     super(errorSummaryService, formBuilder, alertService, backService, router);
   }
 
-  ngOnInit():void{
+  ngOnInit(): void {
     this.subscriptions.add(
       this.router.events
         .pipe(
-          filter(event => event instanceof NavigationEnd),
+          filter((event) => event instanceof NavigationEnd),
           map(() => this.activatedRoute),
-          map(route => route.snapshot.data)
+          map((route) => route.snapshot.data),
         )
-        .subscribe(data => {
+        .subscribe((data) => {
           this.setBackLink(this.return);
-        })
+        }),
     );
 
     this.activatedRoute.params.subscribe((data) => {
@@ -81,7 +81,18 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
   }
 
   private getWorkplaceName(): void {
-    this.workplaceName = this.establishmentsWithMissingReferences[0].name;
+    const currentEstablishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
+    this.workplaceName = this.establishmentsWithMissingReferences.find(
+      ({ uid }) => uid === currentEstablishmentUid,
+    ).name;
+  }
+
+  public skipPage(): void {
+    this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
+    const currentEstablishmentIndex = this.establishmentsWithMissingReferences.findIndex(
+      (establishment) => establishment.uid === this.establishmentUid,
+    );
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(currentEstablishmentIndex + 1));
   }
 
   protected save(): void {
