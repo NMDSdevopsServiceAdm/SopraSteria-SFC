@@ -42,9 +42,7 @@ const findInactiveWorkplaces = async () => {
 				WHERE
           ec."type" = 'inactiveWorkplaces'
 					AND ech."createdAt" > '2020-08-01'
-					AND ech. "establishmentID" = e. "EstablishmentID")
-			ORDER BY
-				EmailCount DESC;`,
+					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
     },
