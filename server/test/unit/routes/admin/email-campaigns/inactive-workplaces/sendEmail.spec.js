@@ -32,10 +32,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       },
       6,
       {
-        name: 'Workplace Name',
-        workplaceId: 'J1234567',
-        lastUpdated: '2020-06-01',
-        nameOfUser: 'Test Name',
+        WORKPLACE_ID: 'J1234567',
       },
     );
   });
