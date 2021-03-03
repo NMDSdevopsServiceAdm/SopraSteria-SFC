@@ -3,7 +3,7 @@ const router = express.Router();
 const moment = require('moment');
 
 const models = require('../../../../models');
-const findInactiveWorkplaces = require('./findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const sendEmail = require('./sendEmail');
 
 const getInactiveWorkplaces = async (_, res) => {
@@ -12,7 +12,7 @@ const getInactiveWorkplaces = async (_, res) => {
   return res.json({
     inactiveWorkplaces: inactiveWorkplaces.length,
   });
-}
+};
 
 const createCampaign = async (req, res) => {
   try {
@@ -39,7 +39,7 @@ const createCampaign = async (req, res) => {
       };
     });
 
-    models.EmailCampaignHistory.bulkCreate(history);
+    await models.EmailCampaignHistory.bulkCreate(history);
     inactiveWorkplaces.map(sendEmail.sendEmail);
 
     return res.json({
@@ -50,7 +50,7 @@ const createCampaign = async (req, res) => {
     console.error(err);
     return res.status(503).json();
   }
-}
+};
 
 const getHistory = async (_, res) => {
   const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
@@ -66,7 +66,7 @@ const getHistory = async (_, res) => {
   });
 
   return res.json(history);
-}
+};
 
 router.route('/').get(getInactiveWorkplaces);
 router.route('/').post(createCampaign);

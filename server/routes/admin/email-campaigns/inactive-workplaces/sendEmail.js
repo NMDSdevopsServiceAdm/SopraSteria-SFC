@@ -8,14 +8,11 @@ const sendEmail = async (workplace) => {
     },
     workplace.emailTemplateId,
     {
-      name: workplace.name,
-      workplaceId: workplace.nmdsId,
-      lastUpdated: workplace.lastUpdated,
-      nameOfUser: workplace.user.name,
+      WORKPLACE_ID: workplace.nmdsId,
     },
   );
 };
 
 module.exports = {
-  sendEmail
+  sendEmail,
 };

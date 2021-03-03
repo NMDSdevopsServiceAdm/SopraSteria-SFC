@@ -3,7 +3,7 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 
 const models = require('../../../../../../models');
-const findInactiveWorkplaces = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const sendEmail = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
@@ -18,7 +18,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
-      emailTemplateId: 6,
+      emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
         name: 'Test Name',
@@ -30,16 +30,18 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastUpdated: '2020-01-01',
-      emailTemplateId: 12,
+      emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
         name: 'Name McName',
         email: 'name@mcname.com',
       },
-    }
-  ]
+    },
+  ];
 
   it('should get the number of inactive workplaces', async () => {
+    sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+
     const req = httpMocks.createRequest({
       method: 'GET',
       url: '/api/admin/email-campaigns/inactive-workplaces',
@@ -52,12 +54,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     const response = res._getJSONData();
 
     expect(response.inactiveWorkplaces).to.deep.equal(2);
-  });
-
-  it('should return inactive workplaces', async () => {
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-
-    expect(inactiveWorkplaces).to.deep.equal(dummyInactiveWorkplaces);
   });
 
   describe('createCampaign', async () => {
@@ -110,8 +106,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
               id: 1,
               createdAt: '2021-01-05 09:00:00',
               emails: 1356,
-            }
-          }
+            };
+          },
         },
         {
           toJSON: () => {
@@ -119,8 +115,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
               id: 2,
               createdAt: '2020-12-05 10:00:00',
               emails: 278,
-            }
-          }
+            };
+          },
         },
       ]);
 

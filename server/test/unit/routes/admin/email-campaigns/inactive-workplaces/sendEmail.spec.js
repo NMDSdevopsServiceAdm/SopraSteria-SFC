@@ -8,34 +8,31 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
   });
 
   it('should call sendEmails for inactive workplace', async () => {
-    const inactiveWorkplace =
-      {
-        name: 'Workplace Name',
-        nmdsId: 'J1234567',
-        lastUpdated: '2020-06-01',
-        emailTemplateId: 6,
-        dataOwner: 'Workplace',
-        user: {
-          name: 'Test Name',
-          email: 'test@example.com',
-        },
-      };
+    const inactiveWorkplace = {
+      name: 'Workplace Name',
+      nmdsId: 'J1234567',
+      lastUpdated: '2020-06-01',
+      emailTemplateId: 13,
+      dataOwner: 'Workplace',
+      user: {
+        name: 'Test Name',
+        email: 'test@example.com',
+      },
+    };
 
     const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
 
     await sendEmail.sendEmail(inactiveWorkplace);
 
-    sinon.assert.calledWith(sendEmailStub,
+    sinon.assert.calledWith(
+      sendEmailStub,
       {
         email: 'test@example.com',
         name: 'Test Name',
       },
-      6,
+      13,
       {
-        name: 'Workplace Name',
-        workplaceId: 'J1234567',
-        lastUpdated: '2020-06-01',
-        nameOfUser: 'Test Name',
+        WORKPLACE_ID: 'J1234567',
       },
     );
   });
