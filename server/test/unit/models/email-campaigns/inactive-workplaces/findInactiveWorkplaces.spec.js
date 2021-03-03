@@ -1,10 +1,11 @@
 const expect = require('chai').expect;
+const moment = require('moment');
 const sinon = require('sinon');
 
 const models = require('../../../../../models');
 const findInactiveWorkplaces = require('../../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 
-describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
+describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -14,7 +15,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       id: 478,
       name: 'Workplace Name',
       nmdsId: 'J1234567',
-      lastUpdated: '2020-06-01',
+      lastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
       emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
@@ -26,7 +27,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       id: 479,
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
-      lastUpdated: '2020-01-01',
+      lastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
       emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
@@ -45,7 +46,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
-        LastUpdated: '2020-06-01',
+        LastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
         LastEmailedDate: '2020-12-01',
         EmailCount: 1,
       },
@@ -56,7 +57,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Name McName',
         PrimaryUserEmail: 'name@mcname.com',
-        LastUpdated: '2020-01-01',
+        LastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
         LastEmailedDate: '2020-06-01',
         EmailCount: 1,
       },
@@ -65,5 +66,85 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
 
     expect(inactiveWorkplaces).to.deep.equal(dummyInactiveWorkplaces);
+  });
+
+  it('should return the correct template when 6 months inactive', async () => {
+    sinon.stub(models.sequelize, 'query').returns([
+      {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: moment().subtract(6, 'months'),
+        LastEmailedDate: '2020-12-01',
+        EmailCount: 0,
+      }
+    ]);
+
+    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+
+    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(13);
+  });
+
+  it('should return the correct template when 12 months inactive', async () => {
+    sinon.stub(models.sequelize, 'query').returns([
+      {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: moment().subtract(12, 'months'),
+        LastEmailedDate: '2020-12-01',
+        EmailCount: 1,
+      }
+    ]);
+
+    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+
+    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(13);
+  });
+
+  it('should return the correct template when 18 months inactive', async () => {
+    sinon.stub(models.sequelize, 'query').returns([
+      {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: moment().subtract(18, 'months'),
+        LastEmailedDate: '2020-12-01',
+        EmailCount: 2,
+      }
+    ]);
+
+    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+
+    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(10);
+  });
+
+  it('should return the correct template when 24 months inactive', async () => {
+    sinon.stub(models.sequelize, 'query').returns([
+      {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: moment().subtract(24, 'months'),
+        LastEmailedDate: '2020-12-01',
+        EmailCount: 2,
+      }
+    ]);
+
+    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+
+    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(12);
   });
 });

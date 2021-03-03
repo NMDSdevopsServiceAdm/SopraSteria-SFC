@@ -2,6 +2,27 @@ const moment = require('moment');
 
 const models = require('../../index');
 
+const calculateEmailTemplate = (inactiveWorkplace) => {
+  const lastUpdated = moment(inactiveWorkplace.LastUpdated).startOf('day');
+
+  const sixMonths = moment().startOf('day').subtract(6, 'months');
+  const twelveMonths = moment().startOf('day').subtract(12, 'months');
+  const eighteenMonths = moment().startOf('day').subtract(18, 'months');
+  const twentyFourMonths = moment().startOf('day').subtract(24, 'months');
+
+  if (lastUpdated.isSameOrBefore(sixMonths) && lastUpdated.isSameOrAfter(twelveMonths)) {
+    return 13;
+  }
+
+  if (lastUpdated.isBefore(twelveMonths) && lastUpdated.isSameOrAfter(eighteenMonths)) {
+    return 10;
+  }
+
+  if (lastUpdated.isSameOrAfter(twentyFourMonths)) {
+    return 12;
+  }
+}
+
 const findInactiveWorkplaces = async () => {
   await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
 
@@ -49,7 +70,7 @@ const findInactiveWorkplaces = async () => {
 					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
-      replacements: { lastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD') },
+      replacements: { lastUpdated: moment().subtract(1, 'months').endOf('month').subtract(6, 'months').format('YYYY-MM-DD') },
     },
   );
 
@@ -59,7 +80,7 @@ const findInactiveWorkplaces = async () => {
       name: inactiveWorkplace.NameValue,
       nmdsId: inactiveWorkplace.NmdsID,
       lastUpdated: inactiveWorkplace.LastUpdated,
-      emailTemplateId: 13,
+      emailTemplateId: calculateEmailTemplate(inactiveWorkplace),
       dataOwner: inactiveWorkplace.DataOwner,
       user: {
         name: inactiveWorkplace.PrimaryUserName,
