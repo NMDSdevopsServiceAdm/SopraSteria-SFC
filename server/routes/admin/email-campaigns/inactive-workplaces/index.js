@@ -3,7 +3,7 @@ const router = express.Router();
 const moment = require('moment');
 
 const models = require('../../../../models');
-const findInactiveWorkplaces = require('./findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const sendEmail = require('./sendEmail');
 
 const getInactiveWorkplaces = async (_, res) => {

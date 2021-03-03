@@ -1,7 +1,7 @@
 const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
-const findInactiveWorkplaces = require('./findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const excelUtils = require('../../../../utils/excelUtils');
 
 const printRow = (worksheet, item) => {

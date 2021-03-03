@@ -3,7 +3,7 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 
 const { generateReport } = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/report');
-const findInactiveWorkplaces = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () => {
   const dummyInactiveWorkplaces = [

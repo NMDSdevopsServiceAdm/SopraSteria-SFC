@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const models = require('../../../../models');
+const models = require('../../index');
 
 const findInactiveWorkplaces = async () => {
   await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
