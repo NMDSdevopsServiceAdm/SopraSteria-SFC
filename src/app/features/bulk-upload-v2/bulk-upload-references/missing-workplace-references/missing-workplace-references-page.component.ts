@@ -55,7 +55,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
 
   public skipPage(): void {
     this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
-    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation());
+    this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(), true);
   }
 
   protected save(): void {

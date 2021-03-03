@@ -177,12 +177,14 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   protected anyFilledReferences(): boolean {
     return this.references.some((reference) => reference.localIdentifier !== null);
   }
+
   protected setBackLink(returnTo): void {
     this.backService.setBackLink(returnTo);
   }
-  protected nextMissingPage(url): void {
+
+  protected nextMissingPage(url, missingReferencesLeft: boolean = false): void {
     this.router.navigate(url).then(() => {
-      if (url[url.length - 1] === '/bulk-upload') {
+      if (url[url.length - 1] === '/bulk-upload' && !missingReferencesLeft) {
         this.alertService.addAlert({
           type: 'success',
           message: 'All workplace and staff references have been added.',
