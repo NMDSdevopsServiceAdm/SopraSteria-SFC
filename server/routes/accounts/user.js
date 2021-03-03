@@ -1066,7 +1066,7 @@ router
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
 router.route('/:uid/resend-activation').post(Authorization.isAuthorised, resendActivationLink);
 router.route('/validateAddUser').post(finishAddUser);
-router.route('/add').post(Authorization.isAuthorisedAddUser, hasPermission('canAddUser'), addUser);
+router.route('/add').post(Authorization.isAuthorisedAddUser, addUser);
 router.route('/my/establishments').get(Authorization.isAuthorised, listEstablishments);
 
 router.use('/my/notifications', Authorization.isAuthorised);
