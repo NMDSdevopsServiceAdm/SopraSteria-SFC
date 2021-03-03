@@ -132,10 +132,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
 
   private onSuccess(nameAndPostCode: string): void {
     const newEstablishmentName = this.getWorkplaceEstablishmentIdOrName(nameAndPostCode, 'name');
-    const url =
-      this.data.workplace.uid === this.data.primaryWorkplaceUid || this.data.primaryWorkplaceUid === null
-        ? ['/dashboard']
-        : ['/workplace', this.data.workplace.uid];
+    const url = this.data.workplace.parentUid !== null ? ['/workplace', this.data.workplace.uid] : ['/dashboard'];
     this.router.navigate(url, { fragment: 'staff-records' });
     this.alertService.addAlert({
       type: 'success',
