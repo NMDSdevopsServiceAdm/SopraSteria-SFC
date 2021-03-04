@@ -764,7 +764,6 @@ class User {
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
         this._status = User.statusTranslator(fetchResults.login);
-        // this._login = fetchResults.login && login.dataValues ? login.dataValues : null;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
