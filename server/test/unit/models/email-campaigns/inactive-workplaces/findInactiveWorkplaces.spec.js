@@ -47,6 +47,7 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
         LastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
+        LastTemplate: null,
         LastEmailedDate: '2020-12-01',
         EmailCount: 1,
       },
@@ -58,6 +59,7 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Name McName',
         PrimaryUserEmail: 'name@mcname.com',
         LastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
+        LastTemplate: null,
         LastEmailedDate: '2020-06-01',
         EmailCount: 1,
       },
@@ -68,9 +70,50 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     expect(inactiveWorkplaces).to.deep.equal(dummyInactiveWorkplaces);
   });
 
-  it('should return the correct template when 6 months inactive', async () => {
-    sinon.stub(models.sequelize, 'query').returns([
-      {
+  [
+    {
+      inactiveMonths: 6,
+      LastUpdated: moment().subtract(6, 'months'),
+      LastTemplate: 13,
+    },
+    {
+      inactiveMonths: 12,
+      LastUpdated: moment().subtract(12, 'months'),
+      LastTemplate: 13,
+    },
+    {
+      inactiveMonths: 18,
+      LastUpdated: moment().subtract(18, 'months'),
+      LastTemplate: 10,
+    },
+    {
+      inactiveMonths: 24,
+      LastUpdated: moment().subtract(24, 'months'),
+      LastTemplate: 12,
+    }
+  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
+    it(`should not include a workplace that has already been sent a ${inactiveMonths} month email`, async () => {
+      sinon.stub(models.sequelize, 'query').returns([{
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastEmailedDate: '2020-12-01',
+        EmailCount: 2,
+        LastUpdated: LastUpdated,
+        LastTemplate: LastTemplate,
+      }]);
+
+      const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+      expect(inactiveWorkplaces.length).to.equal(0);
+    });
+  });
+
+  describe('nextEmailTemplate', () => {
+    it('should return the correct template when 6 months inactive', async () => {
+      const inactiveWorkplace = {
         EstablishmentID: 478,
         NameValue: 'Workplace Name',
         NmdsID: 'J1234567',
@@ -80,17 +123,15 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         LastUpdated: moment().subtract(6, 'months'),
         LastEmailedDate: '2020-12-01',
         EmailCount: 0,
-      }
-    ]);
+      };
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+      const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(13);
-  });
+      expect(emailTemplateId).to.equal(13);
+    });
 
-  it('should return the correct template when 12 months inactive', async () => {
-    sinon.stub(models.sequelize, 'query').returns([
-      {
+    it('should return the correct template when 12 months inactive', async () => {
+      const inactiveWorkplace = {
         EstablishmentID: 478,
         NameValue: 'Workplace Name',
         NmdsID: 'J1234567',
@@ -100,17 +141,15 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         LastUpdated: moment().subtract(12, 'months'),
         LastEmailedDate: '2020-12-01',
         EmailCount: 1,
-      }
-    ]);
+      };
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+      const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(13);
-  });
+      expect(emailTemplateId).to.equal(13);
+    });
 
-  it('should return the correct template when 18 months inactive', async () => {
-    sinon.stub(models.sequelize, 'query').returns([
-      {
+    it('should return the correct template when 18 months inactive', async () => {
+      const inactiveWorkplace = {
         EstablishmentID: 478,
         NameValue: 'Workplace Name',
         NmdsID: 'J1234567',
@@ -120,17 +159,15 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         LastUpdated: moment().subtract(18, 'months'),
         LastEmailedDate: '2020-12-01',
         EmailCount: 2,
-      }
-    ]);
+      };
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+      const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(10);
-  });
+      expect(emailTemplateId).to.equal(10);
+    });
 
-  it('should return the correct template when 24 months inactive', async () => {
-    sinon.stub(models.sequelize, 'query').returns([
-      {
+    it('should return the correct template when 24 months inactive', async () => {
+      const inactiveWorkplace = {
         EstablishmentID: 478,
         NameValue: 'Workplace Name',
         NmdsID: 'J1234567',
@@ -140,11 +177,53 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         LastUpdated: moment().subtract(24, 'months'),
         LastEmailedDate: '2020-12-01',
         EmailCount: 2,
+      };
+
+      const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
+
+      expect(emailTemplateId).to.equal(12);
+    });
+
+    [
+      {
+        inactiveMonths: 6,
+        LastUpdated: moment().subtract(6, 'months'),
+        LastTemplate: 13,
+      },
+      {
+        inactiveMonths: 12,
+        LastUpdated: moment().subtract(12, 'months'),
+        LastTemplate: 13,
+      },
+      {
+        inactiveMonths: 18,
+        LastUpdated: moment().subtract(18, 'months'),
+        LastTemplate: 10,
+      },
+      {
+        inactiveMonths: 24,
+        LastUpdated: moment().subtract(24, 'months'),
+        LastTemplate: 12,
       }
-    ]);
+    ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
+      it(`should not return a ${inactiveMonths} month template when already sent a ${inactiveMonths} month email`, async () => {
+        const inactiveWorkplace = {
+          EstablishmentID: 478,
+          NameValue: 'Workplace Name',
+          NmdsID: 'J1234567',
+          DataOwner: 'Workplace',
+          PrimaryUserName: 'Test Name',
+          PrimaryUserEmail: 'test@example.com',
+          LastEmailedDate: '2020-12-01',
+          EmailCount: 2,
+          LastUpdated: LastUpdated,
+          LastTemplate: LastTemplate,
+        };
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+        const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-    expect(inactiveWorkplaces[0].emailTemplateId).to.equal(12);
+        expect(emailTemplateId).to.equal(null);
+      });
+    });
   });
 });

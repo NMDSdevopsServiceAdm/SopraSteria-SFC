@@ -2,7 +2,7 @@ const moment = require('moment');
 
 const models = require('../../index');
 
-const calculateEmailTemplate = (inactiveWorkplace) => {
+const nextEmailTemplate = (inactiveWorkplace) => {
   const lastUpdated = moment(inactiveWorkplace.LastUpdated).startOf('day');
 
   const sixMonths = moment().startOf('day').subtract(6, 'months');
@@ -11,17 +11,17 @@ const calculateEmailTemplate = (inactiveWorkplace) => {
   const twentyFourMonths = moment().startOf('day').subtract(24, 'months');
 
   if (lastUpdated.isSameOrBefore(sixMonths) && lastUpdated.isSameOrAfter(twelveMonths)) {
-    return 13;
+    return inactiveWorkplace.LastTemplate !== 13 ? 13 : null;
   }
 
   if (lastUpdated.isBefore(twelveMonths) && lastUpdated.isSameOrAfter(eighteenMonths)) {
-    return 10;
+    return inactiveWorkplace.LastTemplate !== 10 ? 10 : null;
   }
 
   if (lastUpdated.isSameOrAfter(twentyFourMonths)) {
-    return 12;
+    return inactiveWorkplace.LastTemplate !== 12 ? 12 : null;
   }
-}
+};
 
 const findInactiveWorkplaces = async () => {
   await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
@@ -36,6 +36,15 @@ const findInactiveWorkplaces = async () => {
   "PrimaryUserName",
   "PrimaryUserEmail",
 	"LastUpdated",
+  (
+		SELECT
+			"template"
+		FROM
+			cqc."EmailCampaignHistories" ech
+		WHERE
+			ech. "establishmentID" = e. "EstablishmentID"
+    ORDER BY ech. "createdAt" DESC
+    LIMIT 1) AS "LastTemplate",
 	(
 		SELECT
 			MAX(ech. "createdAt")
@@ -70,26 +79,33 @@ const findInactiveWorkplaces = async () => {
 					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
-      replacements: { lastUpdated: moment().subtract(1, 'months').endOf('month').subtract(6, 'months').format('YYYY-MM-DD') },
+      replacements: {
+        lastUpdated: moment().subtract(1, 'months').endOf('month').subtract(6, 'months').format('YYYY-MM-DD'),
+      },
     },
   );
 
-  return inactiveWorkplaces.map((inactiveWorkplace) => {
-    return {
-      id: inactiveWorkplace.EstablishmentID,
-      name: inactiveWorkplace.NameValue,
-      nmdsId: inactiveWorkplace.NmdsID,
-      lastUpdated: inactiveWorkplace.LastUpdated,
-      emailTemplateId: calculateEmailTemplate(inactiveWorkplace),
-      dataOwner: inactiveWorkplace.DataOwner,
-      user: {
-        name: inactiveWorkplace.PrimaryUserName,
-        email: inactiveWorkplace.PrimaryUserEmail,
-      },
-    };
-  });
+  return inactiveWorkplaces
+    .filter((inactiveWorkplace) => {
+      return nextEmailTemplate(inactiveWorkplace) !== null;
+    })
+    .map((inactiveWorkplace) => {
+      return {
+        id: inactiveWorkplace.EstablishmentID,
+        name: inactiveWorkplace.NameValue,
+        nmdsId: inactiveWorkplace.NmdsID,
+        lastUpdated: inactiveWorkplace.LastUpdated,
+        emailTemplateId: nextEmailTemplate(inactiveWorkplace),
+        dataOwner: inactiveWorkplace.DataOwner,
+        user: {
+          name: inactiveWorkplace.PrimaryUserName,
+          email: inactiveWorkplace.PrimaryUserEmail,
+        },
+      };
+    });
 };
 
 module.exports = {
   findInactiveWorkplaces,
+  nextEmailTemplate,
 };
