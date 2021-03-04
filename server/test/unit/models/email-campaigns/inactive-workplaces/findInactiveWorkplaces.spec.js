@@ -48,8 +48,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserEmail: 'test@example.com',
         LastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
         LastTemplate: null,
-        LastEmailedDate: '2020-12-01',
-        EmailCount: 1,
       },
       {
         EstablishmentID: 479,
@@ -60,8 +58,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserEmail: 'name@mcname.com',
         LastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
         LastTemplate: null,
-        LastEmailedDate: '2020-06-01',
-        EmailCount: 1,
       },
     ]);
 
@@ -100,8 +96,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
-        LastEmailedDate: '2020-12-01',
-        EmailCount: 2,
         LastUpdated: LastUpdated,
         LastTemplate: LastTemplate,
       }]);
@@ -121,8 +115,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
         LastUpdated: moment().subtract(6, 'months'),
-        LastEmailedDate: '2020-12-01',
-        EmailCount: 0,
       };
 
       const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
@@ -139,8 +131,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
         LastUpdated: moment().subtract(12, 'months'),
-        LastEmailedDate: '2020-12-01',
-        EmailCount: 1,
       };
 
       const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
@@ -157,8 +147,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
         LastUpdated: moment().subtract(18, 'months'),
-        LastEmailedDate: '2020-12-01',
-        EmailCount: 2,
       };
 
       const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
@@ -175,8 +163,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
         LastUpdated: moment().subtract(24, 'months'),
-        LastEmailedDate: '2020-12-01',
-        EmailCount: 2,
       };
 
       const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
@@ -214,8 +200,6 @@ describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
           DataOwner: 'Workplace',
           PrimaryUserName: 'Test Name',
           PrimaryUserEmail: 'test@example.com',
-          LastEmailedDate: '2020-12-01',
-          EmailCount: 2,
           LastUpdated: LastUpdated,
           LastTemplate: LastTemplate,
         };

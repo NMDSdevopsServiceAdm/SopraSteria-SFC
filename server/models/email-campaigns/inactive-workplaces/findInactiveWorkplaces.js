@@ -44,23 +44,7 @@ const findInactiveWorkplaces = async () => {
 		WHERE
 			ech. "establishmentID" = e. "EstablishmentID"
     ORDER BY ech. "createdAt" DESC
-    LIMIT 1) AS "LastTemplate",
-	(
-		SELECT
-			MAX(ech. "createdAt")
-		FROM
-			cqc."EmailCampaignHistories" ech
-		WHERE
-			ech. "establishmentID" = e. "EstablishmentID") AS "LastEmailedDate", (
-			SELECT
-				COUNT(*)
-			FROM
-				cqc."EmailCampaignHistories" ech
-      JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
-			WHERE
-				ec."type" = 'inactiveWorkplaces'
-				AND ech."establishmentID" = e."EstablishmentID"
-				AND ech."createdAt" > "LastUpdated") AS EmailCount
+    LIMIT 1) AS "LastTemplate"
 		FROM
 			cqc. "LastUpdatedEstablishments" e
 		WHERE
