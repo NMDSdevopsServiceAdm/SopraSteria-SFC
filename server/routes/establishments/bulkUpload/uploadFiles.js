@@ -9,7 +9,6 @@ const { buStates } = require('./states');
 const Bucket = S3.Bucket;
 const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
 
-
 const createMyFileObject = (myfile, type) => {
   return {
     data: myfile.data,
@@ -21,7 +20,7 @@ const createMyFileObject = (myfile, type) => {
       size: myfile.size,
       key: myfile.key,
       lastModified: myfile.lastModified,
-      records: null
+      records: null,
     },
   };
 };
@@ -34,7 +33,7 @@ const updateMetaData = async (file, username, establishmentId) => {
 
   if (!passedCheck) {
     file.metaData.fileType = null;
-  }else{
+  } else {
     file.metaData.records = file.importedData.length;
   }
 
@@ -198,7 +197,7 @@ const uploadedPut = async (req, res) => {
           file.header = file.data.substring(0, lastPos).trim();
 
           await updateMetaData(file, username, establishmentId);
-      }),
+        }),
     );
 
     myDownloads.forEach((file) => {

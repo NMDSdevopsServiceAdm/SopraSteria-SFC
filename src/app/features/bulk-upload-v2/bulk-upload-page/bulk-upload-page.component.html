@@ -7,7 +7,7 @@
 
     <app-details [title]="'Who should do bulk uploads?'">
       <p>
-        Bulk upload lets you add large amounts of workforce data in the Adult Social Care Workforce Data Set, without
+        Bulk uploads let you add large amounts of workforce data into the Adult Social Care Workforce Data Set, without
         the need to add that data manually.
       </p>
       <p>
@@ -27,7 +27,9 @@
     </div>
   </div>
   <div class="govuk-grid-column-one-third">
-    <app-bulk-upload-sidebar class="govuk-util__block"></app-bulk-upload-sidebar>
+    <app-bulk-upload-related-content [showAll]="true"></app-bulk-upload-related-content>
+    <app-bulk-upload-download-current-data></app-bulk-upload-download-current-data>
+    <app-codes-and-guidance></app-codes-and-guidance>
   </div>
 
   <div class="govuk-grid-column-full govuk-!-margin-top-0">

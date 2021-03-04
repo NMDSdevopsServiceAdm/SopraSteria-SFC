@@ -1,6 +1,9 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorReport, NumberOfErrorsAndWarnings } from '@core/model/bulk-upload.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
@@ -10,17 +13,23 @@ import { Subscription } from 'rxjs';
   templateUrl: './error-page.component.html',
 })
 export class ErrorPageComponent implements OnInit, OnDestroy {
-  public errorReport: ErrorReport;
+  public errorReport: ErrorReport = this.route.snapshot.data.buErrors;
   public workplaceId: string;
   public now: Date = new Date();
   public numberOfErrorsAndWarnings: NumberOfErrorsAndWarnings;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private bulkuploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
+  constructor(
+    private bulkuploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
+    protected route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
+  ) {}
 
   ngOnInit(): void {
     this.workplaceId = this.establishmentService.primaryWorkplace.uid;
-    this.getErrorReport();
+    this.getNumberOfErrorsAndWarnings();
+    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
   }
 
   ngOnDestroy(): void {
@@ -29,15 +38,6 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
 
   public getNumberOfItems(errorsOrWarnings) {
     return errorsOrWarnings.reduce((num, errorInfo) => num + errorInfo.items.length, 0);
-  }
-
-  private getErrorReport() {
-    this.subscriptions.add(
-      this.bulkuploadService.errorReport(this.workplaceId).subscribe((errorReport: ErrorReport) => {
-        this.errorReport = errorReport;
-        this.getNumberOfErrorsAndWarnings();
-      }),
-    );
   }
 
   public downloadBUReport(event: Event) {

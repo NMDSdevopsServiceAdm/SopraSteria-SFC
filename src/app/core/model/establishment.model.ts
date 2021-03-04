@@ -199,6 +199,10 @@ export interface allMandatoryTrainingCategories {
 export interface mandatoryTrainingCategories {
   categories: mandatoryTraining[];
 }
+export interface adminMoveWorkplace {
+  parentUid: string;
+  subUid: string;
+}
 
 export enum SortStaffOptions {
   '0_asc' = 'Staff name ascending',

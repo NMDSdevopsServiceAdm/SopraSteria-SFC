@@ -10,6 +10,7 @@ const approval = require('./approval');
 const parentApproval = require('./parent-approval');
 const unlockAccount = require('./unlock-account');
 const cqcStatusChange = require('./cqc-status-change');
+const moveWorkplace = require('./move-workplace');
 
 // middleware authentication - only role=Admin from here on in
 router.use('/', isAdmin);
@@ -21,9 +22,10 @@ router.use('/approval', approval);
 router.use('/parent-approval', parentApproval);
 router.use('/cqc-status-change', cqcStatusChange);
 router.use('/unlock-account', unlockAccount);
+router.use('/move-workplace', moveWorkplace);
 
 router.route('/').post(async function (req, res) {
-  return res.status(200).send({success: "from admin"});
+  return res.status(200).send({ success: 'from admin' });
 });
 
 module.exports = router;

@@ -1,9 +1,8 @@
-import { ErrorReportWarning } from '@core/model/bulk-upload.model';
+import { ErrorReportWarning, Items } from '@core/model/bulk-upload.model';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WarningDetailsTableComponent } from './warning-details-table.component';
-
-const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const itemBuilder = build('Item', {
   fields: {
@@ -48,7 +47,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show a list of warnings', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [itemBuilder()];
+      warnings[0].items = [itemBuilder() as Items];
 
       const fileType = 'Workplace';
 
@@ -65,7 +64,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show a dropdown after clicking Open and toggle to say Close', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [itemBuilder()];
+      warnings[0].items = [itemBuilder() as Items];
 
       const fileType = 'Workplace';
 
@@ -90,7 +89,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should hide the dropdown and toggle to say Open after clicking Close', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [itemBuilder()];
+      warnings[0].items = [itemBuilder() as Items];
       const openWarnings = [warnings[0].warnCode];
 
       const fileType = 'Workplace';
@@ -117,8 +116,8 @@ describe('WarningDetailsTableComponent', () => {
     it('should show both dropdowns after clicking Open on two warnings', async () => {
       const warnings = [errorReportWarningBuilder(), errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [itemBuilder()];
-      warnings[1].items = [itemBuilder()];
+      warnings[0].items = [itemBuilder() as Items];
+      warnings[1].items = [itemBuilder() as Items];
 
       const fileType = 'Workplace';
 
@@ -156,7 +155,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show all item messages when dropdown open', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [itemBuilder(), itemBuilder(), itemBuilder()];
+      warnings[0].items = [itemBuilder() as Items, itemBuilder() as Items, itemBuilder() as Items];
       const openWarnings = [warnings[0].warnCode];
 
       const fileType = 'Workplace';
@@ -187,9 +186,9 @@ describe('WarningDetailsTableComponent', () => {
         errorReportWarningBuilder(),
       ] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
-      warnings[1].items = [workerItemBuilder()];
-      warnings[2].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
+      warnings[1].items = [workerItemBuilder() as Items];
+      warnings[2].items = [workerItemBuilder() as Items];
 
       const fileType = 'Staff';
 
@@ -207,7 +206,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show a dropdown after clicking Open and toggle to say Close', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
 
       const fileType = 'Staff';
 
@@ -237,7 +236,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should hide the dropdown and toggle to say Open after clicking Close', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
       const openWarnings = [warnings[0].warnCode];
 
       const fileType = 'Staff';
@@ -269,8 +268,8 @@ describe('WarningDetailsTableComponent', () => {
     it('should show both dropdowns after clicking Open on two warnings', async () => {
       const warnings = [errorReportWarningBuilder(), errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
-      warnings[1].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
+      warnings[1].items = [workerItemBuilder() as Items];
 
       const fileType = 'Staff';
 
@@ -310,7 +309,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show all item messages when dropdown open', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder(), workerItemBuilder(), workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items, workerItemBuilder() as Items, workerItemBuilder() as Items];
       const openWarnings = [warnings[0].warnCode];
 
       const fileType = 'Staff';
@@ -353,9 +352,9 @@ describe('WarningDetailsTableComponent', () => {
         errorReportWarningBuilder(),
       ] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
-      warnings[1].items = [workerItemBuilder()];
-      warnings[2].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
+      warnings[1].items = [workerItemBuilder() as Items];
+      warnings[2].items = [workerItemBuilder() as Items];
 
       const fileType = 'Training';
 
@@ -373,7 +372,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show a dropdown after clicking Open and toggle to say Close', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
 
       const fileType = 'Training';
 
@@ -403,7 +402,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should hide the dropdown and toggle to say Open after clicking Close', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
       const openWarnings = [warnings[0].warnCode];
 
       const fileType = 'Training';
@@ -434,8 +433,8 @@ describe('WarningDetailsTableComponent', () => {
     it('should show both dropdowns after clicking Open on two warnings', async () => {
       const warnings = [errorReportWarningBuilder(), errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder()];
-      warnings[1].items = [workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items];
+      warnings[1].items = [workerItemBuilder() as Items];
 
       const fileType = 'Training';
 
@@ -475,7 +474,7 @@ describe('WarningDetailsTableComponent', () => {
     it('should show all item messages when dropdown open', async () => {
       const warnings = [errorReportWarningBuilder()] as ErrorReportWarning[];
 
-      warnings[0].items = [workerItemBuilder(), workerItemBuilder(), workerItemBuilder()];
+      warnings[0].items = [workerItemBuilder() as Items, workerItemBuilder() as Items, workerItemBuilder() as Items];
       const openWarnings = [warnings[0].warnCode];
 
       const fileType = 'Training';

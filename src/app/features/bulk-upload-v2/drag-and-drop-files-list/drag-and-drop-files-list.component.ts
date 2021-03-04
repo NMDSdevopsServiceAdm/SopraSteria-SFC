@@ -41,6 +41,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   };
   public preValidationErrorMessage = '';
   public showPreValidateErrorMessage = false;
+  public disableButton = false;
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -54,77 +55,20 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getUploadedFiles();
     this.preValidateFilesSubscription();
-  }
-
-  private getUploadedFiles(): void {
-    const files$ = this.bulkUploadService.uploadedFiles$;
-    const state$ = this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid);
-
     this.subscriptions.add(
-      combineLatest([files$, state$]).subscribe(([uploadedFiles, state]) => {
-        if (!uploadedFiles) {
-          return;
-        }
-
-        this.uploadedFiles = uploadedFiles;
-        this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
-
-        if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {
-          this.validationComplete = true;
-        }
+      this.bulkUploadService.selectedFiles$.subscribe(() => {
+        this.disableButton = true;
       }),
     );
+    this.disableButton = false;
   }
 
-  private preValidateFilesSubscription(): void {
-    this.subscriptions.add(
-      this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
-        this.preValidationErrorMessage = '';
-        this.fileErrors =[];
-        this.showPreValidateErrorMessage = false;
-        if (preValidateFiles) {
-          this.validationComplete = false;
-          this.preValidateFiles();
-        }
-      }),
-    );
-  }
-
-  public getFileErrors(file: ValidatedFile): string {
-    return this.fileErrors[file.key];
-  }
-
-  private preValidateFiles(): void {
-    this.subscriptions.add(
-      this.bulkUploadService
-        .preValidateFiles(this.establishmentService.primaryWorkplace.uid)
-        .pipe(take(1))
-        .subscribe(
-          (response: ValidatedFile[]) => {
-            this.validationErrors = [];
-            this.checkForMandatoryFiles(response);
-            this.uploadedFiles = response;
-          },
-          (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
-        ),
-    );
-  }
-
-  private checkForMandatoryFiles(response: ValidatedFile[]): void {
-    const files: string[] = response.map((data) => this.bulkUploadFileTypeEnum[data.fileType]);
-
-    if (
-      !files.includes(this.bulkUploadFileTypeEnum.Establishment) ||
-      !files.includes(this.bulkUploadFileTypeEnum.Worker)
-    ) {
-      this.preValidationError = true;
-    } else {
-      this.preValidationError = false;
+  public showFileRecords(file): string {
+    if (file.fileType === null) {
+      return '-';
     }
-
-    this.bulkUploadService.preValidationError$.next(this.preValidationError);
+    return file.records === null ? '0' : file.records;
   }
-
 
   public validateFiles(): void {
     this.totalErrors = 0;
@@ -160,7 +104,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(this.checkForInvalidFiles()){
+    if (this.checkForInvalidFiles()) {
       return;
     }
 
@@ -177,48 +121,9 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
     this.validateFiles();
   }
-  private checkForInvalidFiles(): boolean {
-    const invalidFiles = this.uploadedFiles.filter(function (item) {
-      return item.fileType === null;
-    });
 
-    invalidFiles.map((item: ValidatedFile)  => {
-      this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
-    });
-
-    return invalidFiles.length > 0;
-  }
-
-  private checkForDuplicateTypes(): boolean {
-    const fileTypesArr = this.uploadedFiles.map(function (file) {
-      return file.fileType;
-    });
-    return fileTypesArr.some(function (item, idx) {
-      return fileTypesArr.indexOf(item) != idx;
-    });
-  }
-
-  private checkFileType(): boolean {
-    const fileTypes = [];
-    this.uploadedFiles.forEach((file) => {
-      fileTypes.push(file.fileType);
-    });
-
-    if (!fileTypes.includes('Worker') && !fileTypes.includes('Establishment')) {
-      this.preValidationErrorMessage = 'You need to select your staff and workplace files.';
-      return true;
-    }
-
-    if (!fileTypes.includes('Worker')) {
-      this.preValidationErrorMessage = 'You need to select your staff file.';
-      return true;
-    }
-
-    if (!fileTypes.includes('Establishment')) {
-      this.preValidationErrorMessage = 'You need to select your workplace file.';
-      return true;
-    }
-    return false;
+  public getFileErrors(file: ValidatedFile): string {
+    return this.fileErrors[file.key];
   }
 
   public beginCompleteUpload(): void {
@@ -262,15 +167,22 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       );
   }
 
-  public displayDownloadReportLink(file: ValidatedFile) {
-    return file.errors > 0 || file.warnings > 0;
-  }
-
   public getValidationError(file: ValidatedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
       message: this.i18nPluralPipe.transform(file.errors, this.pluralMap),
     };
+  }
+  /**
+   * Strip off file extension
+   * Replace white spaces with '-'
+   * Then convert to lowercase
+   * @param file ValidatedFile
+   */
+  public getFileId(file: ValidatedFile): string {
+    const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
+    const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
+    return `bulk-upload-validation-${transformedFileName}`;
   }
 
   public downloadFile(event: Event, key: string) {
@@ -298,6 +210,118 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
    */
   public encodeUrl(url: string): string {
     return encodeURI(url);
+  }
+
+  private getUploadedFiles(): void {
+    const files$ = this.bulkUploadService.uploadedFiles$;
+    const state$ = this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid);
+
+    this.subscriptions.add(
+      combineLatest([files$, state$]).subscribe(([uploadedFiles, state]) => {
+        if (!uploadedFiles) {
+          return;
+        }
+
+        this.uploadedFiles = uploadedFiles;
+        this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
+
+        if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {
+          this.validationComplete = true;
+        }
+      }),
+    );
+  }
+
+  private preValidateFilesSubscription(): void {
+    this.subscriptions.add(
+      this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
+        this.preValidationErrorMessage = '';
+        this.fileErrors = [];
+        this.showPreValidateErrorMessage = false;
+        if (preValidateFiles) {
+          this.validationComplete = false;
+          this.preValidateFiles();
+        } else {
+          this.disableButton = false;
+        }
+      }),
+    );
+  }
+
+  private preValidateFiles(): void {
+    this.subscriptions.add(
+      this.bulkUploadService
+        .preValidateFiles(this.establishmentService.primaryWorkplace.uid)
+        .pipe(take(1))
+        .subscribe(
+          (response: ValidatedFile[]) => {
+            this.validationErrors = [];
+            this.checkForMandatoryFiles(response);
+            this.uploadedFiles = response;
+            this.disableButton = false;
+          },
+          (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
+        ),
+    );
+  }
+
+  private checkForMandatoryFiles(response: ValidatedFile[]): void {
+    const files: string[] = response.map((data) => this.bulkUploadFileTypeEnum[data.fileType]);
+
+    if (
+      !files.includes(this.bulkUploadFileTypeEnum.Establishment) ||
+      !files.includes(this.bulkUploadFileTypeEnum.Worker)
+    ) {
+      this.preValidationError = true;
+    } else {
+      this.preValidationError = false;
+    }
+
+    this.bulkUploadService.preValidationError$.next(this.preValidationError);
+  }
+
+  private checkForInvalidFiles(): boolean {
+    const invalidFiles = this.uploadedFiles.filter(function (item) {
+      return item.fileType === null;
+    });
+
+    invalidFiles.map((item: ValidatedFile) => {
+      this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
+    });
+
+    return invalidFiles.length > 0;
+  }
+
+  private checkForDuplicateTypes(): boolean {
+    const fileTypesArr = this.uploadedFiles.map(function (file) {
+      return file.fileType;
+    });
+    return fileTypesArr.some(function (item, idx) {
+      return fileTypesArr.indexOf(item) != idx;
+    });
+  }
+
+  private checkFileType(): boolean {
+    const fileTypes = [];
+    this.uploadedFiles.forEach((file) => {
+      fileTypes.push(file.fileType);
+    });
+
+    if (!fileTypes.includes('Worker') && !fileTypes.includes('Establishment')) {
+      this.preValidationErrorMessage = 'You need to select your workplace and staff files.';
+      return true;
+    }
+
+    if (!fileTypes.includes('Worker')) {
+      this.preValidationErrorMessage = 'You need to select your staff file.';
+      return true;
+    }
+
+    if (!fileTypes.includes('Establishment')) {
+      this.preValidationErrorMessage = 'You need to select your workplace file.';
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -332,18 +356,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Strip off file extension
-   * Replace white spaces with '-'
-   * Then convert to lowercase
-   * @param file ValidatedFile
-   */
-  public getFileId(file: ValidatedFile): string {
-    const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
-    const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
-    return `bulk-upload-validation-${transformedFileName}`;
-  }
-
-  /**
    * TODO in another ticket
    * @param error
    */
@@ -364,14 +376,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     } else {
       console.log(error);
     }
-  }
-
-  get hasWarnings() {
-    return this.totalWarnings > 0;
-  }
-
-  get hasErrors() {
-    return this.totalErrors > 0;
   }
 
   ngOnDestroy() {

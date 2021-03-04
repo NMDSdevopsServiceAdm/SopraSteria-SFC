@@ -1,0 +1,79 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [serverError]="serverError"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-l">Bulk upload</span>
+      Add workplace references
+    </h1>
+    <p>You need to add a unique reference for each workplace. For example, myworkplace1, myworkplace2.</p>
+  </div>
+</div>
+
+<app-missing-references-toggle *ngIf="showToggles" [(showMissing)]="showMissing"></app-missing-references-toggle>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      #formEl
+      *ngIf="references.length"
+      class="govuk-!-margin-top-6"
+      novalidate
+      (ngSubmit)="onSubmit($event)"
+      [formGroup]="form"
+      id="server-error"
+    >
+      <div class="govuk__grid asc__references-grid-container">
+        <p class="govuk-!-margin-bottom-0 govuk__grid-column-1">
+          <strong> Workplace </strong>
+        </p>
+        <p class="govuk-!-margin-bottom-0 govuk__grid-column-2">
+          <strong>Reference</strong>
+        </p>
+      </div>
+      <ng-container *ngFor="let reference of references; index as i">
+        <div
+          class="govuk-form-group govuk__grid asc__references-grid-container"
+          [ngClass]="{ 'govuk-visually-hidden': reference.localIdentifier && showMissing }"
+          [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
+          [attr.data-testid]="'reference-' + i"
+        >
+          <label class="govuk-label govuk-!-margin-bottom-0 govuk__grid-column-1" for="reference-{{ reference.uid }}">
+            {{ reference.name }}
+          </label>
+          <span
+            id="reference-{{ reference.uid }}-error"
+            class="govuk-error-message govuk__grid-row-start-1 asc__reference-grid-error"
+            *ngIf="form.get('reference-' + reference.uid).errors && submitted"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
+          </span>
+          <input
+            class="govuk-input govuk__grid-column-2"
+            [class.govuk-input--error]="form.get('reference-' + reference.uid).errors && submitted"
+            id="reference-{{ reference.uid }}"
+            name="reference-{{ reference.uid }}"
+            type="text"
+            [formControlName]="'reference-' + reference.uid"
+          />
+        </div>
+      </ng-container>
+      <div class="govuk-grid-row" *ngIf="!references.length">
+        <div class="govuk-grid-column-two-thirds-from-desktop">
+          <p class="govuk-!-margin-top-4">There are no workplaces editable</p>
+        </div>
+      </div>
+      <app-missing-refs-submit-exit-buttons
+        (skip)="skipPage()"
+        [cta]="'Save and continue'"
+        [exit]="'Exit'"
+        [return]="exit"
+      ></app-missing-refs-submit-exit-buttons>
+    </form>
+  </div>
+</div>
