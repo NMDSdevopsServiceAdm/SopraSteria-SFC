@@ -10,14 +10,22 @@
         </ng-container>
       </h3>
     </div>
-    <div class="govuk-grid-column-one-third  govuk-!-padding-left-0">
-      <a *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'|| this.type=='moreStaffZeroRecords'" href="#" class="govuk-util__float-right" (click)="clickedSelectStaff($event)">View staff records</a>
-      <a *ngIf="this.type=='noStaff'" href="#" class="govuk-util__float-right" (click)="clickedTotalStaff($event)">Add total staff number</a>
+    <div class="govuk-grid-column-one-third govuk-!-padding-left-0">
+      <a
+        *ngIf="this.type == 'moreStaffRecords' || this.type == 'moreStaff' || this.type == 'moreStaffZeroRecords'"
+        href="#"
+        class="govuk-util__float-right"
+        (click)="clickedSelectStaff($event)"
+        >View staff records</a
+      >
+      <a *ngIf="this.type == 'noStaff'" href="#" class="govuk-util__float-right" (click)="clickedTotalStaff($event)"
+        >Add total staff number</a
+      >
     </div>
   </div>
-  <p *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff' || this.type == 'moreStaffZeroRecords'">
+  <p *ngIf="this.type == 'moreStaffRecords' || this.type == 'moreStaff' || this.type == 'moreStaffZeroRecords'">
     You said the total number of staff at your workplace was {{ numberOfStaff }}, but
-    <ng-container *ngIf="this.type=='moreStaff' && this.workersCount">only</ng-container>
+    <ng-container *ngIf="this.type == 'moreStaff' && this.workersCount">only</ng-container>
     {{ workersCount }} staff
     <ng-container [ngPlural]="this.workersCount">
       <ng-template ngPluralCase="=1"> record has</ng-template>
@@ -26,21 +34,26 @@
     been added.
   </p>
 
-  <p *ngIf="this.type=='moreStaffRecords' || this.type=='moreStaff'">
+  <p *ngIf="this.type == 'moreStaffRecords' || this.type == 'moreStaff'">
     You either need to
     <ng-container [ngSwitch]="this.type">
       <span *ngSwitchCase="'moreStaffRecords'">delete</span>
       <span *ngSwitchCase="'moreStaff'">add</span>
     </ng-container>
-    {{this.difference}} staff
+    {{ this.difference }} staff
     <ng-container [ngPlural]="this.difference">
       <ng-template ngPluralCase="=1"> record</ng-template>
       <ng-template ngPluralCase="other"> records</ng-template>
     </ng-container>
-    or change the total
-    number of staff for your workplace.
+    or change the total number of staff for your workplace.
   </p>
-  <p *ngIf="this.type=='moreStaff'">It doesnt take long to create a staff record, just add a name or ID number, a main job role and a contract type. You can add extra details when you've got more time.</p>
-  <p *ngIf="this.type=='noStaff'">You still need to add the total number of staff for your workplace.</p>
-  <p *ngIf="this.type=='noStaff' || this.type=='moreStaffZeroRecords'">Both care-providing and none care-providing staff should be included in the total, and you need to add the same number of staff records.</p>
+  <p *ngIf="this.type == 'moreStaff'">
+    It doesn't take long to create a staff record, just add a name or ID number, a main job role and a contract type.
+    You can add extra details when you've got more time.
+  </p>
+  <p *ngIf="this.type == 'noStaff'">You still need to add the total number of staff for your workplace.</p>
+  <p *ngIf="this.type == 'noStaff' || this.type == 'moreStaffZeroRecords'">
+    Both care-providing and none care-providing staff should be included in the total, and you need to add the same
+    number of staff records.
+  </p>
 </app-inset-text>
