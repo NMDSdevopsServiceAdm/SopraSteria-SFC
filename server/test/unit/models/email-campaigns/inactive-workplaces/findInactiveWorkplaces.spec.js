@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const models = require('../../../../../models');
 const findInactiveWorkplaces = require('../../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 
-describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
+describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   afterEach(() => {
     sinon.restore();
   });
