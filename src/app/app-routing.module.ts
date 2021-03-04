@@ -43,7 +43,7 @@ const bulkUploadRouting = {
   },
   production: {
     path: 'bulk-upload',
-    loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
+    loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
     data: {
       title: 'Bulk Upload',
     },
