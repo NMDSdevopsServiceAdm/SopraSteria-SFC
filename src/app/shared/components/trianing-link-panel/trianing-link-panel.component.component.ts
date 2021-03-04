@@ -3,7 +3,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -27,7 +26,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
 
   constructor(
     private reportService: ReportService,
-    private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private router: Router,
     private permissionsService: PermissionsService,
@@ -36,10 +34,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.url = this.router.url;
 
-    if (this.url.includes('view-all-mandatory-training')) {
-      this.fromStaffRecord = true;
-      this.establishmentService.isMandatoryTrainingView.next(true);
-    }
     this.establishmentUid = this.workplace.uid;
     if (this.permissionsService.can(this.establishmentUid, 'canViewListOfWorkers')) {
       this.subscriptions.add(

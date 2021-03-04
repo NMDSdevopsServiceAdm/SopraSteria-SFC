@@ -76,7 +76,6 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  public isMandatoryTrainingView = new BehaviorSubject<boolean>(false);
   public mainServiceCQC: boolean = null;
   constructor(private http: HttpClient) {}
 
