@@ -8,6 +8,7 @@
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
     "build:prod": "npm run build:clean && npm run build -- --prod",
+    "build:test": "npm run build:clean && npm run build -- --configuration=test",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",

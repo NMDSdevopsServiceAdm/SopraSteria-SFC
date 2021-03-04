@@ -69,7 +69,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
 
     const validEstablishments = establishmentArray
       .filter((wp) => wp.uid !== currentWorkplaceUid)
-      .filter((wp) => wp.dataOwner === 'Parent' && wp.ustatus !== 'PENDING')
+      .filter((wp) => (wp.dataOwner === 'Parent' && wp.ustatus !== 'PENDING') || wp.isParent === true)
       .map((wp) => this.addNameAndPostcodeAttribute(wp));
 
     return validEstablishments;
@@ -125,17 +125,14 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     );
   }
   /**
-   * Function is used to move workker in selected workplace.
+   * Function is used to move worker in selected workplace.
    * @param {string} nameOrPostCode of selected workplace
    * @return {void}
    **/
 
   private onSuccess(nameAndPostCode: string): void {
     const newEstablishmentName = this.getWorkplaceEstablishmentIdOrName(nameAndPostCode, 'name');
-    const url =
-      this.data.workplace.uid === this.data.primaryWorkplaceUid
-        ? ['/dashboard']
-        : ['/workplace', this.data.workplace.uid];
+    const url = this.data.workplace.parentUid !== null ? ['/workplace', this.data.workplace.uid] : ['/dashboard'];
     this.router.navigate(url, { fragment: 'staff-records' });
     this.alertService.addAlert({
       type: 'success',
