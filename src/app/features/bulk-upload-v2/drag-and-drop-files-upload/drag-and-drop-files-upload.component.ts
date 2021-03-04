@@ -43,6 +43,12 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.setupForm();
     this.checkForUploadedFiles();
+    this.subscriptions.add(
+      this.bulkUploadService.showNonCsvError$.subscribe((showMessage: boolean) => {
+        this.showInvalidFileError = showMessage;
+      }),
+    );
+    this.bulkUploadService.showNonCsvErrorMessage(false);
   }
 
   ngAfterViewInit() {
@@ -90,11 +96,15 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   }
 
   onSelect(event) {
-    this.showInvalidFileError = event.rejectedFiles.length > 0;
+    event.rejectedFiles.length > 0
+      ? this.bulkUploadService.showNonCsvErrorMessage(true)
+      : this.bulkUploadService.showNonCsvErrorMessage(false);
+
     this.selectedFiles = event.addedFiles;
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.getPresignedUrls();
   }
+
   onRemove(event) {
     this.selectedFiles.splice(this.selectedFiles.indexOf(event), 1);
   }

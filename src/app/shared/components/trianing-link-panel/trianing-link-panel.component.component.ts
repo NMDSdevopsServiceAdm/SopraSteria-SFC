@@ -1,8 +1,8 @@
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -15,6 +15,8 @@ import { Subscription } from 'rxjs';
   templateUrl: './trianing-link-panel.component.html',
 })
 export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
+  @Input() workplace: Establishment;
+
   public establishmentUid: string;
   public url: string;
   public fromStaffRecord: boolean;
@@ -24,7 +26,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
 
   constructor(
     private reportService: ReportService,
-    private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private router: Router,
     private permissionsService: PermissionsService,
@@ -33,11 +34,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.url = this.router.url;
 
-    if (this.url.includes('view-all-mandatory-training')) {
-      this.fromStaffRecord = true;
-      this.establishmentService.isMandatoryTrainingView.next(true);
-    }
-    this.establishmentUid = this.establishmentService.establishmentId;
+    this.establishmentUid = this.workplace.uid;
     if (this.permissionsService.can(this.establishmentUid, 'canViewListOfWorkers')) {
       this.subscriptions.add(
         this.workerService.getAllWorkers(this.establishmentUid).subscribe((workers) => {

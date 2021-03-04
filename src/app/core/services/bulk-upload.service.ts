@@ -44,6 +44,7 @@ export class BulkUploadService {
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
   public establishmentsWithMissingWorkerIds$ = new BehaviorSubject<[EstablishmentList]>(null);
+  public showNonCsvError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
   protected endpoint = 'uploaded';
 
@@ -280,6 +281,11 @@ export class BulkUploadService {
       },
     ];
   }
+
+  public showNonCsvErrorMessage(show: boolean) {
+    this.showNonCsvError$.next(show);
+  }
+
   // Function to check for the lock status
   private checkLockStatus(callback, httpOptions): Observable<any> {
     const establishmentUid = this.establishmentService.establishmentId;
