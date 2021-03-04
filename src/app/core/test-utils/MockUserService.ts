@@ -1,10 +1,10 @@
-import { UserService } from '@core/services/user.service';
-import { UserDetails } from '@core/model/userDetails.model';
-import { Observable, of } from 'rxjs';
-import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { HttpClient } from '@angular/common/http';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
-import { build, fake, oneOf } from '@jackfranklin/test-data-bot/build';
+import { UserDetails } from '@core/model/userDetails.model';
+import { UserService } from '@core/services/user.service';
+import { bool, build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot/build';
+import { Observable, of } from 'rxjs';
 
 export const EditUser = build('EditUser', {
   fields: {
@@ -21,9 +21,65 @@ const readUser = EditUser();
 readUser.role = Roles.Read;
 
 const editUser = EditUser();
+
+const workplaceBuilder = build('Workplace', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.random.uuid()),
+    name: fake((f) => f.lorem.sentence()),
+    dataOwner: 'Workplace',
+    dataPermissions: '',
+    dataOwnerPermissions: '',
+    isParent: bool(),
+    postCode: 'xxxxx',
+  },
+});
+
+const primaryWorkplaceBuilder = () =>
+  workplaceBuilder({
+    overrides: {
+      uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+      isParent: 'true',
+      name: 'Primary Workplace',
+      postcode: 'WA1 2LQ',
+      id: 1,
+      parentUid: null,
+    },
+  });
+
+const primary = primaryWorkplaceBuilder();
+
+const subsid1Builder = () =>
+  workplaceBuilder({
+    overrides: {
+      dataOwner: 'Parent',
+      dataPermissions: 'Workplace',
+      parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+      name: 'Subsid Workplace',
+      postCode: 'WA1 1BQ',
+    },
+  });
+
+const subsid1 = subsid1Builder();
+
+const subsid2Builder = () =>
+  workplaceBuilder({
+    overrides: {
+      dataOwner: 'Parent',
+      dataPermissions: 'Workplace',
+      parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+      name: 'Another Subsid Workplace',
+      postCode: 'WA8 9LW',
+    },
+  });
+
+const subsid2 = subsid2Builder();
+
 export class MockUserService extends UserService {
-  private subsidiaries = 0;
+  private subsidiaries = 2;
   private isAdmin = false;
+
+  private;
 
   public static factory(subsidiaries = 0, isAdmin = false) {
     return (httpClient: HttpClient) => {
@@ -47,10 +103,10 @@ export class MockUserService extends UserService {
 
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     return of({
-      primary: {},
+      primary: primary,
       subsidaries: {
         count: this.subsidiaries,
-        establishments: [],
+        establishments: [subsid1, subsid2],
       },
     } as GetWorkplacesResponse);
   }

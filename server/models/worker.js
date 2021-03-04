@@ -1050,6 +1050,20 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
+      scopes:{
+        active: {
+          where: {
+            archived: false,
+          }
+        },
+        noLocalIdentifier: {
+          where: {
+            LocalIdentifierValue: {
+              [sequelize.Op.is]: null
+            }
+          }
+        }
+      },
       tableName: '"Worker"',
       schema: 'cqc',
       createdAt: false,

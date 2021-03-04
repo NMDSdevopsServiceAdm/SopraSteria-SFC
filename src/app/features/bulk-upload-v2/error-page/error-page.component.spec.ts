@@ -1,9 +1,12 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { render } from '@testing-library/angular';
@@ -19,6 +22,18 @@ describe('ErrorPageComponent', () => {
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: MockBulkUploadService },
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                buErrors: errorReport,
+              },
+            },
+          },
+        },
       ],
     });
   };
@@ -26,7 +41,6 @@ describe('ErrorPageComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByTestId } = await getErrorPageComponent();
     const component = fixture.componentInstance;
-
     const http = TestBed.inject(HttpTestingController);
 
     return { fixture, component, http, getByText, getByTestId };

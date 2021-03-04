@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { take } from 'rxjs/operators';
 import { FileUtil } from '@core/utils/file-util';
+import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-bulk-upload-sidebar',
-  templateUrl: './bulk-upload-sidebar.component.html',
+  selector: 'app-bulk-upload-download-current-data',
+  templateUrl: './bulk-upload-download-current-data.component.html',
 })
-export class BulkUploadSidebarComponent {
+export class BulkUploadDownloadCurrentDataComponent {
   public BulkUploadFileType = BulkUploadFileType;
   public now: Date = new Date();
 

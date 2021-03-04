@@ -62,6 +62,26 @@ export interface UploadedFilesRequestToDownloadResponse {
   };
 }
 
+export interface lastBulkUploadFile {
+  key: string;
+  data: metaData;
+  filename: string;
+  username: string;
+  size: number;
+  lastModified: string;
+}
+
+export interface metaData {
+  key: string;
+  username: string;
+  filename: string;
+  fileType: ValidatedFileType | null;
+  records: number;
+  errors: number;
+  warnings: 2;
+  deleted: number;
+}
+
 export interface ValidatedFile {
   errors: number;
   filename: string;
@@ -121,6 +141,16 @@ export interface NumberOfErrorsAndWarnings {
     errors: number;
     warnings: number;
   };
+}
+
+export interface MissingReferences {
+  establishment: number;
+  worker: number;
+  establishmentList?: [EstablishmentList];
+}
+export interface EstablishmentList {
+  uid: string;
+  name: string;
 }
 
 export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';

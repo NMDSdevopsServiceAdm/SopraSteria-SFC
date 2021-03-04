@@ -7,8 +7,8 @@
       <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
     </button>
   </div>
-  <div class="govuk-grid-column-one-third">
-    <ng-container *ngIf="return">
+  <ng-container *ngIf="return">
+    <div class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
       <a
         [routerLink]="return.url"
@@ -22,6 +22,6 @@
         </ng-container>
         <ng-template #defaultexit>Exit</ng-template>
       </a>
-    </ng-container>
-  </div>
+    </div>
+  </ng-container>
 </div>

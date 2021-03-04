@@ -40,9 +40,10 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# node v10+ c8 coverage reporting
+# Coverage
 /coverage
 /.nyc_output
+/fecoverage
 
 ./package-lock.json
 */package-lock.json
