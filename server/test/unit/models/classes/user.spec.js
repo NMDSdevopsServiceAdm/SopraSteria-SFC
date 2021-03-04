@@ -9,35 +9,37 @@ describe('server/models/classes/user.js', () => {
       sinon.restore();
     });
 
-    it('should return "Pending" when a user has no login attributes', () => {
-      const testUser = {};
+    it('should return "Pending" when login attributes are null', () => {
+      const result = User.statusTranslator(null);
 
-      const result = User.statusTranslator(testUser);
+      expect(result).to.equal('Pending');
+    });
+
+    it('should return "Pending" when a user has empty login attributes', () => {
+      const loginDetails = {};
+
+      const result = User.statusTranslator(loginDetails);
 
       expect(result).to.equal('Pending');
     });
 
     it('should return "Active" when a user has a username but no login status', () => {
-      const testUser = {
-        login: {
-          username: 'Jimmy User',
-        },
+      const loginDetails = {
+        username: 'Jimmy User',
       };
 
-      const result = User.statusTranslator(testUser);
+      const result = User.statusTranslator(loginDetails);
 
       expect(result).to.equal('Active');
     });
 
     it('should return the login status if it exists', () => {
-      const testUser = {
-        login: {
-          username: 'Jimmy User',
-          status: 'Another Status',
-        },
+      const loginDetails = {
+        username: 'Jimmy User',
+        status: 'Another Status',
       };
 
-      const result = User.statusTranslator(testUser);
+      const result = User.statusTranslator(loginDetails);
 
       expect(result).to.equal('Another Status');
     });
