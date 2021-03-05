@@ -84,6 +84,8 @@ router.get('/username/:username', async (req, res) => {
       },
     });
 
+    req.sqreen.track('app.username_lookup');
+
     if (results && results.id && requestedUsername === results.username) {
       return res.status(200).json({
         status: '1',
@@ -530,6 +532,11 @@ router
           // post through feedback topic - async method but don't wait for a responseThe
           sns.postToRegistrations(slackMsg);
           // gets here on success
+          req.sqreen.signup_track({
+            userId: newUser.uid,
+            establishmentId: Estblistmentdata.eUID,
+          });
+
           res.status(200);
           res.json({
             status: 1,
@@ -677,6 +684,10 @@ router.post('/requestPasswordReset', async (req, res) => {
 
       // send email to recipient with the reset UUID
       await sendMail(sendToAddress, sendToName, requestUuid);
+
+      req.sqreen.track('app.reset_password_request', {
+        userId: userResults.uid,
+      });
 
       if (isLocal(req)) {
         return res.status(200).json({ resetLink, uuid: requestUuid });
