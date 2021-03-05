@@ -1,5 +1,6 @@
 const moment = require('moment');
 
+const config = require('../../../config/config');
 const models = require('../../index');
 
 const nextEmailTemplate = (inactiveWorkplace) => {
@@ -10,16 +11,28 @@ const nextEmailTemplate = (inactiveWorkplace) => {
   const eighteenMonths = moment().startOf('day').subtract(18, 'months');
   const twentyFourMonths = moment().startOf('day').subtract(24, 'months');
 
-  if (lastUpdated.isSameOrBefore(sixMonths) && lastUpdated.isSameOrAfter(twelveMonths)) {
-    return inactiveWorkplace.LastTemplate !== 13 ? 13 : null;
+  if (lastUpdated.isSameOrBefore(sixMonths) && lastUpdated.isAfter(twelveMonths)) {
+    const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
+
+    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+  }
+
+  if (lastUpdated.isSameOrBefore(twelveMonths) && lastUpdated.isAfter(eighteenMonths)) {
+    const nextTemplate = config.get('sendInBlue.templates.twelveMonthsInactive');
+
+    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
   }
 
   if (lastUpdated.isBefore(twelveMonths) && lastUpdated.isSameOrAfter(eighteenMonths)) {
-    return inactiveWorkplace.LastTemplate !== 10 ? 10 : null;
+    const nextTemplate = config.get('sendInBlue.templates.eighteenMonthsInactive');
+
+    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
   }
 
-  if (lastUpdated.isSameOrAfter(twentyFourMonths)) {
-    return inactiveWorkplace.LastTemplate !== 12 ? 12 : null;
+  if (lastUpdated.isSameOrBefore(twentyFourMonths)) {
+    const nextTemplate = config.get('sendInBlue.templates.twentyFourMonthsInactive');
+
+    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
   }
 };
 
