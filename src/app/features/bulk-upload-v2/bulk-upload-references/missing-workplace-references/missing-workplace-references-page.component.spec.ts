@@ -15,6 +15,7 @@ import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
@@ -78,6 +79,7 @@ describe('MissingWorkplaceReferencesComponent', () => {
         BackService,
         FormBuilder,
         ErrorSummaryService,
+        AdminSkipService,
       ],
     });
 

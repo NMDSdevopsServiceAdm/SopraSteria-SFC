@@ -8,17 +8,18 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StaffReferencesComponent } from './staff-references-page.component';
-import { WindowRef } from '@core/services/window.ref';
 
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
@@ -43,7 +44,7 @@ describe('StaffReferencesComponent', () => {
         },
         {
           provide: WindowRef,
-          useClass: WindowRef
+          useClass: WindowRef,
         },
         {
           provide: ActivatedRoute,
@@ -64,6 +65,7 @@ describe('StaffReferencesComponent', () => {
         BackService,
         FormBuilder,
         ErrorSummaryService,
+        AdminSkipService,
       ],
     });
 
