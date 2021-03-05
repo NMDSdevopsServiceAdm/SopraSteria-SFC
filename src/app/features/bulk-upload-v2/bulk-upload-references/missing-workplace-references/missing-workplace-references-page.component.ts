@@ -11,6 +11,7 @@ import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -39,6 +40,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected alertService: AlertService,
+    private adminSkipService: AdminSkipService,
   ) {
     super(errorSummaryService, formBuilder, alertService, backService, router);
   }
@@ -56,6 +58,7 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
   public skipPage(): void {
     this.bulkUploadService.setMissingReferencesNavigation(this.establishmentsWithMissingReferences);
     this.nextMissingPage(this.bulkUploadService.nextMissingReferencesNavigation(), true);
+    this.adminSkipService.add(this.primaryWorkplace.uid);
   }
 
   protected save(): void {

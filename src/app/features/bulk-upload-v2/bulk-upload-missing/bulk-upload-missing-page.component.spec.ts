@@ -9,12 +9,12 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { BulkUploadMissingPageComponent } from '@features/bulk-upload-v2/bulk-upload-missing/bulk-upload-missing-page.component';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
-import { BulkUploadMissingPageComponent } from '@features/bulk-upload-v2/bulk-upload-missing/bulk-upload-missing-page.component';
+import { AdminSkipService } from '../admin-skip.service';
 
 describe('BulkUploadMissingPageComponent', () => {
   async function setup() {
@@ -33,6 +33,7 @@ describe('BulkUploadMissingPageComponent', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        AdminSkipService,
         BackService,
       ],
     });
@@ -45,7 +46,7 @@ describe('BulkUploadMissingPageComponent', () => {
       component,
       establishmentService,
       router,
-      componentInstance
+      componentInstance,
     };
   }
 
@@ -55,49 +56,48 @@ describe('BulkUploadMissingPageComponent', () => {
   });
 
   it('should show pluralized workplace and staff when multiple', async () => {
-    const { component,componentInstance } = await setup();
+    const { component, componentInstance } = await setup();
 
     componentInstance.missingRefCount = {
-      establishment:2,
-      worker:2
+      establishment: 2,
+      worker: 2,
     };
     component.fixture.detectChanges();
-    const para = component.getByTestId("info");
-    expect(para.innerText).toContain("You still need to add 2 workplace references and 2 staff references.");
+    const para = component.getByTestId('info');
+    expect(para.innerText).toContain('You still need to add 2 workplace references and 2 staff references.');
   });
   it('should show singular workplace  when multiple', async () => {
-    const { component,componentInstance } = await setup();
+    const { component, componentInstance } = await setup();
 
     componentInstance.missingRefCount = {
-      establishment:1,
-      worker:1
+      establishment: 1,
+      worker: 1,
     };
     component.fixture.detectChanges();
-    const para = component.getByTestId("info");
-    expect(para.innerText).toContain("You still need to add 1 workplace reference and 1 staff reference.");
+    const para = component.getByTestId('info');
+    expect(para.innerText).toContain('You still need to add 1 workplace reference and 1 staff reference.');
   });
 
   it('should not show workplace when 0 ', async () => {
-    const { component,componentInstance } = await setup();
+    const { component, componentInstance } = await setup();
 
     componentInstance.missingRefCount = {
-      establishment:0,
-      worker:2
+      establishment: 0,
+      worker: 2,
     };
     component.fixture.detectChanges();
-    const para = component.getByTestId("info");
-    expect(para.innerText).toContain("You still need to add 2 staff references.");
+    const para = component.getByTestId('info');
+    expect(para.innerText).toContain('You still need to add 2 staff references.');
   });
   it('should not show staff when 0 ', async () => {
-    const { component,componentInstance } = await setup();
+    const { component, componentInstance } = await setup();
 
     componentInstance.missingRefCount = {
-      establishment:2,
-      worker:0
+      establishment: 2,
+      worker: 0,
     };
     component.fixture.detectChanges();
-    const para = component.getByTestId("info");
-    expect(para.innerText).toContain("You still need to add 2 workplace references.");
+    const para = component.getByTestId('info');
+    expect(para.innerText).toContain('You still need to add 2 workplace references.');
   });
-
 });
