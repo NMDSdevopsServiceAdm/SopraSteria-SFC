@@ -113,7 +113,6 @@ const getMe = async (req, res) => {
 
 // updates a user with given uid or username
 const updateUser = async (req, res) => {
-  console.log('QQQQQA');
   const userId = req.params.userId;
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
