@@ -16,7 +16,10 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
-      emailTemplateId: 13,
+      emailTemplate: {
+        id: 13,
+        name: '6 months',
+      },
       dataOwner: 'Workplace',
       user: {
         name: 'Test Name',
@@ -28,7 +31,10 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
-      emailTemplateId: 14,
+      emailTemplate: {
+        id: 14,
+        name: '12 months',
+      },
       dataOwner: 'Workplace',
       user: {
         name: 'Name McName',
@@ -142,9 +148,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
           LastTemplate: null,
         };
 
-        const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
+        const emailTemplate = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-        expect(emailTemplateId).to.equal(NextTemplate);
+        expect(emailTemplate.id).to.equal(NextTemplate);
       });
     });
 
@@ -192,9 +198,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
           LastTemplate: LastTemplate,
         };
 
-        const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
+        const emailTemplate = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-        expect(emailTemplateId).to.equal(NextTemplate);
+        expect(emailTemplate ? emailTemplate.id : emailTemplate).to.equal(NextTemplate);
       });
     });
 
@@ -232,9 +238,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
           LastTemplate: LastTemplate,
         };
 
-        const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
+        const emailTemplate = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
 
-        expect(emailTemplateId).to.equal(null);
+        expect(emailTemplate).to.equal(null);
       });
     });
   });

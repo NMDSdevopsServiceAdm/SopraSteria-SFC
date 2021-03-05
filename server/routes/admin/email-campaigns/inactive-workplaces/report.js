@@ -9,7 +9,7 @@ const printRow = (worksheet, item) => {
       workplace: item.name,
       workplaceId: item.nmdsId,
       lastUpdated: item.lastUpdated,
-      emailTemplate: item.emailTemplateId,
+      emailTemplate: item.emailTemplate.name,
       dataOwner: item.dataOwner,
       nameOfUser: item.user.name,
       userEmail: item.user.email,

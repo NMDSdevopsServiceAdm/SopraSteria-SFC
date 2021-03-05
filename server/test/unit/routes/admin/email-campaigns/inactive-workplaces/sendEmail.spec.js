@@ -12,7 +12,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
-      emailTemplateId: 13,
+      emailTemplate: {
+        id: 13,
+      },
       dataOwner: 'Workplace',
       user: {
         name: 'Test Name',

@@ -12,27 +12,39 @@ const nextEmailTemplate = (inactiveWorkplace) => {
   const twentyFourMonths = moment().startOf('day').subtract(24, 'months');
 
   if (lastUpdated.isSameOrBefore(sixMonths) && lastUpdated.isAfter(twelveMonths)) {
-    const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
+    const nextTemplate = {
+      id: config.get('sendInBlue.templates.sixMonthsInactive'),
+      name: '6 months',
+    }
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSameOrBefore(twelveMonths) && lastUpdated.isAfter(eighteenMonths)) {
-    const nextTemplate = config.get('sendInBlue.templates.twelveMonthsInactive');
+    const nextTemplate = {
+      id: config.get('sendInBlue.templates.twelveMonthsInactive'),
+      name: '12 months',
+    }
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isBefore(twelveMonths) && lastUpdated.isSameOrAfter(eighteenMonths)) {
-    const nextTemplate = config.get('sendInBlue.templates.eighteenMonthsInactive');
+    const nextTemplate = {
+      id: config.get('sendInBlue.templates.eighteenMonthsInactive'),
+      name: '18 months',
+    }
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSameOrBefore(twentyFourMonths)) {
-    const nextTemplate = config.get('sendInBlue.templates.twentyFourMonthsInactive');
+    const nextTemplate = {
+      id: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
+      name: '24 months',
+    }
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   return null;
@@ -89,12 +101,17 @@ const findInactiveWorkplaces = async () => {
       return nextEmailTemplate(inactiveWorkplace) !== null;
     })
     .map((inactiveWorkplace) => {
+      const { id, name } = nextEmailTemplate(inactiveWorkplace);
+
       return {
         id: inactiveWorkplace.EstablishmentID,
         name: inactiveWorkplace.NameValue,
         nmdsId: inactiveWorkplace.NmdsID,
         lastUpdated: inactiveWorkplace.LastUpdated,
-        emailTemplateId: nextEmailTemplate(inactiveWorkplace),
+        emailTemplate: {
+          id,
+          name,
+        },
         dataOwner: inactiveWorkplace.DataOwner,
         user: {
           name: inactiveWorkplace.PrimaryUserName,

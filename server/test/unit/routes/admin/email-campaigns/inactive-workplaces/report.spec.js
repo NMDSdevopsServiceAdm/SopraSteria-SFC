@@ -13,7 +13,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
-      emailTemplateId: 13,
+      emailTemplate: {
+        id: 13,
+      },
       dataOwner: 'Workplace',
       user: {
         name: 'Test Name',
@@ -25,7 +27,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastUpdated: '2020-01-01',
-      emailTemplateId: 13,
+      emailTemplate: {
+        id: 13,
+      },
       dataOwner: 'Workplace',
       user: {
         name: 'Name McName',
@@ -58,7 +62,10 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
-      emailTemplateId: 13,
+      emailTemplate: {
+        id: 13,
+        name: '6 months',
+      },
       dataOwner: 'Workplace',
       user: {
         name: 'Test Name',
@@ -74,13 +81,13 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
     report.printRow(worksheet, workplace);
 
     sinon.assert.calledWith(addRow, {
-      workplace: workplace.name,
-      workplaceId: workplace.nmdsId,
-      lastUpdated: workplace.lastUpdated,
-      emailTemplate: workplace.emailTemplateId,
-      dataOwner: workplace.dataOwner,
-      nameOfUser: workplace.user.name,
-      userEmail: workplace.user.email,
+      workplace: 'Workplace Name',
+      workplaceId: 'J1234567',
+      lastUpdated: '2020-06-01',
+      emailTemplate: '6 months',
+      dataOwner: 'Workplace',
+      nameOfUser: 'Test Name',
+      userEmail: 'test@example.com',
     });
   });
 });
