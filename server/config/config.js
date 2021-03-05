@@ -462,6 +462,28 @@ const config = convict({
       sensitive: true,
       env: 'SEND_IN_BLUE_KEY',
     },
+    templates: {
+      sixMonthsInactive: {
+        doc: 'Template ID for the 6 month inactive email',
+        format: Number,
+        default: 13
+      },
+      twelveMonthsInactive: {
+        doc: 'Template ID for the 12 month inactive email',
+        format: Number,
+        default: 14
+      },
+      eighteenMonthsInactive: {
+        doc: 'Template ID for the 18 month inactive email',
+        format: Number,
+        default: 10
+      },
+      twentyFourMonthsInactive: {
+        doc: 'Template ID for the 24 month inactive email',
+        format: Number,
+        default: 12
+      },
+    }
   },
 });
 
