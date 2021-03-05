@@ -113,6 +113,7 @@ const getMe = async (req, res) => {
 
 // updates a user with given uid or username
 const updateUser = async (req, res) => {
+  console.log('QQQQQA');
   const userId = req.params.userId;
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
@@ -139,6 +140,10 @@ const updateUser = async (req, res) => {
       if (!req.role || (req.role === 'Read' && thisUser.username !== req.username)) {
         console.error('/add/establishment/:id - given user does not have sufficient permission');
         return res.status(401).send();
+      }
+
+      if (thisUser.status === 'Pending') {
+        return res.status(406).send('Requested user status is "Pending". Primary users cannot be in a "Pending" state');
       }
 
       if (req.role === 'Read' && req.body.role && req.body.role !== 'Read') {
