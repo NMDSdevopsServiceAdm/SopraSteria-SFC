@@ -18,7 +18,6 @@ import { Subscription } from 'rxjs';
 
 import { UserAccountChangePrimaryDialogComponent } from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 
-// eslint-disable-next-line max-len
 @Component({
   selector: 'app-user-account-edit-permissions',
   templateUrl: './user-account-edit-permissions.component.html',
@@ -141,6 +140,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
             this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user.` });
           }
         },
+
         (error) => this.onError(error),
       ),
     );
