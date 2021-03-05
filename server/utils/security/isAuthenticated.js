@@ -223,6 +223,7 @@ const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck)
             }
           }
           req.sqreen.identify(
+            req,
             {
               userId: req.userUid,
               establishmentId: req.establishment.uid,
