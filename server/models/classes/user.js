@@ -942,7 +942,7 @@ class User {
       include: [
         {
           model: models.login,
-          attributes: ['username', 'lastLogin'],
+          attributes: ['username', 'lastLogin', 'status'],
         },
       ],
       attributes: [
