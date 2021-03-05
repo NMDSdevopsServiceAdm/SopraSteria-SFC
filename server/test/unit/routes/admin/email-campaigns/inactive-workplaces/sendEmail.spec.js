@@ -33,6 +33,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       13,
       {
         WORKPLACE_ID: 'J1234567',
+        FULL_NAME: 'Test Name',
       },
     );
   });
