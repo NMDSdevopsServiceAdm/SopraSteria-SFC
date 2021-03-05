@@ -9,7 +9,7 @@ const printRow = (worksheet, item) => {
       workplace: item.name,
       workplaceId: item.nmdsId,
       lastUpdated: item.lastUpdated,
-      emailTemplate: item.emailTemplate,
+      emailTemplate: item.emailTemplateId,
       dataOwner: item.dataOwner,
       nameOfUser: item.user.name,
       userEmail: item.user.email,
@@ -55,3 +55,4 @@ router.route('/').get(generateReport);
 
 module.exports = router;
 module.exports.generateReport = generateReport;
+module.exports.printRow = printRow;
