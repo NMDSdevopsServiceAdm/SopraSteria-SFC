@@ -60,6 +60,14 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" DB_PASS "${<<parameters.env_prefix>>_DB_PASS}"
             fi
 
+            if [ -n "${<<parameters.env_prefix>>_SQREEN_APP_NAME}" ]; then
+                cf set-env "<<parameters.appname>>-dark" SQREEN_APP_NAME "${<<parameters.env_prefix>>_SQREEN_APP_NAME}"
+            fi
+
+            if [ -n "${<<parameters.env_prefix>>_SQREEN_TOKEN}" ]; then
+                cf set-env "<<parameters.appname>>-dark" SQREEN_TOKEN "${<<parameters.env_prefix>>_SQREEN_TOKEN}"
+            fi
+
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
