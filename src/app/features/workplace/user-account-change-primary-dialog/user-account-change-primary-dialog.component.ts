@@ -114,7 +114,7 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
     this.serverErrorsMap = [
       {
         name: 406,
-        message: `You cannot change this users permissions`,
+        message: `You cannot make this user the Primary user.`,
       },
     ];
   }
