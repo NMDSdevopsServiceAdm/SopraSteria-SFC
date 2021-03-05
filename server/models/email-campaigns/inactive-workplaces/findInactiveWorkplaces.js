@@ -34,6 +34,8 @@ const nextEmailTemplate = (inactiveWorkplace) => {
 
     return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
   }
+
+  return null;
 };
 
 const findInactiveWorkplaces = async () => {
