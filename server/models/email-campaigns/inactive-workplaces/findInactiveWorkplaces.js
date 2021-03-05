@@ -12,37 +12,25 @@ const nextEmailTemplate = (inactiveWorkplace) => {
   const twentyFourMonths = moment().startOf('day').subtract(24, 'months');
 
   if (lastUpdated.isSameOrBefore(sixMonths) && lastUpdated.isAfter(twelveMonths)) {
-    const nextTemplate = {
-      id: config.get('sendInBlue.templates.sixMonthsInactive'),
-      name: '6 months',
-    }
+    const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
 
     return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSameOrBefore(twelveMonths) && lastUpdated.isAfter(eighteenMonths)) {
-    const nextTemplate = {
-      id: config.get('sendInBlue.templates.twelveMonthsInactive'),
-      name: '12 months',
-    }
+    const nextTemplate = config.get('sendInBlue.templates.twelveMonthsInactive');
 
     return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isBefore(twelveMonths) && lastUpdated.isSameOrAfter(eighteenMonths)) {
-    const nextTemplate = {
-      id: config.get('sendInBlue.templates.eighteenMonthsInactive'),
-      name: '18 months',
-    }
+    const nextTemplate = config.get('sendInBlue.templates.eighteenMonthsInactive');
 
     return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSameOrBefore(twentyFourMonths)) {
-    const nextTemplate = {
-      id: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
-      name: '24 months',
-    }
+    const nextTemplate = config.get('sendInBlue.templates.twentyFourMonthsInactive');
 
     return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
