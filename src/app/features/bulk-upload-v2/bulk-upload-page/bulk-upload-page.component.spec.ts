@@ -41,10 +41,7 @@ describe('BulkUploadPageV2Component', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
-        {
-          provide: AdminSkipService,
-          useClass: AdminSkipService,
-        },
+        AdminSkipService,
       ],
     });
 
