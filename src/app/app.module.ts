@@ -33,6 +33,7 @@ import { TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
@@ -50,10 +51,10 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
-import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
+import { SentryErrorHandler } from './SentryErrorHandler.component';
 
 @NgModule({
   declarations: [
@@ -95,6 +96,7 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
   ],
   providers: [
     AuthGuard,
+    AdminSkipService,
     BackService,
     CountryService,
     EstablishmentService,
