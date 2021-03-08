@@ -6,6 +6,7 @@ Sqreen.middleware = (req, res, next) => {
   req.sqreen.signup_track = () => {};
   req.sqreen.identify = () => {};
   req.sqreen.track = () => {};
+  req.sqreen.userIsBanned = () => {};
   next();
 };
 
