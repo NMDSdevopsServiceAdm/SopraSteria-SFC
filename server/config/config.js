@@ -470,7 +470,7 @@ const config = convict({
           default: 13,
         },
         name: {
-          doc: 'Template Name for the 12 month inactive email',
+          doc: 'Template Name for the 6 month inactive email',
           format: String,
           default: '6 months',
         },
