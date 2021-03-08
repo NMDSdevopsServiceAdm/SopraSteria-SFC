@@ -13,6 +13,7 @@ export class SendEmailsConfirmationDialogComponent extends DialogComponent {
   ) {
     super(data, dialog);
   }
+  public inactiveWorkplaces = 1;
 
   public close(hasConfirmed: boolean) {
     this.dialog.close(hasConfirmed);
