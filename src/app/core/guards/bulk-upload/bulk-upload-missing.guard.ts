@@ -26,10 +26,12 @@ export class BulkUploadMissingGuard implements CanActivate {
 
     return this.bulkUploadService.getMissingRef(primaryWorkplaceID).pipe(
       map((response) => {
+        console.log(response)
         if ( response.establishmentList.some(establishment => this.adminSkipService.skippedWorkplaces.includes(establishment.uid) )) {
           return true;
         }
-        if ((response.establishment > 0 && this.adminSkipService.skipWorkplaceReferences === false) || response.worker > 0) {
+
+        if ((response.establishment > 0 && this.adminSkipService.skipWorkplaceReferences !== true) || response.worker > 0) {
           const redirect: UrlTree = this.router.parseUrl('/bulk-upload/missing');
           return redirect;
         }
