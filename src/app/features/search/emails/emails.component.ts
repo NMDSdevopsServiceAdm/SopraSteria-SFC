@@ -9,7 +9,9 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import {
+  SendEmailsConfirmationDialogComponent,
+} from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-emails',
@@ -67,7 +69,7 @@ export class EmailsComponent implements OnInit {
 
           this.alertService.addAlert({
             type: 'success',
-            message: `${this.decimalPipe.transform(latestCampaign.emails)} emails sent successfully.`,
+            message: `${this.decimalPipe.transform(latestCampaign.emails)} emails scheduled to be sent successfully.`,
           });
 
           this.inactiveWorkplaces = inactiveWorkplaces;
