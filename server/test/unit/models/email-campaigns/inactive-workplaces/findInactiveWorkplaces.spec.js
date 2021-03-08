@@ -10,12 +10,14 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     sinon.restore();
   });
 
+  const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+
   const dummyInactiveWorkplaces = [
     {
       id: 478,
       name: 'Workplace Name',
       nmdsId: 'J1234567',
-      lastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
+      lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
       emailTemplateId: 13,
       dataOwner: 'Workplace',
       user: {
@@ -27,7 +29,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       id: 479,
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
-      lastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
+      lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
       emailTemplateId: 14,
       dataOwner: 'Workplace',
       user: {
@@ -46,7 +48,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
-        LastUpdated: moment().subtract(6, 'months').format('YYYY-MM-DD'),
+        LastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
         LastTemplate: null,
       },
       {
@@ -56,7 +58,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Name McName',
         PrimaryUserEmail: 'name@mcname.com',
-        LastUpdated: moment().subtract(12, 'months').format('YYYY-MM-DD'),
+        LastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
         LastTemplate: null,
       },
     ]);
@@ -69,22 +71,22 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   [
     {
       inactiveMonths: 6,
-      LastUpdated: moment().subtract(6, 'months'),
+      LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
       LastTemplate: 13,
     },
     {
       inactiveMonths: 12,
-      LastUpdated: moment().subtract(12, 'months'),
+      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
       LastTemplate: 14,
     },
     {
       inactiveMonths: 18,
-      LastUpdated: moment().subtract(18, 'months'),
+      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
       LastTemplate: 10,
     },
     {
       inactiveMonths: 24,
-      LastUpdated: moment().subtract(24, 'months'),
+      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
       LastTemplate: 12,
     },
   ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
@@ -111,22 +113,22 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     [
       {
         inactiveMonths: 6,
-        LastUpdated: moment().subtract(6, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
         NextTemplate: 13,
       },
       {
         inactiveMonths: 12,
-        LastUpdated: moment().subtract(12, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
         NextTemplate: 14,
       },
       {
         inactiveMonths: 18,
-        LastUpdated: moment().subtract(18, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
         NextTemplate: 10,
       },
       {
         inactiveMonths: 24,
-        LastUpdated: moment().subtract(24, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
         NextTemplate: 12,
       },
     ].forEach(({ inactiveMonths, LastUpdated, NextTemplate }) => {
@@ -150,32 +152,26 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
     [
       {
-        inactiveMonths: 5,
-        LastUpdated: moment().subtract(5, 'months'),
-        LastTemplate: null,
-        NextTemplate: null,
-      },
-      {
         inactiveMonths: 12,
-        LastUpdated: moment().subtract(12, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
         LastTemplate: 13,
         NextTemplate: 14,
       },
       {
         inactiveMonths: 18,
-        LastUpdated: moment().subtract(18, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
         LastTemplate: 14,
         NextTemplate: 10,
       },
       {
         inactiveMonths: 24,
-        LastUpdated: moment().subtract(24, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
         LastTemplate: 10,
         NextTemplate: 12,
       },
       {
         inactiveMonths: 25,
-        LastUpdated: moment().subtract(25, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(25, 'months'),
         LastTemplate: 12,
         NextTemplate: null,
       },
@@ -201,22 +197,22 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     [
       {
         inactiveMonths: 6,
-        LastUpdated: moment().subtract(6, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
         LastTemplate: 13,
       },
       {
         inactiveMonths: 12,
-        LastUpdated: moment().subtract(12, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
         LastTemplate: 14,
       },
       {
         inactiveMonths: 18,
-        LastUpdated: moment().subtract(18, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
         LastTemplate: 10,
       },
       {
         inactiveMonths: 24,
-        LastUpdated: moment().subtract(24, 'months'),
+        LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
         LastTemplate: 12,
       },
     ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
@@ -236,6 +232,56 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
         expect(emailTemplateId).to.equal(null);
       });
+    });
+  });
+
+  [
+    {
+      inactiveMonths: 5,
+      LastUpdated: endOfLastMonth.clone().subtract(5, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 7,
+      LastUpdated: endOfLastMonth.clone().subtract(7, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 14,
+      LastUpdated: endOfLastMonth.clone().subtract(14, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 20,
+      LastUpdated: endOfLastMonth.clone().subtract(20, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 26,
+      LastUpdated: endOfLastMonth.clone().subtract(26, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
+    it(`should not return a template when ${inactiveMonths} months inactive as they are outside of the 6, 12, 18, 24 month`, async () => {
+      const inactiveWorkplace = {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: LastUpdated,
+        LastTemplate: LastTemplate,
+      };
+
+      const emailTemplateId = await findInactiveWorkplaces.nextEmailTemplate(inactiveWorkplace);
+
+      expect(emailTemplateId).to.equal(NextTemplate);
     });
   });
 });
