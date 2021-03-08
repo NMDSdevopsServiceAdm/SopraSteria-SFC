@@ -8,11 +8,13 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
 import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -41,6 +43,10 @@ describe('StaffReferencesComponent', () => {
           useClass: MockBreadcrumbService,
         },
         {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
@@ -59,6 +65,7 @@ describe('StaffReferencesComponent', () => {
         BackService,
         FormBuilder,
         ErrorSummaryService,
+        AdminSkipService,
       ],
     });
 
@@ -98,7 +105,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should hide missing worker error after filling empty field and resubmitting', async () => {
     const worker = workerBuilder();
-    const references = [worker] as Worker[];
+    const references = ([worker] as unknown) as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
@@ -169,9 +176,11 @@ describe('StaffReferencesComponent', () => {
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
     expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[1].uid}`].markAsDirty();
     form.controls[`reference-${workers[0].uid}`].setValue('abc');
     form.controls[`reference-${workers[1].uid}`].setValue('abc');
     component.fixture.componentInstance.onSubmit(event);
@@ -182,13 +191,35 @@ describe('StaffReferencesComponent', () => {
     expect(form.controls[`reference-${workers[1].uid}`].errors).toEqual({ duplicate: true });
   });
 
-  it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
+  it('should only show 1 duplicate error when submitting with same input in 2 box when 1 dirty', async () => {
     const workers = [workerBuilder(), workerBuilder()];
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter a different reference, this one has already been used';
+    const errorMessage = 'This reference matches another, it needs to be unique';
 
+    expect(component.queryByText(errorMessage, { exact: false })).toBeNull();
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[0].uid}`].setValue('abc');
+    form.controls[`reference-${workers[1].uid}`].setValue('abc');
+    component.fixture.detectChanges();
+    component.fixture.componentInstance.onSubmit(event);
+    component.fixture.detectChanges();
+    expect(form.invalid).toBeTruthy();
+    expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(2);
+    expect(form.controls[`reference-${workers[0].uid}`].errors).toEqual({ duplicate: true });
+    expect(form.controls[`reference-${workers[1].uid}`].errors).toEqual(null);
+  });
+
+  it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
+    const workers = [workerBuilder(), workerBuilder()];
+    const references = workers;
+    const { component } = await setup(references);
+    const form = component.fixture.componentInstance.form;
+    const errorMessage = 'This reference matches another, it needs to be unique';
+
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[1].uid}`].markAsDirty();
     form.controls[`reference-${workers[0].uid}`].setValue('abc');
     form.controls[`reference-${workers[1].uid}`].setValue('abc');
     component.fixture.componentInstance.onSubmit(event);
@@ -208,11 +239,13 @@ describe('StaffReferencesComponent', () => {
     const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    const uniqueErrorMessage = 'Enter a different reference, this one has already been used';
+    const uniqueErrorMessage = 'This reference matches another, it needs to be unique';
     const maxLength = component.fixture.componentInstance.maxLength;
     const lengthErrorMessage = `Reference must be ${maxLength} characters or fewer`;
     const overMaxValue = 'abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc';
 
+    form.controls[`reference-${workers[0].uid}`].markAsDirty();
+    form.controls[`reference-${workers[1].uid}`].markAsDirty();
     form.controls[`reference-${workers[0].uid}`].setValue(overMaxValue);
     form.controls[`reference-${workers[1].uid}`].setValue(overMaxValue);
     component.fixture.componentInstance.onSubmit(event);

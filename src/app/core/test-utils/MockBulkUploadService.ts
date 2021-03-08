@@ -66,11 +66,14 @@ export const errorReport = {
   training: getErrorsWarnings(),
 };
 
-
 @Injectable()
 export class MockBulkUploadService extends BulkUploadService {
   public errorReport(establishmentUid): Observable<ErrorReport> {
     return of(errorReport);
+  }
+
+  public nextMissingReferencesNavigation(): string[] {
+    return ['1'];
   }
 }
 

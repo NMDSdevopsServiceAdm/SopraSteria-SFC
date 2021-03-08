@@ -1,0 +1,54 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Bulk upload</h1>
+    <app-inset-text [color]="'todo'">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <p><b>You have missing references</b></p>
+          <ng-container *ngIf="this.missingRefCount?.establishment || this.missingRefCount?.worker">
+            <p data-testid="info">
+              You still need to add
+              <ng-container [ngPlural]="this.missingRefCount?.establishment">
+                <ng-template ngPluralCase="=0"></ng-template>
+                <ng-template ngPluralCase="=1"
+                  >{{ this.missingRefCount?.establishment }} workplace reference</ng-template
+                >
+                <ng-template ngPluralCase="other"
+                  >{{ this.missingRefCount?.establishment }} workplace references</ng-template
+                >
+              </ng-container>
+              <ng-container *ngIf="this.missingRefCount?.establishment > 0 && this.missingRefCount?.worker > 0">
+                and
+              </ng-container>
+              <ng-container [ngPlural]="this.missingRefCount?.worker">
+                <ng-template ngPluralCase="=0"></ng-template>
+                <ng-template ngPluralCase="=1">{{ this.missingRefCount?.worker }} staff reference</ng-template>
+                <ng-template ngPluralCase="other">{{ this.missingRefCount?.worker }} staff references</ng-template>
+              </ng-container>
+              <span>.</span>
+            </p>
+          </ng-container>
+        </div>
+      </div>
+    </app-inset-text>
+    <p>There needs to be a unique reference for each workplace and for each staff record.</p>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <app-bulk-upload-related-content [showAll]="false"></app-bulk-upload-related-content>
+    <app-codes-and-guidance class="govuk-util__block"></app-codes-and-guidance>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row govuk-!-margin-top-6">
+      <div class="govuk-grid-column-one-third">
+        <a [routerLink]="this.nextPage?.url" role="button" draggable="false" class="govuk-button"> Add references </a>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <a [routerLink]="['/dashboard']" role="button" draggable="false" class="govuk-button govuk-button--link">
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

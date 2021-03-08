@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
@@ -20,6 +20,8 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
 
   constructor(
     @Inject(DIALOG_DATA) public data: { workplaceUid: string; currentUserUid: string },
@@ -43,6 +45,7 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
     );
 
     this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
   ngOnDestroy() {
@@ -78,7 +81,7 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
           (data) => {
             this.close(selectedUser.fullname);
           },
-          (error) => console.log(error),
+          (error) => this.onError(error),
         ),
     );
   }
@@ -86,6 +89,11 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private onError(error) {
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
   }
 
   private setupFormErrorsMap(): void {
@@ -98,6 +106,15 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
             message: 'Select the new primary user',
           },
         ],
+      },
+    ];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 406,
+        message: `You cannot make this user the Primary user.`,
       },
     ];
   }

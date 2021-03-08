@@ -1,20 +1,22 @@
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { WindowRef } from '@core/services/window.ref';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
-import { UserService } from '@core/services/user.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { getTestBed } from '@angular/core/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-page/bulk-upload-page.component';
+import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+
+import { AdminSkipService } from '../admin-skip.service';
 
 describe('BulkUploadPageV2Component', () => {
   async function setup() {
@@ -39,6 +41,7 @@ describe('BulkUploadPageV2Component', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        AdminSkipService,
       ],
     });
 
