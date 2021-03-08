@@ -30,6 +30,9 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await Promise.all([queryInterface.removeColumn(table, 'OtherServicesValue')]);
+    await Promise.all([
+      queryInterface.removeColumn(table, 'OtherServicesValue'),
+      await queryInterface.sequelize.query('DROP TYPE cqc."enum_Establishment_OtherServicesValue";'),
+    ]);
   },
 };
