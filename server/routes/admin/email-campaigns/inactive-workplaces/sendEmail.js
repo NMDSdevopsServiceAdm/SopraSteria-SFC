@@ -6,7 +6,7 @@ const sendEmail = async (workplace) => {
       email: workplace.user.email,
       name: workplace.user.name,
     },
-    workplace.emailTemplateId,
+    workplace.emailTemplate.id,
     {
       WORKPLACE_ID: workplace.nmdsId,
       FULL_NAME: workplace.user.name,

@@ -464,26 +464,54 @@ const config = convict({
     },
     templates: {
       sixMonthsInactive: {
-        doc: 'Template ID for the 6 month inactive email',
-        format: Number,
-        default: 13
+        id: {
+          doc: 'Template ID for the 6 month inactive email',
+          format: Number,
+          default: 13,
+        },
+        name: {
+          doc: 'Template Name for the 6 month inactive email',
+          format: String,
+          default: '6 months',
+        },
       },
       twelveMonthsInactive: {
-        doc: 'Template ID for the 12 month inactive email',
-        format: Number,
-        default: 14
+        id: {
+          doc: 'Template ID for the 12 month inactive email',
+          format: Number,
+          default: 14,
+        },
+        name: {
+          doc: 'Template Name for the 12 month inactive email',
+          format: String,
+          default: '12 months',
+        },
       },
       eighteenMonthsInactive: {
-        doc: 'Template ID for the 18 month inactive email',
-        format: Number,
-        default: 10
+        id: {
+          doc: 'Template ID for the 18 month inactive email',
+          format: Number,
+          default: 10
+        },
+        name: {
+          doc: 'Template Name for the 18 month inactive email',
+          format: String,
+          default: '18 months',
+        },
       },
       twentyFourMonthsInactive: {
-        doc: 'Template ID for the 24 month inactive email',
-        format: Number,
-        default: 12
+        id: {
+          doc: 'Template ID for the 24 month inactive email',
+          format: Number,
+          default: 12
+        },
+        name: {
+          doc: 'Template Name for the 24 month inactive email',
+          format: String,
+          default: '24 months',
+        },
       },
-    }
+    },
   },
 });
 
