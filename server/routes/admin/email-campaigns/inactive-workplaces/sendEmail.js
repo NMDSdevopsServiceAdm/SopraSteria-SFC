@@ -9,6 +9,7 @@ const sendEmail = async (workplace) => {
     workplace.emailTemplate.id,
     {
       WORKPLACE_ID: workplace.nmdsId,
+      FULL_NAME: workplace.user.name,
     },
   );
 };
