@@ -134,7 +134,7 @@ describe('EmailsComponent', () => {
 
     expect(addAlert).toHaveBeenCalledWith({
       type: 'success',
-      message: '2,500 emails sent successfully.',
+      message: '2,500 emails scheduled to be sent successfully.',
     });
 
     const numInactiveWorkplaces = component.getByTestId('inactiveWorkplaces');
