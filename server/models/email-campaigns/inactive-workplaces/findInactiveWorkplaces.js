@@ -3,15 +3,15 @@ const moment = require('moment');
 const config = require('../../../config/config');
 const models = require('../../index');
 
-const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+const lastMonth = moment().subtract(1, 'months');
 
 const nextEmailTemplate = (inactiveWorkplace) => {
-  const lastUpdated = moment(inactiveWorkplace.LastUpdated).endOf('day');
+  const lastUpdated = moment(inactiveWorkplace.LastUpdated);
 
-  const sixMonths = endOfLastMonth.clone().subtract(6, 'months');
-  const twelveMonths = endOfLastMonth.clone().subtract(12, 'months');
-  const eighteenMonths = endOfLastMonth.clone().subtract(18, 'months');
-  const twentyFourMonths = endOfLastMonth.clone().subtract(24, 'months');
+  const sixMonths = lastMonth.clone().subtract(6, 'months');
+  const twelveMonths = lastMonth.clone().subtract(12, 'months');
+  const eighteenMonths = lastMonth.clone().subtract(18, 'months');
+  const twentyFourMonths = lastMonth.clone().subtract(24, 'months');
 
   if (lastUpdated.isSame(sixMonths, 'month')) {
     const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
@@ -79,12 +79,13 @@ const findInactiveWorkplaces = async () => {
         JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
 				WHERE
           ec."type" = 'inactiveWorkplaces'
-					AND ech."createdAt" >= :lastUpdated
+					AND ech."createdAt" >= :lastEmailDate
 					AND ech. "establishmentID" = e. "EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
-        lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+        lastUpdated: lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD'),
+        lastEmailDate: moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD'),
       },
     },
   );
