@@ -16,25 +16,25 @@ const nextEmailTemplate = (inactiveWorkplace) => {
   if (lastUpdated.isSame(sixMonths, 'month')) {
     const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSame(twelveMonths, 'month')) {
     const nextTemplate = config.get('sendInBlue.templates.twelveMonthsInactive');
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSame(eighteenMonths, 'month')) {
     const nextTemplate = config.get('sendInBlue.templates.eighteenMonthsInactive');
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   if (lastUpdated.isSame(twentyFourMonths, 'month')) {
     const nextTemplate = config.get('sendInBlue.templates.twentyFourMonthsInactive');
 
-    return inactiveWorkplace.LastTemplate !== nextTemplate ? nextTemplate : null;
+    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
   }
 
   return null;
@@ -95,12 +95,17 @@ const findInactiveWorkplaces = async () => {
       return nextEmailTemplate(inactiveWorkplace) !== null;
     })
     .map((inactiveWorkplace) => {
+      const { id, name } = nextEmailTemplate(inactiveWorkplace);
+
       return {
         id: inactiveWorkplace.EstablishmentID,
         name: inactiveWorkplace.NameValue,
         nmdsId: inactiveWorkplace.NmdsID,
         lastUpdated: inactiveWorkplace.LastUpdated,
-        emailTemplateId: nextEmailTemplate(inactiveWorkplace),
+        emailTemplate: {
+          id,
+          name,
+        },
         dataOwner: inactiveWorkplace.DataOwner,
         user: {
           name: inactiveWorkplace.PrimaryUserName,

@@ -151,7 +151,7 @@ describe('DragAndDropFilesListComponent', () => {
     component.fixture.componentInstance.preValidateCheck();
     component.fixture.detectChanges();
     const validationMsg = component.getByTestId('validationErrorMsg');
-    expect(validationMsg.innerHTML).toContain('You need to select your staff and workplace files.');
+    expect(validationMsg.innerHTML).toContain('You need to select your workplace and staff files.');
   });
 
   describe('DeleteFile', () => {

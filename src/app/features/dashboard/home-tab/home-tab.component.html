@@ -23,6 +23,14 @@
         </div>
       </app-inset-text>
     </ng-container>
+    <ng-container *ngIf="workplace && canViewListOfWorkers && workersCount !== workplace.numberOfStaff">
+      <app-staff-mismatch-banner
+        (selectStaffTab)="selectStaffTab($event)"
+        (selectTotalStaff)="selectTotalStaff($event)"
+        [workersCount]="workersCount"
+        [numberOfStaff]="workplace.numberOfStaff"
+      ></app-staff-mismatch-banner>
+    </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
@@ -47,7 +55,7 @@
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()"> Bulk upload </a>
         </h3>
-        <p>Bulk upload is used to edit large quantities of staff, workplace and training information.</p>
+        <p>Bulk upload is used to edit large quantities of workplace, staff and training information.</p>
       </div>
     </div>
   </div>

@@ -5,14 +5,17 @@ import {
   BulkUploadFileType,
   BulkUploadLock,
   BulkUploadStatus,
-  ErrorReport, lastBulkUploadFile,
+  ErrorReport,
+  EstablishmentList,
+  lastBulkUploadFile,
+  MissingReferences,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
   UploadedFilesRequestToDownloadResponse,
   UploadedFilesResponse,
   ValidatedFile,
-  ValidatedFilesResponse
+  ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
@@ -23,14 +26,8 @@ import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
 
-export interface NullLocalIdentifiersResponse {
-  establishments: Array<{
-    uid: string;
-    name: string;
-    status?: string;
-    missing: boolean;
-    workers: number;
-  }>;
+export interface isFirstBulkupload {
+  isFirstBulkUpload: boolean;
 }
 
 @Injectable({
@@ -46,6 +43,9 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+  public establishmentsWithMissingWorkerIds$ = new BehaviorSubject<[EstablishmentList]>(null);
+  public showNonCsvError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+
   protected endpoint = 'uploaded';
 
   constructor(
@@ -70,6 +70,18 @@ export class BulkUploadService {
         this.setWorkplaceReferences(references);
       }),
     );
+  }
+
+  public setMissingReferencesNavigation(workplaces: [EstablishmentList]) {
+    this.establishmentsWithMissingWorkerIds$.next(workplaces);
+  }
+
+  public nextMissingReferencesNavigation(index: number = 0) {
+    const establishments = this.establishmentsWithMissingWorkerIds$.value;
+    if (!establishments.length || index > establishments.length - 1) {
+      return ['/bulk-upload'];
+    }
+    return ['/bulk-upload', establishments[index].uid, 'missing-staff-references'];
   }
 
   public setWorkplaceReferences(references: Workplace[]) {
@@ -97,7 +109,6 @@ export class BulkUploadService {
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    console.log('Trying to upload');
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
@@ -164,12 +175,16 @@ export class BulkUploadService {
     });
   }
 
-  public getLastBulkUpload(workplaceUid:string): Observable<[lastBulkUploadFile]>{
-    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`)
+  public getLastBulkUpload(workplaceUid: string): Observable<[lastBulkUploadFile]> {
+    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`);
   }
 
-  public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
-    return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
+  public getMissingRef(workplaceUid: string): Observable<MissingReferences> {
+    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`);
+  }
+
+  public isFirstBulkUpload(workplaceUid: string): Observable<isFirstBulkupload> {
+    return this.http.get<isFirstBulkupload>(`/api/establishment/${workplaceUid}/localIdentifiers`);
   }
 
   public getDataCSV(workplaceUid: string, type: BulkUploadFileType): Observable<any> {
@@ -266,6 +281,11 @@ export class BulkUploadService {
       },
     ];
   }
+
+  public showNonCsvErrorMessage(show: boolean) {
+    this.showNonCsvError$.next(show);
+  }
+
   // Function to check for the lock status
   private checkLockStatus(callback, httpOptions): Observable<any> {
     const establishmentUid = this.establishmentService.establishmentId;

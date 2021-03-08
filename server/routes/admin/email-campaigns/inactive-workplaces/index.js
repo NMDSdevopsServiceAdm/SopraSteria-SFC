@@ -29,7 +29,7 @@ const createCampaign = async (req, res) => {
       return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
-        template: workplace.emailTemplateId,
+        template: workplace.emailTemplate.id,
         data: {
           dataOwner: workplace.dataOwner,
           lastUpdated: workplace.lastUpdated,

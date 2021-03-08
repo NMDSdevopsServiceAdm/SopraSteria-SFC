@@ -23,8 +23,8 @@ import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
 import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files-list.component';
 import { WorkplaceReferencesPageComponent } from './workplace-references-page/workplace-references-page.component';
-import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
+import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule],
@@ -58,6 +58,6 @@ import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolve
     StaffReferencesPageComponent,
     ReferencesCreatedPageComponent,
   ],
-  providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver,LastBulkUploadResolver],
+  providers: [DialogService, StaffReferencesResolver, WorkplacesReferencesResolver,MissingWorkplacesReferencesResolver,LastBulkUploadResolver],
 })
 export class BulkUploadModule {}

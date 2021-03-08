@@ -91,6 +91,21 @@ describe('DragAndDropFilesUploadComponent', () => {
     expect(validationMsg.innerHTML).toContain('You can only upload CSV files.');
   });
 
+  it('should hide non-CSV error if wrong type uploaded and then valid file uploaded', async () => {
+    const { component, fixture, triggerFileInput, triggerInvalidFileInput } = await setup();
+    const nonCsvErrorMessage = 'You can only upload CSV files.';
+
+    triggerInvalidFileInput();
+    fixture.detectChanges();
+    const validationMsg = component.getByTestId('validationErrorMsg');
+
+    expect(validationMsg.innerHTML).toContain(nonCsvErrorMessage);
+
+    triggerFileInput();
+    fixture.detectChanges();
+    expect(component.queryByText(nonCsvErrorMessage)).toBeFalsy();
+  });
+
   describe('file upload', () => {
     it('should post the files to be uploaded', async () => {
       const { triggerFileInput, http } = await setup();
