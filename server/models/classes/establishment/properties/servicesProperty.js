@@ -5,6 +5,8 @@ const ServiceFormatters = require('../../../api/services');
 
 const OTHER_MAX_LENGTH = 120;
 
+const allowedValues = ['Yes', 'No'];
+
 exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototype {
   constructor() {
     super('OtherServices');
@@ -12,6 +14,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     // other services needs reference to main service and All (Known for this Establishment) Services
     this._mainService = null;
     this._allServices = null;
+    this._otherServices = null;
   }
 
   static clone() {
@@ -24,14 +27,16 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     //  but during bulk upload, the Establishment will be restored from JSON not database. In those situations, this._allServices will be null, and it
     //  will be necessary to populate this._allServices from the given JSON document. When restoring fully from JSON, then the
     //  all services as given fromt he JSON (load) document must take precedence over any stored.
+    console.log(document.allMyServices);
     if (document.allMyServices && Array.isArray(document.allMyServices) && document.mainService) {
       // whilst serialising from JSON other services, make a note of main service and all "other" services
       //  - required in toJSON response and for validation
       this._allServices = this.mergeServices(document.allMyServices, document.otherServices, document.mainService);
-
+      console.log(this._allServices);
       if (document.mainService) this._mainService = document.mainService; // can be an empty array
     }
 
+    console.log(document.otherServices);
     // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
     if (document.otherServices) {
       if (Array.isArray(document.otherServices)) {
@@ -46,12 +51,24 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
       }
     }
 
+    console.log(document.services);
+
     if (document.services) {
-      if (Array.isArray(document.services)) {
-        const validatedServices = await this._validateServices(document.services);
+      if (
+        document.services.value === 'Yes' &&
+        Array.isArray(document.services.services) &&
+        document.services.services.length > 1
+      ) {
+        const validatedServices = await this._validateServices(document.services.services);
+
+        console.log(validatedServices);
+        const newSuperCoolValue = {
+          value: document.services.value,
+          services: validatedServices,
+        };
 
         if (validatedServices) {
-          this.property = validatedServices;
+          this.property = newSuperCoolValue;
         } else {
           this.property = null;
         }
@@ -63,10 +80,11 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
   // this method takes all services available to this given establishment and merges those services already registered
   //  against this Establishment, whilst also removing the main service
-  mergeServices(allServices, theseServices, mainService) {
-    // its a simple case of working through each of "theseServices", and setting the "isMyService"
-    if (theseServices && Array.isArray(theseServices)) {
-      theseServices.forEach((thisService) => {
+  mergeServices(allServices, otherServices, mainService) {
+    // its a simple case of working through each of "otherServices", and setting the "isMyService"
+    if (otherServices && Array.isArray(otherServices)) {
+      console.log(otherServices);
+      otherServices.forEach((thisService) => {
         // find and update the corresponding service in allServices
         let foundService = allServices ? allServices.find((refService) => refService.id === thisService.id) : null;
         if (foundService) {
@@ -85,24 +103,27 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     this._allServices = this.mergeServices(document.allMyServices, document.otherServices, document.mainService);
     this._mainService = document.mainService;
 
-    if (document.OtherServicesSavedAt && document.otherServices) {
-      return document.otherServices.map((thisService) => {
-        return {
+    if (document.otherServicesValue && document.otherServices) {
+      return {
+        value: document.otherServicesValue,
+        services: document.otherServices.map((thisService) => ({
           id: thisService.id,
           name: thisService.name,
           category: thisService.category,
           other: thisService.other ? thisService.other : undefined,
-        };
-      });
+        })),
+      };
     }
   }
 
   savePropertyToSequelize() {
     // when saving other services, there is no "Value" column to update - only reflexion records to delete/create
-    const servicesDocument = {};
+    const servicesDocument = {
+      otherServicesValue: this.property.value,
+    };
 
     // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
-    if (this.property && Array.isArray(this.property)) {
+    if (this.property && this.property.value === 'Yes' && Array.isArray(this.property.services)) {
       servicesDocument.additionalModels = {
         establishmentServices: this.property.map((thisService) => {
           return {
@@ -190,6 +211,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     for (let thisService of servicesDef) {
       if (!this._valid(thisService)) {
+        console.log('THE SERVICE IS NOT VALID, CALL FOR HELP');
         // first check the given data structure
         setOfValidatedServicesInvalid = true;
         break;
@@ -207,6 +229,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         });
       }
 
+      console.log(referenceService);
       if (referenceService && referenceService.id) {
         // found a service match - prevent duplicates by checking if the reference service already exists
         if (!setOfValidatedServices.find((thisService) => thisService.id === referenceService.id)) {
@@ -227,6 +250,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
           }
         }
       } else {
+        console.log('YOU DO NOT HAVE A ID, CALL FOR HELP');
         setOfValidatedServicesInvalid = true;
         break;
       }
@@ -236,5 +260,9 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     if (!setOfValidatedServicesInvalid) return setOfValidatedServices;
 
     return false;
+  }
+
+  _validateValue(value) {
+    return allowedValues.includes(value);
   }
 };
