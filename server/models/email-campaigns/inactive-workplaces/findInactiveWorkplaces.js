@@ -1,49 +1,19 @@
 const moment = require('moment');
 
-const config = require('../../../config/config');
 const models = require('../../index');
+const nextEmail = require('./nextEmail');
 
-const lastMonth = moment().subtract(1, 'months');
+const refreshInactiveWorkplaces = async () => {
+  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
+}
 
-const nextEmailTemplate = (inactiveWorkplace) => {
-  const lastUpdated = moment(inactiveWorkplace.LastUpdated);
+const getInactiveWorkplaces = async () => {
+  const lastMonth = moment().subtract(1, 'months');
 
-  const sixMonths = lastMonth.clone().subtract(6, 'months');
-  const twelveMonths = lastMonth.clone().subtract(12, 'months');
-  const eighteenMonths = lastMonth.clone().subtract(18, 'months');
-  const twentyFourMonths = lastMonth.clone().subtract(24, 'months');
+  const lastUpdated = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
+  const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 
-  if (lastUpdated.isSame(sixMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  if (lastUpdated.isSame(twelveMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.twelveMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  if (lastUpdated.isSame(eighteenMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.eighteenMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  if (lastUpdated.isSame(twentyFourMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.twentyFourMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  return null;
-};
-
-const findInactiveWorkplaces = async () => {
-  await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
-
-  const inactiveWorkplaces = await models.sequelize.query(
+  return models.sequelize.query(
     `
   SELECT
 	"EstablishmentID",
@@ -84,38 +54,42 @@ const findInactiveWorkplaces = async () => {
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
-        lastUpdated: lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD'),
-        lastEmailDate: moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD'),
+        lastUpdated,
+        lastEmailDate,
       },
     },
   );
+}
+
+const transformInactiveWorkplaces = (inactiveWorkplace) => {
+  const { id, name } = nextEmail.getTemplate(inactiveWorkplace);
+
+  return {
+    id: inactiveWorkplace.EstablishmentID,
+    name: inactiveWorkplace.NameValue,
+    nmdsId: inactiveWorkplace.NmdsID,
+    lastUpdated: inactiveWorkplace.LastUpdated,
+    emailTemplate: {
+      id,
+      name,
+    },
+    dataOwner: inactiveWorkplace.DataOwner,
+    user: {
+      name: inactiveWorkplace.PrimaryUserName,
+      email: inactiveWorkplace.PrimaryUserEmail,
+    },
+  };
+}
+
+const findInactiveWorkplaces = async () => {
+  await refreshInactiveWorkplaces();
+  const inactiveWorkplaces = await getInactiveWorkplaces();
 
   return inactiveWorkplaces
-    .filter((inactiveWorkplace) => {
-      return nextEmailTemplate(inactiveWorkplace) !== null;
-    })
-    .map((inactiveWorkplace) => {
-      const { id, name } = nextEmailTemplate(inactiveWorkplace);
-
-      return {
-        id: inactiveWorkplace.EstablishmentID,
-        name: inactiveWorkplace.NameValue,
-        nmdsId: inactiveWorkplace.NmdsID,
-        lastUpdated: inactiveWorkplace.LastUpdated,
-        emailTemplate: {
-          id,
-          name,
-        },
-        dataOwner: inactiveWorkplace.DataOwner,
-        user: {
-          name: inactiveWorkplace.PrimaryUserName,
-          email: inactiveWorkplace.PrimaryUserEmail,
-        },
-      };
-    });
+    .filter(nextEmail.shouldReceive)
+    .map(transformInactiveWorkplaces);
 };
 
 module.exports = {
   findInactiveWorkplaces,
-  nextEmailTemplate,
 };

@@ -1,0 +1,187 @@
+const expect = require('chai').expect;
+const moment = require('moment');
+const sinon = require('sinon');
+
+const nextEmail = require('../../../../../models/email-campaigns/inactive-workplaces/nextEmail');
+
+describe('nextEmailTemplate', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+
+  [
+    {
+      inactiveMonths: 6,
+      LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
+      NextTemplate: 13,
+    },
+    {
+      inactiveMonths: 12,
+      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
+      NextTemplate: 14,
+    },
+    {
+      inactiveMonths: 18,
+      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
+      NextTemplate: 10,
+    },
+    {
+      inactiveMonths: 24,
+      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
+      NextTemplate: 12,
+    },
+  ].forEach(({ inactiveMonths, LastUpdated, NextTemplate }) => {
+    it(`should return the correct template when ${inactiveMonths} months inactive`, async () => {
+      const inactiveWorkplace = {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: LastUpdated,
+        LastTemplate: null,
+      };
+
+      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+
+      expect(emailTemplate.id).to.equal(NextTemplate);
+    });
+  });
+
+  [
+    {
+      inactiveMonths: 12,
+      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
+      LastTemplate: 13,
+      NextTemplate: 14,
+    },
+    {
+      inactiveMonths: 18,
+      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
+      LastTemplate: 14,
+      NextTemplate: 10,
+    },
+    {
+      inactiveMonths: 24,
+      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
+      LastTemplate: 10,
+      NextTemplate: 12,
+    },
+    {
+      inactiveMonths: 25,
+      LastUpdated: endOfLastMonth.clone().subtract(25, 'months'),
+      LastTemplate: 12,
+      NextTemplate: null,
+    },
+  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
+    it(`should return the next template when ${inactiveMonths} months inactive`, async () => {
+      const inactiveWorkplace = {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: LastUpdated,
+        LastTemplate: LastTemplate,
+      };
+
+      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+
+      expect(emailTemplate ? emailTemplate.id : emailTemplate).to.equal(NextTemplate);
+    });
+  });
+
+  [
+    {
+      inactiveMonths: 6,
+      LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
+      LastTemplate: 13,
+    },
+    {
+      inactiveMonths: 12,
+      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
+      LastTemplate: 14,
+    },
+    {
+      inactiveMonths: 18,
+      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
+      LastTemplate: 10,
+    },
+    {
+      inactiveMonths: 24,
+      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
+      LastTemplate: 12,
+    },
+  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
+    it(`should not return a ${inactiveMonths} month template when already sent a ${inactiveMonths} month email`, async () => {
+      const inactiveWorkplace = {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: LastUpdated,
+        LastTemplate: LastTemplate,
+      };
+
+      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+
+      expect(emailTemplate).to.equal(null);
+    });
+  });
+
+  [
+    {
+      inactiveMonths: 5,
+      LastUpdated: endOfLastMonth.clone().subtract(5, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 7,
+      LastUpdated: endOfLastMonth.clone().subtract(7, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 14,
+      LastUpdated: endOfLastMonth.clone().subtract(14, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 20,
+      LastUpdated: endOfLastMonth.clone().subtract(20, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+    {
+      inactiveMonths: 26,
+      LastUpdated: endOfLastMonth.clone().subtract(26, 'months'),
+      LastTemplate: null,
+      NextTemplate: null,
+    },
+  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
+    it(`should not return a template when ${inactiveMonths} months inactive as they are outside of the 6, 12, 18, 24 month`, async () => {
+      const inactiveWorkplace = {
+        EstablishmentID: 478,
+        NameValue: 'Workplace Name',
+        NmdsID: 'J1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name',
+        PrimaryUserEmail: 'test@example.com',
+        LastUpdated: LastUpdated,
+        LastTemplate: LastTemplate,
+      };
+
+      const emailTemplateId = await nextEmail.getTemplate(inactiveWorkplace);
+
+      expect(emailTemplateId).to.equal(NextTemplate);
+    });
+  });
+});
