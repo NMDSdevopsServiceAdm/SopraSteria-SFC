@@ -26,7 +26,6 @@ export class BulkUploadMissingGuard implements CanActivate {
 
     return this.bulkUploadService.getMissingRef(primaryWorkplaceID).pipe(
       map((response) => {
-        console.log(response)
         if ( response.establishmentList.some(establishment => this.adminSkipService.skippedWorkplaces.includes(establishment.uid) )) {
           return true;
         }
