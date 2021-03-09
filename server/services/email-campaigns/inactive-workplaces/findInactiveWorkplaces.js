@@ -26,9 +26,8 @@ const transformInactiveWorkplaces = (inactiveWorkplace) => {
 
 const findInactiveWorkplaces = async () => {
   await refreshInactiveWorkplaces();
-  const inactiveWorkplaces = await getInactiveWorkplaces();
 
-  return inactiveWorkplaces.filter(nextEmail.shouldReceive).map(transformInactiveWorkplaces);
+  return (await getInactiveWorkplaces()).filter(nextEmail.shouldReceive).map(transformInactiveWorkplaces);
 };
 
 module.exports = {
