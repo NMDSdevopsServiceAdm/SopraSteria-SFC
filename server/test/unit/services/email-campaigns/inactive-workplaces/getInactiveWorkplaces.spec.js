@@ -11,6 +11,10 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   });
 
   const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+  const sixMonthTemplateId = 13;
+  const twelveMonthTemplateId = 14;
+  const eighteenMonthTemplateId = 10;
+  const twentyFourMonthTemplateId = 12;
 
   const dummyInactiveWorkplaces = [
     {
@@ -19,7 +23,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       nmdsId: 'J1234567',
       lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
       emailTemplate: {
-        id: 13,
+        id: sixMonthTemplateId,
         name: '6 months',
       },
       dataOwner: 'Workplace',
@@ -34,7 +38,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       nmdsId: 'A0012345',
       lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
       emailTemplate: {
-        id: 14,
+        id: twelveMonthTemplateId,
         name: '12 months',
       },
       dataOwner: 'Workplace',
@@ -78,22 +82,22 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     {
       inactiveMonths: 6,
       LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
-      LastTemplate: 13,
+      LastTemplate: sixMonthTemplateId,
     },
     {
       inactiveMonths: 12,
       LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
-      LastTemplate: 14,
+      LastTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
       LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
-      LastTemplate: 10,
+      LastTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
       LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
-      LastTemplate: 12,
+      LastTemplate: twentyFourMonthTemplateId,
     },
   ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
     it(`should not include a workplace that has already been sent a ${inactiveMonths} month email`, async () => {
