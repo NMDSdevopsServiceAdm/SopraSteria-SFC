@@ -325,10 +325,7 @@ router.post('/', async (req, res) => {
 
           req.sqreen.auth_track(true, {
             ...establishmentInfo,
-            role:
-              establishmentUser && establishmentUser.user && establishmentUser.user.UserRoleValue
-                ? establishmentUser.user.UserRoleValue
-                : null,
+            role: get(establishmentUser, 'user.UserRoleValue'),
           });
 
           // TODO: ultimately remove "Bearer" from the response; this should be added by client
