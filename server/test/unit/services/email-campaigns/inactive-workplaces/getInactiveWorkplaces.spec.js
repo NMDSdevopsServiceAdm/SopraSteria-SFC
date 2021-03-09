@@ -3,7 +3,7 @@ const moment = require('moment');
 const sinon = require('sinon');
 
 const models = require('../../../../../models');
-const findInactiveWorkplaces = require('../../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   afterEach(() => {

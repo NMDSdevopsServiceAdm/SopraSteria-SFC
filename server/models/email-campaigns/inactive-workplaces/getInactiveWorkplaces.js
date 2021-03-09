@@ -1,7 +1,6 @@
 const moment = require('moment');
 
 const models = require('../../index');
-const nextEmail = require('../../../services/email-campaigns/inactive-workplaces/nextEmail');
 
 const refreshInactiveWorkplaces = async () => {
   return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
@@ -61,33 +60,7 @@ const getInactiveWorkplaces = async () => {
   );
 };
 
-const transformInactiveWorkplaces = (inactiveWorkplace) => {
-  const { id, name } = nextEmail.getTemplate(inactiveWorkplace);
-
-  return {
-    id: inactiveWorkplace.EstablishmentID,
-    name: inactiveWorkplace.NameValue,
-    nmdsId: inactiveWorkplace.NmdsID,
-    lastUpdated: inactiveWorkplace.LastUpdated,
-    emailTemplate: {
-      id,
-      name,
-    },
-    dataOwner: inactiveWorkplace.DataOwner,
-    user: {
-      name: inactiveWorkplace.PrimaryUserName,
-      email: inactiveWorkplace.PrimaryUserEmail,
-    },
-  };
-};
-
-const findInactiveWorkplaces = async () => {
-  await refreshInactiveWorkplaces();
-  const inactiveWorkplaces = await getInactiveWorkplaces();
-
-  return inactiveWorkplaces.filter(nextEmail.shouldReceive).map(transformInactiveWorkplaces);
-};
-
 module.exports = {
-  findInactiveWorkplaces,
+  getInactiveWorkplaces,
+  refreshInactiveWorkplaces,
 };
