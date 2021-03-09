@@ -355,7 +355,7 @@ class PermissionCache {
       }
     }
 
-    if (estabType !== 'Subsidiary') {
+    if (estabType !== 'Subsidiary' && req.role !== 'Admin') {
       permissions = permissions.filter((perm) => perm.code !== 'canDeleteEstablishment');
     }
 
