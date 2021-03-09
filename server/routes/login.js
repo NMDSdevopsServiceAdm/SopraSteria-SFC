@@ -15,6 +15,8 @@ const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
+const { get } = require('lodash');
+
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
   hash.update(`${password}${salt}`, 'ucs2'); // .NET C# Unicode encoding defaults to UTF-16 // lgtm [js/insufficient-password-hash]
@@ -103,12 +105,8 @@ router.post('/', async (req, res) => {
         : null;
 
     let establishmentInfo = {
-      userId:
-        establishmentUser && establishmentUser.user && establishmentUser.user.uid ? establishmentUser.user.uid : null,
-      establishmentId:
-        establishmentUser && establishmentUser.establishment && establishmentUser.establishment.uid
-          ? establishmentUser.establishment.uid
-          : null,
+      userId: get(establishmentUser, 'user.uid'),
+      establishmentId: get(establishmentUser, 'establishment.uid'),
     };
 
     if (!establishmentUser || !establishmentUser.user) {
@@ -179,14 +177,8 @@ router.post('/', async (req, res) => {
           });
 
           establishmentInfo = {
-            userId:
-              establishmentUser && establishmentUser.user && establishmentUser.user.uid
-                ? establishmentUser.user.uid
-                : null,
-            establishmentId:
-              establishmentUser && establishmentUser.establishment && establishmentUser.establishment.uid
-                ? establishmentUser.establishment.uid
-                : null,
+            userId: get(establishmentUser, 'user.uid'),
+            establishmentId: get(establishmentUser, 'establishment.uid'),
           };
 
           if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
