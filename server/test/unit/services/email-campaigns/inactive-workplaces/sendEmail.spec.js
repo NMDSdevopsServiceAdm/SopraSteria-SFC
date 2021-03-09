@@ -1,6 +1,6 @@
 const sinon = require('sinon');
-const sendEmail = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/sendEmail');
-const sendInBlueEmail = require('../../../../../../utils/email/sendInBlueEmail');
+const sendEmail = require('../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
+const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', () => {
   afterEach(() => {

@@ -4,7 +4,7 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 
 const report = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/report');
-const findInactiveWorkplaces = require('../../../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () => {
   const dummyInactiveWorkplaces = [
@@ -43,7 +43,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
 
     const req = httpMocks.createRequest({
       method: 'GET',
-      url: `/api/admin/email-campaigns/inactive-workplaces/report`,
+      url: '/api/admin/email-campaigns/inactive-workplaces/report',
     });
 
     req.role = 'Admin';
@@ -71,7 +71,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
         name: 'Test Name',
         email: 'test@example.com',
       },
-    }
+    };
 
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet('Inactive workplaces');
