@@ -15,7 +15,7 @@ const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
-const { get } = require('lodash');
+const get = require('lodash/get');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
