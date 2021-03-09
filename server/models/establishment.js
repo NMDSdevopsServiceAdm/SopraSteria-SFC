@@ -405,6 +405,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"NumberOfStaffChangedBy"',
       },
+      otherServicesValue: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"OtherServicesValue"',
+      },
       OtherServicesSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
