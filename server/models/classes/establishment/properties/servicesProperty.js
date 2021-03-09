@@ -27,16 +27,12 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     //  but during bulk upload, the Establishment will be restored from JSON not database. In those situations, this._allServices will be null, and it
     //  will be necessary to populate this._allServices from the given JSON document. When restoring fully from JSON, then the
     //  all services as given fromt he JSON (load) document must take precedence over any stored.
-    console.log(document.allMyServices);
     if (document.allMyServices && Array.isArray(document.allMyServices) && document.mainService) {
       // whilst serialising from JSON other services, make a note of main service and all "other" services
       //  - required in toJSON response and for validation
-      this._allServices = this.mergeServices(document.allMyServices, document.otherServices, document.mainService);
-      console.log(this._allServices);
+      this._allServices = this.removeMainService(document.allMyServices, document.mainService);
       if (document.mainService) this._mainService = document.mainService; // can be an empty array
     }
-
-    console.log(document.otherServices);
     // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
     if (document.otherServices) {
       if (Array.isArray(document.otherServices)) {
@@ -51,8 +47,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
       }
     }
 
-    console.log(document.services);
-
     if (document.services) {
       if (
         document.services.value === 'Yes' &&
@@ -60,15 +54,14 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         document.services.services.length > 1
       ) {
         const validatedServices = await this._validateServices(document.services.services);
-
-        console.log(validatedServices);
-        const newSuperCoolValue = {
-          value: document.services.value,
+        const validatedServicesValue = this._validateValue(document.services.value);
+        const validatedProperty = {
+          value: validatedServicesValue,
           services: validatedServices,
         };
 
-        if (validatedServices) {
-          this.property = newSuperCoolValue;
+        if (validatedServices && validatedServicesValue) {
+          this.property = validatedProperty;
         } else {
           this.property = null;
         }
@@ -78,46 +71,35 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     }
   }
 
-  // this method takes all services available to this given establishment and merges those services already registered
-  //  against this Establishment, whilst also removing the main service
-  mergeServices(allServices, otherServices, mainService) {
-    // its a simple case of working through each of "otherServices", and setting the "isMyService"
-    if (otherServices && Array.isArray(otherServices)) {
-      console.log(otherServices);
-      otherServices.forEach((thisService) => {
-        // find and update the corresponding service in allServices
-        let foundService = allServices ? allServices.find((refService) => refService.id === thisService.id) : null;
-        if (foundService) {
-          foundService.isMyService = true;
-        }
-      });
-    }
-
-    // now remove the main service
+  removeMainService(allServices, mainService) {
     return allServices ? allServices.filter((refService) => refService.id !== mainService.id) : [];
   }
 
   restorePropertyFromSequelize(document) {
+
+    const otherServicesDocument = {
+      value: document.otherServicesValue,
+    };
+
     // whilst serialising from DB other services, make a note of main service and all "other" services
     //  - required in toJSON response
-    this._allServices = this.mergeServices(document.allMyServices, document.otherServices, document.mainService);
+    this._allServices = this.removeMainService(document.allMyServices, document.mainService);
     this._mainService = document.mainService;
 
-    if (document.otherServicesValue && document.otherServices) {
-      return {
-        value: document.otherServicesValue,
-        services: document.otherServices.map((thisService) => ({
-          id: thisService.id,
-          name: thisService.name,
-          category: thisService.category,
-          other: thisService.other ? thisService.other : undefined,
-        })),
-      };
+    if (document.otherServicesValue === 'Yes') {
+      otherServicesDocument.services = document.otherServices.map((thisService) => {
+          return {
+            id: thisService.id,
+            name: thisService.name,
+            category: thisService.category,
+            other: thisService.other ? thisService.other : undefined,
+          };
+        });
     }
+    return otherServicesDocument;
   }
 
   savePropertyToSequelize() {
-    // when saving other services, there is no "Value" column to update - only reflexion records to delete/create
     const servicesDocument = {
       otherServicesValue: this.property.value,
     };
@@ -125,7 +107,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
     if (this.property && this.property.value === 'Yes' && Array.isArray(this.property.services)) {
       servicesDocument.additionalModels = {
-        establishmentServices: this.property.map((thisService) => {
+        establishmentServices: this.property.services.map((thisService) => {
           return {
             serviceId: thisService.id,
             other: thisService.other ? thisService.other : null,
@@ -133,55 +115,54 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         }),
       };
     }
-
     return servicesDocument;
   }
 
   isEqual(currentValue, newValue) {
-    // need to compare arrays
     let arraysEqual;
 
-    if (currentValue && newValue && currentValue.length == newValue.length) {
-      // the preconditions are sets are equal in length; compare the array values themselves
+    if (currentValue && newValue && currentValue.value === 'Yes' && newValue.value === 'Yes' &&
+      currentValue.services && newValue.services) {
 
-      // we haven't got large arrays here; so simply iterate around every
-      //  current value, and confirm it is in the the new data set.
-      //  Array.every will drop out on the first iteration to return false
-      arraysEqual = currentValue.every((thisService) => {
-        return newValue.find(
-          (newService) =>
-            newService.id === thisService.id &&
-            ((thisService.other && newService.other && thisService.other === newService.other) ||
-              (!thisService.other && !newService.other)),
-        );
-      });
-    } else {
-      // if the arrays are lengths are not equal, then we know they're not equal
-      arraysEqual = false;
+      if (currentValue.services.length === newValue.services.length) {
+        arraysEqual = currentValue.services.every((thisService) => {
+          return newValue.services.find(
+            (newService) =>
+              newService.id === thisService.id &&
+              ((thisService.other && newService.other && thisService.other === newService.other) ||
+                (!thisService.other && !newService.other)),
+          );
+        });
+      } else {
+        arraysEqual = false;
+      }
     }
 
-    return arraysEqual;
+    return currentValue && newValue && currentValue.value === newValue.value && arraysEqual;
   }
 
   formatOtherServicesResponse(mainService, otherServices, allServices) {
     return {
       mainService: ServiceFormatters.singleService(mainService),
-      otherServices: otherServices
-        ? ServiceFormatters.createServicesByCategoryJSON(otherServices, false, false, false)
-        : undefined,
+      otherServices: {
+        value: this.property.value ? this.property.value : null,
+        services: otherServices.services
+          ? ServiceFormatters.createServicesByCategoryJSON(otherServices.services, false, false, false)
+          : undefined,
+      },
       allOtherServices: ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true),
     };
   }
 
   toJSON(withHistory = false, showPropertyHistoryOnly = true, wdfEffectiveDate = false) {
     if (!withHistory) {
-      // simple form
       return this.formatOtherServicesResponse(this._mainService, this.property, this._allServices);
     }
 
     return {
       otherServices: {
-        currentValue: ServiceFormatters.createServicesByCategoryJSON(this.property, false, false, false),
+        value:this.property.value ? this.property.value : null,
+        services: ServiceFormatters.createServicesByCategoryJSON(this.property.services, false, false, false),
         ...this.changePropsToJSON(showPropertyHistoryOnly),
       },
     };
@@ -194,10 +175,8 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     if (!(thisService.id || thisService.name)) return false;
 
     // if id is given, it must be an integer
-    if (thisService.id && !Number.isInteger(thisService.id)) return false;
+    return !(thisService.id && !Number.isInteger(thisService.id));
 
-    // gets here, and it's valid
-    return true;
   }
 
   // returns false if service definitions are not valid, otherwise returns
@@ -211,7 +190,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     for (let thisService of servicesDef) {
       if (!this._valid(thisService)) {
-        console.log('THE SERVICE IS NOT VALID, CALL FOR HELP');
         // first check the given data structure
         setOfValidatedServicesInvalid = true;
         break;
@@ -229,7 +207,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         });
       }
 
-      console.log(referenceService);
       if (referenceService && referenceService.id) {
         // found a service match - prevent duplicates by checking if the reference service already exists
         if (!setOfValidatedServices.find((thisService) => thisService.id === referenceService.id)) {
@@ -250,7 +227,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
           }
         }
       } else {
-        console.log('YOU DO NOT HAVE A ID, CALL FOR HELP');
         setOfValidatedServicesInvalid = true;
         break;
       }
@@ -263,6 +239,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
   }
 
   _validateValue(value) {
-    return allowedValues.includes(value);
+    return allowedValues.includes(value)? value : false;
   }
 };
