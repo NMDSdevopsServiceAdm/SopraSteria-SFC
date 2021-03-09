@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
@@ -9,15 +9,13 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import {
-  SendEmailsConfirmationDialogComponent,
-} from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-emails',
   templateUrl: './emails.component.html',
 })
-export class EmailsComponent implements OnInit {
+export class EmailsComponent implements OnDestroy {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
   public history = this.route.snapshot.data.emailCampaignHistory;
   private subscriptions: Subscription = new Subscription();
@@ -29,8 +27,6 @@ export class EmailsComponent implements OnInit {
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
   ) {}
-
-  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -69,7 +65,9 @@ export class EmailsComponent implements OnInit {
 
           this.alertService.addAlert({
             type: 'success',
-            message: `${this.decimalPipe.transform(latestCampaign.emails)} emails scheduled to be sent successfully.`,
+            message: `${this.decimalPipe.transform(latestCampaign.emails)} ${
+              latestCampaign.emails > 1 ? 'emails have' : 'email has'
+            } been scheduled to be sent.`,
           });
 
           this.inactiveWorkplaces = inactiveWorkplaces;
