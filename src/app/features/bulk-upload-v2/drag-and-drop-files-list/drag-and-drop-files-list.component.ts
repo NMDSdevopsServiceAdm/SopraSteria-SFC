@@ -41,6 +41,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   };
   public preValidationErrorMessage = '';
   public showPreValidateErrorMessage = false;
+  public disableButton = false;
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -54,13 +55,19 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getUploadedFiles();
     this.preValidateFilesSubscription();
+    this.subscriptions.add(
+      this.bulkUploadService.selectedFiles$.subscribe(() => {
+        this.disableButton = true;
+      }),
+    );
+    this.disableButton = false;
   }
 
   public showFileRecords(file): string {
-    if (file.fileType === null){
-      return "-"
+    if (file.fileType === null) {
+      return '-';
     }
-    return file.records === null ? "0" : file.records
+    return file.records === null ? '0' : file.records;
   }
 
   public validateFiles(): void {
@@ -86,6 +93,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
   public preValidateCheck(): void {
     const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
+    this.bulkUploadService.showNonCsvErrorMessage(false);
 
     if (fileCount == 0) {
       this.preValidationErrorMessage = 'You need to select 2 or 3 files.';
@@ -160,10 +168,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       );
   }
 
-  public displayDownloadReportLink(file: ValidatedFile) {
-    return file.errors > 0 || file.warnings > 0;
-  }
-
   public getValidationError(file: ValidatedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
@@ -209,7 +213,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return encodeURI(url);
   }
 
-
   private getUploadedFiles(): void {
     const files$ = this.bulkUploadService.uploadedFiles$;
     const state$ = this.bulkUploadService.getBulkUploadStatus(this.establishmentService.primaryWorkplace.uid);
@@ -234,11 +237,13 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
         this.preValidationErrorMessage = '';
-        this.fileErrors =[];
+        this.fileErrors = [];
         this.showPreValidateErrorMessage = false;
         if (preValidateFiles) {
           this.validationComplete = false;
           this.preValidateFiles();
+        } else {
+          this.disableButton = false;
         }
       }),
     );
@@ -254,6 +259,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.validationErrors = [];
             this.checkForMandatoryFiles(response);
             this.uploadedFiles = response;
+            this.disableButton = false;
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
         ),
@@ -280,7 +286,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       return item.fileType === null;
     });
 
-    invalidFiles.map((item: ValidatedFile)  => {
+    invalidFiles.map((item: ValidatedFile) => {
       this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
     });
 
@@ -303,7 +309,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     });
 
     if (!fileTypes.includes('Worker') && !fileTypes.includes('Establishment')) {
-      this.preValidationErrorMessage = 'You need to select your staff and workplace files.';
+      this.preValidationErrorMessage = 'You need to select your workplace and staff files.';
       return true;
     }
 
@@ -372,7 +378,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       console.log(error);
     }
   }
-
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();

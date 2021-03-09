@@ -1,0 +1,33 @@
+<div class="govuk-grid-row govuk-!-margin-top-6">
+  <div class="govuk-grid-column-one-third">
+    <button type="submit" class="govuk-button">
+      <ng-container *ngIf="cta; else default">
+        {{ cta }}
+      </ng-container>
+      <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
+    </button>
+  </div>
+  <ng-container *ngIf="this.authService.isAdmin">
+    <div class="govuk-grid-column-one-third govuk-!-padding-left-9">
+      <a (click)="onSkip()" class="govuk-button govuk-button--link">Skip</a>
+      <span class="govuk-visually-hidden">or</span>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="return">
+    <div class="govuk-grid-column-one-third" [ngClass]="{ 'govuk-!-padding-left-9': !this.authService.isAdmin }">
+      <span class="govuk-visually-hidden">or</span>
+      <a
+        [routerLink]="return.url"
+        [fragment]="return.fragment"
+        role="button"
+        draggable="false"
+        class="govuk-button govuk-button--link"
+      >
+        <ng-container *ngIf="exit; else defaultexit">
+          {{ exit }}
+        </ng-container>
+        <ng-template #defaultexit>Exit</ng-template>
+      </a>
+    </div>
+  </ng-container>
+</div>

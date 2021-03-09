@@ -10,7 +10,6 @@ export class StaffReferencesResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot) {
     const establishmentUUID = route.paramMap.get('uid');
-
     if (establishmentUUID) {
       return this.workerService.getAllWorkers(establishmentUUID).pipe(
         take(1),

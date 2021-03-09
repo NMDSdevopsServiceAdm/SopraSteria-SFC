@@ -1,4 +1,4 @@
-const sendInBlueEmail = require('../../../../utils/email/sendInBlueEmail');
+const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
 
 const sendEmail = async (workplace) => {
   sendInBlueEmail.sendEmail(

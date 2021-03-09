@@ -958,6 +958,22 @@ class Establishment {
         name: this._currentLine.LOCALESTID,
       });
       return false;
+    } else if (
+      myRegType === 0 &&
+      cqcRegulatedServiceCodes.includes(dbServiceCode) &&
+      dbServiceCode !== dbMainServiceCode
+    ) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.REGTYPE_ERROR,
+        errType: 'REGTYPE_ERROR',
+        error:
+          'REGTYPE is 0 (Non-CQC) but CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
+        source: this._currentLine.REGTYPE,
+        column: 'REGTYPE/MAINSERVICE',
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
     } else {
       this._regType = myRegType;
       return true;

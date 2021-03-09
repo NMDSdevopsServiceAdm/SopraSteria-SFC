@@ -7,6 +7,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -22,13 +23,13 @@ import { BulkUploadReferencesDirective } from '../bulk-upload-references.directi
 @Component({
   selector: 'app-bu-staff-references-page',
   templateUrl: 'staff-references.component.html',
-  styleUrls: ['staff-references.component.scss'],
+  styleUrls: ['../references.component.scss'],
   providers: [I18nPluralPipe],
 })
 export class StaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public return: URLStructure = { url: ['/dev', 'bulk-upload', 'workplace-references'] };
+  public return: URLStructure = { url: ['/bulk-upload', 'workplace-references'] };
   private establishmentUid: string;
   public workplaceName: string;
 
@@ -42,8 +43,9 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
+    protected alertService: AlertService,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, alertService, backService, router);
   }
 
   ngOnInit(): void {
@@ -58,21 +60,8 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
       ['asc'],
     );
     this.setupForm();
-    this.setServerErrors();
+    this.setWorkerServerErrors();
     this.getWorkplaceName();
-  }
-
-  private setServerErrors() {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Service unavailable.',
-      },
-      {
-        name: 400,
-        message: `Unable to update staff reference.`,
-      },
-    ];
   }
 
   private getWorkplaceName(): void {
@@ -88,7 +77,7 @@ export class StaffReferencesComponent extends BulkUploadReferencesDirective impl
         .pipe(take(1))
         .subscribe(
           () => {
-            this.router.navigate(['/dev', 'bulk-upload', 'workplace-references']);
+            this.router.navigate(['/bulk-upload', 'workplace-references']);
           },
           (error: HttpErrorResponse) => this.onError(error),
         ),

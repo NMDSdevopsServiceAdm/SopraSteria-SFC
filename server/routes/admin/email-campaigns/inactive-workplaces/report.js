@@ -1,19 +1,19 @@
 const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
-const findInactiveWorkplaces = require('../../../../models/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const excelUtils = require('../../../../utils/excelUtils');
 
 const printRow = (worksheet, item) => {
-    worksheet.addRow({
-      workplace: item.name,
-      workplaceId: item.nmdsId,
-      lastUpdated: item.lastUpdated,
-      emailTemplate: item.emailTemplate.name,
-      dataOwner: item.dataOwner,
-      nameOfUser: item.user.name,
-      userEmail: item.user.email,
-    });
+  worksheet.addRow({
+    workplace: item.name,
+    workplaceId: item.nmdsId,
+    lastUpdated: item.lastUpdated,
+    emailTemplate: item.emailTemplate.name,
+    dataOwner: item.dataOwner,
+    nameOfUser: item.user.name,
+    userEmail: item.user.email,
+  });
 };
 
 const generateReport = async (_, res) => {
@@ -37,18 +37,21 @@ const generateReport = async (_, res) => {
   headerRow.font = { bold: true, name: 'Calibri' };
 
   const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-  inactiveWorkplaces.forEach(workplace => {
+  inactiveWorkplaces.forEach((workplace) => {
     printRow(worksheet, workplace);
   });
 
   excelUtils.fitColumnsToSize(worksheet);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-inactiveWorkplaces.xlsx');
+  res.setHeader(
+    'Content-Disposition',
+    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-inactiveWorkplaces.xlsx',
+  );
 
   await workbook.xlsx.write(res);
   return res.status(200).end();
-}
+};
 
 const router = express.Router();
 router.route('/').get(generateReport);
