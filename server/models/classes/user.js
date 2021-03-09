@@ -763,7 +763,7 @@ class User {
 
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
-        this._status = User.statusTranslator(fetchResults.login);
+        this._displayStatus = User.statusTranslator(fetchResults.login);
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1053,7 +1053,7 @@ class User {
       myDefaultJSON.establishmentId = this._establishmentId;
       myDefaultJSON.establishmentUid = this._establishmentUid ? this._establishmentUid : undefined;
       myDefaultJSON.agreedUpdatedTerms = this._agreedUpdatedTerms;
-      myDefaultJSON.status = this._status;
+      myDefaultJSON.displayStatus = this._displayStatus;
       // migrated user first logged in
       const migratedUserFirstLogin = this._tribalId !== null && this._lastLogin === null ? true : false;
       myDefaultJSON.migratedUserFirstLogon = migratedUserFirstLogin;
