@@ -35,6 +35,12 @@ router.post('/', async (req, res) => {
     req.body.establishment && req.body.establishment.uid ? req.body.establishment.uid : null;
 
   try {
+    if (req.sqreen.userIsBanned()) {
+      return res.status(403).send({
+        message: 'Banned user.',
+      });
+    }
+
     let establishmentUser =
       givenEstablishmentUid === null
         ? await models.login.findOne({
@@ -166,6 +172,11 @@ router.post('/', async (req, res) => {
           if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
             console.log(`Found admin user and establishment`);
           } else {
+            req.sqreen.auth_track(false, {
+              userId: establishmentUser.user.uid,
+              establishmentId: establishmentUser.establishment.uid,
+            });
+
             console.error('POST .../login failed: on finding the given establishment');
             return res.status(401).send({
               message: 'Authentication failed.',
@@ -175,6 +186,11 @@ router.post('/', async (req, res) => {
           establishmentUser.user.establishment = null; // this admin user has no primary (home) establishment
         }
       } else {
+        req.sqreen.auth_track(false, {
+          userId: establishmentUser.user.uid,
+          establishmentId: establishmentUser.establishment.uid,
+        });
+
         console.error(`Failed to find user account`);
         return res.status(401).send({
           message: 'Authentication failed.',
@@ -182,8 +198,8 @@ router.post('/', async (req, res) => {
       }
     }
 
-    //check weather posted user is locked or pending
     if (establishmentUser) {
+      //check weather posted user is locked or pending
       if (!establishmentUser.isActive && establishmentUser.status === 'Locked') {
         //check for locked status, if locked then return with 409 error
         console.error(`POST .../login failed: User status is locked`);
@@ -301,6 +317,12 @@ router.post('/', async (req, res) => {
             await models.userAudit.create(auditEvent, { transaction: t });
           });
 
+          req.sqreen.auth_track(true, {
+            userId: establishmentUser.user.uid,
+            establishmentId: establishmentUser.user.establishment.uid,
+            role: establishmentUser.user.UserRoleValue,
+          });
+
           // TODO: ultimately remove "Bearer" from the response; this should be added by client
           return res
             .set({ Authorization: 'Bearer ' + token })
@@ -365,6 +387,11 @@ router.post('/', async (req, res) => {
               event: {},
             };
             await models.userAudit.create(auditEvent, { transaction: t });
+          });
+
+          req.sqreen.auth_track(false, {
+            userId: establishmentUser.user.uid,
+            establishmentId: establishmentUser.establishment.uid,
           });
 
           return res.status(401).send({
