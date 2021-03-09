@@ -7,18 +7,27 @@ import { SendEmailsConfirmationDialogComponent } from './send-emails-confirmatio
 describe('SendEmailsConfirmationDialogComponent', () => {
   async function setup() {
     return render(SendEmailsConfirmationDialogComponent, {
-      imports: [
-        SharedModule,
-      ],
+      imports: [SharedModule],
       providers: [
         { provide: DIALOG_DATA, useValue: {} },
-        { provide: Dialog, useValue: {} }
-    ]
+        { provide: Dialog, useValue: {} },
+      ],
     });
   }
 
-  it('should create', async () => {
+  it('should display confirmation dialog', async () => {
     const component = await setup();
-    expect(component).toBeTruthy();
+    component.fixture.componentInstance.data.inactiveWorkplaces = 10;
+    component.fixture.detectChanges(true);
+    const p = component.fixture.nativeElement.querySelector('p');
+    expect(p.innerText).toContain('This will send an email to 10 workplaces.');
+  });
+
+  it('should pluralise the confirmation dialog', async () => {
+    const component = await setup();
+    component.fixture.componentInstance.data.inactiveWorkplaces = 1;
+    component.fixture.detectChanges(true);
+    const p = component.fixture.nativeElement.querySelector('p');
+    expect(p.innerText).toContain('This will send an email to 1 workplace.');
   });
 });

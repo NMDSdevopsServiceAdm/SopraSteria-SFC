@@ -10,27 +10,31 @@ describe('nextEmailTemplate', () => {
   });
 
   const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+  const sixMonthTemplateId = 13;
+  const twelveMonthTemplateId = 14;
+  const eighteenMonthTemplateId = 10;
+  const twentyFourMonthTemplateId = 12;
 
   [
     {
       inactiveMonths: 6,
       LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
-      NextTemplate: 13,
+      NextTemplate: sixMonthTemplateId,
     },
     {
       inactiveMonths: 12,
       LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
-      NextTemplate: 14,
+      NextTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
       LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
-      NextTemplate: 10,
+      NextTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
       LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
-      NextTemplate: 12,
+      NextTemplate: twentyFourMonthTemplateId,
     },
   ].forEach(({ inactiveMonths, LastUpdated, NextTemplate }) => {
     it(`should return the correct template when ${inactiveMonths} months inactive`, async () => {
@@ -55,25 +59,25 @@ describe('nextEmailTemplate', () => {
     {
       inactiveMonths: 12,
       LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
-      LastTemplate: 13,
-      NextTemplate: 14,
+      LastTemplate: sixMonthTemplateId,
+      NextTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
       LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
-      LastTemplate: 14,
-      NextTemplate: 10,
+      LastTemplate: twelveMonthTemplateId,
+      NextTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
       LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
-      LastTemplate: 10,
-      NextTemplate: 12,
+      LastTemplate: eighteenMonthTemplateId,
+      NextTemplate: twentyFourMonthTemplateId,
     },
     {
       inactiveMonths: 25,
       LastUpdated: endOfLastMonth.clone().subtract(25, 'months'),
-      LastTemplate: 12,
+      LastTemplate: twentyFourMonthTemplateId,
       NextTemplate: null,
     },
   ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
@@ -99,22 +103,22 @@ describe('nextEmailTemplate', () => {
     {
       inactiveMonths: 6,
       LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
-      LastTemplate: 13,
+      LastTemplate: sixMonthTemplateId,
     },
     {
       inactiveMonths: 12,
       LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
-      LastTemplate: 14,
+      LastTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
       LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
-      LastTemplate: 10,
+      LastTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
       LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
-      LastTemplate: 12,
+      LastTemplate: twentyFourMonthTemplateId,
     },
   ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
     it(`should not return a ${inactiveMonths} month template when already sent a ${inactiveMonths} month email`, async () => {
