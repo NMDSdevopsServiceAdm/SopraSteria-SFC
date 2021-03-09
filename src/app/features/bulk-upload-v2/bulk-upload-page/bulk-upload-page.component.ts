@@ -31,5 +31,6 @@ export class BulkUploadPageV2Component implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.adminSkipService.clear();
+    this.adminSkipService.skipWorkplaceReferences = false;
   }
 }

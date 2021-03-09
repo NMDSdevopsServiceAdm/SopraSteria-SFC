@@ -29,7 +29,7 @@
                 </label>
               </div>
               <div
-                *ngIf="item.value === 'Edit'"
+                *ngIf="user?.displayStatus !== 'Pending' && item.value === 'Edit'"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
                 id="role-conditional-{{ i }}"
