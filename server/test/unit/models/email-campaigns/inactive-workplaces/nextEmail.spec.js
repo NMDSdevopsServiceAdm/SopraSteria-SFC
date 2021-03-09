@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const sinon = require('sinon');
 
-const nextEmail = require('../../../../../models/email-campaigns/inactive-workplaces/nextEmail');
+const nextEmail = require('../../../../../services/email-campaigns/inactive-workplaces/nextEmail');
 
 describe('nextEmailTemplate', () => {
   afterEach(() => {

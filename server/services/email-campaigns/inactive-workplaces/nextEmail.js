@@ -39,9 +39,9 @@ const getTemplate = (inactiveWorkplace) => {
 
 const shouldReceive = (inactiveWorkplace) => {
   return getTemplate(inactiveWorkplace) !== null;
-}
+};
 
 module.exports = {
   getTemplate,
   shouldReceive,
-}
+};
