@@ -173,8 +173,14 @@ router.post('/', async (req, res) => {
             console.log(`Found admin user and establishment`);
           } else {
             req.sqreen.auth_track(false, {
-              userId: establishmentUser.user.uid,
-              establishmentId: establishmentUser.establishment.uid,
+              userId:
+                establishmentUser && establishmentUser.user && establishmentUser.user.uid
+                  ? establishmentUser.user.uid
+                  : null,
+              establishmentId:
+                establishmentUser && establishmentUser.establishment && establishmentUser.establishment.uid
+                  ? establishmentUser.establishment.uid
+                  : null,
             });
 
             console.error('POST .../login failed: on finding the given establishment');
@@ -187,8 +193,14 @@ router.post('/', async (req, res) => {
         }
       } else {
         req.sqreen.auth_track(false, {
-          userId: establishmentUser.user.uid,
-          establishmentId: establishmentUser.establishment.uid,
+          userId:
+            establishmentUser && establishmentUser.user && establishmentUser.user.uid
+              ? establishmentUser.user.uid
+              : null,
+          establishmentId:
+            establishmentUser && establishmentUser.establishment && establishmentUser.establishment.uid
+              ? establishmentUser.establishment.uid
+              : null,
         });
 
         console.error(`Failed to find user account`);
@@ -318,9 +330,18 @@ router.post('/', async (req, res) => {
           });
 
           req.sqreen.auth_track(true, {
-            userId: establishmentUser.user.uid,
-            establishmentId: establishmentUser.user.establishment.uid,
-            role: establishmentUser.user.UserRoleValue,
+            userId:
+              establishmentUser && establishmentUser.user && establishmentUser.user.uid
+                ? establishmentUser.user.uid
+                : null,
+            establishmentId:
+              establishmentUser && establishmentUser.establishment && establishmentUser.establishment.uid
+                ? establishmentUser.establishment.uid
+                : null,
+            role:
+              establishmentUser && establishmentUser.user && establishmentUser.user.UserRoleValue
+                ? establishmentUser.user.UserRoleValue
+                : null,
           });
 
           // TODO: ultimately remove "Bearer" from the response; this should be added by client
@@ -390,8 +411,14 @@ router.post('/', async (req, res) => {
           });
 
           req.sqreen.auth_track(false, {
-            userId: establishmentUser.user.uid,
-            establishmentId: establishmentUser.establishment.uid,
+            userId:
+              establishmentUser && establishmentUser.user && establishmentUser.user.uid
+                ? establishmentUser.user.uid
+                : null,
+            establishmentId:
+              establishmentUser && establishmentUser.establishment && establishmentUser.establishment.uid
+                ? establishmentUser.establishment.uid
+                : null,
           });
 
           return res.status(401).send({
