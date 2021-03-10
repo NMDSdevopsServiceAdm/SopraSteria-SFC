@@ -5,6 +5,7 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
@@ -25,7 +26,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public sicknessContent = MetricsContent.Sickness;
 
   public tilesData: BenchmarksResponse;
-  private canViewBenchmarks: boolean;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -36,20 +36,25 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
-        this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
-        if (this.canViewBenchmarks) {
-          this.subscriptions.add(
-            this.benchmarksService
-              .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
-              .subscribe((data) => {
-                if (data) {
-                  this.tilesData = data;
-                }
-              }),
-          );
-        }
-      }),
+      this.permissionsService
+        .getPermissions(this.workplace.uid)
+        .pipe(
+          map((permission) => permission.permissions.canViewBenchmarks),
+          filter((canViewBenchmarks) => canViewBenchmarks),
+          switchMap(() => {
+            return this.benchmarksService.getTileData(this.workplace.uid, [
+              'sickness',
+              'turnover',
+              'pay',
+              'qualifications',
+            ]);
+          }),
+        )
+        .subscribe((data) => {
+          if (data) {
+            this.tilesData = data;
+          }
+        }),
     );
   }
 
