@@ -124,21 +124,11 @@ export class OtherServicesComponent extends Question {
 
   protected generateUpdateProps() {
     const { otherServices, otherServicesValue } = this.form.value;
-
-    if (otherServicesValue === 'No') {
-      return {
-        services: {
-          value: 'No',
-          services: [],
-        },
-      };
-    }
-
     const allServicesKeys = this.allServices.map((service) => service.id);
 
     return {
       services: {
-        value: 'Yes',
+        value: otherServicesValue,
         services: otherServices
           .filter((id) => allServicesKeys.includes(id))
           .map((id) => {
