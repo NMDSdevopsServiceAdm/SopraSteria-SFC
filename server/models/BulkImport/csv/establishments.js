@@ -2681,8 +2681,9 @@ class Establishment {
       },
       localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
-      services: this._allServices
-        ? this._allServices
+      services: {
+        value: this._allServices && this._allServices.length > 1 ? "Yes" : "No" ,
+        services: this._allServices && this._allServices.length > 1 ? this._allServices
             .filter((thisService) => (this._mainService ? this._mainService.id !== thisService : true)) // main service cannot appear in otherServices
             .map((thisService, index) => {
               const returnThis = {
@@ -2697,7 +2698,8 @@ class Establishment {
 
               return returnThis;
             })
-        : [],
+          : []
+      },
       serviceUsers: this._allServiceUsers
         ? this._allServiceUsers.map((thisService, index) => {
             const returnThis = {
@@ -2761,14 +2763,15 @@ class Establishment {
       changeProperties.capacities = [];
     }
 
-    if (changeProperties.services && changeProperties.services.length === 0) {
-      changeProperties.services = [];
+    if (changeProperties.services && changeProperties.services.services.length === 0) {
+      changeProperties.services = {value: "No"};
     }
 
     return {
       ...fixedProperties,
       ...changeProperties,
     };
+
   }
 
   // takes the given establishment entity and writes it out to CSV string (one line)

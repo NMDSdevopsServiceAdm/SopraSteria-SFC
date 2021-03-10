@@ -35,16 +35,19 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     }
     // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
     if (document.otherServices) {
-      if (Array.isArray(document.otherServices)) {
-        document.services = [];
-        document.otherServices.forEach((thisServiceCategory) => {
+        document.services =
+          {
+            value: null,
+            services: []
+          };
+        document.services.value = document.otherServices.services.length ? 'Yes' : ' No';
+        document.otherServices.services.forEach((thisServiceCategory) => {
           thisServiceCategory.services.forEach((thisService) => {
-            document.services.push({
+            document.services.services.push({
               id: thisService.id,
             });
           });
         });
-      }
     }
 
     if (document.services) {
@@ -53,6 +56,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         Array.isArray(document.services.services) &&
         document.services.services.length > 0
       ) {
+
         const validatedServices = await this._validateServices(document.services.services);
         const validatedServicesValue = this._validateValue(document.services.value);
         const validatedProperty = {
@@ -65,8 +69,14 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         } else {
           this.property = null;
         }
-      } else {
-        this.property = null;
+      }
+      if (document.services.value === 'No' ){
+        this.property = {
+          value: 'No'
+        };
+      }
+      if(document.services.value === null ){
+      this.property = null;
       }
     }
   }
