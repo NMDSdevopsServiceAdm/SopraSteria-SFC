@@ -51,7 +51,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
       if (
         document.services.value === 'Yes' &&
         Array.isArray(document.services.services) &&
-        document.services.services.length > 1
+        document.services.services.length > 0
       ) {
         const validatedServices = await this._validateServices(document.services.services);
         const validatedServicesValue = this._validateValue(document.services.value);
