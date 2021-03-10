@@ -5,7 +5,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-benchmarks-about-the-data',
@@ -26,16 +28,24 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
     protected backService: BackService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit() {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
     this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(
-          this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentuid,
-          [],
+      this.permissionsService
+        .getPermissions(this.workplace.uid)
+        .pipe(
+          map((permission) => permission.permissions.canViewBenchmarks),
+          filter((canViewBenchmarks) => canViewBenchmarks),
+          switchMap(() => {
+            return this.benchmarksService.getTileData(
+              this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentuid,
+              [],
+            );
+          }),
         )
         .subscribe((data) => {
           if (data) {
