@@ -27,7 +27,7 @@
                 class="govuk-radios__input"
                 [formControlName]="'otherServicesValue'"
                 id="otherServices-conditional-1"
-                name="otherJobs"
+                name="otherServicesValue"
                 type="radio"
                 value="Yes"
                 aria-controls="conditional-otherServices-conditional-1"
@@ -91,7 +91,7 @@
                               <input
                                 class="govuk-input govuk-!-width-one-third"
                                 id="additionalOtherService-{{ service.id }}"
-                                name="additionalOtherService"
+                                name="'additionalOtherService' + service.id"
                                 type="text"
                                 [formControlName]="'additionalOtherService' + service.id"
                                 [class.govuk-input--error]="
@@ -113,7 +113,7 @@
                 class="govuk-radios__input"
                 [formControlName]="'otherServicesValue'"
                 id="otherServices-2"
-                name="otherJobs"
+                name="otherServicesValue"
                 type="radio"
                 value="No"
               />

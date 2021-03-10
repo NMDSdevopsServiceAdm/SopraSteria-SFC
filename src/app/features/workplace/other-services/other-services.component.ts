@@ -129,17 +129,20 @@ export class OtherServicesComponent extends Question {
     return {
       services: {
         value: otherServicesValue,
-        services: otherServices
-          .filter((id) => allServicesKeys.includes(id))
-          .map((id) => {
-            const service = { id };
-            const otherService: Service = filter(this.allServices, { id })[0];
+        services:
+          otherServicesValue === 'No'
+            ? []
+            : otherServices
+                .filter((id) => allServicesKeys.includes(id))
+                .map((id) => {
+                  const service = { id };
+                  const otherService: Service = filter(this.allServices, { id })[0];
 
-            if (otherService.other) {
-              service[`other`] = this.form.get(`additionalOtherService${id}`).value;
-            }
-            return service;
-          }),
+                  if (otherService.other) {
+                    service[`other`] = this.form.get(`additionalOtherService${id}`).value;
+                  }
+                  return service;
+                }),
       },
     };
   }
