@@ -141,7 +141,7 @@ const updateUser = async (req, res) => {
         return res.status(401).send();
       }
 
-      if (thisUser.status === 'Pending' && req.body.isPrimary == true) {
+      if (thisUser.displayStatus === 'Pending' && req.body.isPrimary == true) {
         return res.status(406).send('Requested user status is "Pending". Primary users cannot be in a "Pending" state');
       }
 
