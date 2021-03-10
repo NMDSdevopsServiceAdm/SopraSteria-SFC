@@ -6,7 +6,7 @@ const models = require('../../../../models');
 const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
-const getInactiveWorkplaces = async (_, res) => {
+const getInactiveWorkplaces = async (_req, res) => {
   const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
 
   return res.json({

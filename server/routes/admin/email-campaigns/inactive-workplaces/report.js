@@ -16,7 +16,7 @@ const printRow = (worksheet, item) => {
   });
 };
 
-const generateReport = async (_, res) => {
+const generateReport = async (_req, res) => {
   const workbook = new excelJS.Workbook();
 
   workbook.creator = 'Skills-For-Care';
