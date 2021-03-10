@@ -39,7 +39,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
         this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
         if (this.canViewBenchmarks) {
-          console.log(this.canViewBenchmarks);
           this.subscriptions.add(
             this.benchmarksService
               .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
