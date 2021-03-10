@@ -22,7 +22,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   public returnTo: URLStructure;
   public url: any[];
   public fragment: string;
-  private canViewBenchmarks: boolean;
 
   constructor(
     protected router: Router,
