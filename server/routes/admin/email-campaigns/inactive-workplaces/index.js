@@ -52,7 +52,7 @@ const createCampaign = async (req, res) => {
   }
 };
 
-const getHistory = async (_, res) => {
+const getHistory = async (_req, res) => {
   const type = models.EmailCampaign.types().INACTIVE_WORKPLACES;
   const emailCampaigns = await models.EmailCampaign.getHistory(type);
 
