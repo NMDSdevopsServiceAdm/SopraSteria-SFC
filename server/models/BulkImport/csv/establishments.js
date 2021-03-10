@@ -2822,7 +2822,7 @@ class Establishment {
     columns.push(budiMappedMainService);
 
     // all services - this is main service and other services
-    const otherServices = entity.otherServices && Array.isArray(entity.otherServices) ? entity.otherServices : [];
+    const otherServices = entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services) ? entity.otherServices.services : [];
     otherServices.unshift(mainService);
     columns.push(otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
 
