@@ -123,7 +123,17 @@ export class OtherServicesComponent extends Question {
   }
 
   protected generateUpdateProps() {
-    const { otherServices } = this.form.value;
+    const { otherServices, otherServicesValue } = this.form.value;
+
+    if (otherServicesValue === 'No') {
+      return {
+        services: {
+          value: 'No',
+          services: [],
+        },
+      };
+    }
+
     const allServicesKeys = this.allServices.map((service) => service.id);
 
     return {
