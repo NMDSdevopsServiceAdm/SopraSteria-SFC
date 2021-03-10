@@ -5,19 +5,25 @@ const {
 } = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplaces');
 
 const transformInactiveWorkplaces = (inactiveWorkplace) => {
+  const id = inactiveWorkplace.EstablishmentID;
+  const name = inactiveWorkplace.NameValue;
+  const nmdsId = inactiveWorkplace.NmdsID;
+  const lastUpdated = inactiveWorkplace.LastUpdated;
+  const dataOwner = inactiveWorkplace.DataOwner;
   const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
+  const user = {
+    name: inactiveWorkplace.PrimaryUserName,
+    email: inactiveWorkplace.PrimaryUserEmail,
+  };
 
   return {
-    id: inactiveWorkplace.EstablishmentID,
-    name: inactiveWorkplace.NameValue,
-    nmdsId: inactiveWorkplace.NmdsID,
-    lastUpdated: inactiveWorkplace.LastUpdated,
-    emailTemplate: emailTemplate,
-    dataOwner: inactiveWorkplace.DataOwner,
-    user: {
-      name: inactiveWorkplace.PrimaryUserName,
-      email: inactiveWorkplace.PrimaryUserEmail,
-    },
+    id,
+    name,
+    nmdsId,
+    lastUpdated,
+    emailTemplate,
+    dataOwner,
+    user
   };
 };
 
