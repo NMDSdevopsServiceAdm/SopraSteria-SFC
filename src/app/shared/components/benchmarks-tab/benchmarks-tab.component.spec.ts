@@ -2,7 +2,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
 
@@ -16,7 +18,10 @@ describe('BenchmarksTabComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [{ provide: BenchmarksService, useClass: MockBenchmarksService }],
+      providers: [
+        { provide: BenchmarksService, useClass: MockBenchmarksService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+      ],
     }).compileComponents();
   }));
 
