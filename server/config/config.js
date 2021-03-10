@@ -543,6 +543,7 @@ if (config.get('aws.secrets.use')) {
     //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
+    config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
