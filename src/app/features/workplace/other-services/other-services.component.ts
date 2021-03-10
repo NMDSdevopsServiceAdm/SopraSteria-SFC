@@ -32,6 +32,7 @@ export class OtherServicesComponent extends Question {
 
     this.form = this.formBuilder.group({
       otherServices: [[], null],
+      otherServicesValue: [null, [Validators.required]],
     });
   }
 
@@ -76,10 +77,11 @@ export class OtherServicesComponent extends Question {
   }
 
   private preFillForm(): void {
+    this.form.get('otherServicesValue').setValue(this.establishmentService.establishment.otherServices.value);
     const allOtherServices = this.establishmentService.establishment.otherServices;
-
+console.log(allOtherServices);
     if (allOtherServices) {
-      allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
+      allOtherServices.services.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
       this.allOtherServices.forEach((service: Service) => {
         this.form.get('otherServices').value.push(service.id);
@@ -125,18 +127,20 @@ export class OtherServicesComponent extends Question {
     const allServicesKeys = this.allServices.map(service => service.id);
 
     return {
-      services: otherServices
-        .filter(id => allServicesKeys.includes(id))
-        .map(id => {
-          const service = { id };
-          const otherService: Service = filter(this.allServices, { id })[0];
+      services: {
+            value: 'Yes',
+            services: otherServices.filter(id => allServicesKeys.includes(id))
+              .map(id => {
+                const service = { id };
+                const otherService: Service = filter(this.allServices, { id })[0];
 
-          if (otherService.other) {
-            service[`other`] = this.form.get(`additionalOtherService${id}`).value;
+                if (otherService.other) {
+                  service[`other`] = this.form.get(`additionalOtherService${id}`).value;
+                }
+                return service;
+              }),
           }
-          return service;
-        }),
-    };
+    }
   }
 
   protected updateEstablishment(props) {
