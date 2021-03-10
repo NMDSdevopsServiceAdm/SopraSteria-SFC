@@ -5,17 +5,14 @@ const {
 } = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplaces');
 
 const transformInactiveWorkplaces = (inactiveWorkplace) => {
-  const { id, name } = nextEmail.getTemplate(inactiveWorkplace);
+  const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
   return {
     id: inactiveWorkplace.EstablishmentID,
     name: inactiveWorkplace.NameValue,
     nmdsId: inactiveWorkplace.NmdsID,
     lastUpdated: inactiveWorkplace.LastUpdated,
-    emailTemplate: {
-      id,
-      name,
-    },
+    emailTemplate: emailTemplate,
     dataOwner: inactiveWorkplace.DataOwner,
     user: {
       name: inactiveWorkplace.PrimaryUserName,
