@@ -187,6 +187,10 @@ class User {
     return this._establishmentUid;
   }
 
+  get displayStatus() {
+    return this._displayStatus;
+  }
+
   set establishmentUid(uid) {
     this._establishmentUid = uid;
   }
