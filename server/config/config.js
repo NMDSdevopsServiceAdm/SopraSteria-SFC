@@ -454,6 +454,65 @@ const config = convict({
       default: 'd',
     },
   },
+  sendInBlue: {
+    apiKey: {
+      doc: 'Send in Blue API Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'SEND_IN_BLUE_KEY',
+    },
+    templates: {
+      sixMonthsInactive: {
+        id: {
+          doc: 'Template ID for the 6 month inactive email',
+          format: Number,
+          default: 13,
+        },
+        name: {
+          doc: 'Template Name for the 6 month inactive email',
+          format: String,
+          default: '6 months',
+        },
+      },
+      twelveMonthsInactive: {
+        id: {
+          doc: 'Template ID for the 12 month inactive email',
+          format: Number,
+          default: 14,
+        },
+        name: {
+          doc: 'Template Name for the 12 month inactive email',
+          format: String,
+          default: '12 months',
+        },
+      },
+      eighteenMonthsInactive: {
+        id: {
+          doc: 'Template ID for the 18 month inactive email',
+          format: Number,
+          default: 10
+        },
+        name: {
+          doc: 'Template Name for the 18 month inactive email',
+          format: String,
+          default: '18 months',
+        },
+      },
+      twentyFourMonthsInactive: {
+        id: {
+          doc: 'Template ID for the 24 month inactive email',
+          format: Number,
+          default: 12
+        },
+        name: {
+          doc: 'Template Name for the 24 month inactive email',
+          format: String,
+          default: '24 months',
+        },
+      },
+    },
+  },
 });
 
 // Load environment dependent configuration
@@ -484,6 +543,7 @@ if (config.get('aws.secrets.use')) {
     //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
+    config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());

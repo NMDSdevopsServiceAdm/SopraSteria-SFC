@@ -212,6 +212,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'emails',
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Emails',
+        },
+      },
+      {
         path: 'notifications',
         loadChildren: () => import('@features/notifications/notifications.module').then((m) => m.NotificationsModule),
       },

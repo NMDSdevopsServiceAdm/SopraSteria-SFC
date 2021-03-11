@@ -66,7 +66,7 @@ exports.autoFitColumns = function (ws, headerRow) {
 };
 
 exports.fitColumnsToSize = function (ws) {
-  eachColumnInRange(ws, 1, 25, (column) => {
+  eachColumnInRange(ws, 1, ws.columns.length, (column) => {
     const cellsWidth = [];
     column.eachCell((cell) => {
       if (!cell.isMerged && cell.value) {
