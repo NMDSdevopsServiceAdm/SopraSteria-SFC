@@ -106,7 +106,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container [ngSwitch]="workplace.otherServices.value">
         <span *ngSwitchCase="undefined"> - </span>
-        <span *ngSwitchCase="'No'"> No </span>
+        <span *ngSwitchCase="'No'"> None </span>
         <div *ngSwitchCase="'Yes'">
           <ul class="govuk-list govuk-!-margin-bottom-0">
             <ng-container *ngFor="let categories of workplace.otherServices.services">
