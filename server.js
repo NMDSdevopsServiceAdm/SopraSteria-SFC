@@ -1,3 +1,4 @@
+const Sqreen = process.env.SQREEN_APP_NAME ? require('sqreen') : require('./server/utils/middleware/sqreen.mock');
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
 const { Integrations } = require('@sentry/tracing');
@@ -79,6 +80,9 @@ AWSsns.initialise(config.get('aws.region'));
 var testOnly = require('./server/routes/testOnly');
 
 var app = express();
+
+app.use(Sqreen.middleware);
+
 if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),

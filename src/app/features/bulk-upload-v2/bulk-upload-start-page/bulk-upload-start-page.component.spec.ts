@@ -5,6 +5,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { render } from '@testing-library/angular';
 
+import { AdminSkipService } from '../admin-skip.service';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page.component';
 
@@ -12,7 +13,7 @@ describe('BulkUploadStartPage', () => {
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadStartPageComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, AdminSkipService],
       declarations: [BulkUploadStartPageComponent, CodesAndGuidanceComponent],
     });
     const component = fixture.componentInstance;

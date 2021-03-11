@@ -9,9 +9,6 @@ import { ParentConfirmationDialogComponent } from '@features/search/parent-reque
 import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
-import {
-  ViewAllMandatoryTrainingComponent,
-} from '@features/workplace/view-all-mandatory-trainings/view-all-mandatory-training.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
@@ -160,7 +157,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
-    ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
     CqcConfirmationDialogComponent,
@@ -229,7 +225,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
-    ViewAllMandatoryTrainingComponent,
     DeleteWorkplaceDialogComponent,
     ParentConfirmationDialogComponent,
     CqcConfirmationDialogComponent,

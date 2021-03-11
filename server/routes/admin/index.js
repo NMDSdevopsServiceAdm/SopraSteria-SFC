@@ -1,28 +1,19 @@
-// default route for admin
 const express = require('express');
 const router = express.Router();
-const isAdmin = require('../../utils/security/isAuthenticated').isAdmin;
-
-const search = require('./search');
-const recalcWdf = require('./recalcWdf');
-const registrations = require('./registrations');
-const approval = require('./approval');
-const parentApproval = require('./parent-approval');
-const unlockAccount = require('./unlock-account');
-const cqcStatusChange = require('./cqc-status-change');
-const moveWorkplace = require('./move-workplace');
 
 // middleware authentication - only role=Admin from here on in
+const { isAdmin } = require('../../utils/security/isAuthenticated');
 router.use('/', isAdmin);
 
-router.use('/search', search);
-router.use('/recalcWdf', recalcWdf);
-router.use('/registrations', registrations);
-router.use('/approval', approval);
-router.use('/parent-approval', parentApproval);
-router.use('/cqc-status-change', cqcStatusChange);
-router.use('/unlock-account', unlockAccount);
-router.use('/move-workplace', moveWorkplace);
+router.use('/search', require('./search'));
+router.use('/recalcWdf', require('./recalcWdf'));
+router.use('/registrations', require('./registrations'));
+router.use('/approval', require('./approval'));
+router.use('/parent-approval', require('./parent-approval'));
+router.use('/cqc-status-change', require('./cqc-status-change'));
+router.use('/unlock-account', require('./unlock-account'));
+router.use('/email-campaigns', require('./email-campaigns'));
+router.use('/move-workplace', require('./move-workplace'));
 
 router.route('/').post(async function (req, res) {
   return res.status(200).send({ success: 'from admin' });
