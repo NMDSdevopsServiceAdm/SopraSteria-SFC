@@ -1,9 +1,17 @@
 const SibApiV3Sdk = require('sib-api-v3-sdk');
+const AppConfig = require('../../config/appConfig');
 const config = require('../../config/config');
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = config.get('sendInBlue.apiKey');
+
+if (AppConfig.ready) {
+  apiKey.apiKey = config.get('sendInBlue.apiKey');
+}
+
+AppConfig.on(AppConfig.READY_EVENT, () => {
+  apiKey.apiKey = config.get('sendInBlue.apiKey');
+});
 
 const sendEmail = async (to, templateId, params) => {
   try {
