@@ -165,6 +165,11 @@ app.use(
     maxAge: 86400,
   }),
 );
+app.use(
+  helmet.dnsPrefetchControl({
+    allow: true,
+  }),
+);
 
 // disable Helmet's caching - because we control that directly - cahcing is not enabled by default; but explicitly disabling it here
 // set frame policy to deny
