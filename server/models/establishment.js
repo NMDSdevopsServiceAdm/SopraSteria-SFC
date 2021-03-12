@@ -1,4 +1,5 @@
-/* jshint indent: 2 */
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
     'establishment',
@@ -702,21 +703,21 @@ module.exports = function (sequelize, DataTypes) {
         noUstatus: {
           where: {
             ustatus: {
-              [sequelize.Op.is]: null,
+              [Op.is]: null,
             },
           },
         },
         noLocalIdentifier: {
           where: {
             LocalIdentifierValue: {
-              [sequelize.Op.is]: null,
+              [Op.is]: null,
             },
           },
         },
         parentAndChildWorkplaces: function (establishmentId) {
           return {
             where: {
-              [sequelize.Op.or]: [
+              [Op.or]: [
                 {
                   id: establishmentId,
                 },
@@ -836,11 +837,11 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.findbyId = async function (id) {
-    return await this.find({ id });
+    return await this.findOne({ id });
   };
 
   Establishment.findByUid = async function (uid) {
-    return await this.find({ uid });
+    return await this.findOne({ uid });
   };
 
   Establishment.find = async function (where) {
@@ -927,7 +928,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ustatus: {
-          [sequelize.Op.is]: null,
+          [Op.is]: null,
         },
         ...where,
       },
