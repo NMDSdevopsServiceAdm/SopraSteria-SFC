@@ -141,6 +141,31 @@ var unless = function (root, path, middleware) {
   };
 };
 
+app.disable('x-powered-by');
+
+app.use(helmet.noSniff());
+app.use(
+  helmet.referrerPolicy({
+    policy: 'strict-origin-when-cross-origin',
+  }),
+);
+app.use(helmet.xssFilter());
+app.use(
+  helmet.frameguard({
+    action: 'deny',
+  }),
+);
+app.use(
+  helmet.permittedCrossDomainPolicies({
+    permittedPolicies: 'none',
+  }),
+);
+app.use(
+  helmet.expectCt({
+    maxAge: 86400,
+  }),
+);
+
 // disable Helmet's caching - because we control that directly - cahcing is not enabled by default; but explicitly disabling it here
 // set frame policy to deny
 // only use on '/api' endpoint, because these changes may otherwise impact on the UI.
@@ -148,9 +173,6 @@ app.use(
   '/api',
   helmet({
     noCache: false,
-    frameguard: {
-      action: 'deny',
-    },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
