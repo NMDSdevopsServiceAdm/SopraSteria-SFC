@@ -54,7 +54,7 @@
     "cheerio": "^1.0.0-rc.3",
     "compression": "^1.7.4",
     "convict": "^6.0.0",
-    "convict-format-with-validator": "^6.0.0",
+    "convict-format-with-validator": "^6.0.1",
     "cookie-parser": "^1.4.5",
     "core-js": "^3.9.0",
     "csvtojson": "^2.0.10",
