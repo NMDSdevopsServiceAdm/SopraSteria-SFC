@@ -491,7 +491,7 @@ const config = convict({
         id: {
           doc: 'Template ID for the 18 month inactive email',
           format: Number,
-          default: 10
+          default: 10,
         },
         name: {
           doc: 'Template Name for the 18 month inactive email',
@@ -503,7 +503,7 @@ const config = convict({
         id: {
           doc: 'Template ID for the 24 month inactive email',
           format: Number,
-          default: 12
+          default: 12,
         },
         name: {
           doc: 'Template Name for the 24 month inactive email',
@@ -511,6 +511,13 @@ const config = convict({
           default: '24 months',
         },
       },
+    },
+  },
+  redis: {
+    url: {
+      doc: 'URL for Redis',
+      format: String,
+      default: 'redis://127.0.0.1:6379',
     },
   },
 });

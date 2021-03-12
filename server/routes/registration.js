@@ -21,6 +21,7 @@ const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
 const usernameCheck = require('../utils/security/usernameValidation').isUsernameValid;
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
+const { limiter } = require('../utils/middleware/rateLimiting');
 // const rateLimiting = require('../utils/middleware/rateLimiting').rateLimiting;
 // const pCodeCheck = require('../utils/postcodeSanitizer');
 
@@ -72,7 +73,7 @@ router.get('/username', (req, res) => {
   });
 });
 
-//router.use('/username/:username', rateLimiting);
+router.use('/username/:username', limiter);
 router.get('/username/:username', async (req, res) => {
   const requestedUsername = req.params.username.toLowerCase();
   try {
