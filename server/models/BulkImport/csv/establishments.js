@@ -1133,10 +1133,10 @@ class Establishment {
   }
 
   _validateAllServices() {
-    // all services must have at least one value (main service) or a semi colon delimited list of integers; treat consistently as a list of
-    const myAllServices = this._currentLine.ALLSERVICES;
+    // all services must have main service in it
 
-    if (!myAllServices || myAllServices.length === 0) {
+    const listOfServices = this._currentLine.ALLSERVICES.split(';');
+    if (!listOfServices ||  !listOfServices.includes(this._currentLine.MAINSERVICE)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -1147,12 +1147,11 @@ class Establishment {
         name: this._currentLine.LOCALESTID,
       });
 
-      return false; // no point continuing validation because all services is empty
     }
 
     // all services and their service descriptions are semi-colon delimited
-
-    const listOfServices = this._currentLine.ALLSERVICES.split(';');
+    //remove 0 aka NO other services
+    const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
     const listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
 
     const localValidationErrors = [];
@@ -1168,7 +1167,7 @@ class Establishment {
         column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
-    } else if (listOfServices.length !== listOfServiceDescriptions.length) {
+    } else if (listOfServicesWithoutNo.length !== listOfServiceDescriptions.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -1353,7 +1352,8 @@ class Establishment {
     }
 
     // and the number of utilisations/capacities must equal the number of all services
-    if (listOfCapacities.length !== (this._allServices ? this._allServices.length : 0)) {
+    const lengthOfServicesWithoutNo = this._allServices ? this._allServices.filter(item => item !== 0).length : 0;
+    if (listOfCapacities.length !== lengthOfServicesWithoutNo) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_ERROR,
@@ -2090,10 +2090,14 @@ class Establishment {
       const mappedServices = [];
 
       this._allServices.forEach((thisService) => {
-        const thisMappedService = BUDI.services(BUDI.TO_ASC, thisService);
-
+        let thisMappedService = null;
+        if (thisService !== 0) {
+          thisMappedService = BUDI.services(BUDI.TO_ASC, thisService);
+        }
         if (thisMappedService) {
           mappedServices.push(thisMappedService);
+        }else if(thisService == 0){
+          mappedServices.push(0);
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
@@ -2191,8 +2195,12 @@ class Establishment {
       this._capacities.forEach((thisCapacity, index) => {
         // we're only interested in non null capacities to map
         if (thisCapacity !== null) {
+
+          //if the allservices is 0 then there can only be 2 allservices
+          const allServiceIndex = this._allServices[index] === 0 ? 1 : index;
+
           // we need to map from service id to service capacity id
-          const thisMappedCapacity = BUDI.capacity(BUDI.TO_ASC, this._allServices[index]);
+          const thisMappedCapacity = BUDI.capacity(BUDI.TO_ASC, this._allServices[allServiceIndex]);
 
           if (thisMappedCapacity) {
             mappedCapacities.push({
@@ -2682,23 +2690,7 @@ class Establishment {
       localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
       services: {
-        value: this._allServices && this._allServices.length > 1 ? "Yes" : "No" ,
-        services: this._allServices && this._allServices.length > 1 ? this._allServices
-            .filter((thisService) => (this._mainService ? this._mainService.id !== thisService : true)) // main service cannot appear in otherServices
-            .map((thisService, index) => {
-              const returnThis = {
-                id: thisService,
-              };
-
-              // console.log("WA DEBUG - this other service: ", thisService, index, this._allServicesOther, this._allServicesOther[index])
-
-              if (this._allServicesOther[index]) {
-                returnThis.other = this._allServicesOther[index];
-              }
-
-              return returnThis;
-            })
-          : []
+        value: null,
       },
       serviceUsers: this._allServiceUsers
         ? this._allServiceUsers.map((thisService, index) => {
@@ -2718,6 +2710,30 @@ class Establishment {
       starters: this._starters,
       leavers: this._leavers,
     };
+    if (this._allServices){
+      if(this._allServices.length < 2) {
+        changeProperties.services.value = null;
+      }else if(this._allServices.includes(0)){
+          changeProperties.services.value = 'No';
+      }else if ( this._allServices > 2) {
+        changeProperties.services = {
+          value: 'Yes',
+          services: this._allServices
+              .filter((thisService) => (this._mainService ? this._mainService.id !== thisService : true)) // main service cannot appear in otherServices
+              .map((thisService, index) => {
+                const returnThis = {
+                  id: thisService,
+                };
+
+                if (this._allServicesOther[index]) {
+                  returnThis.other = this._allServicesOther[index];
+                }
+
+                return returnThis;
+              })
+        };
+      }
+    }
 
     if (this._regType === 2) {
       changeProperties.locationId = this._locationID;
@@ -2761,10 +2777,6 @@ class Establishment {
     // clean up empty properties
     if (changeProperties.capacities.length === 0) {
       changeProperties.capacities = [];
-    }
-
-    if (changeProperties.services && changeProperties.services.services.length === 0) {
-      changeProperties.services = {value: "No"};
     }
 
     return {
@@ -2823,11 +2835,18 @@ class Establishment {
     const mainService = entity.mainService;
     const budiMappedMainService = BUDI.services(BUDI.FROM_ASC, mainService.id);
     columns.push(budiMappedMainService);
-
+    let otherServices = [];
     // all services - this is main service and other services
-    const otherServices = entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services) ? entity.otherServices.services : [];
+    if (entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services)){
+      otherServices = entity.otherServices.services;
+    }
     otherServices.unshift(mainService);
-    columns.push(otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
+    const transformedOtherService = otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id));
+    if (entity.otherServices.value === 'No'){
+      transformedOtherService.push('999');
+    }
+    columns.push(transformedOtherService.join(';'));
+
 
     // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
     const entityCapacities = Array.isArray(entity.capacities)

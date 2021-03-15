@@ -58,6 +58,26 @@ describe('Bulk Upload - Establishment CSV', () => {
   });
 
   describe('Validations', () => {
+    it('should validate ALLSERVICES ', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.MAINSERVICE = '8';
+      establishmentRow.ALLSERVICES = '12;13';
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+      expect(establishment.validationErrors).to.deep.equal([
+        {
+          origin: 'Establishments',
+          lineNumber: establishment.lineNumber,
+          errCode: 1120,
+          errType: 'ALL_SERVICES_ERROR',
+          error: 'MAINSERVICE is not included in ALLSERVICES',
+          source: '12;13',
+          column: 'ALLSERVICES',
+          name: establishmentRow.LOCALESTID,
+        },
+      ]);
+    });
+
     it('should validate Starters, Leavers, Vacancies if All Job Roles is blank but S/L/V is not blank', async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '';

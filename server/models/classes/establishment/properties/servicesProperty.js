@@ -31,16 +31,19 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
       // whilst serialising from JSON other services, make a note of main service and all "other" services
       //  - required in toJSON response and for validation
       this._allServices = this.removeMainService(document.allMyServices, document.mainService);
+
       if (document.mainService) this._mainService = document.mainService; // can be an empty array
     }
+
     // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
     if (document.otherServices) {
-        document.services =
-          {
-            value: null,
-            services: []
-          };
-        document.services.value = document.otherServices.services.length ? 'Yes' : ' No';
+
+      document.services =
+        {
+          value: document.otherServices.value,
+          services: []
+        };
+      if (document.otherServices === 'Yes') {
         document.otherServices.services.forEach((thisServiceCategory) => {
           thisServiceCategory.services.forEach((thisService) => {
             document.services.services.push({
@@ -48,6 +51,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
             });
           });
         });
+      }
     }
 
     if (document.services) {
@@ -76,7 +80,9 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         };
       }
       if(document.services.value === null ){
-      this.property = null;
+      this.property = {
+        value: null
+      };
       }
     }
   }
@@ -147,7 +153,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         arraysEqual = false;
       }
     }
-
     return currentValue && newValue && currentValue.value === newValue.value && arraysEqual;
   }
 
