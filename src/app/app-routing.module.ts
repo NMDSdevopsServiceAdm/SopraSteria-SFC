@@ -43,7 +43,7 @@ const bulkUploadRouting = {
   },
   production: {
     path: 'bulk-upload',
-    loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
+    loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
     data: {
       title: 'Bulk Upload',
     },
@@ -209,6 +209,15 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin],
           title: 'CQC Status Change',
+        },
+      },
+      {
+        path: 'emails',
+        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Emails',
         },
       },
       {

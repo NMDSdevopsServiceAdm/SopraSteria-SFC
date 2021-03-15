@@ -93,6 +93,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
   public preValidateCheck(): void {
     const fileCount = this.uploadedFiles ? this.uploadedFiles.length : 0;
+    this.bulkUploadService.showNonCsvErrorMessage(false);
 
     if (fileCount == 0) {
       this.preValidationErrorMessage = 'You need to select 2 or 3 files.';

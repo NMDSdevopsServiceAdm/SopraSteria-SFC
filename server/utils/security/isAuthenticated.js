@@ -222,6 +222,17 @@ const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck)
               req.establishment.isParent = true;
             }
           }
+          req.sqreen.identify(
+            req,
+            {
+              userId: req.userUid,
+              establishmentId: req.establishment.uid,
+            },
+            {
+              isParent: req.establishment.isParent,
+              role: req.role,
+            },
+          );
 
           next();
         }

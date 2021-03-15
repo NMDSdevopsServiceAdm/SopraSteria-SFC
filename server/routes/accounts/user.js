@@ -141,6 +141,10 @@ const updateUser = async (req, res) => {
         return res.status(401).send();
       }
 
+      if (thisUser.displayStatus === 'Pending' && req.body.isPrimary == true) {
+        return res.status(406).send('Requested user status is "Pending". Primary users cannot be in a "Pending" state');
+      }
+
       if (req.role === 'Read' && req.body.role && req.body.role !== 'Read') {
         console.error('User tried to upgrade their own permissions');
         return res.status(403).send();

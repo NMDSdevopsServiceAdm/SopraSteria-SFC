@@ -12,6 +12,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
 import { orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -44,6 +45,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     protected router: Router,
     protected alertService: AlertService,
     private workerService: WorkerService,
+    private adminSkipService: AdminSkipService,
   ) {
     super(errorSummaryService, formBuilder, alertService, backService, router);
   }
@@ -97,6 +99,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
       this.bulkUploadService.nextMissingReferencesNavigation(this.currentEstablishmentIndex + 1),
       true,
     );
+    this.adminSkipService.add(this.establishmentUid);
   }
 
   protected save(): void {
