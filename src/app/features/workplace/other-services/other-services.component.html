@@ -43,6 +43,13 @@
             >
               <div class="govuk-form-group">
                 <span id="otherJobRoles-hint" class="govuk-hint"> Select all that apply. </span>
+                <span
+                  *ngIf="submitted && form.get('otherServices').errors"
+                  id="otherServices-error"
+                  class="govuk-error-message"
+                >
+                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('otherServices') }}
+                </span>
                 <div class="govuk-checkboxes">
                   <div class="govuk-form-group" *ngFor="let serviceGroup of serviceGroups">
                     <fieldset class="govuk-fieldset">
