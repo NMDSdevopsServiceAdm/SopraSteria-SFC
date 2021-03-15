@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -30,10 +30,15 @@ export class OtherServicesComponent extends Question {
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      otherServices: [[], null],
-      otherServicesValue: [null, [Validators.required]],
-    });
+    this.form = this.formBuilder.group(
+      {
+        otherServices: [[], null],
+        otherServicesValue: [null, [Validators.required]],
+      },
+      {
+        validator: this.oneCheckboxRequiredIfYes,
+      },
+    );
   }
 
   protected init() {
@@ -55,7 +60,30 @@ export class OtherServicesComponent extends Question {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'type-of-employer'];
   }
 
+  private oneCheckboxRequiredIfYes(form: FormGroup) {
+    if (!form?.value) return null;
+    if (form?.value?.otherServicesValue === 'No' || form?.value?.otherServices?.length > 0) {
+      form.controls.otherServices.setErrors(null);
+    } else {
+      form.controls.otherServices.setErrors({
+        oneCheckboxRequiredIfYes: true,
+      });
+    }
+    console.log('HEEEERE');
+    console.log(form);
+  }
+
   private updateForm(): void {
+    this.formErrorsMap.push({
+      item: `otherServices`,
+      type: [
+        {
+          name: 'oneCheckboxRequiredIfYes',
+          message: `Select the other services you provide`,
+        },
+      ],
+    });
+
     this.allServices.forEach((service: Service) => {
       if (service.other) {
         this.form.addControl(
