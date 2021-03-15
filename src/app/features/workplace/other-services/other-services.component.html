@@ -62,7 +62,7 @@
                               type="checkbox"
                               [value]="service.id"
                               [checked]="form.get('otherServices').value.includes(service.id)"
-                              (change)="toggle($event.target)"
+                              (change)="toggle($event.target, 'additionalOtherService' + service.id)"
                             />
                             <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
                               {{ service.name }}

@@ -119,7 +119,7 @@ export class OtherServicesComponent extends Question {
     this.renderForm = true;
   }
 
-  public toggle(target: HTMLInputElement) {
+  public toggle(target: HTMLInputElement, additionalOtherServiceTextInput: string) {
     const value = parseInt(target.value, 10);
     const selected = this.form.get('otherServices').value;
 
@@ -128,6 +128,10 @@ export class OtherServicesComponent extends Question {
         selected.push(value);
       }
     } else {
+      const otherService = this.form.get(additionalOtherServiceTextInput);
+      if (otherService) {
+        otherService.setValue(null);
+      }
       const index = selected.indexOf(value);
       if (index >= 0) {
         selected.splice(index, 1);
