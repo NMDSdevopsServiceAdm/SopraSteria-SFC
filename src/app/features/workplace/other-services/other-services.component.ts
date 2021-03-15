@@ -61,16 +61,13 @@ export class OtherServicesComponent extends Question {
   }
 
   private oneCheckboxRequiredIfYes(form: FormGroup) {
-    if (!form?.value) return null;
-    if (form?.value?.otherServicesValue === 'No' || form?.value?.otherServices?.length > 0) {
-      form.controls.otherServices.setErrors(null);
-    } else {
+    if (form?.value?.otherServicesValue === 'Yes' && form?.value?.otherServices?.length === 0) {
       form.controls.otherServices.setErrors({
         oneCheckboxRequiredIfYes: true,
       });
+    } else {
+      form.controls.otherServices.setErrors(null);
     }
-    console.log('HEEEERE');
-    console.log(form);
   }
 
   private updateForm(): void {
