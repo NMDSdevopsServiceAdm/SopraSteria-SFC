@@ -79,8 +79,7 @@ export class OtherServicesComponent extends Question {
   private preFillForm(): void {
     this.form.get('otherServicesValue').setValue(this.establishmentService.establishment.otherServices.value);
     const allOtherServices = this.establishmentService.establishment.otherServices;
-
-    if (allOtherServices.value != null && allOtherServices.value != 'No') {
+    if (allOtherServices.value === 'Yes') {
       allOtherServices.services.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
       this.allOtherServices.forEach((service: Service) => {
