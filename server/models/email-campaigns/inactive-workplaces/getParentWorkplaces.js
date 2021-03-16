@@ -39,7 +39,7 @@ const getParentWorkplaces = async () => {
           JOIN cqc. "EmailCampaigns" ec ON ec. "id" = ech. "emailCampaignID"
         WHERE
           ec. "type" = 'inactiveWorkplaces'
-          AND ech. "createdAt" >= '2021-03-01'
+          AND ech. "createdAt" >= :currentMonth
           AND ech. "establishmentID" = e. "ParentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
