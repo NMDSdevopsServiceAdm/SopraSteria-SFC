@@ -171,6 +171,18 @@ const sendInBlueKey = () => {
   }
 };
 
+const sendInBlueWhitelist = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SEND_IN_BLUE_WHITELIST) {
+      return '';
+    } else {
+      return myLocalSecrets.SEND_IN_BLUE_WHITELIST;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_APP_USER_KEY) {
@@ -219,4 +231,5 @@ module.exports.datadogApiKey = datadogApiKey;
 module.exports.sentryDsn = sentryDsn;
 module.exports.honeycombWriteKey = honeycombWriteKey;
 module.exports.sendInBlueKey = sendInBlueKey;
+module.exports.sendInBlueWhitelist = sendInBlueWhitelist;
 module.exports.getAddressKey = getAddressKey;
