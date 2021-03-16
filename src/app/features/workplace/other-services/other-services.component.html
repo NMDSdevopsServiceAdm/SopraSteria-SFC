@@ -27,6 +27,7 @@
                 class="govuk-radios__input"
                 [formControlName]="'otherServicesValue'"
                 id="otherServices-conditional-1"
+                data-testid="otherServices-conditional-1"
                 name="otherServicesValue"
                 type="radio"
                 value="Yes"
@@ -40,6 +41,7 @@
               class="govuk-radios__conditional"
               [class.govuk-radios__conditional--hidden]="form.get('otherServicesValue').value !== 'Yes'"
               id="conditional-recruitmentKnown-conditional-1"
+              data-testid="checkboxes"
             >
               <div class="govuk-form-group">
                 <span id="otherJobRoles-hint" class="govuk-hint"> Select all that apply. </span>
@@ -120,6 +122,7 @@
                 class="govuk-radios__input"
                 [formControlName]="'otherServicesValue'"
                 id="otherServices-2"
+                data-testid="otherServices-conditional-2"
                 name="otherServicesValue"
                 type="radio"
                 value="No"
