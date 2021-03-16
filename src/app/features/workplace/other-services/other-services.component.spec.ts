@@ -40,6 +40,16 @@ describe('OtherServicesComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should not display dropdown checkboxes when No is selected', async () => {
+    const { fixture, getByTestId } = await setup();
+    const noButton = getByTestId('otherServices-conditional-2');
+    const checkboxes = getByTestId('checkboxes');
+    fireEvent.click(noButton);
+    fixture.detectChanges();
+
+    expect(checkboxes).toHaveClass('govuk-radios__conditional--hidden');
+  });
+
   it('should show error message(twice) when user tries to answer Yes with no checkboxes ticked', async () => {
     const { component, fixture, getAllByText, getByTestId } = await setup();
     const yesButton = getByTestId('otherServices-conditional-1');
