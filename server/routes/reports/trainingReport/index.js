@@ -11,9 +11,13 @@ const trainingReport = require('./training');
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.use('/establishment/:id', isAuthorisedEstablishment, hasPermission('canEditWorker'));
+router.use('/establishment/:id', isAuthorisedEstablishment, hasPermission('canViewListOfWorkers'));
 
 // gets the training report in excel xlsx spreadsheet format
-router.use('/establishment/:id/training', [isAuthorisedEstablishment, hasPermission('canEditWorker'), trainingReport]);
+router.use('/establishment/:id/training', [
+  isAuthorisedEstablishment,
+  hasPermission('canViewListOfWorkers'),
+  trainingReport,
+]);
 
 module.exports = router;

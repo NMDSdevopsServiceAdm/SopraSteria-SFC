@@ -1,37 +1,37 @@
 const moment = require('moment');
 const config = require('../../../config/config');
 
+const lastMonth = moment().subtract(1, 'months');
+
+const templates = {
+  sixMonths: {
+    lastUpdated: lastMonth.clone().subtract(6, 'months'),
+    template: config.get('sendInBlue.templates.sixMonthsInactive'),
+  },
+  twelveMonths: {
+    lastUpdated: lastMonth.clone().subtract(12, 'months'),
+    template: config.get('sendInBlue.templates.twelveMonthsInactive'),
+  },
+  eighteenMonths: {
+    lastUpdated: lastMonth.clone().subtract(18, 'months'),
+    template: config.get('sendInBlue.templates.eighteenMonthsInactive'),
+  },
+  twentyFourMonths: {
+    lastUpdated: lastMonth.clone().subtract(24, 'months'),
+    template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
+  },
+};
+
 const getTemplate = (inactiveWorkplace) => {
-  const lastMonth = moment().subtract(1, 'months');
   const lastUpdated = moment(inactiveWorkplace.LastUpdated);
 
-  const sixMonths = lastMonth.clone().subtract(6, 'months');
-  const twelveMonths = lastMonth.clone().subtract(12, 'months');
-  const eighteenMonths = lastMonth.clone().subtract(18, 'months');
-  const twentyFourMonths = lastMonth.clone().subtract(24, 'months');
+  for (const [_key, month] of Object.entries(templates)) {
+    const nextTemplate = month.template;
+    const notReceivedTemplate = inactiveWorkplace.LastTemplate !== nextTemplate.id;
 
-  if (lastUpdated.isSame(sixMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.sixMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  if (lastUpdated.isSame(twelveMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.twelveMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  if (lastUpdated.isSame(eighteenMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.eighteenMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
-  }
-
-  if (lastUpdated.isSame(twentyFourMonths, 'month')) {
-    const nextTemplate = config.get('sendInBlue.templates.twentyFourMonthsInactive');
-
-    return inactiveWorkplace.LastTemplate !== nextTemplate.id ? nextTemplate : null;
+    if (lastUpdated.isSame(month.lastUpdated, 'month') && notReceivedTemplate) {
+      return nextTemplate;
+    }
   }
 
   return null;
