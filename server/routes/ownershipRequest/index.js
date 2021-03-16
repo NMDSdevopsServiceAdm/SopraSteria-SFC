@@ -63,7 +63,7 @@ const ownershipRequest = async (req, res) => {
         if (params.approvalStatus !== 'DENIED') {
           let objToUpdate = {
             dataOwner: 'Workplace',
-            dataPermissions: 'Workplace and Staff',
+            dataPermissions: checkOwnerChangeRequest[0].permissionRequest,
           };
           let ownershipRequesterId = await ownership.getownershipRequesterId(req.establishment.id);
           if (ownershipRequesterId && ownershipRequesterId[0].IsParent === false && ownershipRequesterId[0].ParentID) {
