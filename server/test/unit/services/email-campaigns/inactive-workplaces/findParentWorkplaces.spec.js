@@ -6,6 +6,7 @@ const models = require('../../../../../models');
 const findParentWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWorkplaces', () => {
+
   afterEach(() => {
     sinon.restore();
   });
