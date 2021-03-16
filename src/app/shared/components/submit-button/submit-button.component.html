@@ -7,16 +7,11 @@
     </div>
     <div *ngIf="recordSummary" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
-      <a href="#" class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
-        >View record summary</a
-      >
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)">View record summary</a>
     </div>
     <div *ngIf="this.canExit" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
-      <a
-        href="#"
-        class="govuk-button govuk-button--link govuk-util__float-right"
-        (click)="onClick($event, 'exit', false)"
+      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)"
         >Exit</a
       >
     </div>
@@ -27,10 +22,7 @@
     </div>
     <div class="govuk-grid-column-one-half">
       <span class="govuk-visually-hidden">or</span>
-      <a
-        href="#"
-        class="govuk-button govuk-button--link govuk-util__float-right"
-        (click)="onClick($event, 'return', false)"
+      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'return', false)"
         >Exit</a
       >
     </div>
