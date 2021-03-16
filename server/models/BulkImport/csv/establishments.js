@@ -1136,6 +1136,7 @@ class Establishment {
     // all services must have main service in it
 
     const listOfServices = this._currentLine.ALLSERVICES.split(';');
+    const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
     if (!listOfServices ||  !listOfServices.includes(this._currentLine.MAINSERVICE)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -1148,15 +1149,25 @@ class Establishment {
       });
 
     }
+    if( listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ALL_SERVICES_ERROR,
+        errType: 'ALL_SERVICES_ERROR',
+        error: 'ALLSERVICES is 0 (none) but contains services other than the MAINSERVICE',
+        source: this._currentLine.ALLSERVICES,
+        column: 'ALLSERVICES',
+        name: this._currentLine.LOCALESTID,
+      });
 
+    }
     // all services and their service descriptions are semi-colon delimited
     //remove 0 aka NO other services
-    const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
-    const listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
+    let listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
+    listOfServiceDescriptions = this._checkForTrailingSemiColon(listOfServiceDescriptions);
 
     const localValidationErrors = [];
     const isValid = listOfServices.every((thisService) => !Number.isNaN(parseInt(thisService, 10)));
-
     if (!isValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1305,12 +1316,20 @@ class Establishment {
 
     return true;
   }
-
+ _checkForTrailingSemiColon(listOfEntities){
+   if(this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2){
+     return listOfEntities.filter( thisItem => !Number.isNaN(parseInt(thisItem, 10)));
+   }
+   return listOfEntities;
+ }
   _validateCapacitiesAndUtilisations() {
     // capacities/utilisations are a semi colon delimited list of integers
+    let listOfCapacities = this._currentLine.CAPACITY.split(';');
+    let listOfUtilisations = this._currentLine.UTILISATION.split(';');
 
-    const listOfCapacities = this._currentLine.CAPACITY.split(';');
-    const listOfUtilisations = this._currentLine.UTILISATION.split(';');
+    //remove unneed semicolon when no other services = 0
+    listOfCapacities = this._checkForTrailingSemiColon(listOfCapacities);
+    listOfUtilisations = this._checkForTrailingSemiColon(listOfUtilisations);
 
     const localValidationErrors = [];
 
@@ -2711,11 +2730,11 @@ class Establishment {
       leavers: this._leavers,
     };
     if (this._allServices){
-      if(this._allServices.length < 2) {
+      if(this._allServices.length === 1) {
         changeProperties.services.value = null;
       }else if(this._allServices.includes(0)){
           changeProperties.services.value = 'No';
-      }else if ( this._allServices > 2) {
+      }else if ( this._allServices.length > 1) {
         changeProperties.services = {
           value: 'Yes',
           services: this._allServices
