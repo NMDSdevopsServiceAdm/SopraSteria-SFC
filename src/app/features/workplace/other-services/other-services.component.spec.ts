@@ -16,7 +16,7 @@ import { OtherServicesComponent } from './other-services.component';
 
 describe('OtherServicesComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, getAllByText, getByTestId } = await render(OtherServicesComponent, {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(OtherServicesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -32,12 +32,23 @@ describe('OtherServicesComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, fireEvent };
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, fireEvent };
   };
 
   it('should render an OtherServicesComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should display dropdown checkboxes when Yes is selected', async () => {
+    const { fixture, getByTestId, queryByText } = await setup();
+    const yesButton = getByTestId('otherServices-conditional-1');
+    const checkboxes = getByTestId('checkboxes');
+    fireEvent.click(yesButton);
+    fixture.detectChanges();
+
+    expect(checkboxes).not.toHaveClass('govuk-radios__conditional--hidden');
+    expect(queryByText('Hello')).toBeTruthy();
   });
 
   it('should not display dropdown checkboxes when No is selected', async () => {
