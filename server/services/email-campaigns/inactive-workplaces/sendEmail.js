@@ -1,15 +1,33 @@
-const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
-const config = require('../../../config/config');
+const moment = require('moment');
 
-const sendEmail = async (workplace) => {
+const config = require('../../../config/config');
+const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
+
+const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+
+const getParams = (workplace) => {
   const params = {
     WORKPLACE_ID: workplace.nmdsId,
-      FULL_NAME: workplace.user.name,
+    FULL_NAME: workplace.user.name,
   };
 
-  if (workplace.emailTemplate.id === config.get('sendInBlue.templates.parent').id) {
-    params.SUBSIDIARIES = workplace.subsidiaries;
-  };
+  switch (workplace.emailTemplate.id) {
+    case config.get('sendInBlue.templates.parent').id:
+      params.WORKPLACES = workplace.subsidiaries;
+
+      if (moment(workplace.lastUpdated) <= endOfLastMonth.clone().subtract(6, 'months')) {
+        const { id, name, nmdsId, lastUpdated, dataOwner } = workplace;
+
+        params.WORKPLACES.unshift({ id, name, nmdsId, lastUpdated, dataOwner });
+      }
+      break;
+  }
+
+  return params;
+};
+
+const sendEmail = async (workplace) => {
+  const params = getParams(workplace);
 
   sendInBlueEmail.sendEmail(
     {
@@ -18,9 +36,10 @@ const sendEmail = async (workplace) => {
     },
     workplace.emailTemplate.id,
     params,
-  )
+  );
 };
 
 module.exports = {
   sendEmail,
+  getParams,
 };
