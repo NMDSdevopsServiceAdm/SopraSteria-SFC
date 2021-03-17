@@ -1,4 +1,5 @@
 const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
+const config = require('../../../config/config');
 
 const sendEmail = async (workplace) => {
   const params = {
@@ -6,7 +7,7 @@ const sendEmail = async (workplace) => {
       FULL_NAME: workplace.user.name,
   };
 
-  if (workplace.subsidiaries) {
+  if (workplace.emailTemplate.id === config.get('sendInBlue.templates.parent').id) {
     params.SUBSIDIARIES = workplace.subsidiaries;
   };
 
