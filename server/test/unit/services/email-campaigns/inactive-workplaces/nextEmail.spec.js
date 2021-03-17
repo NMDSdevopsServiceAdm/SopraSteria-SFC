@@ -2,7 +2,6 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const sinon = require('sinon');
 
-const config = require('../../../../../config/config');
 const nextEmail = require('../../../../../services/email-campaigns/inactive-workplaces/nextEmail');
 
 describe('nextEmailTemplate', () => {
@@ -187,33 +186,6 @@ describe('nextEmailTemplate', () => {
       const emailTemplateId = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplateId).to.equal(NextTemplate);
-    });
-  });
-
-  describe('isWhitelisted', () => {
-    it ('should return true if there is no whitelist', () => {
-      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('');
-
-      const whitelisted =  nextEmail.isWhitelisted('test@test.com');
-
-      expect(whitelisted).to.equal(true);
-    });
-
-
-    it ('should return true if the email is whitelisted', () => {
-      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('test@test.com,name@name.com');
-
-      const whitelisted =  nextEmail.isWhitelisted('test@test.com');
-
-      expect(whitelisted).to.equal(true);
-    });
-
-    it ('should return false if the email is not whitelisted', () => {
-      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('test@test.com,name@name.com');
-
-      const whitelisted =  nextEmail.isWhitelisted('example@example.com');
-
-      expect(whitelisted).to.equal(false);
     });
   });
 });
