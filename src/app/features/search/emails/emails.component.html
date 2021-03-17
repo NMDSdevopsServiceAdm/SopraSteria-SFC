@@ -38,7 +38,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <tr class="govuk-table__row" *ngFor="let row of history.slice().reverse()">
+      <tr class="govuk-table__row" *ngFor="let row of history">
         <td class="govuk-table__cell">{{ row.date | date: 'dd/MM/yyyy' }}</td>
         <td class="govuk-table__cell">{{ row.emails | number }}</td>
       </tr>
