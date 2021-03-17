@@ -37,11 +37,20 @@ const getTemplate = (inactiveWorkplace) => {
   return null;
 };
 
+const isWhitelisted = (email) => {
+  if (!config.get('sendInBlue.whitelist')) {
+    return true;
+  }
+
+  return config.get('sendInBlue.whitelist').split(',').includes(email);
+}
+
 const shouldReceive = (inactiveWorkplace) => {
-  return getTemplate(inactiveWorkplace) !== null;
+  return isWhitelisted(inactiveWorkplace.PrimaryUserEmail) === true && getTemplate(inactiveWorkplace) !== null;
 };
 
 module.exports = {
   getTemplate,
+  isWhitelisted,
   shouldReceive,
 };
