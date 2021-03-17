@@ -105,6 +105,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   describe('createCampaign', async () => {
     it('should create a campaign', async () => {
       sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+
       const sendEmailMock = sinon.stub(sendEmail, 'sendEmail').returns();
       const userMock = sinon.stub(models.user, 'findByUUID').returns({
         id: 1,
@@ -131,7 +133,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
       expect(response).to.deep.equal({
         date: '2021-01-01',
-        emails: 2,
+        emails: 3,
       });
 
       sinon.assert.calledOnce(createEmailCampaignHistoryMock);
@@ -142,6 +144,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       });
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[0]);
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[1]);
+      // sinon.assert.calledWith(sendEmailMock, dummyParentWorkplaces[0]);
     });
 
     it('should get the email campaign history', async () => {
