@@ -1,6 +1,10 @@
+const moment = require('moment');
+
 const { getParentWorkplaces } = require('../../../models/email-campaigns/inactive-workplaces/getParentWorkplaces');
 
-const findParentWorkplaces = async () => {
+const lastMonth = moment().subtract(1, 'months');
+
+const transformParentWorkplaces = async () => {
   const workplaces = await getParentWorkplaces();
 
   return workplaces
@@ -8,7 +12,7 @@ const findParentWorkplaces = async () => {
     .map((parentWorkplace) => {
       const subsidiaries = workplaces
         .filter((subsidiary) => {
-          return subsidiary.ParentID === parentWorkplace.EstablishmentID;
+          return (subsidiary.ParentID === parentWorkplace.EstablishmentID) && (moment(subsidiary.LastUpdated) <= lastMonth.clone().subtract(6, 'months'));
         })
         .map((subsidiary) => {
           return {
@@ -45,6 +49,12 @@ const findParentWorkplaces = async () => {
         subsidiaries,
       };
     });
+};
+
+const findParentWorkplaces = async () => {
+  return (await transformParentWorkplaces()).filter((parent) => {
+    return parent.subsidiaries.length || (parent.lastUpdated <= lastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'));
+  });
 };
 
 module.exports = {
