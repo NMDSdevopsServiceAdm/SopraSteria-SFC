@@ -4,54 +4,58 @@ const { getParentWorkplaces } = require('../../../models/email-campaigns/inactiv
 
 const lastMonth = moment().subtract(1, 'months');
 
-const transformParentWorkplaces = async () => {
+const transformSubsidiaryWorkplace = (subsidiary) => {
+  return {
+    id: subsidiary.EstablishmentID,
+    name: subsidiary.NameValue,
+    nmdsId: subsidiary.NmdsID,
+    lastUpdated: subsidiary.LastUpdated,
+    dataOwner: subsidiary.DataOwner,
+  };
+};
+
+const transformParentWorkplaces = (workplaces, parentWorkplace) => {
+  const subsidiaries = workplaces
+    .filter((subsidiary) => {
+      return (
+        subsidiary.ParentID === parentWorkplace.EstablishmentID &&
+        moment(subsidiary.LastUpdated) <= lastMonth.clone().subtract(6, 'months')
+      );
+    })
+    .map(transformSubsidiaryWorkplace);
+
+  return {
+    id: parentWorkplace.EstablishmentID,
+    name: parentWorkplace.NameValue,
+    nmdsId: parentWorkplace.NmdsID,
+    lastUpdated: parentWorkplace.LastUpdated,
+    emailTemplate: config.get('sendInBlue.templates.parent'),
+    dataOwner: parentWorkplace.DataOwner,
+    user: {
+      name: parentWorkplace.PrimaryUserName,
+      email: parentWorkplace.PrimaryUserEmail,
+    },
+    subsidiaries: subsidiaries,
+  };
+};
+
+const isParent = (workplace) => {
+  return workplace.IsParent;
+}
+
+const parentOrSubsInactive = (parent) => {
+  return parent.subsidiaries.length || moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months');
+}
+
+const findParentWorkplaces = async () => {
   const workplaces = await getParentWorkplaces();
 
   return workplaces
-    .filter((workplace) => workplace.IsParent)
+    .filter(isParent)
     .map((parentWorkplace) => {
-      const subsidiaries = workplaces
-        .filter((subsidiary) => {
-          return (subsidiary.ParentID === parentWorkplace.EstablishmentID) && (moment(subsidiary.LastUpdated) <= lastMonth.clone().subtract(6, 'months'));
-        })
-        .map((subsidiary) => {
-          return {
-            id: subsidiary.EstablishmentID,
-            name: subsidiary.NameValue,
-            nmdsId: subsidiary.NmdsID,
-            lastUpdated: subsidiary.LastUpdated,
-            dataOwner: subsidiary.DataOwner,
-          };
-        });
-
-      const id = parentWorkplace.EstablishmentID;
-      const name = parentWorkplace.NameValue;
-      const nmdsId = parentWorkplace.NmdsID;
-      const lastUpdated = parentWorkplace.LastUpdated;
-      const emailTemplate = config.get('sendInBlue.templates.parent');
-      const dataOwner = parentWorkplace.DataOwner;
-      const user = {
-        name: parentWorkplace.PrimaryUserName,
-        email: parentWorkplace.PrimaryUserEmail,
-      };
-
-      return {
-        id,
-        name,
-        nmdsId,
-        lastUpdated,
-        emailTemplate,
-        dataOwner,
-        user,
-        subsidiaries,
-      };
-    });
-};
-
-const findParentWorkplaces = async () => {
-  return (await transformParentWorkplaces()).filter((parent) => {
-    return parent.subsidiaries.length || (moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months'));
-  });
+      return transformParentWorkplaces(workplaces, parentWorkplace);
+    })
+    .filter(parentOrSubsInactive);
 };
 
 module.exports = {
