@@ -36,7 +36,6 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
       combineLatest([this.errorSummaryService.formEl$, this.errorSummaryService.errorId$])
         .pipe(filter(([formEl, errorId]) => formEl !== null && errorId !== null))
         .subscribe(([formEl, errorId]) => {
-          console.log(formEl);
           const errorMessage = formEl.nativeElement.querySelector(`#${this.getErrorId(errorId)}`);
           if (errorMessage) {
             const errorWrapper = errorMessage.closest('div');
@@ -144,7 +143,6 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   }
 
   public focusOnField(item: string) {
-    console.log(item);
     this.errorSummaryService.errorId$.next(item);
   }
 

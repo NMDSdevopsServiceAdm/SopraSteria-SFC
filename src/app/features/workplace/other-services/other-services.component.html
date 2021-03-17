@@ -5,7 +5,7 @@
   [serverError]="serverError"
 >
 </app-error-summary>
-<form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form" *ngIf="renderForm">
+<form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -25,21 +25,21 @@
               <input
                 class="govuk-radios__input"
                 [formControlName]="'otherServicesValue'"
-                id="otherServices-conditional-1"
+                id="otherServices-Yes"
                 data-testid="otherServices-conditional-1"
                 name="otherServicesValue"
                 type="radio"
                 value="Yes"
-                aria-controls="conditional-otherServices-conditional-1"
+                aria-controls="otherServices-Yes-dropdown"
               />
-              <label class="govuk-label govuk-radios__label" for="otherServices-conditional-1">
+              <label class="govuk-label govuk-radios__label" for="otherServices-Yes">
                 Yes, we provide other services.
               </label>
             </div>
             <div
               class="govuk-radios__conditional"
               [class.govuk-radios__conditional--hidden]="form.get('otherServicesValue').value !== 'Yes'"
-              id="conditional-recruitmentKnown-conditional-1"
+              id="otherServices-Yes-dropdown"
               data-testid="checkboxes"
             >
               <div class="govuk-form-group">
@@ -85,7 +85,7 @@
                             id="otherServices-conditional-{{ i }}"
                           >
                             <div class="govuk-form-group govuk-!-margin-bottom-2">
-                              <label class="govuk-label" for="additionalOtherService-{{ service.id }}">
+                              <label class="govuk-label" for="additionalOtherService{{ service.id }}">
                                 Enter your other service
                               </label>
                               <span
@@ -120,13 +120,13 @@
               <input
                 class="govuk-radios__input"
                 [formControlName]="'otherServicesValue'"
-                id="otherServices-2"
+                id="otherServices-No"
                 data-testid="otherServices-conditional-2"
                 name="otherServicesValue"
                 type="radio"
                 value="No"
               />
-              <label class="govuk-label govuk-radios__label" for="otherServices-2"> No </label>
+              <label class="govuk-label govuk-radios__label" for="otherServices-No"> No </label>
             </div>
           </div>
         </fieldset>
