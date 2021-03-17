@@ -33,6 +33,7 @@ const initialiseSecrets = async (region, wallet) => {
         SENTRY_DSN: mySecrets.SENTRY_DSN,
         HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY,
         SEND_IN_BLUE_KEY: mySecrets.SEND_IN_BLUE_KEY,
+        SEND_IN_BLUE_WHITELIST: mySecrets.SEND_IN_BLUE_WHITELIST,
       };
     }
   } catch (err) {
