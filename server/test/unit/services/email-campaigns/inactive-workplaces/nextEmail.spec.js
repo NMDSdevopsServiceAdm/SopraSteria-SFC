@@ -49,7 +49,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: null,
       };
 
-      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplate.id).to.equal(NextTemplate);
     });
@@ -93,7 +93,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: LastTemplate,
       };
 
-      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplate ? emailTemplate.id : emailTemplate).to.equal(NextTemplate);
     });
@@ -133,7 +133,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: LastTemplate,
       };
 
-      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplate).to.equal(null);
     });
@@ -183,7 +183,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: LastTemplate,
       };
 
-      const emailTemplateId = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplateId = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplateId).to.equal(NextTemplate);
     });
