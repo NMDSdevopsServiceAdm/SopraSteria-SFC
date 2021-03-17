@@ -197,6 +197,37 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       expect(apiObject).to.deep.equal(expectedResult);
     });
+    it('should return a correct all services when util contains ; ', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.MAINSERVICE = '8';
+      establishmentRow.ALLSERVICES = '8;0';
+      establishmentRow.SERVICEDESC = ';';
+      establishmentRow.UTILISATION = ';';
+      establishmentRow.CAPACITY = ';';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      const apiObject = establishment.toAPI();
+      const expectedResult = validateAPIObject(establishmentRow);
+      expectedResult.services = {value: 'No', };
+      expectedResult.capacities =  [null,null];
+
+      expect(apiObject).to.deep.equal(expectedResult);
+    });
+    it('should return a correct all services ALLSERVICES doesnt contain ; ', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.MAINSERVICE = '8';
+      establishmentRow.ALLSERVICES = '8';
+      establishmentRow.SERVICEDESC = ';';
+      establishmentRow.UTILISATION = ';';
+      establishmentRow.CAPACITY = ';';
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      const apiObject = establishment.toAPI();
+      const expectedResult = validateAPIObject(establishmentRow);
+      expectedResult.services = {value: null };
+      expectedResult.capacities =  [null,null];
+
+      expect(apiObject).to.deep.equal(expectedResult);
+    });
   });
   describe('toJSON', () => {
     it('should return a correct JSON ', async () => {

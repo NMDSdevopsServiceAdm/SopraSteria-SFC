@@ -149,6 +149,9 @@ class Establishment {
   static get ALL_SERVICES_ERROR() {
     return 1120;
   }
+  static get ALL_SERVICES_ERROR_NONE() {
+    return 1121;
+  }
   static get SERVICE_USERS_ERROR() {
     return 1130;
   }
@@ -1134,11 +1137,12 @@ class Establishment {
 
   _validateAllServices() {
     // all services must have main service in it
+    const localValidationErrors = [];
 
     const listOfServices = this._currentLine.ALLSERVICES.split(';');
     const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
     if (!listOfServices ||  !listOfServices.includes(this._currentLine.MAINSERVICE)) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: 'ALL_SERVICES_ERROR',
@@ -1150,10 +1154,10 @@ class Establishment {
 
     }
     if( listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_SERVICES_ERROR,
-        errType: 'ALL_SERVICES_ERROR',
+        errCode: Establishment.ALL_SERVICES_ERROR_NONE,
+        errType: 'ALL_SERVICES_ERROR_NONE',
         error: 'ALLSERVICES is 0 (none) but contains services other than the MAINSERVICE',
         source: this._currentLine.ALLSERVICES,
         column: 'ALLSERVICES',
@@ -1161,12 +1165,13 @@ class Establishment {
       });
 
     }
+
     // all services and their service descriptions are semi-colon delimited
     //remove 0 aka NO other services
     let listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
-    listOfServiceDescriptions = this._checkForTrailingSemiColon(listOfServiceDescriptions);
 
-    const localValidationErrors = [];
+    listOfServiceDescriptions = this._prepArray(listOfServiceDescriptions);
+
     const isValid = listOfServices.every((thisService) => !Number.isNaN(parseInt(thisService, 10)));
     if (!isValid) {
       localValidationErrors.push({
@@ -1316,9 +1321,29 @@ class Establishment {
 
     return true;
   }
+  _ignoreZerosIfNo(listOfEntities){
+    const allServices =  this._currentLine.ALLSERVICES.split(';');
+
+    if(this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2  && allServices.length === 2 ){
+      const indexOfZero = allServices.indexOf('0');
+      if( indexOfZero > -1){
+        listOfEntities[indexOfZero] = '';
+      }
+    }
+    return listOfEntities;
+  }
+ _prepArray(listOfEntities) {
+   listOfEntities = this._ignoreZerosIfNo(listOfEntities);
+
+   listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
+   return listOfEntities;
+ }
+
  _checkForTrailingSemiColon(listOfEntities){
-   if(this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2){
-     return listOfEntities.filter( thisItem => !Number.isNaN(parseInt(thisItem, 10)));
+   if((this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2) || this._currentLine.ALLSERVICES.split(';').length === 1 ){
+     listOfEntities =  listOfEntities.filter( thisItem => !Number.isNaN(parseInt(thisItem, 10)));
+     //make sure listOfEntities always has at least one null for MainService
+     return listOfEntities.length === 0 ? ['']: listOfEntities;
    }
    return listOfEntities;
  }
@@ -1327,9 +1352,10 @@ class Establishment {
     let listOfCapacities = this._currentLine.CAPACITY.split(';');
     let listOfUtilisations = this._currentLine.UTILISATION.split(';');
 
-    //remove unneed semicolon when no other services = 0
-    listOfCapacities = this._checkForTrailingSemiColon(listOfCapacities);
-    listOfUtilisations = this._checkForTrailingSemiColon(listOfUtilisations);
+    //remove excess semicolon when no other services = 0
+    console.log(listOfCapacities);
+    listOfCapacities = this._prepArray(listOfCapacities);
+    listOfUtilisations = this._prepArray(listOfUtilisations);
 
     const localValidationErrors = [];
 
@@ -1372,7 +1398,8 @@ class Establishment {
 
     // and the number of utilisations/capacities must equal the number of all services
     const lengthOfServicesWithoutNo = this._allServices ? this._allServices.filter(item => item !== 0).length : 0;
-    if (listOfCapacities.length !== lengthOfServicesWithoutNo) {
+    console.log(lengthOfServicesWithoutNo);
+    if (this._allServices && listOfCapacities.length !== lengthOfServicesWithoutNo) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_ERROR,
@@ -2862,7 +2889,7 @@ class Establishment {
     otherServices.unshift(mainService);
     const transformedOtherService = otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id));
     if (entity.otherServices.value === 'No'){
-      transformedOtherService.push('999');
+      transformedOtherService.push('0');
     }
     columns.push(transformedOtherService.join(';'));
 

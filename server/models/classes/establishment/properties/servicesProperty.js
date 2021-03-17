@@ -34,16 +34,14 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
       if (document.mainService) this._mainService = document.mainService; // can be an empty array
     }
-
     // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
     if (document.otherServices) {
-
       document.services =
         {
           value: document.otherServices.value,
           services: []
         };
-      if (document.otherServices === 'Yes') {
+      if (document.otherServices.value === 'Yes') {
         document.otherServices.services.forEach((thisServiceCategory) => {
           thisServiceCategory.services.forEach((thisService) => {
             document.services.services.push({
@@ -53,7 +51,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         });
       }
     }
-
     if (document.services) {
       if (
         document.services.value === 'Yes' &&
@@ -158,14 +155,14 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
   formatOtherServicesResponse(mainService, otherServices, allServices) {
     return {
-      mainService: ServiceFormatters.singleService(mainService),
+      mainService: mainService ? ServiceFormatters.singleService(mainService) : undefined,
       otherServices: {
         value: this.property.value ? this.property.value : null,
         services: otherServices.services
           ? ServiceFormatters.createServicesByCategoryJSON(otherServices.services, false, false, false)
           : undefined,
       },
-      allOtherServices: ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true),
+      allOtherServices: allServices ? ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true) : undefined,
     };
   }
 
@@ -174,13 +171,14 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
       return this.formatOtherServicesResponse(this._mainService, this.property, this._allServices);
     }
 
-    return {
+    const result = {
       otherServices: {
         value:this.property.value ? this.property.value : null,
-        services: ServiceFormatters.createServicesByCategoryJSON(this.property.services, false, false, false),
-        ...this.changePropsToJSON(showPropertyHistoryOnly),
+
       },
     };
+    result.services = ServiceFormatters.createServicesByCategoryJSON(this.property.services, false, false, false);
+    return result;
   }
 
   _valid(thisService) {
@@ -209,7 +207,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         setOfValidatedServicesInvalid = true;
         break;
       }
-
       // id overrides name, because id is indexed whereas name is not!
       let referenceService = null;
       if (thisService.id) {
