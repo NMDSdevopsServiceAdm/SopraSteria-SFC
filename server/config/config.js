@@ -511,6 +511,18 @@ const config = convict({
           default: '24 months',
         },
       },
+      parent: {
+        id: {
+          doc: 'Template ID for the parent workplace email',
+          format: Number,
+          default: 15,
+        },
+        name: {
+          doc: 'Template Name for the parent workplace email',
+          format: String,
+          default: 'Parent',
+        },
+      },
     },
   },
 });

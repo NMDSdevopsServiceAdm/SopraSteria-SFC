@@ -1,5 +1,5 @@
 const moment = require('moment');
-
+const config = require('../../../config/config');
 const { getParentWorkplaces } = require('../../../models/email-campaigns/inactive-workplaces/getParentWorkplaces');
 
 const lastMonth = moment().subtract(1, 'months');
@@ -28,10 +28,7 @@ const transformParentWorkplaces = async () => {
       const name = parentWorkplace.NameValue;
       const nmdsId = parentWorkplace.NmdsID;
       const lastUpdated = parentWorkplace.LastUpdated;
-      const emailTemplate = {
-        id: 15,
-        name: 'Parent',
-      };
+      const emailTemplate = config.get('sendInBlue.templates.parent');
       const dataOwner = parentWorkplace.DataOwner;
       const user = {
         name: parentWorkplace.PrimaryUserName,
@@ -53,7 +50,7 @@ const transformParentWorkplaces = async () => {
 
 const findParentWorkplaces = async () => {
   return (await transformParentWorkplaces()).filter((parent) => {
-    return parent.subsidiaries.length || (parent.lastUpdated <= lastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'));
+    return parent.subsidiaries.length || (moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months'));
   });
 };
 
