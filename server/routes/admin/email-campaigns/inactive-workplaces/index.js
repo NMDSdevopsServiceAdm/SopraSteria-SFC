@@ -4,13 +4,15 @@ const moment = require('moment');
 
 const models = require('../../../../models');
 const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
 const getInactiveWorkplaces = async (_req, res) => {
   const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+  const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
 
   return res.json({
-    inactiveWorkplaces: inactiveWorkplaces.length,
+    inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
   });
 };
 

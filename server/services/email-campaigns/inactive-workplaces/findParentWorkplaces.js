@@ -1,38 +1,50 @@
-const findParentWorkplaces = async () => {
+const { getParentWorkplaces } = require('../../../models/email-campaigns/inactive-workplaces/getParentWorkplaces');
 
-  return [
-    {
-      id: 1,
-      name: 'Test Name',
-      nmdsId: 'A1234567',
-      lastUpdated: '6 months ago',
-      emailTemplate: {
+const findParentWorkplaces = async () => {
+  const workplaces = await getParentWorkplaces();
+
+  return workplaces
+    .filter((workplace) => workplace.IsParent)
+    .map((parentWorkplace) => {
+      const subsidiaries = workplaces
+        .filter((subsidiary) => {
+          return subsidiary.ParentID === parentWorkplace.EstablishmentID;
+        })
+        .map((subsidiary) => {
+          return {
+            id: subsidiary.EstablishmentID,
+            name: subsidiary.NameValue,
+            nmdsId: subsidiary.NmdsID,
+            lastUpdated: subsidiary.LastUpdated,
+            dataOwner: subsidiary.DataOwner,
+          };
+        });
+
+      const id = parentWorkplace.EstablishmentID;
+      const name = parentWorkplace.NameValue;
+      const nmdsId = parentWorkplace.NmdsID;
+      const lastUpdated = parentWorkplace.LastUpdated;
+      const emailTemplate = {
         id: 15,
         name: 'Parent',
-      },
-      dataOwner: 'Workplace',
-      user: {
-        name: 'Test Person',
-        email: 'test@example.com',
-      },
-      subsidiaries: [
-        {
-          id: 2,
-          name: 'Test Name 2',
-          nmdsId: 'J231466',
-          lastUpdated: '3 months ago',
-          dataOwner: 'Parent',
-        },
-        {
-          id: 3,
-          name: 'Test Name 3',
-          nmdsId: 'H2345678',
-          lastUpdated: '6 months ago',
-          dataOwner: 'Parent',
-        },
-      ],
-    },
-  ];
+      };
+      const dataOwner = parentWorkplace.DataOwner;
+      const user = {
+        name: parentWorkplace.PrimaryUserName,
+        email: parentWorkplace.PrimaryUserEmail,
+      };
+
+      return {
+        id,
+        name,
+        nmdsId,
+        lastUpdated,
+        emailTemplate,
+        dataOwner,
+        user,
+        subsidiaries,
+      };
+    });
 };
 
 module.exports = {
