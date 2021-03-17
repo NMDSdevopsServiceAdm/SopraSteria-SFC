@@ -182,7 +182,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
     ]);
 
     const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
-    console.log(parentWorkplaces);
 
     expect(parentWorkplaces).to.deep.equal([
       {

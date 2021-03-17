@@ -46,7 +46,7 @@ const createCampaign = async (req, res) => {
     });
 
     await models.EmailCampaignHistory.bulkCreate(history);
-    inactiveWorkplaces.map(sendEmail.sendEmail);
+    totalInactiveWorkplaces.map(sendEmail.sendEmail);
 
     return res.json({
       date: emailCampaign.createdAt,

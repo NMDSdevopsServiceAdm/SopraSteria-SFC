@@ -144,7 +144,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       });
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[0]);
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[1]);
-      // sinon.assert.calledWith(sendEmailMock, dummyParentWorkplaces[0]);
+      sinon.assert.calledWith(sendEmailMock, dummyParentWorkplaces[0]);
     });
 
     it('should get the email campaign history', async () => {
