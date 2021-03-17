@@ -5,8 +5,7 @@
   [serverError]="serverError"
 >
 </app-error-summary>
-
-<form (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="renderForm">
+<form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form" *ngIf="renderForm">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -60,7 +59,7 @@
                           {{ serviceGroup.category }}
                         </h2>
                       </legend>
-                      <div class="govuk-checkboxes">
+                      <div class="govuk-checkboxes" id="otherServices">
                         <ng-container *ngFor="let service of serviceGroup.services | orderOther; let i = index">
                           <div class="govuk-checkboxes__item">
                             <input
@@ -99,7 +98,7 @@
                               </span>
                               <input
                                 class="govuk-input govuk-!-width-one-third"
-                                id="additionalOtherService-{{ service.id }}"
+                                id="additionalOtherService{{ service.id }}"
                                 name="'additionalOtherService' + service.id"
                                 type="text"
                                 [formControlName]="'additionalOtherService' + service.id"
