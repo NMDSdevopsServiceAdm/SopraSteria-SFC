@@ -4,6 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-references-created-page',
   templateUrl: './references-created-page.component.html',
 })
-export class ReferencesCreatedPageComponent {
-  constructor() {}
-}
+export class ReferencesCreatedPageComponent {}

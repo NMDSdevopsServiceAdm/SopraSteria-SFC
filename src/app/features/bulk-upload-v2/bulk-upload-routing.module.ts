@@ -11,15 +11,25 @@ import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolv
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { AboutBulkUploadComponent } from '@features/bulk-upload-v2/about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-page/bulk-upload-page.component';
-import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
-import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import {
+  MissingStaffReferencesComponent,
+} from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
+import {
+  MissingWorkplaceReferencesComponent,
+} from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import {
+  BulkUploadStartPageComponent,
+} from '@features/bulk-upload-v2/bulk-upload-start-page/bulk-upload-start-page.component';
 import { LastBulkUploadComponent } from '@features/bulk-upload-v2/last-bulk-upload/last-bulk-upload.component';
-import { BulkUploadStartPageComponent } from '@features/bulk-upload-v2/bulk-upload-start-page/bulk-upload-start-page.component';
-import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references-created-page/references-created-page.component';
+import {
+  ReferencesCreatedPageComponent,
+} from '@features/bulk-upload-v2/references-created-page/references-created-page.component';
 
 import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-upload-missing-page.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
-import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import {
+  WorkplaceReferencesComponent,
+} from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 
 const routes: Routes = [
