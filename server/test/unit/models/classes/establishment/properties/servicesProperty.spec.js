@@ -30,7 +30,7 @@ describe('servicesProperty Property', () => {
     { id: 17, name: 'Other healthcare service', category: 'Other', other: true },
   ];
   describe('restoreFromJson()', () => {
-    it('should return JSON', async () => {
+    it('should return correct JSON when yes', async () => {
       const servicesProperty = new servicesPropertyClass();
       const document = {
         services: {
@@ -52,9 +52,41 @@ describe('servicesProperty Property', () => {
         ],
       });
     });
+    it('should return correct JSON when no', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      const document = {
+        services: {
+          value: 'No',
+        },
+        allMyServices: allMyServices,
+        mainService: {
+          id: 1,
+        },
+      };
+      await servicesProperty.restoreFromJson(document);
+      expect(servicesProperty.property).to.deep.equal({
+        value: 'No',
+      });
+    });
+    it('should return correct JSON when null', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      const document = {
+        services: {
+          value: null,
+        },
+        allMyServices: allMyServices,
+        mainService: {
+          id: 1,
+        },
+      };
+      await servicesProperty.restoreFromJson(document);
+      expect(servicesProperty.property).to.deep.equal({
+        value: null,
+      });
+    });
   });
   describe('restorePropertyFromSequelize()', () => {
-    it('should restore from sequelize', async () => {
+    it('should restore from sequelize correct when yes', async () => {
       const servicesProperty = new servicesPropertyClass();
       const document = {
         otherServicesValue: 'Yes',
@@ -76,6 +108,36 @@ describe('servicesProperty Property', () => {
           { id: 11, name: 'Domestic services and home help', category: 'Adult domiciliary', other: undefined },
           { id: 17, name: 'Other healthcare service', category: 'Other', other: undefined },
         ],
+      });
+    });
+    it('should restore from sequelize correctly when No', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      const document = {
+        otherServicesValue: 'No',
+        otherServices: [],
+        allMyServices: allMyServices,
+        mainService: {
+          id: 1,
+        },
+      };
+      await servicesProperty.restoreFromSequelize(document);
+      expect(servicesProperty.property).to.deep.equal({
+        value: 'No',
+      });
+    });
+    it('should restore from sequelize correctly when null', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      const document = {
+        otherServicesValue: null,
+        otherServices: [],
+        allMyServices: allMyServices,
+        mainService: {
+          id: 1,
+        },
+      };
+      await servicesProperty.restoreFromSequelize(document);
+      expect(servicesProperty.property).to.deep.equal({
+        value: null,
       });
     });
   });
@@ -115,6 +177,19 @@ describe('servicesProperty Property', () => {
 
       expect(result).to.deep.equal({
         otherServicesValue: 'No',
+      });
+
+    });
+    it('should save to sequelize with additional Models when null', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      servicesProperty.property = {
+        value: null,
+      };
+
+      const result = servicesProperty.savePropertyToSequelize();
+
+      expect(result).to.deep.equal({
+        otherServicesValue: null,
       });
 
     });
@@ -174,7 +249,7 @@ describe('servicesProperty Property', () => {
     });
   });
   describe('toJSON()', () => {
-    it('should return JSON', async () => {
+    it('should return JSON correctly when yes', async () => {
       const servicesProperty = new servicesPropertyClass();
       const document = {
         otherServicesValue: 'Yes',
@@ -212,6 +287,74 @@ describe('servicesProperty Property', () => {
               ]
             },
           ]
+        },
+        allOtherServices: [
+          {
+            category: 'Adult community care',
+            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }]
+          },
+        ]
+      });
+    });
+    it('should return JSON correctly when No', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      const document = {
+        otherServicesValue: 'No',
+        allMyServices: [{ id: 1, name: 'Carers support', category: 'Adult community care', other: false },
+          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },],
+
+        mainService: {
+          id: 1,
+        },
+      };
+      await servicesProperty.restoreFromSequelize(document);
+
+      const results = servicesProperty.toJSON(false, true, false);
+      expect(results).to.deep.equal({
+        mainService: {
+          id: 1,
+          name: undefined,
+          other: undefined,
+          category: undefined,
+          isCQC: undefined
+        },
+        otherServices: {
+          value: 'No',
+          services: undefined,
+        },
+        allOtherServices: [
+          {
+            category: 'Adult community care',
+            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }]
+          },
+        ]
+      });
+    });
+    it('should return JSON correctly when null', async () => {
+      const servicesProperty = new servicesPropertyClass();
+      const document = {
+        otherServicesValue: null,
+        allMyServices: [{ id: 1, name: 'Carers support', category: 'Adult community care', other: false },
+          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },],
+
+        mainService: {
+          id: 1,
+        },
+      };
+      await servicesProperty.restoreFromSequelize(document);
+
+      const results = servicesProperty.toJSON(false, true, false);
+      expect(results).to.deep.equal({
+        mainService: {
+          id: 1,
+          name: undefined,
+          other: undefined,
+          category: undefined,
+          isCQC: undefined
+        },
+        otherServices: {
+          value: null,
+          services: undefined,
         },
         allOtherServices: [
           {

@@ -55,7 +55,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     if (document.services) {
       if (document.services.value === 'No' || document.services.value === null ){
          this.property = {
-          value: document.services.value 
+          value: document.services.value
         };
          return;
       }
