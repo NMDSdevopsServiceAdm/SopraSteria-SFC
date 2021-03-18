@@ -143,31 +143,25 @@ var unless = function (root, path, middleware) {
 
 app.disable('x-powered-by');
 
-app.use(helmet.noSniff());
 app.use(
-  helmet.referrerPolicy({
-    policy: 'strict-origin-when-cross-origin',
-  }),
-);
-app.use(helmet.xssFilter());
-app.use(
-  helmet.frameguard({
-    action: 'deny',
-  }),
-);
-app.use(
-  helmet.permittedCrossDomainPolicies({
-    permittedPolicies: 'none',
-  }),
-);
-app.use(
-  helmet.expectCt({
-    maxAge: 86400,
-  }),
-);
-app.use(
-  helmet.dnsPrefetchControl({
-    allow: true,
+  helmet({
+    referrerPolicy: {
+      policy: 'strict-origin-when-cross-origin',
+    },
+    frameguard: {
+      action: 'deny',
+    },
+    permittedCrossDomainPolicies: {
+      permittedPolicies: 'none',
+    },
+    expectCt: {
+      maxAge: 86400,
+    },
+    dnsPrefetchControl: {
+      allow: true,
+    },
+    hsts: false,
+    contentSecurityPolicy: false,
   }),
 );
 
