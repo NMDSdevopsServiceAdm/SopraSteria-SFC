@@ -27,7 +27,10 @@ const createCampaign = async (req, res) => {
     });
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    const history = inactiveWorkplaces.map((workplace) => {
+    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+
+    const totalInactiveWorkplaces = inactiveWorkplaces.concat(parentWorkplaces)
+    const history = totalInactiveWorkplaces.map((workplace) => {
       return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
@@ -35,6 +38,7 @@ const createCampaign = async (req, res) => {
         data: {
           dataOwner: workplace.dataOwner,
           lastUpdated: workplace.lastUpdated,
+          subsidiaries: workplace.subsidiaries ? workplace.subsidiaries : [],
         },
         sentToName: workplace.user.name,
         sentToEmail: workplace.user.email,
@@ -42,11 +46,11 @@ const createCampaign = async (req, res) => {
     });
 
     await models.EmailCampaignHistory.bulkCreate(history);
-    inactiveWorkplaces.map(sendEmail.sendEmail);
+    totalInactiveWorkplaces.map(sendEmail.sendEmail);
 
     return res.json({
       date: emailCampaign.createdAt,
-      emails: inactiveWorkplaces.length,
+      emails: totalInactiveWorkplaces.length,
     });
   } catch (err) {
     console.error(err);

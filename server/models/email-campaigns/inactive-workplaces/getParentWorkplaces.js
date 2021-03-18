@@ -3,12 +3,18 @@ const moment = require('moment');
 const models = require('../../index');
 
 const getParentWorkplaces = async () => {
-  const currentMonth = moment().startOf('month').format('YYYY-MM-DD');
+  const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 
   return models.sequelize.query(
     `
     SELECT
-    *
+      "EstablishmentID",
+      "NameValue",
+      TRIM("NmdsID"),
+      "DataOwner",
+      "PrimaryUserName",
+      "PrimaryUserEmail",
+      "LastUpdated"
   FROM
     cqc. "LastUpdatedEstablishments" e
   WHERE
@@ -21,11 +27,17 @@ const getParentWorkplaces = async () => {
         JOIN cqc. "EmailCampaigns" ec ON ec. "id" = ech. "emailCampaignID"
       WHERE
         ec. "type" = 'inactiveWorkplaces'
-        AND ech. "createdAt" >= :currentMonth
+        AND ech. "createdAt" >= :lastEmailDate
         AND ech. "establishmentID" = e. "EstablishmentID")
     UNION
     SELECT
-      *
+      "EstablishmentID",
+      "NameValue",
+      TRIM("NmdsID"),
+      "DataOwner",
+      "PrimaryUserName",
+      "PrimaryUserEmail",
+      "LastUpdated"
     FROM
       cqc. "LastUpdatedEstablishments" e
     WHERE
@@ -39,12 +51,12 @@ const getParentWorkplaces = async () => {
           JOIN cqc. "EmailCampaigns" ec ON ec. "id" = ech. "emailCampaignID"
         WHERE
           ec. "type" = 'inactiveWorkplaces'
-          AND ech. "createdAt" >= :currentMonth
+          AND ech. "createdAt" >= :lastEmailDate
           AND ech. "establishmentID" = e. "ParentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
-        currentMonth,
+        lastEmailDate,
       },
     },
   );
