@@ -156,7 +156,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       const apiObject = establishment.toAPI();
-
       const expectedResult = validateAPIObject(establishmentRow);
       expectedResult.services = {value: "No"};
       expectedResult.capacities =  [null,null];
@@ -304,8 +303,8 @@ describe('Bulk Upload - Establishment CSV', () => {
         {
           origin: 'Establishments',
           lineNumber: establishment.lineNumber,
-          errCode: 1120,
-          errType: 'ALL_SERVICES_ERROR',
+          errCode: 1121,
+          errType: 'ALL_SERVICES_ERROR_NONE',
           error: 'ALLSERVICES is 0 (none) but contains services other than the MAINSERVICE',
           source: '8;0;13',
           column: 'ALLSERVICES',
@@ -488,7 +487,6 @@ describe('Bulk Upload - Establishment CSV', () => {
         establishmentRow,
         workerRow,
         (csvEstablishmentSchemaErrors) => {
-          console.log(csvEstablishmentSchemaErrors);
           expect(csvEstablishmentSchemaErrors[0].errCode).to.equal(1280);
         },
         databaseWorkers,

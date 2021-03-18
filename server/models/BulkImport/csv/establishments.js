@@ -1142,7 +1142,7 @@ class Establishment {
     const listOfServices = this._currentLine.ALLSERVICES.split(';');
     const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
     if (!listOfServices ||  !listOfServices.includes(this._currentLine.MAINSERVICE)) {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: 'ALL_SERVICES_ERROR',
@@ -1154,7 +1154,7 @@ class Establishment {
 
     }
     if( listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR_NONE,
         errType: 'ALL_SERVICES_ERROR_NONE',
@@ -1165,14 +1165,11 @@ class Establishment {
       });
 
     }
-
     // all services and their service descriptions are semi-colon delimited
     //remove 0 aka NO other services
-    let listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
-
-    listOfServiceDescriptions = this._prepArray(listOfServiceDescriptions);
-
-    const isValid = listOfServices.every((thisService) => !Number.isNaN(parseInt(thisService, 10)));
+    const listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
+    const listOfServiceDescriptionsWithoutNo = this._prepArray(listOfServiceDescriptions);
+    const isValid = listOfServicesWithoutNo.every((thisService) => !Number.isNaN(parseInt(thisService, 10)));
     if (!isValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1183,7 +1180,7 @@ class Establishment {
         column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
-    } else if (listOfServicesWithoutNo.length !== listOfServiceDescriptions.length) {
+    } else if (listOfServicesWithoutNo.length !== listOfServiceDescriptionsWithoutNo.length ) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -1327,14 +1324,13 @@ class Establishment {
     if(this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2  && allServices.length === 2 ){
       const indexOfZero = allServices.indexOf('0');
       if( indexOfZero > -1){
-        listOfEntities[indexOfZero] = '';
+        listOfEntities[indexOfZero] =  listOfEntities[indexOfZero] === '0' ? '' :  listOfEntities[indexOfZero];
       }
     }
     return listOfEntities;
   }
  _prepArray(listOfEntities) {
    listOfEntities = this._ignoreZerosIfNo(listOfEntities);
-
    listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
    return listOfEntities;
  }
@@ -1353,7 +1349,6 @@ class Establishment {
     let listOfUtilisations = this._currentLine.UTILISATION.split(';');
 
     //remove excess semicolon when no other services = 0
-    console.log(listOfCapacities);
     listOfCapacities = this._prepArray(listOfCapacities);
     listOfUtilisations = this._prepArray(listOfUtilisations);
 
@@ -2232,7 +2227,7 @@ class Establishment {
   }
 
   _transformAllCapacities() {
-    if (this._capacities && Array.isArray(this._capacities)) {
+    if (this._capacities && Array.isArray(this._capacities) && this._allServices) {
       const mappedCapacities = [];
 
       // capacities start out as a positional array including nulls
@@ -2274,7 +2269,7 @@ class Establishment {
   }
 
   _transformAllUtilisation() {
-    if (this._utilisations && Array.isArray(this._utilisations)) {
+    if (this._utilisations && Array.isArray(this._utilisations) && this._allServices) {
       const mappedUtilisations = [];
 
       // utilsiations start out as a positional array including nulls
