@@ -29,7 +29,7 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public getAllServices(): Observable<ServiceGroup[]> {
-    return of([{ category: 'any', value: null, services: [{ id: 123, name: 'Hello' }] }]);
+    return of([{ category: 'any', value: null, services: [{ id: 123, name: 'Mock Service' }] }]);
   }
 
   public get establishment(): Establishment {

@@ -48,7 +48,7 @@ describe('OtherServicesComponent', () => {
     fixture.detectChanges();
 
     expect(checkboxes).not.toHaveClass('govuk-radios__conditional--hidden');
-    expect(queryByText('Hello')).toBeTruthy();
+    expect(queryByText('Mock Service')).toBeTruthy();
   });
 
   it('should not display dropdown checkboxes when No is selected', async () => {
@@ -69,6 +69,7 @@ describe('OtherServicesComponent', () => {
     fireEvent.click(yesButton);
     component.onSubmit(event);
     fixture.detectChanges();
+
     expect(fixture.componentInstance.form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
   });
