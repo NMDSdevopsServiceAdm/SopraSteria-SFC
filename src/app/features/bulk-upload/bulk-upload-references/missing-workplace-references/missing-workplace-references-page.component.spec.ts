@@ -4,22 +4,24 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Workplace } from '@core/model/my-workplaces.model';
+import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
-import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
+import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
-import { WorkplaceReferencesComponent } from './workplace-references-page.component';
+import { MissingWorkplaceReferencesComponent } from './missing-workplace-references-page.component';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -30,13 +32,14 @@ const establishmentBuilder = build('Workplace', {
     dataPermissions: '',
     dataOwnerPermissions: '',
     isParent: bool(),
+    localIdentifier: null,
   },
 });
 
-describe('WorkplaceReferencesComponent', () => {
+describe('MissingWorkplaceReferencesComponent', () => {
   async function setup(references: Workplace[] = []) {
-    const component = await render(WorkplaceReferencesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
+    const component = await render(MissingWorkplaceReferencesComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -47,12 +50,16 @@ describe('WorkplaceReferencesComponent', () => {
           useClass: MockBulkUploadService,
         },
         {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+        {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
         {
-          provide: WindowRef,
-          useClass: WindowRef,
+          provide: AuthService,
+          useFactory: MockAuthService.factory(true, false),
         },
         {
           provide: ActivatedRoute,
@@ -60,6 +67,11 @@ describe('WorkplaceReferencesComponent', () => {
             snapshot: {
               data: {
                 workplaceReferences: references,
+                nextWorkplace: {
+                  establishment: 1,
+                  worker: 2,
+                  establishmentList: [{ uid: '123', name: 'Workplace Steve' }],
+                },
               },
             },
           },
@@ -183,5 +195,30 @@ describe('WorkplaceReferencesComponent', () => {
     expect(component.getAllByText(errorMessage, { exact: false }).length).toBe(2);
     expect(form.controls[`reference-${workplaces[0].uid}`].errors).toEqual({ duplicate: true });
     expect(form.controls[`reference-${workplaces[1].uid}`].errors).toEqual(null);
+  });
+
+  it('should show empty references at top of table on page load', async () => {
+    const workplaces = [establishmentBuilder(), establishmentBuilder()] as Workplace[];
+    workplaces[0].localIdentifier = 'hello';
+    const { component } = await setup(workplaces);
+    const firstReferenceRow = component.getByTestId('reference-0');
+    const workplaceNameWithEmptyReference = workplaces[1].name;
+
+    expect(firstReferenceRow.textContent.includes(workplaceNameWithEmptyReference));
+  });
+
+  it('should hide filled references on page load and show them after clicking Show all references', async () => {
+    const workplaces = [establishmentBuilder(), establishmentBuilder()] as Workplace[];
+    workplaces[0].localIdentifier = 'hello';
+    const { component } = await setup(workplaces);
+    const filledReferenceRow = component.getByTestId('reference-1');
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeTruthy();
+
+    const showAllReferencesToggle = component.getByText('Show all references');
+
+    fireEvent.click(showAllReferencesToggle);
+    component.fixture.detectChanges();
+
+    expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
   });
 });

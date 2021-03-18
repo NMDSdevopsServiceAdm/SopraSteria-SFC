@@ -13,7 +13,7 @@ import { AdminSkipService } from '../admin-skip.service';
   templateUrl: './bulk-upload-page.component.html',
   providers: [I18nPluralPipe, { provide: BulkUploadService, useClass: BulkUploadServiceV2 }],
 })
-export class BulkUploadPageV2Component implements OnInit, OnDestroy {
+export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
 
   constructor(

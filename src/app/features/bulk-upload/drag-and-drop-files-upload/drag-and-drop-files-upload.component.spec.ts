@@ -7,13 +7,13 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { render } from '@testing-library/angular';
 
-import { BulkUploadV2Module } from '../bulk-upload.module';
+import { BulkUploadModule } from '../bulk-upload.module';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
 
 describe('DragAndDropFilesUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
     return await render(DragAndDropFilesUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadV2Module],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
