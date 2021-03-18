@@ -19,7 +19,7 @@ module.exports = build('EstablishmentCSV', {
     PROVNUM: fake(f => f.helpers.replaceSymbolWithNumber('#-########')),
     LOCATIONID: fake(f => f.helpers.replaceSymbolWithNumber('#-########')),
     MAINSERVICE: '8',
-    ALLSERVICES: '12;13',
+    ALLSERVICES: '8;13',
     CAPACITY: '0;0',
     UTILISATION: '0;0',
     SERVICEDESC: '1;1',
