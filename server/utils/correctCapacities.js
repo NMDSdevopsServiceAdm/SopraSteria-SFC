@@ -26,7 +26,7 @@ exports.correctCapacities = async (establishment, mainService = null, otherServi
   }
   if (otherServices && otherServices.services && Array.isArray(otherServices.services)) {
     otherServices.services.map((other) => allServices.push(other.id));
-  } else if (establishment && establishment.otherServices  && establishment.otherServices.services&& Array.isArray(establishment.otherServices.services)) {
+  } else if (establishment && establishment.otherServices && establishment.otherServices.services && Array.isArray(establishment.otherServices.services)) {
     establishment.otherServices.services.map((other) => allServices.push(other.id));
   }
   const correctCapacities = CapacitiesCache.allMyCapacities(allServices);
