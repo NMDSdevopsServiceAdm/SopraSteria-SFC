@@ -18,7 +18,6 @@ export class OtherServicesComponent extends Question {
   private additionalOtherServiceMaxLength = 120;
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
-  public renderForm = false;
   public serviceGroups: Array<ServiceGroup>;
 
   constructor(
@@ -115,8 +114,6 @@ export class OtherServicesComponent extends Question {
         }
       });
     }
-
-    this.renderForm = true;
   }
 
   public toggle(target: HTMLInputElement, additionalOtherServiceTextInput: string) {
