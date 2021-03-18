@@ -7,18 +7,30 @@ const templates = {
   sixMonths: {
     lastUpdated: lastMonth.clone().subtract(6, 'months'),
     template: config.get('sendInBlue.templates.sixMonthsInactive'),
+    matches: function (lastUpdated) {
+      return lastUpdated.isSame(this.lastUpdated, 'month');
+    },
   },
   twelveMonths: {
     lastUpdated: lastMonth.clone().subtract(12, 'months'),
     template: config.get('sendInBlue.templates.twelveMonthsInactive'),
+    matches: function (lastUpdated) {
+      return lastUpdated.isSame(this.lastUpdated, 'month');
+    },
   },
   eighteenMonths: {
     lastUpdated: lastMonth.clone().subtract(18, 'months'),
     template: config.get('sendInBlue.templates.eighteenMonthsInactive'),
+    matches: function (lastUpdated) {
+      return lastUpdated.isSame(this.lastUpdated, 'month');
+    },
   },
   twentyFourMonths: {
     lastUpdated: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
+    matches: function (lastUpdated) {
+      return this.lastUpdated.isSameOrAfter(lastUpdated, 'month');
+    },
   },
 };
 
@@ -29,7 +41,7 @@ const getTemplate = (inactiveWorkplace) => {
     const nextTemplate = month.template;
     const notReceivedTemplate = inactiveWorkplace.LastTemplate !== nextTemplate.id;
 
-    if (lastUpdated.isSame(month.lastUpdated, 'month') && notReceivedTemplate) {
+    if (month.matches(lastUpdated) && notReceivedTemplate) {
       return nextTemplate;
     }
   }
