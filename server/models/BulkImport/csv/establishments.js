@@ -88,7 +88,6 @@ class Establishment {
     this._id = null;
     this._ignore = false;
 
-    // console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   }
 
   static get EXPECT_JUST_ONE_ERROR() {
@@ -1137,7 +1136,6 @@ class Establishment {
 
   _validateAllServices() {
     // all services must have main service in it
-    const localValidationErrors = [];
 
     const listOfServices = this._currentLine.ALLSERVICES.split(';');
     const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
@@ -1153,7 +1151,7 @@ class Establishment {
       });
 
     }
-    if( listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
+    if(listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR_NONE,
@@ -1165,6 +1163,8 @@ class Establishment {
       });
 
     }
+    const localValidationErrors = [];
+
     // all services and their service descriptions are semi-colon delimited
     //remove 0 aka NO other services
     const listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
@@ -1393,7 +1393,7 @@ class Establishment {
 
     // and the number of utilisations/capacities must equal the number of all services
     const lengthOfServicesWithoutNo = this._allServices ? this._allServices.filter(item => item !== 0).length : 0;
-    console.log(lengthOfServicesWithoutNo);
+
     if (this._allServices && listOfCapacities.length !== lengthOfServicesWithoutNo) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1417,7 +1417,6 @@ class Establishment {
         thisCapacity.length === 0 ||
         (!Number.isNaN(parseInt(thisCapacity, 10)) && parseInt(thisCapacity, 10) < MAX_CAP_UTIL),
     );
-
     if (!areCapacitiesValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1453,7 +1452,6 @@ class Establishment {
       localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
       return false;
     }
-
     this._capacities = listOfCapacities.map((thisCapacity) => {
       const intCapacity = parseInt(thisCapacity, 10);
       if (isNaN(intCapacity)) {
@@ -1462,7 +1460,6 @@ class Establishment {
         return intCapacity;
       }
     });
-
     this._utilisations = listOfUtilisations.map((thisUtilisation) => {
       const intUtilisation = parseInt(thisUtilisation, 10);
       if (isNaN(intUtilisation)) {
@@ -2547,7 +2544,6 @@ class Establishment {
 
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
-
     return this.validationErrors.length === 0;
   }
 
@@ -2765,11 +2761,9 @@ class Establishment {
                 const returnThis = {
                   id: thisService,
                 };
-
                 if (this._allServicesOther[index]) {
                   returnThis.other = this._allServicesOther[index];
                 }
-
                 return returnThis;
               })
         };

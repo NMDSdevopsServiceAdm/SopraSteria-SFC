@@ -51,7 +51,15 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         });
       }
     }
+
     if (document.services) {
+      if (document.services.value === 'No' || document.services.value === null ){
+         this.property = {
+          value: document.services.value === null
+        };
+         return;
+      }
+
       if (
         document.services.value === 'Yes' &&
         Array.isArray(document.services.services) &&
@@ -60,6 +68,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
         const validatedServices = await this._validateServices(document.services.services);
         const validatedServicesValue = this._validateValue(document.services.value);
+
         const validatedProperty = {
           value: validatedServicesValue,
           services: validatedServices,
@@ -70,16 +79,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         } else {
           this.property = null;
         }
-      }
-      if (document.services.value === 'No' ){
-        this.property = {
-          value: 'No'
-        };
-      }
-      if(document.services.value === null ){
-      this.property = {
-        value: null
-      };
       }
     }
   }
