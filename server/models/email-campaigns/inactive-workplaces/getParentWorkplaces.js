@@ -8,7 +8,13 @@ const getParentWorkplaces = async () => {
   return models.sequelize.query(
     `
     SELECT
-    *
+      "EstablishmentID",
+      "NameValue",
+      TRIM("NmdsID"),
+      "DataOwner",
+      "PrimaryUserName",
+      "PrimaryUserEmail",
+      "LastUpdated"
   FROM
     cqc. "LastUpdatedEstablishments" e
   WHERE
@@ -25,7 +31,13 @@ const getParentWorkplaces = async () => {
         AND ech. "establishmentID" = e. "EstablishmentID")
     UNION
     SELECT
-      *
+      "EstablishmentID",
+      "NameValue",
+      TRIM("NmdsID"),
+      "DataOwner",
+      "PrimaryUserName",
+      "PrimaryUserEmail",
+      "LastUpdated"
     FROM
       cqc. "LastUpdatedEstablishments" e
     WHERE
