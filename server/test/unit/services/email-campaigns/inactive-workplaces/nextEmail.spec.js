@@ -94,9 +94,6 @@ describe('nextEmailTemplate', () => {
 
       const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
-      console.log({ emailTemplate });
-      console.log({ NextTemplate });
-
       expect(emailTemplate ? emailTemplate.id : emailTemplate).to.equal(NextTemplate);
     });
   });
