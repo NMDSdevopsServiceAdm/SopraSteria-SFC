@@ -10,16 +10,14 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <h1 class="govuk-fieldset__heading">Do you provide any other services?</h1>
           </legend>
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              <p>
-                You selected '{{ establishment.mainService.name }}' as your main service when you created your account.
-              </p>
-            </h1>
-          </legend>
+          <div class="govuk-!-margin-bottom-7">
+            <p>
+              You selected '{{ establishment.mainService.name }}' as your main service when you created your account.
+            </p>
+          </div>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
