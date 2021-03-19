@@ -36,6 +36,11 @@ describe('nextEmailTemplate', () => {
       LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
       NextTemplate: twentyFourMonthTemplateId,
     },
+    {
+      inactiveMonths: 25,
+      LastUpdated: endOfLastMonth.clone().subtract(25, 'months'),
+      NextTemplate: twentyFourMonthTemplateId,
+    },
   ].forEach(({ inactiveMonths, LastUpdated, NextTemplate }) => {
     it(`should return the correct template when ${inactiveMonths} months inactive`, async () => {
       const inactiveWorkplace = {
@@ -49,7 +54,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: null,
       };
 
-      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplate.id).to.equal(NextTemplate);
     });
@@ -74,12 +79,6 @@ describe('nextEmailTemplate', () => {
       LastTemplate: eighteenMonthTemplateId,
       NextTemplate: twentyFourMonthTemplateId,
     },
-    {
-      inactiveMonths: 25,
-      LastUpdated: endOfLastMonth.clone().subtract(25, 'months'),
-      LastTemplate: twentyFourMonthTemplateId,
-      NextTemplate: null,
-    },
   ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
     it(`should return the next template when ${inactiveMonths} months inactive`, async () => {
       const inactiveWorkplace = {
@@ -93,7 +92,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: LastTemplate,
       };
 
-      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplate ? emailTemplate.id : emailTemplate).to.equal(NextTemplate);
     });
@@ -133,7 +132,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: LastTemplate,
       };
 
-      const emailTemplate = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplate).to.equal(null);
     });
@@ -164,12 +163,6 @@ describe('nextEmailTemplate', () => {
       LastTemplate: null,
       NextTemplate: null,
     },
-    {
-      inactiveMonths: 26,
-      LastUpdated: endOfLastMonth.clone().subtract(26, 'months'),
-      LastTemplate: null,
-      NextTemplate: null,
-    },
   ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
     it(`should not return a template when ${inactiveMonths} months inactive as they are outside of the 6, 12, 18, 24 month`, async () => {
       const inactiveWorkplace = {
@@ -183,7 +176,7 @@ describe('nextEmailTemplate', () => {
         LastTemplate: LastTemplate,
       };
 
-      const emailTemplateId = await nextEmail.getTemplate(inactiveWorkplace);
+      const emailTemplateId = nextEmail.getTemplate(inactiveWorkplace);
 
       expect(emailTemplateId).to.equal(NextTemplate);
     });

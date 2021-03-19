@@ -103,7 +103,10 @@ export interface Establishment {
   };
   numberOfStaff: number;
   totalWorkers: number;
-  otherServices: any[];
+  otherServices: {
+    value: string;
+    services: any[];
+  }
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
   share: Share;

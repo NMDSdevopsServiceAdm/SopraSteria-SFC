@@ -2,6 +2,7 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const sinon = require('sinon');
 
+const config = require('../../../../../config/config');
 const sendEmail = require('../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
 
@@ -213,6 +214,32 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
           },
         ],
       });
+    });
+  });
+
+  describe('isWhitelisted', () => {
+    it('should return true if there is no whitelist', () => {
+      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('');
+
+      const whitelisted = sendEmail.isWhitelisted('test@test.com');
+
+      expect(whitelisted).to.equal(true);
+    });
+
+    it('should return true if the email is whitelisted', () => {
+      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('test@test.com,name@name.com');
+
+      const whitelisted = sendEmail.isWhitelisted('test@test.com');
+
+      expect(whitelisted).to.equal(true);
+    });
+
+    it('should return false if the email is not whitelisted', () => {
+      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('test@test.com,name@name.com');
+
+      const whitelisted = sendEmail.isWhitelisted('example@example.com');
+
+      expect(whitelisted).to.equal(false);
     });
   });
 });

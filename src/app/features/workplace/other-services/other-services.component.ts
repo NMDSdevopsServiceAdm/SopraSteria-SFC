@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -18,7 +18,6 @@ export class OtherServicesComponent extends Question {
   private additionalOtherServiceMaxLength = 120;
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
-  public renderForm = false;
   public serviceGroups: Array<ServiceGroup>;
 
   constructor(
@@ -26,13 +25,19 @@ export class OtherServicesComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      otherServices: [[], null],
-    });
+    this.form = this.formBuilder.group(
+      {
+        otherServices: [[], null],
+        otherServicesValue: [null, null],
+      },
+      {
+        validator: this.oneCheckboxRequiredIfYes,
+      },
+    );
   }
 
   protected init() {
@@ -47,19 +52,39 @@ export class OtherServicesComponent extends Question {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
         },
-        () => this.preFillForm()
-      )
+        () => this.preFillForm(),
+      ),
     );
 
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'type-of-employer'];
   }
 
+  private oneCheckboxRequiredIfYes(form: FormGroup) {
+    if (form?.value?.otherServicesValue === 'Yes' && form?.value?.otherServices?.length === 0) {
+      form.controls.otherServices.setErrors({
+        oneCheckboxRequiredIfYes: true,
+      });
+    } else {
+      form.controls.otherServices.setErrors(null);
+    }
+  }
+
   private updateForm(): void {
+    this.formErrorsMap.push({
+      item: `otherServices`,
+      type: [
+        {
+          name: 'oneCheckboxRequiredIfYes',
+          message: `Select the other services you provide`,
+        },
+      ],
+    });
+
     this.allServices.forEach((service: Service) => {
       if (service.other) {
         this.form.addControl(
           `additionalOtherService${service.id}`,
-          new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)])
+          new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)]),
         );
 
         this.formErrorsMap.push({
@@ -76,10 +101,10 @@ export class OtherServicesComponent extends Question {
   }
 
   private preFillForm(): void {
+    this.form.get('otherServicesValue').setValue(this.establishmentService.establishment.otherServices.value);
     const allOtherServices = this.establishmentService.establishment.otherServices;
-
-    if (allOtherServices) {
-      allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
+    if (allOtherServices.value === 'Yes') {
+      allOtherServices.services.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
       this.allOtherServices.forEach((service: Service) => {
         this.form.get('otherServices').value.push(service.id);
@@ -89,11 +114,9 @@ export class OtherServicesComponent extends Question {
         }
       });
     }
-
-    this.renderForm = true;
   }
 
-  public toggle(target: HTMLInputElement) {
+  public toggle(target: HTMLInputElement, additionalOtherServiceTextInput: string) {
     const value = parseInt(target.value, 10);
     const selected = this.form.get('otherServices').value;
 
@@ -102,6 +125,10 @@ export class OtherServicesComponent extends Question {
         selected.push(value);
       }
     } else {
+      const otherService = this.form.get(additionalOtherServiceTextInput);
+      if (otherService) {
+        otherService.setValue(null);
+      }
       const index = selected.indexOf(value);
       if (index >= 0) {
         selected.splice(index, 1);
@@ -121,29 +148,36 @@ export class OtherServicesComponent extends Question {
   }
 
   protected generateUpdateProps() {
-    const { otherServices } = this.form.value;
-    const allServicesKeys = this.allServices.map(service => service.id);
+    const { otherServices, otherServicesValue } = this.form.value;
+    const allServicesKeys = this.allServices.map((service) => service.id);
 
     return {
-      services: otherServices
-        .filter(id => allServicesKeys.includes(id))
-        .map(id => {
-          const service = { id };
-          const otherService: Service = filter(this.allServices, { id })[0];
+      services: {
+        value: otherServicesValue,
+        services:
+          otherServicesValue === 'No'
+            ? []
+            : otherServices
+                .filter((id) => allServicesKeys.includes(id))
+                .map((id) => {
+                  const service = { id };
+                  const otherService: Service = filter(this.allServices, { id })[0];
 
-          if (otherService.other) {
-            service[`other`] = this.form.get(`additionalOtherService${id}`).value;
-          }
-          return service;
-        }),
+                  if (otherService.other) {
+                    service[`other`] = this.form.get(`additionalOtherService${id}`).value;
+                  }
+                  return service;
+                }),
+      },
     };
   }
 
   protected updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateOtherServices(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateOtherServices(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 
@@ -151,15 +185,15 @@ export class OtherServicesComponent extends Question {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
-        response => {
+        (response) => {
           this.nextRoute =
             response.allServiceCapacities && response.allServiceCapacities.length
               ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
               : ['/workplace', `${this.establishment.uid}`, 'service-users'];
           this.navigate();
         },
-        error => this.onError(error)
-      )
+        (error) => this.onError(error),
+      ),
     );
   }
 }
