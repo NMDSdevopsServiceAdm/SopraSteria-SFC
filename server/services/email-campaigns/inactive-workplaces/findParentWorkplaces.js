@@ -11,14 +11,14 @@ const buildWorkplaces = (workplaces) => {
         ...workplace,
         ...acc[workplace.EstablishmentID],
       };
-    } else {
-      if (!acc[workplace.ParentID].subsidiaries) {
-        acc[workplace.ParentID].subsidiaries = [];
-      }
 
-      if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months')) {
-        acc[workplace.ParentID].subsidiaries.push(workplace);
-      }
+      return acc;
+    }
+
+    const subsidiaries = (acc[workplace.ParentID].subsidiaries || (acc[workplace.ParentID].subsidiaries = []));
+
+    if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months')) {
+      subsidiaries.push(workplace);
     }
 
     return acc;
