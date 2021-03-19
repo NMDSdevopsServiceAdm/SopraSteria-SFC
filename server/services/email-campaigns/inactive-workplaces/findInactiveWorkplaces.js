@@ -23,7 +23,7 @@ const transformInactiveWorkplaces = (inactiveWorkplace) => {
     lastUpdated,
     emailTemplate,
     dataOwner,
-    user
+    user,
   };
 };
 
