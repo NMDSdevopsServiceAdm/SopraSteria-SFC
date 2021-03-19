@@ -22,7 +22,7 @@ const ownershipRequest = async (req, res) => {
       rejectionReason: req.body.rejectionReason,
       type: req.body.type,
     };
-    let recieverUpdate;
+    let receiverUpdate;
 
     if (!id) {
       console.error('Missing id or uid');
@@ -59,21 +59,21 @@ const ownershipRequest = async (req, res) => {
 
         //update establishment dataOwner and dataPermissions property for ownership transfer
         if (params.approvalStatus !== 'DENIED') {
-          recieverUpdate = await updateOwnership.update(req, checkOwnerChangeRequest);
+          receiverUpdate = await updateOwnership.update(req, checkOwnerChangeRequest);
         } else {
           let recieverEstablishmentDetails = new Establishment.Establishment(req.username);
           if (await recieverEstablishmentDetails.restore(req.establishment.id, false)) {
-            recieverUpdate = recieverEstablishmentDetails;
+            receiverUpdate = recieverEstablishmentDetails;
           }
         }
 
         // Update notifications after updating Establishment
-        if (recieverUpdate) {
+        if (receiverUpdate) {
           params.exsistingNotificationUid = req.body.exsistingNotificationUid;
           let updateNotificationParam = {
             exsistingNotificationUid: params.exsistingNotificationUid,
             ownerRequestChangeUid: params.ownerRequestChangeUid,
-            recipientUserUid: recieverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
+            recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
           };
           let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
           if (updatedNotificationResp) {
