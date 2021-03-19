@@ -29,7 +29,7 @@ const templates = {
     lastUpdated: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
     matches: function (lastUpdated) {
-      return this.lastUpdated.isSameOrAfter(lastUpdated, 'month');
+      return lastUpdated.isSameOrBefore(this.lastUpdated, 'month');
     },
   },
 };
