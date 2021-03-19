@@ -11,44 +11,47 @@ const ownership = require('../../../../data/ownership');
 
 describe('routes/ownershipRequest/updateOwnership.js', () => {
   describe('update', () => {
-    beforeEach(function () {});
+    let ownershipStub;
+    let establishmentStub;
+
+    beforeEach(function () {
+      ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
+      establishmentStub = sinon.stub(Establishment, 'fetchAndUpdateEstablishmentDetails');
+    });
 
     afterEach(function () {
       sinon.restore();
     });
 
-    const request = {
-      establishment: {
-        id: 2320,
-      },
-    };
-
     describe('Parent requesting ownership', () => {
-      let currentDataOwnerDetails = [
+      const request = {
+        establishment: {
+          id: 2320,
+        },
+      };
+
+      const currentDataOwnerDetails = [
         {
           IsParent: false,
           ParentID: 479,
         },
       ];
 
-      it('Gets the Ownership Requester details', () => {
+      it('Gets the Ownership Requester details', async () => {
         const ownershipChangeRequest = [
           {
             permissionRequest: 'Workplace',
           },
         ];
 
-        const ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
         ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
 
-        updateOwnership.update(request, ownershipChangeRequest);
+        await updateOwnership.update(request, ownershipChangeRequest);
 
         ownershipStub.should.have.been.calledWith(request.establishment.id);
       });
 
-      it.only('Updates the data owner to Parent with "Workplace" permission', () => {
-        const establishmentStub = sinon.stub(Establishment, 'fetchAndUpdateEstablishmentDetails');
-
+      it('Updates the data owner to Parent with "Workplace" permission', async () => {
         const updateDetails = {
           dataOwner: 'Parent',
           dataPermissions: 'Workplace',
@@ -60,17 +63,14 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           },
         ];
 
-        let ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
         ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
 
-        updateOwnership.update(request, ownershipChangeRequest);
+        await updateOwnership.update(request, ownershipChangeRequest);
 
         establishmentStub.should.have.been.calledWith(request.establishment.id, updateDetails);
       });
 
-      it('Updates the data owner to Parent with "Workplace and Staff" permission', () => {
-        const establishmentStub = sinon.stub(Establishment, 'fetchAndUpdateEstablishmentDetails');
-
+      it('Updates the data owner to Parent with "Workplace and Staff" permission', async () => {
         const updateDetails = {
           dataOwner: 'Parent',
           dataPermissions: 'Workplace and Staff',
@@ -82,41 +82,43 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           },
         ];
 
-        let ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
         ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
 
-        updateOwnership.update(request, checkOwnerChangeRequestResult);
+        await updateOwnership.update(request, checkOwnerChangeRequestResult);
 
-        establishmentStub.should.have.been.calledWith(currentDataOwnerDetails[0].ParentID, updateDetails);
+        establishmentStub.should.have.been.calledWith(request.establishment.id, updateDetails);
       });
     });
 
     describe('Subsiduary requesting ownership', () => {
+      const request = {
+        establishment: {
+          id: 479,
+        },
+      };
+
       let currentDataOwnerDetails = [
         {
-          IsParent: false,
+          IsParent: true,
           SubEstablishmentID: 2320,
         },
       ];
 
-      it('Gets the Ownership Requester details', () => {
+      it('Gets the Ownership Requester details', async () => {
         const checkOwnerChangeRequest = [
           {
             permissionRequest: 'Workplace',
           },
         ];
 
-        const ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
         ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
 
-        updateOwnership.update(request, checkOwnerChangeRequest);
+        await updateOwnership.update(request, checkOwnerChangeRequest);
 
         ownershipStub.should.have.been.calledWith(request.establishment.id);
       });
 
-      it('Updates the data owner to Workplace with "Workplace" permission', () => {
-        const establishmentStub = sinon.stub(Establishment, 'fetchAndUpdateEstablishmentDetails');
-
+      it('Updates the data owner to Workplace with "Workplace" permission', async () => {
         const updateDetails = {
           dataOwner: 'Workplace',
           dataPermissions: 'Workplace',
@@ -128,17 +130,14 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           },
         ];
 
-        let ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
         ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
 
-        updateOwnership.update(request, checkOwnerChangeRequestResult);
+        await updateOwnership.update(request, checkOwnerChangeRequestResult);
 
-        establishmentStub.should.have.been.calledWith(request.establishment.id, updateDetails);
+        establishmentStub.should.have.been.calledWith(currentDataOwnerDetails.SubEstablishmentID, updateDetails);
       });
 
-      it('Updates the data owner to Workplace with "Workplace and Staff" permission', () => {
-        const establishmentStub = sinon.stub(Establishment, 'fetchAndUpdateEstablishmentDetails');
-
+      it('Updates the data owner to Workplace with "Workplace and Staff" permission', async () => {
         const updateDetails = {
           dataOwner: 'Workplace',
           dataPermissions: 'Workplace and Staff',
@@ -150,12 +149,11 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           },
         ];
 
-        let ownershipStub = sinon.stub(ownership, 'getownershipRequesterId');
         ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
 
-        updateOwnership.update(request, checkOwnerChangeRequestResult);
+        await updateOwnership.update(request, checkOwnerChangeRequestResult);
 
-        establishmentStub.should.have.been.calledWith(request.establishment.id, updateDetails);
+        establishmentStub.should.have.been.calledWith(currentDataOwnerDetails.SubEstablishmentID, updateDetails);
       });
     });
   });
