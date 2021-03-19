@@ -7,8 +7,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockBulkUploadService, errorReport } from '@core/test-utils/MockBulkUploadService';
 import { render } from '@testing-library/angular';
 
 import { BulkUploadModule } from '../bulk-upload.module';
@@ -21,7 +21,7 @@ describe('ErrorPageComponent', () => {
       declarations: [ErrorPageComponent],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: [BulkUploadServiceV2, BulkUploadService], useClass: MockBulkUploadService },
+        { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
 
         {
