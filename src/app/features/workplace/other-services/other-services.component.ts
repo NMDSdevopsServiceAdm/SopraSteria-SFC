@@ -32,7 +32,7 @@ export class OtherServicesComponent extends Question {
     this.form = this.formBuilder.group(
       {
         otherServices: [[], null],
-        otherServicesValue: [null, [Validators.required]],
+        otherServicesValue: [null, null],
       },
       {
         validator: this.oneCheckboxRequiredIfYes,
