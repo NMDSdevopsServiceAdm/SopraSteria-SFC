@@ -9,8 +9,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { BulkUploadMissingPageComponent } from '@features/bulk-upload-v2/bulk-upload-missing/bulk-upload-missing-page.component';
-import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
+import {
+  BulkUploadMissingPageComponent,
+} from '@features/bulk-upload/bulk-upload-missing/bulk-upload-missing-page.component';
+import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
