@@ -20,11 +20,9 @@
         {{ tab.title }}
       </a>
 
-      <i
-        alt="Missing or expired record alert"
-        [class.govuk-tabs__tab--alert]="tab.alert"
-        [class.govuk-tabs__tab--red-alert]="tab.redAlert"
-      ></i>
+      <i [class.govuk-tabs__tab--alert]="tab.alert" [class.govuk-tabs__tab--red-alert]="tab.redAlert">
+        <span class="govuk-visually-hidden">Missing or expired record alert</span>
+      </i>
     </li>
   </ng-container>
 </ul>
