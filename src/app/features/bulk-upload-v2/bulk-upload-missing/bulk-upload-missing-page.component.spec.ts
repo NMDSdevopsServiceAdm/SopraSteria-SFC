@@ -10,7 +10,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BulkUploadMissingPageComponent } from '@features/bulk-upload-v2/bulk-upload-missing/bulk-upload-missing-page.component';
-import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -19,7 +19,7 @@ import { AdminSkipService } from '../admin-skip.service';
 describe('BulkUploadMissingPageComponent', () => {
   async function setup() {
     const component = await render(BulkUploadMissingPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,

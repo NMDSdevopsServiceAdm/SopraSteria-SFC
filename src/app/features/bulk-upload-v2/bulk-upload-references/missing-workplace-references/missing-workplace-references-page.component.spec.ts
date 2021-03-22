@@ -16,7 +16,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
-import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -39,7 +39,7 @@ const establishmentBuilder = build('Workplace', {
 describe('MissingWorkplaceReferencesComponent', () => {
   async function setup(references: Workplace[] = []) {
     const component = await render(MissingWorkplaceReferencesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,

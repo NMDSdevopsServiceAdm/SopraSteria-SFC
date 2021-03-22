@@ -11,16 +11,16 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BulkUploadPageV2Component } from '@features/bulk-upload-v2/bulk-upload-page/bulk-upload-page.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { AdminSkipService } from '../admin-skip.service';
+import { BulkUploadPageComponent } from './bulk-upload-page.component';
 
-describe('BulkUploadPageV2Component', () => {
+describe('BulkUploadPageComponent', () => {
   async function setup() {
-    const component = await render(BulkUploadPageV2Component, {
+    const component = await render(BulkUploadPageComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [HomeTabComponent],
       providers: [
@@ -55,7 +55,7 @@ describe('BulkUploadPageV2Component', () => {
       router,
     };
   }
-  it('should render a BulkUploadPageV2Component', async () => {
+  it('should render a BulkUploadPageComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

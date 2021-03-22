@@ -27,7 +27,7 @@ export class BulkUploadStartGuard implements CanActivate {
         if (this.adminSkipService.skippedWorkplaces.includes(workplaceID)) {
           return true;
         }
-        if(this.adminSkipService.skipWorkplaceReferences){
+        if (this.adminSkipService.skipWorkplaceReferences) {
           return true;
         }
         if (response.isFirstBulkUpload) {

@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { render } from '@testing-library/angular';
 
 import { MissingRefsSubmitExitButtonsComponent } from './missing-refs-submit-exit-buttons.component';
@@ -11,7 +11,7 @@ import { MissingRefsSubmitExitButtonsComponent } from './missing-refs-submit-exi
 describe('MissingRefsSubmitExitButtonsComponent', () => {
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText } = await render(MissingRefsSubmitExitButtonsComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadV2Module],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
       providers: [
         {
           provide: AuthService,

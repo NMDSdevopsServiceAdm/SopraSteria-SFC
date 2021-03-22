@@ -15,7 +15,7 @@ import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
-import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -24,7 +24,7 @@ import { StaffReferencesComponent } from './staff-references-page.component';
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(StaffReferencesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,

@@ -11,7 +11,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { EstablishmentFile, OtherFile, TrainingFile, WorkerFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BulkUploadV2Module } from '@features/bulk-upload-v2/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -20,7 +20,7 @@ import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.compon
 describe('DragAndDropFilesListComponent', () => {
   async function setup() {
     const component = await render(DragAndDropFilesListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadV2Module],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: WindowRef,
