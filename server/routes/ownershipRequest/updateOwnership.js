@@ -2,25 +2,20 @@ const ownership = require('../../data/ownership');
 const { Establishment } = require('../../models/classes/establishment');
 
 async function update(request, ownershipChangeRequest) {
-  let workplaceEstablishmentId = request.establishment.id;
+  const currentDataOwnerDetails = await ownership.getownershipRequesterId(request.establishment.id);
 
-  const currentDataOwnerDetails = await ownership.getownershipRequesterId(workplaceEstablishmentId);
+  const isSubsidiary = currentDataOwnerDetails[0].IsParent === false && currentDataOwnerDetails[0].ParentID;
 
-  let updateDetails = {
+  const workplaceEstablishmentId = isSubsidiary
+    ? request.establishment.id
+    : ownershipChangeRequest[0].subEstablishmentID;
+
+  const updateDetails = {
     dataPermissions: ownershipChangeRequest[0].permissionRequest,
+    dataOwner: isSubsidiary ? 'Parent' : 'Workplace',
   };
 
-  if (currentDataOwnerDetails[0].IsParent === false && currentDataOwnerDetails[0].ParentID) {
-    updateDetails.dataOwner = 'Parent';
-    workplaceEstablishmentId = request.establishment.id;
-  } else {
-    updateDetails.dataOwner = 'Workplace';
-    workplaceEstablishmentId = ownershipChangeRequest[0].subEstablishmentID;
-  }
-
-  const result = await Establishment.fetchAndUpdateEstablishmentDetails(workplaceEstablishmentId, updateDetails);
-
-  return result;
+  return await Establishment.fetchAndUpdateEstablishmentDetails(workplaceEstablishmentId, updateDetails);
 }
 
 module.exports = {
