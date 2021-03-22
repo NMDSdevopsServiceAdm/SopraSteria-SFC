@@ -756,6 +756,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'ParentID',
       targetKey: 'id',
     });
+    Establishment.belongsTo(models.lastUpdatedEstablishmentsView, {
+      as: 'LastUpdated',
+      foreignKey: 'id',
+      targetKey: 'id',
+    });
 
     Establishment.hasMany(models.user, {
       foreignKey: 'establishmentId',
@@ -965,7 +970,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
-  Establishment.generateDeleteReportData = async function () {
+  Establishment.generateDeleteReportData = async function (lastUpdatedDate) {
     return await this.findAll({
       attributes: [
         'uid',
@@ -987,9 +992,14 @@ module.exports = function (sequelize, DataTypes) {
       order: [['NameValue', 'ASC']],
       include: [
         {
-          model: sequelize.models.worker,
-          as: 'workers',
-          attributes: ['id', 'uid'],
+          model: sequelize.models.lastUpdatedEstablishmentsView,
+          as: 'LastUpdated',
+          attributes: ['id'],
+          where:{
+            lastUpdated:{
+              [models.Sequelize.Op.gte]: lastUpdatedDate
+            },
+          },
           order: [['updated', 'DESC']],
         },
         {
