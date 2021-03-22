@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
+import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable, of } from 'rxjs';
@@ -27,6 +28,10 @@ export class MockEstablishmentService extends EstablishmentService {
     return of(this.establishment);
   }
 
+  public getAllServices(): Observable<ServiceGroup[]> {
+    return of([{ category: 'any', value: null, services: [{ id: 123, name: 'Mock Service' }] }]);
+  }
+
   public get establishment(): Establishment {
     return {
       address: 'mock establishment address',
@@ -40,11 +45,11 @@ export class MockEstablishmentService extends EstablishmentService {
       isRegulated: false,
       leavers: undefined,
       localAuthorities: [],
-      mainService: undefined,
+      mainService: { name: 'Care', id: 123, isCQC: false },
       name: 'mock establishment name',
       nmdsId: 'mock nmdsId',
       numberOfStaff: 0,
-      otherServices: [],
+      otherServices: { value: null, services: [] },
       postcode: 'mock establishment postcode',
       primaryAuthority: undefined,
       serviceUsers: [],
@@ -89,7 +94,7 @@ export class MockEstablishmentService extends EstablishmentService {
       name: '',
       nmdsId: '',
       numberOfStaff: 0,
-      otherServices: [],
+      otherServices: { value: null, services: [] },
       postcode: '',
       primaryAuthority: undefined,
       serviceUsers: [],
