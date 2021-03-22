@@ -84,7 +84,7 @@ if (AppConfig.ready) {
     sequelize.connectionManager.config.host = appConfig.get('db.host');
     sequelize.connectionManager.config.password = appConfig.get('db.password');
 
-    sequelize.connectionManager.pool.clear();
+    sequelize.connectionManager.pool.drain().then(() => sequelize.connectionManager.pool.destroyAllNow());
 
     // now the database is ready
     db.status.ready = true;
