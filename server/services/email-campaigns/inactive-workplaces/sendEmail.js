@@ -1,6 +1,19 @@
+const config = require('../../../config/config');
 const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
 
+const isWhitelisted = (email) => {
+  if (!config.get('sendInBlue.whitelist')) {
+    return true;
+  }
+
+  return config.get('sendInBlue.whitelist').split(',').includes(email);
+};
+
 const sendEmail = async (workplace) => {
+  if (!isWhitelisted(workplace.user.email)) {
+    return;
+  }
+
   sendInBlueEmail.sendEmail(
     {
       email: workplace.user.email,
@@ -16,4 +29,5 @@ const sendEmail = async (workplace) => {
 
 module.exports = {
   sendEmail,
+  isWhitelisted,
 };

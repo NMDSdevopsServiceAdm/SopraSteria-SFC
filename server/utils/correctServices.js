@@ -1,11 +1,9 @@
 const {ServiceCache} = require('../models/cache/singletons/services');
 
-exports.correctServices = async (establishment, cqc, mainService = null, otherServices = null) => {
+exports.correctServices = async (establishment, cqc, mainService = null) => {
   const allServices = [];
-  if (otherServices !== null && Array.isArray(otherServices)) {
-    otherServices.map(other => allServices.push(other));
-  } else if (establishment && establishment.otherServices && Array.isArray(establishment.otherServices)) {
-    establishment.otherServices.map(other => allServices.push(other));
+  if (establishment && establishment.otherServices && establishment.otherServices.services && Array.isArray(establishment.otherServices.services)) {
+    establishment.otherServices.services.map(other => allServices.push(other));
   }
 
   const services = [];
@@ -15,8 +13,13 @@ exports.correctServices = async (establishment, cqc, mainService = null, otherSe
       if (!(mainService && mainService.id === currentService.id) && correctService.id === currentService.id ) {
         services.push(currentService);
       }
-    })
+    });
   });
+  const result = {
+    value: services.length ? 'Yes' : 'No'
+  };
+  if (!services.length) return result;
 
-  return services;
+  result.services = services;
+  return  result;
 };
