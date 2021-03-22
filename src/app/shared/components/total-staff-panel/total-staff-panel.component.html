@@ -35,7 +35,7 @@
       <ng-template #deleteText>delete</ng-template>
     </dt>
     <dd data-testid="changeNumber">
-      <img src="/assets/images/flag-orange.svg" alt="Warning" />
+      <img src="/assets/images/flag-orange.svg" alt="" />
       <ng-container *ngIf="totalStaff > totalWorkers; else totalDelete"> {{ totalStaff - totalWorkers }} </ng-container>
       <ng-template #totalDelete> {{ totalWorkers - totalStaff }} </ng-template>
     </dd>
