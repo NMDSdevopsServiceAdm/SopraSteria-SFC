@@ -995,10 +995,10 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.lastUpdatedEstablishmentsView,
           as: 'LastUpdated',
-          attributes: ['id'],
+          attributes: ['id','dataOwner','lastUpdated'],
           where:{
             lastUpdated:{
-              [Op.gte]: lastUpdatedDate
+              [Op.lte]: lastUpdatedDate
             },
           },
           order: [['updated', 'DESC']],

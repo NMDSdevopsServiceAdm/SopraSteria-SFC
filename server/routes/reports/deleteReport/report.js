@@ -20,6 +20,7 @@ const headers = [
   'CQC Registered',
   'Parent Name',
   'Due to be deleted date',
+  'Data Owner'
 ];
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
 const monthsWithoutUpdate = 20;
@@ -87,7 +88,6 @@ const fillData = (reportData, laData, WS1) => {
       region = laData[establishment.id].theAuthority.region;
       la = laData[establishment.id].theAuthority.localAuthority;
     }
-
     const address = concatenateAddress(
       establishment.address,
       establishment.address2,
@@ -109,7 +109,8 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        new Date(moment(establishment.LastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
+        new Date(moment(establishment.LastUpdated.lastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
+        establishment.LastUpdated.dataOwner,
       ],
       rowStyle,
     );
