@@ -14,7 +14,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
+import { UploadWarningDialogComponent } from '@features/bulk-upload-v2/upload-warning-dialog/upload-warning-dialog.component';
 import { filter, findIndex } from 'lodash';
 import { combineLatest, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';

@@ -8,11 +8,11 @@ import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-wor
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import { MissingStaffReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
-import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
-import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
-import { FileErrorMessageComponent } from '@features/bulk-upload/file_error_message/file-error-message.component';
-import { LastBulkUploadComponent } from '@features/bulk-upload/last-bulk-upload/last-bulk-upload.component';
+import { MissingStaffReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
+import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload-v2/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import { BulkUploadRoutingModule } from '@features/bulk-upload-v2/bulk-upload-routing.module';
+import { FileErrorMessageComponent } from '@features/bulk-upload-v2/file_error_message/file-error-message.component';
+import { LastBulkUploadComponent } from '@features/bulk-upload-v2/last-bulk-upload/last-bulk-upload.component';
 import { SharedModule } from '@shared/shared.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 

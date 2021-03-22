@@ -11,7 +11,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { EstablishmentFile, OtherFile, TrainingFile, WorkerFile } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 

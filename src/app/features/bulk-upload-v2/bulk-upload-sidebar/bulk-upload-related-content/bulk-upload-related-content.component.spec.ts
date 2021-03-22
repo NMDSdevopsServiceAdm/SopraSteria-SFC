@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
+import { BulkUploadModule } from '@features/bulk-upload-v2/bulk-upload.module';
 import { render } from '@testing-library/angular';
 
 import { BulkUploadRelatedContentComponent } from './bulk-upload-related-content.component';
