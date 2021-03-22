@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 import { AdminSkipService } from '../admin-skip.service';
@@ -11,7 +11,7 @@ import { AdminSkipService } from '../admin-skip.service';
 @Component({
   selector: 'app-bulk-upload-page',
   templateUrl: './bulk-upload-page.component.html',
-  providers: [I18nPluralPipe],
+  providers: [I18nPluralPipe, { provide: BulkUploadService, useClass: BulkUploadServiceV2 }],
 })
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
