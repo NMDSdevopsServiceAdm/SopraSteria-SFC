@@ -17,7 +17,7 @@ const getInactiveWorkplaces = async () => {
   SELECT
 	"EstablishmentID",
   "NameValue",
-  "NmdsID",
+  TRIM("NmdsID"),
   "DataOwner",
   "PrimaryUserName",
   "PrimaryUserEmail",
