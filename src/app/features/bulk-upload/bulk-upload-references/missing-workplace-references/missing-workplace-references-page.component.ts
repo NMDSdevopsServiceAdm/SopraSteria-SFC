@@ -11,7 +11,7 @@ import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 

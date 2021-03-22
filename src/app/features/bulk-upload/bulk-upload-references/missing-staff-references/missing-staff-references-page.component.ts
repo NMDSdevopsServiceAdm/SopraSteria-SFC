@@ -12,7 +12,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { AdminSkipService } from '@features/bulk-upload-v2/admin-skip.service';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { orderBy } from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
