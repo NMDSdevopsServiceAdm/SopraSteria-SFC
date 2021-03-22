@@ -998,7 +998,7 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['id'],
           where:{
             lastUpdated:{
-              [models.Sequelize.Op.gte]: lastUpdatedDate
+              [Op.gte]: lastUpdatedDate
             },
           },
           order: [['updated', 'DESC']],
