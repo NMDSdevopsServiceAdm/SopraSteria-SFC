@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -1050,19 +1052,19 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      scopes:{
+      scopes: {
         active: {
           where: {
             archived: false,
-          }
+          },
         },
         noLocalIdentifier: {
           where: {
             LocalIdentifierValue: {
-              [sequelize.Op.is]: null
-            }
-          }
-        }
+              [Op.is]: null,
+            },
+          },
+        },
       },
       tableName: '"Worker"',
       schema: 'cqc',
@@ -1132,14 +1134,12 @@ module.exports = function (sequelize, DataTypes) {
     Worker.belongsToMany(models.job, {
       through: 'workerJobs',
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
       otherKey: 'jobFk',
       as: 'otherJobs',
     });
     Worker.belongsToMany(models.workerNurseSpecialism, {
       through: 'workerNurseSpecialisms',
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
     });
@@ -1227,7 +1227,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
+          [Op.not]: null,
         },
         establishmentFk: establishmentId,
       },
