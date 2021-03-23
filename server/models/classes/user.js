@@ -218,10 +218,7 @@ class User {
   }
 
   _isBool(value) {
-    if (typeof value === 'boolean') {
-      return true;
-    }
-    return false;
+    return typeof value === 'boolean';
   }
 
   // takes the given JSON document and creates a User's set of extendable properties
