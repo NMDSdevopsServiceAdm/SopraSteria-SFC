@@ -572,7 +572,7 @@ class User {
               },
               {
                 where: {
-                  uid: { $not: this.uid },
+                  uid: { [Sequelize.Op.not]: this.uid },
                   establishmentId: this._establishmentId,
                   archived: false,
                   isPrimary: true,
