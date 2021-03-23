@@ -217,6 +217,10 @@ class User {
     }
   }
 
+  _isBool(value) {
+    return typeof value === 'boolean';
+  }
+
   // takes the given JSON document and creates a User's set of extendable properties
   // Returns true if the resulting User is valid; otherwise false
   async load(document) {
@@ -231,13 +235,8 @@ class User {
         this._password = escape(document.password);
       }
 
-      if (document.isPrimary !== null) {
-        // by explicitly checking for "true", don't have to worry about any other value
-        if (document.isPrimary === true) {
-          this._isPrimary = true;
-        } else {
-          this._isPrimary = false;
-        }
+      if (this._isBool(document.isPrimary)) {
+        this._isPrimary = document.isPrimary;
       }
       if (document.isActive) {
         this._active = document.isActive;
