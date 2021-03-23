@@ -47,10 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       }],
       group: [
         'EmailCampaign.id',
-      ],
-      order: [
-        ['createdAt', 'DESC'],
-      ],
+      ]
     });
   }
 
