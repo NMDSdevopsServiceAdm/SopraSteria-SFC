@@ -411,7 +411,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"OtherServicesValue"',
         values: ['No', 'Yes'],
-
       },
       OtherServicesSavedAt: {
         type: DataTypes.DATE,
@@ -849,11 +848,19 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.findbyId = async function (id) {
-    return await this.findOne({ id });
+    return await this.findOne({
+      where: {
+        id,
+      },
+    });
   };
 
   Establishment.findByUid = async function (uid) {
-    return await this.findOne({ uid });
+    return await this.findOne({
+      where: {
+        uid,
+      },
+    });
   };
 
   Establishment.find = async function (where) {
@@ -995,10 +1002,10 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.lastUpdatedEstablishmentsView,
           as: 'LastUpdated',
-          attributes: ['id','dataOwner','lastUpdated'],
-          where:{
-            lastUpdated:{
-              [Op.lte]: lastUpdatedDate
+          attributes: ['id', 'dataOwner', 'lastUpdated'],
+          where: {
+            lastUpdated: {
+              [Op.lte]: lastUpdatedDate,
             },
           },
           order: [['updated', 'DESC']],
