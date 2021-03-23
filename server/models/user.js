@@ -366,6 +366,7 @@ module.exports = function (sequelize, DataTypes) {
             'NameValue',
             'updated',
             'ParentID',
+            'ustatus'
           ],
           required: true,
           include: [
