@@ -92,7 +92,7 @@ describe('SearchComponent', () => {
 
       await within(getByTestId('user-search-results')).getByText('John Doe');
     });
-    fit('should show a flag when user\'s workplace is pending', async () => {
+    it('should show a flag when user\'s workplace is pending', async () => {
       const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
 
       await setup(fixture, navigate, getByText);
