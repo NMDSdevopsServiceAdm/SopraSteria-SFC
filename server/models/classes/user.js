@@ -239,12 +239,7 @@ class User {
       }
 
       if (this._isBool(document.isPrimary)) {
-        // by explicitly checking for "true", don't have to worry about any other value
-        if (document.isPrimary === true) {
-          this._isPrimary = true;
-        } else {
-          this._isPrimary = false;
-        }
+        this._isPrimary = document.isPrimary;
       }
       if (document.isActive) {
         this._active = document.isActive;
