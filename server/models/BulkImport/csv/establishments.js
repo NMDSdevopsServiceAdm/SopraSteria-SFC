@@ -87,7 +87,6 @@ class Establishment {
 
     this._id = null;
     this._ignore = false;
-
   }
 
   static get EXPECT_JUST_ONE_ERROR() {
@@ -1029,7 +1028,7 @@ class Establishment {
   async _validateLocationID() {
     try {
       // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
-      const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
+      const locationIDRegex = /^[0-9]{1}-[0-9]{8,12}$/;
       const myLocationID = this._currentLine.LOCATIONID;
 
       // do not use
@@ -1138,8 +1137,8 @@ class Establishment {
     // all services must have main service in it
 
     const listOfServices = this._currentLine.ALLSERVICES.split(';');
-    const listOfServicesWithoutNo = listOfServices.filter(item => item !== '0');
-    if (!listOfServices ||  !listOfServices.includes(this._currentLine.MAINSERVICE)) {
+    const listOfServicesWithoutNo = listOfServices.filter((item) => item !== '0');
+    if (!listOfServices || !listOfServices.includes(this._currentLine.MAINSERVICE)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -1149,9 +1148,8 @@ class Establishment {
         column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
-
     }
-    if(listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
+    if (listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR_NONE,
@@ -1161,7 +1159,6 @@ class Establishment {
         column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
-
     }
     const localValidationErrors = [];
 
@@ -1180,7 +1177,7 @@ class Establishment {
         column: 'ALLSERVICES',
         name: this._currentLine.LOCALESTID,
       });
-    } else if (listOfServicesWithoutNo.length !== listOfServiceDescriptionsWithoutNo.length ) {
+    } else if (listOfServicesWithoutNo.length !== listOfServiceDescriptionsWithoutNo.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -1318,31 +1315,34 @@ class Establishment {
 
     return true;
   }
-  _ignoreZerosIfNo(listOfEntities){
-    const allServices =  this._currentLine.ALLSERVICES.split(';');
+  _ignoreZerosIfNo(listOfEntities) {
+    const allServices = this._currentLine.ALLSERVICES.split(';');
 
-    if(this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2  && allServices.length === 2 ){
+    if (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
-      if( indexOfZero > -1){
-        listOfEntities[indexOfZero] =  listOfEntities[indexOfZero] === '0' ? '' :  listOfEntities[indexOfZero];
+      if (indexOfZero > -1) {
+        listOfEntities[indexOfZero] = listOfEntities[indexOfZero] === '0' ? '' : listOfEntities[indexOfZero];
       }
     }
     return listOfEntities;
   }
- _prepArray(listOfEntities) {
-   listOfEntities = this._ignoreZerosIfNo(listOfEntities);
-   listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
-   return listOfEntities;
- }
+  _prepArray(listOfEntities) {
+    listOfEntities = this._ignoreZerosIfNo(listOfEntities);
+    listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
+    return listOfEntities;
+  }
 
- _checkForTrailingSemiColon(listOfEntities){
-   if((this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2) || this._currentLine.ALLSERVICES.split(';').length === 1 ){
-     listOfEntities =  listOfEntities.filter( thisItem => !Number.isNaN(parseInt(thisItem, 10)));
-     //make sure listOfEntities always has at least one null for MainService
-     return listOfEntities.length === 0 ? ['']: listOfEntities;
-   }
-   return listOfEntities;
- }
+  _checkForTrailingSemiColon(listOfEntities) {
+    if (
+      (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2) ||
+      this._currentLine.ALLSERVICES.split(';').length === 1
+    ) {
+      listOfEntities = listOfEntities.filter((thisItem) => !Number.isNaN(parseInt(thisItem, 10)));
+      //make sure listOfEntities always has at least one null for MainService
+      return listOfEntities.length === 0 ? [''] : listOfEntities;
+    }
+    return listOfEntities;
+  }
   _validateCapacitiesAndUtilisations() {
     // capacities/utilisations are a semi colon delimited list of integers
     let listOfCapacities = this._currentLine.CAPACITY.split(';');
@@ -1392,7 +1392,7 @@ class Establishment {
     }
 
     // and the number of utilisations/capacities must equal the number of all services
-    const lengthOfServicesWithoutNo = this._allServices ? this._allServices.filter(item => item !== 0).length : 0;
+    const lengthOfServicesWithoutNo = this._allServices ? this._allServices.filter((item) => item !== 0).length : 0;
 
     if (this._allServices && listOfCapacities.length !== lengthOfServicesWithoutNo) {
       localValidationErrors.push({
@@ -2134,7 +2134,7 @@ class Establishment {
         }
         if (thisMappedService) {
           mappedServices.push(thisMappedService);
-        }else if(thisService == 0){
+        } else if (thisService == 0) {
           mappedServices.push(0);
         } else {
           this._validationErrors.push({
@@ -2233,7 +2233,6 @@ class Establishment {
       this._capacities.forEach((thisCapacity, index) => {
         // we're only interested in non null capacities to map
         if (thisCapacity !== null) {
-
           //if the allservices is 0 then there can only be 2 allservices
           const allServiceIndex = this._allServices[index] === 0 ? 1 : index;
 
@@ -2747,25 +2746,25 @@ class Establishment {
       starters: this._starters,
       leavers: this._leavers,
     };
-    if (this._allServices){
-      if(this._allServices.length === 1) {
+    if (this._allServices) {
+      if (this._allServices.length === 1) {
         changeProperties.services.value = null;
-      }else if(this._allServices.includes(0)){
-          changeProperties.services.value = 'No';
-      }else if ( this._allServices.length > 1) {
+      } else if (this._allServices.includes(0)) {
+        changeProperties.services.value = 'No';
+      } else if (this._allServices.length > 1) {
         changeProperties.services = {
           value: 'Yes',
           services: this._allServices
-              .filter((thisService) => (this._mainService ? this._mainService.id !== thisService : true)) // main service cannot appear in otherServices
-              .map((thisService, index) => {
-                const returnThis = {
-                  id: thisService,
-                };
-                if (this._allServicesOther[index]) {
-                  returnThis.other = this._allServicesOther[index];
-                }
-                return returnThis;
-              })
+            .filter((thisService) => (this._mainService ? this._mainService.id !== thisService : true)) // main service cannot appear in otherServices
+            .map((thisService, index) => {
+              const returnThis = {
+                id: thisService,
+              };
+              if (this._allServicesOther[index]) {
+                returnThis.other = this._allServicesOther[index];
+              }
+              return returnThis;
+            }),
         };
       }
     }
@@ -2818,7 +2817,6 @@ class Establishment {
       ...fixedProperties,
       ...changeProperties,
     };
-
   }
 
   // takes the given establishment entity and writes it out to CSV string (one line)
@@ -2872,16 +2870,15 @@ class Establishment {
     columns.push(budiMappedMainService);
     let otherServices = [];
     // all services - this is main service and other services
-    if (entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services)){
+    if (entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services)) {
       otherServices = entity.otherServices.services;
     }
     otherServices.unshift(mainService);
     const transformedOtherService = otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id));
-    if (entity.otherServices.value === 'No'){
+    if (entity.otherServices.value === 'No') {
       transformedOtherService.push('0');
     }
     columns.push(transformedOtherService.join(';'));
-
 
     // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
     const entityCapacities = Array.isArray(entity.capacities)
