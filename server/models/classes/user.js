@@ -49,6 +49,7 @@ class User {
     this._lastLogin = null;
     this._establishmentUid = null;
     this._agreedUpdatedTerms = false;
+    this._registrationSurveyCompleted = null;
 
     // abstracted properties
     const thisUserManager = new UserProperties();
@@ -183,6 +184,10 @@ class User {
     return this._tribalId;
   }
 
+  get registrationSurveyCompleted() {
+    return this._registrationSurveyCompleted;
+  }
+
   get establishmentUid() {
     return this._establishmentUid;
   }
@@ -246,6 +251,9 @@ class User {
       }
       if (document.agreedUpdatedTerms) {
         this._agreedUpdatedTerms = document.agreedUpdatedTerms;
+      }
+      if (this._isBool(document.registrationSurveyCompleted)) {
+        this._registrationSurveyCompleted = document.registrationSurveyCompleted;
       }
     } catch (err) {
       this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
@@ -373,6 +381,7 @@ class User {
           archived: false,
           attributes: ['id', 'created', 'updated'],
           agreedUpdatedTerms: true,
+          registrationSurveyCompleted: this._registrationSurveyCompleted,
         };
 
         // need to create the User record and the User Audit event
