@@ -4,15 +4,13 @@ const moment = require('moment');
 
 const models = require('../../../../models');
 const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
-const findParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
 const getInactiveWorkplaces = async (_req, res) => {
   const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-  const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
 
   return res.json({
-    inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
+    inactiveWorkplaces: inactiveWorkplaces.length,
   });
 };
 
@@ -27,10 +25,7 @@ const createCampaign = async (req, res) => {
     });
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
-
-    const totalInactiveWorkplaces = inactiveWorkplaces.concat(parentWorkplaces)
-    const history = totalInactiveWorkplaces.map((workplace) => {
+    const history = inactiveWorkplaces.map((workplace) => {
       return {
         emailCampaignID: emailCampaign.id,
         establishmentID: workplace.id,
@@ -38,7 +33,6 @@ const createCampaign = async (req, res) => {
         data: {
           dataOwner: workplace.dataOwner,
           lastUpdated: workplace.lastUpdated,
-          subsidiaries: workplace.subsidiaries ? workplace.subsidiaries : [],
         },
         sentToName: workplace.user.name,
         sentToEmail: workplace.user.email,
@@ -46,11 +40,11 @@ const createCampaign = async (req, res) => {
     });
 
     await models.EmailCampaignHistory.bulkCreate(history);
-    totalInactiveWorkplaces.map(sendEmail.sendEmail);
+    inactiveWorkplaces.map(sendEmail.sendEmail);
 
     return res.json({
       date: emailCampaign.createdAt,
-      emails: totalInactiveWorkplaces.length,
+      emails: inactiveWorkplaces.length,
     });
   } catch (err) {
     console.error(err);
