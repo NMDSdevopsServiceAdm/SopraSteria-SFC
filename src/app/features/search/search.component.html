@@ -254,14 +254,14 @@
                 }}</a>
                 <img
                   src="/assets/images/flag-orange.svg"
-                  alt="workplace is pending"
+                  alt="Workplace is pending"
                   class="govuk-!-margin-right-1 govuk-!-margin-left-3 govuk-util__vertical-align-top"
                   *ngIf="item.establishment.ustatus === 'PENDING'"
                 />
               </td>
               <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
               <td class="govuk-table__cell">
-                <a class="govuk-link--no-visited-state " href="#" (click)="toggleDetails(item.uid, $event)">{{
+                <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
                   workerDetailsLabel[item.uid] ? workerDetailsLabel[item.uid] : 'Open'
                 }}</a>
               </td>
