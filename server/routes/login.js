@@ -74,6 +74,7 @@ router.post('/', async (req, res) => {
                   'isPrimary',
                   'establishmentId',
                   'UserRoleValue',
+                  'registrationSurveyCompleted',
                   'tribalId',
                 ],
                 include: [
