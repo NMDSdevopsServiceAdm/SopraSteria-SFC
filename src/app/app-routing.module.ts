@@ -24,32 +24,6 @@ import {
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 
-import { environment } from '../environments/environment';
-
-const bulkUploadRouting = {
-  other: {
-    path: 'bulk-upload',
-    loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
-    data: {
-      title: 'Bulk Upload',
-    },
-  },
-  test: {
-    path: 'bulk-upload',
-    loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
-    data: {
-      title: 'Bulk Upload',
-    },
-  },
-  production: {
-    path: 'bulk-upload',
-    loadChildren: () => import('@features/bulk-upload-v2/bulk-upload.module').then((m) => m.BulkUploadV2Module),
-    data: {
-      title: 'Bulk Upload',
-    },
-  },
-}[environment.environmentName];
-
 const routes: Routes = [
   {
     path: '',
@@ -156,7 +130,11 @@ const routes: Routes = [
         component: DashboardComponent,
         data: { title: 'Dashboard' },
       },
-      bulkUploadRouting,
+      {
+        path: 'bulk-upload',
+        loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
+        data: { title: 'Bulk Upload' },
+      },
       {
         path: 'search-users',
         loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),

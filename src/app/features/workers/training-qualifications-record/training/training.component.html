@@ -25,18 +25,24 @@
           </td>
           <td class="govuk-table__cell">{{ trainingRecord.title }}</td>
           <td class="govuk-table__cell">
-            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
+            <div
+              *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING"
+              class="govuk-!-margin-bottom-1"
+            >
               <img
                 src="/assets/images/flag-red.svg"
-                alt="Missing"
+                alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               Missing
             </div>
-            <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED" class="govuk-!-margin-bottom-1">
+            <div
+              *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED"
+              class="govuk-!-margin-bottom-1"
+            >
               <img
                 src="/assets/images/flag-red.svg"
-                alt="expired"
+                alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               Expired
@@ -44,7 +50,7 @@
             <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING">
               <img
                 src="/assets/images/flag-orange.svg"
-                alt="expiring"
+                alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               Expiring soon
@@ -52,7 +58,7 @@
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
-              *ngIf="canEditWorker && !trainingRecord.missing "
+              *ngIf="canEditWorker && !trainingRecord.missing"
               class="govuk-link--no-visited-state"
               href="#"
               (click)="toggleDetails(trainingRecord.uid, $event)"
@@ -60,7 +66,7 @@
             >
           </td>
         </tr>
-        <tr *ngIf="trainingDetails[trainingRecord.uid]" class="govuk-panel--gray ">
+        <tr *ngIf="trainingDetails[trainingRecord.uid]" class="govuk-panel--gray">
           <td colspan="4">
             <div class="govuk-grid-row govuk-!-margin-2">
               <div class="govuk-grid-column-one-quarter">

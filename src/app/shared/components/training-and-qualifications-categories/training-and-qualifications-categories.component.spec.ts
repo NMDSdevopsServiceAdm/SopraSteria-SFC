@@ -1,12 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { render, RenderResult, within, fireEvent } from '@testing-library/angular';
+import { fireEvent, render, RenderResult, within } from '@testing-library/angular';
 import * as moment from 'moment';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
-import { By } from '@angular/platform-browser';
 
 const sinon = require('sinon');
 const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
@@ -312,7 +312,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     });
 
     fixture.detectChanges();
-    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortBy')).nativeElement;
+    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingCategory')).nativeElement;
     select.value = select.options[1].value; // Expiring Soon
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
