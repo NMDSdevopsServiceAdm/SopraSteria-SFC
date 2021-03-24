@@ -1,10 +1,10 @@
 'use strict';
-​
+
 const table = {
   tableName: 'Worker',
   schema: 'cqc',
 };
-​
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(async (transaction) => {
@@ -19,10 +19,14 @@ module.exports = {
             },
             { transaction },
           ),
-          queryInterface.addColumn(table, 'NationalInsuranceNumberEncryptedValue', {
+          queryInterface.addColumn(
+            table,
+            'NationalInsuranceNumberEncryptedValue',
+            {
               type: Sequelize.DataTypes.TEXT,
               allowNull: true,
-            }, { transaction }
+            },
+            { transaction },
           ),
         ]);
 
@@ -32,11 +36,11 @@ module.exports = {
       }
     });
   },
+
   down: async (queryInterface, Sequelize) => {
-      await Promise.all([
-        queryInterface.removeColumn(table, 'DateOfBirthEncryptedValue'),
-        queryInterface.removeColumn(table, 'NationalInsuranceNumberEncryptedValue'),
-      ]);
-    },
+    await Promise.all([
+      queryInterface.removeColumn(table, 'DateOfBirthEncryptedValue'),
+      queryInterface.removeColumn(table, 'NationalInsuranceNumberEncryptedValue'),
+    ]);
+  },
 };
-​
