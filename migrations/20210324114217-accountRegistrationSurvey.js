@@ -11,28 +11,19 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true,
           },
-          EstablishmentFK: {
+          UserFK: {
             type: Sequelize.INTEGER,
             references: {
               model: {
-                tableName: 'Establishment',
+                tableName: 'User',
                 schema: 'cqc',
               },
-              key: 'EstablishmentID',
+              key: 'RegistrationID',
             },
           },
-          Participation: {
-            type: Sequelize.DataTypes.ENUM,
-            allowNull: true,
-            values: ['Yes', 'No'],
-          },
-          WhyDidYouCreateAnAccount: {
-            type: Sequelize.DataTypes.TEXT,
-            allowNull: true,
-          },
-          HowDidYouHearAboutASCWDF: {
-            type: Sequelize.DataTypes.TEXT,
-            allowNull: true,
+          SurveyAnswers: {
+            type: Sequelize.DataTypes.JSON,
+            allowNull: false,
           },
           SubmittedDate: {
             type: Sequelize.DataTypes.DATE,
