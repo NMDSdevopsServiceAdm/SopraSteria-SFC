@@ -96,12 +96,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.setPermissionLinks();
 
     if (this.workplace) {
-      if (this.canViewListOfWorkers) {
+      if (this.canEditEstablishment) {
         this.subscriptions.add(
           this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
-            if(this.canEditEstablishment ) {
-              this.updateStaffRecords = !(workers.length > 0);
-            }
+            this.updateStaffRecords = !(workers.length > 0);
             this.workersCount = workers.length;
           }),
         );
