@@ -9,25 +9,14 @@ module.exports = function (sequelize, DataTypes) {
         autoIncrement: true,
         field: 'ID',
       },
-      establishmentFk: {
+      userFk: {
         type: DataTypes.INTEGER,
-        field: 'EstablishmentFK',
+        field: 'UserFK',
       },
-      participation: {
-        type: DataTypes.ENUM,
+      surveyAnswers: {
+        type: DataTypes.JSON,
         allowNull: true,
-        values: ['Yes', 'No'],
-        field: 'Participation',
-      },
-      whyDidYouCreateAnAccount: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'WhyDidYouCreateAnAccount',
-      },
-      howDidYouHearAboutASCWDF: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'HowDidYouHearAboutASCWDF',
+        field: 'SurveyAnswers',
       },
       submittedDate: {
         type: DataTypes.DATE,
@@ -43,14 +32,6 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false,
     },
   );
-
-  RegistrationSurvey.associate = (models) => {
-    RegistrationSurvey.belongsTo(models.establishment, {
-      foreignKey: 'establishmentFK',
-      targetKey: 'id',
-      as: 'establishment',
-    });
-  };
 
   return RegistrationSurvey;
 };

@@ -139,6 +139,12 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
             this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
+
+          // Stick logic in here to navigate to new registration survey
+          // refactor code above to a single navigate function
+          if (response.body.registrationSurveyCompleted === false) {
+            console.log('show the survey');
+          }
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
