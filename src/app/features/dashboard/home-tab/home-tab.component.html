@@ -23,7 +23,7 @@
         </div>
       </app-inset-text>
     </ng-container>
-    <ng-container *ngIf="workplace && canEditEstablishment && workersCount !== workplace.numberOfStaff">
+    <ng-container *ngIf="workplace && canAddWorker && workersCount !== workplace.numberOfStaff">
       <app-staff-mismatch-banner
         (selectStaffTab)="selectStaffTab($event)"
         (selectTotalStaff)="selectTotalStaff($event)"
