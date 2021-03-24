@@ -8,12 +8,16 @@ const findParentWorkplaces = require('../../../../services/email-campaigns/inact
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
 const getInactiveWorkplaces = async (_req, res) => {
-  const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-  const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+  try {
+    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
 
-  return res.json({
-    inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
-  });
+    return res.json({
+      inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
+    });
+  } catch (err) {
+    return res.status(503).json({});
+  }
 };
 
 const createCampaign = async (req, res) => {
@@ -29,7 +33,7 @@ const createCampaign = async (req, res) => {
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
     const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
 
-    const totalInactiveWorkplaces = inactiveWorkplaces.concat(parentWorkplaces)
+    const totalInactiveWorkplaces = inactiveWorkplaces.concat(parentWorkplaces);
     const history = totalInactiveWorkplaces.map((workplace) => {
       return {
         emailCampaignID: emailCampaign.id,

@@ -84,22 +84,44 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     },
   ];
 
-  it('should get the number of inactive workplaces', async () => {
-    sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-    sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+  describe('getInactiveWorkplaces', () => {
+    it('should get the number of inactive workplaces', async () => {
+      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
 
-    const req = httpMocks.createRequest({
-      method: 'GET',
-      url: '/api/admin/email-campaigns/inactive-workplaces',
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+      const response = res._getJSONData();
+
+      expect(response.inactiveWorkplaces).to.deep.equal(3);
     });
 
-    req.role = 'Admin';
+    it('should return an error if inactive workplaces throws an exception', async () => {
+      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
+      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').rejects();
 
-    const res = httpMocks.createResponse();
-    await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
-    const response = res._getJSONData();
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces',
+      });
 
-    expect(response.inactiveWorkplaces).to.deep.equal(3);
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(503);
+      expect(response).to.deep.equal({});
+    });
   });
 
   describe('createCampaign', async () => {

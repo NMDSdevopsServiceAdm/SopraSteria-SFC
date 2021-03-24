@@ -6,7 +6,6 @@ const models = require('../../../../../models');
 const findParentWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWorkplaces', () => {
-
   afterEach(() => {
     sinon.restore();
   });
@@ -71,7 +70,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
     expect(parentWorkplaces).to.deep.equal(dummyParentWorkplaces);
   });
 
-  it('should only return parent workplaces of subs that haven\'t updated for at least 6 months', async () => {
+  it("should only return parent workplaces of subs that haven't updated for at least 6 months", async () => {
     sinon.stub(models.sequelize, 'query').returns([
       {
         EstablishmentID: 1,
@@ -155,7 +154,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
     expect(parentWorkplaces).to.deep.equal([]);
   });
 
-  it('should return parent workplaces if they are inactive and their subs aren\'t', async () => {
+  it("should return parent workplaces if they are inactive and their subs aren't", async () => {
     sinon.stub(models.sequelize, 'query').returns([
       {
         EstablishmentID: 1,
@@ -201,5 +200,35 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
         subsidiaries: [],
       },
     ]);
+  });
+
+  it("should group subs when the parent isn't the first workplace in the list", async () => {
+    sinon.stub(models.sequelize, 'query').returns([
+      {
+        EstablishmentID: 2,
+        NameValue: 'Workplace Name',
+        ParentID: 1,
+        IsParent: false,
+        NmdsID: 'A0045232',
+        LastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+        DataOwner: 'Parent',
+        PrimaryUserName: 'Test Person',
+        PrimaryUserEmail: 'test@example.com',
+      },
+      {
+        EstablishmentID: 1,
+        NameValue: 'Test Name',
+        ParentID: null,
+        IsParent: true,
+        NmdsID: 'A1234567',
+        LastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Person',
+        PrimaryUserEmail: 'test@example.com',
+      },
+    ]);
+
+    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    expect(parentWorkplaces).to.deep.equal(dummyParentWorkplaces);
   });
 });

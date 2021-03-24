@@ -1,4 +1,5 @@
 const moment = require('moment');
+
 const config = require('../../../config/config');
 const { getParentWorkplaces } = require('../../../models/email-campaigns/inactive-workplaces/getParentWorkplaces');
 
@@ -15,7 +16,8 @@ const buildWorkplaces = (workplaces) => {
       return acc;
     }
 
-    const subsidiaries = (acc[workplace.ParentID].subsidiaries || (acc[workplace.ParentID].subsidiaries = []));
+    const parent = acc[workplace.ParentID] || (acc[workplace.ParentID] = {});
+    const subsidiaries = parent.subsidiaries || (parent.subsidiaries = []);
 
     if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months')) {
       subsidiaries.push(workplace);
