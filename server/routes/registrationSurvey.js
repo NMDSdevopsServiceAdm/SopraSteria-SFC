@@ -4,11 +4,11 @@ const models = require('../models');
 
 const submitSurvey = async (req, res) => {
   try {
-    const user = await models.user.findByUUID(req.body.userUUID);
-
     await models.registrationSurvey.create({
-      userFk: user.id,
-      surveyAnswers: req.body.surveyAnswers,
+      userFk: req.user.id,
+      participation: req.body.participation,
+      whyDidYouCreateAccount: req.body.whyDidYouCreateAccount,
+      howDidYouHearAboutASCWDS: req.body.howDidYouHearAboutASCWDS,
     });
     res.status(200).send();
   } catch (error) {

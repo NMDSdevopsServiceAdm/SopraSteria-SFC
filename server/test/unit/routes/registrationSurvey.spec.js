@@ -19,29 +19,10 @@ describe('registrationSurvey', async () => {
     const request = {
       method: 'POST',
       url: '/api/registrationSurvey',
-      body: {
-        userUUID: '3b22ddf9-0f34-4e1d-af8d-5176c570945c',
-        surveyAnswers: {
-          participation: {
-            answer: 'Yes',
-          },
-          whyDidYouCreateAccount: {
-            answer: ['Other', 'To record and manage staff records'],
-          },
-          howDidYouHearAboutASCWDS: {
-            answer: ['From our local authority'],
-          },
-        },
+      user: {
+        id: 1234,
       },
-    };
-
-    const userModel = {
-      id: 1234,
-    };
-
-    const expectedRegistrationSurveyParams = {
-      userFk: 1234,
-      surveyAnswers: {
+      body: {
         participation: {
           answer: 'Yes',
         },
@@ -54,7 +35,19 @@ describe('registrationSurvey', async () => {
       },
     };
 
-    const userStub = sinon.stub(models.user, 'findByUUID').returns(userModel);
+    const expectedRegistrationSurveyParams = {
+      userFk: 1234,
+      participation: {
+        answer: 'Yes',
+      },
+      whyDidYouCreateAccount: {
+        answer: ['Other', 'To record and manage staff records'],
+      },
+      howDidYouHearAboutASCWDS: {
+        answer: ['From our local authority'],
+      },
+    };
+
     const registrationSurveyStub = sinon.stub(models.registrationSurvey, 'create');
 
     const req = httpMocks.createRequest(request);
@@ -62,7 +55,6 @@ describe('registrationSurvey', async () => {
     await registrationSurvey.submitSurvey(req, res);
 
     expect(res.statusCode).to.deep.equal(200);
-    userStub.should.have.been.calledWith(request.body.userUUID);
     registrationSurveyStub.should.have.been.calledWith(expectedRegistrationSurveyParams);
   });
 
@@ -70,29 +62,10 @@ describe('registrationSurvey', async () => {
     const request = {
       method: 'POST',
       url: '/api/registrationSurvey',
-      body: {
-        userUUID: '3b22ddf9-0f34-4e1d-af8d-5176c570945c',
-        surveyAnswers: {
-          participation: {
-            answer: 'Yes',
-          },
-          whyDidYouCreateAccount: {
-            answer: [],
-          },
-          howDidYouHearAboutASCWDS: {
-            answer: [],
-          },
-        },
+      user: {
+        id: 1234,
       },
-    };
-
-    const userModel = {
-      id: 1234,
-    };
-
-    const expectedRegistrationSurveyParams = {
-      userFk: 1234,
-      surveyAnswers: {
+      body: {
         participation: {
           answer: 'Yes',
         },
@@ -105,7 +78,19 @@ describe('registrationSurvey', async () => {
       },
     };
 
-    const userStub = sinon.stub(models.user, 'findByUUID').returns(userModel);
+    const expectedRegistrationSurveyParams = {
+      userFk: 1234,
+      participation: {
+        answer: 'Yes',
+      },
+      whyDidYouCreateAccount: {
+        answer: [],
+      },
+      howDidYouHearAboutASCWDS: {
+        answer: [],
+      },
+    };
+
     const registrationSurveyStub = sinon.stub(models.registrationSurvey, 'create');
 
     const req = httpMocks.createRequest(request);
@@ -113,53 +98,19 @@ describe('registrationSurvey', async () => {
     await registrationSurvey.submitSurvey(req, res);
 
     expect(res.statusCode).to.deep.equal(200);
-    userStub.should.have.been.calledWith(request.body.userUUID);
     registrationSurveyStub.should.have.been.calledWith(expectedRegistrationSurveyParams);
   });
 
-  it('should return an HTTP 500 if the user is not found', async () => {
+  it('should return a 500 if create fails', async () => {
     const request = {
       method: 'POST',
       url: '/api/registrationSurvey',
-      body: {
-        userUUID: '3b22ddf9-0f34-4e1d-af8d-5176c570945c',
-        surveyAnswers: {
-          participation: {
-            answer: 'Yes',
-          },
-          whyDidYouCreateAccount: {
-            answer: [],
-          },
-          howDidYouHearAboutASCWDS: {
-            answer: [],
-          },
-        },
+      user: {
+        id: 1234,
       },
+      body: {},
     };
 
-    sinon.stub(models.user, 'findByUUID').returns(null);
-
-    const req = httpMocks.createRequest(request);
-    const res = httpMocks.createResponse();
-    await registrationSurvey.submitSurvey(req, res);
-
-    expect(res.statusCode).to.deep.equal(500);
-  });
-
-  it('should return an error if surveyAnswers does not exist', async () => {
-    const request = {
-      method: 'POST',
-      url: '/api/registrationSurvey',
-      body: {
-        userUUID: '3b22ddf9-0f34-4e1d-af8d-5176c570945c',
-      },
-    };
-
-    const userModel = {
-      id: 1234,
-    };
-
-    sinon.stub(models.user, 'findByUUID').returns(userModel);
     sinon.stub(models.registrationSurvey, 'create').throws();
 
     const req = httpMocks.createRequest(request);

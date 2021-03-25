@@ -21,9 +21,18 @@ module.exports = {
               key: 'RegistrationID',
             },
           },
-          SurveyAnswers: {
-            type: Sequelize.DataTypes.JSON,
+          Participation: {
+            type: Sequelize.DataTypes.ENUM,
             allowNull: false,
+            values: ['Yes', 'No'],
+          },
+          WhyDidYouCreateAccount: {
+            type: Sequelize.DataTypes.JSON,
+            allowNull: true,
+          },
+          HowDidYouHearAboutASCWDS: {
+            type: Sequelize.DataTypes.JSON,
+            allowNull: true,
           },
           SubmittedDate: {
             type: Sequelize.DataTypes.DATE,

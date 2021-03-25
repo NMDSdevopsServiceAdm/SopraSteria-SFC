@@ -242,6 +242,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'updatedby',
       },
+      registrationSurveyCompleted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        field: 'RegistrationSurveyCompleted',
+      },
     },
     {
       tableName: '"User"',

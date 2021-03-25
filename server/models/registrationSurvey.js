@@ -13,10 +13,21 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         field: 'UserFK',
       },
-      surveyAnswers: {
+      participation: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['Yes', 'No'],
+        field: 'Participation',
+      },
+      whyDidYouCreateAccount: {
         type: DataTypes.JSON,
         allowNull: true,
-        field: 'SurveyAnswers',
+        field: 'WhyDidYouCreateAccount',
+      },
+      howDidYouHearAboutASCWDS: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        field: 'HowDidYouHearAboutASCWDS',
       },
       submittedDate: {
         type: DataTypes.DATE,
