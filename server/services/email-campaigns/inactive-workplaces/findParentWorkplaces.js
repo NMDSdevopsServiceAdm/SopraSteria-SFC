@@ -9,6 +9,9 @@ const buildWorkplaces = (workplaces) => {
   return workplaces.reduce((acc, workplace) => {
     if (workplace.IsParent) {
       acc[workplace.EstablishmentID] = {
+        ...{
+          subsidiaries: [],
+        },
         ...workplace,
         ...acc[workplace.EstablishmentID],
       };
