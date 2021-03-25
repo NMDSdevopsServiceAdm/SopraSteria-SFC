@@ -16,6 +16,8 @@ const getInactiveWorkplaces = async (_req, res) => {
       inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
     });
   } catch (err) {
+    console.error(err);
+
     return res.status(503).json({});
   }
 };
