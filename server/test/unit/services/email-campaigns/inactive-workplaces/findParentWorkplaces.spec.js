@@ -202,6 +202,42 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
     ]);
   });
 
+  it('should return parent when there are no subs', async () => {
+    sinon.stub(models.sequelize, 'query').returns([
+      {
+        EstablishmentID: 1,
+        NameValue: 'Test Name',
+        ParentID: null,
+        IsParent: true,
+        NmdsID: 'A1234567',
+        LastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Person',
+        PrimaryUserEmail: 'test@example.com',
+      },
+    ]);
+
+    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    expect(parentWorkplaces).to.deep.equal([
+      {
+        id: 1,
+        name: 'Test Name',
+        nmdsId: 'A1234567',
+        lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+        emailTemplate: {
+          id: parentTemplateId,
+          name: 'Parent',
+        },
+        dataOwner: 'Workplace',
+        user: {
+          name: 'Test Person',
+          email: 'test@example.com',
+        },
+        subsidiaries: [],
+      },
+    ]);
+  });
+
   it("should group subs when the parent isn't the first workplace in the list", async () => {
     sinon.stub(models.sequelize, 'query').returns([
       {
