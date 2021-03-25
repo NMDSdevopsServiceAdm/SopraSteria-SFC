@@ -10,7 +10,7 @@ const getParentWorkplaces = async () => {
     SELECT
       "EstablishmentID",
       "NameValue",
-      TRIM("NmdsID"),
+      TRIM("NmdsID") AS "NmdsID",
       "DataOwner",
       "PrimaryUserName",
       "PrimaryUserEmail",
@@ -33,7 +33,7 @@ const getParentWorkplaces = async () => {
     SELECT
       "EstablishmentID",
       "NameValue",
-      TRIM("NmdsID"),
+      TRIM("NmdsID") AS "NmdsID",
       "DataOwner",
       "PrimaryUserName",
       "PrimaryUserEmail",
