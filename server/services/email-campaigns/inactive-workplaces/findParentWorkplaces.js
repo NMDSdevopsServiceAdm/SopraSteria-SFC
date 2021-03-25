@@ -57,7 +57,10 @@ const transformSubsidiaryWorkplace = (subsidiary) => {
 };
 
 const parentOrSubsInactive = (parent) => {
-  return parent.subsidiaries.length || moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months');
+  return (
+    parent.subsidiaries.length ||
+    moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')
+  );
 };
 
 const findParentWorkplaces = async () => {
