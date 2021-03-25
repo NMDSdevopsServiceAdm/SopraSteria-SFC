@@ -1,4 +1,6 @@
 const { Op } = require('sequelize');
+const { encrypt } = require('../utils/db/openpgp/encrypt');
+const { decrypt } = require('../utils/db/openpgp/decrypt');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -202,6 +204,19 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"MainJobStartDateChangedBy"',
       },
+      NationalInsuranceNumberEncryptedValue: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"NationalInsuranceNumberEncryptedValue"',
+        get() {
+          const rawValue = this.getDataValue('NationalInsuranceNumberEncryptedValue');
+          return decrypt(rawValue);
+        },
+        set(value) {
+          const rawValue = this.getDataValue(value);
+          return encrypt(rawValue);
+        }
+      },
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -226,6 +241,19 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
         field: '"NationalInsuranceNumberChangedBy"',
+      },
+      DateOfBirthEncryptedValue: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"DateOfBirthValue"',
+        get() {
+          const rawValue = this.getDataValue('DateOfBirthValue');
+          return decrypt(rawValue);
+        },
+        set(value) {
+          const rawValue = this.getDataValue(value);
+          return encrypt(rawValue);
+        }
       },
       DateOfBirthValue: {
         type: DataTypes.DATE,

@@ -6,6 +6,9 @@ global.TextEncoder = textEncoding.TextEncoder;
 global.TextDecoder = textEncoding.TextDecoder;
 
 const encrypt = async (message) => {
+  if (message === null){
+    return;
+  }
   const publicKeyArmored = config.get('encryption.publicKey');
 
   const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });

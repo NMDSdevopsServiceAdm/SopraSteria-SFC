@@ -6,6 +6,9 @@ global.TextEncoder = textEncoding.TextEncoder;
 global.TextDecoder = textEncoding.TextDecoder;
 
 const decrypt = async (encryptedMessage) => {
+  if (encryptedMessage === null){
+    return;
+  }
   const privateKeyArmored = config.get('encryption.privateKey');
   const passphrase = config.get('encryption.passphrase');
 
