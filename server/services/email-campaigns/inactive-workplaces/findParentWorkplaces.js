@@ -22,7 +22,7 @@ const buildWorkplaces = (workplaces) => {
     const parent = acc[workplace.ParentID] || (acc[workplace.ParentID] = {});
     const subsidiaries = parent.subsidiaries || (parent.subsidiaries = []);
 
-    if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months')) {
+    if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')) {
       subsidiaries.push(workplace);
     }
 
