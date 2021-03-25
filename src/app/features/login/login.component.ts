@@ -140,8 +140,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
 
-          // Stick logic in here to navigate to new registration survey
-          // refactor code above to a single navigate function
           if (response.body.registrationSurveyCompleted === false) {
             console.log('show the survey');
           }

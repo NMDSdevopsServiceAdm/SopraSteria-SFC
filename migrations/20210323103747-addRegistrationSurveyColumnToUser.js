@@ -30,6 +30,5 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(table, 'RegistrationSurveyCompleted');
-      //await queryInterface.sequelize.query('DROP TYPE cqc."enum_Establishment_OtherServicesValue";'),
-  }
+  },
 };
