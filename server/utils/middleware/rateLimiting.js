@@ -2,7 +2,7 @@ const config = require('../../config/config');
 const RateLimit = require('express-rate-limit');
 const RedisStore = require('rate-limit-redis');
 
-const limiter = new RateLimit({
+const authLimiter = new RateLimit({
   store: new RedisStore({
     redisURL: config.get('redis.url'),
   }),
@@ -11,4 +11,4 @@ const limiter = new RateLimit({
   passIfNotConnected: true,
 });
 
-module.exports.limiter = limiter;
+module.exports.authLimiter = authLimiter;

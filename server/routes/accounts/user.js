@@ -14,7 +14,7 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 const linkSubToParent = require('../../data/linkToParent');
-const { limiter } = require('../../utils/middleware/rateLimiting');
+const { authLimiter } = require('../../utils/middleware/rateLimiting');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -1079,7 +1079,7 @@ router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
 router.route('/my/notifications/:notificationUid').get(getNotification);
 router.route('/my/notifications/:notificationUid').post(readNotification);
-router.use('/swap/establishment/:id', limiter);
-router.route('/swap/establishment/:id').post(Authorization.isAdmin, limiter, swapEstablishment);
+router.use('/swap/establishment/:id', authLimiter);
+router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
 module.exports = router;
