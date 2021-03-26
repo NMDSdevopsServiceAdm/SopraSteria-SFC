@@ -22,7 +22,6 @@ const passwordCheck = require('../utils/security/passwordValidation').isPassword
 const usernameCheck = require('../utils/security/usernameValidation').isUsernameValid;
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 const { limiter } = require('../utils/middleware/rateLimiting');
-// const rateLimiting = require('../utils/middleware/rateLimiting').rateLimiting;
 // const pCodeCheck = require('../utils/postcodeSanitizer');
 
 class RegistrationException {

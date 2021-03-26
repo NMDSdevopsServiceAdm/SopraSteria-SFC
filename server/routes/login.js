@@ -16,6 +16,7 @@ const formatSuccessulLoginResponse = require('../utils/login/response');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 const get = require('lodash/get');
+const { limiter } = require('../utils/middleware/rateLimiting');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
@@ -30,6 +31,7 @@ const tribalHashCompare = (password, salt, expectedHash) => {
   }
 };
 
+router.use('/', limiter);
 router.post('/', async (req, res) => {
   const givenUsername = req.body.username.toLowerCase();
   const givenPassword = req.body.password;
@@ -410,7 +412,7 @@ router.post('/', async (req, res) => {
 
 // renews a given bearer token; this token must exist and must be valid
 //  it must be a Logged In "Bearer" token
-router.use('/refresh', isAuthorised);
+router.use('/refresh', isAuthorised, limiter);
 router.get('/refresh', async function (req, res) {
   // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
 
