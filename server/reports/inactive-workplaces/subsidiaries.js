@@ -21,7 +21,6 @@ const addWorksheet = (workbook) => {
     { header: 'Workplace name', key: 'workplace' },
     { header: 'Workplace ID', key: 'workplaceId' },
     { header: 'Date last updated', key: 'lastUpdated' },
-    { header: 'Email template', key: 'emailTemplate' },
     { header: 'Data owner', key: 'dataOwner' },
   ];
 
