@@ -9,6 +9,17 @@ import { BackService } from '@core/services/back.service';
 export class WhyCreateAccountComponent implements OnInit {
   public nextPage: URLStructure = { url: ['/registration-survey', 'how-did-you-hear-about'] };
   public return: URLStructure = { url: ['/registration-survey'] };
+  public responses = [
+    'To help the Department of Health and Social Care and others to better understand the adult social care sector',
+    'To get access to the Workforce Development Fund',
+    'To help us with the Care Quality Commission',
+    'To help us with our local authority',
+    'To record and manage staff training and qualifications',
+    'To record and manage staff records',
+    'To benchmark our workplace against others',
+    'To help us understand our workforce better',
+    'Other',
+  ];
 
   constructor(protected backService: BackService) {}
 

@@ -1,3 +1,26 @@
-<p>why-create-account works!</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-l">Question 1</span>
+    <h1 class="govuk-heading-xl">Why did you create an account?</h1>
+    <p>Select all that apply.</p>
 
-<a role="button" draggable="false" class="govuk-button" [routerLink]="this.nextPage?.url"> Continue </a>
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+        <div class="govuk-checkboxes">
+          <ng-container *ngFor="let response of responses">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" type="checkbox" />
+              <label class="govuk-label govuk-checkboxes__label" for="why-create-account">
+                {{ response }}
+              </label>
+            </div>
+          </ng-container>
+        </div>
+      </fieldset>
+    </div>
+
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-2" [routerLink]="this.nextPage?.url">
+      Next question
+    </a>
+  </div>
+</div>

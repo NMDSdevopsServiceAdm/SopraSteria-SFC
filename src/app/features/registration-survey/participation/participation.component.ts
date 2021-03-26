@@ -8,9 +8,7 @@ import { URLStructure } from '@core/model/url.model';
 export class ParticipationComponent implements OnInit {
   public nextPage: URLStructure;
 
-  constructor() {
-    /**/
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.nextPage = { url: ['/registration-survey', 'why-create-account'] };
