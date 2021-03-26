@@ -9,6 +9,7 @@ const buildWorkplaces = (workplaces) => {
   return workplaces.reduce((acc, workplace) => {
     if (workplace.IsParent) {
       acc[workplace.EstablishmentID] = {
+        subsidiaries: [],
         ...workplace,
         ...acc[workplace.EstablishmentID],
       };
@@ -19,7 +20,7 @@ const buildWorkplaces = (workplaces) => {
     const parent = acc[workplace.ParentID] || (acc[workplace.ParentID] = {});
     const subsidiaries = parent.subsidiaries || (parent.subsidiaries = []);
 
-    if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months')) {
+    if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')) {
       subsidiaries.push(workplace);
     }
 
@@ -54,7 +55,10 @@ const transformSubsidiaryWorkplace = (subsidiary) => {
 };
 
 const parentOrSubsInactive = (parent) => {
-  return parent.subsidiaries.length || moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months');
+  return (
+    parent.subsidiaries.length ||
+    moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')
+  );
 };
 
 const findParentWorkplaces = async () => {
