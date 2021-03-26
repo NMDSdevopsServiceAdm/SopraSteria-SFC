@@ -33,7 +33,7 @@ var AppConfig = require('./server/config/appConfig');
 // caching middleware - ref and transactional
 var cacheMiddleware = require('./server/utils/middleware/noCache');
 var refCacheMiddleware = require('./server/utils/middleware/refCache');
-const { authLimiter } = require('./server/utils/middleware/rateLimiting');
+const { authLimiter, dbLimiter } = require('./server/utils/middleware/rateLimiting');
 
 // security libraries
 var helmet = require('helmet');
@@ -179,6 +179,7 @@ app.use(
       },
     },
   }),
+  dbLimiter,
 );
 
 // encodes all URL parameters
