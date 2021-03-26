@@ -204,19 +204,19 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"MainJobStartDateChangedBy"',
       },
-      NationalInsuranceNumberEncryptedValue: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NationalInsuranceNumberEncryptedValue"',
-        get() {
-          const rawValue = this.getDataValue('NationalInsuranceNumberEncryptedValue');
-          return decrypt(rawValue);
-        },
-        set(value) {
-          const rawValue = this.getDataValue(value);
-          return encrypt(rawValue);
-        }
-      },
+      // NationalInsuranceNumberEncryptedValue: {
+      //   type: DataTypes.TEXT,
+      //   allowNull: true,
+      //   field: '"NationalInsuranceNumberEncryptedValue"',
+      //   get() {
+      //     const rawValue = this.getDataValue('NationalInsuranceNumberEncryptedValue');
+      //     return decrypt(rawValue);
+      //   },
+      //   set(value) {
+      //     const rawValue = this.getDataValue(value);
+      //     return encrypt(rawValue);
+      //   },
+      // },
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -243,17 +243,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthEncryptedValue: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
-        field: '"DateOfBirthValue"',
-        get() {
-          const rawValue = this.getDataValue('DateOfBirthValue');
-          return decrypt(rawValue);
-        },
-        set(value) {
-          const rawValue = this.getDataValue(value);
-          return encrypt(rawValue);
-        }
+        field: '"DateOfBirthEncryptedValue"',
       },
       DateOfBirthValue: {
         type: DataTypes.DATE,
@@ -1080,6 +1072,32 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
+      hooks: {
+        beforeBulkUpdate: async (workerUpdate) => {
+          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
+            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
+            workerUpdate.attributes.NationalInsuranceNumberEncryptedValue = encrypted;
+          }
+
+          if (workerUpdate.attributes.DateOfBirthValue) {
+            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
+            workerUpdate.attributes.DateOfBirthEncryptedValue = encrypted;
+          }
+        },
+        afterFind: async (worker) => {
+          if (worker && worker.dataValues) {
+            if (worker.dataValues.NationalInsuranceNumberEncryptedValue) {
+              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberEncryptedValue);
+              worker.dataValues.NationalInsuranceNumberEncryptedValue = decrypted;
+            }
+
+            if (worker.dataValues.DateOfBirthEncryptedValue) {
+              const decrypted = await decrypt(worker.dataValues.DateOfBirthEncryptedValue);
+              worker.dataValues.DateOfBirthEncryptedValue = decrypted;
+            }
+          }
+        },
+      },
       scopes: {
         active: {
           where: {

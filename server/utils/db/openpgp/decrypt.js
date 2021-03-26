@@ -1,3 +1,4 @@
+const Sentry = require('@sentry/node');
 const openpgp = require('openpgp');
 var config = require('../../../../server/config/config');
 const textEncoding = require('text-encoding-utf-8');
@@ -6,26 +7,33 @@ global.TextEncoder = textEncoding.TextEncoder;
 global.TextDecoder = textEncoding.TextDecoder;
 
 const decrypt = async (encryptedMessage) => {
-  if (encryptedMessage === null){
-    return;
+  if (!encryptedMessage) {
+    return null;
   }
-  const privateKeyArmored = config.get('encryption.privateKey');
-  const passphrase = config.get('encryption.passphrase');
 
-  const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
-  await privateKey.decrypt(passphrase);
+  try {
+    const privateKeyArmored = config.get('encryption.privateKey');
+    const passphrase = config.get('encryption.passphrase');
 
-  const message = await openpgp.readMessage({
-    armoredMessage: encryptedMessage,
-  });
+    const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
+    await privateKey.decrypt(passphrase);
 
-  const decryptedMessage = await openpgp.decrypt({
-    message,
-    privateKeys: privateKey,
-  });
+    const message = await openpgp.readMessage({
+      armoredMessage: encryptedMessage,
+    });
 
-  const decryptedData = await openpgp.stream.readToEnd(decryptedMessage.data);
-  return decryptedData;
+    const decryptedMessage = await openpgp.decrypt({
+      message,
+      privateKeys: privateKey,
+    });
+
+    const decryptedData = await openpgp.stream.readToEnd(decryptedMessage.data);
+    return decryptedData;
+  } catch (e) {
+    console.error(e);
+    Sentry.captureException(e);
+    throw new Error('Unable to retrieve');
+  }
 };
 
 module.exports.decrypt = decrypt;
