@@ -5,7 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
   selector: 'app-training-info-panel',
   templateUrl: './training-info-panel.component.html',
 })
-export class TainingInfoPanelComponent implements OnInit {
+export class TrainingInfoPanelComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() totalExpiredTraining = 0;
   @Input() totalExpiringTraining = 0;
