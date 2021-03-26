@@ -1,5 +1,5 @@
 <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
-<app-trianing-link-panel [workplace]="workplace"></app-trianing-link-panel>
+<app-training-link-panel [workplace]="workplace"></app-training-link-panel>
 <ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">

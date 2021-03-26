@@ -9,7 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { TrainingLinkPanelComponent } from '@shared/components/trianing-link-panel/trianing-link-panel.component.component';
+import { TrainingLinkPanelComponent } from '@shared/components/training-link-panel/training-link-panel.component';
 import { render } from '@testing-library/angular';
 
 import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';

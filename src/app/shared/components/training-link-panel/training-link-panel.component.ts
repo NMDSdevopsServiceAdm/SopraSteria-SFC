@@ -11,8 +11,8 @@ import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-trianing-link-panel',
-  templateUrl: './trianing-link-panel.component.html',
+  selector: 'app-training-link-panel',
+  templateUrl: './training-link-panel.component.html',
 })
 export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
