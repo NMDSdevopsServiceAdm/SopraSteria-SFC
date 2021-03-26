@@ -7,12 +7,11 @@ import { BackService } from '@core/services/back.service';
   templateUrl: './how-did-you-hear-about.component.html',
 })
 export class HowDidYouHearAboutComponent implements OnInit {
-  public return: URLStructure;
+  public return: URLStructure = { url: ['/registration-survey', 'why-create-account'] };
 
   constructor(protected backService: BackService) {}
 
   ngOnInit(): void {
-    this.return = { url: ['/registration-survey', 'why-create-account'] };
     this.setBackLink(this.return);
   }
 
