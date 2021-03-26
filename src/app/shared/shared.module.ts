@@ -70,7 +70,7 @@ import {
   TrainingAndQualificationsTabComponent,
 } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
-import { TrainingLinkPanelComponent } from './components/trianing-link-panel/trianing-link-panel.component.component';
+import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
