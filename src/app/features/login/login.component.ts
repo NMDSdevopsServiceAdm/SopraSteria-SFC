@@ -141,7 +141,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           if (response.body.registrationSurveyCompleted === false) {
-            console.log('show the survey');
+            this.router.navigate(['/registration-survey']);
           }
         },
         (error: HttpErrorResponse) => {

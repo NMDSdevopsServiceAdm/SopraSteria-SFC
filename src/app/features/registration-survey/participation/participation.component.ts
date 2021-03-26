@@ -6,14 +6,13 @@ import { URLStructure } from '@core/model/url.model';
   templateUrl: './participation.component.html',
 })
 export class ParticipationComponent implements OnInit {
-  public nextPage: URLStructure = { url: ['/registration-survey', 'why-create-account'] };
-  public return: URLStructure;
+  public nextPage: URLStructure;
 
   constructor() {
     /**/
   }
 
   ngOnInit(): void {
-    this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
+    this.nextPage = { url: ['/registration-survey', 'why-create-account'] };
   }
 }

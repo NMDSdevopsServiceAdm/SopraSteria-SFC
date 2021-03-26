@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { URLStructure } from '@core/model/url.model';
+import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-how-did-you-hear-about',
@@ -8,9 +9,14 @@ import { URLStructure } from '@core/model/url.model';
 export class HowDidYouHearAboutComponent implements OnInit {
   public return: URLStructure;
 
-  ngOnInit(): void {
-    this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
+  constructor(protected backService: BackService) {}
 
-    /**/
+  ngOnInit(): void {
+    this.return = { url: ['/registration-survey', 'why-create-account'] };
+    this.setBackLink(this.return);
+  }
+
+  protected setBackLink(returnTo): void {
+    this.backService.setBackLink(returnTo);
   }
 }
