@@ -1,33 +1,38 @@
-<app-error-summary
-  *ngIf="showErrorSummary"
-  [customErrors]="uploadValidationErrors"
-  [serverError]="serverError"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-></app-error-summary>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">
-      <span *ngIf="establishment?.name" class="govuk-caption-xl">{{ establishment?.name }}</span>
-      Bulk upload
-    </h1>
-    <p>Bulk upload is used to add and edit large quantities of staff, workplace and training information.</p>
-  </div>
-</div>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Bulk upload</h1>
+    <p class="govuk-!-font-size-16 govuk-!-margin-bottom-6" *ngIf="this.establishment?.lastBulkUploaded">
+      Last bulk upload {{ this.establishment.lastBulkUploaded | date: 'd MMMM y' }}
+    </p>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <ol class="govuk-list govuk-list--number govuk-!-margin-top-8 govuk-!-padding-left-5">
-      <li class="govuk-!-padding-left-5 govuk-!-font-size-24 govuk-!-padding-bottom-6 govuk-util__bold">
-        <app-check-workplace-references class="govuk-util__block"></app-check-workplace-references>
-      </li>
-      <li class="govuk-!-padding-left-5 govuk-!-font-size-24 govuk-!-padding-bottom-6 govuk-util__bold">
-        <app-download-data-files class="govuk-util__block"></app-download-data-files>
-      </li>
-      <li class="govuk-!-padding-left-5 govuk-!-font-size-24 govuk-!-padding-bottom-6 govuk-util__bold">
-        <app-upload-data-files class="govuk-util__block"></app-upload-data-files>
-      </li>
-    </ol>
+    <app-details [title]="'Who should do bulk uploads?'">
+      <p>
+        Bulk uploads let you add large amounts of workforce data into the Adult Social Care Workforce Data Set, without
+        the need to add that data manually.
+      </p>
+      <p>
+        Skills for Care recommend bulk uploads for local authorities and large private or voluntary employers who need
+        to add data for subsidiary workplaces.
+      </p>
+      <p>Individual workplaces with fewer than 50 staff members often find it easier to add their data manually.</p>
+    </app-details>
+
+    <p><b>Download your current data</b> and update the records in those CSV files before you do the bulk upload.</p>
+    <p>You can <b>download codes and guidance</b> to use as references for how to update the records in your files.</p>
+
+    <div class="govuk-util__block">
+      <h2 class="govuk-heading-m">Select your files</h2>
+
+      <app-drag-and-drop-files-upload></app-drag-and-drop-files-upload>
+    </div>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <app-bulk-upload-related-content [showAll]="true"></app-bulk-upload-related-content>
+    <app-bulk-upload-download-current-data></app-bulk-upload-download-current-data>
+    <app-codes-and-guidance></app-codes-and-guidance>
+  </div>
+
+  <div class="govuk-grid-column-full govuk-!-margin-top-0">
+    <app-drag-and-drop-files-list></app-drag-and-drop-files-list>
   </div>
 </div>

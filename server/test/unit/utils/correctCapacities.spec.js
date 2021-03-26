@@ -115,7 +115,7 @@ describe('correctCapacities util', () => {
           }
         }
       });
-      const capacities = await correctCapacities(establishment, null, [{id: 10}]);
+      const capacities = await correctCapacities(establishment, null, {value: 'Yes',services:[{id: 10}]});
       expect(capacities.length).to.deep.equal(1);
       const allQuestions = establishmentCapacities.map(capacity => capacity.reference.id);
       const allAnswers = establishmentCapacities.map(capacity => capacity.answer);

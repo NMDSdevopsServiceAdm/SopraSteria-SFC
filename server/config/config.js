@@ -462,6 +462,13 @@ const config = convict({
       sensitive: true,
       env: 'SEND_IN_BLUE_KEY',
     },
+    whitelist: {
+      doc: 'Send in Blue API Whitelist',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'SEND_IN_BLUE_WHITELIST',
+    },
     templates: {
       sixMonthsInactive: {
         id: {
@@ -550,7 +557,10 @@ if (config.get('aws.secrets.use')) {
     //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
+
+    // Send in Blue
     config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
+    config.set('sendInBlue.whitelist', AWSSecrets.sendInBlueWhitelist())
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());

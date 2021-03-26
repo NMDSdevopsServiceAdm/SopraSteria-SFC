@@ -428,8 +428,8 @@ class Establishment extends EntityValidator {
           allAssociatedServiceIndices.push(document.mainService.id);
           mainServiceAdded = true;
         }
-        if (document && document.otherServices && Array.isArray(document.otherServices)) {
-          document.otherServices.forEach((thisService) => {
+        if (document && document.otherServices && document.otherServices.services &&  Array.isArray(document.otherServices)) {
+          document.otherServices.services.forEach((thisService) => {
             if (thisService.id) {
               allAssociatedServiceIndices.push(thisService.id);
             } else if (thisService.services && Array.isArray(thisService.services)) {
@@ -440,8 +440,8 @@ class Establishment extends EntityValidator {
           });
           servicesAdded = true;
         }
-        if (document && document.services && Array.isArray(document.services)) {
-          document.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
+        if (document && document.services && document.services.services && Array.isArray(document.services)) {
+          document.services.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
 
           // if no main service given in document, then use the current known main service property
           if (!mainServiceAdded && this.mainService) {
@@ -450,8 +450,8 @@ class Establishment extends EntityValidator {
 
           servicesAdded = true;
         }
-        if (mainServiceAdded && !servicesAdded && this.otherServices) {
-          this.otherServices.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
+        if (mainServiceAdded && !servicesAdded && this.otherServices && this.otherServices.services) {
+          this.otherServices.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
         }
 
         document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
@@ -2104,15 +2104,15 @@ class Establishment extends EntityValidator {
     // only get the sub if the isParent parameter is truthy
     const where = isParent
       ? {
-          $or: [
+          [models.Sequelize.Op.or]: [
             {
               id: {
-                $eq: primaryEstablishmentId,
+                [models.Sequelize.Op.eq]: primaryEstablishmentId,
               },
             },
             {
               ParentID: {
-                $eq: primaryEstablishmentId,
+                [models.Sequelize.Op.eq]: primaryEstablishmentId,
               },
             },
           ],
