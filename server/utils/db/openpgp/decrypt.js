@@ -6,26 +6,31 @@ global.TextEncoder = textEncoding.TextEncoder;
 global.TextDecoder = textEncoding.TextDecoder;
 
 const decrypt = async (encryptedMessage) => {
-  if (encryptedMessage === null){
-    return;
+  if (!encryptedMessage) {
+    return null;
   }
-  const privateKeyArmored = config.get('encryption.privateKey');
-  const passphrase = config.get('encryption.passphrase');
+  try {
+    const privateKeyArmored = config.get('encryption.privateKey');
+    const passphrase = config.get('encryption.passphrase');
 
-  const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
-  await privateKey.decrypt(passphrase);
+    const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
+    await privateKey.decrypt(passphrase);
 
-  const message = await openpgp.readMessage({
-    armoredMessage: encryptedMessage,
-  });
+    const message = await openpgp.readMessage({
+      armoredMessage: encryptedMessage,
+    });
 
-  const decryptedMessage = await openpgp.decrypt({
-    message,
-    privateKeys: privateKey,
-  });
+    const decryptedMessage = await openpgp.decrypt({
+      message,
+      privateKeys: privateKey,
+    });
 
-  const decryptedData = await openpgp.stream.readToEnd(decryptedMessage.data);
-  return decryptedData;
+    const decryptedData = await openpgp.stream.readToEnd(decryptedMessage.data);
+    return decryptedData;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 };
 
 module.exports.decrypt = decrypt;

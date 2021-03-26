@@ -215,7 +215,7 @@ module.exports = function (sequelize, DataTypes) {
         set(value) {
           const rawValue = this.getDataValue(value);
           return encrypt(rawValue);
-        }
+        },
       },
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
@@ -253,7 +253,7 @@ module.exports = function (sequelize, DataTypes) {
         set(value) {
           const rawValue = this.getDataValue(value);
           return encrypt(rawValue);
-        }
+        },
       },
       DateOfBirthValue: {
         type: DataTypes.DATE,
@@ -1080,6 +1080,22 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
+      hooks: {
+        beforeSave: async (workerUpdate) => {
+          if (workerUpdate.dataValues.NationalInsuranceNumberEncryptedValue) {
+            const encrypted = await encrypt(workerUpdate.dataValues.NationalInsuranceNumberEncryptedValue);
+            workerUpdate.dataValues.NationalInsuranceNumberEncryptedValue = encrypted;
+          }
+          return workerUpdate;
+        },
+        afterFind: async (worker) => {
+          if (worker.NationalInsuranceNumberEncryptedValue) {
+            const decrypted = await decrypt(worker.NationalInsuranceNumberEncryptedValue);
+            worker.NationalInsuranceNumberEncryptedValue = decrypted;
+          }
+          return worker;
+        },
+      },
       scopes: {
         active: {
           where: {
