@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
   selector: 'app-how-did-you-hear-about',
@@ -19,10 +20,16 @@ export class HowDidYouHearAboutComponent implements OnInit {
     'Other',
   ];
 
-  constructor(protected backService: BackService) {}
+  constructor(protected backService: BackService, protected registrationSurveyService: RegistrationSurveyService) {}
 
   ngOnInit(): void {
     this.setBackLink(this.return);
+  }
+
+  public completeSurvey(): void {
+    const test = 'not yet a form';
+    this.registrationSurveyService.updateHowDidYouHearAboutState(test);
+    this.registrationSurveyService.submitSurvey();
   }
 
   protected setBackLink(returnTo): void {

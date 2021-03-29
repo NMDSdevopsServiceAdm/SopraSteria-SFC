@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
   selector: 'app-why-create-account',
@@ -20,11 +22,29 @@ export class WhyCreateAccountComponent implements OnInit {
     'To help us understand our workforce better',
     'Other',
   ];
+  public form: FormGroup;
 
-  constructor(protected backService: BackService) {}
+  constructor(
+    protected backService: BackService,
+    protected registrationSurveyService: RegistrationSurveyService,
+    private formBuilder: FormBuilder,
+  ) {}
 
   ngOnInit(): void {
     this.setBackLink(this.return);
+    this.setupForm();
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      whyCreateAccount: null,
+    });
+  }
+
+  public updateState(): void {
+    const test = this.form.value;
+    console.log(test);
+    this.registrationSurveyService.updatewhyCreateAccountState(test);
   }
 
   protected setBackLink(returnTo): void {
