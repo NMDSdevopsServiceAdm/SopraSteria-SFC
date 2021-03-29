@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HowDidYouHearAboutComponent } from './how-did-you-hear-about/how-did-you-hear-about.component';
 import { ParticipationComponent } from './participation/participation.component';
+import { ThankYouComponent } from './thank-you/thank-you.component';
 import { WhyCreateAccountComponent } from './why-create-account/why-create-account.component';
 
 const routes: Routes = [
@@ -19,6 +20,11 @@ const routes: Routes = [
   {
     path: 'how-did-you-hear-about',
     component: HowDidYouHearAboutComponent,
+    data: { title: 'Registration Survey' },
+  },
+  {
+    path: 'thank-you',
+    component: ThankYouComponent,
     data: { title: 'Registration Survey' },
   },
 ];

@@ -7,7 +7,17 @@ import { BackService } from '@core/services/back.service';
   templateUrl: './how-did-you-hear-about.component.html',
 })
 export class HowDidYouHearAboutComponent implements OnInit {
+  public nextPage: URLStructure = { url: ['/registration-survey', 'thank-you'] };
   public return: URLStructure = { url: ['/registration-survey', 'why-create-account'] };
+  public responses = [
+    'From an event we attended',
+    'From the Skills for Care website',
+    'From a Skills for Care staff member',
+    'From the Care Quality Commission',
+    'From our local authority',
+    'From our trade association',
+    'Other',
+  ];
 
   constructor(protected backService: BackService) {}
 
