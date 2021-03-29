@@ -8,44 +8,43 @@ export class RegistrationSurveyService {
   public participationFormData: any;
   public whyCreateAccountFormData: any;
   public howDidYouHearAboutFormData: any;
+  private result: any;
 
   constructor(private http: HttpClient) {}
 
   public updateParticipationState(formValue) {
     console.log(formValue); //Still need to work out how to get the form data passed in
-    this.participationFormData = {
-      key: 'participation',
-      anotherKey: 'value2',
-    };
-
-    console.log(this.participationFormData);
+    this.participationFormData = 'Yes';
   }
 
   public updatewhyCreateAccountState(formValue) {
     console.log(formValue); //Still need to work out how to get the form data passed in
-    this.whyCreateAccountFormData = {
-      key: 'whyCreate',
-      anotherKey: 'value2',
-    };
-
-    console.log(this.participationFormData);
-    console.log(this.whyCreateAccountFormData);
+    this.whyCreateAccountFormData = ['To get access to the Workforce Development Fund'];
   }
 
   public updateHowDidYouHearAboutState(formValue) {
     console.log(formValue); //Still need to work out how to get the form data passed in
-    this.howDidYouHearAboutFormData = {
-      key: 'howHear',
-      anotherKey: 'value2',
-    };
+    this.howDidYouHearAboutFormData = ['From an event we attended', 'Other'];
+  }
 
-    console.log(this.participationFormData);
-    console.log(this.whyCreateAccountFormData);
-    console.log(this.howDidYouHearAboutFormData);
+  private buildSurveyResultObject() {
+    return (this.result = {
+      participation: this.participationFormData,
+      whyDidYouCreateAccount: this.whyCreateAccountFormData,
+      howDidYouHearAboutASCWDS: this.howDidYouHearAboutFormData,
+    });
+  }
+
+  private doSomething() {
+    console.log('did something');
   }
 
   public submitSurvey() {
-    const data = this.participationFormData;
-    return this.http.post<any>('/api/registration-survey', data);
+    const data = this.buildSurveyResultObject();
+
+    return this.http.post<any>('/api/registration-survey', data).subscribe(
+      () => this.doSomething(),
+      (err) => this.doSomething(),
+    );
   }
 }
