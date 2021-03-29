@@ -204,19 +204,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"MainJobStartDateChangedBy"',
       },
-      // NationalInsuranceNumberEncryptedValue: {
-      //   type: DataTypes.TEXT,
-      //   allowNull: true,
-      //   field: '"NationalInsuranceNumberEncryptedValue"',
-      //   get() {
-      //     const rawValue = this.getDataValue('NationalInsuranceNumberEncryptedValue');
-      //     return decrypt(rawValue);
-      //   },
-      //   set(value) {
-      //     const rawValue = this.getDataValue(value);
-      //     return encrypt(rawValue);
-      //   },
-      // },
+      NationalInsuranceNumberEncryptedValue: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"NationalInsuranceNumberEncryptedValue"',
+      },
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
