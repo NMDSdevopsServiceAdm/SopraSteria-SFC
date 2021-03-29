@@ -57,7 +57,6 @@ const createCampaign = async (req, res) => {
     const limit = pRateLimit({
       interval: 1000,
       rate: 5, // 5 emails per second
-      concurrency: 1,
     });
 
     totalInactiveWorkplaces.map((inactiveWorkplace) => {
