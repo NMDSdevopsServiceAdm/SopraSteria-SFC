@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,7 @@ export class RegistrationSurveyService {
   public whyCreateAccountFormData: any;
   public howDidYouHearAboutFormData: any;
   private result: any;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(private http: HttpClient) {}
 
@@ -39,12 +41,29 @@ export class RegistrationSurveyService {
     console.log('did something');
   }
 
+  public submit(data) {
+    return this.http.post<any>('/api/satisfactionSurvey', data);
+  }
+
   public submitSurvey() {
     const data = this.buildSurveyResultObject();
 
-    return this.http.post<any>('/api/registration-survey', data).subscribe(
-      () => this.doSomething(),
-      (err) => this.doSomething(),
+    this.subscriptions.add(
+      this.submit(data).subscribe(
+        (res) => {
+          {
+            console.log(res);
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+      ),
     );
+
+    // return this.http.post<any>('/api/registration-survey', data).subscribe(
+    //   () => this.doSomething(),
+    //   (err) => this.doSomething(),
+    // );
   }
 }
