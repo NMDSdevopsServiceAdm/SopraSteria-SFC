@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
@@ -35,16 +35,39 @@ export class WhyCreateAccountComponent implements OnInit {
     this.setupForm();
   }
 
+  get whyCreateAccountArray() {
+    return this.form.get('whyCreateAccount') as FormArray;
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       whyCreateAccount: this.formBuilder.array([]),
     });
+
+    this.responses.map((response) => {
+      const checked = this.registrationSurveyService.whyCreateAccountFormData.find((answer) => answer === response);
+
+      const formControl = this.formBuilder.control({
+        response,
+        checked,
+      });
+
+      console.log(formControl);
+
+      this.whyCreateAccountArray.push(formControl);
+    });
+
+    console.log(this.whyCreateAccountArray);
   }
 
   public updateState(): void {
-    const test = this.form.value;
-    console.log(test);
-    this.registrationSurveyService.updatewhyCreateAccountState(test);
+    const responses = this.whyCreateAccountArray.controls
+      .filter((control) => control.value.checked)
+      .map((control) => {
+        return control.value.response;
+      });
+
+    this.registrationSurveyService.updatewhyCreateAccountState(responses);
   }
 
   protected setBackLink(returnTo): void {

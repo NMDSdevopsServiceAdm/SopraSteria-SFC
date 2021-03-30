@@ -8,18 +8,23 @@
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
           <div class="govuk-checkboxes">
-            <ng-container *ngFor="let response of responses; let i = index" formArrayName="whyCreateAccount">
+            <ng-container
+              *ngFor="let control of whyCreateAccountArray.controls; let i = index"
+              formArrayName="whyCreateAccount"
+            >
               <div class="govuk-checkboxes__item">
                 <input
                   class="govuk-checkboxes__input"
                   type="checkbox"
                   name="whyCreateAccount[]"
-                  [value]="response.id"
+                  (change)="control.value.checked = !control.value.checked"
+                  [checked]="control.value.checked"
+                  [value]="control.value.response"
                   [formControlName]="whyCreateAccount"
                 />
 
                 <label class="govuk-label govuk-checkboxes__label" for="why-create-account">
-                  {{ response }}
+                  {{ control.value.response }}
                 </label>
               </div>
             </ng-container>
