@@ -37,7 +37,7 @@ export class WhyCreateAccountComponent implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      whyCreateAccount: null,
+      whyCreateAccount: this.formBuilder.array([]),
     });
   }
 

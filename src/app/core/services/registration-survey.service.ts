@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class RegistrationSurveyService {
 
   public updatewhyCreateAccountState(formValue) {
     console.log(formValue); //Still need to work out how to get the form data passed in
-    this.whyCreateAccountFormData = ['To get access to the Workforce Development Fund'];
+    this.whyCreateAccountFormData = formValue;
   }
 
   public updateHowDidYouHearAboutState(formValue) {
@@ -37,12 +37,8 @@ export class RegistrationSurveyService {
     });
   }
 
-  private doSomething() {
-    console.log('did something');
-  }
-
-  public submit(data) {
-    return this.http.post<any>('/api/satisfactionSurvey', data);
+  public submit(data): Observable<any> {
+    return this.http.post<any>('/api/registrationSurvey', data);
   }
 
   public submitSurvey() {
