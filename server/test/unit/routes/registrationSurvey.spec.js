@@ -11,7 +11,7 @@ const models = require('../../../models');
 
 const registrationSurvey = require('../../../routes/registrationSurvey');
 
-describe.only('registrationSurvey', async () => {
+describe('registrationSurvey', async () => {
   // let userUpdateStub;
   // let userFindStub;
 

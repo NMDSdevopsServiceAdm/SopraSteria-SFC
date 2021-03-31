@@ -27,10 +27,10 @@ const submitSurvey = async (req, res) => {
     res.status(200).send();
   } catch (error) {
     res.status(500).send();
-    console.log('lalalalal');
-    console.log(error);
+    console.error();
   }
 };
 
 router.route('/').post(submitSurvey);
 module.exports = router;
+module.exports.submitSurvey = submitSurvey;
