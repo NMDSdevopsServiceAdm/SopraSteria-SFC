@@ -1,9 +1,11 @@
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
+const moment = require('moment');
 
 const models = require('../../../../../../models');
 const findInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const findParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
 const sendEmail = require('../../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
@@ -12,6 +14,11 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     sinon.restore();
   });
 
+  const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
+  const sixMonthTemplateId = 13;
+  const twelveMonthTemplateId = 14;
+  const parentTemplateId = 15;
+
   const dummyInactiveWorkplaces = [
     {
       id: 478,
@@ -19,7 +26,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       nmdsId: 'J1234567',
       lastUpdated: '2020-06-01',
       emailTemplate: {
-        id: 13,
+        id: sixMonthTemplateId,
       },
       dataOwner: 'Workplace',
       user: {
@@ -33,7 +40,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       nmdsId: 'A0012345',
       lastUpdated: '2020-01-01',
       emailTemplate: {
-        id: 13,
+        id: twelveMonthTemplateId,
       },
       dataOwner: 'Workplace',
       user: {
@@ -43,26 +50,85 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     },
   ];
 
-  it('should get the number of inactive workplaces', async () => {
-    sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+  const dummyParentWorkplaces = [
+    {
+      id: 1,
+      name: 'Test Name',
+      nmdsId: 'A1234567',
+      lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+      emailTemplate: {
+        id: parentTemplateId,
+        name: 'Parent',
+      },
+      dataOwner: 'Workplace',
+      user: {
+        name: 'Test Person',
+        email: 'test@example.com',
+      },
+      subsidiaries: [
+        {
+          id: 2,
+          name: 'Workplace Name',
+          nmdsId: 'A0045232',
+          lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+          dataOwner: 'Parent',
+        },
+        {
+          id: 3,
+          name: 'Workplace Name',
+          nmdsId: 'A1245232',
+          lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+          dataOwner: 'Parent',
+        },
+      ],
+    },
+  ];
 
-    const req = httpMocks.createRequest({
-      method: 'GET',
-      url: '/api/admin/email-campaigns/inactive-workplaces',
+  describe('getInactiveWorkplaces', () => {
+    it('should get the number of inactive workplaces', async () => {
+      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+      const response = res._getJSONData();
+
+      expect(response.inactiveWorkplaces).to.deep.equal(3);
     });
 
-    req.role = 'Admin';
+    it('should return an error if inactive workplaces throws an exception', async () => {
+      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
+      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').rejects();
 
-    const res = httpMocks.createResponse();
-    await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
-    const response = res._getJSONData();
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces',
+      });
 
-    expect(response.inactiveWorkplaces).to.deep.equal(2);
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(503);
+      expect(response).to.deep.equal({});
+    });
   });
 
   describe('createCampaign', async () => {
     it('should create a campaign', async () => {
       sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+
       const sendEmailMock = sinon.stub(sendEmail, 'sendEmail').returns();
       const userMock = sinon.stub(models.user, 'findByUUID').returns({
         id: 1,
@@ -89,7 +155,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
       expect(response).to.deep.equal({
         date: '2021-01-01',
-        emails: 2,
+        emails: 3,
       });
 
       sinon.assert.calledOnce(createEmailCampaignHistoryMock);
@@ -100,6 +166,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       });
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[0]);
       sinon.assert.calledWith(sendEmailMock, dummyInactiveWorkplaces[1]);
+      sinon.assert.calledWith(sendEmailMock, dummyParentWorkplaces[0]);
     });
 
     it('should get the email campaign history', async () => {
