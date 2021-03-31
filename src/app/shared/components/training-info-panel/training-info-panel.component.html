@@ -2,21 +2,21 @@
   <ng-container *ngIf="totalExpiredTraining > 0">
     <dt>Expired</dt>
     <dd>
-      <img src="/assets/images/flag-red.svg" alt="Expired" />
+      <img src="/assets/images/flag-red.svg" alt="" />
       {{ totalExpiredTraining }}
     </dd>
   </ng-container>
   <ng-container *ngIf="totalMissingMandatoryTraining > 0">
     <dt>Missing</dt>
     <dd>
-      <img src="/assets/images/flag-red.svg" alt="Missing" />
+      <img src="/assets/images/flag-red.svg" alt="" />
       {{ totalMissingMandatoryTraining }}
     </dd>
   </ng-container>
   <ng-container *ngIf="totalExpiringTraining > 0">
     <dt>Expiring soon</dt>
     <dd>
-      <img src="/assets/images/flag-orange.svg" alt="Expiring soon" />
+      <img src="/assets/images/flag-orange.svg" alt="" />
       {{ totalExpiringTraining }}
     </dd>
   </ng-container>

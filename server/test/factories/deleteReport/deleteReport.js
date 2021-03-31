@@ -14,11 +14,11 @@ const rawDataBuilder = build('rawData', {
     county: fake((f) => f.address.county()),
     postcode: fake((f) => f.address.zipCode('??# #??')),
     locationId: fake((f) => f.helpers.replaceSymbolWithNumber('#-########')),
-    updated: '2019-10-18T11:29:58.477Z',
     EmployerTypeValue: null,
     EmployerTypeOther: null,
     workers: [],
     mainService: { name: 'Day care and day services' },
+    LastUpdated:{dataOwner: "Workplace",lastUpdated:"2019-10-18T11:29:58.477Z"}
   },
 });
 module.exports.rawDataBuilder = rawDataBuilder;

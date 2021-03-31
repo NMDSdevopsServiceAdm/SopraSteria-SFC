@@ -1,4 +1,5 @@
-/* jshint indent: 2 */
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
     'establishment',
@@ -410,7 +411,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"OtherServicesValue"',
         values: ['No', 'Yes'],
-
       },
       OtherServicesSavedAt: {
         type: DataTypes.DATE,
@@ -709,21 +709,21 @@ module.exports = function (sequelize, DataTypes) {
         noUstatus: {
           where: {
             ustatus: {
-              [sequelize.Op.is]: null,
+              [Op.is]: null,
             },
           },
         },
         noLocalIdentifier: {
           where: {
             LocalIdentifierValue: {
-              [sequelize.Op.is]: null,
+              [Op.is]: null,
             },
           },
         },
         parentAndChildWorkplaces: function (establishmentId) {
           return {
             where: {
-              [sequelize.Op.or]: [
+              [Op.or]: [
                 {
                   id: establishmentId,
                 },
@@ -754,6 +754,11 @@ module.exports = function (sequelize, DataTypes) {
     Establishment.belongsTo(models.establishment, {
       as: 'Parent',
       foreignKey: 'ParentID',
+      targetKey: 'id',
+    });
+    Establishment.belongsTo(models.lastUpdatedEstablishmentsView, {
+      as: 'LastUpdated',
+      foreignKey: 'id',
       targetKey: 'id',
     });
 
@@ -843,11 +848,19 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.findbyId = async function (id) {
-    return await this.find({ id });
+    return await this.findOne({
+      where: {
+        id,
+      },
+    });
   };
 
   Establishment.findByUid = async function (uid) {
-    return await this.find({ uid });
+    return await this.findOne({
+      where: {
+        uid,
+      },
+    });
   };
 
   Establishment.find = async function (where) {
@@ -934,7 +947,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ustatus: {
-          [sequelize.Op.is]: null,
+          [Op.is]: null,
         },
         ...where,
       },
@@ -965,7 +978,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
-  Establishment.generateDeleteReportData = async function () {
+  Establishment.generateDeleteReportData = async function (lastUpdatedDate) {
     return await this.findAll({
       attributes: [
         'uid',
@@ -987,9 +1000,14 @@ module.exports = function (sequelize, DataTypes) {
       order: [['NameValue', 'ASC']],
       include: [
         {
-          model: sequelize.models.worker,
-          as: 'workers',
-          attributes: ['id', 'uid'],
+          model: sequelize.models.lastUpdatedEstablishmentsView,
+          as: 'LastUpdated',
+          attributes: ['id', 'dataOwner', 'lastUpdated'],
+          where: {
+            lastUpdated: {
+              [Op.lte]: lastUpdatedDate,
+            },
+          },
           order: [['updated', 'DESC']],
         },
         {

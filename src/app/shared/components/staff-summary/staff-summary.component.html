@@ -1,8 +1,6 @@
 <div class="govuk-form-group">
-  <label class="govuk-label" for="sort">
-    Sort by
-  </label>
-  <select class="govuk-select" id="sortBy" name="sortBy" (change)="sortByColumn($event.target.value)">
+  <label class="govuk-label" for="sortByStaff"> Sort by </label>
+  <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortByColumn($event.target.value)">
     <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
       {{ sortStaffOption.value }}
     </option>

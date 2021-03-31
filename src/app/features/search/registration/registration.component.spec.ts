@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { FirstErrorPipe } from '@shared/pipes/first-error.pipe';
-import { render, fireEvent, screen } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { throwError } from 'rxjs';
 import { spy } from 'sinon';
@@ -152,6 +152,8 @@ describe('RegistrationComponent', () => {
 
       userEvent.type(nmdsIdInput, '');
 
+      fireEvent.click(getByText('Approve'));
+
       expect(getByText('Enter a workplace ID.'));
       expect(component.registrationsService.registrationApproval).toHaveBeenCalledTimes(0);
     });
@@ -166,6 +168,8 @@ describe('RegistrationComponent', () => {
       userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, 'W123456');
+
+      fireEvent.click(getByText('Approve'));
 
       expect(getByText('Workplace ID must be between 1 and 8 characters.'));
       expect(registrationApproval).toHaveBeenCalledTimes(0);
@@ -182,6 +186,8 @@ describe('RegistrationComponent', () => {
 
       userEvent.type(nmdsIdInput, 'W12345678910');
 
+      fireEvent.click(getByText('Approve'));
+
       expect(getByText('Workplace ID must be between 1 and 8 characters.'));
       expect(registrationApproval).toHaveBeenCalledTimes(0);
     });
@@ -197,6 +203,8 @@ describe('RegistrationComponent', () => {
 
       userEvent.type(nmdsIdInput, '12345678');
 
+      fireEvent.click(getByText('Approve'));
+
       expect(getByText('Workplace ID must start with an uppercase letter.'));
       expect(registrationApproval).toHaveBeenCalledTimes(0);
     });
@@ -211,6 +219,8 @@ describe('RegistrationComponent', () => {
       userEvent.clear(nmdsIdInput);
 
       userEvent.type(nmdsIdInput, 'w1234567');
+
+      fireEvent.click(getByText('Approve'));
 
       expect(getByText('Workplace ID must start with an uppercase letter.'));
       expect(registrationApproval).toHaveBeenCalledTimes(0);
