@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
@@ -20,15 +21,52 @@ export class HowDidYouHearAboutComponent implements OnInit {
     'Other',
   ];
 
-  constructor(protected backService: BackService, protected registrationSurveyService: RegistrationSurveyService) {}
+  public form: FormGroup;
+
+  constructor(
+    protected backService: BackService,
+    protected registrationSurveyService: RegistrationSurveyService,
+    private formBuilder: FormBuilder,
+  ) {}
 
   ngOnInit(): void {
     this.setBackLink(this.return);
+    this.setupForm();
+  }
+
+  get howDidYouHearAboutArray() {
+    return this.form.get('howDidYouHearAbout') as FormArray;
+  }
+
+  private setupForm = () => {
+    this.form = this.formBuilder.group({
+      howDidYouHearAbout: this.formBuilder.array([]),
+    });
+
+    this.responses.map((response) => {
+      const checked = this.registrationSurveyService.howDidYouHearAboutFormData?.includes(response) ? true : false;
+
+      const formControl = this.formBuilder.control({
+        response,
+        checked,
+      });
+
+      this.howDidYouHearAboutArray.push(formControl);
+    });
+  };
+
+  public updateState(): void {
+    const responses = this.howDidYouHearAboutArray.controls
+      .filter((control) => control.value.checked)
+      .map((control) => {
+        return control.value.response;
+      });
+
+    this.registrationSurveyService.updateHowDidYouHearAboutState(responses);
   }
 
   public completeSurvey(): void {
-    const test = 'not yet a form';
-    this.registrationSurveyService.updateHowDidYouHearAboutState(test);
+    this.updateState();
     this.registrationSurveyService.submitSurvey();
   }
 

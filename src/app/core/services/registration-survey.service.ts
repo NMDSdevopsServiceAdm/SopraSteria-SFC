@@ -15,18 +15,15 @@ export class RegistrationSurveyService {
   constructor(private http: HttpClient) {}
 
   public updateParticipationState(formValue) {
-    console.log(formValue); //Still need to work out how to get the form data passed in
-    this.participationFormData = 'Yes';
+    this.participationFormData = formValue;
   }
 
   public updatewhyCreateAccountState(formValue) {
-    console.log(formValue); //Still need to work out how to get the form data passed in
     this.whyCreateAccountFormData = formValue;
   }
 
   public updateHowDidYouHearAboutState(formValue) {
-    console.log(formValue); //Still need to work out how to get the form data passed in
-    this.howDidYouHearAboutFormData = ['From an event we attended', 'Other'];
+    this.howDidYouHearAboutFormData = formValue;
   }
 
   private buildSurveyResultObject() {

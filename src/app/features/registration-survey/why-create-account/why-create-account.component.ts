@@ -39,26 +39,22 @@ export class WhyCreateAccountComponent implements OnInit {
     return this.form.get('whyCreateAccount') as FormArray;
   }
 
-  private setupForm(): void {
+  private setupForm = () => {
     this.form = this.formBuilder.group({
       whyCreateAccount: this.formBuilder.array([]),
     });
 
     this.responses.map((response) => {
-      const checked = this.registrationSurveyService.whyCreateAccountFormData.find((answer) => answer === response);
+      const checked = this.registrationSurveyService.whyCreateAccountFormData?.includes(response) ? true : false;
 
       const formControl = this.formBuilder.control({
         response,
         checked,
       });
 
-      console.log(formControl);
-
       this.whyCreateAccountArray.push(formControl);
     });
-
-    console.log(this.whyCreateAccountArray);
-  }
+  };
 
   public updateState(): void {
     const responses = this.whyCreateAccountArray.controls
