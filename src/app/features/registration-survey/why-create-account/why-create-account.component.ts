@@ -39,7 +39,7 @@ export class WhyCreateAccountComponent implements OnInit {
     return this.form.get('whyCreateAccount') as FormArray;
   }
 
-  private setupForm = () => {
+  private setupForm() {
     this.form = this.formBuilder.group({
       whyCreateAccount: this.formBuilder.array([]),
     });
@@ -54,7 +54,7 @@ export class WhyCreateAccountComponent implements OnInit {
 
       this.whyCreateAccountArray.push(formControl);
     });
-  };
+  }
 
   public updateState(): void {
     const responses = this.whyCreateAccountArray.controls
