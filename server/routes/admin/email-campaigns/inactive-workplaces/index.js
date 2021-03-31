@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+const { pRateLimit } = require('p-ratelimit');
 
 const models = require('../../../../models');
 const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
@@ -52,7 +53,15 @@ const createCampaign = async (req, res) => {
     });
 
     await models.EmailCampaignHistory.bulkCreate(history);
-    totalInactiveWorkplaces.map(sendEmail.sendEmail);
+
+    const limit = pRateLimit({
+      interval: 1000,
+      rate: 5, // 5 emails per second
+    });
+
+    totalInactiveWorkplaces.map((inactiveWorkplace) => {
+      return limit(() => sendEmail.sendEmail(inactiveWorkplace));
+    });
 
     return res.json({
       date: emailCampaign.createdAt,
