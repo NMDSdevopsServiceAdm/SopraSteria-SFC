@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../models');
+const Authorization = require('../utils/security/isAuthenticated');
 
 const submitSurvey = async (req, res) => {
   // const user = await models.user.findByUUID(req.userUid);
@@ -13,17 +14,6 @@ const submitSurvey = async (req, res) => {
       howDidYouHearAboutASCWDS: req.body.howDidYouHearAboutASCWDS,
     });
 
-    // await user.update(
-    //   {
-    //     registrationSurveyCompleted: true,
-    //   },
-    //   {
-    //     where: {
-    //       registrationId: req.user.id,
-    //     },
-    //   },
-    // );
-
     res.status(200).send();
   } catch (error) {
     res.status(500).send();
@@ -31,6 +21,6 @@ const submitSurvey = async (req, res) => {
   }
 };
 
-router.route('/').post(submitSurvey);
+router.route('/').post(Authorization.isAuthorised, submitSurvey);
 module.exports = router;
 module.exports.submitSurvey = submitSurvey;

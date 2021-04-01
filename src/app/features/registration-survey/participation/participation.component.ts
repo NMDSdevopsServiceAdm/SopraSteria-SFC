@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -26,13 +26,13 @@ export class ParticipationComponent implements OnInit {
     this.setupForm();
   }
 
-  get participationArray() {
-    return this.form.get('participation') as FormArray;
+  get participation() {
+    return this.form.get('participation');
   }
 
   private setupForm() {
     this.form = this.formBuilder.group({
-      participation: this.formBuilder.array([]),
+      participation: this.formBuilder.control(''),
     });
 
     // this.responses.map((response) => {
@@ -45,18 +45,18 @@ export class ParticipationComponent implements OnInit {
 
     //   this.whyCreateAccountArray.push(formControl);
     // });
-    const responses = ["Yes, I'll answer the questions", 'No, I want to start adding data'];
+    // const responses = ["Yes, I'll answer the questions", 'No, I want to start adding data'];
 
-    responses.map((response) => {
-      const checked = this.registrationSurveyService.participationFormData?.includes(response) ? true : false;
+    // responses.map((response) => {
+    //   const checked = this.registrationSurveyService.participationFormData?.includes(response) ? true : false;
 
-      const formControl = this.formBuilder.control({
-        response,
-        checked,
-      });
+    //   const formControl = this.formBuilder.control({
+    //     response,
+    //     checked,
+    //   });
 
-      this.participationArray.push(formControl);
-    });
+    //   this.participationArray.push(formControl);
+    // });
   }
 
   public updateState(): void {
