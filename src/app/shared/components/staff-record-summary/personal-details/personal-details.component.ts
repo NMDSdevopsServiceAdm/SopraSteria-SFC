@@ -21,11 +21,13 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
     return moment(this.worker.dateOfBirth).format(DATE_DISPLAY_DEFAULT);
   }
 
-  public toggleNinoHide() {
+  public toggleNinoHide(event) {
+    event.preventDefault();
     this.ninoHidden = !this.ninoHidden;
   }
 
-  public toggleDobHide() {
+  public toggleDobHide(event) {
+    event.preventDefault();
     this.dobHidden = !this.dobHidden;
   }
 }
