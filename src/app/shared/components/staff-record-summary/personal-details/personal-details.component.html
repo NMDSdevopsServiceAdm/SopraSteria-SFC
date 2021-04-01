@@ -37,7 +37,6 @@
           <ng-template #hideNino>Hide</ng-template>
         </a>
       </dd>
-
       <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
         <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
           Change
@@ -52,17 +51,17 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.dateOfBirth">
         <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
-        <ng-template #hasDob>
-          <ng-container *ngIf="dobHidden; else showDob">*********</ng-container>
-          <ng-template #showDob>{{ dob }}</ng-template>
-        </ng-template>
+        <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
+        <a
+          *ngIf="worker.dateOfBirth"
+          class="govuk-link govuk-util__float-right"
+          href="#"
+          (click)="toggleDobHide($event)"
+        >
+          <ng-container *ngIf="dobHidden; else hideDob">Show</ng-container>
+          <ng-template #hideDob>Hide</ng-template>
+        </a>
       </app-summary-record-value>
-    </dd>
-    <dd *ngIf="worker.dateOfBirth" class="govuk-summary-list__actions">
-      <a class="govuk-link" href="#" (click)="toggleDobHide($event)">
-        <ng-container *ngIf="dobHidden; else hideDob">Show</ng-container>
-        <ng-template #hideDob>Hide</ng-template>
-      </a>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('date-of-birth')" (click)="setReturn()">
