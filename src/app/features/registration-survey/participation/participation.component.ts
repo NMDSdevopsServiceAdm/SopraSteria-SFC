@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
@@ -10,11 +12,17 @@ import { RegistrationSurveyService } from '@core/services/registration-survey.se
 export class ParticipationComponent implements OnInit {
   public nextPage: URLStructure;
   public form: FormGroup;
+  public workplace: Establishment;
 
-  constructor(protected registrationSurveyService: RegistrationSurveyService, private formBuilder: FormBuilder) {}
+  constructor(
+    protected registrationSurveyService: RegistrationSurveyService,
+    private establishmentService: EstablishmentService,
+    private formBuilder: FormBuilder,
+  ) {}
 
   ngOnInit(): void {
     this.nextPage = { url: ['/registration-survey', 'why-create-account'] };
+    this.workplace = this.establishmentService.primaryWorkplace;
     this.setupForm();
   }
 
