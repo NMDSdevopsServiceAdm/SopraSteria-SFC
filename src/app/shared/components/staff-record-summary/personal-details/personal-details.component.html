@@ -32,13 +32,12 @@
     <ng-template #hasNino>
       <dd class="govuk-summary-list__value">
         {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
-      </dd>
-      <dd class="govuk-summary-list__actions">
-        <a class="govuk-link" href="#" (click)="toggleNinoHide($event)">
+        <a class="govuk-link govuk-util__float-right" href="#" (click)="toggleNinoHide($event)">
           <ng-container *ngIf="ninoHidden; else hideNino">Show</ng-container>
           <ng-template #hideNino>Hide</ng-template>
         </a>
       </dd>
+
       <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
         <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
           Change
