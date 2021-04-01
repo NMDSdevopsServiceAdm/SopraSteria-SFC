@@ -32,35 +32,13 @@ export class ParticipationComponent implements OnInit {
 
   private setupForm() {
     this.form = this.formBuilder.group({
-      participation: this.formBuilder.control(''),
+      participation: this.registrationSurveyService.participationFormData
+        ? this.formBuilder.control(this.registrationSurveyService.participationFormData)
+        : this.formBuilder.control(''),
     });
-
-    // this.responses.map((response) => {
-    //   const checked = this.registrationSurveyService.whyCreateAccountFormData?.includes(response) ? true : false;
-
-    //   const formControl = this.formBuilder.control({
-    //     response,
-    //     checked,
-    //   });
-
-    //   this.whyCreateAccountArray.push(formControl);
-    // });
-    // const responses = ["Yes, I'll answer the questions", 'No, I want to start adding data'];
-
-    // responses.map((response) => {
-    //   const checked = this.registrationSurveyService.participationFormData?.includes(response) ? true : false;
-
-    //   const formControl = this.formBuilder.control({
-    //     response,
-    //     checked,
-    //   });
-
-    //   this.participationArray.push(formControl);
-    // });
   }
 
   public updateState(): void {
-    const test = 'not yet a form';
-    this.registrationSurveyService.updateParticipationState(test);
+    this.registrationSurveyService.updateParticipationState(this.participation.value);
   }
 }
