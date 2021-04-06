@@ -33,8 +33,7 @@
       <dd class="govuk-summary-list__value">
         {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
         <a class="govuk-link govuk-util__float-right" href="#" (click)="toggleNinoHide($event)">
-          <ng-container *ngIf="ninoHidden; else hideNino">Show</ng-container>
-          <ng-template #hideNino>Hide</ng-template>
+          {{ ninoHidden ? 'Show' : 'Hide' }}
         </a>
       </dd>
       <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -57,9 +56,7 @@
           class="govuk-link govuk-util__float-right"
           href="#"
           (click)="toggleDobHide($event)"
-        >
-          <ng-container *ngIf="dobHidden; else hideDob">Show</ng-container>
-          <ng-template #hideDob>Hide</ng-template>
+          >{{ dobHidden ? 'Show' : 'Hide' }}
         </a>
       </app-summary-record-value>
     </dd>
