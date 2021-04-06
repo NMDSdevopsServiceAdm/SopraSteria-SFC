@@ -15,7 +15,7 @@ const getParams = (workplace) => {
     case config.get('sendInBlue.templates.parent').id:
       params.WORKPLACES = workplace.subsidiaries.map(subsidiary => {
         const { id, name, nmdsId, lastUpdated, dataOwner } = subsidiary;
-        const lastUpdatedFormatted = moment(lastUpdated).format('DD/MM/yyyy');
+        const lastUpdatedFormatted = moment(lastUpdated).format('Mo MMMM YYYY');
 
         return {
           id,
@@ -28,7 +28,7 @@ const getParams = (workplace) => {
 
       if (moment(workplace.lastUpdated) <= endOfLastMonth.clone().subtract(6, 'months')) {
         const { id, name, nmdsId, lastUpdated, dataOwner } = workplace;
-        const lastUpdatedFormatted = moment(lastUpdated).format('DD/MM/yyyy');
+        const lastUpdatedFormatted = moment(lastUpdated).format('Mo MMMM YYYY');
 
         params.WORKPLACES.unshift({
           id,
