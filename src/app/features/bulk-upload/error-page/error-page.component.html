@@ -1,0 +1,61 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-l">Bulk upload</span>
+      Error report
+    </h1>
+    <p class="govuk-inset-text">
+      Use this error report to correct the errors in your data files before you select them again for a bulk upload.
+    </p>
+    <app-bu-error-summary [numberOfErrorsAndWarnings]="numberOfErrorsAndWarnings"></app-bu-error-summary>
+    <ul class="govuk-list govuk-list--download">
+      <li>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-bulk_upload_report.xlsx"
+          class="govuk-body-m"
+          (click)="downloadBUReport($event)"
+        >
+          Download error report
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-tabs>
+      <app-tab [title]="'Workplace'">
+        <app-error-details-table
+          [errors]="errorReport?.establishments.errors"
+          [fileType]="'Workplace'"
+        ></app-error-details-table>
+        <app-warning-details-table
+          [warnings]="errorReport?.establishments.warnings"
+          [fileType]="'Workplace'"
+        ></app-warning-details-table>
+      </app-tab>
+      <app-tab [title]="'Staff'">
+        <app-error-details-table [errors]="errorReport?.workers.errors" [fileType]="'Staff'"></app-error-details-table>
+        <app-warning-details-table
+          [warnings]="errorReport?.workers.warnings"
+          [fileType]="'Staff'"
+        ></app-warning-details-table>
+      </app-tab>
+      <app-tab [title]="'Training'">
+        <app-error-details-table
+          [errors]="errorReport?.training.errors"
+          [fileType]="'Training'"
+        ></app-error-details-table>
+        <app-warning-details-table
+          [warnings]="errorReport?.training.warnings"
+          [fileType]="'Training'"
+        ></app-warning-details-table>
+      </app-tab>
+    </app-tabs>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third-from-desktop">
+    <a [routerLink]="['../']" class="govuk-button">Return to bulk upload</a>
+  </div>
+</div>

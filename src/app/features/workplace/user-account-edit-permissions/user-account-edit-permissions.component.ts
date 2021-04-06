@@ -140,6 +140,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
             this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user.` });
           }
         },
+
         (error) => this.onError(error),
       ),
     );

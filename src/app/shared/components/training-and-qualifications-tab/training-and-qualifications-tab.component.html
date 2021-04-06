@@ -1,5 +1,5 @@
 <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
-<app-trianing-link-panel></app-trianing-link-panel>
+<app-training-link-panel [workplace]="workplace"></app-training-link-panel>
 <ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
@@ -20,7 +20,7 @@
   ></app-training-info-panel>
 
   <app-training-and-qualifications-categories
-    *ngIf="viewTrainingByCategory && trainingCategories.length > 0"
+    *ngIf="viewTrainingByCategory && trainingCategories?.length > 0"
     [workplace]="workplace"
     [trainingCategories]="trainingCategories"
     (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
@@ -30,7 +30,7 @@
     *ngIf="workers && viewTrainingByCategory === false"
     [workplace]="workplace"
     [workers]="workers"
-    [showViewByToggle]="trainingCategories.length > 0"
+    [showViewByToggle]="trainingCategories?.length > 0"
     (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-summary>
 </ng-container>

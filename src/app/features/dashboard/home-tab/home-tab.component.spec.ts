@@ -20,6 +20,8 @@ import { StartComponent } from '../../workplace/start/start.component';
 import { WorkplaceRoutingModule } from '../../workplace/workplace-routing.module';
 import { WorkplaceModule } from '../../workplace/workplace.module';
 import { HomeTabComponent } from './home-tab.component';
+import { By } from '@angular/platform-browser';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 
 const MockWindow = {
   dataLayer: {
@@ -42,7 +44,7 @@ describe('HomeTabComponent', () => {
         WorkplaceRoutingModule,
         HttpClientTestingModule,
       ],
-      declarations: [HomeTabComponent],
+      declarations: [HomeTabComponent,StaffMismatchBannerComponent],
       providers: [
         {
           provide: WorkerService,
@@ -103,9 +105,56 @@ describe('HomeTabComponent', () => {
     const { component } = await setup();
     // Act
     component.fixture.componentInstance.updateStaffRecords = true;
+    component.fixture.detectChanges();
 
     const link = component.getByTestId('add-staff-banner');
     // Assert
     expect(link.innerHTML).toContain('Add staff records');
   });
+
+  it('should not show the more staff records banner if there are equal staff records', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+
+    component.fixture.detectChanges();
+
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeFalsy();
+  });
+  it('should  show the more staff records banner if the user does  have permissions to viewListOfWorkers', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeTruthy();
+  });
+
+  it('should not show the more staff records banner if the user doesnt  have permissions to addWorker', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = false;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeFalsy();
+  });
+
 });

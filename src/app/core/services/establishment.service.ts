@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  adminMoveWorkplace,
   allMandatoryTrainingCategories,
   CancelOwnerShip,
   ChangeOwner,
@@ -75,7 +76,6 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  public isMandatoryTrainingView = new BehaviorSubject<boolean>(false);
   public mainServiceCQC: boolean = null;
   constructor(private http: HttpClient) {}
 
@@ -279,5 +279,10 @@ export class EstablishmentService {
   //update mandatory training
   public updateMandatoryTraining(establishmentId, data: mandatoryTraining[]) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
+  }
+
+  //Move workplace as an admin
+  public adminMoveWorkplace(data: adminMoveWorkplace): Observable<any> {
+    return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 }

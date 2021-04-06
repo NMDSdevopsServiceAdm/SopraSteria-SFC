@@ -355,7 +355,7 @@ class PermissionCache {
       }
     }
 
-    if (estabType !== 'Subsidiary') {
+    if (estabType !== 'Subsidiary' && req.role !== 'Admin') {
       permissions = permissions.filter((perm) => perm.code !== 'canDeleteEstablishment');
     }
 
@@ -399,7 +399,7 @@ class PermissionCache {
       }
       if (permission.code === 'canDownloadWdfReport') {
         return {
-          [permission.code]: isLoggedInAsParent && req.role === 'Edit',
+          [permission.code]: (isLoggedInAsParent && req.role === 'Edit') || req.role === 'Admin',
         };
       }
       if (permission.code === 'canBecomeAParent') {

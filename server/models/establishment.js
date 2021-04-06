@@ -1,4 +1,5 @@
-/* jshint indent: 2 */
+const { Op } = require('sequelize');
+
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
     'establishment',
@@ -405,6 +406,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"NumberOfStaffChangedBy"',
       },
+      otherServicesValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        field: '"OtherServicesValue"',
+        values: ['No', 'Yes'],
+      },
       OtherServicesSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -698,6 +705,44 @@ module.exports = function (sequelize, DataTypes) {
           archived: false,
         },
       },
+      scopes: {
+        noUstatus: {
+          where: {
+            ustatus: {
+              [Op.is]: null,
+            },
+          },
+        },
+        noLocalIdentifier: {
+          where: {
+            LocalIdentifierValue: {
+              [Op.is]: null,
+            },
+          },
+        },
+        parentAndChildWorkplaces: function (establishmentId) {
+          return {
+            where: {
+              [Op.or]: [
+                {
+                  id: establishmentId,
+                },
+                {
+                  parentId: establishmentId,
+                  dataOwner: 'Parent',
+                },
+              ],
+            },
+          };
+        },
+        withEstablishmentId: function (establishmentId) {
+          return {
+            where: {
+              id: establishmentId,
+            },
+          };
+        },
+      },
       tableName: '"Establishment"',
       schema: 'cqc',
       createdAt: false,
@@ -709,6 +754,11 @@ module.exports = function (sequelize, DataTypes) {
     Establishment.belongsTo(models.establishment, {
       as: 'Parent',
       foreignKey: 'ParentID',
+      targetKey: 'id',
+    });
+    Establishment.belongsTo(models.lastUpdatedEstablishmentsView, {
+      as: 'LastUpdated',
+      foreignKey: 'id',
       targetKey: 'id',
     });
 
@@ -798,11 +848,19 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.findbyId = async function (id) {
-    return await this.find({ id });
+    return await this.findOne({
+      where: {
+        id,
+      },
+    });
   };
 
   Establishment.findByUid = async function (uid) {
-    return await this.find({ uid });
+    return await this.findOne({
+      where: {
+        uid,
+      },
+    });
   };
 
   Establishment.find = async function (where) {
@@ -813,6 +871,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       attributes: [
         'id',
+        'uid',
         'ustatus',
         'locationId',
         'provId',
@@ -888,7 +947,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ustatus: {
-          [sequelize.Op.is]: null,
+          [Op.is]: null,
         },
         ...where,
       },
@@ -919,7 +978,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
-  Establishment.generateDeleteReportData = async function () {
+  Establishment.generateDeleteReportData = async function (lastUpdatedDate) {
     return await this.findAll({
       attributes: [
         'uid',
@@ -941,9 +1000,14 @@ module.exports = function (sequelize, DataTypes) {
       order: [['NameValue', 'ASC']],
       include: [
         {
-          model: sequelize.models.worker,
-          as: 'workers',
-          attributes: ['id', 'uid'],
+          model: sequelize.models.lastUpdatedEstablishmentsView,
+          as: 'LastUpdated',
+          attributes: ['id', 'dataOwner', 'lastUpdated'],
+          where: {
+            lastUpdated: {
+              [Op.lte]: lastUpdatedDate,
+            },
+          },
           order: [['updated', 'DESC']],
         },
         {
@@ -958,6 +1022,52 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
         },
       ],
+    });
+  };
+
+  Establishment.getMissingEstablishmentRefCount = async function (establishmentId, isParent) {
+    const scopes = ['defaultScope', 'noUstatus', 'noLocalIdentifier'];
+
+    if (isParent) {
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
+    } else {
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
+    }
+    return await this.scope(scopes).count();
+  };
+
+  Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
+    const scopes = ['defaultScope', 'noUstatus'];
+
+    if (isParent) {
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
+    } else {
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
+    }
+
+    return this.scope(scopes).findAll({
+      attributes: ['uid', 'NameValue'],
+      include: {
+        attributes: ['id'],
+        model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+        as: 'workers',
+      },
+    });
+  };
+
+  Establishment.getMissingWorkerRefCount = async function (establishmentId, isParent) {
+    const scopes = ['defaultScope', 'noUstatus'];
+
+    if (isParent) {
+      scopes.push({ method: ['parentAndChildWorkplaces', establishmentId] });
+    } else {
+      scopes.push({ method: ['withEstablishmentId', establishmentId] });
+    }
+    return await this.scope(scopes).count({
+      include: {
+        model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
+        as: 'workers',
+      },
     });
   };
 
