@@ -21,13 +21,6 @@
     <dt class="govuk-summary-list__key">National Insurance number</dt>
     <ng-container *ngIf="!worker.nationalInsuranceNumber; else hasNino">
       <dd class="govuk-summary-list__value">-</dd>
-      <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-        <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-          <span class="govuk-visually-hidden"> national insurance number</span>
-        </a>
-      </dd>
     </ng-container>
     <ng-template #hasNino>
       <dd class="govuk-summary-list__value">
@@ -40,13 +33,17 @@
           </a>
         </div>
       </dd>
-      <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-        <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
-          Change
-          <span class="govuk-visually-hidden"> national insurance number</span>
-        </a>
-      </dd>
     </ng-template>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
+        <ng-container *ngIf="!worker.nationalInsuranceNumber; else changeNino">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-template #changeNino> Change </ng-template>
+        <span class="govuk-visually-hidden"> national insurance number</span>
+      </a>
+    </dd>
   </div>
 
   <div class="govuk-summary-list__row">
