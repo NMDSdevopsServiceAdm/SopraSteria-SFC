@@ -4,11 +4,10 @@ const models = require('../models');
 const Authorization = require('../utils/security/isAuthenticated');
 
 const submitSurvey = async (req, res) => {
-  // const user = await models.user.findByUUID(req.userUid);
-  //If the survey is a success we need to update the user record so they aren't given the survey again
+  const user = await models.user.findByUUID(req.user.id);
   try {
     await models.registrationSurvey.create({
-      userFk: req.user.id,
+      userFk: user.id,
       participation: req.body.participation,
       whyDidYouCreateAccount: req.body.whyDidYouCreateAccount,
       howDidYouHearAboutASCWDS: req.body.howDidYouHearAboutASCWDS,

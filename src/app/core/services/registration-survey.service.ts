@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RegistrationSurveyService {
+export class RegistrationSurveyService implements OnDestroy {
   public participationFormData: any;
   public whyCreateAccountFormData: any;
   public howDidYouHearAboutFormData: any;
@@ -58,5 +58,9 @@ export class RegistrationSurveyService {
     //   () => this.doSomething(),
     //   (err) => this.doSomething(),
     // );
+  }
+
+  ngOnDestroy() {
+    console.log('QQQQ');
   }
 }

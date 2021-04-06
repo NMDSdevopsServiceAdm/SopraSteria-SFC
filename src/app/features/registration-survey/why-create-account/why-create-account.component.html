@@ -6,7 +6,7 @@
       <p>Select all that apply.</p>
 
       <div class="govuk-form-group">
-        <form #formEl novalidate [formGroup]="form">
+        <form [formGroup]="form">
           <div class="govuk-checkboxes">
             <ng-container
               *ngFor="let control of whyCreateAccountArray.controls; let i = index"
@@ -21,7 +21,6 @@
                   (change)="updateState()"
                   [checked]="control.value.checked"
                   [value]="control.value.response"
-                  [formControlName]="whyCreateAccount"
                 />
 
                 <label class="govuk-label govuk-checkboxes__label" for="why-create-account">
