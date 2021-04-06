@@ -11,7 +11,7 @@ import { ThankYouComponent } from './thank-you/thank-you.component';
 import { WhyCreateAccountComponent } from './why-create-account/why-create-account.component';
 
 @NgModule({
-  imports: [CommonModule, SharedModule, OverlayModule, RegistrationSurveyRoutingModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, RegistrationSurveyRoutingModule],
   declarations: [ParticipationComponent, WhyCreateAccountComponent, HowDidYouHearAboutComponent, ThankYouComponent],
   providers: [],
 })

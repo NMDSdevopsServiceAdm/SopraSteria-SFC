@@ -5,28 +5,30 @@
     <p>Select all that apply.</p>
 
     <div class="govuk-form-group">
-      <div class="govuk-checkboxes">
-        <ng-container
-          *ngFor="let control of howDidYouHearAboutArray.controls; let i = index"
-          formArrayName="howDidYouHearAbout"
-        >
-          <div class="govuk-checkboxes__item">
-            <input
-              class="govuk-checkboxes__input"
-              type="checkbox"
-              name="whyCreateAccount-{{ i }}"
-              (change)="control.value.checked = !control.value.checked"
-              (change)="updateState()"
-              [checked]="control.value.checked"
-              [value]="control.value.response"
-              [formControlName]="howDidYouHearAbout"
-            />
-            <label class="govuk-label govuk-checkboxes__label" for="how-did-you-hear-about">
-              {{ control.value.response }}
-            </label>
-          </div>
-        </ng-container>
-      </div>
+      <form [formGroup]="form">
+        <div class="govuk-checkboxes">
+          <ng-container
+            *ngFor="let control of howDidYouHearAboutArray.controls; let i = index"
+            formArrayName="howDidYouHearAbout"
+          >
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                type="checkbox"
+                name="whyCreateAccount-{{ i }}"
+                (change)="control.value.checked = !control.value.checked"
+                (change)="updateState()"
+                [checked]="control.value.checked"
+                [value]="control.value.response"
+                [formControlName]="howDidYouHearAbout"
+              />
+              <label class="govuk-label govuk-checkboxes__label" for="how-did-you-hear-about">
+                {{ control.value.response }}
+              </label>
+            </div>
+          </ng-container>
+        </div>
+      </form>
     </div>
 
     <a
