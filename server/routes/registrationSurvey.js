@@ -5,6 +5,7 @@ const Authorization = require('../utils/security/isAuthenticated');
 
 const submitSurvey = async (req, res) => {
   const user = await models.user.findByUUID(req.user.id);
+
   try {
     await models.registrationSurvey.create({
       userFk: user.id,

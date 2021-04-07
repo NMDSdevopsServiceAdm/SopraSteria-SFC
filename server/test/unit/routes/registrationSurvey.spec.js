@@ -7,31 +7,27 @@ chai.use(sinonChai);
 const httpMocks = require('node-mocks-http');
 
 const models = require('../../../models');
-// const user = require('../../../models/user');
 
 const registrationSurvey = require('../../../routes/registrationSurvey');
 
 describe('registrationSurvey', async () => {
-  // let userUpdateStub;
-  // let userFindStub;
+  let userFindStub;
 
   beforeEach(() => {
-    // userUpdateStub = sinon.stub(models.user, 'update');
-    // userFindStub = sinon.stub(models.user, 'findByUUID').returns(userUpdateStub);
+    userFindStub = sinon.stub(models.user, 'findByUUID').returns({ id: 1234 });
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  it('should return 200 with all questions answered', async () => {
+  it.only('should return 200 with all questions answered', async () => {
     const request = {
       method: 'POST',
       url: '/api/registrationSurvey',
       user: {
-        id: 1234,
+        id: '85b2a783-ff2d-4c83-adba-c25378afa19c',
       },
-      userUid: '85b2a783-ff2d-4c83-adba-c25378afa19c',
       body: {
         participation: {
           answer: 'Yes',
@@ -67,7 +63,7 @@ describe('registrationSurvey', async () => {
 
     expect(res.statusCode).to.deep.equal(200);
     registrationSurveyStub.should.have.been.calledWith(expectedRegistrationSurveyParams);
-    // userUpdateStub.should.have.been.calledOnce;
+    userFindStub.should.have.been.calledWith(request.user.id);
   });
 
   it('should return 200 when questions are skipped', async () => {
@@ -112,7 +108,6 @@ describe('registrationSurvey', async () => {
 
     expect(res.statusCode).to.deep.equal(200);
     registrationSurveyStub.should.have.been.calledWith(expectedRegistrationSurveyParams);
-    // userUpdateStub.should.have.been.calledOnce;
   });
 
   it('should return a 500 if create fails', async () => {
@@ -132,6 +127,5 @@ describe('registrationSurvey', async () => {
     await registrationSurvey.submitSurvey(req, res);
 
     expect(res.statusCode).to.deep.equal(500);
-    // userUpdateStub.should.not.have.been.calledOnce;
   });
 });
