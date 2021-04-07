@@ -1,11 +1,11 @@
 <div class="govuk-grid-row">
   <div class="govuk-form-group">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <span class="govuk-caption-l">Question 1</span>
-      <h1 class="govuk-heading-xl">Why did you create an account?</h1>
+      <span class="govuk-caption-xl">Question 1</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-7">Why did you create an account?</h1>
       <p>Select all that apply.</p>
 
-      <div class="govuk-form-group">
+      <div class="govuk-form-group govuk-!-margin-top-6">
         <form [formGroup]="form">
           <div class="govuk-checkboxes">
             <ng-container
@@ -16,6 +16,7 @@
                 <input
                   class="govuk-checkboxes__input"
                   type="checkbox"
+                  id="whyCreateAccount-{{ i }}"
                   name="whyCreateAccount-{{ i }}"
                   (change)="control.value.checked = !control.value.checked"
                   (change)="updateState()"
@@ -23,7 +24,11 @@
                   [value]="control.value.response"
                 />
 
-                <label class="govuk-label govuk-checkboxes__label" for="why-create-account">
+                <label
+                  for="whyCreateAccount-{{ i }}"
+                  class="govuk-label govuk-checkboxes__label"
+                  for="why-create-account"
+                >
                   {{ control.value.response }}
                 </label>
               </div>
@@ -35,7 +40,7 @@
       <a
         role="button"
         draggable="false"
-        class="govuk-button govuk-!-margin-top-2"
+        class="govuk-button govuk-!-margin-top-7"
         [routerLink]="this.nextPage?.url"
         (click)="updateState()"
       >

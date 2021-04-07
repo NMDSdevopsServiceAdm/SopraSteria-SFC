@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 @Injectable({
@@ -12,7 +13,7 @@ export class RegistrationSurveyService {
   private result: any;
   protected subscriptions: Subscription = new Subscription();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   public updateParticipationState(formValue) {
     this.participationFormData = formValue;
@@ -42,8 +43,9 @@ export class RegistrationSurveyService {
     const data = this.buildSurveyResultObject();
 
     this.subscriptions.add(
-      this.submit(data).subscribe((error) => {
-        console.log(error);
+      this.submit(data).subscribe((res) => {
+        console.log('test');
+        console.log(res);
       }),
     );
   }

@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { URLStructure } from '@core/model/url.model';
@@ -28,9 +29,11 @@ export class WhyCreateAccountComponent implements OnInit {
     protected backService: BackService,
     protected registrationSurveyService: RegistrationSurveyService,
     private formBuilder: FormBuilder,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
+    console.log(this.location);
     this.setBackLink(this.return);
     this.setupForm();
   }
