@@ -158,8 +158,12 @@ const getEstablishmentReportData = async (establishmentId) => {
     } else {
       value.SubsidiarySharingPermissions = 'None';
     }
+    console.log("value.CurrentWdfEligibilityStatus");
+
+    console.log(value.CurrentWdfEligibilityStatus);
 
     value.CurrentWdfEligibilityStatus = value.CurrentWdfEligibilityStatus === null ? 'Not Eligible' : 'Eligible';
+    console.log(value.CurrentWdfEligibilityStatus);
 
     if (value.DateEligibilityAchieved === null) {
       value.DateEligibilityAchieved = '';
