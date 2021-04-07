@@ -21,7 +21,7 @@ describe('registrationSurvey', async () => {
     sinon.restore();
   });
 
-  it.only('should return 200 with all questions answered', async () => {
+  it('should return 200 with all questions answered', async () => {
     const request = {
       method: 'POST',
       url: '/api/registrationSurvey',
