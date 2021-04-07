@@ -8,7 +8,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { RegistrationSurveyModule } from '../registration-survey.module';
 import { WhyCreateAccountComponent } from './why-create-account.component';
 
-fdescribe('WhyCreateAccountComponent', () => {
+describe('WhyCreateAccountComponent', () => {
   async function setup() {
     return render(WhyCreateAccountComponent, {
       imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],

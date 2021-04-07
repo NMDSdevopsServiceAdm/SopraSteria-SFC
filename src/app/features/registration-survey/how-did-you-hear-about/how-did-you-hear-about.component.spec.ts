@@ -1,21 +1,35 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
+import { MockRegistrationSurveyService } from '@core/test-utils/MockRegistrationSurveyService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { RegistrationSurveyModule } from '../registration-survey.module';
+import { ThankYouComponent } from '../thank-you/thank-you.component';
 import { HowDidYouHearAboutComponent } from './how-did-you-hear-about.component';
 
-fdescribe('HowDidYouHearAboutComponent', () => {
+describe('HowDidYouHearAboutComponent', () => {
   async function setup() {
     return render(HowDidYouHearAboutComponent, {
-      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        SharedModule,
+        RegistrationSurveyModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([
+          {
+            path: 'registration-survey/thank-you',
+            component: ThankYouComponent,
+          },
+        ]),
+      ],
       providers: [
         {
           provide: RegistrationSurveyService,
-          useClass: RegistrationSurveyService,
+          useClass: MockRegistrationSurveyService,
           deps: [HttpClient],
         },
       ],
@@ -48,5 +62,28 @@ fdescribe('HowDidYouHearAboutComponent', () => {
 
     const nextPage = component.fixture.componentInstance.nextPage;
     expect(nextPage.url).toEqual(['/registration-survey', 'thank-you']);
+  });
+
+  describe('Submit Survey', async () => {
+    it('should send off answers when survey is submitted', async () => {
+      const expectedRequestBody = {
+        participation: 'Yes',
+        whyDidYouCreateAccount: ['Other'],
+        howDidYouHearAboutASCWDS: ['From an event we attended', 'From a Skills for Care staff member'],
+      };
+      MockRegistrationSurveyService.prototype.updateParticipationState('Yes');
+      MockRegistrationSurveyService.prototype.updatewhyCreateAccountState(['Other']);
+      MockRegistrationSurveyService.prototype.updateHowDidYouHearAboutState([
+        'From an event we attended',
+        'From a Skills for Care staff member',
+      ]);
+
+      const component = await setup();
+      const submit = component.getByRole('button');
+      fireEvent.click(submit);
+      const req = TestBed.inject(HttpTestingController).expectOne('/api/registrationSurvey');
+      req.flush({});
+      expect(req.request.body).toEqual(expectedRequestBody);
+    });
   });
 });

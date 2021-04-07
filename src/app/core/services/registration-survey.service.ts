@@ -44,7 +44,6 @@ export class RegistrationSurveyService {
 
     this.subscriptions.add(
       this.submit(data).subscribe((res) => {
-        console.log('test');
         console.log(res);
       }),
     );

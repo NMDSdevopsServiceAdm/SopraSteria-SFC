@@ -8,7 +8,7 @@ import { render } from '@testing-library/angular';
 import { RegistrationSurveyModule } from '../registration-survey.module';
 import { ThankYouComponent } from './thank-you.component';
 
-fdescribe('ThankYouComponent', () => {
+describe('ThankYouComponent', () => {
   async function setup() {
     return render(ThankYouComponent, {
       imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
