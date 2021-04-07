@@ -130,7 +130,6 @@ class WdfCalculator {
     if (config.get('admin.overrideWdfEffectiveDate') === false) {
       return WdfUtils.wdfEligibilityDate(); // return the most recent previous 1st of April
     } else {
-      console.log("using Admin override");
       return config.get('admin.overrideWdfEffectiveDate');
     }
   }
