@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RegistrationSurveyService implements OnDestroy {
+export class RegistrationSurveyService {
   public participationFormData: any;
   public whyCreateAccountFormData: any;
   public howDidYouHearAboutFormData: any;
@@ -42,25 +42,9 @@ export class RegistrationSurveyService implements OnDestroy {
     const data = this.buildSurveyResultObject();
 
     this.subscriptions.add(
-      this.submit(data).subscribe(
-        (res) => {
-          {
-            console.log(res);
-          }
-        },
-        (error) => {
-          console.log(error);
-        },
-      ),
+      this.submit(data).subscribe((error) => {
+        console.log(error);
+      }),
     );
-
-    // return this.http.post<any>('/api/registration-survey', data).subscribe(
-    //   () => this.doSomething(),
-    //   (err) => this.doSomething(),
-    // );
-  }
-
-  ngOnDestroy() {
-    console.log('QQQQ');
   }
 }

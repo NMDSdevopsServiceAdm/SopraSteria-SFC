@@ -46,7 +46,7 @@ export class UserService {
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
-    return this.http.get<UserDetails>(`/api/user/me`).pipe(tap(user => (this.loggedInUser = user)));
+    return this.http.get<UserDetails>(`/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
   }
 
   // get agreedUpdatedTermsStatus
@@ -105,6 +105,8 @@ export class UserService {
    * PUT /api/user/establishment/:establishmentUID/:userUID
    */
   public updateUserDetails(workplaceUid: string, userUid: string, userDetails: UserDetails): Observable<UserDetails> {
+    console.log('test');
+    console.log(userDetails);
     return this.http.put<UserDetails>(`/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
   }
 
@@ -138,6 +140,6 @@ export class UserService {
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     return this.http
       .get<GetAllUsersResponse>(`/api/user/establishment/${workplaceUid}`)
-      .pipe(map(response => response.users));
+      .pipe(map((response) => response.users));
   }
 }
