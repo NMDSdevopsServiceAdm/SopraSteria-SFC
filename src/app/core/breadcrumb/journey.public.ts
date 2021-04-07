@@ -8,6 +8,7 @@ enum Path {
   TERMS_AND_CONDITIONS = '/terms-and-conditions',
   PRIVACY_NOTICE = '/privacy-notice',
   CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
+  THANK_YOU = '/thank-you',
 }
 
 export const publicJourney: JourneyRoute = {
@@ -27,6 +28,10 @@ export const publicJourney: JourneyRoute = {
     {
       title: 'Privacy notice',
       path: Path.PRIVACY_NOTICE,
+    },
+    {
+      title: 'Thank you',
+      path: Path.THANK_YOU,
     },
     {
       title: 'Contact us or leave feedback',
