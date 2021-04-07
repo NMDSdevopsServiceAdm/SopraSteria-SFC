@@ -10,7 +10,5 @@ export enum Phase {
   templateUrl: './phase-banner.component.html',
 })
 export class PhaseBannerComponent {
-  @Input() phase: Phase = Phase.Alpha;
-
-  constructor() {}
+  @Input() phase: Phase;
 }
