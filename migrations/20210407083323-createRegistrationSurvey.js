@@ -20,6 +20,7 @@ module.exports = {
               },
               key: 'RegistrationID',
             },
+            unique: true,
           },
           Participation: {
             type: Sequelize.DataTypes.ENUM,
