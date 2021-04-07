@@ -1,24 +1,35 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { RegistrationSurveyService } from '@core/services/registration-survey.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
-// import { WhyCreateAccountComponent } from './why-create-account.component';
+import { RegistrationSurveyModule } from '../registration-survey.module';
+import { WhyCreateAccountComponent } from './why-create-account.component';
 
-// describe('WhyCreateAccountComponent', () => {
-//   let component: WhyCreateAccountComponent;
-//   let fixture: ComponentFixture<WhyCreateAccountComponent>;
+describe('WhyCreateAccountComponent', () => {
+  async function setup() {
+    return render(WhyCreateAccountComponent, {
+      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        {
+          provide: RegistrationSurveyService,
+          useClass: RegistrationSurveyService,
+          deps: [HttpClient],
+        },
+      ],
+    });
+  }
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       declarations: [WhyCreateAccountComponent],
-//     }).compileComponents();
-//   });
+  it('should create', async () => {
+    const component = await setup();
+    expect(component).toBeTruthy();
+  });
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(WhyCreateAccountComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges();
-//   });
-
-//   it('should create', () => {
-//     expect(component).toBeTruthy();
-//   });
-// });
+  it('should display the why create account question', async () => {
+    const component = await setup();
+    const text = component.fixture.nativeElement.querySelector('h1');
+    expect(text.innerText).toContain('Why did you create an account?');
+  });
+});

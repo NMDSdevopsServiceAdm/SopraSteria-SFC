@@ -1,24 +1,35 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { RegistrationSurveyService } from '@core/services/registration-survey.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
-// import { HowDidYouHearAboutComponent } from './how-did-you-hear-about.component';
+import { RegistrationSurveyModule } from '../registration-survey.module';
+import { HowDidYouHearAboutComponent } from './how-did-you-hear-about.component';
 
-// describe('HowDidYouHearAboutComponent', () => {
-//   let component: HowDidYouHearAboutComponent;
-//   let fixture: ComponentFixture<HowDidYouHearAboutComponent>;
+describe('HowDidYouHearAboutComponent', () => {
+  async function setup() {
+    return render(HowDidYouHearAboutComponent, {
+      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        {
+          provide: RegistrationSurveyService,
+          useClass: RegistrationSurveyService,
+          deps: [HttpClient],
+        },
+      ],
+    });
+  }
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       declarations: [HowDidYouHearAboutComponent],
-//     }).compileComponents();
-//   });
+  it('should create', async () => {
+    const component = await setup();
+    expect(component).toBeTruthy();
+  });
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(HowDidYouHearAboutComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges();
-//   });
-
-//   it('should create', () => {
-//     expect(component).toBeTruthy();
-//   });
-// });
+  it('should display the why create account question', async () => {
+    const component = await setup();
+    const text = component.fixture.nativeElement.querySelector('h1');
+    expect(text.innerText).toContain('How did you hear about the Adult Social Care Workforce Data Set service?');
+  });
+});
