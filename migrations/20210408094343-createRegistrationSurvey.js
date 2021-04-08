@@ -22,11 +22,6 @@ module.exports = {
             },
             unique: true,
           },
-          Participation: {
-            type: Sequelize.DataTypes.ENUM,
-            allowNull: false,
-            values: ['Yes', 'No'],
-          },
           WhyDidYouCreateAccount: {
             type: Sequelize.DataTypes.JSON,
             allowNull: true,

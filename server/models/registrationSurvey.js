@@ -13,12 +13,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         field: 'UserFK',
       },
-      participation: {
-        type: DataTypes.ENUM,
-        allowNull: false,
-        values: ['Yes', 'No'],
-        field: 'Participation',
-      },
       whyDidYouCreateAccount: {
         type: DataTypes.JSON,
         allowNull: true,

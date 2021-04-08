@@ -67,11 +67,9 @@ describe('HowDidYouHearAboutComponent', () => {
   describe('Submit Survey', async () => {
     it('should send off answers when survey is submitted', async () => {
       const expectedRequestBody = {
-        participation: 'Yes',
         whyDidYouCreateAccount: ['Other'],
         howDidYouHearAboutASCWDS: ['From an event we attended', 'From a Skills for Care staff member'],
       };
-      MockRegistrationSurveyService.prototype.updateParticipationState('Yes');
       MockRegistrationSurveyService.prototype.updatewhyCreateAccountState(['Other']);
       MockRegistrationSurveyService.prototype.updateHowDidYouHearAboutState([
         'From an event we attended',

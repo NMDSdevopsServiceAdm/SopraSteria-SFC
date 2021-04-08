@@ -29,7 +29,6 @@ export class RegistrationSurveyService {
 
   private buildSurveyResultObject() {
     return (this.result = {
-      participation: this.participationFormData,
       whyDidYouCreateAccount: this.whyCreateAccountFormData,
       howDidYouHearAboutASCWDS: this.howDidYouHearAboutFormData,
     });

@@ -29,9 +29,6 @@ describe('registrationSurvey', async () => {
         id: '85b2a783-ff2d-4c83-adba-c25378afa19c',
       },
       body: {
-        participation: {
-          answer: 'Yes',
-        },
         whyDidYouCreateAccount: {
           answer: ['Other', 'To record and manage staff records'],
         },
@@ -43,9 +40,6 @@ describe('registrationSurvey', async () => {
 
     const expectedRegistrationSurveyParams = {
       userFk: 1234,
-      participation: {
-        answer: 'Yes',
-      },
       whyDidYouCreateAccount: {
         answer: ['Other', 'To record and manage staff records'],
       },
@@ -74,9 +68,6 @@ describe('registrationSurvey', async () => {
         id: 1234,
       },
       body: {
-        participation: {
-          answer: 'Yes',
-        },
         whyDidYouCreateAccount: {
           answer: [],
         },
@@ -88,9 +79,6 @@ describe('registrationSurvey', async () => {
 
     const expectedRegistrationSurveyParams = {
       userFk: 1234,
-      participation: {
-        answer: 'Yes',
-      },
       whyDidYouCreateAccount: {
         answer: [],
       },

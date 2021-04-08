@@ -105,8 +105,6 @@ export class UserService {
    * PUT /api/user/establishment/:establishmentUID/:userUID
    */
   public updateUserDetails(workplaceUid: string, userUid: string, userDetails: UserDetails): Observable<UserDetails> {
-    console.log('test');
-    console.log(userDetails);
     return this.http.put<UserDetails>(`/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
   }
 

@@ -10,7 +10,6 @@ const submitSurvey = async (req, res) => {
   try {
     await models.registrationSurvey.create({
       userFk: user.id,
-      participation: req.body.participation,
       whyDidYouCreateAccount: req.body.whyDidYouCreateAccount,
       howDidYouHearAboutASCWDS: req.body.howDidYouHearAboutASCWDS,
     });
@@ -18,14 +17,13 @@ const submitSurvey = async (req, res) => {
     res.status(200).send();
   } catch (error) {
     res.status(500).send();
-    console.error();
+    console.error(error);
   }
 };
 
 router.route('/').post(
   celebrate({
     body: Joi.object().keys({
-      participation: Joi.string().required(),
       whyDidYouCreateAccount: Joi.array().items(Joi.string()),
       howDidYouHearAboutASCWDS: Joi.array().items(Joi.string()),
     }),
