@@ -91,7 +91,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
-  private onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
