@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -11,6 +11,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
   templateUrl: './contact-us-or-leave-feedback.component.html',
 })
 export class ContactUsOrLeaveFeedbackComponent {
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: ErrorDetails[] = [];
@@ -26,6 +27,10 @@ export class ContactUsOrLeaveFeedbackComponent {
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.PUBLIC);
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   get contactUsOrFeedback() {

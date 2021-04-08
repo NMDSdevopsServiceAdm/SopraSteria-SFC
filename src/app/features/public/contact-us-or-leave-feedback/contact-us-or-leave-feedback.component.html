@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="govuk-radios govuk-!-margin-top-2">
-    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+    <form #formEl [formGroup]="form" (ngSubmit)="onSubmit($event)">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <div class="govuk-radios">
