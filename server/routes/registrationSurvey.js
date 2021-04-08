@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models');
 const Authorization = require('../utils/security/isAuthenticated');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const submitSurvey = async (req, res) => {
   const user = await models.user.findByUUID(req.user.id);
@@ -21,6 +22,19 @@ const submitSurvey = async (req, res) => {
   }
 };
 
-router.route('/').post(Authorization.isAuthorised, submitSurvey);
+router.route('/').post(
+  celebrate({
+    body: Joi.object().keys({
+      participation: Joi.string().required(),
+      whyDidYouCreateAccount: Joi.array().items(Joi.string()),
+      howDidYouHearAboutASCWDS: Joi.array().items(Joi.string()),
+    }),
+  }),
+  Authorization.isAuthorised,
+  submitSurvey,
+);
+
+router.use('/', errors());
+
 module.exports = router;
 module.exports.submitSurvey = submitSurvey;
