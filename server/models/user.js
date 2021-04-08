@@ -244,7 +244,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       registrationSurveyCompleted: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: 'RegistrationSurveyCompleted',
       },
     },
