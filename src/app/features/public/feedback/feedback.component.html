@@ -12,7 +12,7 @@
       <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">Feedback</h1>
+            <h1 class="govuk-fieldset__heading">Leave feedback</h1>
           </legend>
 
           <div class="govuk-character-count">
@@ -65,56 +65,9 @@
             </div>
             <app-character-count [max]="tellUsCharactersLimit" [control]="form.get('tellUs')"></app-character-count>
           </div>
-
-          <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below</h3>
-
-          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('fullname').errors">
-            <label class="govuk-label" for="fullname"> Full name </label>
-            <span id="fullname-hint" class="govuk-hint"> Optional </span>
-            <span *ngIf="submitted" id="fullname-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span>
-              <ng-container *ngIf="form.get('fullname').hasError('maxlength')">
-                {{ getFormErrorMessage('fullname', 'maxlength') }}
-              </ng-container>
-            </span>
-            <input
-              class="govuk-input govuk-input--width-20"
-              [class.govuk-input--error]="submitted && form.get('fullname').errors"
-              id="fullname"
-              name="fullname"
-              type="text"
-              aria-describedby="fullname-hint"
-              [formControlName]="'fullname'"
-            />
-          </div>
-
-          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('email').errors">
-            <label class="govuk-label" for="email"> Email address </label>
-            <span id="email-hint" class="govuk-hint"> Optional </span>
-            <span *ngIf="submitted" id="email-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span>
-              <ng-container *ngIf="form.get('email').hasError('email')">
-                {{ getFormErrorMessage('email', 'email') }}
-              </ng-container>
-              <ng-container *ngIf="form.get('email').hasError('maxlength')">
-                {{ getFormErrorMessage('email', 'maxlength') }}
-              </ng-container>
-            </span>
-            <input
-              class="govuk-input"
-              [class.govuk-input--error]="submitted && form.get('email').errors"
-              id="email"
-              name="email"
-              type="email"
-              aria-describedby="email-hint"
-              autocomplete="email"
-              spellcheck="false"
-              [formControlName]="'email'"
-            />
-          </div>
         </fieldset>
 
-        <button type="submit" class="govuk-button">Send</button>
+        <button type="submit" class="govuk-button govuk-!-margin-top-7">Send</button>
       </form>
     </ng-container>
 
