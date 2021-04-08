@@ -1,9 +1,9 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
-  FEEDBACK = '/contact-us-or-leave-feedback/feedback',
+  FEEDBACK = '/feedback',
   COOKIE_POLICY = '/cookie-policy',
-  CONTACT_US = '/contact-us-or-leave-feedback/contact-us',
+  CONTACT_US = '/contact-us',
   ACCESSIBILITY_STATEMENT = '/accessibility-statement',
   TERMS_AND_CONDITIONS = '/terms-and-conditions',
   PRIVACY_NOTICE = '/privacy-notice',

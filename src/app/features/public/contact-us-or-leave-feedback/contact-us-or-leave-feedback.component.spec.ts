@@ -1,24 +1,27 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
-import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback.component';
+import { ContactUsComponent } from '../contact-us/contact-us.component';
 
-describe('ContactUsOrLeaveFeedbackComponent', () => {
-  let component: ContactUsOrLeaveFeedbackComponent;
-  let fixture: ComponentFixture<ContactUsOrLeaveFeedbackComponent>;
+describe('ContactUsComponent', () => {
+  const setup = async () => {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(ContactUsComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder],
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ContactUsOrLeaveFeedbackComponent],
-    }).compileComponents();
-  });
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ContactUsOrLeaveFeedbackComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should render a ContactUsComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });
