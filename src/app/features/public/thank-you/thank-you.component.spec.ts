@@ -1,24 +1,27 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { ThankYouComponent } from './thank-you.component';
 
 describe('ThankYouComponent', () => {
-  let component: ThankYouComponent;
-  let fixture: ComponentFixture<ThankYouComponent>;
+  const setup = async () => {
+    const { fixture } = await render(ThankYouComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder],
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ThankYouComponent],
-    }).compileComponents();
-  });
+    return { component, fixture };
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ThankYouComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should render a ThankYouComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });
