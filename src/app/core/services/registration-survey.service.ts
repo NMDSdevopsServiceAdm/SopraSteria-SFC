@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
@@ -43,9 +43,12 @@ export class RegistrationSurveyService {
     const data = this.buildSurveyResultObject();
 
     this.subscriptions.add(
-      this.submit(data).subscribe((res) => {
-        console.log(res);
-      }),
+      this.submit(data).subscribe(
+        (data) => {
+          this.subscriptions.unsubscribe();
+        },
+        (error: HttpErrorResponse) => this.router.navigate(['/dashboard']),
+      ),
     );
   }
 }
