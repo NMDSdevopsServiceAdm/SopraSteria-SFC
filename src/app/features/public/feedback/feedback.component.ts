@@ -29,11 +29,11 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
-    private breadcrumbSerivce: BreadcrumbService,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit() {
-    this.breadcrumbSerivce.show(JourneyType.PUBLIC);
+    this.breadcrumbService.show(JourneyType.PUBLIC);
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();

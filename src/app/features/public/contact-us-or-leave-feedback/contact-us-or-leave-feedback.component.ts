@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
@@ -17,8 +19,13 @@ export class ContactUsOrLeaveFeedbackComponent {
     private formBuilder: FormBuilder,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
+    private breadcrumbService: BreadcrumbService,
   ) {
     this.setupForm();
+  }
+
+  ngOnInit() {
+    this.breadcrumbService.show(JourneyType.PUBLIC);
   }
 
   get contactUsOrFeedback() {
