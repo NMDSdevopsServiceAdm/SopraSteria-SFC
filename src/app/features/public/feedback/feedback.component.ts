@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { FeedbackModel } from '@core/model/feedback.model';
@@ -20,7 +21,6 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   public serverError: string;
   public doingWhatCharacterLimit = 500;
   public tellUsCharactersLimit = 500;
-  private _pendingFeedback = true;
   private formErrorsMap: Array<ErrorDetails>;
   private serverErrorsMap: Array<ErrorDefinition>;
   private subscriptions: Subscription = new Subscription();
@@ -30,6 +30,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
     private breadcrumbService: BreadcrumbService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -90,37 +91,29 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
-  get pendingFeedback(): boolean {
-    return this._pendingFeedback;
-  }
-
-  resetPendingFeedback() {
-    this._pendingFeedback = false;
-  }
-
   private onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      if (this.pendingFeedback) {
-        const { doingWhat, tellUs } = this.form.controls;
+      const { doingWhat, tellUs } = this.form.controls;
 
-        const request: FeedbackModel = {
-          doingWhat: doingWhat.value,
-          tellUs: tellUs.value,
-        };
+      const request: FeedbackModel = {
+        doingWhat: doingWhat.value,
+        tellUs: tellUs.value,
+      };
 
-        this.subscriptions.add(
-          this.feedbackService.post(request).subscribe(
-            () => this.resetPendingFeedback(),
-            (error: HttpErrorResponse) => {
-              this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-              this.errorSummaryService.scrollToErrorSummary();
-            },
-          ),
-        );
-      }
+      this.subscriptions.add(
+        this.feedbackService.post(request).subscribe(
+          () => {
+            this.router.navigate(['/thank-you']);
+          },
+          (error: HttpErrorResponse) => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+            this.errorSummaryService.scrollToErrorSummary();
+          },
+        ),
+      );
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
