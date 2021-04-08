@@ -21,9 +21,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   public doingWhatCharacterLimit = 500;
   public tellUsCharactersLimit = 500;
   private _pendingFeedback = true;
-  private emailCharacterLimit = 120;
   private formErrorsMap: Array<ErrorDetails>;
-  private fullNameCharacterLimit = 120;
   private serverErrorsMap: Array<ErrorDefinition>;
   private subscriptions: Subscription = new Subscription();
 
@@ -31,7 +29,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
-    private breadcrumbSerivce: BreadcrumbService
+    private breadcrumbSerivce: BreadcrumbService,
   ) {}
 
   ngOnInit() {
@@ -48,8 +46,6 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group({
       doingWhat: [null, [Validators.required, Validators.maxLength(this.doingWhatCharacterLimit)]],
-      email: [null, [Validators.email, Validators.maxLength(this.emailCharacterLimit)]],
-      fullname: [null, [Validators.maxLength(this.fullNameCharacterLimit)]],
       tellUs: [null, [Validators.required, Validators.maxLength(this.tellUsCharactersLimit)]],
     });
   }
@@ -66,28 +62,6 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
           {
             name: 'maxlength',
             message: `Character limit of ${this.doingWhatCharacterLimit} exceeded.`,
-          },
-        ],
-      },
-      {
-        item: 'email',
-        type: [
-          {
-            name: 'email',
-            message: 'Please enter a valid email address.',
-          },
-          {
-            name: 'maxlength',
-            message: `Character limit of ${this.emailCharacterLimit} exceeded.`,
-          },
-        ],
-      },
-      {
-        item: 'fullname',
-        type: [
-          {
-            name: 'maxlength',
-            message: `Character limit of ${this.fullNameCharacterLimit} exceeded.`,
           },
         ],
       },
@@ -130,13 +104,11 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.form.valid) {
       if (this.pendingFeedback) {
-        const { doingWhat, tellUs, fullname, email } = this.form.controls;
+        const { doingWhat, tellUs } = this.form.controls;
 
         const request: FeedbackModel = {
           doingWhat: doingWhat.value,
           tellUs: tellUs.value,
-          name: fullname.value,
-          email: email.value,
         };
 
         this.subscriptions.add(
@@ -145,8 +117,8 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
             (error: HttpErrorResponse) => {
               this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
               this.errorSummaryService.scrollToErrorSummary();
-            }
-          )
+            },
+          ),
         );
       }
     } else {
