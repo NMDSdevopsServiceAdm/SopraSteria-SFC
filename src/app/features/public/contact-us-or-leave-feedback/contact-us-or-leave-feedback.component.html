@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="govuk-radios govuk-!-margin-top-2">
-    <form [formGroup]="form">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <span
@@ -52,7 +52,7 @@
         <div class="govuk-grid-column-two-thirds">
           <div class="govuk-grid-row govuk-!-margin-top-6">
             <div class="govuk-grid-column-one-third">
-              <button type="submit" (click)="onSubmit($event)" class="govuk-button">Continue</button>
+              <button type="submit" class="govuk-button">Continue</button>
             </div>
             <div class="govuk-grid-column-one-third">
               <a [routerLink]="['/dashboard']" role="button" draggable="false" class="govuk-button govuk-button--link">
