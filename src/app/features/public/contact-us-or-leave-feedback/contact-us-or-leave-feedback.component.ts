@@ -25,7 +25,7 @@ export class ContactUsOrLeaveFeedbackComponent {
     return this.form.get('contactUsOrFeedback').value;
   }
 
-  continue() {
+  navigateToNextPage() {
     if (this.contactUsOrFeedback === 'feedback') {
       this.router.navigate(['/feedback']);
     } else if (this.contactUsOrFeedback === 'contactUs') {
@@ -39,7 +39,7 @@ export class ContactUsOrLeaveFeedbackComponent {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.continue();
+      this.navigateToNextPage();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

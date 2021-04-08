@@ -12,14 +12,14 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-          <span
-            id="contactUsOrFeedback-error"
-            class="govuk-error-message"
-            *ngIf="form.get('contactUsOrFeedback')?.errors && submitted"
-          >
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('contactUsOrFeedback') }}
-          </span>
           <div class="govuk-radios">
+            <span
+              id="contactUsOrFeedback-error"
+              class="govuk-error-message"
+              *ngIf="submitted && form.get('contactUsOrFeedback')?.errors"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('contactUsOrFeedback') }}
+            </span>
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
@@ -27,7 +27,7 @@
                 name="contactUsOrFeedback"
                 type="radio"
                 value="contactUs"
-                formControlName="contactUsOrFeedback"
+                [formControlName]="'contactUsOrFeedback'"
                 [class.govuk-input--error]="form.get('contactUsOrFeedback')?.errors && submitted"
               />
               <label class="govuk-label govuk-radios__label" for="contactUs">
@@ -41,16 +41,16 @@
                 name="contactUsOrFeedback"
                 type="radio"
                 value="feedback"
-                formControlName="contactUsOrFeedback"
+                [formControlName]="'contactUsOrFeedback'"
               />
               <label class="govuk-label govuk-radios__label" for="feedback"> Leave feedback about the service </label>
             </div>
           </div>
         </div>
       </div>
-      <div class="govuk-grid-row">
+      <div class="govuk-grid-row govuk-!-margin-top-7">
         <div class="govuk-grid-column-two-thirds">
-          <div class="govuk-grid-row govuk-!-margin-top-6">
+          <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third">
               <button type="submit" class="govuk-button">Continue</button>
             </div>
