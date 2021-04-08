@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,6 +25,7 @@ export class ParticipationComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private userService: UserService,
     private formBuilder: FormBuilder,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -31,11 +33,33 @@ export class ParticipationComponent implements OnInit {
       ? { url: ['/registration-survey', 'why-create-account'] }
       : { url: ['/dashboard'] };
     this.workplace = this.establishmentService.primaryWorkplace;
+
+    this.updateUserMarkSurveyAsComplete();
     this.setupForm();
   }
 
   get participation() {
     return this.form.get('participation');
+  }
+
+  public updateUserMarkSurveyAsComplete() {
+    if (this.userService.loggedInUser?.registrationSurveyCompleted === false) {
+      this.subscriptions.add(
+        this.userService
+          .updateUserDetails(this.userService.loggedInUser.establishmentUid, this.userService.loggedInUser.uid, {
+            ...this.userService.loggedInUser,
+            ...{ registrationSurveyCompleted: true },
+          })
+          .subscribe((data) => {
+            this.userService.loggedInUser = data;
+          }),
+      );
+    }
+  }
+
+  public onSubmit() {
+    this.updateState();
+    this.router.navigate(this.nextPage.url);
   }
 
   private setupForm() {
@@ -60,17 +84,7 @@ export class ParticipationComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    if (this.userService.loggedInUser?.registrationSurveyCompleted === false) {
-      this.subscriptions.add(
-        this.userService
-          .updateUserDetails(this.userService.loggedInUser.establishmentUid, this.userService.loggedInUser.uid, {
-            ...this.userService.loggedInUser,
-            ...{ registrationSurveyCompleted: true },
-          })
-          .subscribe((data) => (this.userService.loggedInUser = data)),
-      );
-    }
-
+    this.subscriptions.unsubscribe();
     this.updateRouteToNextPage();
   }
 }

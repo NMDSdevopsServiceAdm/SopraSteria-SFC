@@ -6,7 +6,7 @@
     <p>It should only take a minute to answer our questions and it will help us to improve the service.</p>
 
     <div class="govuk-form-group">
-      <form [formGroup]="form">
+      <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="govuk-radios govuk-!-margin-top-2">
           <div class="govuk-radios__item">
             <input
@@ -37,16 +37,9 @@
             </label>
           </div>
         </div>
+
+        <button type="submit" class="govuk-button govuk-!-margin-top-7">Continue</button>
       </form>
     </div>
-
-    <button
-      type="submit"
-      class="govuk-button govuk-!-margin-top-2"
-      [routerLink]="this.nextPage?.url"
-      (click)="updateState()"
-    >
-      Continue
-    </button>
   </div>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
@@ -27,6 +28,7 @@ export class HowDidYouHearAboutComponent implements OnInit {
     protected backService: BackService,
     protected registrationSurveyService: RegistrationSurveyService,
     private formBuilder: FormBuilder,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -65,8 +67,9 @@ export class HowDidYouHearAboutComponent implements OnInit {
     this.registrationSurveyService.updateHowDidYouHearAboutState(responses);
   }
 
-  public completeSurvey(): void {
+  public onSubmit(): void {
     this.updateState();
+    this.router.navigate(this.nextPage.url);
     this.registrationSurveyService.submitSurvey();
   }
 

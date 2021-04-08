@@ -4,9 +4,8 @@
       <span class="govuk-caption-xl">Question 1</span>
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-7">Why did you create an account?</h1>
       <p>Select all that apply.</p>
-
       <div class="govuk-form-group govuk-!-margin-top-6">
-        <form [formGroup]="form">
+        <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
           <div class="govuk-checkboxes">
             <ng-container
               *ngFor="let control of whyCreateAccountArray.controls; let i = index"
@@ -34,18 +33,10 @@
               </div>
             </ng-container>
           </div>
+
+          <button type="submit" class="govuk-button govuk-!-margin-top-7">Next question</button>
         </form>
       </div>
-
-      <a
-        role="button"
-        draggable="false"
-        class="govuk-button govuk-!-margin-top-7"
-        [routerLink]="this.nextPage?.url"
-        (click)="updateState()"
-      >
-        Next question
-      </a>
     </div>
   </div>
 </div>
