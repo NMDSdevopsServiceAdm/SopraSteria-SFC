@@ -55,7 +55,12 @@
               <button type="submit" class="govuk-button">Continue</button>
             </div>
             <div class="govuk-grid-column-one-third">
-              <a [routerLink]="['/dashboard']" role="button" draggable="false" class="govuk-button govuk-button--link">
+              <a
+                [routerLink]="this.returnTo?.url"
+                role="button"
+                draggable="false"
+                class="govuk-button govuk-button--link"
+              >
                 Exit
               </a>
             </div>

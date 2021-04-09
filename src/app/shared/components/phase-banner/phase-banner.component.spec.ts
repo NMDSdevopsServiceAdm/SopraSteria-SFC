@@ -1,24 +1,27 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { PhaseBannerComponent } from './phase-banner.component';
 
 describe('PhaseBannerComponent', () => {
-  let component: PhaseBannerComponent;
-  let fixture: ComponentFixture<PhaseBannerComponent>;
+  const setup = async () => {
+    const { fixture } = await render(PhaseBannerComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder],
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [PhaseBannerComponent],
-    }).compileComponents();
-  }));
+    return { component, fixture };
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PhaseBannerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should render a PhaseBannerComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });

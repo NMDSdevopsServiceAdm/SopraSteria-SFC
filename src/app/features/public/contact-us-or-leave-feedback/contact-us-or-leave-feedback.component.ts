@@ -3,8 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FeedbackService } from '@core/services/feedback.service';
 
 @Component({
   selector: 'app-contact-us-or-leave-feedback',
@@ -15,18 +17,21 @@ export class ContactUsOrLeaveFeedbackComponent {
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: ErrorDetails[] = [];
+  public returnTo: URLStructure;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private breadcrumbService: BreadcrumbService,
+    private feedbackService: FeedbackService,
   ) {
     this.setupForm();
   }
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.PUBLIC);
+    this.returnTo = this.feedbackService.returnTo ? this.feedbackService.returnTo : { url: ['/dashboard'] };
   }
 
   ngAfterViewInit(): void {
