@@ -6,7 +6,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback.component';
 
@@ -32,13 +32,14 @@ describe('ContactUsOrLeaveFeedbackComponent', () => {
   });
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
-    const { component, fixture, getAllByText, queryByText } = await setup();
+    const { component, fixture, getAllByText, queryByText, getByTestId } = await setup();
     const errorMessage = `Select if you want to contact us or leave feedback`;
     const form = component.form;
+    const continueButton = getByTestId('continue');
 
     expect(queryByText(errorMessage, { exact: false })).toBeNull();
 
-    component.onSubmit(event);
+    fireEvent.click(continueButton);
     fixture.detectChanges();
     expect(form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
