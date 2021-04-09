@@ -25,7 +25,7 @@
     "db:migrate": "sequelize db:migrate",
     "db:migrate:undo": "sequelize db:migrate:undo",
     "cf:migrate": "node ./bin/cf-migrate.js",
-    "prepare": "husky install"
+    "prepare": "is-ci || husky install"
   },
   "private": true,
   "dependencies": {
