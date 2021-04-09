@@ -74,7 +74,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
             message: 'Please tell us your feedback.',
           },
           {
-            name: 'maxwords',
+            name: 'maxlength',
             message: 'Maximum word count exceeded.',
           },
         ],
