@@ -20,7 +20,7 @@ const headers = [
   'CQC Registered',
   'Parent Name',
   'Due to be deleted date',
-  'Data Owner'
+  'Data Owner',
 ];
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
 const monthsWithoutUpdate = 20;
@@ -130,7 +130,7 @@ const fillData = (reportData, laData, WS1) => {
 };
 
 const generateDeleteReport = async (req, res) => {
-  const lastUpdatedDate =  moment().subtract(monthsWithoutUpdate, 'months').toDate();
+  const lastUpdatedDate = moment().subtract(monthsWithoutUpdate, 'months').toDate();
   const reportData = await models.establishment.generateDeleteReportData(lastUpdatedDate);
   const laData = await addCSSRData(reportData);
 

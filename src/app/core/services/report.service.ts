@@ -39,6 +39,8 @@ export class ReportService {
     });
   }
 
+  // Add getSatisfactionSurvey report
+
   public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
       {

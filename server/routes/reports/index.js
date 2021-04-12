@@ -17,6 +17,7 @@ router.use('/dailySnapshot', DailySnapshot);
 router.use('/localAuthority', LocalAuthority);
 router.use('/training', TrainingReport);
 router.use('/delete', [isAdmin, DeleteReport]);
+// Add satisfaction survey report
 
 router.route('/').get(async (req, res) => {
   return res.status(501).send();

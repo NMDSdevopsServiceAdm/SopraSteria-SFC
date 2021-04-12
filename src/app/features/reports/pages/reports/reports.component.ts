@@ -63,6 +63,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
   }
 
+  // Add downloadSatisfactionSurvey report
+
   public downloadLocalAuthorityReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(
