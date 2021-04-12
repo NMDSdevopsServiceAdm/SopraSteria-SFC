@@ -11,6 +11,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       userFk: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         field: 'UserFK',
       },
       whyDidYouCreateAccount: {
@@ -37,6 +38,14 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false,
     },
   );
+
+  RegistrationSurvey.associate = (models) => {
+    RegistrationSurvey.belongsTo(models.user, {
+      foreignKey: 'userFk',
+      targetKey: 'id',
+      as: 'user',
+    });
+  };
 
   return RegistrationSurvey;
 };

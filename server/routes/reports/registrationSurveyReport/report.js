@@ -2,48 +2,43 @@ const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
 const excelUtils = require('../../../utils/excelUtils');
+const models = require('../../../models');
 
 const printRow = (worksheet, item) => {
     worksheet.addRow({
-      workplace: item.name,
-      workplaceId: item.nmdsId,
-      lastUpdated: item.lastUpdated,
-      emailTemplate: item.emailTemplate,
-      dataOwner: item.dataOwner,
-      nameOfUser: item.user.name,
-      userEmail: item.user.email,
+      workplaceId: item.userFk,
+      dateCompleted: moment(item.submittedDate).format('DD-MM-YYYY'),
+      whyCreateAccount: item.whyDidYouCreateAccount,
+      howDidYouHearAboutASCWDS: item.howDidYouHearAboutASCWDS,
     });
 };
 
 const generateReport = async (_, res) => {
   const workbook = new excelJS.Workbook();
 
-  // workbook.creator = 'Skills-For-Care';
-  // workbook.properties.date1904 = true;
+  workbook.creator = 'Skills-For-Care';
+  workbook.properties.date1904 = true;
 
-  // const worksheet = workbook.addWorksheet('Inactive workplaces');
-  // worksheet.columns = [
-  //   { header: 'Workplace name', key: 'workplace' },
-  //   { header: 'Workplace ID', key: 'workplaceId' },
-  //   { header: 'Date last updated', key: 'lastUpdated' },
-  //   { header: 'Email template', key: 'emailTemplate' },
-  //   { header: 'Data owner', key: 'dataOwner' },
-  //   { header: 'Name of user', key: 'nameOfUser' },
-  //   { header: 'User email', key: 'userEmail' },
-  // ];
+  const worksheet = workbook.addWorksheet('Registration survey');
+  worksheet.columns = [
+    { header: 'Workplace ID', key: 'workplaceId' },
+    { header: 'Date completed', key: 'dateCompleted' },
+    { header: 'Why did you create your account?', key: 'whyCreateAccount' },
+    { header: 'How did you hear about ASC-WDS?', key: 'howDidYouHearAboutASCWDS' },
+  ];
 
-  // const headerRow = worksheet.getRow(1);
-  // headerRow.font = { bold: true, name: 'Calibri' };
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true, name: 'Calibri' };
 
-  // const inactiveWorkplaces = await findInactiveWorkplaces();
-  // inactiveWorkplaces.forEach(workplace => {
-  //   printRow(worksheet, workplace);
-  // });
+  const registrationSurveyResponses = await models.registrationSurvey.findAll();
+  registrationSurveyResponses.forEach(response => {
+    printRow(worksheet, response);
+  });
 
-  // excelUtils.fitColumnsToSize(worksheet);
+  excelUtils.fitColumnsToSize(worksheet);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-registrationSurvey.xlsx');
+  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-registration-survey-report.xlsx');
 
   await workbook.xlsx.write(res);
   return res.status(200).end();
