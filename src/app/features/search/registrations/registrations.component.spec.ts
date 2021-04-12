@@ -1,12 +1,10 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { FirstErrorPipe } from '@shared/pipes/first-error.pipe';
-import { fireEvent, render, RenderResult } from '@testing-library/angular';
+import { render, RenderResult } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { RegistrationComponent } from '../registration/registration.component';
@@ -19,7 +17,7 @@ describe('RegistrationsComponent', () => {
     component = await render(RegistrationsComponent, {
       imports: [ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
       declarations: [FirstErrorPipe, RegistrationComponent],
-      providers: [RegistrationsService, RegistrationSurveyService],
+      providers: [RegistrationsService],
     });
 
     expect(component).toBeTruthy();
@@ -53,11 +51,6 @@ describe('RegistrationsComponent', () => {
             provide: RegistrationsService,
             useClass: registrationService,
           },
-          {
-            provide: RegistrationSurveyService,
-            useClass: RegistrationSurveyService,
-            deps: [HttpClient],
-          },
         ],
       });
 
@@ -86,14 +79,7 @@ describe('RegistrationsComponent', () => {
     const { fixture } = await render(RegistrationsComponent, {
       imports: [ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
       declarations: [FirstErrorPipe, RegistrationComponent],
-      providers: [
-        RegistrationsService,
-        {
-          provide: RegistrationSurveyService,
-          useClass: RegistrationSurveyService,
-          deps: [HttpClient],
-        },
-      ],
+      providers: [RegistrationsService],
       componentProperties: {
         registrations,
       },
@@ -105,29 +91,5 @@ describe('RegistrationsComponent', () => {
 
     expect(componentInstance.registrations).toContain(registrations[0]);
     expect(componentInstance.registrations.length).toBe(1);
-  });
-
-  it('should download a report when the "Download report" button is clicked', async () => {
-    const component = await render(RegistrationsComponent, {
-      imports: [ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
-      declarations: [FirstErrorPipe, RegistrationComponent],
-      providers: [
-        RegistrationsService,
-        {
-          provide: RegistrationSurveyService,
-          useClass: RegistrationSurveyService,
-          deps: [HttpClient],
-        },
-      ],
-    });
-
-    const registrationSurveyService = TestBed.inject(RegistrationSurveyService);
-    const getReport = spyOn(registrationSurveyService, 'getReport').and.callFake(() => of(null));
-    const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
-
-    fireEvent.click(component.getByText('Download report', { exact: false }));
-
-    expect(getReport).toHaveBeenCalled();
-    expect(saveAs).toHaveBeenCalled();
   });
 });
