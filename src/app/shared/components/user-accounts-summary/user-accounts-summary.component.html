@@ -1,8 +1,21 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Users ({{ users.length }})</h2>
+    <div *ngIf="canAddUser && users.length === 1">
+      <app-inset-text [color]="'todo'">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h3 class="govuk-heading-s">You should add a second user</h3>
+            <p>
+              Adding a second user will give Skills for Care another person to contact at your workplace should you be
+              unavailable.
+            </p>
+          </div>
+        </div>
+      </app-inset-text>
+    </div>
   </div>
-  <div class="govuk-grid-column-one-half govuk-util__align-right">
+  <div class="govuk-grid-column-one-third govuk-util__align-right">
     <a
       *ngIf="canAddUser"
       role="button"
