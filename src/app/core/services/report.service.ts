@@ -41,7 +41,7 @@ export class ReportService {
   }
 
   public getRegistrationSurveyReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<any>('/api/reports/registrationSurvey', {
+    return this.http.get<any>('/api/reports/registrationSurvey/report', {
       observe: 'response',
       responseType: 'blob' as 'json',
     });

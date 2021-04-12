@@ -19,7 +19,7 @@ import { of } from 'rxjs';
 
 import { ReportsComponent } from './reports.component';
 
-fdescribe('', async () => {
+describe('ReportsComponent', async () => {
   const setup = async (isAdmin = true, isLoggedIn: boolean = true) => {
     return await render(ReportsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -47,6 +47,7 @@ fdescribe('', async () => {
       ],
     });
   };
+
   it('should download a report when the "Download report" button is clicked', async () => {
     const component = await setup();
 
