@@ -42,7 +42,7 @@ export class ContactUsOrLeaveFeedbackComponent {
     return this.form.get('contactUsOrFeedback').value;
   }
 
-  navigateToNextPage() {
+  private navigateToNextPage() {
     if (this.contactUsOrFeedback === 'feedback') {
       this.router.navigate(['/feedback']);
     } else if (this.contactUsOrFeedback === 'contactUs') {
@@ -67,7 +67,7 @@ export class ContactUsOrLeaveFeedbackComponent {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setupForm(): void {
+  private setupForm(): void {
     this.submitted = false;
     this.form = this.formBuilder.group({
       contactUsOrFeedback: [
