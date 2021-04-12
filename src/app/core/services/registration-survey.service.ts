@@ -50,4 +50,11 @@ export class RegistrationSurveyService {
       ),
     );
   }
+
+  public getReport(): Observable<any> {
+    return this.http.get<any>('/api/registrationSurvey/report', {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
 }
