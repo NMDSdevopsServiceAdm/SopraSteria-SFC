@@ -94,7 +94,6 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         200,
         returnData,
       ]);
-
     });
 
     it('Identifies Training files', async () => {

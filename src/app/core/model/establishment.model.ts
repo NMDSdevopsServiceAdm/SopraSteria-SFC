@@ -103,7 +103,10 @@ export interface Establishment {
   };
   numberOfStaff: number;
   totalWorkers: number;
-  otherServices: any[];
+  otherServices: {
+    value: string;
+    services: any[];
+  }
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
   share: Share;
@@ -198,6 +201,10 @@ export interface allMandatoryTrainingCategories {
 }
 export interface mandatoryTrainingCategories {
   categories: mandatoryTraining[];
+}
+export interface adminMoveWorkplace {
+  parentUid: string;
+  subUid: string;
 }
 
 export enum SortStaffOptions {

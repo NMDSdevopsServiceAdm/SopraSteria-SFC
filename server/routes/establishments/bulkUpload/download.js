@@ -104,6 +104,12 @@ const downloadGet = async (req, res) => {
   const isParent = req.isParent;
 
   const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
+  const renameDownloadType = {
+    establishments: 'workplace',
+    workers: 'staff',
+    training: 'training',
+  };
+
   const downloadType = req.params.downloadType;
 
   const ENTITY_RESTORE_LEVEL = 2;
@@ -128,12 +134,13 @@ const downloadGet = async (req, res) => {
         maxQuals,
         responseSend,
       );
+      const filename = renameDownloadType[downloadType];
 
       await saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',
         'Content-disposition': `attachment; filename=${
           new Date().toISOString().split('T')[0]
-        }-sfc-bulk-upload-${downloadType}.csv`,
+        }-sfc-bulk-upload-${filename}.csv`,
       });
     } catch (err) {
       console.error(
@@ -147,7 +154,6 @@ const downloadGet = async (req, res) => {
     }
   } else {
     console.error(`router.get('/bulkupload/download').get: unexpected download type: ${downloadType}`, downloadType);
-
     await saveResponse(req, res, 400, {
       message: `Unexpected download type: ${downloadType}`,
     });

@@ -72,6 +72,7 @@ const UserTransformer = async (users) => {
         isParent: user.establishment.isParent,
         parent,
         locationId: user.establishment.locationId,
+        ustatus: user.establishment.ustatus
       }
     };
   });

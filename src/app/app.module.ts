@@ -5,7 +5,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
@@ -33,6 +35,7 @@ import { TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
@@ -50,16 +53,14 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
-import { SentryErrorHandler } from './SentryErrorHandler.component';
+import {
+  StaffMismatchBannerComponent,
+} from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  MigratedUserTermsConditionsComponent,
+} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
-import { DevelopmentRoutingModule } from './development-routing.module';
-import { environment } from 'src/environments/environment';
-
-const developmentModules = [];
-if (!environment.production) {
-  developmentModules.push(DevelopmentRoutingModule);
-}
+import { SentryErrorHandler } from './SentryErrorHandler.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ if (!environment.production) {
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
+    StaffMismatchBannerComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -88,7 +90,6 @@ if (!environment.production) {
         clearIds: true,
       },
     }),
-    ...developmentModules,
     AppRoutingModule,
     BrowserModule,
     CommonModule,
@@ -101,6 +102,7 @@ if (!environment.production) {
   ],
   providers: [
     AuthGuard,
+    AdminSkipService,
     BackService,
     CountryService,
     EstablishmentService,

@@ -8,27 +8,21 @@ const search = async function (req, res) {
     let search = {};
 
     if (searchFields && searchFields.postcode) {
-      const postcodeSearchField = searchFields.postcode
-        .replace(/[%_]/g, '')
-        .replace(/\*/g, '%')
-        .replace(/\?/g, '_');
+      const postcodeSearchField = searchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
 
       search = {
         postcode: {
-          [models.sequelize.Op.iLike]: postcodeSearchField,
+          [models.Sequelize.Op.iLike]: postcodeSearchField,
         },
       };
     }
 
     if (searchFields && searchFields.nmdsId) {
-      const nmdsIdSearchField = searchFields.nmdsId
-        .replace(/[%_]/g, '')
-        .replace(/\*/g, '%')
-        .replace(/\?/g, '_');
+      const nmdsIdSearchField = searchFields.nmdsId.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
 
       search = {
         nmdsId: {
-          [models.sequelize.Op.iLike]: nmdsIdSearchField,
+          [models.Sequelize.Op.iLike]: nmdsIdSearchField,
         },
       };
     }
@@ -41,7 +35,7 @@ const search = async function (req, res) {
 
       search = {
         locationId: {
-          [models.sequelize.Op.iLike]: locationIdSearchField,
+          [models.Sequelize.Op.iLike]: locationIdSearchField,
         },
       };
     }
@@ -65,7 +59,7 @@ const search = async function (req, res) {
       ],
       where: {
         ustatus: {
-          [models.sequelize.Op.is]: null,
+          [models.Sequelize.Op.is]: null,
         },
         ...search,
       },
@@ -96,10 +90,8 @@ const search = async function (req, res) {
       ],
     });
 
-    const results = establishments.map(establishment => {
-      const parent = establishment.Parent
-        ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId }
-        : {};
+    const results = establishments.map((establishment) => {
+      const parent = establishment.Parent ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId } : {};
 
       const users = establishment.users
         ? establishment.users.map((user) => {

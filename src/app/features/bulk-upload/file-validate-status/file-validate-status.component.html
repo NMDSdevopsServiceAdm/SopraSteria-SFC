@@ -1,20 +1,21 @@
-<p
-  class="govuk-!-margin-0 govuk-!-padding-top-1 govuk-!-padding-right-2 govuk-!-padding-bottom-1 govuk-!-padding-left-2"
-  [class.govuk-file-validate-status--validating]="status === statusEnum.Validating"
-  [class.govuk-file-validate-status--pass]="status === statusEnum.Pass"
-  [class.govuk-file-validate-status--fail]="status === statusEnum.Fail"
-  [class.govuk-util__align-center]="status === statusEnum.Pass || statusEnum.Fail"
->
-  <ng-container *ngIf="status; else idle">
-    <img
-      *ngIf="status !== statusEnum.Validating"
-      [attr.src]="'/assets/images/' + getIconByStatus(status) + '-icon-white.svg'"
-      alt=""
-      class="govuk-!-padding-right-1"
-    />
-    {{ status }}
+<p *ngIf="errors === 0" class="govuk-file-validate-status--success">
+  <ng-container *ngIf="warnings === 0">This file has passed.</ng-container>
+  <ng-container *ngIf="warnings" [ngPlural]="warnings">
+    <ng-template ngPluralCase="=1">This file has passed, but there is {{ warnings }} warning.</ng-template>
+    <ng-template ngPluralCase="other">This file has passed, but there are {{ warnings }} warnings.</ng-template>
+    <a [routerLink]="['error-report']" >View warnings</a></ng-container
+  >
+</p>
+<p *ngIf="errors" class="govuk-file-validate-status--error">
+  There
+  <ng-container [ngPlural]="errors">
+    <ng-template ngPluralCase="=1">is {{ errors }} error </ng-template>
+    <ng-template ngPluralCase="other">are {{ errors }} errors </ng-template>
   </ng-container>
-  <ng-template #idle>
-    -
-  </ng-template>
+  <ng-container *ngIf="warnings" [ngPlural]="warnings">
+    and {{ warnings }}
+    <ng-template ngPluralCase="=1"> warning </ng-template>
+    <ng-template ngPluralCase="other"> warnings </ng-template>
+  </ng-container>
+  in this file.
 </p>

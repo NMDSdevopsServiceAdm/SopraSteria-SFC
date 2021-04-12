@@ -1,36 +1,56 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">Bulk Upload</h1>
-    <p>You're about to begin bulk uploading files for the first time.</p>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Bulk upload</h1>
     <p>
-      Before you can begin to bulk upload you must create unique references for each workplace and staff member. These
-      were previously known as Local identifiers.
+      Bulk uploads let you add large amounts of workforce data into the Adult Social Care Workforce Data Set (ASC-WDS)
+      without the need to add that data manually.
     </p>
+    <h2>Who should do bulk uploads?</h2>
+    <p>
+      Skills for Care recommend bulk uploads for local authorities and large private or voluntary sector employers who
+      need to add data for a number of workplaces.
+    </p>
+    <p>
+      Individual workplaces can also choose to bulk upload, but our findings suggest those with fewer than 50 staff
+      records usually add their data manually.
+    </p>
+    <h2>What you need to know about bulk uploads</h2>
+    <p>
+      You can only bulk upload CSV (comma-separated values) files. Previous experience of working with CSV files is
+      helpful, but not necessary.
+    </p>
+    <p>
+      Before you can do a bulk upload, you'll need to add unique references for each workplace and each staff record
+      that you have.
+    </p>
+    <p class="govuk-inset-text">References are used by ASC-WDS to match staff records to a workplace.</p>
+    <p>
+      After you've added your references, download your current data into each file type you want to upload (workplace,
+      staff and training) and update the records in those files if necessary.
+    </p>
+    <p>You always need to upload a staff file with a workplace file, but the training file is optional.</p>
+    <p class="govuk-inset-text">
+      You can download codes and guidance for each file type you need to update (workplace, staff and training).
+    </p>
+    <p>
+      You'll use ASC-WDS to validate your CSV files and will be able to view any errors and warnings in an error report.
+    </p>
+    <p>A bulk upload can only be completed when all the errors have been fixed.</p>
+    <div class="govuk-!-margin-top-8">
+      <h2 class="govuk-heading-m">Before you can do a bulk upload</h2>
+      <p>You need to add your unique references.</p>
+    </div>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <app-codes-and-guidance class="govuk-util__block"></app-codes-and-guidance>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <div class="govuk-!-margin-top-6">
-      <a
-        role="button"
-        draggable="false"
-        class="govuk-button govuk-button--start"
-        [routerLink]="['/bulk-upload/workplace-references']"
-      >
-        Start now
-
-        <svg
-          class="govuk-button__start-icon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="17.5"
-          height="19"
-          viewBox="0 0 33 40"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
-        </svg>
-      </a>
-    </div>
+<div class="govuk-grid-row govuk-!-margin-top-6">
+  <div class="govuk-grid-column-one-third">
+    <a role="button" draggable="false" class="govuk-button" [routerLink]="this.nextPage?.url"> Continue </a>
+    <span class="govuk-visually-hidden">or</span>
+    <a [routerLink]="['/dashboard']" class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
+      >Cancel</a
+    >
   </div>
 </div>
