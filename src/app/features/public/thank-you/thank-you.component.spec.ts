@@ -7,11 +7,11 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { PhaseBannerComponent } from './phase-banner.component';
+import { ThankYouComponent } from './thank-you.component';
 
-describe('PhaseBannerComponent', () => {
+describe('ThankYouComponent', () => {
   const setup = async () => {
-    const { fixture } = await render(PhaseBannerComponent, {
+    const { fixture } = await render(ThankYouComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder],
     });
@@ -20,7 +20,7 @@ describe('PhaseBannerComponent', () => {
     return { component, fixture };
   };
 
-  it('should render a PhaseBannerComponent', async () => {
+  it('should render a ThankYouComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

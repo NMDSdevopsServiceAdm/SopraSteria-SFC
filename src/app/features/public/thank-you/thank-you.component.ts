@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-contact-us',
-  templateUrl: './contact-us.component.html',
+  selector: 'app-thank-you',
+  templateUrl: './thank-you.component.html',
 })
-export class ContactUsComponent implements OnInit {
+export class ThankYouComponent {
   constructor(private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {

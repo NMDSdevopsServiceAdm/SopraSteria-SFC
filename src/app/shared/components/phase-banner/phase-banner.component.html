@@ -1,10 +1,8 @@
 <div class="govuk-phase-banner">
   <p class="govuk-phase-banner__content">
-    <strong class="govuk-tag govuk-phase-banner__content__tag ">
-      {{ phase }}
-    </strong>
     <span class="govuk-phase-banner__text">
-      <ng-content></ng-content>
+      <a [routerLink]="['/contact-us-or-leave-feedback']" (click)="setReturn()">Contact us or leave feedback</a> to help
+      us improve the service.
     </span>
   </p>
 </div>
