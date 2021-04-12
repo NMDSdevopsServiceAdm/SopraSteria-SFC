@@ -67,18 +67,33 @@
       </ul>
     </ng-container>
     <ng-container *ngIf="isAdmin">
-      <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Other Admin Reports</h2>
-      <ul class="govuk-list govuk-list--inline govuk-list--download">
-        <li class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
-          <a
-            href="/download/{{ now | date: 'dd-MM-YYYY' }}-delete-report.xlsx"
-            class="govuk-body-m"
-            (click)="downloadDeleteReport($event)"
-          >
-            Download delete report
-          </a>
-        </li>
-      </ul>
+      <div>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-6">Other Admin Reports</h2>
+        <ul class="govuk-list govuk-list--inline govuk-list--download">
+          <li class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
+            <a
+              href="/download/{{ now | date: 'dd-MM-YYYY' }}-delete-report.xlsx"
+              class="govuk-body-m"
+              (click)="downloadDeleteReport($event)"
+            >
+              Download delete report
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <ul class="govuk-list govuk-list--inline govuk-list--download">
+          <li class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
+            <a
+              href="/download/{{ now | date: 'dd-MM-YYYY' }}-satisfaction-report.xlsx"
+              class="govuk-body-m"
+              (click)="downloadSatisfactionSurveyReport($event)"
+            >
+              Download Satisfaction Survey report
+            </a>
+          </li>
+        </ul>
+      </div>
     </ng-container>
   </div>
 </div>

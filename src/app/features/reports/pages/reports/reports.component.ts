@@ -58,12 +58,18 @@ export class ReportsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
   }
+
   public downloadDeleteReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
   }
 
-  // Add downloadSatisfactionSurvey report
+  public downloadSatisfactionSurveyReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getSatisfactionSurveyReport().subscribe((response) => this.saveFile(response)),
+    );
+  }
 
   public downloadLocalAuthorityReport(event: Event) {
     event.preventDefault();
