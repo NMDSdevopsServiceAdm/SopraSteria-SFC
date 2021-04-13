@@ -1,29 +1,30 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AuthService } from '@core/services/auth.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { UserAccountsSummaryComponent } from '@shared/components/user-accounts-summary/user-accounts-summary.component';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { SharedModule } from '@shared/shared.module';
-import { Router, RouterModule } from '@angular/router';
-import { WindowRef } from '@core/services/window.ref';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
-describe('UserAccountsSummaryComponent', () => {
-  async function setup(isAdmin = true, subsidiaries = 0) {
-    TestBed.configureTestingModule({
+fdescribe('UserAccountsSummaryComponent', () => {
+  const setup = async (isAdmin = true, subsidiaries = 0) => {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(UserAccountsSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
+      componentProperties: { workplace: Establishment },
       providers: [
         {
           provide: WindowRef,
@@ -53,24 +54,20 @@ describe('UserAccountsSummaryComponent', () => {
         },
       ],
     });
-    const fixture = TestBed.createComponent(UserAccountsSummaryComponent);
-    const component: UserAccountsSummaryComponent = fixture.componentInstance;
-    return {
-      component,
-      fixture,
-    };
-  }
+    const component = fixture.componentInstance;
+
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+  };
 
   it('should render a User Account Summary Workplace Component', async () => {
-    const { component, fixture } = await setup();
-    fixture.componentInstance.workplace = Establishment;
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
-  it('should still show Add User if existing user doesnt have a name', async () => {
-    const { component, fixture } = await setup();
 
-    fixture.componentInstance.workplace = Establishment;
-    fixture.componentInstance.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
+  it('should still show Add User if existing user doesnt have a name', async () => {
+    const { component } = await setup();
+
+    component.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
 
     component.ngOnInit();
     expect(component.users.length).toEqual(1);
@@ -78,14 +75,48 @@ describe('UserAccountsSummaryComponent', () => {
   });
 
   it('should not be able to add user if 3 edit users exist', async () => {
-    const { component, fixture } = await setup();
+    const { component } = await setup();
 
-    fixture.componentInstance.workplace = Establishment;
-    fixture.componentInstance.workplace.uid = 'overLimit';
-    fixture.componentInstance.workplace.isParent = false;
+    component.workplace.uid = 'overLimit';
+    component.workplace.isParent = false;
 
     component.ngOnInit();
     expect(component.users.length).toEqual(6);
     expect(component.canAddUser).toBeFalsy();
+  });
+
+  it("should show add user banner if there's only 1 user for the workplace", async () => {
+    const { component, fixture, queryByText } = await setup();
+    const addUserText =
+      'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
+
+    component.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(queryByText(addUserText, { exact: false })).toBeTruthy();
+  });
+
+  it("should not show add user banner if there's more than 1 user for the workplace", async () => {
+    const { component, fixture, queryByText } = await setup();
+    const addUserText =
+      'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
+
+    component.workplace.uid = 'overLimit';
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(queryByText(addUserText, { exact: false })).toBeFalsy();
+  });
+
+  it("should not show add user banner if there's 1 user which can't add users for the workplace", async () => {
+    const { component, fixture, queryByText } = await setup();
+    const addUserText =
+      'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
+
+    component.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
+    component.canAddUser = false;
+    fixture.detectChanges();
+    expect(queryByText(addUserText, { exact: false })).toBeFalsy();
   });
 });
