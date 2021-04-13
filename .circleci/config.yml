@@ -306,6 +306,9 @@ jobs:
           sentry-cli releases set-commits --auto $SENTRY_RELEASE
           sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist
           sentry-cli releases finalize $SENTRY_RELEASE
+  start_edgescan:
+    - run: |
+      curl https://live.edgescan.com/api/
 workflows:
   build-test-deploy:
     jobs:
