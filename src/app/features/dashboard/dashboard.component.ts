@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public canViewBenchmarks: boolean;
   public workplaceUid: string;
   public showUsersTabFlag: boolean;
+  public canAddUser: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -54,6 +55,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -96,7 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.add(
         this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-          this.showUsersTabFlag = users.length === 1;
+          this.showUsersTabFlag = users.length === 1 && this.canAddUser;
         }),
       );
     }

@@ -24,8 +24,6 @@ describe('ContactUsOrLeaveFeedbackComponent', () => {
     return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
   };
 
-  const event = new Event('click');
-
   it('should render a ContactUsOrLeaveFeedbackComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
