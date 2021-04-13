@@ -58,6 +58,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
   }
+
   public downloadDeleteReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
@@ -77,7 +78,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private saveFile(response: HttpResponse<Blob>) {
+  public downloadRegistrationSurveyReport(event: Event): void {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getRegistrationSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');
     const filenameMatches = header && header.match(filenameRegEx);

@@ -32,8 +32,16 @@ export class ReportService {
       responseType: 'blob' as 'json',
     });
   }
+
   public getDeleteReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/delete/new`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
+  public getRegistrationSurveyReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<any>('/api/reports/registrationSurvey/new', {
       observe: 'response',
       responseType: 'blob' as 'json',
     });

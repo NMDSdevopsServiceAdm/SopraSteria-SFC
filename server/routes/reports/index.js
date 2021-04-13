@@ -10,6 +10,7 @@ const DailySnapshot = require('./dailySnapshot');
 const LocalAuthority = require('./localAuthorityReport/index');
 const TrainingReport = require('./trainingReport');
 const DeleteReport = require('./deleteReport');
+const RegistrationSurveyReport = require('./registrationSurveyReport');
 
 router.use('/wdf', WDF);
 router.use('/wdfSummary', WDFsummary);
@@ -17,6 +18,7 @@ router.use('/dailySnapshot', DailySnapshot);
 router.use('/localAuthority', LocalAuthority);
 router.use('/training', TrainingReport);
 router.use('/delete', [isAdmin, DeleteReport]);
+router.use('/registrationSurvey', [isAdmin, RegistrationSurveyReport]);
 
 router.route('/').get(async (req, res) => {
   return res.status(501).send();
