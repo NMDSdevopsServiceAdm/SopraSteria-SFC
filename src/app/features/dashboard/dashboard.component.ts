@@ -98,7 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.add(
         this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-          this.showUsersTabFlag = users.length === 1 && this.canAddUser;
+          this.showUsersTabFlag = this.canAddUser && users.length === 1;
         }),
       );
     }
