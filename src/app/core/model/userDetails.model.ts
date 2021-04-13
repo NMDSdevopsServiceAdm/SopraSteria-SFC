@@ -15,6 +15,7 @@ export interface UserDetails {
   migratedUserFirstLogon?: boolean;
   phone: string;
   role?: Roles;
+  registrationSurveyCompleted?: boolean;
   securityQuestion?: string;
   securityQuestionAnswer?: string;
   status?: UserStatus;

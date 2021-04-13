@@ -63,6 +63,7 @@ var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
+var registrationSurvey = require('./server/routes/registrationSurvey');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -247,6 +248,7 @@ app.use('/api/test', [cacheMiddleware.nocache, testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);
+app.use('/api/registrationSurvey', [cacheMiddleware.nocache, registrationSurvey]);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);

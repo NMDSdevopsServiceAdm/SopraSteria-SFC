@@ -508,6 +508,7 @@ router
             isPrimary: true,
             isActive: Logindata.Active,
             status: Logindata.Status,
+            registrationSurveyCompleted: false,
           });
           if (newUser.isValid) {
             await newUser.save(Logindata.UserName, 0, t);

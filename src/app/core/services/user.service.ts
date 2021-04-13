@@ -46,7 +46,7 @@ export class UserService {
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
-    return this.http.get<UserDetails>(`/api/user/me`).pipe(tap(user => (this.loggedInUser = user)));
+    return this.http.get<UserDetails>(`/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
   }
 
   // get agreedUpdatedTermsStatus
@@ -138,6 +138,6 @@ export class UserService {
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     return this.http
       .get<GetAllUsersResponse>(`/api/user/establishment/${workplaceUid}`)
-      .pipe(map(response => response.users));
+      .pipe(map((response) => response.users));
   }
 }
