@@ -1,7 +1,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
-const getSurveyResponses = require('../../../../../routes/reports/registrationSurveyReport/getSurveyResponses');
 const registrationSurveyReport = require('../../../../../routes/reports/registrationSurveyReport/report');
 const models = require('../../../../../models')
 
@@ -16,12 +15,24 @@ describe('/server/routes/reports/registrationSurveyReport/report', () => {
       dateSubmitted:  '2021-04-12',
       whyCreateAccount: ['To help us with the Care Quality Commission'],
       howDidYouHearAboutASCWDS: ['Other'],
+      user: {
+        id: 1,
+        establishment: {
+          nmdsId: 'J1234567',
+        },
+      },
     },
     {
       id: 2,
       dateSubmitted: '2021-04-12',
       whyCreateAccount: ['Other'],
       howDidYouHearAboutASCWDS: ['From an event we attended'],
+      user: {
+        id: 2,
+        establishment: {
+          nmdsId: 'A1234567',
+        },
+      },
     },
   ];
 
@@ -32,7 +43,7 @@ describe('/server/routes/reports/registrationSurveyReport/report', () => {
 
     const req = httpMocks.createRequest({
       method: 'GET',
-      url: '/api/report/registrationSurveyReport/report',
+      url: '/api/report/registrationSurveyReport/new',
     });
     const res = httpMocks.createResponse();
 

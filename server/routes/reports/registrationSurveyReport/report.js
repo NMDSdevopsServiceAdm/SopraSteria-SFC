@@ -5,12 +5,12 @@ const excelUtils = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
 const printRow = (worksheet, item) => {
-    worksheet.addRow({
-      workplaceId: item.userFk,
-      dateCompleted: moment(item.submittedDate).format('DD-MM-YYYY'),
-      whyCreateAccount: item.whyDidYouCreateAccount,
-      howDidYouHearAboutASCWDS: item.howDidYouHearAboutASCWDS,
-    });
+  worksheet.addRow({
+    workplaceId: item.user.establishment.nmdsId,
+    whyCreateAccount: item.whyDidYouCreateAccount,
+    howDidYouHearAboutASCWDS: item.howDidYouHearAboutASCWDS,
+    dateCompleted: moment(item.submittedDate).format('DD-MM-YYYY'),
+  });
 };
 
 const generateReport = async (_, res) => {
@@ -22,15 +22,29 @@ const generateReport = async (_, res) => {
   const worksheet = workbook.addWorksheet('Registration survey');
   worksheet.columns = [
     { header: 'Workplace ID', key: 'workplaceId' },
-    { header: 'Date completed', key: 'dateCompleted' },
     { header: 'Why did you create your account?', key: 'whyCreateAccount' },
     { header: 'How did you hear about ASC-WDS?', key: 'howDidYouHearAboutASCWDS' },
+    { header: 'Date completed', key: 'dateCompleted' },
   ];
 
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
 
-  const registrationSurveyResponses = await models.registrationSurvey.findAll();
+  const registrationSurveyResponses = await models.registrationSurvey.findAll({
+    include: [
+      {
+        model: models.user,
+        as: "user",
+        attributes: ["id"],
+        include: [
+          {
+            model: models.establishment,
+            attributes: ["nmdsId"],
+          }
+        ]
+      }
+    ]
+  });
   registrationSurveyResponses.forEach(response => {
     printRow(worksheet, response);
   });
