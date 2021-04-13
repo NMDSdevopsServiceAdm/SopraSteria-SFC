@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public trainingAlert: number;
   public subsidiaryCount: number;
   public canViewBenchmarks: boolean;
-  public workplaceUid: string;
+  public workplaceUid: string | null;
   public showUsersTabFlag: boolean;
   public canAddUser: boolean;
 
