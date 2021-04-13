@@ -19,7 +19,7 @@ import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 
-fdescribe('UserAccountsSummaryComponent', () => {
+describe('UserAccountsSummaryComponent', () => {
   const setup = async (isAdmin = true, subsidiaries = 0) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(UserAccountsSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -117,6 +117,7 @@ fdescribe('UserAccountsSummaryComponent', () => {
     component.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
     component.canAddUser = false;
     fixture.detectChanges();
+
     expect(queryByText(addUserText, { exact: false })).toBeFalsy();
   });
 });
