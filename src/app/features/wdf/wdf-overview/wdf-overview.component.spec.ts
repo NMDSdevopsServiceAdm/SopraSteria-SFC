@@ -1,25 +1,41 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ReportService } from '@core/services/report.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockReportService } from '@core/test-utils/MockReportService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
 
 describe('WdfOverviewComponent', () => {
-  let component: WdfOverviewComponent;
-  let fixture: ComponentFixture<WdfOverviewComponent>;
+  const setup = async () => {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfOverviewComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        { provide: ReportService, useClass: MockReportService },
+      ],
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ WdfOverviewComponent ]
-    })
-    .compileComponents();
-  });
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WdfOverviewComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should render a WdfOverviewComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should display the correct timeframe for meeting WDF requirements', async () => {
+    const { getByText } = await setup();
+    const timeframeSentence = 'Your data has met the WDF 2021 to 2022 requirements';
+
+    expect(getByText(timeframeSentence, { exact: false }));
   });
 });

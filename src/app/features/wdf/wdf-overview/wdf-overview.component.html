@@ -4,13 +4,13 @@
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Workforce Development Fund (WDF)</h1>
     <span>
       <h2 class="govuk-heading-s">
-        <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />Your data has met the WDF 2021
-        to 2022 requirements
+        <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />Your data has met the WDF
+        {{ wdfStartYear }} to {{ wdfEndYear }} requirements
       </h2>
     </span>
     <p>
-      Your data met the requirements on 21 July 2021 and will continue to meet them until he next fund is available on 1
-      April 2022.
+      Your data met the requirements on 21 July 2021 and will continue to meet them until the next fund is available on
+      1 April {{ wdfEndYear }}.
     </p>
     <p><a [routerLink]="['/reports']">Keep your WDF data up to date</a>, it will save you time next year.</p>
     <h2 class="govuk-heading-s">Find out more</h2>
