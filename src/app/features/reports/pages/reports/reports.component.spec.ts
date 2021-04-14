@@ -48,7 +48,7 @@ describe('ReportsComponent', async () => {
     });
   };
 
-  it('should download a report when the "Download report" button is clicked', async () => {
+  it('should download a registration survey report when the "Download report" button is clicked', async () => {
     const component = await setup();
 
     const reportService = TestBed.inject(ReportService);
@@ -56,6 +56,19 @@ describe('ReportsComponent', async () => {
     const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
     fireEvent.click(component.getByText('Download registration survey report', { exact: false }));
+
+    expect(getReport).toHaveBeenCalled();
+    expect(saveAs).toHaveBeenCalled();
+  });
+
+  it('should download a satisfaction survey report when the "Download report" button is clicked', async () => {
+    const component = await setup();
+
+    const reportService = TestBed.inject(ReportService);
+    const getReport = spyOn(reportService, 'getSatisfactionSurveyReport').and.callFake(() => of(null));
+    const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+
+    fireEvent.click(component.getByText('Download satisfaction survey report', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
