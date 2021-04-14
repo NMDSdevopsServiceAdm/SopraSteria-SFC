@@ -81,12 +81,11 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.user,
           attributes: ['FullNameValue', 'EmailValue'],
           as: 'user',
-          include: [
-            {
-              model: sequelize.models.establishment,
-              attributes: ['nmdsId'],
-            },
-          ],
+        },
+        {
+          model: sequelize.models.establishment,
+          attributes: ['nmdsId'],
+          as: 'establishment',
         },
       ],
     });
