@@ -45,4 +45,11 @@ describe('WdfOverviewComponent', () => {
 
     expect(getByText(timeframeSentence, { exact: false }));
   });
+
+  it('should display the correct date for when the user became eligible', async () => {
+    const { getByText } = await setup();
+    const timeframeSentence = 'Your data met the requirements on 21 July 2021';
+
+    expect(getByText(timeframeSentence, { exact: false }));
+  });
 });

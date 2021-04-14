@@ -12,6 +12,7 @@ export class MockReportService extends ReportService {
       effectiveFrom: '2021-04-01T00:00:00.000Z',
       wdf: {
         overall: true,
+        overallWdfEligibility: '2021-07-21T00:00:00.000Z',
         workplace: true,
         staff: true,
       },
