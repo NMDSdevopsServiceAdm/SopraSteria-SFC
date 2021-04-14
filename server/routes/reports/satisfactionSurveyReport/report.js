@@ -8,9 +8,9 @@ const router = express.Router();
 
 const printRow = (worksheet, result) => {
   worksheet.addRow({
-    fullName: result.user.FullNameValue,
-    email: result.user.EmailValue,
-    workplaceID: result.user.establishment.nmdsId,
+    fullName: result.user ? result.user.FullNameValue : '',
+    email: result.user ? result.user.EmailValue : '',
+    workplaceID: result.establishment ? result.establishment.nmdsId : '',
     submittedDate: moment(result.submittedDate).format('DD-MM-YYYY'),
     didYouDoEverything: result.didYouDoEverything,
     didYouDoEverythingAdditionalAnswer: result.didYouDoEverythingAdditionalAnswer,
