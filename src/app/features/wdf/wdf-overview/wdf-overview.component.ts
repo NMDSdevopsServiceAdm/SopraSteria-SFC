@@ -15,6 +15,7 @@ export class WdfOverviewComponent implements OnInit {
   public report: WDFReport;
   public wdfStartYear: string;
   public wdfEndYear: string;
+  public wdfEndDate: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(private establishmentService: EstablishmentService, private reportService: ReportService) {}
@@ -26,6 +27,7 @@ export class WdfOverviewComponent implements OnInit {
         this.report = report;
         this.wdfStartYear = moment(this.report.effectiveFrom).format('YYYY');
         this.wdfEndYear = moment(this.report.effectiveFrom).add(1, 'years').format('YYYY');
+        this.wdfEndDate = moment(this.report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
       }),
     );
   }

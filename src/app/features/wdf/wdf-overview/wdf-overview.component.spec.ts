@@ -38,4 +38,11 @@ describe('WdfOverviewComponent', () => {
 
     expect(getByText(timeframeSentence, { exact: false }));
   });
+
+  it('should display the correct date for next WDF fund', async () => {
+    const { getByText } = await setup();
+    const timeframeSentence = 'until the next fund is available on 1 April 2022';
+
+    expect(getByText(timeframeSentence, { exact: false }));
+  });
 });
