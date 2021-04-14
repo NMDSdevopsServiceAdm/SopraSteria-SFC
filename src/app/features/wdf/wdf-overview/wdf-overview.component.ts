@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import * as moment from 'moment';
@@ -18,10 +20,16 @@ export class WdfOverviewComponent implements OnInit {
   public overallEligibilityDate: string;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private establishmentService: EstablishmentService, private reportService: ReportService) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+    private reportService: ReportService,
+    private breadcrumbService: BreadcrumbService,
+  ) {}
 
   ngOnInit(): void {
+    this.breadcrumbService.show(JourneyType.WDF);
     this.workplace = this.establishmentService.primaryWorkplace;
+
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
         this.report = report;
