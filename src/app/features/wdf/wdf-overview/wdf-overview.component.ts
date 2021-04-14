@@ -13,8 +13,7 @@ import { Subscription } from 'rxjs';
 export class WdfOverviewComponent implements OnInit {
   public workplace: Establishment;
   public report: WDFReport;
-  public wdfStartYear: string;
-  public wdfEndYear: string;
+  public wdfStartDate: string;
   public wdfEndDate: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -25,8 +24,7 @@ export class WdfOverviewComponent implements OnInit {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
         this.report = report;
-        this.wdfStartYear = moment(this.report.effectiveFrom).format('YYYY');
-        this.wdfEndYear = moment(this.report.effectiveFrom).add(1, 'years').format('YYYY');
+        this.wdfStartDate = moment(this.report.effectiveFrom).format('D MMMM YYYY');
         this.wdfEndDate = moment(this.report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
       }),
     );

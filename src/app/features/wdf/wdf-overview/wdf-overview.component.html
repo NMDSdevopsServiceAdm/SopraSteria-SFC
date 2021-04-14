@@ -5,7 +5,7 @@
     <span>
       <h2 class="govuk-heading-s">
         <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />Your data has met the WDF
-        {{ wdfStartYear }} to {{ wdfEndYear }} requirements
+        {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
       </h2>
     </span>
     <p>
