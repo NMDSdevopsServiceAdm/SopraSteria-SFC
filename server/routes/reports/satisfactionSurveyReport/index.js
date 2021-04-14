@@ -5,7 +5,7 @@ const report = require('./report');
 
 router.route('/new').get(report.generateSatisfactionSurveyReport);
 
-router.route('/').get(async (req, res) => {
+router.route('/').get(async (_req, res) => {
   return res.status(501).send();
 });
 
