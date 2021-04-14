@@ -90,6 +90,17 @@
           </a>
         </li>
       </ul>
+      <ul class="govuk-list govuk-list--inline govuk-list--download">
+        <li class="govuk-!-margin-bottom-0 govuk-!-margin-right-8">
+          <a
+            href="/download/{{ now | date: 'yyyy-MM-dd' }}-satisfaction-survey-report.xlsx"
+            class="govuk-body-m"
+            (click)="downloadSatisfactionSurveyReport($event)"
+          >
+            Download satisfaction survey report
+          </a>
+        </li>
+      </ul>
     </ng-container>
   </div>
 </div>

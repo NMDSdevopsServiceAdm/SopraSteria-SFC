@@ -11,6 +11,7 @@ const LocalAuthority = require('./localAuthorityReport/index');
 const TrainingReport = require('./trainingReport');
 const DeleteReport = require('./deleteReport');
 const RegistrationSurveyReport = require('./registrationSurveyReport');
+const SatisfactionSurveyReport = require('./satisfactionSurveyReport');
 
 router.use('/wdf', WDF);
 router.use('/wdfSummary', WDFsummary);
@@ -19,6 +20,7 @@ router.use('/localAuthority', LocalAuthority);
 router.use('/training', TrainingReport);
 router.use('/delete', [isAdmin, DeleteReport]);
 router.use('/registrationSurvey', [isAdmin, RegistrationSurveyReport]);
+router.use('/satisfactionSurvey', [isAdmin, SatisfactionSurveyReport]);
 
 router.route('/').get(async (req, res) => {
   return res.status(501).send();

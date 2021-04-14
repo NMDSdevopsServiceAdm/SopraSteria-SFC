@@ -8,7 +8,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
-import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -82,6 +81,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.subscriptions.add(
       this.reportsService.getRegistrationSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public downloadSatisfactionSurveyReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getSatisfactionSurveyReport().subscribe((response) => {
         this.saveFile(response);
       }),
     );
