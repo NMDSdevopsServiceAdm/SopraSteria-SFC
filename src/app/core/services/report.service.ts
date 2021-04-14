@@ -47,6 +47,13 @@ export class ReportService {
     });
   }
 
+  public getSatisfactionSurveyReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/reports/satisfactionSurvey/new`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
       {

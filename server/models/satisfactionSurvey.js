@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const SatisfactionSurvey = sequelize.define(
@@ -9,11 +9,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        field: 'ID'
+        field: 'ID',
       },
       establishmentFk: {
         type: DataTypes.INTEGER,
-        field: 'EstablishmentFK'
+        field: 'EstablishmentFK',
       },
       userFk: {
         type: DataTypes.INTEGER,
@@ -24,24 +24,24 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'Some', 'No'],
-        field: 'DidYouDoEverything'
+        field: 'DidYouDoEverything',
       },
       didYouDoEverythingAdditionalAnswer: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: 'DidYouDoEverythingAdditionalAnswer'
+        field: 'DidYouDoEverythingAdditionalAnswer',
       },
       howDidYouFeel: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Very satisfied', 'Satisfied', 'Neither', 'Dissatisfied', 'Very dissatisfied'],
-        field: 'HowDidYouFeel'
+        field: 'HowDidYouFeel',
       },
       submittedDate: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false,
-        field: 'SubmittedDate'
+        field: 'SubmittedDate',
       },
     },
     {
@@ -52,16 +52,56 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  SatisfactionSurvey.countSubmissions = async function(userFk, fromDate) {
+  SatisfactionSurvey.associate = (models) => {
+    SatisfactionSurvey.belongsTo(models.user, {
+      foreignKey: 'userFk',
+      targetKey: 'id',
+      as: 'user',
+    });
+
+    SatisfactionSurvey.belongsTo(models.establishment, {
+      foreignKey: 'EstablishmentFK',
+      targetKey: 'id',
+      as: 'establishment',
+    });
+  };
+
+  SatisfactionSurvey.generateSatisfactionSurveyReportData = async function () {
+    return await this.findAll({
+      attributes: [
+        'userFk',
+        'submittedDate',
+        'didYouDoEverything',
+        'didYouDoEverythingAdditionalAnswer',
+        'howDidYouFeel',
+      ],
+      order: [['submittedDate', 'ASC']],
+      include: [
+        {
+          model: sequelize.models.user,
+          attributes: ['FullNameValue', 'EmailValue'],
+          as: 'user',
+          include: [
+            {
+              model: sequelize.models.establishment,
+              attributes: ['nmdsId'],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  SatisfactionSurvey.countSubmissions = async function (userFk, fromDate) {
     return await this.count({
       where: {
         submittedDate: {
-          [Op.gte]: fromDate
+          [Op.gte]: fromDate,
         },
-        userFk
+        userFk,
       },
     });
-  }
+  };
 
   return SatisfactionSurvey;
 };
