@@ -7,7 +7,7 @@ const models = require('../../../../../models');
 
 const satisfactionSurveyReport = require('../../../../../routes/reports/satisfactionSurveyReport/report');
 
-describe.only('/server/routes/reports/satisfactionSurveyReport/report', () => {
+describe('/server/routes/reports/satisfactionSurveyReport/report', () => {
   describe('satisfactionSurveyReport()', () => {
     const SatisfactionSurveyReportData = [
       {
