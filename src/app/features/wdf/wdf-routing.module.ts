@@ -5,7 +5,7 @@ import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 
 const routes: Routes = [
   {
-    path: 'overview',
+    path: '',
     component: WdfOverviewComponent,
     data: { title: 'Workforce Development Fund' },
   },
