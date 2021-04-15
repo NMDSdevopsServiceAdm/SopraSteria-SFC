@@ -237,7 +237,7 @@ class User {
         this._username = escape(document.username);
       }
       if (document.password) {
-        this._password = escape(document.password);
+        this._password = escape(document.password); // 2nd password escape
       }
 
       if (this._isBool(document.isPrimary)) {

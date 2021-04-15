@@ -396,7 +396,7 @@ router
       var Logindata = {
         RegistrationId: 0,
         UserName: req.body[0].user.username,
-        Password: escape(req.body[0].user.password),
+        Password: req.body[0].user.password, //first password escape
         // Active: CQCpostcode && CQClocationID,
         Active: false,
         InvalidAttempt: 0,
