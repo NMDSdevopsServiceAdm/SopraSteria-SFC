@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-wdf-overview',
   templateUrl: './wdf-overview.component.html',
 })
-export class WdfOverviewComponent implements OnInit {
+export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public report: WDFReport;
   public wdfStartDate: string;
@@ -38,7 +38,11 @@ export class WdfOverviewComponent implements OnInit {
     );
   }
 
-  private setDates(report: WDFReport) {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  private setDates(report: WDFReport): void {
     this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
     this.overallEligibilityDate = moment(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
