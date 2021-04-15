@@ -21,7 +21,8 @@
       </a>
 
       <i [class.govuk-tabs__tab--alert]="tab.alert" [class.govuk-tabs__tab--red-alert]="tab.redAlert">
-        <span class="govuk-visually-hidden">Missing or expired record alert</span>
+        <span *ngIf="tab.alert" class="govuk-visually-hidden">Orange warning flag</span>
+        <span *ngIf="tab.redAlert" class="govuk-visually-hidden">Red warning flag</span>
       </i>
     </li>
   </ng-container>
