@@ -33,10 +33,14 @@ export class WdfOverviewComponent implements OnInit {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
         this.report = report;
-        this.wdfStartDate = moment(this.report.effectiveFrom).format('D MMMM YYYY');
-        this.wdfEndDate = moment(this.report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
-        this.overallEligibilityDate = moment(this.report.wdf.overallWdfEligibility).format('D MMMM YYYY');
+        this.setDates(report);
       }),
     );
+  }
+
+  private setDates(report: WDFReport) {
+    this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+    this.overallEligibilityDate = moment(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
   }
 }
