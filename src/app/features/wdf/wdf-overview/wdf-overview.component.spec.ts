@@ -39,9 +39,9 @@ describe('WdfOverviewComponent', () => {
     expect(getByText(timeframeSentence, { exact: false }));
   });
 
-  it('should display the correct date for next WDF fund', async () => {
+  it('should display the correct date for when WDF eligibility is valid until', async () => {
     const { getByText } = await setup();
-    const timeframeSentence = 'until the next fund is available on 1 April 2022';
+    const timeframeSentence = 'continues to meet them until 31 March 2022';
 
     expect(getByText(timeframeSentence, { exact: false }));
   });

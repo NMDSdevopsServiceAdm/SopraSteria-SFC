@@ -12,8 +12,8 @@
       </h2>
     </span>
     <p>
-      Your data met the requirements on {{ overallEligibilityDate }} and will continue to meet them until the next fund
-      is available on {{ wdfEndDate }}.
+      Your data met the requirements on {{ overallEligibilityDate }} and continues to meet them until 31 March
+      {{ wdfEndDate | date: 'yyyy' }}.
     </p>
     <p><a [routerLink]="['']">Keep your WDF data up to date</a>, it will save you time next year.</p>
     <h2 class="govuk-heading-s">Find out more</h2>
