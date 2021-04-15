@@ -30,6 +30,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public trainingAlert: number;
   public subsidiaryCount: number;
   public canViewBenchmarks: boolean;
+  public workplaceUid: string | null;
+  public showUsersTabFlag: boolean;
+  public canAddUser: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -46,16 +49,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
     this.workplace = this.establishmentService.primaryWorkplace;
-    const workplaceUid: string = this.workplace ? this.workplace.uid : null;
-    this.canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
-    this.canViewListOfUsers = this.permissionsService.can(workplaceUid, 'canViewListOfUsers');
-    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
-    this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
-    this.canDeleteEstablishment = this.permissionsService.can(workplaceUid, 'canDeleteAllEstablishments');
+    this.workplaceUid = this.workplace ? this.workplace.uid : null;
+    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
+    this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
+    this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
 
     if (this.workplace) {
       this.subscriptions.add(
-        this.permissionsService.getPermissions(workplaceUid).subscribe((permission) => {
+        this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
           this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
         }),
       );
@@ -90,6 +94,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.userService.getEstablishments().subscribe((res) => {
           this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
+        }),
+      );
+      this.subscriptions.add(
+        this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
+          this.showUsersTabFlag = this.canAddUser && users.length === 1;
         }),
       );
     }
