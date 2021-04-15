@@ -1,0 +1,29 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">{{ workplace.name }}</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Workforce Development Fund (WDF)</h1>
+    <span>
+      <h2 class="govuk-heading-s">
+        <img
+          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+          src="/assets/images/tick-icon.svg"
+          alt=""
+        />Your data has met the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+      </h2>
+    </span>
+    <p>
+      Your data met the requirements on {{ overallEligibilityDate }} and continues to meet them until 31 March
+      {{ wdfEndDate | date: 'yyyy' }}.
+    </p>
+    <p><a [routerLink]="['']">Keep your WDF data up to date</a>, it will save you time next year.</p>
+    <h2 class="govuk-heading-s">Find out more</h2>
+    <p>
+      <a
+        href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
+        target="_blank"
+        >Learn more about WDF</a
+      >
+      on the Skills for Care website.
+    </p>
+  </div>
+</div>
