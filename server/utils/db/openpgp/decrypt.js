@@ -12,7 +12,8 @@ const decrypt = async (encryptedMessage) => {
   }
 
   try {
-    const privateKeyArmored = config.get('encryption.privateKey');
+
+    const privateKeyArmored =  Buffer.from(config.get('encryption.privateKey'), 'base64').toString('utf-8')
     const passphrase = config.get('encryption.passphrase');
 
     const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });

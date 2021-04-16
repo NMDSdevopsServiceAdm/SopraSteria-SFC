@@ -204,15 +204,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"MainJobStartDateChangedBy"',
       },
-      NationalInsuranceNumberEncryptedValue: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NationalInsuranceNumberEncryptedValue"',
-      },
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberValue"',
+        field: '"NationalInsuranceNumberEncryptedValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -234,15 +229,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"NationalInsuranceNumberChangedBy"',
       },
-      DateOfBirthEncryptedValue: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"DateOfBirthEncryptedValue"',
-      },
       DateOfBirthValue: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"DateOfBirthValue"',
+        field: '"DateOfBirthEncryptedValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -1068,24 +1058,24 @@ module.exports = function (sequelize, DataTypes) {
         beforeBulkUpdate: async (workerUpdate) => {
           if (workerUpdate.attributes.NationalInsuranceNumberValue) {
             const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
-            workerUpdate.attributes.NationalInsuranceNumberEncryptedValue = encrypted;
+            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
           }
 
           if (workerUpdate.attributes.DateOfBirthValue) {
             const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
-            workerUpdate.attributes.DateOfBirthEncryptedValue = encrypted;
+            workerUpdate.attributes.DateOfBirthValue = encrypted;
           }
         },
         afterFind: async (worker) => {
           if (worker && worker.dataValues) {
-            if (worker.dataValues.NationalInsuranceNumberEncryptedValue) {
-              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberEncryptedValue);
-              worker.dataValues.NationalInsuranceNumberEncryptedValue = decrypted;
+            if (worker.dataValues.NationalInsuranceNumberValue) {
+              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
+              worker.dataValues.NationalInsuranceNumberValue = decrypted;
             }
 
-            if (worker.dataValues.DateOfBirthEncryptedValue) {
-              const decrypted = await decrypt(worker.dataValues.DateOfBirthEncryptedValue);
-              worker.dataValues.DateOfBirthEncryptedValue = decrypted;
+            if (worker.dataValues.DateOfBirthValue) {
+              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
+              worker.dataValues.DateOfBirthValue = decrypted;
             }
           }
         },

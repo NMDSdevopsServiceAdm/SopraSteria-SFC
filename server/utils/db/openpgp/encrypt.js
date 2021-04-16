@@ -12,13 +12,14 @@ const encrypt = async (message) => {
   }
 
   try {
-    const publicKeyArmored = config.get('encryption.publicKey');
+    const publicKeyArmored =  Buffer.from(config.get('encryption.publicKey'), 'base64').toString('utf-8')
     const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
     const encryptedData = await openpgp.encrypt({
       message: openpgp.Message.fromText(message), // input as Message object
       publicKeys: publicKey, // for encryption
     });
+
     return encryptedData;
   } catch (e) {
     console.error(e);
