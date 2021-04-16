@@ -1,9 +1,9 @@
 const expect = require('chai').expect;
 const faker = require('faker');
+const models = require('../../../models');
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 
-const EstablishmentModel = require('../../../models/classes/establishment').Establishment;
 const registration = require('../../../routes/registration');
 
 describe.only('server/routes/registration.js', () => {
@@ -13,11 +13,12 @@ describe.only('server/routes/registration.js', () => {
 
   describe('/api/registration', () => {
     it('should register a new user', async () => {
-      sinon.stub(EstablishmentModel.prototype, 'save').callsFake(() => {
-        this._id = 1;
-        this._uid = '1234';
-        this._nmdsId = 'J1234567';
+      const establishment = models.establishment.build({
+        id: 2345,
       });
+      establishment.setDataValue('EstablishmentID', 2345);
+
+      sinon.stub(models.establishment, 'create').returns(establishment);
 
       const postcode = {
         uprn: '100021275800',
@@ -73,10 +74,10 @@ describe.only('server/routes/registration.js', () => {
       expect(json).to.deep.equal({
         status: 1,
         message: 'Establishment and primary user successfully created',
-        establishmentId: 2346,
-        establishmentUid: '390f6d3d-2645-4c73-b12c-b8c67bba6140',
+        establishmentId: 2345,
+        establishmentUid: 'bfa38ab4-462a-489d-877e-afc5d805601a',
         primaryUser: username,
-        nmdsId: 'G1003015',
+        nmdsId: 'G1003030',
         active: false,
         userstatus: 'PENDING',
       });
