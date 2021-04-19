@@ -20,11 +20,11 @@ import { render } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 
 describe('UserAccountsSummaryComponent', () => {
-  const setup = async (isAdmin = true, subsidiaries = 0) => {
+  const setup = async (showBanner = false, isAdmin = true, subsidiaries = 0) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(UserAccountsSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      componentProperties: { workplace: Establishment },
+      componentProperties: { workplace: Establishment, showSecondUserBanner: showBanner },
       providers: [
         {
           provide: WindowRef,
@@ -85,38 +85,18 @@ describe('UserAccountsSummaryComponent', () => {
     expect(component.canAddUser).toBeFalsy();
   });
 
-  it("should show add user banner if there's only 1 user for the workplace", async () => {
-    const { component, fixture, queryByText } = await setup();
+  it('should show add user banner if showSecondUserBanner is true', async () => {
+    const { component, fixture, queryByText } = await setup(true);
     const addUserText =
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
-
-    component.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
-    component.ngOnInit();
-    fixture.detectChanges();
 
     expect(queryByText(addUserText, { exact: false })).toBeTruthy();
   });
 
-  it("should not show add user banner if there's more than 1 user for the workplace", async () => {
-    const { component, fixture, queryByText } = await setup();
+  it('should not show add user banner if showSecondUserBanner is false', async () => {
+    const { component, fixture, queryByText } = await setup(false);
     const addUserText =
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
-
-    component.workplace.uid = 'overLimit';
-    component.ngOnInit();
-    fixture.detectChanges();
-
-    expect(queryByText(addUserText, { exact: false })).toBeFalsy();
-  });
-
-  it("should not show add user banner if there's 1 user which can't add users for the workplace", async () => {
-    const { component, fixture, queryByText } = await setup();
-    const addUserText =
-      'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
-
-    component.workplace.uid = '4698f4a4-ab82-4906-8b0e-3f4972375927';
-    component.canAddUser = false;
-    fixture.detectChanges();
 
     expect(queryByText(addUserText, { exact: false })).toBeFalsy();
   });

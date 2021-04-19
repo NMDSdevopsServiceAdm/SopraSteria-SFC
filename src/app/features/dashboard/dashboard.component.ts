@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public subsidiaryCount: number;
   public canViewBenchmarks: boolean;
   public workplaceUid: string | null;
-  public showUsersTabFlag: boolean;
+  public showSecondUserBanner: boolean;
   public canAddUser: boolean;
 
   constructor(
@@ -98,7 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.add(
         this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-          this.showUsersTabFlag = this.canAddUser && users.length === 1;
+          this.showSecondUserBanner = this.canAddUser && users.length === 1;
         }),
       );
     }
