@@ -570,8 +570,6 @@ const postRegistration = async (req, res) => {
   } catch (err) {
     // failed to fully register a new user/establishment - full rollback
     console.error('Registration: rolling back all changes because: ', err.errCode, err.errMessage);
-    console.log('lalalalala');
-    console.log({ err });
     if (err.errCode > -99) {
       console.error('Registration: original error: ', err.err);
     }
