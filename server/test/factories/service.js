@@ -1,13 +1,13 @@
-const { build, sequence } = require('@jackfranklin/test-data-bot');
+const { build, sequence, fake } = require('@jackfranklin/test-data-bot');
 
 module.exports = build('services', {
   fields: {
     id: sequence(),
-    name: 'Carers support',
-    category: 'Adult community care',
-    iscqcregistered: false,
-    isMain: true,
-    other: false,
-    reportingID: 13,
+    name: fake(f => f.random.words(2)),
+    category: fake(f => f.random.words(2)),
+    iscqcregistered: fake(f => f.random.boolean),
+    isMain: fake(f => f.random.boolean),
+    other: fake(f => f.random.boolean),
+    reportingID: sequence(),
   }
 });
