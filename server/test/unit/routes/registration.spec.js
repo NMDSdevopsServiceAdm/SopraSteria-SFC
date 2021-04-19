@@ -6,6 +6,8 @@ const sinon = require('sinon');
 const uuid = require('uuid');
 
 const serviceBuilder = require('../../factories/service');
+const pcodedataBuilder = require('../../factories/pcodedata');
+const cssrBuilder = require('../../factories/cssr');
 const registration = require('../../../routes/registration');
 
 describe.only('server/routes/registration.js', () => {
@@ -41,19 +43,9 @@ describe.only('server/routes/registration.js', () => {
         name: service.name,
       });
 
-      sinon.stub(models.pcodedata, 'findOne').returns({
-        uprn: '100021275776',
-        sub_building_name: '',
-        building_name: '',
-        building_number: '41',
-        street_description: 'LOWER ROAD',
-        post_town: 'HARROW',
-        postcode: 'HA2 0DE',
-        local_custodian_code: '5450',
-        county: 'HARROW',
-        rm_organisation_name: '',
-        theAuthority: { id: 725, name: 'Harrow', nmdsIdLetter: 'G' },
-      });
+      const pcodedata = pcodedataBuilder();
+      pcodedata.theAuthority = cssrBuilder();
+      sinon.stub(models.pcodedata, 'findOne').returns(pcodedata);
 
       sinon.stub(uuid, 'v4').returns('bfa38ab4-462a-489d-877e-afc5d805601a');
 
