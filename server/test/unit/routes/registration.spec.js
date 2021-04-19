@@ -10,7 +10,7 @@ const pcodedataBuilder = require('../../factories/pcodedata');
 const cssrBuilder = require('../../factories/cssr');
 const registration = require('../../../routes/registration');
 
-describe.only('server/routes/registration.js', () => {
+describe('server/routes/registration.js', () => {
   afterEach(() => {
     sinon.restore();
   });
