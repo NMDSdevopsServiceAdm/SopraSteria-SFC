@@ -6,9 +6,10 @@ import { SharedModule } from '@shared/shared.module';
 
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfRoutingModule } from './wdf-routing.module';
+import { WdfDataComponent } from './wdf-data/wdf-data.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WdfRoutingModule],
-  declarations: [WdfOverviewComponent],
+  declarations: [WdfOverviewComponent, WdfDataComponent],
 })
 export class WdfModule {}
