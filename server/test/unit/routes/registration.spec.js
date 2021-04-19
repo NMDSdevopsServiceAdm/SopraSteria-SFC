@@ -45,6 +45,7 @@ describe.only('server/routes/registration.js', () => {
 
       const pcodedata = pcodedataBuilder();
       pcodedata.theAuthority = cssrBuilder();
+
       sinon.stub(models.pcodedata, 'findOne').returns(pcodedata);
 
       sinon.stub(uuid, 'v4').returns('bfa38ab4-462a-489d-877e-afc5d805601a');
@@ -93,12 +94,12 @@ describe.only('server/routes/registration.js', () => {
       sinon.stub(models.addUserTracking, 'create');
 
       const postcode = {
-        uprn: '100021275800',
-        address1: 'DUDLEY HOUSE 31 LOWER ROAD ',
-        townAndCity: 'HARROW',
-        county: 'HARROW',
-        postcode: 'HA2 0DE',
-        localCustodianCode: '5450',
+        uprn: pcodedata.uprn,
+        address1: pcodedata.street_description,
+        townAndCity: pcodedata.post_town,
+        county: pcodedata.county,
+        postcode: pcodedata.postcode,
+        localCustodianCode: pcodedata.local_custodian_code,
       };
 
       const username = faker.internet.userName().replace('.', '_');
