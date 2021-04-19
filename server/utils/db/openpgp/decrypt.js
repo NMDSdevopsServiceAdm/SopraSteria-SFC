@@ -18,7 +18,6 @@ const decrypt = async (encryptedMessage) => {
 
     const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
     await privateKey.decrypt(passphrase);
-
     const message = await openpgp.readMessage({
       armoredMessage: encryptedMessage,
     });
@@ -28,8 +27,7 @@ const decrypt = async (encryptedMessage) => {
       privateKeys: privateKey,
     });
 
-    const decryptedData = await openpgp.stream.readToEnd(decryptedMessage.data);
-    return decryptedData;
+    return await openpgp.stream.readToEnd(decryptedMessage.data);
   } catch (e) {
     console.error(e);
     Sentry.captureException(e);
