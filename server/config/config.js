@@ -458,17 +458,21 @@ const config = convict({
     publicKey: {
       doc: 'The public key for encryption',
       format: String,
-      default: ''
+      default: '',
+      env: 'PUBLICKEY'
     },
     privateKey: {
       doc: 'The private key for encryption',
       format: String,
-      default: ''
+      default: '',
+      env: 'PRIVATEKEY'
     },
     passphrase: {
       doc: 'The passphrase used for encryption',
       format: String,
-      default: ''
+      default: '',
+      env: 'PASSPHRASE'
+
     },
   },
   sendInBlue: {
