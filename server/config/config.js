@@ -459,19 +459,19 @@ const config = convict({
       doc: 'The public key for encryption',
       format: String,
       default: '',
-      env: 'PUBLICKEY'
+      env: 'ENCRYPTION_PUBLIC_KEY'
     },
     privateKey: {
       doc: 'The private key for encryption',
       format: String,
       default: '',
-      env: 'PRIVATEKEY'
+      env: 'ENCRYPTION_PRIVATE_KEY'
     },
     passphrase: {
       doc: 'The passphrase used for encryption',
       format: String,
       default: '',
-      env: 'PASSPHRASE'
+      env: 'ENCRYPTION_PASSPHRASE'
 
     },
   },
