@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() showSecondUserBanner: boolean;
 
   private subscriptions: Subscription = new Subscription();
   public users: Array<UserDetails> = [];
