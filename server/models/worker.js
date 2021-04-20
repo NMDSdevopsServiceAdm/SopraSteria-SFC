@@ -230,7 +230,7 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
         field: '"DateOfBirthEncryptedValue"',
       },
