@@ -17,6 +17,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
+  public overallWdfEligibility: boolean;
   public overallEligibilityDate: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -33,6 +34,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
         this.report = report;
+        this.overallWdfEligibility = report.wdf.overall;
         this.setDates(report);
       }),
     );
