@@ -68,6 +68,8 @@ const workerBuilder = build('Worker', {
     id: sequence(),
     uid: fake(f => f.random.uuid()),
     NameOrIdValue: fake(f => f.name.findName()),
+    nameOrId: fake(f => f.name.findName()),
+    jobRole: fake(f => f.name.findName()),
     mainJob: perBuild(() => {
       return jobBuilder();
     }),
@@ -76,6 +78,7 @@ const workerBuilder = build('Worker', {
         return trainingBuilder();
       }),
     ],
+    wdfEligible: false,
   },
 });
 
