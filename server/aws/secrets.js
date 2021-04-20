@@ -177,10 +177,10 @@ const sendInBlueKey = () => {
 
 const encryptionPrivateKey = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.OPENPGP_PRIVATE_KEY) {
+    if (!myLocalSecrets.ENCRYPTION_PRIVATE_KEY) {
       return '';
     } else {
-      return myLocalSecrets.OPENPGP_PRIVATE_KEY;
+      return myLocalSecrets.ENCRYPTION_PRIVATE_KEY;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -188,10 +188,10 @@ const encryptionPrivateKey = () => {
 };
 const encryptionPublicKey = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.OPENPGP_PUBLIC_KEY) {
+    if (!myLocalSecrets.ENCRYPTION_PUBLIC_KEY) {
       return '';
     } else {
-      return myLocalSecrets.OPENPGP_PUBLIC_KEY;
+      return myLocalSecrets.ENCRYPTION_PUBLIC_KEY;
     }
   } else {
     throw new Error('Unknown secrets');
@@ -199,10 +199,10 @@ const encryptionPublicKey = () => {
 };
 const encryptionPassphrase = () => {
   if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.OPENPGP_PASSPHRASE) {
+    if (!myLocalSecrets.ENCRYPTION_PASSPHRASE) {
       return '';
     } else {
-      return myLocalSecrets.OPENPGP_PASSPHRASE;
+      return myLocalSecrets.ENCRYPTION_PASSPHRASE;
     }
   } else {
     throw new Error('Unknown secrets');
