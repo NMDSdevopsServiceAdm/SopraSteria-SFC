@@ -1,10 +1,14 @@
 const expect = require('chai').expect;
 const encrypt = require('../../../../../utils/db/openpgp/encrypt').encrypt;
-const decrypt = require('../../../../../utils/db/openpgp/decrypt').decrypt;
 
-describe('Decrypt', () => {
-  it('should encrypt and decrypt', async () => {
+describe('Encrypt', () => {
+
+  it('should return an armoured response', async () => {
     const encrypted = await encrypt("hello moto");
-    expect( await decrypt(encrypted)).to.equal("hello moto");
+    expect( encrypted).to.contain("-BEGIN PGP MESSAGE---");
+  });
+  it('should not contain the private data', async () => {
+    const encrypted = await encrypt("hello moto");
+    expect( encrypted).to.not.contain("hello moto");
   });
 });
