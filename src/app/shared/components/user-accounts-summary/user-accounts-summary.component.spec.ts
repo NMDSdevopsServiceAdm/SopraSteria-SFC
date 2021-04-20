@@ -86,7 +86,7 @@ describe('UserAccountsSummaryComponent', () => {
   });
 
   it('should show add user banner if showSecondUserBanner is true', async () => {
-    const { component, fixture, queryByText } = await setup(true);
+    const { queryByText } = await setup(true);
     const addUserText =
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
 
@@ -94,7 +94,7 @@ describe('UserAccountsSummaryComponent', () => {
   });
 
   it('should not show add user banner if showSecondUserBanner is false', async () => {
-    const { component, fixture, queryByText } = await setup(false);
+    const { queryByText } = await setup(false);
     const addUserText =
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
 
