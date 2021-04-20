@@ -48,7 +48,7 @@ describe('StaffSummaryComponent', () => {
     const { component } = await setup();
     component.fixture.componentInstance.workers[2].wdfEligible = true;
 
-    component.fixture.componentInstance.sortByColumn('2_dsc');
+    component.fixture.componentInstance.sortByColumn('2_asc');
     const workers = component.fixture.componentInstance.workers;
     component.fixture.detectChanges();
 
@@ -61,7 +61,7 @@ describe('StaffSummaryComponent', () => {
     const { component } = await setup();
     component.fixture.componentInstance.workers[1].wdfEligible = true;
 
-    component.fixture.componentInstance.sortByColumn('2_asc');
+    component.fixture.componentInstance.sortByColumn('2_dsc');
     const workers = component.fixture.componentInstance.workers;
     component.fixture.detectChanges();
 

@@ -66,11 +66,11 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
         break;
       }
       case '2_asc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['asc']);
+        this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['desc']);
         break;
       }
       case '2_dsc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['desc']);
+        this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['asc']);
         break;
       }
       default: {
