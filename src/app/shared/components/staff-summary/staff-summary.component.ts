@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Establishment, SortStaffOptions } from '@core/model/establishment.model';
+import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { orderBy } from 'lodash';
@@ -34,7 +34,7 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-    this.sortStaffOptions = SortStaffOptions;
+    this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
   }
 
   ngOnChanges() {

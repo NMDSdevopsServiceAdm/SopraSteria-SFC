@@ -212,6 +212,13 @@ export enum SortStaffOptions {
   '0_dsc' = 'Staff name (Z to A)',
   '1_asc' = 'Job role (A to Z)',
   '1_dsc' = 'Job role (Z to A)',
+}
+
+export enum WdfSortStaffOptions {
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
   '2_asc' = 'WDF requirements (not meeting)',
   '2_dsc' = 'WDF requirements (meeting)',
 }
