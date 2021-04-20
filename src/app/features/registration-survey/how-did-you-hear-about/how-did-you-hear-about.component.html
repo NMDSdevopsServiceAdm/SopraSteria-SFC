@@ -1,0 +1,42 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters-from-desktop">
+    <span class="govuk-caption-xl">Question 2</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-7">
+      How did you hear about the Adult Social Care Workforce Data Set service?
+    </h1>
+    <p>Select all that apply.</p>
+
+    <div class="govuk-form-group govuk-!-margin-top-6">
+      <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="govuk-checkboxes">
+          <ng-container
+            *ngFor="let control of howDidYouHearAboutArray.controls; let i = index"
+            formArrayName="howDidYouHearAbout"
+          >
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                type="checkbox"
+                id="howDidYouHearAbout-{{ i }}"
+                name="howDidYouHearAbout-{{ i }}"
+                (change)="control.value.checked = !control.value.checked"
+                (change)="updateState()"
+                [checked]="control.value.checked"
+                [value]="control.value.response"
+              />
+              <label
+                for="howDidYouHearAbout-{{ i }}"
+                class="govuk-label govuk-checkboxes__label"
+                for="how-did-you-hear-about"
+              >
+                {{ control.value.response }}
+              </label>
+            </div>
+          </ng-container>
+        </div>
+
+        <button type="submit" class="govuk-button govuk-!-margin-top-7">Finish</button>
+      </form>
+    </div>
+  </div>
+</div>

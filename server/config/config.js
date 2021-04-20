@@ -472,7 +472,6 @@ const config = convict({
       format: String,
       default: '',
       env: 'ENCRYPTION_PASSPHRASE'
-
     },
   },
   sendInBlue: {
@@ -537,6 +536,18 @@ const config = convict({
           doc: 'Template Name for the 24 month inactive email',
           format: String,
           default: '24 months',
+        },
+      },
+      parent: {
+        id: {
+          doc: 'Template ID for the parent workplace email',
+          format: Number,
+          default: 15,
+        },
+        name: {
+          doc: 'Template Name for the parent workplace email',
+          format: String,
+          default: 'Parent',
         },
       },
     },

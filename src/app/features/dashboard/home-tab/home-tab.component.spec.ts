@@ -140,14 +140,16 @@ describe('HomeTabComponent', () => {
     // Assert
     expect(childDebugElement).toBeTruthy();
   });
-  it('should not show the more staff records banner if the user does  have permissions to viewListOfWorkers', async () => {
+
+  it('should not show the more staff records banner if the user doesnt  have permissions to addWorker', async () => {
     // Arrange
     const { component } = await setup();
     // Act
     component.fixture.componentInstance.workersCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
 
-    component.fixture.componentInstance.canViewListOfWorkers = false;
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = false;
 
     component.fixture.detectChanges();
     const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));

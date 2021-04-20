@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { FirstErrorPipe } from '@shared/pipes/first-error.pipe';
 import { render, RenderResult } from '@testing-library/angular';
@@ -14,7 +15,7 @@ describe('RegistrationsComponent', () => {
 
   it('should create', async () => {
     component = await render(RegistrationsComponent, {
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
+      imports: [ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
       declarations: [FirstErrorPipe, RegistrationComponent],
       providers: [RegistrationsService],
     });
@@ -43,7 +44,7 @@ describe('RegistrationsComponent', () => {
       spyOn(registrationService, 'getRegistrations').and.returnValue(of(registrations));
 
       const { fixture } = await render(RegistrationsComponent, {
-        imports: [ReactiveFormsModule, HttpClientTestingModule],
+        imports: [ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
         declarations: [FirstErrorPipe, RegistrationComponent],
         providers: [
           {
@@ -76,7 +77,7 @@ describe('RegistrationsComponent', () => {
     ];
 
     const { fixture } = await render(RegistrationsComponent, {
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
+      imports: [ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
       declarations: [FirstErrorPipe, RegistrationComponent],
       providers: [RegistrationsService],
       componentProperties: {

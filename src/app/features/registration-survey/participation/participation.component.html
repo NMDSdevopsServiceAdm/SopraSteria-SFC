@@ -1,0 +1,45 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-xl">{{ workplace.name }}</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">Welcome to your new account</h1>
+    <h2 class="govuk-heading-m">Please could you answer 2 questions about why you created an account?</h2>
+    <p>It should only take a minute to answer our questions and it will help us to improve the service.</p>
+
+    <div class="govuk-form-group">
+      <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="govuk-radios govuk-!-margin-top-2">
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="participation-yes"
+              name="participation"
+              type="radio"
+              value="Yes"
+              formControlName="participation"
+              (change)="updateState()"
+            />
+            <label for="participation-yes" class="govuk-label govuk-radios__label">
+              Yes, I'll answer the questions
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="participation-no"
+              name="participation"
+              type="radio"
+              value="No"
+              formControlName="participation"
+              (change)="updateState()"
+            />
+            <label for="participation-no" class="govuk-label govuk-radios__label">
+              No, I want to start adding data
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="govuk-button govuk-!-margin-top-7">Continue</button>
+      </form>
+    </div>
+  </div>
+</div>
