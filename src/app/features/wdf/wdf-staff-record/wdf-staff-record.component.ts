@@ -41,13 +41,7 @@ export class WdfStaffRecordComponent implements OnInit {
 
   ngOnInit() {
     this.workplace = this.establishmentService.establishment;
-
-    const breadcrumbConfig =
-      this.workplace.uid === this.establishmentService.primaryWorkplace.uid
-        ? JourneyType.REPORTS
-        : JourneyType.SUBSIDIARY_REPORTS;
-
-    this.breadcrumbService.show(breadcrumbConfig);
+    this.breadcrumbService.show(JourneyType.WDF);
 
     this.workerService
       .getWorker(this.route.snapshot.params.establishmentuid, this.route.snapshot.params.id, true)
