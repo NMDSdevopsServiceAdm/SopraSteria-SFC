@@ -65,11 +65,11 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
         this.workers = orderBy(this.workers, [(worker) => worker.jobRole.toLowerCase()], ['desc']);
         break;
       }
-      case '2_asc': {
+      case '2_meeting': {
         this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['desc']);
         break;
       }
-      case '2_dsc': {
+      case '2_not_meeting': {
         this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['asc']);
         break;
       }
