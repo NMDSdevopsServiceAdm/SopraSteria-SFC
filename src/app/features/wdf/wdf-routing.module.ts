@@ -15,6 +15,11 @@ const routes: Routes = [
     component: WdfDataComponent,
     data: { title: 'WDF data' },
   },
+  {
+    path: 'staff-record/:id',
+    component: WdfOverviewComponent,
+    data: { title: 'WDF Staff Record' },
+  },
 ];
 
 @NgModule({
