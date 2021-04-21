@@ -25,9 +25,7 @@
     [wdfView]="true"
   ></app-staff-record-summary>
 
-  <app-wdf-confirmation-panel
-    *ngIf="displayConfirmationPanel"
-    (confirmed)="onConfirmAndSubmit()"
-    [exitUrl]="exitUrl"
-  ></app-wdf-confirmation-panel>
+  <a class="govuk-button govuk-!-margin-top-3" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment"
+    >Close this staff record</a
+  >
 </ng-container>
