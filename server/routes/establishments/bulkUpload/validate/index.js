@@ -10,6 +10,8 @@ const { validateBulkUploadFiles } = require('./validateBulkUploadFiles');
 const { s3, Bucket, saveResponse, downloadContent } = require('../s3');
 const { buStates } = require('../states');
 
+const Sentry = require('@sentry/node');
+
 const validatePut = async (req, res) => {
   const keepAlive = (stepName = '', stepId = '') => {
     console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
@@ -136,6 +138,7 @@ const validatePut = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    Sentry.captureException(err);
 
     await saveResponse(req, res, 503, {});
   }
