@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 export class WdfStaffRecordComponent implements OnInit {
   public worker: Worker;
   public workplace: Establishment;
+  public workplaceUid: string;
   public isEligible: boolean;
   public exitUrl: URLStructure;
 
@@ -29,17 +30,22 @@ export class WdfStaffRecordComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.workplace = this.establishmentService.establishment;
     this.breadcrumbService.show(JourneyType.WDF);
+    this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
 
     this.subscriptions.add(
-      this.workerService
-        .getWorker(this.route.snapshot.params.establishmentuid, this.route.snapshot.params.id, true)
-        .subscribe((worker) => {
-          this.worker = worker;
-          this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
-          this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff-records' };
-        }),
+      this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
+        this.workplace = workplace;
+        this.establishmentService.setState(workplace);
+      }),
+    );
+
+    this.subscriptions.add(
+      this.workerService.getWorker(this.workplaceUid, this.route.snapshot.params.id, true).subscribe((worker) => {
+        this.worker = worker;
+        this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
+        this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff-records' };
+      }),
     );
   }
 

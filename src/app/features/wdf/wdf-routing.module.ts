@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
+import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 
 const routes: Routes = [
   {
@@ -17,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'staff-record/:id',
-    component: WdfOverviewComponent,
+    component: WdfStaffRecordComponent,
     data: { title: 'WDF Staff Record' },
   },
 ];
