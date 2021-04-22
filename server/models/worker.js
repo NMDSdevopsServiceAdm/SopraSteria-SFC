@@ -1,4 +1,6 @@
 const { Op } = require('sequelize');
+const { encrypt } = require('../utils/db/openpgp/encrypt');
+const { decrypt } = require('../utils/db/openpgp/decrypt');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -205,7 +207,7 @@ module.exports = function (sequelize, DataTypes) {
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberValue"',
+        field: '"NationalInsuranceNumberEncryptedValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -228,9 +230,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
-        field: '"DateOfBirthValue"',
+        field: '"DateOfBirthEncryptedValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -1052,6 +1054,32 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
+      hooks: {
+        beforeBulkUpdate: async (workerUpdate) => {
+          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
+            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
+            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
+          }
+
+          if (workerUpdate.attributes.DateOfBirthValue) {
+            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
+            workerUpdate.attributes.DateOfBirthValue = encrypted;
+          }
+        },
+        afterFind: async (worker) => {
+          if (worker && worker.dataValues) {
+            if (worker.dataValues.NationalInsuranceNumberValue) {
+              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
+              worker.dataValues.NationalInsuranceNumberValue = decrypted;
+            }
+
+            if (worker.dataValues.DateOfBirthValue) {
+              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
+              worker.dataValues.DateOfBirthValue = decrypted;
+            }
+          }
+        },
+      },
       scopes: {
         active: {
           where: {

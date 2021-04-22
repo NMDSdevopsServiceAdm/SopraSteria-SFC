@@ -40,6 +40,7 @@ const getInactiveWorkplaces = async () => {
       "IsParent" = FALSE
       AND "DataOwner" = 'Workplace'
 			AND "LastUpdated" <= :lastUpdated
+      AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
 					ech. "establishmentID"

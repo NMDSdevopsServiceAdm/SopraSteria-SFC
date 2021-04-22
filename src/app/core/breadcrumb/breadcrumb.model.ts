@@ -17,6 +17,7 @@ export enum JourneyType {
   BENCHMARK_RANKINGS_TURNOVER,
   BENCHMARK_RANKINGS_SICKNESS,
   BENCHMARK_RANKINGS_QUALIFICATIONS,
+  WDF,
 }
 
 export interface JourneyRoute {
