@@ -21,6 +21,7 @@ const getParentWorkplaces = async () => {
     cqc. "LastUpdatedEstablishments" e
   WHERE
     "IsParent" = TRUE
+    AND "PrimaryUserEmail" IS NOT NULL
     AND NOT EXISTS (
       SELECT
         ech. "establishmentID"
