@@ -71,6 +71,8 @@ const validateEstablishmentCsv = async (
       }
     } catch (err) {
       console.error('WA - localised validate establishment error until validation card', err);
+
+      throw err;
     }
   } else {
     console.log('Ignoring', lineValidator._name);
