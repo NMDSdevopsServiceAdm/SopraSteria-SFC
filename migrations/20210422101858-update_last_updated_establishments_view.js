@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."LastUpdatedEstablishments"');
 
     await queryInterface.sequelize.query(`
       CREATE MATERIALIZED VIEW cqc."LastUpdatedEstablishments" AS (
@@ -36,6 +36,22 @@ module.exports = {
     },
     {
       fields: ['ParentID', 'IsParent', 'LastUpdated'],
+    });
+
+    await queryInterface.addIndex({
+      tableName: 'LastUpdatedEstablishments',
+      schema: 'cqc',
+    },
+    {
+      fields: ['IsParent', 'PrimaryUserEmail'],
+    });
+
+    await queryInterface.addIndex({
+      tableName: 'LastUpdatedEstablishments',
+      schema: 'cqc',
+    },
+    {
+      fields: ['IsParent', 'PrimaryUserEmail', 'LastUpdated', 'DataOwner'],
     });
   },
 
