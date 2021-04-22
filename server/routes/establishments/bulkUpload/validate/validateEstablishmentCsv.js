@@ -1,6 +1,6 @@
 'use strict';
 
-const postcodes = require('../../../../models/postcodes');
+const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
 
@@ -45,7 +45,7 @@ const validateEstablishmentCsv = async (
         foundCurrentEstablishment &&
         foundCurrentEstablishment.postcode !== thisApiEstablishment.postcode
       ) {
-        const { Latitude, Longitude } = (await postcodes.firstOrCreate(thisApiEstablishment.postcode)) || {};
+        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(thisApiEstablishment.postcode)) || {};
 
         thisEstablishmentAsAPI.Latitude = Latitude;
         thisEstablishmentAsAPI.Longitude = Longitude;
