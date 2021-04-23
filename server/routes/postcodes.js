@@ -30,22 +30,22 @@ router
           const numberAndStreet = data.building_number
             ? `${data.building_number} ${data.street_description}`
             : data.street_description;
-          const dataValues = [data.sub_building_name, data.building_name, numberAndStreet];
-          const filteredDataValues = dataValues.filter((value) => {
+          const addressInfo = [data.sub_building_name, data.building_name, numberAndStreet];
+          const filteredAddressInfo = addressInfo.filter((value) => {
             return value != '';
           });
 
-          let myObject = {
+          const workplaceAndAddress = {
             locationName: data.rm_organisation_name,
-            addressLine1: filteredDataValues[0],
-            addressLine2: filteredDataValues[1] ? filteredDataValues[1] : '',
-            addressLine3: filteredDataValues[2] ? filteredDataValues[2] : '',
+            addressLine1: filteredAddressInfo[0],
+            addressLine2: filteredAddressInfo[1] ? filteredAddressInfo[1] : '',
+            addressLine3: filteredAddressInfo[2] ? filteredAddressInfo[2] : '',
             townCity: data.post_town,
             county: data.county,
             postalCode: data.postcode,
           };
 
-          postcodeData.push(myObject);
+          postcodeData.push(workplaceAndAddress);
         }
       } else {
         res.status(400);
