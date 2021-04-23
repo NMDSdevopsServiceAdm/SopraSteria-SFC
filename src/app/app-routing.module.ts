@@ -172,6 +172,11 @@ const routes: Routes = [
         },
       },
       {
+        path: 'wdf',
+        loadChildren: () => import('@features/wdf/wdf.module').then((m) => m.WdfModule),
+        data: { title: 'Workforce Development Fund' },
+      },
+      {
         path: 'parent-requests',
         loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
         canActivate: [RoleGuard],
@@ -213,6 +218,11 @@ const routes: Routes = [
           permissions: ['canAddEstablishment'],
           title: 'Add Mandatory Training',
         },
+      },
+      {
+        path: 'registration-survey',
+        loadChildren: () =>
+          import('@features/registration-survey/registration-survey.module').then((m) => m.RegistrationSurveyModule),
       },
     ],
   },

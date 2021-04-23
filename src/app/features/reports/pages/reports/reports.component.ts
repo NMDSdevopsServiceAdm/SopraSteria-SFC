@@ -8,7 +8,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
-import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -58,6 +57,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
   }
+
   public downloadDeleteReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
@@ -77,7 +77,25 @@ export class ReportsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private saveFile(response: HttpResponse<Blob>) {
+  public downloadRegistrationSurveyReport(event: Event): void {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getRegistrationSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public downloadSatisfactionSurveyReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getSatisfactionSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');
     const filenameMatches = header && header.match(filenameRegEx);

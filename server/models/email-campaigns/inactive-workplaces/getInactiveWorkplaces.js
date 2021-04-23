@@ -17,7 +17,7 @@ const getInactiveWorkplaces = async () => {
   SELECT
 	"EstablishmentID",
   "NameValue",
-  TRIM("NmdsID"),
+  TRIM("NmdsID") AS "NmdsID",
   "DataOwner",
   "PrimaryUserName",
   "PrimaryUserEmail",
@@ -37,9 +37,10 @@ const getInactiveWorkplaces = async () => {
 		FROM
 			cqc. "LastUpdatedEstablishments" e
 		WHERE
-      "ParentID" IS NULL
-      AND "IsParent" = FALSE
+      "IsParent" = FALSE
+      AND "DataOwner" = 'Workplace'
 			AND "LastUpdated" <= :lastUpdated
+      AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
 					ech. "establishmentID"

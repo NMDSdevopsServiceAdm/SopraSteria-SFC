@@ -86,8 +86,11 @@
         <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'Users'">
-        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
+      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'Users'" [alert]="showSecondUserBanner">
+        <app-user-accounts-summary
+          [workplace]="workplace"
+          [showSecondUserBanner]="showSecondUserBanner"
+        ></app-user-accounts-summary>
       </app-tab>
     </app-tabs>
   </div>

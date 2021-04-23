@@ -209,7 +209,6 @@
               </div>
             </div>
           </fieldset>
-
           <button class="govuk-button" type="submit">{{ form.buttonText }}</button>
         </form>
       </section>
@@ -253,6 +252,12 @@
                 <a (click)="setEstablishmentId(item.establishment.uid, item.username, null, $event)" href="#">{{
                   item.establishment.nmdsId
                 }}</a>
+                <img
+                  src="/assets/images/flag-orange.svg"
+                  alt="Workplace is pending"
+                  class="govuk-!-margin-right-1 govuk-!-margin-left-3 govuk-util__vertical-align-top"
+                  *ngIf="item.establishment.ustatus === 'PENDING'"
+                />
               </td>
               <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
               <td class="govuk-table__cell">

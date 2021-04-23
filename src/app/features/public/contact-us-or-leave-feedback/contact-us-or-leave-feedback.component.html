@@ -1,0 +1,74 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">Contact us or leave feedback</h1>
+      </legend>
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h2 class="govuk-fieldset__heading">What do you want to do?</h2>
+      </legend>
+    </div>
+  </div>
+  <div class="govuk-radios govuk-!-margin-top-2">
+    <form #formEl [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-radios">
+            <span
+              id="contactUsOrFeedback-error"
+              class="govuk-error-message"
+              *ngIf="submitted && form.get('contactUsOrFeedback')?.errors"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('contactUsOrFeedback') }}
+            </span>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="contactUs"
+                name="contactUsOrFeedback"
+                type="radio"
+                value="contactUs"
+                [formControlName]="'contactUsOrFeedback'"
+                [class.govuk-input--error]="form.get('contactUsOrFeedback')?.errors && submitted"
+              />
+              <label class="govuk-label govuk-radios__label" for="contactUs">
+                Contact us to get help from the ASC-WDS Support Team
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="feedback"
+                name="contactUsOrFeedback"
+                type="radio"
+                value="feedback"
+                [formControlName]="'contactUsOrFeedback'"
+              />
+              <label class="govuk-label govuk-radios__label" for="feedback"> Leave feedback about the service </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-grid-row govuk-!-margin-top-7">
+        <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+              <button type="submit" class="govuk-button" data-testid="continue">Continue</button>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <a
+                [routerLink]="this.returnTo?.url"
+                role="button"
+                draggable="false"
+                class="govuk-button govuk-button--link"
+              >
+                Exit
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

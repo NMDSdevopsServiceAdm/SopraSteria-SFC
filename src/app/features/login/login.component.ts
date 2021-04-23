@@ -116,7 +116,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private login(): void {
     const { username, password } = this.form.value;
-    localStorage.setItem('test', 'test');
+
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
         (response) => {
@@ -138,6 +138,10 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
             this.router.navigate(['/migrated-user-terms-and-conditions']);
+          }
+
+          if (response.body.registrationSurveyCompleted === false) {
+            this.router.navigate(['/registration-survey']);
           }
         },
         (error: HttpErrorResponse) => {

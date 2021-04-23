@@ -92,6 +92,17 @@ describe('SearchComponent', () => {
 
       await within(getByTestId('user-search-results')).getByText('John Doe');
     });
+    it('should show a flag when user\'s workplace is pending', async () => {
+      const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
+
+      await setup(fixture, navigate, getByText);
+
+      fixture.componentInstance.results[0].establishment.ustatus = 'PENDING';
+      fixture.detectChanges();
+
+      const result = getByTestId('user-search-results').querySelector('img');
+      expect(result.src).toContain('flag-orange')
+    });
 
     it('should expand the User details when clicking Open', async () => {
       const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();

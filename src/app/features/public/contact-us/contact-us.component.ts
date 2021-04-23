@@ -7,9 +7,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
   templateUrl: './contact-us.component.html',
 })
 export class ContactUsComponent implements OnInit {
-  constructor(private breadcrumbSerivce: BreadcrumbService) {}
+  constructor(private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
-    this.breadcrumbSerivce.show(JourneyType.PUBLIC);
+    this.breadcrumbService.show(JourneyType.PUBLIC);
   }
 }
