@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
 
@@ -64,14 +64,14 @@ const getAddressesWithPostcode = async (req, res) => {
         success: 0,
         message: 'No addresses found',
       });
-    } else {
-      res.status(200);
-      return res.json({
-        success: 1,
-        message: 'Addresses Found',
-        postcodedata: postcodeData,
-      });
     }
+
+    res.status(200);
+    return res.json({
+      success: 1,
+      message: 'Addresses Found',
+      postcodedata: postcodeData,
+    });
   } catch (err) {
     console.error('[GET] .../api/postcode/:postcode - failed: ', err);
     return res.status(503).send();
@@ -81,4 +81,5 @@ const getAddressesWithPostcode = async (req, res) => {
 router.route('/:postcode').get(getAddressesWithPostcode);
 
 module.exports = router;
+module.exports.getAddressesWithPostcode = getAddressesWithPostcode;
 module.exports.createAddressObject = createAddressObject;
