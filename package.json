@@ -121,7 +121,7 @@
     "@lhci/cli": "^0.7.0",
     "@testing-library/angular": "^10.3.2",
     "@testing-library/dom": "^7.30.3",
-    "@testing-library/user-event": "^12.7.3",
+    "@testing-library/user-event": "^13.1.5",
     "@types/faker": "^5.5.3",
     "@types/file-saver": "^2.0.2",
     "@types/jasmine": "^3.6.9",
