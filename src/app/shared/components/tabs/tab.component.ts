@@ -20,6 +20,7 @@ export class TabComponent implements OnInit {
   @Input() active = false;
   @Input() alert = false;
   @Input() redAlert = false;
+  @Input() greenTick = false;
 
   public slug: string;
 

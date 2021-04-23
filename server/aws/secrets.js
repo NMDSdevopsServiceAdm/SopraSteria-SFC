@@ -34,6 +34,9 @@ const initialiseSecrets = async (region, wallet) => {
         HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY,
         SEND_IN_BLUE_KEY: mySecrets.SEND_IN_BLUE_KEY,
         SEND_IN_BLUE_WHITELIST: mySecrets.SEND_IN_BLUE_WHITELIST,
+        ENCRYPTION_PRIVATE_KEY: mySecrets.ENCRYPTION_PRIVATE_KEY,
+        ENCRYPTION_PUBLIC_KEY: mySecrets.ENCRYPTION_PUBLIC_KEY,
+        ENCRYPTION_PASSPHRASE: mySecrets.ENCRYPTION_PASSPHRASE,
       };
     }
   } catch (err) {
@@ -172,6 +175,40 @@ const sendInBlueKey = () => {
   }
 };
 
+const encryptionPrivateKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ENCRYPTION_PRIVATE_KEY) {
+      return '';
+    } else {
+      return myLocalSecrets.ENCRYPTION_PRIVATE_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+const encryptionPublicKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ENCRYPTION_PUBLIC_KEY) {
+      return '';
+    } else {
+      return myLocalSecrets.ENCRYPTION_PUBLIC_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+const encryptionPassphrase = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ENCRYPTION_PASSPHRASE) {
+      return '';
+    } else {
+      return myLocalSecrets.ENCRYPTION_PASSPHRASE;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+
 const sendInBlueWhitelist = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.SEND_IN_BLUE_WHITELIST) {
@@ -234,3 +271,9 @@ module.exports.honeycombWriteKey = honeycombWriteKey;
 module.exports.sendInBlueKey = sendInBlueKey;
 module.exports.sendInBlueWhitelist = sendInBlueWhitelist;
 module.exports.getAddressKey = getAddressKey;
+module.exports.encryptionPassphrase = encryptionPassphrase;
+module.exports.encryptionPrivateKey = encryptionPrivateKey;
+module.exports.encryptionPublicKey = encryptionPublicKey;
+
+
+
