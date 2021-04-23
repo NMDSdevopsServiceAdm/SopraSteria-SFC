@@ -4,15 +4,7 @@ const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
 
 const transformAddresses = (results) => {
-  let postcodeData = [];
-
-  for (let i = 0, len = results.length; i < len; i++) {
-    let data = results[i].dataValues;
-
-    const workplaceAndAddress = createAddressObject(data);
-    postcodeData.push(workplaceAndAddress);
-  }
-  return postcodeData;
+  return results.map((result) => createAddressObject(result.dataValues));
 };
 
 const createAddressObject = (data) => {
