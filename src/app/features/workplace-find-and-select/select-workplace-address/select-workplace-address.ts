@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -24,7 +24,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   get getAddress() {
@@ -94,6 +94,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
       location.locationName,
       location.addressLine1,
       location.addressLine2,
+      location.addressLine3,
       location.townCity,
       location.postalCode,
     ];
