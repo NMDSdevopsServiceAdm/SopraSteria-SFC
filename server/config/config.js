@@ -459,19 +459,19 @@ const config = convict({
       doc: 'The public key for encryption',
       format: String,
       default: '',
-      env: 'ENCRYPTION_PUBLIC_KEY'
+      env: 'ENCRYPTION_PUBLIC_KEY',
     },
     privateKey: {
       doc: 'The private key for encryption',
       format: String,
       default: '',
-      env: 'ENCRYPTION_PRIVATE_KEY'
+      env: 'ENCRYPTION_PRIVATE_KEY',
     },
     passphrase: {
       doc: 'The passphrase used for encryption',
       format: String,
       default: '',
-      env: 'ENCRYPTION_PASSPHRASE'
+      env: 'ENCRYPTION_PASSPHRASE',
     },
   },
   sendInBlue: {
@@ -552,12 +552,10 @@ const config = convict({
       },
     },
   },
-  redis: {
-    url: {
-      doc: 'URL for Redis',
-      format: String,
-      default: 'redis://127.0.0.1:6379',
-    },
+  vcapServices: {
+    doc: 'All the info from VCAP Services env vars from CF',
+    env: 'VCAP_SERVICES',
+    default: '{}',
   },
 });
 
@@ -597,7 +595,6 @@ if (config.get('aws.secrets.use')) {
     config.set('encryption.privateKey', AWSSecrets.encryptionPrivateKey());
     config.set('encryption.publicKey', AWSSecrets.encryptionPublicKey());
     config.set('encryption.passphrase', AWSSecrets.encryptionPassphrase());
-
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());

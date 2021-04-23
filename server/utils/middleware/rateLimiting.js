@@ -2,8 +2,10 @@ const config = require('../../config/config');
 const RateLimit = require('express-rate-limit');
 const RedisStore = require('rate-limit-redis');
 
+const vcapServices = JSON.parse(config.get('vcapServices'));
+
 const store = new RedisStore({
-  redisURL: config.get('redis.url'),
+  redisURL: vcapServices.redis.uri,
 });
 
 const rateLimiterConfig = {
