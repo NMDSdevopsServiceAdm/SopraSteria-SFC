@@ -25,7 +25,12 @@
       [wdfView]="true"
     ></app-workplace-summary>
   </app-tab>
-  <app-tab *ngIf="canViewWorker" [greenTick]="true" [title]="'Staff records'">
+  <app-tab
+    *ngIf="canViewWorker"
+    [greenTick]="overallWdfEligibility && staffWdfEligibility"
+    [alert]="overallWdfEligibility && !staffWdfEligibility"
+    [title]="'Staff records'"
+  >
     <app-wdf-staff-summary
       *ngIf="workers && workplace"
       [workplace]="workplace"
