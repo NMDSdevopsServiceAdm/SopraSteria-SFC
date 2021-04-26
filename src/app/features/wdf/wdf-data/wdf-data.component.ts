@@ -27,6 +27,9 @@ export class WdfDataComponent implements OnInit {
   public wdfStartDate: string;
   public wdfEndDate: string;
   public returnUrl: URLStructure;
+  public overallWdfEligibility: boolean;
+  public workplaceWdfEligibility: boolean;
+  public staffWdfEligibility: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -78,6 +81,7 @@ export class WdfDataComponent implements OnInit {
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.report = report;
         this.setDates(report);
+        this.setWdfEligibility(report);
       }),
     );
   }
@@ -93,5 +97,11 @@ export class WdfDataComponent implements OnInit {
   private setDates(report: WDFReport): void {
     this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+  }
+
+  private setWdfEligibility(report: WDFReport): void {
+    this.overallWdfEligibility = report.wdf.overall;
+    this.workplaceWdfEligibility = report.wdf.workplace;
+    this.staffWdfEligibility = report.wdf.staff;
   }
 }

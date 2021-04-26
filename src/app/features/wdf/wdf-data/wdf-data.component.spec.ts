@@ -51,4 +51,14 @@ describe('WdfDataComponent', () => {
 
     expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
   });
+
+  it('should display an orange flag on the workplace tab when the user has qualified for WDF but workplace is no longer eligible', async () => {
+    const { component, fixture, getByText } = await setup();
+    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+
+    component.workplaceWdfEligibility = false;
+    fixture.detectChanges();
+
+    expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+  });
 });

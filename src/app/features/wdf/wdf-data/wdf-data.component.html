@@ -12,7 +12,11 @@
 </h4>
 
 <app-tabs>
-  <app-tab [greenTick]="true" [title]="'Workplace'">
+  <app-tab
+    [greenTick]="overallWdfEligibility && workplaceWdfEligibility"
+    [alert]="overallWdfEligibility && !workplaceWdfEligibility"
+    [title]="'Workplace'"
+  >
     <app-workplace-summary
       *ngIf="workplace"
       [workplace]="workplace"
