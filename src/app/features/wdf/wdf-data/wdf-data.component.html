@@ -12,11 +12,7 @@
 </h4>
 
 <app-tabs>
-  <app-tab
-    [greenTick]="overallWdfEligibility && workplaceWdfEligibility"
-    [alert]="overallWdfEligibility && !workplaceWdfEligibility"
-    [title]="'Workplace'"
-  >
+  <app-tab [greenTick]="showGreenTickOnWorkplaceTab()" [alert]="showOrangeFlagOnWorkplaceTab()" [title]="'Workplace'">
     <app-workplace-summary
       *ngIf="workplace"
       [workplace]="workplace"
@@ -27,8 +23,8 @@
   </app-tab>
   <app-tab
     *ngIf="canViewWorker"
-    [greenTick]="overallWdfEligibility && staffWdfEligibility"
-    [alert]="overallWdfEligibility && !staffWdfEligibility"
+    [greenTick]="showGreenTickOnStaffTab()"
+    [alert]="showOrangeFlagOnStaffTab()"
     [title]="'Staff records'"
   >
     <app-wdf-staff-summary

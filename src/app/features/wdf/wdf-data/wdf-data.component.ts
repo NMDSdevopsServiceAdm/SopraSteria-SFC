@@ -67,6 +67,22 @@ export class WdfDataComponent implements OnInit {
     this.subscriptions.unsubscribe();
   }
 
+  public showGreenTickOnWorkplaceTab(): boolean {
+    return this.overallWdfEligibility && this.workplaceWdfEligibility;
+  }
+
+  public showOrangeFlagOnWorkplaceTab(): boolean {
+    return this.overallWdfEligibility && !this.workplaceWdfEligibility;
+  }
+
+  public showGreenTickOnStaffTab(): boolean {
+    return this.overallWdfEligibility && this.staffWdfEligibility;
+  }
+
+  public showOrangeFlagOnStaffTab(): boolean {
+    return this.overallWdfEligibility && !this.staffWdfEligibility;
+  }
+
   private setWorkplace() {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
