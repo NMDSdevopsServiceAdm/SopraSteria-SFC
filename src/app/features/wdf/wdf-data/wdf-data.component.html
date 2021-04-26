@@ -22,11 +22,10 @@
     ></app-workplace-summary>
   </app-tab>
   <app-tab *ngIf="canViewWorker" [greenTick]="true" [title]="'Staff records'">
-    <app-staff-summary
+    <app-wdf-staff-summary
       *ngIf="workers && workplace"
       [workplace]="workplace"
       [workers]="workers"
-      [wdfView]="true"
-    ></app-staff-summary>
+    ></app-wdf-staff-summary>
   </app-tab>
 </app-tabs>
