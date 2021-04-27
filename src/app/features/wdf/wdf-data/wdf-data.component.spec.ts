@@ -13,7 +13,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -42,7 +42,6 @@ describe('WdfDataComponent', () => {
 
   it('should render a WdfDataComponent', async () => {
     const { component } = await setup();
-    console.log(component.workers);
     expect(component).toBeTruthy();
   });
 
@@ -117,5 +116,31 @@ describe('WdfDataComponent', () => {
     fixture.detectChanges();
 
     expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+  });
+
+  describe('getStaffWdfEligibility', () => {
+    it('should return true when all workers are WDF eligible', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.workers = [workerBuilder(), workerBuilder(), workerBuilder()];
+      component.workers[0].wdfEligible = true;
+      component.workers[1].wdfEligible = true;
+      component.workers[2].wdfEligible = true;
+      fixture.detectChanges();
+
+      expect(component.getStaffWdfEligibility()).toBeTrue();
+    });
+
+    it('should return false when any worker is not WDF eligible', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.workers = [workerBuilder(), workerBuilder(), workerBuilder()];
+      component.workers[0].wdfEligible = true;
+      component.workers[1].wdfEligible = false;
+      component.workers[2].wdfEligible = true;
+      fixture.detectChanges();
+
+      expect(component.getStaffWdfEligibility()).toBeFalse();
+    });
   });
 });

@@ -127,7 +127,7 @@ export class WdfDataComponent implements OnInit {
     this.workplaceWdfEligibility = report.wdf.workplace;
   }
 
-  private getStaffWdfEligibility(): boolean {
-    return this.workers.some((worker) => worker.wdfEligible === false);
+  public getStaffWdfEligibility(): boolean {
+    return this.workers.every((worker) => worker.wdfEligible === true);
   }
 }
