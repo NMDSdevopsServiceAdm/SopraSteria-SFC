@@ -10,8 +10,6 @@ const moment = require('moment');
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
 const models = require('../../models');
-const Training = require('../../models/classes/training').Training;
-const Qualification = require('../../models/classes/qualification').Qualification;
 const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
 // parent route defines the "id" parameter
