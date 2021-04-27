@@ -985,6 +985,9 @@ module.exports = function (sequelize, DataTypes) {
           ],
         ],
         as: 'workers',
+        where: {
+          archived: false,
+        },
         include: [
           {
             model: sequelize.models.job,

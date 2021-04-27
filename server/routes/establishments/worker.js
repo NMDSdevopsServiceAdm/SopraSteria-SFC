@@ -7,6 +7,8 @@ const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 
 const moment = require('moment');
+const get = require('lodash/get');
+
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
 const models = require('../../models');
@@ -247,31 +249,35 @@ const viewAllWorkers = async (req, res) => {
     const allWorkers = await models.establishment.workersAndTraining(establishmentId);
 
     res.status(200).send({
-      workers: allWorkers.workers.map((worker) => {
-        return {
-          uid: worker.uid,
-          localIdentifier: worker.LocalIdentifierValue ? worker.LocalIdentifierValue : null,
-          nameOrId: worker.NameOrIdValue,
-          contract: worker.ContractValue,
-          mainJob: {
-            jobId: worker.mainJob.id,
-            title: worker.mainJob.title,
-            other: worker.MainJobFkOther ? worker.MainJobFkOther : undefined,
-          },
-          completed: worker.CompletedValue,
-          created: worker.created,
-          updated: worker.updated,
-          updatedBy: worker.updatedBy,
-          effectiveFrom: effectiveFromIso,
-          wdfEligible: moment(worker.lastWdfEligibility).isAfter(effectiveFromIso),
-          wdfEligibilityLastUpdated: worker.lastWdfEligibility ? worker.lastWdfEligibility.toISOString() : undefined,
-          trainingCount: parseInt(worker.get('trainingCount')),
-          qualificationCount: parseInt(worker.get('qualificationCount')),
-          expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
-          expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
-          missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
-        };
-      }),
+      workers: get(allWorkers, 'workers')
+        ? allWorkers.workers.map((worker) => {
+            return {
+              uid: worker.uid,
+              localIdentifier: worker.LocalIdentifierValue ? worker.LocalIdentifierValue : null,
+              nameOrId: worker.NameOrIdValue,
+              contract: worker.ContractValue,
+              mainJob: {
+                jobId: worker.mainJob.id,
+                title: worker.mainJob.title,
+                other: worker.MainJobFkOther ? worker.MainJobFkOther : undefined,
+              },
+              completed: worker.CompletedValue,
+              created: worker.created,
+              updated: worker.updated,
+              updatedBy: worker.updatedBy,
+              effectiveFrom: effectiveFromIso,
+              wdfEligible: moment(worker.lastWdfEligibility).isAfter(effectiveFromIso),
+              wdfEligibilityLastUpdated: worker.lastWdfEligibility
+                ? worker.lastWdfEligibility.toISOString()
+                : undefined,
+              trainingCount: parseInt(worker.get('trainingCount')),
+              qualificationCount: parseInt(worker.get('qualificationCount')),
+              expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
+              expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
+              missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+            };
+          })
+        : [],
     });
   } catch (err) {
     console.error('worker::GET:all - failed', err);
