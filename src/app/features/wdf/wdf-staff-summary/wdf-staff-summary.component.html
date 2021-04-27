@@ -33,8 +33,20 @@
         <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>
       </td>
       <td class="govuk-table__cell">
-        <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
-        <app-eligibility-icon [eligible]="worker.wdfEligible"></app-eligibility-icon>
+        <ng-container *ngIf="overallWdfEligibility && !worker.wdfEligible">
+          <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
+          <span class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap">
+            <img class="govuk-!-margin-right-1" src="/assets/images/flag-orange.svg" alt="" />
+            <span class="govuk-visually-hidden">Orange warning flag</span>Check this staff record
+          </span>
+        </ng-container>
+        <ng-container *ngIf="overallWdfEligibility && worker.wdfEligible">
+          <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
+          <span class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap">
+            <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />
+            <span class="govuk-visually-hidden">Green tick</span>Meeting requirements
+          </span>
+        </ng-container>
       </td>
     </tr>
   </tbody>

@@ -2,8 +2,10 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Establishment, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ReportService } from '@core/services/report.service';
 import { orderBy } from 'lodash';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-wdf-staff-summary',
@@ -16,8 +18,10 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
+  public overallWdfEligibility: boolean;
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private permissionsService: PermissionsService) {}
+  constructor(private permissionsService: PermissionsService, private reportService: ReportService) {}
 
   public lastUpdated(timestamp: string): string {
     const lastUpdated: moment.Moment = moment(timestamp);
@@ -26,13 +30,14 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   }
 
   public getWorkerRecordPath(worker: Worker) {
-    return ['/wdf'];
+    return ['/wdf', 'staff-record', worker.uid];
   }
 
   ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = WdfSortStaffOptions;
+    this.getOverallWdfEligibility();
   }
 
   ngOnChanges() {
@@ -74,5 +79,13 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
         break;
       }
     }
+  }
+
+  private getOverallWdfEligibility() {
+    this.subscriptions.add(
+      this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
+        this.overallWdfEligibility = report.wdf.overall;
+      }),
+    );
   }
 }
