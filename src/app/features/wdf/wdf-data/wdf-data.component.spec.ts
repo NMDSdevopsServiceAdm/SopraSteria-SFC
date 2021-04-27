@@ -42,6 +42,7 @@ describe('WdfDataComponent', () => {
 
   it('should render a WdfDataComponent', async () => {
     const { component } = await setup();
+    console.log(component.workers);
     expect(component).toBeTruthy();
   });
 
@@ -90,6 +91,7 @@ describe('WdfDataComponent', () => {
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
     component.workplaceWdfEligibility = false;
+    component.staffWdfEligibility = true;
     fixture.detectChanges();
 
     expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();

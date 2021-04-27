@@ -13,6 +13,8 @@ import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
+import { Worker } from '../../../core/model/worker.model';
+
 @Component({
   selector: 'app-wdf-data',
   templateUrl: './wdf-data.component.html',
@@ -50,17 +52,7 @@ export class WdfDataComponent implements OnInit {
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
-
-    if (this.canViewWorker) {
-      this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplaceUid)
-          .pipe(take(1))
-          .subscribe((workers) => {
-            this.workers = sortBy(workers, ['wdfEligible']);
-          }),
-      );
-    }
+    this.getWorkers();
   }
 
   ngOnDestroy() {
@@ -83,7 +75,7 @@ export class WdfDataComponent implements OnInit {
     return this.overallWdfEligibility && !this.staffWdfEligibility;
   }
 
-  private setWorkplace() {
+  private setWorkplace(): void {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
@@ -92,10 +84,25 @@ export class WdfDataComponent implements OnInit {
     );
   }
 
+  private getWorkers(): void {
+    if (this.canViewWorker) {
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(this.workplaceUid)
+          .pipe(take(1))
+          .subscribe((workers) => {
+            this.workers = sortBy(workers, ['wdfEligible']);
+            this.staffWdfEligibility = this.getStaffWdfEligibility();
+          }),
+      );
+    }
+  }
+
   private getWdfReport() {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.report = report;
+        console.log(report);
         this.setDates(report);
         this.setWdfEligibility(report);
       }),
@@ -118,6 +125,9 @@ export class WdfDataComponent implements OnInit {
   private setWdfEligibility(report: WDFReport): void {
     this.overallWdfEligibility = report.wdf.overall;
     this.workplaceWdfEligibility = report.wdf.workplace;
-    this.staffWdfEligibility = report.wdf.staff;
+  }
+
+  private getStaffWdfEligibility(): boolean {
+    return this.workers.some((worker) => worker.wdfEligible === false);
   }
 }
