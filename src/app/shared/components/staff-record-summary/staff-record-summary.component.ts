@@ -33,11 +33,11 @@ export class StaffRecordSummaryComponent implements OnInit {
     private location: Location,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    public workerService: WorkerService
+    public workerService: WorkerService,
   ) {}
 
   ngOnInit() {
-    this.workplaceUid = this.route.snapshot.params.establishmentuid;
+    this.workplaceUid = this.workplace.uid;
 
     const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
     this.returnTo = this.wdfView
