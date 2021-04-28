@@ -46,11 +46,28 @@ describe('WdfDataComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the correct timeframe for meeting WDF requirements', async () => {
-    const { getByText } = await setup();
+  it('should display the correct message and timeframe if meeting WDF requirements', async () => {
+    const { component, fixture, getByText } = await setup();
     const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
 
+    component.overallWdfEligibility = true;
+    component.workplaceWdfEligibility = true;
+    component.staffWdfEligibility = true;
+    fixture.detectChanges();
+
     expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the "Keeping data up to date" message if meeting WDF requirements with data changes', async () => {
+    const { component, fixture, getByText } = await setup();
+    const keepUpToDateMessage = 'Keeping your data up to date will save you time next year';
+
+    component.overallWdfEligibility = true;
+    component.workplaceWdfEligibility = true;
+    component.staffWdfEligibility = false;
+    fixture.detectChanges();
+
+    expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
   });
 
   it('should display a green tick on the workplace tab when the user has qualified for WDF and workplace is still eligible', async () => {

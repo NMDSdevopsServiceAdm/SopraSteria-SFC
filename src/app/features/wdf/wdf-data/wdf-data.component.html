@@ -8,7 +8,12 @@
 </div>
 
 <h4 class="govuk-heading-s govuk-!-margin-bottom-8">
-  Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+  <ng-container *ngIf="overallWdfEligibility && !(workplaceWdfEligibility && staffWdfEligibility)">
+    Keeping your data up to date will save you time next year
+  </ng-container>
+  <ng-container *ngIf="overallWdfEligibility && workplaceWdfEligibility && staffWdfEligibility">
+    Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+  </ng-container>
 </h4>
 
 <app-tabs>
