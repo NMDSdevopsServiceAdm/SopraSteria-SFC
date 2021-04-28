@@ -14,12 +14,13 @@ import { render } from '@testing-library/angular';
 import { workers } from 'node:cluster';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models.js';
+import { WdfModule } from '../wdf.module.js';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
 describe('WdfStaffSummaryComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfStaffSummaryComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
         { provide: ReportService, useClass: MockReportService },
         {

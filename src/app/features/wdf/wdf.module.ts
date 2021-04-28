@@ -9,9 +9,10 @@ import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfRoutingModule } from './wdf-routing.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';
+import { WdfRequirementsStateComponent } from './wdf-requirements-state/wdf-requirements-state.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WdfRoutingModule],
-  declarations: [WdfOverviewComponent, WdfDataComponent, WdfStaffSummaryComponent, WdfStaffRecordComponent],
+  declarations: [WdfOverviewComponent, WdfDataComponent, WdfStaffSummaryComponent, WdfStaffRecordComponent, WdfRequirementsStateComponent],
 })
 export class WdfModule {}
