@@ -10,4 +10,12 @@ export class WdfStatusMessageComponent {
   @Input() overallWdfEligibility: boolean;
   @Input() workplaceWdfEligibility: boolean;
   @Input() staffWdfEligibility: boolean;
+
+  public showMeetingMessage(): boolean {
+    return this.overallWdfEligibility && this.workplaceWdfEligibility && this.staffWdfEligibility;
+  }
+
+  public showMeetingWithChangesMessage(): boolean {
+    return this.overallWdfEligibility && !(this.workplaceWdfEligibility && this.staffWdfEligibility);
+  }
 }
