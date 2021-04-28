@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
+import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
 import { Worker } from '../../../core/model/worker.model';
 
 @Component({
@@ -29,9 +30,7 @@ export class WdfDataComponent implements OnInit {
   public wdfStartDate: string;
   public wdfEndDate: string;
   public returnUrl: URLStructure;
-  public overallWdfEligibility: boolean;
-  public workplaceWdfEligibility: boolean;
-  public staffWdfEligibility: boolean;
+  public wdfEligibilityStatus: WdfEligibilityStatus = {};
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -60,19 +59,19 @@ export class WdfDataComponent implements OnInit {
   }
 
   public showGreenTickOnWorkplaceTab(): boolean {
-    return this.overallWdfEligibility && this.workplaceWdfEligibility;
+    return this.wdfEligibilityStatus.overall && this.wdfEligibilityStatus.currentWorkplace;
   }
 
   public showOrangeFlagOnWorkplaceTab(): boolean {
-    return this.overallWdfEligibility && !this.workplaceWdfEligibility;
+    return this.wdfEligibilityStatus.overall && !this.wdfEligibilityStatus.currentWorkplace;
   }
 
   public showGreenTickOnStaffTab(): boolean {
-    return this.overallWdfEligibility && this.staffWdfEligibility;
+    return this.wdfEligibilityStatus.overall && this.wdfEligibilityStatus.currentStaff;
   }
 
   public showOrangeFlagOnStaffTab(): boolean {
-    return this.overallWdfEligibility && !this.staffWdfEligibility;
+    return this.wdfEligibilityStatus.overall && !this.wdfEligibilityStatus.currentStaff;
   }
 
   private setWorkplace(): void {
@@ -92,7 +91,7 @@ export class WdfDataComponent implements OnInit {
           .pipe(take(1))
           .subscribe((workers) => {
             this.workers = sortBy(workers, ['wdfEligible']);
-            this.staffWdfEligibility = this.getStaffWdfEligibility(workers);
+            this.wdfEligibilityStatus.currentStaff = this.getStaffWdfEligibility(workers);
           }),
       );
     }
@@ -122,8 +121,8 @@ export class WdfDataComponent implements OnInit {
   }
 
   private setWdfEligibility(report: WDFReport): void {
-    this.overallWdfEligibility = report.wdf.overall;
-    this.workplaceWdfEligibility = report.wdf.workplace;
+    this.wdfEligibilityStatus.overall = report.wdf.overall;
+    this.wdfEligibilityStatus.currentWorkplace = report.wdf.workplace;
   }
 
   public getStaffWdfEligibility(workers: Worker[]): boolean {

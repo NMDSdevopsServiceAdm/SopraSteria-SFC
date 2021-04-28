@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
+
 @Component({
   selector: 'app-wdf-status-message',
   templateUrl: './wdf-status-message.component.html',
@@ -7,15 +9,20 @@ import { Component, Input } from '@angular/core';
 export class WdfStatusMessageComponent {
   @Input() wdfStartDate: string;
   @Input() wdfEndDate: string;
-  @Input() overallWdfEligibility: boolean;
-  @Input() workplaceWdfEligibility: boolean;
-  @Input() staffWdfEligibility: boolean;
+  @Input() wdfEligibilityStatus: WdfEligibilityStatus;
 
   public showMeetingMessage(): boolean {
-    return this.overallWdfEligibility && this.workplaceWdfEligibility && this.staffWdfEligibility;
+    return (
+      this.wdfEligibilityStatus.overall &&
+      this.wdfEligibilityStatus.currentWorkplace &&
+      this.wdfEligibilityStatus.currentStaff
+    );
   }
 
   public showMeetingWithChangesMessage(): boolean {
-    return this.overallWdfEligibility && !(this.workplaceWdfEligibility && this.staffWdfEligibility);
+    return (
+      this.wdfEligibilityStatus.overall &&
+      !(this.wdfEligibilityStatus.currentWorkplace && this.wdfEligibilityStatus.currentStaff)
+    );
   }
 }
