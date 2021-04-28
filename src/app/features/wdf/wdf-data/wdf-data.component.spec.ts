@@ -46,94 +46,72 @@ describe('WdfDataComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the correct message and timeframe if meeting WDF requirements', async () => {
-    const { component, fixture, getByText } = await setup();
-    const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
+  describe('Tab icons', async () => {
+    it('should display a green tick on the workplace tab when the user has qualified for WDF and workplace is still eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const greenTickVisuallyHiddenMessage = 'Green tick';
 
-    component.overallWdfEligibility = true;
-    component.workplaceWdfEligibility = true;
-    component.staffWdfEligibility = true;
-    fixture.detectChanges();
+      component.workplaceWdfEligibility = true;
+      component.staffWdfEligibility = false;
+      fixture.detectChanges();
 
-    expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
-  });
+      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
 
-  it('should display the "Keeping data up to date" message if meeting WDF requirements with data changes', async () => {
-    const { component, fixture, getByText } = await setup();
-    const keepUpToDateMessage = 'Keeping your data up to date will save you time next year';
+    it('should display a green tick in staff tab when the user has qualified for WDF and is still eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const greenTickVisuallyHiddenMessage = 'Green tick';
 
-    component.overallWdfEligibility = true;
-    component.workplaceWdfEligibility = true;
-    component.staffWdfEligibility = false;
-    fixture.detectChanges();
+      component.workplaceWdfEligibility = false;
+      component.staffWdfEligibility = true;
+      fixture.detectChanges();
 
-    expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
-  });
+      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
 
-  it('should display a green tick on the workplace tab when the user has qualified for WDF and workplace is still eligible', async () => {
-    const { component, fixture, getByText } = await setup();
-    const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display a green tick on the staff tab and the workplace tab when the user has qualified for WDF and staff records and workplace are still eligible', async () => {
+      const { component, fixture, getAllByText } = await setup();
+      const greenTickVisuallyHiddenMessage = 'Green tick';
 
-    component.workplaceWdfEligibility = true;
-    component.staffWdfEligibility = false;
-    fixture.detectChanges();
+      component.workplaceWdfEligibility = true;
+      component.staffWdfEligibility = true;
+      fixture.detectChanges();
 
-    expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-  });
+      expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+    });
 
-  it('should display a green tick in staff tab when the user has qualified for WDF and is still eligible', async () => {
-    const { component, fixture, getByText } = await setup();
-    const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display an orange flag on the workplace tab when the user has qualified for WDF but workplace is no longer eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-    component.workplaceWdfEligibility = false;
-    component.staffWdfEligibility = true;
-    fixture.detectChanges();
+      component.workplaceWdfEligibility = false;
+      component.staffWdfEligibility = true;
+      fixture.detectChanges();
 
-    expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-  });
+      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
 
-  it('should display a green tick on the staff tab and the workplace tab when the user has qualified for WDF and staff records and workplace are still eligible', async () => {
-    const { component, fixture, getAllByText } = await setup();
-    const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display an orange flag on the staff tab when the user has qualified for WDF but staff records are no longer eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-    component.workplaceWdfEligibility = true;
-    component.staffWdfEligibility = true;
-    fixture.detectChanges();
+      component.workplaceWdfEligibility = true;
+      component.staffWdfEligibility = false;
+      fixture.detectChanges();
 
-    expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-  });
+      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
 
-  it('should display an orange flag on the workplace tab when the user has qualified for WDF but workplace is no longer eligible', async () => {
-    const { component, fixture, getByText } = await setup();
-    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+    it('should display an orange flag on the staff tab and workplace tab when the user has qualified for WDF but staff records and workplace are no longer eligible', async () => {
+      const { component, fixture, getAllByText } = await setup();
+      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-    component.workplaceWdfEligibility = false;
-    component.staffWdfEligibility = true;
-    fixture.detectChanges();
+      component.workplaceWdfEligibility = false;
+      component.staffWdfEligibility = false;
+      fixture.detectChanges();
 
-    expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-  });
-
-  it('should display an orange flag on the staff tab when the user has qualified for WDF but staff records are no longer eligible', async () => {
-    const { component, fixture, getByText } = await setup();
-    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-
-    component.workplaceWdfEligibility = true;
-    component.staffWdfEligibility = false;
-    fixture.detectChanges();
-
-    expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-  });
-
-  it('should display an orange flag on the staff tab and workplace tab when the user has qualified for WDF but staff records and workplace are no longer eligible', async () => {
-    const { component, fixture, getAllByText } = await setup();
-    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-
-    component.workplaceWdfEligibility = false;
-    component.staffWdfEligibility = false;
-    fixture.detectChanges();
-
-    expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+      expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+    });
   });
 
   describe('getStaffWdfEligibility', () => {
@@ -159,6 +137,32 @@ describe('WdfDataComponent', () => {
       fixture.detectChanges();
 
       expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
+    });
+  });
+
+  describe('WdfStatusMessageComponent', async () => {
+    it('should display the correct message and timeframe if meeting WDF requirements', async () => {
+      const { component, fixture, getByText } = await setup();
+      const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
+
+      component.overallWdfEligibility = true;
+      component.workplaceWdfEligibility = true;
+      component.staffWdfEligibility = true;
+      fixture.detectChanges();
+
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the "Keeping data up to date" message if meeting WDF requirements with data changes', async () => {
+      const { component, fixture, getByText } = await setup();
+      const keepUpToDateMessage = 'Keeping your data up to date will save you time next year';
+
+      component.overallWdfEligibility = true;
+      component.workplaceWdfEligibility = true;
+      component.staffWdfEligibility = false;
+      fixture.detectChanges();
+
+      expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
     });
   });
 });
