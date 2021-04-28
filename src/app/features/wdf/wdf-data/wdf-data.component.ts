@@ -92,7 +92,7 @@ export class WdfDataComponent implements OnInit {
           .pipe(take(1))
           .subscribe((workers) => {
             this.workers = sortBy(workers, ['wdfEligible']);
-            this.staffWdfEligibility = this.getStaffWdfEligibility();
+            this.staffWdfEligibility = this.getStaffWdfEligibility(workers);
           }),
       );
     }
@@ -102,7 +102,6 @@ export class WdfDataComponent implements OnInit {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.report = report;
-        console.log(report);
         this.setDates(report);
         this.setWdfEligibility(report);
       }),
@@ -127,7 +126,7 @@ export class WdfDataComponent implements OnInit {
     this.workplaceWdfEligibility = report.wdf.workplace;
   }
 
-  public getStaffWdfEligibility(): boolean {
-    return this.workers.every((worker) => worker.wdfEligible === true);
+  public getStaffWdfEligibility(workers: Worker[]): boolean {
+    return workers.every((worker) => worker.wdfEligible === true);
   }
 }

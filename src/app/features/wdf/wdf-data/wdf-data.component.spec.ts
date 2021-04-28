@@ -17,12 +17,13 @@ import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerSer
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { WdfModule } from '../wdf.module.js';
 import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfDataComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -120,7 +121,7 @@ describe('WdfDataComponent', () => {
 
   describe('getStaffWdfEligibility', () => {
     it('should return true when all workers are WDF eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { component, fixture } = await setup();
 
       component.workers = [workerBuilder(), workerBuilder(), workerBuilder()];
       component.workers[0].wdfEligible = true;
@@ -128,11 +129,11 @@ describe('WdfDataComponent', () => {
       component.workers[2].wdfEligible = true;
       fixture.detectChanges();
 
-      expect(component.getStaffWdfEligibility()).toBeTrue();
+      expect(component.getStaffWdfEligibility(component.workers)).toBeTrue();
     });
 
     it('should return false when any worker is not WDF eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { component, fixture } = await setup();
 
       component.workers = [workerBuilder(), workerBuilder(), workerBuilder()];
       component.workers[0].wdfEligible = true;
@@ -140,7 +141,7 @@ describe('WdfDataComponent', () => {
       component.workers[2].wdfEligible = true;
       fixture.detectChanges();
 
-      expect(component.getStaffWdfEligibility()).toBeFalse();
+      expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
     });
   });
 });
