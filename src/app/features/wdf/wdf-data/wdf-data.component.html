@@ -1,18 +1,24 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
       <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
       WDF data
     </h1>
   </div>
 </div>
 
-<h4 class="govuk-heading-s govuk-!-margin-bottom-8">
-  Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
-</h4>
+<app-wdf-status-message
+  [wdfStartDate]="wdfStartDate"
+  [wdfEndDate]="wdfEndDate"
+  [wdfEligibilityStatus]="wdfEligibilityStatus"
+></app-wdf-status-message>
 
 <app-tabs>
-  <app-tab [greenTick]="true" [title]="'Workplace'">
+  <app-tab
+    [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [title]="'Workplace'"
+  >
     <app-workplace-summary
       *ngIf="workplace"
       [workplace]="workplace"
@@ -21,12 +27,16 @@
       [wdfView]="true"
     ></app-workplace-summary>
   </app-tab>
-  <app-tab *ngIf="canViewWorker" [greenTick]="true" [title]="'Staff records'">
-    <app-staff-summary
+  <app-tab
+    *ngIf="canViewWorker"
+    [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentStaff"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [title]="'Staff records'"
+  >
+    <app-wdf-staff-summary
       *ngIf="workers && workplace"
       [workplace]="workplace"
       [workers]="workers"
-      [wdfView]="true"
-    ></app-staff-summary>
+    ></app-wdf-staff-summary>
   </app-tab>
 </app-tabs>

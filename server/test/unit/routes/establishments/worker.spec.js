@@ -219,4 +219,46 @@ describe('worker route', () => {
       expect(typeof res._getData().workers[0].missingMandatoryTrainingCount).to.equal('number');
     });
   });
+
+  describe('getTotalWorkers()', () => {
+    const workerBuilder = build('Worker', {
+      fields: {
+        uid: fake((f) => f.random.uuid()),
+      },
+    });
+
+    const worker = workerBuilder();
+    beforeEach(() => {
+      sinon.stub(models.establishment, 'workers').returns({
+        id: 123,
+        workers: [worker],
+      });
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should return a total number of staff', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker/total',
+        params: {
+          establishmentId: 123,
+        },
+      });
+
+      req.username = 'aylingw';
+      req.userUid = '1234';
+      req.establishment = {
+        id: 123,
+      };
+
+      const res = httpMocks.createResponse();
+      await workerRoute.getTotalWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal({
+        total: 1,
+      });
+    });
+  });
 });
