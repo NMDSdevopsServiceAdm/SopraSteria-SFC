@@ -9,12 +9,4 @@ import { Worker } from '../../../core/model/worker.model';
 export class WdfRequirementsStateComponent {
   @Input() overallWdfEligibility: boolean;
   @Input() worker: Worker;
-
-  public showMeetingRequirementsMessage(): boolean {
-    return this.overallWdfEligibility && this.worker.wdfEligible;
-  }
-
-  public showCheckStaffRecordMessage(): boolean {
-    return this.overallWdfEligibility && !this.worker.wdfEligible;
-  }
 }
