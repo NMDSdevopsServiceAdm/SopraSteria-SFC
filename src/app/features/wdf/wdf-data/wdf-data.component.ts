@@ -13,6 +13,9 @@ import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
+import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
+import { Worker } from '../../../core/model/worker.model';
+
 @Component({
   selector: 'app-wdf-data',
   templateUrl: './wdf-data.component.html',
@@ -27,6 +30,7 @@ export class WdfDataComponent implements OnInit {
   public wdfStartDate: string;
   public wdfEndDate: string;
   public returnUrl: URLStructure;
+  public wdfEligibilityStatus: WdfEligibilityStatus = {};
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -47,24 +51,14 @@ export class WdfDataComponent implements OnInit {
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
-
-    if (this.canViewWorker) {
-      this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplaceUid)
-          .pipe(take(1))
-          .subscribe((workers) => {
-            this.workers = sortBy(workers, ['wdfEligible']);
-          }),
-      );
-    }
+    this.getWorkers();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  private setWorkplace() {
+  private setWorkplace(): void {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
@@ -73,11 +67,26 @@ export class WdfDataComponent implements OnInit {
     );
   }
 
+  private getWorkers(): void {
+    if (this.canViewWorker) {
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(this.workplaceUid)
+          .pipe(take(1))
+          .subscribe((workers) => {
+            this.workers = sortBy(workers, ['wdfEligible']);
+            this.wdfEligibilityStatus.currentStaff = this.getStaffWdfEligibility(workers);
+          }),
+      );
+    }
+  }
+
   private getWdfReport() {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.report = report;
         this.setDates(report);
+        this.setWdfEligibility(report);
       }),
     );
   }
@@ -93,5 +102,14 @@ export class WdfDataComponent implements OnInit {
   private setDates(report: WDFReport): void {
     this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+  }
+
+  private setWdfEligibility(report: WDFReport): void {
+    this.wdfEligibilityStatus.overall = report.wdf.overall;
+    this.wdfEligibilityStatus.currentWorkplace = report.wdf.workplace;
+  }
+
+  public getStaffWdfEligibility(workers: Worker[]): boolean {
+    return workers.every((worker) => worker.wdfEligible === true);
   }
 }
