@@ -112,6 +112,43 @@ describe('WdfDataComponent', () => {
 
       expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
     });
+    //
+    it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const redCrossVisuallyHiddenMessage = 'Red warning flag';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentWorkplace = false;
+      component.wdfEligibilityStatus.currentStaff = true;
+      fixture.detectChanges();
+
+      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display a red cross on the staff tab when the user has not qualified for WDF and staff records are not currently eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const redCrossVisuallyHiddenMessage = 'Red warning flag';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentStaff = false;
+      component.wdfEligibilityStatus.currentWorkplace = true;
+
+      fixture.detectChanges();
+
+      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display a red cross on the staff tab and workplace tab when the user has not qualified for WDF and staff records and workplace are not currently eligible', async () => {
+      const { component, fixture, getAllByText } = await setup();
+      const redCrossVisuallyHiddenMessage = 'Red warning flag';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentWorkplace = false;
+      component.wdfEligibilityStatus.currentStaff = false;
+      fixture.detectChanges();
+
+      expect(getAllByText(redCrossVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+    });
   });
 
   describe('getStaffWdfEligibility', () => {
