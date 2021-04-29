@@ -227,19 +227,24 @@ const deleteWorker = async (req, res) => {
   }
 };
 
-router.route('/total').get(async (req, res) => {
+const getTotalWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
 
+  const where = {
+    archived: false,
+  };
+
   try {
-    const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+    const allWorkers = await models.establishment.workers(establishmentId, where, []);
+
     return res.status(200).json({
-      total: allTheseWorkers.length,
+      total: get(allWorkers, 'workers') ? allWorkers.workers.length : 0,
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);
     return res.status(503).send('Failed to get total workers for establishment having id: ' + establishmentId);
   }
-});
+};
 
 const viewAllWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -334,6 +339,7 @@ router.route('/').get(hasPermission('canViewWorker'), viewAllWorkers);
 router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
+router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
 
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
@@ -346,3 +352,4 @@ router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
 module.exports = router;
 module.exports.editWorker = editWorker;
 module.exports.viewAllWorkers = viewAllWorkers;
+module.exports.getTotalWorkers = getTotalWorkers;
