@@ -50,79 +50,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authService.isOnAdminScreen = false;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
-    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
-    this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
-    this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
-    this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
-    this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
-    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
+
+    this.getPermissions();
 
     if (this.workplace) {
-      this.subscriptions.add(
-        this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
-          this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
-        }),
-      );
-      this.subscriptions.add(
-        this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
-          (total) => {
-            if (total) {
-              this.totalStaffRecords = total;
-            }
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        ),
-      );
+      this.getCanViewBenchmarks();
+      this.getTotalStaffRecords();
+
       if (this.canViewListOfWorkers) {
-        this.subscriptions.add(
-          this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-            (workers) => {
-              this.workerService.setWorkers(workers);
-              if (workers.length > 0) {
-                this.trainingAlert = workers[0].trainingAlert;
-              }
-            },
-            (error) => {
-              console.error(error.error);
-            },
-          ),
-        );
+        this.setWorkersAndTrainingAlert();
       }
 
-      this.subscriptions.add(
-        this.userService.getEstablishments().subscribe((res) => {
-          this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
-        }),
-      );
-      this.subscriptions.add(
-        this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-          this.showSecondUserBanner = this.canAddUser && users.length === 1;
-        }),
-      );
+      this.setSubsidiaryCount();
+      this.setShowSecondUserBanner();
     }
-    const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
-    this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
 
-    this.userService.updateReturnUrl({
-      url: ['/dashboard'],
-      fragment: 'users',
-    });
-
-    // get latest notification after every 30 seconds
-    this.subscriptions.add(
-      interval(30000).subscribe(() => {
-        this.notificationsService.getAllNotifications().subscribe(
-          (notifications) => {
-            this.notificationsService.notifications$.next(notifications);
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        );
-      }),
-    );
+    this.getLastLoggedIn();
+    this.setUserServiceReturnUrl();
+    this.setUpNotificationSubscription();
   }
 
   public onDeleteWorkplace(event: Event): void {
@@ -185,6 +130,98 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       ),
     );
+  }
+
+  private getPermissions(): void {
+    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
+    this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
+    this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
+  }
+
+  private getCanViewBenchmarks(): void {
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
+        this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
+      }),
+    );
+  }
+
+  private getTotalStaffRecords(): void {
+    this.subscriptions.add(
+      this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
+        (total) => {
+          if (total) {
+            this.totalStaffRecords = total;
+          }
+        },
+        (error) => {
+          console.error(error.error);
+        },
+      ),
+    );
+  }
+
+  private setWorkersAndTrainingAlert(): void {
+    this.subscriptions.add(
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
+        (workers) => {
+          this.workerService.setWorkers(workers);
+          if (workers.length > 0) {
+            this.trainingAlert = workers[0].trainingAlert;
+          }
+        },
+        (error) => {
+          console.error(error.error);
+        },
+      ),
+    );
+  }
+
+  private setShowSecondUserBanner(): void {
+    this.subscriptions.add(
+      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
+        this.showSecondUserBanner = this.canAddUser && users.length === 1;
+      }),
+    );
+  }
+
+  private setSubsidiaryCount(): void {
+    this.subscriptions.add(
+      this.userService.getEstablishments().subscribe((res) => {
+        this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
+      }),
+    );
+  }
+
+  private setUpNotificationSubscription(): void {
+    // get latest notification after every 30 seconds
+    this.subscriptions.add(
+      interval(30000).subscribe(() => {
+        this.notificationsService.getAllNotifications().subscribe(
+          (notifications) => {
+            this.notificationsService.notifications$.next(notifications);
+          },
+          (error) => {
+            console.error(error.error);
+          },
+        );
+      }),
+    );
+  }
+
+  private setUserServiceReturnUrl(): void {
+    this.userService.updateReturnUrl({
+      url: ['/dashboard'],
+      fragment: 'users',
+    });
+  }
+
+  private getLastLoggedIn(): void {
+    const lastLoggedIn = this.userService.loggedInUser.lastLoggedIn;
+    this.lastLoggedIn = lastLoggedIn ? lastLoggedIn : null;
   }
 
   get numberOfNewNotifications() {
