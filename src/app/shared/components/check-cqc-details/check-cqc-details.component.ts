@@ -3,28 +3,23 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-workplace-tab',
-  templateUrl: './workplace-tab.component.html',
+  selector: 'app-check-cqc-details',
+  templateUrl: './check-cqc-details.component.html',
 })
-export class WorkplaceTabComponent implements OnInit {
+export class CheckCQCDetailsComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
-  @Input() showCqcRegistrationAlert: boolean;
 
-  protected subscriptions: Subscription = new Subscription();
-
-  public updateWorkplaceAlert: boolean;
-  public showCqcRegistrationAlertBanner: boolean;
+  public cqcDetailsCheck: boolean;
+  public locationId: string;
 
   constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    this.showCqcRegistrationAlertBanner = this.showCqcRegistrationAlert;
+    this.locationId = this.establishmentService.primaryWorkplace.locationId;
 
-    this.updateWorkplaceAlert =
-      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.cqcDetailsCheck = true;
   }
 }

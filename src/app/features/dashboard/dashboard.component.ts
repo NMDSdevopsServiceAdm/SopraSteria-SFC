@@ -33,6 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplaceUid: string | null;
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
+  public showCQCDetailsAlert: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -56,6 +57,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
     this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
+    this.showCQCDetailsAlert = false;
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -63,6 +65,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
         }),
       );
+
+      if (this.workplace.locationId) {
+        this.subscriptions.add(
+          this.establishmentService.getCQCRegistrationStatus(this.workplace.locationId).subscribe((response) => {
+            this.showCQCDetailsAlert = response.cqcStatusMatch === false;
+            console.log('showCQCDetailsAlert', this.showCQCDetailsAlert);
+          }),
+        );
+      }
+
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
           (total) => {

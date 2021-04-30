@@ -1,4 +1,8 @@
 <h2 class="govuk-heading-m">Workplace</h2>
+<ng-container *ngIf="this.showCqcRegistrationAlertBanner">
+  <app-check-cqc-details></app-check-cqc-details>
+</ng-container>
+
 <ng-container *ngIf="updateWorkplaceAlert; then alert; else summary"></ng-container>
 <ng-template #alert>
   <app-inset-text *ngIf="updateWorkplaceAlert" color="todo">
