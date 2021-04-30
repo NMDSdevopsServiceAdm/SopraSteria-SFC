@@ -961,25 +961,27 @@ module.exports = function (sequelize, DataTypes) {
           ],
           [
             sequelize.literal(
-              `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" >= '${currentDate}' AND "Expires" <= '${expiresSoon}')`,
+              `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
             ),
             'expiringTrainingCount',
           ],
           [
             sequelize.literal(
-              `(
+              `
+              (
                 SELECT
-                  COUNT(0)
-                FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
-                AND "JobFK" = "workers"."MainJobFKValue"
-                AND "TrainingCategoryFK" NOT IN (
-                  SELECT
-                    "CategoryFK"
-                  FROM cqc."WorkerTraining"
-                  WHERE "WorkerFK" = "workers"."ID"
-                )
-              )`,
+                    COUNT(0)
+                  FROM cqc."MandatoryTraining"
+                  WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                  AND "JobFK" = "workers"."MainJobFKValue"
+                  AND "TrainingCategoryFK" NOT IN (
+                    SELECT
+                      DISTINCT "CategoryFK"
+                    FROM cqc."WorkerTraining"
+                    WHERE "WorkerFK" = "workers"."ID"
+                  )
+              )
+              `,
             ),
             'missingMandatoryTrainingCount',
           ],
