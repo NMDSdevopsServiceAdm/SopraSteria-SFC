@@ -124,7 +124,7 @@ describe('WdfDataComponent', () => {
 
       expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
     });
-    //
+ 
     it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const redCrossVisuallyHiddenMessage = 'Red cross';
