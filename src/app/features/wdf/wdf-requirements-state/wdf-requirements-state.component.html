@@ -1,5 +1,5 @@
 <span class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap">
-  <ng-container *ngIf="overallWdfEligibility && worker.wdfEligible">
+  <ng-container *ngIf="worker.wdfEligible">
     <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
     <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />
     <span class="govuk-visually-hidden">Green tick</span>Meeting requirements
@@ -7,5 +7,9 @@
   <ng-container *ngIf="overallWdfEligibility && !worker.wdfEligible">
     <img class="govuk-!-margin-right-1" src="/assets/images/flag-orange.svg" alt="" />
     <span class="govuk-visually-hidden">Orange warning flag</span>Check this staff record
+  </ng-container>
+  <ng-container *ngIf="!overallWdfEligibility && !worker.wdfEligible">
+    <img class="govuk-!-margin-right-1" src="/assets/images/cross-icon.svg" alt="" />
+    <span class="govuk-visually-hidden">Red cross</span>Check this staff record
   </ng-container>
 </span>
