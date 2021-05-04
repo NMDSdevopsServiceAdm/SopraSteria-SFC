@@ -1,12 +1,12 @@
-<dl *ngIf="workplace" class="govuk-summary-list" [class.govuk-summary-list--contains-warnings]="totalStaffWarning">
+<dl
+  *ngIf="workplace"
+  class="govuk-summary-list"
+  [class.govuk-summary-list--contains-warnings]="totalStaffWarning || staffMismatchWarning()"
+>
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      <div>
-        Workplace name
-      </div>
-      <div *ngIf="workplace && workplace.address" class="govuk-!-padding-top-2">
-        Workplace address
-      </div>
+      <div>Workplace name</div>
+      <div *ngIf="workplace && workplace.address" class="govuk-!-padding-top-2">Workplace address</div>
     </dt>
     <dd class="govuk-summary-list__value">
       <div>
@@ -22,34 +22,26 @@
       </div>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'update-workplace-details']" (click)="setReturn()">
-        <span *ngIf="!workplace.name">
-          Provide information
-        </span>
-        <span *ngIf="workplace.name">
-          Change
-        </span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="''"
+        [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+        [hasData]="workplace.name"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
   <div class="govuk-summary-list__row" *ngIf="workplace?.isRegulated">
-    <dt class="govuk-summary-list__key">
-      CQC location ID
-    </dt>
+    <dt class="govuk-summary-list__key">CQC location ID</dt>
     <dd class="govuk-summary-list__value">
       {{ workplace.locationId }}
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()">
-        Change
-      </a>
+      <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Employer type
-    </dt>
+    <dt class="govuk-summary-list__key">Employer type</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.employerType">
         <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
@@ -61,92 +53,87 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'type-of-employer']" (click)="setReturn()">
-        <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value)">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.employerType?.other || workplace.employerType?.value">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> employer type</span>
-      </a>
+
+      <app-summary-record-change
+        [explanationText]="' employer type'"
+        [link]="['/workplace', workplace.uid, 'type-of-employer']"
+        [hasData]="(workplace.employerType?.other || workplace.employerType?.value)"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row" [ngClass]="{'govuk-panel--light-blue': cqcStatusRequested}">
-    <dt class="govuk-summary-list__key" [ngClass]="{'govuk-!-padding-left-3': cqcStatusRequested}">
-      Main service
-    </dt>
+  <div class="govuk-summary-list__row" [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }">
+    <dt class="govuk-summary-list__key" [ngClass]="{ 'govuk-!-padding-left-3': cqcStatusRequested }">Main service</dt>
     <dd class="govuk-summary-list__value" data-testid="main-service-name">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.mainService">
         {{ cqcStatusRequested ? requestedServiceName : workplace.mainService?.name }}
-        <ng-container *ngIf="(cqcStatusRequested && requestedServiceOtherName)
-        || (workplace.mainService?.other && !cqcStatusRequested)"> - {{ cqcStatusRequested ? requestedServiceOtherName : workplace.mainService?.other }}
+        <ng-container
+          *ngIf="
+            (cqcStatusRequested && requestedServiceOtherName) || (workplace.mainService?.other && !cqcStatusRequested)
+          "
+        >
+          - {{ cqcStatusRequested ? requestedServiceOtherName : workplace.mainService?.other }}
         </ng-container>
       </app-summary-record-value>
     </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [ngClass]="{'govuk-!-padding-right-3': cqcStatusRequested}" data-testid="main-service-change-or-pending">
-      <a *ngIf="!cqcStatusRequested; else cqcPending" [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']" (click)="setReturn()">
+    <dd
+      *ngIf="canEditEstablishment"
+      class="govuk-summary-list__actions"
+      [ngClass]="{ 'govuk-!-padding-right-3': cqcStatusRequested }"
+      data-testid="main-service-change-or-pending"
+    >
+      <a
+        *ngIf="!cqcStatusRequested; else cqcPending"
+        [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']"
+        (click)="setReturn()"
+      >
         <ng-container *ngIf="!workplace.mainService">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.mainService">
-          Change
-        </ng-container>
+        <ng-container *ngIf="workplace.mainService"> Change </ng-container>
         <span class="govuk-visually-hidden"> main service</span>
       </a>
       <ng-template #cqcPending>
-        <ng-container>
-          Pending
-        </ng-container>
+        <ng-container> Pending </ng-container>
         <span class="govuk-visually-hidden"> main service</span>
       </ng-template>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Other services
-    </dt>
+    <dt class="govuk-summary-list__key">Other services</dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!workplace.otherServices?.length; else otherServices">
-        -
+      <ng-container [ngSwitch]="workplace.otherServices.value">
+        <span *ngSwitchCase="undefined"> - </span>
+        <span *ngSwitchCase="'No'"> None </span>
+        <div *ngSwitchCase="'Yes'">
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            <ng-container *ngFor="let categories of workplace.otherServices.services">
+              <li *ngFor="let service of filterAndSortOtherServices(categories.services)">
+                {{ service.name }}<ng-container *ngIf="service.other"> - {{ service.other }}</ng-container>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
       </ng-container>
-      <ng-template #otherServices>
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <ng-container *ngFor="let categories of workplace.otherServices">
-            <li *ngFor="let service of filterAndSortOtherServices(categories.services)">
-              {{ service.name }}<ng-container *ngIf="service.other"> - {{ service.other }}</ng-container>
-            </li>
-          </ng-container>
-        </ul>
-      </ng-template>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'other-services']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.otherServices?.length">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.otherServices?.length">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> other services</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' other services'"
+        [link]="['/workplace', workplace.uid, 'other-services']"
+        [hasData]="(workplace.otherServices.value !== null)"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="hasCapacity">
-    <dt class="govuk-summary-list__key">
-      Service capacity
-    </dt>
+    <dt class="govuk-summary-list__key">Service capacity</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.capacities">
-        <ng-container *ngIf="!workplace.capacities?.length; else capacities">
-          -
-        </ng-container>
+        <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
         <ng-template #capacities>
           <ul class="govuk-list govuk-!-margin-bottom-0">
             <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
@@ -155,55 +142,43 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'capacity-of-services']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.capacities?.length">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.capacities?.length">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> service capacities</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' service capacities'"
+        [link]="['/workplace', workplace.uid, 'capacity-of-services']"
+        [hasData]="workplace.capacities?.length"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Service users
-    </dt>
+    <dt class="govuk-summary-list__key">Service users</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.serviceUsers">
-        <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers">
-          -
-        </ng-container>
+        <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers"> - </ng-container>
         <ng-template #serviceUsers>
           <ul class="govuk-list govuk-!-margin-bottom-0">
             <li *ngFor="let users of workplace.serviceUsers">
-              {{ users.service }}<ng-container *ngIf="users.other"> - {{ users.other }}</ng-container>
+              {{ users.service }}
+              <ng-container *ngIf="users.other"> - {{ users.other }}</ng-container>
             </li>
           </ul>
         </ng-template>
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'service-users']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.serviceUsers?.length">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.serviceUsers?.length">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> service users</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' service users'"
+        [link]="['/workplace', workplace.uid, 'service-users']"
+        [hasData]="workplace.serviceUsers?.length"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
+
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Data sharing
-    </dt>
+    <dt class="govuk-summary-list__key">Data sharing</dt>
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="!workplace.share?.enabled && workplace.share?.with?.length === 0; else sharing">
         -
@@ -214,27 +189,19 @@
       </ng-template>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'sharing-data']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.share?.enabled">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.share?.enabled">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> data sharing</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' data sharing'"
+        [link]="['/workplace', workplace.uid, 'sharing-data']"
+        [hasData]="workplace.share?.enabled"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div *ngIf="workplace.share.with.includes('Local Authority')" class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Local authorities shared with
-    </dt>
+    <dt class="govuk-summary-list__key">Local authorities shared with</dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="workplace.localAuthorities?.length === 0; else localAuthorities">
-        -
-      </ng-container>
+      <ng-container *ngIf="workplace.localAuthorities?.length === 0; else localAuthorities"> - </ng-container>
       <ng-template #localAuthorities>
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let localAuthorities of workplace.localAuthorities">
@@ -244,42 +211,53 @@
       </ng-template>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'sharing-data-with-local-authorities']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.share?.enabled">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.share?.enabled">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> local authorities data is shared with</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' local authorities data is shared with'"
+        [link]="['/workplace', workplace.uid, 'sharing-data-with-local-authorities']"
+        [hasData]="workplace.share?.enabled"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Total number of staff
-    </dt>
-    <dd class="govuk-summary-list__value">
+    <dt class="govuk-summary-list__key" [class.asc-no-border]="staffMismatchWarning()">Total number of staff</dt>
+    <dd class="govuk-summary-list__value" [class.asc-no-border]="staffMismatchWarning()">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
     </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'total-staff']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.numberOfStaff">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.numberOfStaff">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> total number of staff</span>
-      </a>
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
+      <app-summary-record-change
+        [explanationText]="' total number of staff'"
+        [link]="['/workplace', workplace.uid, 'total-staff']"
+        [hasData]="isNumber(workplace.numberOfStaff)"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
-    
+  <ng-container *ngIf="staffMismatchWarning()">
+    <div class="govuk-summary-list__row spacer"></div>
+    <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-visually-hidden">Total number of staff warning</span>
+      </dt>
+      <dd class="govuk-summary-list__value">
+        <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
+        <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
+        <p *ngIf="workplace.numberOfStaff == null">The total number of staff is missing</p>
+      </dd>
+      <dd class="govuk-summary-list__actions">
+        <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row spacer">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </ng-container>
+
   <ng-container *ngIf="wdfView">
     <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
       <dt class="govuk-summary-list__key">
@@ -303,38 +281,28 @@
     </div>
 
     <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">
-        Staff records
-      </dt>
+      <dt class="govuk-summary-list__key">Staff records</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
           {{ workplace.totalWorkers }}
         </app-summary-record-value>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']" (click)="setReturn()">
-          <ng-container *ngIf="!workplace.totalWorkers || !workplace.totalWorkers === 0">
-            Provide information
-            <span class="govuk-visually-hidden"> for</span>
-          </ng-container>
-          <ng-container *ngIf="workplace.totalWorkers > 0">
-            Change
-          </ng-container>
-          <span class="govuk-visually-hidden"> total number of staff</span>
-        </a>
+        <app-summary-record-change
+          [explanationText]="' total number of staff'"
+          [link]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']"
+          [hasData]="workplace.totalWorkers > 0"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
       </dd>
     </div>
   </ng-container>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Current staff vacancies
-    </dt>
+    <dt class="govuk-summary-list__key">Current staff vacancies</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.vacancies">
-        <ng-container *ngIf="!workplace.vacancies?.length; else vacancies">
-          -
-        </ng-container>
+        <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
         <ng-template #vacancies>
           <ng-container *ngIf="isArray(workplace.vacancies)">
             <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -346,28 +314,20 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'vacancies']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.vacancies?.length">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.vacancies?.length">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> staff vacancies</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' staff vacancies'"
+        [link]="['/workplace', workplace.uid, 'vacancies']"
+        [hasData]="workplace.vacancies?.length"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      New starters
-    </dt>
+    <dt class="govuk-summary-list__key">New starters</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.starters">
-        <ng-container *ngIf="!workplace.starters?.length; else starters">
-          -
-        </ng-container>
+        <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
         <ng-template #starters>
           <ng-container *ngIf="isArray(workplace.starters)">
             <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -381,28 +341,20 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'starters']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.starters?.length">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.starters?.length">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> new starters</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' new starters'"
+        [link]="['/workplace', workplace.uid, 'starters']"
+        [hasData]="workplace.starters?.length"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Staff leavers
-    </dt>
+    <dt class="govuk-summary-list__key">Staff leavers</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.leavers">
-        <ng-container *ngIf="!workplace.leavers?.length; else leavers">
-          -
-        </ng-container>
+        <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
         <ng-template #leavers>
           <ng-container *ngIf="isArray(workplace.leavers)">
             <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -416,16 +368,12 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <a [routerLink]="['/workplace', workplace.uid, 'leavers']" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.leavers?.length">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.leavers?.length">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> staff leavers</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' staff leavers'"
+        [link]="['/workplace', workplace.uid, 'leavers']"
+        [hasData]="workplace.leavers?.length"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 </dl>

@@ -9,11 +9,10 @@ const search = async function (req, res) {
     const where = {
       name: req.body.name,
       username: req.body.username
-    }
+    };
 
     const users = await models.user.searchUsers(where);
     const results = await UserTransformer(users);
-
     return res.status(200).json(results);
   } catch (err) {
     return res.status(500).send();

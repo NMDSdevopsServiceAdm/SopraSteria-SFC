@@ -7,21 +7,15 @@ enum Path {
   ACCESSIBILITY_STATEMENT = '/accessibility-statement',
   TERMS_AND_CONDITIONS = '/terms-and-conditions',
   PRIVACY_NOTICE = '/privacy-notice',
+  CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
+  THANK_YOU = '/thank-you',
 }
 
 export const publicJourney: JourneyRoute = {
   children: [
     {
-      title: 'Feedback',
-      path: Path.FEEDBACK,
-    },
-    {
       title: 'Cookie policy',
       path: Path.COOKIE_POLICY,
-    },
-    {
-      title: 'Contact us',
-      path: Path.CONTACT_US,
     },
     {
       title: 'Accessibility statement',
@@ -34,6 +28,24 @@ export const publicJourney: JourneyRoute = {
     {
       title: 'Privacy notice',
       path: Path.PRIVACY_NOTICE,
+    },
+    {
+      title: 'Thank you',
+      path: Path.THANK_YOU,
+    },
+    {
+      title: 'Contact us or leave feedback',
+      path: Path.CONTACT_US_OR_LEAVE_FEEDBACK,
+      children: [
+        {
+          title: 'Feedback',
+          path: Path.FEEDBACK,
+        },
+        {
+          title: 'Contact us',
+          path: Path.CONTACT_US,
+        },
+      ],
     },
   ],
 };

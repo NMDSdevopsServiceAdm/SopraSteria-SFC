@@ -4,18 +4,25 @@
   border: 0;
 }
 
-.govuk-tabs__list-item .govuk-tabs__tab--alert {
-  background-image: url('/assets/images/flag-orange.svg');
+.govuk-tabs__list-item .govuk-tabs__tab--generic-alert {
   background-repeat: no-repeat;
-  background-position: calc(100% - 2px);
+  background-position: calc(100%);
   background-size: 22px;
-  padding-right: 35px;
+  padding-left: 30px;
+  padding-top: 10px;
 }
 
-.govuk-tabs__list-item .govuk-tabs__tab--red-alert {
+.govuk-tabs__tab--alert {
+  @extend .govuk-tabs__tab--generic-alert;
+  background-image: url('/assets/images/flag-orange.svg');
+}
+
+.govuk-tabs__tab--red-alert {
+  @extend .govuk-tabs__tab--generic-alert;
   background-image: url('/assets/images/flag-red.svg');
-  background-repeat: no-repeat;
-  background-position: calc(100% - 2px);
-  background-size: 22px;
-  padding-right: 35px;
+}
+
+.govuk-tabs__tab--green-tick {
+  @extend .govuk-tabs__tab--generic-alert;
+  background-image: url('/assets/images/tick-icon.svg');
 }

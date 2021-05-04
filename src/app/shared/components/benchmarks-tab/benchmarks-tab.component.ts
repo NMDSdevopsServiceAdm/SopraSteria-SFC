@@ -3,7 +3,9 @@ import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
@@ -29,12 +31,25 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     private benchmarksService: BenchmarksService,
     private elRef: ElementRef,
     private pdfService: PdfService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
+      this.permissionsService
+        .getPermissions(this.workplace.uid)
+        .pipe(
+          map((permission) => permission.permissions.canViewBenchmarks),
+          filter((canViewBenchmarks) => canViewBenchmarks),
+          switchMap(() => {
+            return this.benchmarksService.getTileData(this.workplace.uid, [
+              'sickness',
+              'turnover',
+              'pay',
+              'qualifications',
+            ]);
+          }),
+        )
         .subscribe((data) => {
           if (data) {
             this.tilesData = data;

@@ -49,6 +49,7 @@ class User {
     this._lastLogin = null;
     this._establishmentUid = null;
     this._agreedUpdatedTerms = false;
+    this._registrationSurveyCompleted = null;
 
     // abstracted properties
     const thisUserManager = new UserProperties();
@@ -183,8 +184,16 @@ class User {
     return this._tribalId;
   }
 
+  get registrationSurveyCompleted() {
+    return this._registrationSurveyCompleted;
+  }
+
   get establishmentUid() {
     return this._establishmentUid;
+  }
+
+  get displayStatus() {
+    return this._displayStatus;
   }
 
   set establishmentUid(uid) {
@@ -213,6 +222,10 @@ class User {
     }
   }
 
+  _isBool(value) {
+    return typeof value === 'boolean';
+  }
+
   // takes the given JSON document and creates a User's set of extendable properties
   // Returns true if the resulting User is valid; otherwise false
   async load(document) {
@@ -227,13 +240,8 @@ class User {
         this._password = escape(document.password);
       }
 
-      if (document.isPrimary !== null) {
-        // by explicitly checking for "true", don't have to worry about any other value
-        if (document.isPrimary === true) {
-          this._isPrimary = true;
-        } else {
-          this._isPrimary = false;
-        }
+      if (this._isBool(document.isPrimary)) {
+        this._isPrimary = document.isPrimary;
       }
       if (document.isActive) {
         this._active = document.isActive;
@@ -243,6 +251,9 @@ class User {
       }
       if (document.agreedUpdatedTerms) {
         this._agreedUpdatedTerms = document.agreedUpdatedTerms;
+      }
+      if (this._isBool(document.registrationSurveyCompleted)) {
+        this._registrationSurveyCompleted = document.registrationSurveyCompleted;
       }
     } catch (err) {
       this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
@@ -370,6 +381,7 @@ class User {
           archived: false,
           attributes: ['id', 'created', 'updated'],
           agreedUpdatedTerms: true,
+          registrationSurveyCompleted: this._registrationSurveyCompleted,
         };
 
         // need to create the User record and the User Audit event
@@ -568,7 +580,7 @@ class User {
               },
               {
                 where: {
-                  uid: { $not: this.uid },
+                  uid: { [Sequelize.Op.not]: this.uid },
                   establishmentId: this._establishmentId,
                   archived: false,
                   isPrimary: true,
@@ -589,6 +601,7 @@ class User {
             isPrimary: this._isPrimary,
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
+            registrationSurveyCompleted: this._registrationSurveyCompleted,
           };
 
           // now save the document
@@ -674,7 +687,6 @@ class User {
               null,
               this.uid,
               this.fullname,
-              err,
               `Failed to update resulting user record with id: ${this._id}`,
             );
           }
@@ -764,6 +776,8 @@ class User {
 
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
+        this._registrationSurveyCompleted = fetchResults.registrationSurveyCompleted;
+        this._displayStatus = User.statusTranslator(fetchResults.login);
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -795,7 +809,7 @@ class User {
     }
   }
 
-  async delete(deletedBy, externalTransaction = null, associatedEntities = false) {
+  async delete(deletedBy, externalTransaction = null) {
     try {
       const updatedTimestamp = new Date();
 
@@ -892,7 +906,6 @@ class User {
             null,
             this.uid,
             null,
-            err,
             `Failed to update (archive) user record with uid: ${this._uid}`,
           );
         }
@@ -972,13 +985,7 @@ class User {
           updated: thisUser.updated.toJSON(),
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
-          status: thisUser.login && thisUser.login.status ? thisUser.login.status : null,
-        });
-      });
-
-      allUsers = allUsers.map((user) => {
-        return Object.assign(user, {
-          status: user.username == null ? 'Pending' : user.status !== null ? user.status : 'Active',
+          status: User.statusTranslator(thisUser.login),
         });
       });
 
@@ -1060,10 +1067,12 @@ class User {
       myDefaultJSON.establishmentId = this._establishmentId;
       myDefaultJSON.establishmentUid = this._establishmentUid ? this._establishmentUid : undefined;
       myDefaultJSON.agreedUpdatedTerms = this._agreedUpdatedTerms;
+      myDefaultJSON.displayStatus = this._displayStatus;
       // migrated user first logged in
       const migratedUserFirstLogin = this._tribalId !== null && this._lastLogin === null ? true : false;
       myDefaultJSON.migratedUserFirstLogon = migratedUserFirstLogin;
       myDefaultJSON.migratedUser = this._tribalId !== null ? true : false;
+      myDefaultJSON.registrationSurveyCompleted = this._registrationSurveyCompleted;
 
       // TODO: JSON schema validation
       if (showHistory && !showPropertyHistoryOnly) {
@@ -1202,6 +1211,17 @@ class User {
     if (filters) throw new Error('Filters not implemented');
     const primaryEstablishmentId = this._establishmentId;
     return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId, isWDF);
+  }
+
+  // Maps the correct status depending on a user's login state
+  static statusTranslator(loginDetails) {
+    if (loginDetails && loginDetails.status) {
+      return loginDetails.status;
+    } else if (loginDetails && loginDetails.username) {
+      return 'Active';
+    } else {
+      return 'Pending';
+    }
   }
 }
 

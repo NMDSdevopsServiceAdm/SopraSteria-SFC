@@ -20,17 +20,11 @@ const headers = [
   'CQC Registered',
   'Parent Name',
   'Due to be deleted date',
+  'Data Owner'
 ];
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
 const monthsWithoutUpdate = 20;
 const monthsToBeDelete = 24;
-
-const filterData = async (rawData) => {
-  const updateDate = moment().subtract(monthsWithoutUpdate, 'months');
-  return rawData.filter((establishment) => {
-    return moment(getLastUpdate(establishment)).isSameOrBefore(updateDate);
-  });
-};
 
 const createBlueHeader = (WS1) => {
   const headerFont = {
@@ -78,15 +72,7 @@ const addCSSRData = async (establishmentsData) => {
   );
   return result;
 };
-const getLastUpdate = (establishment) => {
-  if (establishment.workers.length === 0) {
-    return establishment.updated;
-  }
-  if (moment(establishment.workers[0].updated).isAfter(establishment.updated)) {
-    return establishment.workers[0].updated;
-  }
-  return establishment.updated;
-};
+
 const fillData = (reportData, laData, WS1) => {
   let firstRow = true;
   let rowStyle = '';
@@ -102,7 +88,6 @@ const fillData = (reportData, laData, WS1) => {
       region = laData[establishment.id].theAuthority.region;
       la = laData[establishment.id].theAuthority.localAuthority;
     }
-
     const address = concatenateAddress(
       establishment.address,
       establishment.address2,
@@ -124,7 +109,8 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        new Date(moment(getLastUpdate(establishment)).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
+        new Date(moment(establishment.LastUpdated.lastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
+        establishment.LastUpdated.dataOwner,
       ],
       rowStyle,
     );
@@ -144,9 +130,9 @@ const fillData = (reportData, laData, WS1) => {
 };
 
 const generateDeleteReport = async (req, res) => {
-  const rawData = await models.establishment.generateDeleteReportData();
-  const establishmentsData = await filterData(rawData);
-  const laData = await addCSSRData(establishmentsData);
+  const lastUpdatedDate =  moment().subtract(monthsWithoutUpdate, 'months').toDate();
+  const reportData = await models.establishment.generateDeleteReportData(lastUpdatedDate);
+  const laData = await addCSSRData(reportData);
 
   let workbook = new excelJS.Workbook();
 
@@ -158,7 +144,7 @@ const generateDeleteReport = async (req, res) => {
   createBlueHeader(WS1);
   createTableHeader(WS1);
 
-  fillData(establishmentsData, laData, WS1);
+  fillData(reportData, laData, WS1);
   excelUtils.autoFitColumns(WS1, 8);
   WS1.getColumn(1).width = 0.7;
 
@@ -171,6 +157,4 @@ const generateDeleteReport = async (req, res) => {
 
 module.exports = router;
 module.exports.generateDeleteReport = generateDeleteReport;
-module.exports.filterData = filterData;
 module.exports.monthsWithoutUpdate = monthsWithoutUpdate;
-module.exports.getLastUpdate = getLastUpdate;

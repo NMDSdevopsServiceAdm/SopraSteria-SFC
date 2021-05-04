@@ -15,6 +15,8 @@ const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
+const get = require('lodash/get');
+
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
   hash.update(`${password}${salt}`, 'ucs2'); // .NET C# Unicode encoding defaults to UTF-16 // lgtm [js/insufficient-password-hash]
@@ -35,6 +37,12 @@ router.post('/', async (req, res) => {
     req.body.establishment && req.body.establishment.uid ? req.body.establishment.uid : null;
 
   try {
+    if (req.sqreen.userIsBanned()) {
+      return res.status(403).send({
+        message: 'Banned user.',
+      });
+    }
+
     let establishmentUser =
       givenEstablishmentUid === null
         ? await models.login.findOne({
@@ -66,6 +74,7 @@ router.post('/', async (req, res) => {
                   'isPrimary',
                   'establishmentId',
                   'UserRoleValue',
+                  'registrationSurveyCompleted',
                   'tribalId',
                 ],
                 include: [
@@ -95,6 +104,11 @@ router.post('/', async (req, res) => {
             ],
           })
         : null;
+
+    let establishmentInfo = {
+      userId: get(establishmentUser, 'user.uid'),
+      establishmentId: get(establishmentUser, 'establishment.uid'),
+    };
 
     if (!establishmentUser || !establishmentUser.user) {
       // before returning error, check to see if this is a superadmin user with a given establishment UID, to be assumed as their "logged in session" primary establishment
@@ -163,9 +177,16 @@ router.post('/', async (req, res) => {
             },
           });
 
+          establishmentInfo = {
+            userId: get(establishmentUser, 'user.uid'),
+            establishmentId: get(establishmentUser, 'establishment.uid'),
+          };
+
           if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
-            console.log(`Found admin user and establishment`);
+            console.log('Found admin user and establishment');
           } else {
+            req.sqreen.auth_track(false, establishmentInfo);
+
             console.error('POST .../login failed: on finding the given establishment');
             return res.status(401).send({
               message: 'Authentication failed.',
@@ -175,24 +196,26 @@ router.post('/', async (req, res) => {
           establishmentUser.user.establishment = null; // this admin user has no primary (home) establishment
         }
       } else {
-        console.error(`Failed to find user account`);
+        req.sqreen.auth_track(false, establishmentInfo);
+
+        console.error('Failed to find user account');
         return res.status(401).send({
           message: 'Authentication failed.',
         });
       }
     }
 
-    //check weather posted user is locked or pending
     if (establishmentUser) {
+      //check weather posted user is locked or pending
       if (!establishmentUser.isActive && establishmentUser.status === 'Locked') {
         //check for locked status, if locked then return with 409 error
-        console.error(`POST .../login failed: User status is locked`);
+        console.error('POST .../login failed: User status is locked');
         return res.status(409).send({
           message: 'Authentication failed.',
         });
       } else if (!establishmentUser.isActive && establishmentUser.status === 'PENDING') {
         //check for Pending status, if Pending then return with 403 error
-        console.error(`POST .../login failed: User status is pending`);
+        console.error('POST .../login failed: User status is pending');
         return res.status(405).send({
           message: 'Authentication failed.',
         });
@@ -269,6 +292,7 @@ router.post('/', async (req, res) => {
               migratedUserFirstLogon,
               migratedUser,
             },
+            establishmentUser.user.registrationSurveyCompleted,
           );
 
           await models.sequelize.transaction(async (t) => {
@@ -299,6 +323,11 @@ router.post('/', async (req, res) => {
               event: {},
             };
             await models.userAudit.create(auditEvent, { transaction: t });
+          });
+
+          req.sqreen.auth_track(true, {
+            ...establishmentInfo,
+            role: get(establishmentUser, 'user.UserRoleValue'),
           });
 
           // TODO: ultimately remove "Bearer" from the response; this should be added by client
@@ -366,6 +395,8 @@ router.post('/', async (req, res) => {
             };
             await models.userAudit.create(auditEvent, { transaction: t });
           });
+
+          req.sqreen.auth_track(false, establishmentInfo);
 
           return res.status(401).send({
             message: 'Authentication failed.',

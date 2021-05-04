@@ -9,6 +9,8 @@ import { FeedbackComponent } from './feedback/feedback.component';
 import { PrivacyNoticeComponent } from './privacy-notice/privacy-notice.component';
 import { PublicRoutingModule } from './public-routing.module';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
+import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback/contact-us-or-leave-feedback.component';
+import { ThankYouComponent } from './thank-you/thank-you.component';
 
 @NgModule({
   imports: [CommonModule, PublicRoutingModule, ReactiveFormsModule, SharedModule],
@@ -19,6 +21,8 @@ import { TermsConditionsComponent } from './terms-conditions/terms-conditions.co
     FeedbackComponent,
     PrivacyNoticeComponent,
     TermsConditionsComponent,
+    ContactUsOrLeaveFeedbackComponent,
+    ThankYouComponent,
   ],
 })
 export class PublicModule {}

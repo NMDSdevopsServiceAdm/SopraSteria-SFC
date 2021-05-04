@@ -1,0 +1,42 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
+      <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
+      WDF data
+    </h1>
+  </div>
+</div>
+
+<app-wdf-status-message
+  [wdfStartDate]="wdfStartDate"
+  [wdfEndDate]="wdfEndDate"
+  [wdfEligibilityStatus]="wdfEligibilityStatus"
+></app-wdf-status-message>
+
+<app-tabs>
+  <app-tab
+    [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [title]="'Workplace'"
+  >
+    <app-workplace-summary
+      *ngIf="workplace"
+      [workplace]="workplace"
+      [workerCount]="workerCount"
+      [return]="returnUrl"
+      [wdfView]="true"
+    ></app-workplace-summary>
+  </app-tab>
+  <app-tab
+    *ngIf="canViewWorker"
+    [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentStaff"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [title]="'Staff records'"
+  >
+    <app-wdf-staff-summary
+      *ngIf="workers && workplace"
+      [workplace]="workplace"
+      [workers]="workers"
+    ></app-wdf-staff-summary>
+  </app-tab>
+</app-tabs>
