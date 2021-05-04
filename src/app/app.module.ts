@@ -61,6 +61,7 @@ import {
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @NgModule({
   declarations: [
@@ -135,6 +136,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     LoggedInUserResolver,
     PrimaryWorkplaceResolver,
     NotificationsListResolver,
+    FeatureFlagsService
   ],
   bootstrap: [AppComponent],
 })
