@@ -6,14 +6,12 @@
       {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('year-arrived-uk')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.yearArrived">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.yearArrived"> Change </ng-container>
-        <span class="govuk-visually-hidden"> year arrived in UK</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' year arrived in UK'"
+        [link]="getRoutePath('year-arrived-uk')"
+        [hasData]="worker.yearArrived"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -25,14 +23,12 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('main-job-start-date')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.mainJobStartDate">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.mainJobStartDate"> Change </ng-container>
-        <span class="govuk-visually-hidden"> job start date</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' job start date'"
+        [link]="getRoutePath('main-job-start-date')"
+        [hasData]="!!worker.mainJobStartDate"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -42,14 +38,12 @@
       {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('mental-health-professional')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.approvedMentalHealthWorker">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.approvedMentalHealthWorker"> Change </ng-container>
-        <span class="govuk-visually-hidden"> approved mental health professional</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' approved mental health professional'"
+        [link]="getRoutePath('mental-health-professional')"
+        [hasData]="!!worker.approvedMentalHealthWorker"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -72,14 +66,12 @@
       </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('other-job-roles')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.otherJobs">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.otherJobs"> Change </ng-container>
-        <span class="govuk-visually-hidden"> other job roles</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' other job roles'"
+        [link]="getRoutePath('other-job-roles')"
+        [hasData]="!!worker.otherJobs"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -89,14 +81,12 @@
       {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('nursing-category')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.registeredNurse">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.registeredNurse"> Change </ng-container>
-        <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' nursing and midwifery council category'"
+        [link]="getRoutePath('nursing-category')"
+        [hasData]="!!worker.registeredNurse"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -115,14 +105,12 @@
       </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('nursing-specialism')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.nurseSpecialisms">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.nurseSpecialisms"> Change </ng-container>
-        <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' nursing and midwifery council category'"
+        [link]="getRoutePath('nursing-specialism')"
+        [hasData]="!!worker.nurseSpecialisms"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -131,21 +119,19 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.recruitedFrom">
         {{
-          worker.recruitedFrom?.from?.from !== null
-            ? worker.recruitedFrom?.from?.from
-            : (worker.recruitedFrom?.value | openEndedAnswer)
+        worker.recruitedFrom?.from?.from !== null
+          ? worker.recruitedFrom?.from?.from
+          : (worker.recruitedFrom?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('recruited-from')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.recruitedFrom">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.recruitedFrom"> Change </ng-container>
-        <span class="govuk-visually-hidden"> recruited from</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' recruited from'"
+        [link]="getRoutePath('recruited-from')"
+        [hasData]="!!worker.recruitedFrom"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -153,20 +139,18 @@
     <dt class="govuk-summary-list__key">Worked in adult social care</dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.socialCareStartDate?.year
-          ? worker.socialCareStartDate?.year
-          : (worker.socialCareStartDate?.value | openEndedAnswer)
+      worker.socialCareStartDate?.year
+        ? worker.socialCareStartDate?.year
+        : (worker.socialCareStartDate?.value | openEndedAnswer)
       }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('adult-social-care-started')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.socialCareStartDate">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.socialCareStartDate"> Change </ng-container>
-        <span class="govuk-visually-hidden"> adult social care date</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' adult social care date'"
+        [link]="getRoutePath('adult-social-care-started')"
+        [hasData]="!!worker.socialCareStartDate"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -178,14 +162,12 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('days-of-sickness')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.daysSick">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.daysSick"> Change </ng-container>
-        <span class="govuk-visually-hidden"> days of sickness</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' days of sickness'"
+        [link]="getRoutePath('days-of-sickness')"
+        [hasData]="!!worker.daysSick"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -197,14 +179,12 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('contract-with-zero-hours')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.zeroHoursContract">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.zeroHoursContract"> Change </ng-container>
-        <span class="govuk-visually-hidden"> contract with zero hours</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' contract with zero hours'"
+        [link]="getRoutePath('contract-with-zero-hours')"
+        [hasData]="!!worker.zeroHoursContract"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -213,21 +193,19 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursAverage">
         {{
-          isNumber(worker.weeklyHoursAverage?.hours)
-            ? worker.weeklyHoursAverage?.hours
-            : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+        isNumber(worker.weeklyHoursAverage?.hours)
+          ? worker.weeklyHoursAverage?.hours
+          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('average-weekly-hours')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.weeklyHoursAverage">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.weeklyHoursAverage"> Change </ng-container>
-        <span class="govuk-visually-hidden"> average weekly working hours</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' average weekly working hours'"
+        [link]="getRoutePath('average-weekly-hours')"
+        [hasData]="!!worker.weeklyHoursAverage"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -236,21 +214,19 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursContracted">
         {{
-          isNumber(worker.weeklyHoursContracted?.hours)
-            ? worker.weeklyHoursContracted?.hours
-            : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+        isNumber(worker.weeklyHoursContracted?.hours)
+          ? worker.weeklyHoursContracted?.hours
+          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('weekly-contracted-hours')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.weeklyHoursContracted">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.weeklyHoursContracted"> Change </ng-container>
-        <span class="govuk-visually-hidden"> contracted weekly hours</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' contracted weekly hours'"
+        [link]="getRoutePath('weekly-contracted-hours')"
+        [hasData]="!!worker.weeklyHoursContracted"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -263,14 +239,12 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('salary')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.annualHourlyPay">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.annualHourlyPay"> Change </ng-container>
-        <span class="govuk-visually-hidden"> salary</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' salary'"
+        [link]="getRoutePath('salary')"
+        [hasData]="!!worker.annualHourlyPay"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 </dl>

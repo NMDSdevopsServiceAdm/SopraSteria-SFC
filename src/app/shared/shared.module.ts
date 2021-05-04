@@ -89,6 +89,7 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -132,6 +133,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SubmitButtonComponent,
     SubmitExitButtonsComponent,
     SummaryListComponent,
+    SummaryRecordChangeComponent,
     SummaryRecordValueComponent,
     TabComponent,
     TabsComponent,
@@ -201,6 +203,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SubmitButtonComponent,
     SubmitExitButtonsComponent,
     SummaryListComponent,
+    SummaryRecordValueComponent,
     TabComponent,
     TabsComponent,
     TotalStaffPanelComponent,
