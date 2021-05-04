@@ -115,7 +115,7 @@ describe('WdfDataComponent', () => {
     //
     it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
       const { component, fixture, getByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red warning flag';
+      const redCrossVisuallyHiddenMessage = 'Red cross';
 
       component.wdfEligibilityStatus.overall = false;
       component.wdfEligibilityStatus.currentWorkplace = false;
@@ -127,7 +127,7 @@ describe('WdfDataComponent', () => {
 
     it('should display a red cross on the staff tab when the user has not qualified for WDF and staff records are not currently eligible', async () => {
       const { component, fixture, getByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red warning flag';
+      const redCrossVisuallyHiddenMessage = 'Red cross';
 
       component.wdfEligibilityStatus.overall = false;
       component.wdfEligibilityStatus.currentStaff = false;
@@ -140,7 +140,7 @@ describe('WdfDataComponent', () => {
 
     it('should display a red cross on the staff tab and workplace tab when the user has not qualified for WDF and staff records and workplace are not currently eligible', async () => {
       const { component, fixture, getAllByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red warning flag';
+      const redCrossVisuallyHiddenMessage = 'Red cross';
 
       component.wdfEligibilityStatus.overall = false;
       component.wdfEligibilityStatus.currentWorkplace = false;

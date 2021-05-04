@@ -17,7 +17,7 @@
   <app-tab
     [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace"
     [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [redAlert]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
     [title]="'Workplace'"
   >
     <app-workplace-summary
@@ -32,7 +32,7 @@
     *ngIf="canViewWorker"
     [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentStaff"
     [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-    [redAlert]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
     [title]="'Staff records'"
   >
     <app-wdf-staff-summary
