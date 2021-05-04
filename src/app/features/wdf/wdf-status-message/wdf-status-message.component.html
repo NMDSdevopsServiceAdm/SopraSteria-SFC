@@ -1,4 +1,7 @@
 <h4 class="govuk-heading-s govuk-!-margin-bottom-8">
+  <ng-container *ngIf="!wdfEligibilityStatus.overall">
+    Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+  </ng-container>
   <ng-container
     *ngIf="
       wdfEligibilityStatus.overall && !(wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff)

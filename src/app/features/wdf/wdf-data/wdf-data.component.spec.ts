@@ -201,5 +201,15 @@ describe('WdfDataComponent', () => {
 
       expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
     });
+
+    it('should display the not meeting message if not meeting WDF requirements overall', async () => {
+      const { component, fixture, getByText } = await setup();
+      const notMeetingMessage = 'Your data does not meet the WDF 2021 to 2022 requirements';
+
+      component.wdfEligibilityStatus.overall = false;
+      fixture.detectChanges();
+
+      expect(getByText(notMeetingMessage, { exact: false })).toBeTruthy();
+    });
   });
 });
