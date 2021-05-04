@@ -86,7 +86,7 @@
         {{ worker.highestQualification?.title || '-' }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' other qualification level'"
         [link]="getRoutePath('other-qualifications-level')"
@@ -103,7 +103,7 @@
     <dd class="govuk-summary-list__value">
       {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' apprenticeship training'"
         [link]="getRoutePath('apprenticeship-training')"
