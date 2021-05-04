@@ -69,6 +69,18 @@ describe('WdfDataComponent', () => {
       expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
     });
 
+    it('should display a green tick on the workplace tab when the user has not qualified for WDF but workplace is currently eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const greenTickVisuallyHiddenMessage = 'Green tick';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentWorkplace = true;
+      component.wdfEligibilityStatus.currentStaff = false;
+      fixture.detectChanges();
+
+      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
+
     it('should display a green tick on the staff tab and the workplace tab when the user has qualified for WDF and staff records and workplace are still eligible', async () => {
       const { component, fixture, getAllByText } = await setup();
       const greenTickVisuallyHiddenMessage = 'Green tick';

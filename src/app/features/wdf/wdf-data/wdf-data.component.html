@@ -15,7 +15,7 @@
 
 <app-tabs>
   <app-tab
-    [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace"
+    [greenTick]="wdfEligibilityStatus.currentWorkplace"
     [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
     [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
     [title]="'Workplace'"
@@ -30,7 +30,7 @@
   </app-tab>
   <app-tab
     *ngIf="canViewWorker"
-    [greenTick]="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentStaff"
+    [greenTick]="wdfEligibilityStatus.currentStaff"
     [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
     [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
     [title]="'Staff records'"
