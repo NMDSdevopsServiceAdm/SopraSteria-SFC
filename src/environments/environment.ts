@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   environmentName: 'other',
   tracesSampleRate: 0,
-  configCatKey: 'NYLYCEZOFU6E4uZ7G5-s-Q/IcRZPsFdlUqTxEhPQFN3Tg',
+  configCatKey: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ',
 };
 
 /*
