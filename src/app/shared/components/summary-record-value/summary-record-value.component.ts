@@ -7,9 +7,10 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: './summary-record-value.component.html',
 })
 export class SummaryRecordValueComponent implements OnInit {
-  public wdfNewDesign: boolean;
   @Input() wdfView: boolean;
   @Input() wdfValue: WDFValue;
+  @Input() overallWdfEligibility: boolean;
+  public wdfNewDesign: boolean;
   public ELIGIBILITY = Eligibility;
 
   constructor(private featureFlagsService: FeatureFlagsService) {}

@@ -1,7 +1,11 @@
 <ng-content></ng-content>
 <ng-container *ngIf="wdfNewDesign; else wdfOldDesign">
-  <ng-container *ngIf="wdfView && wdfValue?.isEligible === ELIGIBILITY.NO; else answer">
+  <ng-container *ngIf="wdfView && overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; else answer">
     <app-eligibility-icon [overallEligibility]="true" [eligible]="false"></app-eligibility-icon>
+  </ng-container>
+
+  <ng-container *ngIf="wdfView && !overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; else answer">
+    <app-eligibility-icon [overallEligibility]="false" [eligible]="false"></app-eligibility-icon>
   </ng-container>
 </ng-container>
 
