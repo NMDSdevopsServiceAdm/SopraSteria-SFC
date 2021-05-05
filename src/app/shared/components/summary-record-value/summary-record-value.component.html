@@ -1,3 +1,4 @@
+<ng-content></ng-content>
 <ng-container *ngIf="wdfNewDesign; else wdfOldDesign">
   <ng-container *ngIf="wdfView && wdfValue?.isEligible === ELIGIBILITY.NO; else answer">
     <app-eligibility-icon [overallEligibility]="true" [eligible]="false"></app-eligibility-icon>
@@ -15,7 +16,6 @@
         wdfView && !wdfValue?.updatedSinceEffectiveDate && wdfValue?.isEligible === ELIGIBILITY.YES
       "
     >
-      <ng-content></ng-content>
       <div
         *ngIf="wdfView && !wdfValue?.updatedSinceEffectiveDate && wdfValue?.isEligible === ELIGIBILITY.YES"
         class="govuk-!-margin-top-2"
