@@ -6,7 +6,9 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
+import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,6 +21,9 @@ export class WdfStaffRecordComponent implements OnInit {
   public workplaceUid: string;
   public isEligible: boolean;
   public exitUrl: URLStructure;
+  public overallWdfEligibility: boolean;
+  public wdfStartDate: string;
+  public wdfEndDate: string;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -27,19 +32,32 @@ export class WdfStaffRecordComponent implements OnInit {
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
+    private reportService: ReportService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
 
+    this.getEstablishment();
+    this.getWorker();
+    this.getOverallWdfEligibility();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  public getEstablishment() {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.establishmentService.setState(workplace);
       }),
     );
+  }
 
+  public getWorker() {
     this.subscriptions.add(
       this.workerService.getWorker(this.workplaceUid, this.route.snapshot.params.id, true).subscribe((worker) => {
         this.worker = worker;
@@ -49,7 +67,13 @@ export class WdfStaffRecordComponent implements OnInit {
     );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  public getOverallWdfEligibility() {
+    this.subscriptions.add(
+      this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
+        this.overallWdfEligibility = report.wdf.overall;
+        this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
+        this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+      }),
+    );
   }
 }
