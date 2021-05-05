@@ -17,6 +17,7 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 })
 export class EmploymentComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
+  @Input() overallWdfEligibility: boolean;
 
   constructor(
     location: Location,
