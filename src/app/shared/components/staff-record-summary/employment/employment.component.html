@@ -14,6 +14,13 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Date started</dt>
+    <dd class="govuk-summary-list__value">
+      <app-wdf-field-confirmation></app-wdf-field-confirmation>
+    </dd>
+    <dd class="govuk-summary-list__actions"></dd>
+  </div>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Date started</dt>
@@ -119,9 +126,9 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.recruitedFrom">
         {{
-        worker.recruitedFrom?.from?.from !== null
-          ? worker.recruitedFrom?.from?.from
-          : (worker.recruitedFrom?.value | openEndedAnswer)
+          worker.recruitedFrom?.from?.from !== null
+            ? worker.recruitedFrom?.from?.from
+            : (worker.recruitedFrom?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
     </dd>
@@ -139,9 +146,9 @@
     <dt class="govuk-summary-list__key">Worked in adult social care</dt>
     <dd class="govuk-summary-list__value">
       {{
-      worker.socialCareStartDate?.year
-        ? worker.socialCareStartDate?.year
-        : (worker.socialCareStartDate?.value | openEndedAnswer)
+        worker.socialCareStartDate?.year
+          ? worker.socialCareStartDate?.year
+          : (worker.socialCareStartDate?.value | openEndedAnswer)
       }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -193,9 +200,9 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursAverage">
         {{
-        isNumber(worker.weeklyHoursAverage?.hours)
-          ? worker.weeklyHoursAverage?.hours
-          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+          isNumber(worker.weeklyHoursAverage?.hours)
+            ? worker.weeklyHoursAverage?.hours
+            : (worker.weeklyHoursAverage?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
     </dd>
@@ -214,9 +221,9 @@
     <dd class="govuk-summary-list__value">
       <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.weeklyHoursContracted">
         {{
-        isNumber(worker.weeklyHoursContracted?.hours)
-          ? worker.weeklyHoursContracted?.hours
-          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+          isNumber(worker.weeklyHoursContracted?.hours)
+            ? worker.weeklyHoursContracted?.hours
+            : (worker.weeklyHoursContracted?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
     </dd>
