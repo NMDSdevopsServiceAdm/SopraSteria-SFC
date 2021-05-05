@@ -18,22 +18,19 @@ export class EligibilityIconComponent implements OnInit {
 
   ngOnInit() {
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
-      this.calc(value);
+      this.displayCorrectIcon(value);
     });
   }
 
-  public calc(newDesign): void {
+  public displayCorrectIcon(newDesign): void {
     if (newDesign) {
       if (!this.eligible && this.overallEligibility) {
         this.icon = 'flag-orange';
+        this.label = 'You need to add this information';
       } else if (!this.eligible && !this.overallEligibility) {
         this.icon = 'cross-icon';
+        this.label = 'You need to add this information';
       }
-      this.label = this.check
-        ? 'Check and confirm'
-        : this.eligible
-        ? 'Meeting requirements'
-        : 'Not meeting requirements';
     } else {
       this.icon = this.eligible ? 'tick-icon' : 'cross-icon';
       this.label = this.check
