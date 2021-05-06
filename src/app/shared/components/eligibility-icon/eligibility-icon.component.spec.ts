@@ -1,27 +1,61 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { EligibilityIconComponent } from './eligibility-icon.component';
 
 describe('EligibilityIconComponent', () => {
-  let component: EligibilityIconComponent;
-  let fixture: ComponentFixture<EligibilityIconComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [EligibilityIconComponent],
+  const setup = async (overallEligibility: boolean, currentRowEligible: boolean) => {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(EligibilityIconComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
       providers: [{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }],
-    }).compileComponents();
-  }));
+      componentProperties: { overallEligibility: overallEligibility, eligible: currentRowEligible },
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EligibilityIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+  };
+
+  it('should render a EligibilityIconComponent', async () => {
+    const { component } = await setup(true, true);
+    expect(component).toBeTruthy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should not display a message when user meets WDF requirements overall and the current row is eligible', async () => {
+    const { component, fixture } = await setup(true, true);
+
+    component.displayCorrectIcon(true);
+    fixture.detectChanges();
+
+    expect(component.label).toEqual('');
+    expect(component.icon).toEqual('');
+  });
+
+  it('should display the "You need to add this information" message and orange flag when user meets WDF requirements overall but current row is empty', async () => {
+    const { component, fixture } = await setup(true, false);
+    const expectedMessage = 'You need to add this information';
+    const orangeFlagIcon = 'flag-orange';
+
+    component.displayCorrectIcon(true);
+    fixture.detectChanges();
+
+    expect(component.label).toEqual(expectedMessage);
+    expect(component.icon).toEqual(orangeFlagIcon);
+  });
+
+  it('should display the "You need to add this information" message and orange flag when user meets WDF requirements overall but current row is empty', async () => {
+    const { component, fixture } = await setup(false, false);
+    const expectedMessage = 'You need to add this information';
+    const redCrossIcon = 'cross-icon';
+
+    component.displayCorrectIcon(true);
+    fixture.detectChanges();
+
+    expect(component.label).toEqual(expectedMessage);
+    expect(component.icon).toEqual(redCrossIcon);
   });
 });

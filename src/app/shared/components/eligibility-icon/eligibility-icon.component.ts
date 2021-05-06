@@ -11,8 +11,8 @@ export class EligibilityIconComponent implements OnInit {
   @Input() check: boolean;
   @Input() num: number = null;
 
-  public icon: string;
-  public label: string;
+  public icon = '';
+  public label = '';
 
   constructor(private featureFlagsService: FeatureFlagsService) {}
 

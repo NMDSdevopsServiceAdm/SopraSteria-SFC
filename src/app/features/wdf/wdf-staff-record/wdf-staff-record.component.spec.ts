@@ -11,10 +11,10 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { workerBuilder } from '../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module.js';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
-// import { workerBuilder } from '../../../../../server/test/factories/models.js';
 describe('WdfStaffRecordComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfStaffRecordComponent, {
@@ -45,27 +45,33 @@ describe('WdfStaffRecordComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should display the "update staff record" message and orange flag when user meets WDF requirements overall but current staff record does not', async () => {
-  //   const { component, fixture, getByText } = await setup();
-  //   const expectedStatusMessage = 'Update this staff record to save yourself time next year';
-  //   const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+  it('should display the "update staff record" message and orange flag when user meets WDF requirements overall but current staff record does not', async () => {
+    const { component, fixture, getByText } = await setup();
+    const expectedStatusMessage = 'Update this staff record to save yourself time next year';
+    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-  //   component.worker = workerBuilder();
-  //   fixture.detectChanges();
+    component.worker = workerBuilder();
+    component.exitUrl = { url: [] };
+    component.overallWdfEligibility = true;
+    fixture.detectChanges();
 
-  //   expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-  //   expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
-  // });
+    expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
+  });
 
-  // it('should display the "not meeting requirements" message and red cross when user does not meet WDF requirements overall and current staff record does not', async () => {
-  //   const { component, fixture, getByText } = await setup();
-  //   const expectedStatusMessage = 'Not meeting the WDF 2021 to 2022 requirements';
-  //   const redCrossVisuallyHiddenMessage = 'Red cross';
+  it('should display the "not meeting requirements" message and red cross when user does not meet WDF requirements overall and current staff record does not', async () => {
+    const { component, fixture, getByText } = await setup();
+    const expectedStatusMessage = 'Not meeting the WDF 2021 to 2022 requirements';
+    const redCrossVisuallyHiddenMessage = 'Red cross';
 
-  //   component.worker = workerBuilder();
-  //   fixture.detectChanges();
+    component.worker = workerBuilder();
+    component.exitUrl = { url: [] };
+    component.overallWdfEligibility = false;
+    component.wdfStartDate = '2021-01-01';
+    component.wdfEndDate = '2022-01-01';
+    fixture.detectChanges();
 
-  //   expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-  //   expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
-  // });
+    expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
+  });
 });
