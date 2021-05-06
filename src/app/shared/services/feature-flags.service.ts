@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import * as configcat from 'configcat-js';
 import { IConfigCatClient } from 'configcat-common/lib/ConfigCatClient';
 import { LogLevel } from 'configcat-common';
@@ -13,9 +12,8 @@ export class FeatureFlagsService {
   ) {}
 
   start(){
-    this.configCatClient = configcat.createClientWithAutoPoll(environment.configCatKey,
+    this.configCatClient = configcat.createClientWithManualPoll(environment.configCatKey,
       {
-        pollIntervalSeconds: 2,
         logger: this.logger
       });
   }
