@@ -17,7 +17,10 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Date started</dt>
     <dd class="govuk-summary-list__value">
-      <app-wdf-field-confirmation></app-wdf-field-confirmation>
+      <app-wdf-field-confirmation
+        [changeLink]="getRoutePath('main-job-start-date')"
+        [data]="mainStartDate"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd class="govuk-summary-list__actions"></dd>
   </div>
