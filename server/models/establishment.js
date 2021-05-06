@@ -996,10 +996,6 @@ module.exports = function (sequelize, DataTypes) {
             as: 'mainJob',
             attributes: ['id', 'title'],
           },
-          {
-            model: sequelize.models.workerTraining,
-            as: 'workerTraining',
-          },
         ],
       },
       where: {
