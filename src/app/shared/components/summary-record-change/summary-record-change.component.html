@@ -1,9 +1,8 @@
 <a [routerLink]="link" (click)="setReturn()">
   <ng-container *ngIf="!hasData">
-    Provide information
+    Add information
     <span class="govuk-visually-hidden"> for</span>
   </ng-container>
   <ng-container *ngIf="hasData"> Change</ng-container>
-  <span class="govuk-visually-hidden">{{explanationText}}</span>
+  <span class="govuk-visually-hidden">{{ explanationText }}</span>
 </a>
-
