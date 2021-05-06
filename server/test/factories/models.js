@@ -82,9 +82,33 @@ const workerBuilder = build('Worker', {
   },
 });
 
+const workerBuilderWithWdf = build('Worker', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.random.uuid()),
+    NameOrIdValue: fake((f) => f.name.findName()),
+    nameOrId: fake((f) => f.name.findName()),
+    jobRole: fake((f) => f.name.jobTitle()),
+    mainJob: perBuild(() => {
+      return jobBuilder();
+    }),
+    mainJobStartDate: '2020-12-01',
+    workerTraining: [
+      perBuild(() => {
+        return trainingBuilder();
+      }),
+    ],
+    wdfEligible: false,
+    wdf: {
+      mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: false },
+    },
+  },
+});
+
 module.exports.establishmentBuilder = establishmentBuilder;
 module.exports.workerBuilder = workerBuilder;
 module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;
 module.exports.trainingBuilder = trainingBuilder;
 module.exports.mandatoryTrainingBuilder = mandatoryTrainingBuilder;
+module.exports.workerBuilderWithWdf = workerBuilderWithWdf;
