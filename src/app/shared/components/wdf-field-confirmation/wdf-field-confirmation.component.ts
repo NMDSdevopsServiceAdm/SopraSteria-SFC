@@ -6,5 +6,4 @@ import { Component, Input } from '@angular/core';
 })
 export class WdfFieldConfirmationComponent {
   @Input() changeLink: any[];
-  @Input() data: string;
 }
