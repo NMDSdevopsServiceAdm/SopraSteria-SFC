@@ -19,7 +19,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
-    const { fixture, getByText } = await render(StaffRecordSummaryComponent, {
+    const { fixture, getByText, queryByText } = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
         {
@@ -41,7 +41,7 @@ describe('StaffRecordSummaryComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText };
+    return { component, fixture, getByText, queryByText };
   };
 
   it('should render a StaffRecordSummaryComponent', async () => {
@@ -62,5 +62,13 @@ describe('StaffRecordSummaryComponent', () => {
     expect(getByText('Is this still correct?')).toBeTruthy();
     expect(getByText('Yes, it is')).toBeTruthy();
     expect(getByText('No, change it')).toBeTruthy();
+  });
+
+  it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
+    const { queryByText } = await setup();
+
+    expect(queryByText('Is this still correct?')).toBeFalsy();
+    expect(queryByText('Yes, it is')).toBeFalsy();
+    expect(queryByText('No, change it')).toBeFalsy();
   });
 });
