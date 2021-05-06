@@ -167,10 +167,7 @@ describe('worker route', () => {
 
     const worker = workerBuilder();
     beforeEach(() => {
-      sinon.stub(models.establishment, 'workersAndTraining').returns({
-        id: 123,
-        workers: [worker],
-      });
+      sinon.stub(models.worker, 'workersAndTraining').returns([worker]);
     });
     afterEach(() => {
       sinon.restore();
