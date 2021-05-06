@@ -7,8 +7,7 @@ import { render } from '@testing-library/angular';
 import { SummaryRecordChangeComponent } from './summary-record-change.component';
 
 describe('SummaryRecordChangeComponent', () => {
-  async function setup(explanationText = '',link=[],hasData=false) {
-
+  async function setup(explanationText = '', link = [], hasData = false) {
     const component = await render(SummaryRecordChangeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -31,16 +30,15 @@ describe('SummaryRecordChangeComponent', () => {
   });
 
   it('should render Change when it has data', async () => {
-    const { component } = await setup(' test',[],true);
+    const { component } = await setup(' test', [], true);
     expect(component.queryByText).toBeTruthy();
   });
   it('should render Provide information when it  doesnt has data', async () => {
-    const { component } = await setup(' test',[],false);
-    expect(component.queryByText("Provide information")).toBeTruthy();
+    const { component } = await setup(' test', [], false);
+    expect(component.queryByText('Add information')).toBeTruthy();
   });
   it('should render the screen reader text', async () => {
-    const { component } = await setup(' test',[],false);
-    expect(component.queryByText("test")).toBeTruthy();
+    const { component } = await setup(' test', [], false);
+    expect(component.queryByText('test')).toBeTruthy();
   });
-
 });
