@@ -19,6 +19,8 @@ import { render } from '@testing-library/angular';
 
 import { WdfModule } from '../wdf.module.js';
 import { WdfDataComponent } from './wdf-data.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfDataComponent', () => {
   const setup = async () => {
@@ -29,6 +31,7 @@ describe('WdfDataComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ReportService, useClass: MockReportService },
         { provide: WorkerService, useClass: MockWorkerService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canViewWorker']),
@@ -124,7 +127,7 @@ describe('WdfDataComponent', () => {
 
       expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
     });
- 
+
     it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const redCrossVisuallyHiddenMessage = 'Red cross';

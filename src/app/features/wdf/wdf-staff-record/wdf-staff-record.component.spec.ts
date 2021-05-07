@@ -14,6 +14,8 @@ import { render } from '@testing-library/angular';
 import { workerBuilder } from '../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module.js';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfStaffRecordComponent', () => {
   const setup = async () => {
@@ -23,6 +25,7 @@ describe('WdfStaffRecordComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {

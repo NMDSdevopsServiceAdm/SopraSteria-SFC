@@ -7,6 +7,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+
+
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -17,6 +19,8 @@ import { render } from '@testing-library/angular';
 
 import { AdminSkipService } from '../admin-skip.service';
 import { BulkUploadPageComponent } from './bulk-upload-page.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('BulkUploadPageComponent', () => {
   async function setup() {
@@ -28,6 +32,7 @@ describe('BulkUploadPageComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),

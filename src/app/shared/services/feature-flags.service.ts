@@ -10,10 +10,10 @@ export class FeatureFlagsService {
 
   constructor() {}
 
-  start() {
-    this.configCatClient = configcat.createClientWithAutoPoll(environment.configCatKey, {
-      pollIntervalSeconds: 2,
-      logger: this.logger,
-    });
+  start(){
+    this.configCatClient = configcat.createClientWithManualPoll(environment.configCatKey,
+      {
+        logger: this.logger
+      });
   }
 }

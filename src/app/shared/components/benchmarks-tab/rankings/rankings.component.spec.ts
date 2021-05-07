@@ -17,6 +17,8 @@ import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/r
 import { render } from '@testing-library/angular';
 import * as moment from 'moment';
 import { from } from 'rxjs';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const payTileData = {
   workplaceValue: { value: 1000, hasValue: true },
@@ -82,6 +84,7 @@ const getBenchmarksRankingsComponent = async () => {
         provide: BreadcrumbService,
         useClass: MockBreadcrumbService,
       },
+      { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       {
         provide: ActivatedRoute,
         useValue: new MockActivatedRoute({

@@ -9,12 +9,15 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { FeedbackComponent } from './feedback.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('FeedbackComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(FeedbackComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder, ErrorSummaryService],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        FormBuilder, ErrorSummaryService],
     });
     const component = fixture.componentInstance;
 

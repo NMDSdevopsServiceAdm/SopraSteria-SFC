@@ -8,12 +8,14 @@ import { render } from '@testing-library/angular';
 import { AdminSkipService } from '../admin-skip.service';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('BulkUploadStartPage', () => {
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadStartPageComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, AdminSkipService],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService },{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }, AdminSkipService],
       declarations: [BulkUploadStartPageComponent, CodesAndGuidanceComponent],
     });
     const component = fixture.componentInstance;
