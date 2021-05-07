@@ -12,14 +12,13 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <ng-container *ngIf="!worker.wdf.isEligible">
-        <app-wdf-staff-record-status-message
-          [overallWdfEligibility]="overallWdfEligibility"
-          [worker]="worker"
-          [wdfStartDate]="wdfStartDate"
-          [wdfEndDate]="wdfEndDate"
-        ></app-wdf-staff-record-status-message>
-      </ng-container>
+      <app-wdf-staff-record-status-message
+        *ngIf="!worker.wdf.isEligible"
+        [overallWdfEligibility]="overallWdfEligibility"
+        [worker]="worker"
+        [wdfStartDate]="wdfStartDate"
+        [wdfEndDate]="wdfEndDate"
+      ></app-wdf-staff-record-status-message>
     </div>
   </div>
 
