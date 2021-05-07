@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-staff-record-summary',
@@ -27,6 +28,7 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   private _worker: Worker;
   private workplaceUid: string;
+  private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public returnTo: URLStructure;
 
@@ -54,5 +56,15 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   public getRoutePath(name: string) {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
+  }
+
+  public confirmField(dataField) {
+    const props = { [dataField]: this.worker[dataField] };
+
+    this.subscriptions.add(
+      this.workerService
+        .updateWorker(this.workplace.uid, this.worker.uid, props)
+        .subscribe((data) => console.log(data)),
+    );
   }
 }

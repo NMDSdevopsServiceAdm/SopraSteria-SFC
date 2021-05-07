@@ -7,7 +7,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 import { isNumber } from 'lodash';
 import * as moment from 'moment';
-import { Subscription } from 'rxjs';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
@@ -19,8 +18,6 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 export class EmploymentComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
-
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     location: Location,
@@ -64,13 +61,5 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
 
   get mainStartDate() {
     return moment(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
-  }
-
-  public confirmField() {
-    const props = {
-      mainJobStartDate: this.worker.mainJobStartDate,
-    };
-
-    this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props);
   }
 }
