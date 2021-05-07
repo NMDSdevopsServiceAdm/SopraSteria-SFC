@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -10,14 +11,16 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
+
+const sinon = require('sinon');
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
@@ -29,10 +32,7 @@ describe('StaffRecordSummaryComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditWorker']),
           deps: [HttpClient, Router, UserService],
         },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerService,
-        },
+
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
@@ -73,5 +73,26 @@ describe('StaffRecordSummaryComponent', () => {
     expect(queryByText('Is this still correct?')).toBeFalsy();
     expect(queryByText('Yes, it is')).toBeFalsy();
     expect(queryByText('No, change it')).toBeFalsy();
+  });
+
+  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const workerService = TestBed.inject(WorkerService);
+
+    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+
+    component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
+    component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
+    component.worker.mainJobStartDate = '2020-01-12';
+
+    fixture.detectChanges();
+
+    const yesItIsButton = getByText('Yes, it is');
+    yesItIsButton.click();
+
+    fixture.detectChanges();
+
+    expect(getByText('Meeting requirements')).toBeTruthy();
   });
 });

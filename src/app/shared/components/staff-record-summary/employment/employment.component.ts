@@ -71,10 +71,6 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
       mainJobStartDate: this.worker.mainJobStartDate,
     };
 
-    this.subscriptions.add(
-      this.workerService
-        .updateWorker(this.workplace.uid, this.worker.uid, props)
-        .subscribe((data) => console.log(data)),
-    );
+    this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props);
   }
 }
