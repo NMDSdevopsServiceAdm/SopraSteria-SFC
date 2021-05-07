@@ -1,12 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from '@shared/shared.module';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SharedModule } from '@shared/shared.module';
+
 import { Establishment } from '../../../../mockdata/establishment';
 import { WorkplaceTabComponent } from './workplace-tab.component';
 
@@ -16,16 +19,14 @@ describe('WorkplaceTabComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        SharedModule,
-        RouterTestingModule,
-        HttpClientTestingModule],
+      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService]
+          deps: [HttpClient, Router, UserService],
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     }).compileComponents();
   }));
