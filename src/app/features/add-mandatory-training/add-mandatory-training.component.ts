@@ -71,9 +71,8 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
-    this.setBackLink();
     this.getAllTrainingCategories();
     this.getAlJobs();
     this.setupForm();
@@ -82,6 +81,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
+        this.setBackLink();
         this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
           (trainings) => {
             this.existingMandatoryTrainings = trainings;
@@ -98,6 +98,9 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   private setBackLink(): void {
+    const url =
+      this.establishment.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.establishment.uid];
+    this.return = { url: url, fragment: 'training-and-qualifications' };
     this.backService.setBackLink(this.return);
   }
 
