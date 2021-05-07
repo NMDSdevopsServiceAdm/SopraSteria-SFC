@@ -79,6 +79,9 @@ const workerBuilder = build('Worker', {
       }),
     ],
     wdfEligible: false,
+    wdf: {
+      isEligible: false
+    }
   },
 });
 

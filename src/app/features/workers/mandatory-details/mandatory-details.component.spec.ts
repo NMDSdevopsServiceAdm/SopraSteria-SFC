@@ -6,11 +6,13 @@ import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { EligibilityIconComponent } from '@shared/components/eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
 import { BasicRecordComponent } from '@shared/components/staff-record-summary/basic-record/basic-record.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
@@ -56,6 +58,7 @@ describe('MandatoryDetailsComponent', () => {
           provide: PermissionsService,
           useValue: mockPermissionsService,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {

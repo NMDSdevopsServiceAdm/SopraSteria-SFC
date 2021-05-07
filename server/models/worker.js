@@ -1,7 +1,11 @@
 const { Op } = require('sequelize');
+const moment = require('moment');
+
 const { encrypt } = require('../utils/db/openpgp/encrypt');
 const { decrypt } = require('../utils/db/openpgp/decrypt');
 
+const currentDate = moment().toISOString();
+const expiresSoon = moment().add(90, 'days').toISOString();
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -1260,6 +1264,74 @@ module.exports = function (sequelize, DataTypes) {
         establishmentFk: establishmentId,
       },
       raw: true,
+    });
+  };
+
+  Worker.workersAndTraining = async function (establishmentId) {
+    return this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'LocalIdentifierValue',
+        'NameOrIdValue',
+        'ContractValue',
+        'CompletedValue',
+        'created',
+        'updated',
+        'updatedBy',
+        'lastWdfEligibility',
+        [
+          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
+          'trainingCount',
+        ],
+        [
+          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "worker"."ID")'),
+          'qualificationCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}')`,
+          ),
+          'expiredTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+          ),
+          'expiringTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `
+              (
+                SELECT
+                    COUNT(0)
+                  FROM cqc."MandatoryTraining"
+                  WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                  AND "JobFK" = "worker"."MainJobFKValue"
+                  AND "TrainingCategoryFK" NOT IN (
+                    SELECT
+                      DISTINCT "CategoryFK"
+                    FROM cqc."WorkerTraining"
+                    WHERE "WorkerFK" = "worker"."ID"
+                  )
+              )
+              `,
+          ),
+          'missingMandatoryTrainingCount',
+        ],
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+      ],
     });
   };
 
