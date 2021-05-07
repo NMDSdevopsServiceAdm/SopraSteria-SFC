@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-wdf-field-confirmation',
@@ -6,4 +6,9 @@ import { Component, Input } from '@angular/core';
 })
 export class WdfFieldConfirmationComponent {
   @Input() changeLink: any[];
+  @Output() fieldConfirmation: EventEmitter<Event> = new EventEmitter();
+
+  confirmField() {
+    this.fieldConfirmation.emit();
+  }
 }
