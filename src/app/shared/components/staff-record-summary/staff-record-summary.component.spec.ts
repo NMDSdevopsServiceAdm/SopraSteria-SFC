@@ -4,17 +4,19 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { Eligibility } from '@core/model/wdf.model.js';
+import { Eligibility } from '@core/model/wdf.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { UserService } from '@core/services/user.service.js';
-import { WorkerService } from '@core/services/worker.service.js';
+import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf.module.js';
+import { WdfModule } from '@features/wdf/wdf.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models.js';
+import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
@@ -31,6 +33,7 @@ describe('StaffRecordSummaryComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerService,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         wdfView: true,
