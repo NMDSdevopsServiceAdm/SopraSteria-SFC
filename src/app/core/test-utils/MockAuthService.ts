@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Injectable()
 export class MockAuthService extends AuthService {
@@ -19,8 +20,9 @@ export class MockAuthService extends AuthService {
       establishmentService: EstablishmentService,
       userService: UserService,
       permissionsService: PermissionsService,
+      featureFlagsService: FeatureFlagsService
     ) => {
-      const service = new MockAuthService(httpClient, router, establishmentService, userService, permissionsService);
+      const service = new MockAuthService(httpClient, router, establishmentService, userService, permissionsService,featureFlagsService);
       service._isAuthenticated = isAuthenticated;
       service._isAdmin = isAdmin;
       return service;
@@ -33,8 +35,9 @@ export class MockAuthService extends AuthService {
     establishmentService: EstablishmentService,
     userService: UserService,
     permissionsService: PermissionsService,
+    featureFlagsService: FeatureFlagsService
   ) {
-    super(http, router, establishmentService, userService, permissionsService);
+    super(http, router, establishmentService, userService, permissionsService,featureFlagsService );
   }
 
   public getPreviousToken(): any {

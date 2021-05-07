@@ -13,6 +13,8 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const payTileData = {
   workplaceValue: { value: 1000, hasValue: true },
@@ -47,6 +49,8 @@ const getBenchmarksMetricComponent = async () => {
         provide: EstablishmentService,
         useClass: MockEstablishmentService,
       },
+      { provide: FeatureFlagsService,
+        useClass: MockFeatureFlagsService},
       {
         provide: BreadcrumbService,
         useClass: MockBreadcrumbService,

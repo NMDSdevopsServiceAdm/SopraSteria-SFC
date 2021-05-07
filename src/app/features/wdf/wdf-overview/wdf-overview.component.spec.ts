@@ -11,6 +11,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfOverviewComponent', () => {
   const setup = async () => {
@@ -20,6 +22,7 @@ describe('WdfOverviewComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ReportService, useClass: MockReportService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService }
       ],
     });
     const component = fixture.componentInstance;

@@ -20,12 +20,15 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StaffReferencesComponent } from './staff-references-page.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(StaffReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
