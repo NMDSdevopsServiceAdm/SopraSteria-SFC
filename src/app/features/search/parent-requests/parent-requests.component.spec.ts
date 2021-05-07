@@ -88,6 +88,10 @@ describe('ParentRequestsComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
+        { provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService
+        },
+
       ],
       componentProperties: {
         parentRequests,
