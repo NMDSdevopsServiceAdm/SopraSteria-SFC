@@ -37,21 +37,21 @@ describe('WdfOverviewComponent', () => {
       const { getByText } = await setup();
       const timeframeSentence = 'Your data has met the WDF 2021 to 2022 requirements';
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();;
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the correct date for when WDF eligibility is valid until', async () => {
       const { getByText } = await setup();
       const timeframeSentence = 'continues to meet them until 31 March 2022';
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();;
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the correct date for when the user became eligible', async () => {
       const { getByText } = await setup();
       const timeframeSentence = 'Your data met the requirements on 21 July 2021';
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();;
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
   });
 
@@ -77,9 +77,9 @@ describe('WdfOverviewComponent', () => {
       component.overallWdfEligibility = false;
       fixture.detectChanges();
 
-      expect(getByText(requirementsNotMetSentence, { exact: false })).toBeTruthy();;
-      expect(getByText(viewWdfLink, { exact: false })).toBeTruthy();;
-      expect(getByText(viewWdfSentence, { exact: false })).toBeTruthy();;
+      expect(getByText(requirementsNotMetSentence, { exact: false })).toBeTruthy();
+      expect(getByText(viewWdfLink, { exact: false })).toBeTruthy();
+      expect(getByText(viewWdfSentence, { exact: false })).toBeTruthy();
     });
   });
 });

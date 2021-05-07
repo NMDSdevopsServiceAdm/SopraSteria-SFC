@@ -23,6 +23,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() return: URLStructure;
   @Input() wdfView = false;
+  @Input() overallWdfEligibility: boolean;
 
   private _worker: Worker;
   private workplaceUid: string;
