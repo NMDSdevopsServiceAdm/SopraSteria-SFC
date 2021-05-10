@@ -29,8 +29,14 @@
     [wdfView]="true"
     [overallWdfEligibility]="overallWdfEligibility"
   ></app-staff-record-summary>
-
-  <a class="govuk-button govuk-!-margin-top-3" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment"
-    >Close this staff record</a
-  >
+  <div class="govuk-grid-row  govuk-button-group govuk__align-items-center govuk__justify-content-space-between govuk__flex">
+      <div class="govuk-grid-column-one-half">
+          <a class="govuk-button govuk-!-margin-top-3" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment"
+            >Close this staff record</a
+          >
+      </div>
+      <div class="govuk-grid-column-one-half ">
+            <app-wdf-pagination [workerList]="workerList"></app-wdf-pagination>
+      </div>
+    </div>
 </ng-container>

@@ -62,3 +62,25 @@ $button-shadow-size: $govuk-border-width-form-element;
     text-decoration: underline;
   }
 }
+
+.asc-chevron-before,.asc-chevron-after{
+  &::before, &::after {
+    @include govuk-font($size: 24, $weight: 400);
+    text-decoration: none;
+    display: inline-block;
+  }
+}
+.asc-chevron-before{
+  &::before{
+    content: "\0003C";
+    padding-right: 5px;
+
+  }
+}
+.asc-chevron-after{
+  &::after{
+    content: "\0003E";
+    padding-left: 5px;
+
+  }
+}

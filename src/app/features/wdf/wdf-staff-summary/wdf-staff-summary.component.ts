@@ -38,6 +38,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = WdfSortStaffOptions;
     this.getOverallWdfEligibility();
+    this.saveWorkerList();
   }
 
   ngOnChanges() {
@@ -46,6 +47,11 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
       return worker;
     });
     this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
+    this.saveWorkerList();
+  }
+  public saveWorkerList() {
+    const listOfWorkerUids =  this.workers.map((worker) => worker.uid );
+    localStorage.setItem('ListOfWorkers', JSON.stringify(listOfWorkerUids));
   }
 
   public sortByColumn(selectedColumn: any) {
@@ -79,6 +85,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
         break;
       }
     }
+    this.saveWorkerList();
   }
 
   private getOverallWdfEligibility() {

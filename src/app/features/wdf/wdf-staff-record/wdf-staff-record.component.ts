@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -24,6 +24,7 @@ export class WdfStaffRecordComponent implements OnInit {
   public overallWdfEligibility: boolean;
   public wdfStartDate: string;
   public wdfEndDate: string;
+  public workerList: string[];
 
   private subscriptions: Subscription = new Subscription();
 
@@ -33,19 +34,30 @@ export class WdfStaffRecordComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
     private reportService: ReportService,
+    protected router: Router,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
 
+    this.route.params.subscribe((data) => {
+          this.getEstablishment();
+          this.getWorker();
+          this.getOverallWdfEligibility();
+          this.getListOfWorkers();
+        });
     this.getEstablishment();
     this.getWorker();
     this.getOverallWdfEligibility();
+    this.getListOfWorkers();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+  public getListOfWorkers(){
+    this.workerList = JSON.parse(localStorage.getItem("ListOfWorkers"));
   }
 
   public getEstablishment() {
