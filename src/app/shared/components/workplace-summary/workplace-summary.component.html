@@ -43,7 +43,11 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Employer type</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.employerType">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.employerType"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
           -
         </ng-container>
@@ -53,11 +57,10 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-
       <app-summary-record-change
         [explanationText]="' employer type'"
         [link]="['/workplace', workplace.uid, 'type-of-employer']"
-        [hasData]="(workplace.employerType?.other || workplace.employerType?.value)"
+        [hasData]="workplace.employerType?.other || workplace.employerType?.value"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
@@ -66,7 +69,11 @@
   <div class="govuk-summary-list__row" [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }">
     <dt class="govuk-summary-list__key" [ngClass]="{ 'govuk-!-padding-left-3': cqcStatusRequested }">Main service</dt>
     <dd class="govuk-summary-list__value" data-testid="main-service-name">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.mainService">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.mainService"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         {{ cqcStatusRequested ? requestedServiceName : workplace.mainService?.name }}
         <ng-container
           *ngIf="
@@ -123,7 +130,7 @@
       <app-summary-record-change
         [explanationText]="' other services'"
         [link]="['/workplace', workplace.uid, 'other-services']"
-        [hasData]="(workplace.otherServices.value !== null)"
+        [hasData]="workplace.otherServices.value !== null"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
@@ -132,7 +139,11 @@
   <div class="govuk-summary-list__row" *ngIf="hasCapacity">
     <dt class="govuk-summary-list__key">Service capacity</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.capacities">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.capacities"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
         <ng-template #capacities>
           <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -154,7 +165,11 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Service users</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.serviceUsers">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.serviceUsers"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers"> - </ng-container>
         <ng-template #serviceUsers>
           <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -175,7 +190,6 @@
       ></app-summary-record-change>
     </dd>
   </div>
-
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Data sharing</dt>
@@ -223,7 +237,11 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key" [class.asc-no-border]="staffMismatchWarning()">Total number of staff</dt>
     <dd class="govuk-summary-list__value" [class.asc-no-border]="staffMismatchWarning()">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.numberOfStaff"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
     </dd>
@@ -283,7 +301,11 @@
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Staff records</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.numberOfStaff"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
           {{ workplace.totalWorkers }}
         </app-summary-record-value>
       </dd>
@@ -301,7 +323,11 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Current staff vacancies</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.vacancies">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.vacancies"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
         <ng-template #vacancies>
           <ng-container *ngIf="isArray(workplace.vacancies)">
@@ -326,7 +352,11 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">New starters</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.starters">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.starters"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
         <ng-template #starters>
           <ng-container *ngIf="isArray(workplace.starters)">
@@ -353,7 +383,11 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Staff leavers</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.leavers">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.leavers"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
         <ng-template #leavers>
           <ng-container *ngIf="isArray(workplace.leavers)">

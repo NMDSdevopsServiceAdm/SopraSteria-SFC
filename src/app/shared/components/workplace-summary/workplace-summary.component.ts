@@ -28,6 +28,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public workerCount: number;
 
   @Input() wdfView = false;
+  @Input() overallWdfEligibility: boolean;
 
   @Input()
   set workplace(workplace: any) {
