@@ -65,8 +65,12 @@
         <app-home-tab [workplace]="workplace"></app-home-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace && canViewEstablishment" [title]="'Workplace'" [alert]="showCQCDetailsAlert">
-        <app-workplace-tab [workplace]="workplace" [showCqcRegistrationAlert]="showCQCDetailsAlert"></app-workplace-tab>
+      <app-tab
+        *ngIf="workplace && canViewEstablishment"
+        [title]="'Workplace'"
+        [alert]="workplace?.employerType && showCQCDetailsBanner"
+      >
+        <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
       </app-tab>
 
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">

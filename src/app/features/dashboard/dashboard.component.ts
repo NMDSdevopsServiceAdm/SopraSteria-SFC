@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplaceUid: string | null;
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
-  public showCQCDetailsAlert: boolean;
+  public showCQCDetailsBanner = false;
 
   constructor(
     private alertService: AlertService,
@@ -49,6 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
+    this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
@@ -57,7 +58,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
     this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
-    this.showCQCDetailsAlert = false;
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -66,14 +66,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }),
       );
 
-      if (this.workplace.locationId) {
+      if (this.workplace && this.workplace.locationId) {
         this.subscriptions.add(
           this.establishmentService.getCQCRegistrationStatus(this.workplace.locationId).subscribe((response) => {
-            this.showCQCDetailsAlert = response.cqcStatusMatch === false;
-            console.log('showCQCDetailsAlert', this.showCQCDetailsAlert);
+            this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
           }),
         );
       }
+
+      this.subscriptions.add(
+        this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+          this.showCQCDetailsBanner = showBanner;
+        }),
+      );
 
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
