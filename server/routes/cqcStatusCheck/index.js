@@ -7,6 +7,9 @@ const url = 'https://api.cqc.org.uk/public/v1';
 
 const cqcStatusCheck = async (req, res) => {
   const locationID = req.params.locationID;
+  const postcode = req.query.postcode.toUpperCase();
+  const mainService = req.query.mainService.toUpperCase();
+
   const result = {};
 
   if (!locationID) {
@@ -16,7 +19,10 @@ const cqcStatusCheck = async (req, res) => {
   try {
     const { data } = await axios.get(url + '/locations/' + locationID);
 
-    const cqcStatusMatch = data.registrationStatus === 'Registered';
+    const cqcStatusMatch =
+      checkRegistrationStatus(data.registrationStatus) &&
+      checkPostcodeMatch(postcode, data.postalCode.toUpperCase()) &&
+      checkMainServiceMatch(mainService, data.mainService);
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
@@ -30,6 +36,30 @@ const cqcStatusCheck = async (req, res) => {
 
   return res.status(200).send(result);
 };
+
+function checkRegistrationStatus(cqcRegistrationStatus) {
+  if (cqcRegistrationStatus !== 'Registered') {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function checkPostcodeMatch(postcode, cqcPostcode) {
+  if (postcode !== cqcPostcode) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function checkMainServiceMatch(mainService, cqcMainService) {
+  if (mainService !== cqcMainService) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 router.route('/:locationID').get(cqcStatusCheck);
 

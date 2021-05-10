@@ -68,9 +68,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       if (this.workplace && this.workplace.locationId) {
         this.subscriptions.add(
-          this.establishmentService.getCQCRegistrationStatus(this.workplace.locationId).subscribe((response) => {
-            this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-          }),
+          this.establishmentService
+            .getCQCRegistrationStatus(this.workplace.locationId, { postcode: 'sk11 8ex', mainService: 'A Service' })
+            .subscribe((response) => {
+              this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
+            }),
         );
       }
 
