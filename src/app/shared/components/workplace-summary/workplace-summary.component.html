@@ -244,6 +244,7 @@
       >
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
+      <app-wdf-staff-mismatch-message *ngIf="wdfView && wdfNewDesign"></app-wdf-staff-mismatch-message>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
       <app-summary-record-change
@@ -276,7 +277,7 @@
     </div>
   </ng-container>
 
-  <ng-container *ngIf="wdfView">
+  <ng-container *ngIf="wdfView && !wdfNewDesign">
     <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
