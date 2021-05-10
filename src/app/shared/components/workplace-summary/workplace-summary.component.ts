@@ -59,7 +59,15 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   @Input() return: URLStructure = null;
+
   get totalStaffWarning() {
+    if (this.wdfNewDesign) {
+      return (
+        this.workplace.numberOfStaff &&
+        (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
+        this.workplace.numberOfStaff !== this.workerCount
+      );
+    }
     return (
       (this.workplace.numberOfStaff > 0 || this.workplace.totalWorkers > 0) &&
       this.workplace.numberOfStaff !== this.workplace.totalWorkers
@@ -104,7 +112,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.setFeatureFlags();
+    // this.setFeatureFlags();
+    this.wdfNewDesign = true;
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.subscriptions.add(

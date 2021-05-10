@@ -244,7 +244,12 @@
       >
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
-      <app-wdf-staff-mismatch-message *ngIf="wdfView && wdfNewDesign"></app-wdf-staff-mismatch-message>
+      <app-wdf-staff-mismatch-message
+        *ngIf="wdfView && wdfNewDesign && totalStaffWarning"
+        [workplace]="workplace"
+        [workerCount]="workerCount"
+        [overallWdfEligibility]="overallWdfEligibility"
+      ></app-wdf-staff-mismatch-message>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
       <app-summary-record-change
