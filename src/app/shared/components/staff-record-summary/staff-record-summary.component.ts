@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -31,12 +32,14 @@ export class StaffRecordSummaryComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public returnTo: URLStructure;
+  public wdfNewDesign: boolean;
 
   constructor(
     private location: Location,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     public workerService: WorkerService,
+    private featureFlagsService: FeatureFlagsService
   ) {}
 
   ngOnInit() {
@@ -48,6 +51,10 @@ export class StaffRecordSummaryComponent implements OnInit {
       : { url: [...staffRecordPath, ...['check-answers']] };
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
+
+    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
+      this.wdfNewDesign = value;
+    });
   }
 
   setReturn() {

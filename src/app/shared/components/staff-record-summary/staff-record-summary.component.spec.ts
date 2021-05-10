@@ -56,6 +56,7 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed', async () => {
     const { component, fixture, getByText } = await setup();
 
+    component.wdfNewDesign = true;
     component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
     component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
     component.worker.mainJobStartDate = '2020-01-12';
@@ -68,9 +69,10 @@ describe('StaffRecordSummaryComponent', () => {
   });
 
   it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
-    const { queryByText } = await setup();
+    const { component, queryByText } = await setup();
 
-    expect(queryByText('Is this still correct?')).toBeFalsy();
+    component.wdfNewDesign = true;
+    expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
     expect(queryByText('Yes, it is')).toBeFalsy();
     expect(queryByText('No, change it')).toBeFalsy();
   });
@@ -79,16 +81,16 @@ describe('StaffRecordSummaryComponent', () => {
     const { component, fixture, getByText } = await setup();
 
     const workerService = TestBed.inject(WorkerService);
-
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
+    component.wdfNewDesign = true;
     component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
     component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
     component.worker.mainJobStartDate = '2020-01-12';
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is');
+    const yesItIsButton = getByText('Yes, it is',  { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
