@@ -11,6 +11,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
+import { within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { WorkplaceTabComponent } from './workplace-tab.component';
