@@ -277,9 +277,19 @@
             : (worker.weeklyHoursContracted?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.weeklyHoursContracted.isEligible === 'Yes' && !worker.wdf?.weeklyHoursContracted.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('weekly-contracted-hours')"
+        (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="!(
+        wdfNewDesign && worker.wdf?.weeklyHoursContracted.isEligible === 'Yes' && !worker.wdf?.weeklyHoursContracted.updatedSinceEffectiveDate
+        )"
         [explanationText]="' contracted weekly hours'"
         [link]="getRoutePath('weekly-contracted-hours')"
         [hasData]="!!worker.weeklyHoursContracted"
