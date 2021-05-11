@@ -252,9 +252,20 @@
             : (worker.weeklyHoursAverage?.value | openEndedAnswer)
         }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.weeklyHoursAverage.isEligible === 'Yes' && !worker.wdf?.weeklyHoursAverage.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('average-weekly-hours')"
+        (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+        !(
+        wdfNewDesign && worker.wdf?.weeklyHoursAverage.isEligible === 'Yes' && !worker.wdf?.weeklyHoursAverage.updatedSinceEffectiveDate
+        )"
         [explanationText]="' average weekly working hours'"
         [link]="getRoutePath('average-weekly-hours')"
         [hasData]="!!worker.weeklyHoursAverage"

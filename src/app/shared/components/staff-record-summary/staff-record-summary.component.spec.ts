@@ -219,4 +219,44 @@ describe('StaffRecordSummaryComponent', () => {
 
     expect(getByText('Meeting requirements')).toBeTruthy();
   });
+
+  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Average weekly working hours', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.wdfNewDesign = true;
+    component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
+    component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
+    component.worker.zeroHoursContract = "Yes";
+    component.worker.weeklyHoursAverage = { value: "Yes", hours: 30 };
+    component.worker.contract = Contracts.Agency;
+
+    fixture.detectChanges();
+
+    expect(getByText('Is this still correct?')).toBeTruthy();
+    expect(getByText('Yes, it is')).toBeTruthy();
+    expect(getByText('No, change it')).toBeTruthy();
+  });
+
+  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Average weekly working hours', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const workerService = TestBed.inject(WorkerService);
+    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+
+    component.wdfNewDesign = true;
+    component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
+    component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
+    component.worker.zeroHoursContract = "Yes";
+    component.worker.weeklyHoursAverage = { value: "Yes", hours: 30 };
+    component.worker.contract = Contracts.Agency;
+
+    fixture.detectChanges();
+
+    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    yesItIsButton.click();
+
+    fixture.detectChanges();
+
+    expect(getByText('Meeting requirements')).toBeTruthy();
+  });
 });
