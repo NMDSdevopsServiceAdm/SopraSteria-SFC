@@ -21,6 +21,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
     if (this.workerCount) {
       this.setMessage();
     }
+    this.setIcon();
   }
 
   public setMessage(): void {
@@ -40,7 +41,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
       return;
     }
     if (this.overallWdfEligibility == false) {
-      this.icon = 'flag-red';
+      this.icon = 'cross-icon';
       return;
     }
   }

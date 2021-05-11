@@ -112,8 +112,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.setFeatureFlags();
-    this.wdfNewDesign = true;
+    this.setFeatureFlags();
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.subscriptions.add(
