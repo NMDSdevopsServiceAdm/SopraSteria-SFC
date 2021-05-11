@@ -184,9 +184,20 @@
       >
         {{ worker.daysSick | workerDays | openEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.daysSick.isEligible === 'Yes' && !worker.wdf?.daysSick.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('days-of-sickness')"
+        (fieldConfirmation)="this.confirmField('daysSick')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+        !(
+        wdfNewDesign && worker.wdf?.daysSick.isEligible === 'Yes' && !worker.wdf?.daysSick.updatedSinceEffectiveDate
+        )"
         [explanationText]="' days of sickness'"
         [link]="getRoutePath('days-of-sickness')"
         [hasData]="!!worker.daysSick"

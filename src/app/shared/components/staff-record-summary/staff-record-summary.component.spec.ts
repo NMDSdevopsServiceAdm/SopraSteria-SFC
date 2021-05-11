@@ -4,8 +4,10 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { WorkerDays } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -53,7 +55,7 @@ describe('StaffRecordSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed', async () => {
+  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Date Started', async () => {
     const { component, fixture, getByText } = await setup();
 
     component.wdfNewDesign = true;
@@ -77,7 +79,7 @@ describe('StaffRecordSummaryComponent', () => {
     expect(queryByText('No, change it')).toBeFalsy();
   });
 
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked', async () => {
+  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Date Started', async () => {
     const { component, fixture, getByText } = await setup();
 
     const workerService = TestBed.inject(WorkerService);
@@ -87,6 +89,52 @@ describe('StaffRecordSummaryComponent', () => {
     component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
     component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
     component.worker.mainJobStartDate = '2020-01-12';
+
+    fixture.detectChanges();
+
+    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    yesItIsButton.click();
+
+    fixture.detectChanges();
+
+    expect(getByText('Meeting requirements')).toBeTruthy();
+  });
+
+  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Sickness in last 12 Months', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.wdfNewDesign = true;
+    component.worker.wdf.daysSick.isEligible = Eligibility.YES;
+    component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
+    component.worker.contract = Contracts.Permanent;
+    const myWorkerDay: WorkerDays = {
+      days: 4,
+      value: null
+    }
+    component.worker.daysSick = myWorkerDay;
+
+    fixture.detectChanges();
+
+    expect(getByText('Is this still correct?')).toBeTruthy();
+    expect(getByText('Yes, it is')).toBeTruthy();
+    expect(getByText('No, change it')).toBeTruthy();
+  });
+
+  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Sickness in the last 12 months', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const workerService = TestBed.inject(WorkerService);
+    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+
+    component.wdfNewDesign = true;
+    component.worker.wdf.daysSick.isEligible = Eligibility.YES;
+    component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
+    component.worker.contract = Contracts.Permanent;
+    const myWorkerDay: WorkerDays = {
+      days: 4,
+      value: null
+    }
+    component.worker.daysSick = myWorkerDay;
 
     fixture.detectChanges();
 
