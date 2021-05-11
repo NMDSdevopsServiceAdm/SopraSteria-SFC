@@ -4,6 +4,9 @@ const CQCDataAPI = require('../../utils/CQCDataAPI');
 
 const cqcStatusCheck = async (req, res) => {
   const locationID = req.params.locationID;
+  const postcode = req.query.postcode.toUpperCase();
+  const mainService = req.query.mainService.toUpperCase();
+
   const result = {};
 
   if (!locationID) {
@@ -13,7 +16,10 @@ const cqcStatusCheck = async (req, res) => {
   try {
     const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
 
-    const cqcStatusMatch = workplaceCQCData.registrationStatus === 'Registered';
+    const cqcStatusMatch =
+      checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
+      checkPostcodeMatch(postcode, workplaceCQCData.postalCode.toUpperCase()) &&
+      checkMainServiceMatch(mainService, workplaceCQCData.mainService);
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
@@ -29,6 +35,30 @@ const cqcStatusCheck = async (req, res) => {
 
   return res.status(200).send(result);
 };
+
+function checkRegistrationStatus(cqcRegistrationStatus) {
+  if (cqcRegistrationStatus !== 'Registered') {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function checkPostcodeMatch(postcode, cqcPostcode) {
+  if (postcode !== cqcPostcode) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function checkMainServiceMatch(mainService, cqcMainService) {
+  if (mainService !== cqcMainService) {
+    return true;
+  } else {
+    return true;
+  }
+}
 
 router.route('/:locationID').get(cqcStatusCheck);
 

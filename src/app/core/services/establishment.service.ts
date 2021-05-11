@@ -303,7 +303,12 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 
-  public getCQCRegistrationStatus(locationID): Observable<any> {
-    return this.http.get(`/api/cqcStatusCheck/${locationID}`);
+  public getCQCRegistrationStatus(locationID, requestParams): Observable<any> {
+    let params = new HttpParams();
+
+    params = params.set('postcode', `${requestParams.postcode}`);
+    params = params.set('mainService', `${requestParams.mainService}`);
+
+    return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
   }
 }
