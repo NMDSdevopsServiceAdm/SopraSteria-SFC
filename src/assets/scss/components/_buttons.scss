@@ -76,6 +76,7 @@ $button-shadow-size: $govuk-border-width-form-element;
   .asc-chevron-before {
     display: inline-block;
     position: relative;
+    @include govuk-font($size: 19);
 
     // Allow space for the arrow
     padding-left: 14px;
@@ -170,6 +171,7 @@ $button-shadow-size: $govuk-border-width-form-element;
 .asc-chevron-after {
   display: inline-block;
   position: relative;
+  @include govuk-font($size: 19);
 
   // Allow space for the arrow
   padding-right: 14px;
