@@ -27,7 +27,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
   });
 
   it('should show staff mismatch message if you have more staff than staff records', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture } = await setup();
     component.workerCount = 9;
     component.workplace.numberOfStaff = 10;
     component.setMessage();
@@ -38,7 +38,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
   });
 
   it('should show staff mismatch message if you have more staff records than staff', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture } = await setup();
     component.workerCount = 10;
     component.workplace.numberOfStaff = 9;
     component.setMessage();
@@ -49,7 +49,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
   });
 
   it('should show an orange flag if the user is meeting WDF overall but has made changes', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture } = await setup();
     component.workerCount = 10;
     component.workplace.numberOfStaff = 9;
     component.overallWdfEligibility = true;
@@ -60,15 +60,15 @@ describe('WdfStaffMismatchMessageComponent', () => {
     expect(component.icon).toEqual(orangeFlagIcon);
   });
 
-  it('should show a red flag if the user is not meeting WDF overall', async () => {
-    const { component, fixture, getByText } = await setup();
+  it('should show a red cross if the user is not meeting WDF overall', async () => {
+    const { component, fixture } = await setup();
     component.workerCount = 10;
     component.workplace.numberOfStaff = 9;
     component.overallWdfEligibility = false;
     component.setIcon();
     fixture.detectChanges();
 
-    const redFlagIcon = 'flag-red';
-    expect(component.icon).toEqual(redFlagIcon);
+    const crossIcon = 'cross-icon';
+    expect(component.icon).toEqual(crossIcon);
   });
 });

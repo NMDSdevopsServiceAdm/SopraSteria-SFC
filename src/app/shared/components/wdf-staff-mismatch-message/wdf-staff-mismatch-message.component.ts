@@ -18,9 +18,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
   }
 
   ngOnChanges() {
-    if (this.workerCount) {
-      this.setMessage();
-    }
+    this.setMessage();
     this.setIcon();
   }
 
