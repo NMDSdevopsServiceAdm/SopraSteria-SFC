@@ -17,6 +17,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { AdminSkipService } from '../admin-skip.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('BulkUploadMissingPageComponent', () => {
   async function setup() {
@@ -31,6 +33,7 @@ describe('BulkUploadMissingPageComponent', () => {
           provide: BulkUploadService,
           useClass: MockBulkUploadService,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,

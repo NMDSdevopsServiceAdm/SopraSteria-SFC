@@ -11,9 +11,10 @@ import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.com
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';
 import { WdfRequirementsStateComponent } from './wdf-requirements-state/wdf-requirements-state.component';
 import { WdfStatusMessageComponent } from './wdf-status-message/wdf-status-message.component';
+import { WdfStaffRecordStatusMessageComponent } from './wdf-staff-record-status-message/wdf-staff-record-status-message.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WdfRoutingModule],
-  declarations: [WdfOverviewComponent, WdfDataComponent, WdfStaffSummaryComponent, WdfStaffRecordComponent, WdfRequirementsStateComponent, WdfStatusMessageComponent],
+  declarations: [WdfOverviewComponent, WdfDataComponent, WdfStaffSummaryComponent, WdfStaffRecordComponent, WdfRequirementsStateComponent, WdfStatusMessageComponent, WdfStaffRecordStatusMessageComponent],
 })
 export class WdfModule {}

@@ -19,6 +19,8 @@ import { render } from '@testing-library/angular';
 
 import { WdfModule } from '../wdf.module.js';
 import { WdfDataComponent } from './wdf-data.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfDataComponent', () => {
   const setup = async () => {
@@ -29,6 +31,7 @@ describe('WdfDataComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ReportService, useClass: MockReportService },
         { provide: WorkerService, useClass: MockWorkerService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canViewWorker']),
@@ -64,6 +67,18 @@ describe('WdfDataComponent', () => {
 
       component.wdfEligibilityStatus.currentWorkplace = false;
       component.wdfEligibilityStatus.currentStaff = true;
+      fixture.detectChanges();
+
+      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display a green tick on the workplace tab when the user has not qualified for WDF but workplace is currently eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const greenTickVisuallyHiddenMessage = 'Green tick';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentWorkplace = true;
+      component.wdfEligibilityStatus.currentStaff = false;
       fixture.detectChanges();
 
       expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
@@ -111,6 +126,43 @@ describe('WdfDataComponent', () => {
       fixture.detectChanges();
 
       expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+    });
+
+    it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const redCrossVisuallyHiddenMessage = 'Red cross';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentWorkplace = false;
+      component.wdfEligibilityStatus.currentStaff = true;
+      fixture.detectChanges();
+
+      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display a red cross on the staff tab when the user has not qualified for WDF and staff records are not currently eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const redCrossVisuallyHiddenMessage = 'Red cross';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentStaff = false;
+      component.wdfEligibilityStatus.currentWorkplace = true;
+
+      fixture.detectChanges();
+
+      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display a red cross on the staff tab and workplace tab when the user has not qualified for WDF and staff records and workplace are not currently eligible', async () => {
+      const { component, fixture, getAllByText } = await setup();
+      const redCrossVisuallyHiddenMessage = 'Red cross';
+
+      component.wdfEligibilityStatus.overall = false;
+      component.wdfEligibilityStatus.currentWorkplace = false;
+      component.wdfEligibilityStatus.currentStaff = false;
+      fixture.detectChanges();
+
+      expect(getAllByText(redCrossVisuallyHiddenMessage, { exact: false }).length).toBe(2);
     });
   });
 
@@ -163,6 +215,16 @@ describe('WdfDataComponent', () => {
       fixture.detectChanges();
 
       expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the not meeting message if not meeting WDF requirements overall', async () => {
+      const { component, fixture, getByText } = await setup();
+      const notMeetingMessage = 'Your data does not meet the WDF 2021 to 2022 requirements';
+
+      component.wdfEligibilityStatus.overall = false;
+      fixture.detectChanges();
+
+      expect(getByText(notMeetingMessage, { exact: false })).toBeTruthy();
     });
   });
 });

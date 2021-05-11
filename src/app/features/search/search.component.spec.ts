@@ -11,6 +11,8 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { SearchComponent } from './search.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const getSearchComponent = async () => {
   return render(SearchComponent, {
@@ -30,6 +32,7 @@ const getSearchComponent = async () => {
         provide: WindowRef,
         useClass: WindowRef,
       },
+      { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       {
         provide: SwitchWorkplaceService,
         useClass: MockSwitchWorkplaceService,
