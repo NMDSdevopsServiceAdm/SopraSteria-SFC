@@ -47,6 +47,7 @@ import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
+import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
@@ -58,6 +59,9 @@ import { TrainingInfoPanelComponent } from './components/training-info-panel/tra
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
+import {
+  WdfStaffMismatchMessageComponent,
+} from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -74,7 +78,6 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -149,6 +152,7 @@ import { SummaryRecordChangeComponent } from './components/summary-record-change
     CqcConfirmationDialogComponent,
     TotalStaffComponent,
     MoveWorkplaceDialogComponent,
+    WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
   ],
   exports: [
