@@ -55,7 +55,6 @@ export class StaffRecordSummaryComponent implements OnInit {
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
     });
-    console.log(this.worker);
   }
 
   setReturn() {

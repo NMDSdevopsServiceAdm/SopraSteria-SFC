@@ -104,7 +104,8 @@ const workerBuilderWithWdf = build('Worker', {
     wdfEligible: false,
     wdf: {
       mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: false },
-      daysSick: { isEligible: true, updatedSinceEffectiveDate: false }
+      daysSick: { isEligible: true, updatedSinceEffectiveDate: false },
+      zeroHoursContract: { isEligible: true, updatedSinceEffectiveDate: false }
     },
   },
 });

@@ -216,9 +216,20 @@
       >
         {{ worker.zeroHoursContract || '-' | closedEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.zeroHoursContract.isEligible === 'Yes' && !worker.wdf?.zeroHoursContract.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('contract-with-zero-hours')"
+        (fieldConfirmation)="this.confirmField('zeroHoursContract')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+        !(
+        wdfNewDesign && worker.wdf?.zeroHoursContract.isEligible === 'Yes' && !worker.wdf?.zeroHoursContract.updatedSinceEffectiveDate
+        )"
         [explanationText]="' contract with zero hours'"
         [link]="getRoutePath('contract-with-zero-hours')"
         [hasData]="!!worker.zeroHoursContract"
