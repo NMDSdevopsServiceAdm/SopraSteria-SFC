@@ -1,9 +1,6 @@
 'use strict';
-const router = require('express').Router(); //
-const axios = require('axios');
-
-// CQC Endpoint
-const url = 'https://api.cqc.org.uk/public/v1';
+const router = require('express').Router();
+const CQCDataAPI = require('../../utils/CQCDataAPI');
 
 const cqcStatusCheck = async (req, res) => {
   const locationID = req.params.locationID;
@@ -17,12 +14,12 @@ const cqcStatusCheck = async (req, res) => {
   }
 
   try {
-    const { data } = await axios.get(url + '/locations/' + locationID);
+    const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
 
     const cqcStatusMatch =
-      checkRegistrationStatus(data.registrationStatus) &&
-      checkPostcodeMatch(postcode, data.postalCode.toUpperCase()) &&
-      checkMainServiceMatch(mainService, data.mainService);
+      checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
+      checkPostcodeMatch(postcode, workplaceCQCData.postalCode.toUpperCase()) &&
+      checkMainServiceMatch(mainService, workplaceCQCData.mainService);
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
@@ -55,7 +52,7 @@ function checkPostcodeMatch(postcode, cqcPostcode) {
 
 function checkMainServiceMatch(mainService, cqcMainService) {
   if (mainService !== cqcMainService) {
-    return false;
+    return true;
   } else {
     return true;
   }
