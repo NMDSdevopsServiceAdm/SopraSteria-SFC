@@ -4,8 +4,7 @@ const CQCDataAPI = require('../../utils/CQCDataAPI');
 
 const cqcStatusCheck = async (req, res) => {
   const locationID = req.params.locationID;
-  const postcode = req.query.postcode.toUpperCase();
-  const mainService = req.query.mainService.toUpperCase();
+  const postcode = req.query.postcode;
 
   const result = {};
 
@@ -18,8 +17,7 @@ const cqcStatusCheck = async (req, res) => {
 
     const cqcStatusMatch =
       checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
-      checkPostcodeMatch(postcode, workplaceCQCData.postalCode.toUpperCase()) &&
-      checkMainServiceMatch(mainService, workplaceCQCData.mainService);
+      checkPostcodeMatch(postcode, workplaceCQCData.postalCode);
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
@@ -45,18 +43,8 @@ function checkRegistrationStatus(cqcRegistrationStatus) {
 }
 
 function checkPostcodeMatch(postcode, cqcPostcode) {
-  if (postcode !== cqcPostcode) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function checkMainServiceMatch(mainService, cqcMainService) {
-  if (mainService !== cqcMainService) {
-    return true;
-  } else {
-    return true;
+  if (postcode && cqcPostcode) {
+    return postcode.toUpperCase() === cqcPostcode.toUpperCase() ? true : false;
   }
 }
 
