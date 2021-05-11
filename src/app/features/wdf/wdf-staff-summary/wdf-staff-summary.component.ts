@@ -17,7 +17,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   public canViewWorker: boolean;
   public canEditWorker: boolean;
   public sortStaffOptions;
-  public workersOrderBy: Array<Worker>;
+  public sortBy: string;
   public overallWdfEligibility: boolean;
   private subscriptions: Subscription = new Subscription();
 
@@ -38,6 +38,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = WdfSortStaffOptions;
     this.getOverallWdfEligibility();
+    this.restoreSortBy();
     this.saveWorkerList();
   }
 
@@ -47,14 +48,23 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
       return worker;
     });
     this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
+    this.restoreSortBy();
     this.saveWorkerList();
   }
   public saveWorkerList() {
     const listOfWorkerUids =  this.workers.map((worker) => worker.uid );
     localStorage.setItem('ListOfWorkers', JSON.stringify(listOfWorkerUids));
   }
+  public restoreSortBy(){
+    this.sortBy = localStorage.getItem("SortBy");
+    if(this.sortBy){
+      this.sortByColumn(this.sortBy);
+    }
+  }
+
 
   public sortByColumn(selectedColumn: any) {
+    localStorage.setItem('SortBy', selectedColumn);
     switch (selectedColumn) {
       case '0_asc': {
         this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);

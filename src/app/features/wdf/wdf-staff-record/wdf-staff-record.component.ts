@@ -10,6 +10,7 @@ import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wdf-staff-record',
@@ -40,15 +41,9 @@ export class WdfStaffRecordComponent implements OnInit {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-
-    this.route.params.subscribe((data) => {
-          this.getEstablishment();
-          this.getWorker();
-          this.getOverallWdfEligibility();
-          this.getListOfWorkers();
-        });
+    this.refreshSubscription();
     this.getEstablishment();
-    this.getWorker();
+    this.getWorker(this.route.snapshot.params);
     this.getOverallWdfEligibility();
     this.getListOfWorkers();
   }
@@ -56,6 +51,7 @@ export class WdfStaffRecordComponent implements OnInit {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+
   public getListOfWorkers(){
     this.workerList = JSON.parse(localStorage.getItem("ListOfWorkers"));
   }
@@ -69,9 +65,9 @@ export class WdfStaffRecordComponent implements OnInit {
     );
   }
 
-  public getWorker() {
+  public getWorker(data) {
     this.subscriptions.add(
-      this.workerService.getWorker(this.workplaceUid, this.route.snapshot.params.id, true).subscribe((worker) => {
+      this.workerService.getWorker(this.workplaceUid, data.id, true).subscribe((worker) => {
         this.worker = worker;
         this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
         this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff-records' };
@@ -86,6 +82,26 @@ export class WdfStaffRecordComponent implements OnInit {
         this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
         this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
       }),
+    );
+  }
+
+  private refreshSubscription(){
+    this.route.params.subscribe((data) => {
+      this.getEstablishment();
+      this.getWorker(data);
+      this.getOverallWdfEligibility();
+      this.getListOfWorkers();
+
+    });
+    this.subscriptions.add(
+      this.router.events
+        .pipe(
+          filter((event) => event instanceof NavigationEnd),
+          map(() => this.route),
+        )
+        .subscribe((data) => {
+          this.breadcrumbService.show(JourneyType.WDF);
+        }),
     );
   }
 }
