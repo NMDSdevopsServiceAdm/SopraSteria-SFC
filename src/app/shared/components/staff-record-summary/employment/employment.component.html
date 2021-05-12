@@ -320,9 +320,19 @@
       >
         {{ worker.annualHourlyPay | workerPay | closedEndedAnswer }}
       </app-summary-record-value>
+        <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.annualHourlyPay.isEligible === 'Yes' && !worker.wdf?.annualHourlyPay.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('salary')"
+        (fieldConfirmation)="this.confirmField('annualHourlyPay')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="!(
+        wdfNewDesign && worker.wdf?.annualHourlyPay.isEligible === 'Yes' && !worker.wdf?.annualHourlyPay.updatedSinceEffectiveDate
+        )"
         [explanationText]="' salary'"
         [link]="getRoutePath('salary')"
         [hasData]="!!worker.annualHourlyPay"
