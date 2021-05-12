@@ -103,14 +103,15 @@ const workerBuilderWithWdf = build('Worker', {
     ],
     wdfEligible: false,
     wdf: {
-      mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: false },
-      daysSick: { isEligible: true, updatedSinceEffectiveDate: false },
-      zeroHoursContract: { isEligible: true, updatedSinceEffectiveDate: false },
-      weeklyHoursContracted: { isEligible: true, updatedSinceEffectiveDate: false },
-      weeklyHoursAverage: { isEligible: true, updatedSinceEffectiveDate: false },
-      annualHourlyPay: { isEligible: true, updatedSinceEffectiveDate: false },
-      mainJob: { isEligible: true, updatedSinceEffectiveDate: false },
-      contract: { isEligible: true, updatedSinceEffectiveDate: false }
+      mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: true },
+      daysSick: { isEligible: true, updatedSinceEffectiveDate: true },
+      zeroHoursContract: { isEligible: true, updatedSinceEffectiveDate: true },
+      weeklyHoursContracted: { isEligible: true, updatedSinceEffectiveDate: true },
+      weeklyHoursAverage: { isEligible: true, updatedSinceEffectiveDate: true },
+      annualHourlyPay: { isEligible: true, updatedSinceEffectiveDate: true },
+      mainJob: { isEligible: true, updatedSinceEffectiveDate: true },
+      contract: { isEligible: true, updatedSinceEffectiveDate: true },
+      socialCareQualification: { isEligible: true, updatedSinceEffectiveDate: true }
     },
   },
 });

@@ -53,9 +53,19 @@
       >
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.socialCareQualification.isEligible === 'Yes' && !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
+        "
+        (fieldConfirmation)="this.confirmField('socialCareQualification')"
+        [changeLink]="getRoutePath('social-care-qualification-level')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="!(
+        wdfNewDesign && worker.wdf?.socialCareQualification.isEligible === 'Yes' && !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
+        )"
         [explanationText]="' social care qualification level'"
         [link]="getRoutePath('social-care-qualification-level')"
         [hasData]="!!worker.socialCareQualification"
