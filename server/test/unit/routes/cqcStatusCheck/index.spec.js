@@ -1,24 +1,25 @@
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
-const sinon_sandbox = sinon.createSandbox();
 const CQCDataAPI = require('../../../../utils/CQCDataAPI');
 
 const { cqcStatusCheck } = require('../../../../routes/cqcStatusCheck');
 
 describe('server/routes/establishments/cqcStatus', async () => {
-  sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').callsFake(async (locationID) => {
-    if (locationID === registeredLocationId) {
-      return registeredURLResponse;
-    } else if (locationID === deregisteredLocationId) {
-      return deregisteredURLResponse;
-    } else {
-      return null;
-    }
+  beforeEach(() => {
+    sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').callsFake(async (locationID) => {
+      if (locationID === registeredLocationId) {
+        return registeredURLResponse;
+      } else if (locationID === deregisteredLocationId) {
+        return deregisteredURLResponse;
+      } else {
+        return null;
+      }
+    });
   });
 
   afterEach(async () => {
-    sinon_sandbox.restore();
+    sinon.restore();
   });
 
   const registeredLocationId = '1-109009203';
