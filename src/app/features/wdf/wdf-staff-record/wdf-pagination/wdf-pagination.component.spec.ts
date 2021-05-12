@@ -70,7 +70,7 @@ describe('WdfPagination', () => {
     expect(queryByText('Next staff record')).toBeTruthy();
     expect(queryByText('Previous staff record')).toBeFalsy();
   });
-  it('should only show Next staff record', async () => {
+  it('should only show Previous staff record', async () => {
     const { fixture,queryByText } = await setup("4");
     fixture.detectChanges();
 
