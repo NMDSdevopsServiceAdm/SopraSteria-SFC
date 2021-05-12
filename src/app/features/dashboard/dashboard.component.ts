@@ -35,6 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplaceUid: string | null;
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
+  public showCQCDetailsBanner = false;
 
   constructor(
     private alertService: AlertService,
@@ -50,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
+    this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
@@ -65,6 +67,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
         }),
       );
+
+      if (this.workplace && this.workplace.locationId) {
+        this.subscriptions.add(
+          this.establishmentService.getCQCRegistrationStatus(this.workplace.locationId).subscribe((response) => {
+            this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
+          }),
+        );
+      }
+
+      this.subscriptions.add(
+        this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+          this.showCQCDetailsBanner = showBanner;
+        }),
+      );
+
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
           (total) => {
