@@ -50,6 +50,13 @@
       >
         {{ worker.contract }}
       </app-summary-record-value>
+        <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.contract.isEligible === 'Yes' && !worker.wdf?.contract.updatedSinceEffectiveDate
+        "
+        (fieldConfirmation)="this.confirmField('contract')"
+        [changeLink]="getRoutePath('staff-details')"
+      ></app-wdf-field-confirmation>
     </dd>
   </div>
 </dl>

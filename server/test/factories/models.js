@@ -109,7 +109,8 @@ const workerBuilderWithWdf = build('Worker', {
       weeklyHoursContracted: { isEligible: true, updatedSinceEffectiveDate: false },
       weeklyHoursAverage: { isEligible: true, updatedSinceEffectiveDate: false },
       annualHourlyPay: { isEligible: true, updatedSinceEffectiveDate: false },
-      mainJob: { isEligible: true, updatedSinceEffectiveDate: false }
+      mainJob: { isEligible: true, updatedSinceEffectiveDate: false },
+      contract: { isEligible: true, updatedSinceEffectiveDate: false }
     },
   },
 });
