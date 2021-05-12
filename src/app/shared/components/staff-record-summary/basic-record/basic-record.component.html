@@ -30,6 +30,13 @@
           <span>{{ worker.mainJob.title }}</span>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+        wdfNewDesign && worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate
+        "
+        (fieldConfirmation)="this.confirmField('mainJob')"
+        [changeLink]="getRoutePath('staff-details')"
+      ></app-wdf-field-confirmation>
     </dd>
   </div>
 
