@@ -16,9 +16,10 @@ import { WdfModule } from '../wdf.module.js';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { Observable } from 'rxjs';
 
 describe('WdfStaffRecordComponent', () => {
-  const setup = async () => {
+  const setup = async (id = 123) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfStaffRecordComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
@@ -29,9 +30,13 @@ describe('WdfStaffRecordComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
+            params: Observable.from([{ id: id }]),
             snapshot: {
-              params: {
-                id: '123',
+              params:[{id: id}],
+              paramMap: {
+                get(id) {
+                  return id;
+                },
               },
             },
           },

@@ -11,7 +11,6 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockReportService } from '@core/test-utils/MockReportService.js';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { workers } from 'node:cluster';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models.js';
 import { WdfModule } from '../wdf.module.js';
