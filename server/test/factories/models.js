@@ -111,7 +111,8 @@ const workerBuilderWithWdf = build('Worker', {
       annualHourlyPay: { isEligible: true, updatedSinceEffectiveDate: true },
       mainJob: { isEligible: true, updatedSinceEffectiveDate: true },
       contract: { isEligible: true, updatedSinceEffectiveDate: true },
-      socialCareQualification: { isEligible: true, updatedSinceEffectiveDate: true }
+      socialCareQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+      qualificationInSocialCare: { isEligible: true, updatedSinceEffectiveDate: true }
     },
   },
 });
