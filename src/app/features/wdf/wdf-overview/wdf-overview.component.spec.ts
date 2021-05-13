@@ -206,7 +206,7 @@ describe('WdfOverviewComponent', () => {
         { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
       ];
 
-      component.getLastOverallEligibilyDate();
+      component.getLastOverallEligibilityDate();
       fixture.detectChanges();
 
       expect(component.parentOverallEligibilityDate).toEqual('31 July 2021');

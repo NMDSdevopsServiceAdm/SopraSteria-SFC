@@ -27,8 +27,8 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public parentOverallEligibilityDate: string;
   public isParent: boolean;
   public workplaceUid: string;
-  private subscriptions: Subscription = new Subscription();
   public workplaces = [];
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -59,8 +59,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
         }
         this.workplaces.unshift(workplaces.primary);
         this.getParentOverallWdfEligibility();
-        this.getLastOverallEligibilyDate();
-        console.log(this.workplaces);
+        this.getLastOverallEligibilityDate();
       }),
     );
   }
@@ -71,7 +70,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  public getLastOverallEligibilyDate(): void {
+  public getLastOverallEligibilityDate(): void {
     if (this.parentOverallWdfEligibility) {
       this.parentOverallEligibilityDate = moment(this.workplaces[0].wdf.overallWdfEligibility).format('D MMMM YYYY');
     }
