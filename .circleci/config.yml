@@ -505,21 +505,21 @@ workflows:
           live_subdomain: asc-wds
           live_domain: skillsforcare.org.uk
           workspace_path: .
-      - attach_autoscale_policy:
-          appname: sfcprod
-          requires:
-            - prod_deploy
-          filters:
-            # ignore any commit on any branch by default
-            branches:
-              ignore: /.*/
-            # only act on version tags
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*$/
-          endpoint: https://api.cloud.service.gov.uk
-          org: dhsc-skills-for-care-nmds-sc-2
-          space: production
-          workspace_path: .
+      # - attach_autoscale_policy:
+      #     appname: sfcprod
+      #     requires:
+      #       - prod_deploy
+      #     filters:
+      #       # ignore any commit on any branch by default
+      #       branches:
+      #         ignore: /.*/
+      #       # only act on version tags
+      #       tags:
+      #         only: /^v[0-9]+(\.[0-9]+)*$/
+      #     endpoint: https://api.cloud.service.gov.uk
+      #     org: dhsc-skills-for-care-nmds-sc-2
+      #     space: production
+      #     workspace_path: .
       - sentry_release:
           requires:
             - blue_green_benchmarks
