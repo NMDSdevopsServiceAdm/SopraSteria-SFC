@@ -39,7 +39,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     public workerService: WorkerService,
-    private featureFlagsService: FeatureFlagsService
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit() {
@@ -54,6 +54,10 @@ export class StaffRecordSummaryComponent implements OnInit {
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
+
+      if (this.wdfView && this.wdfNewDesign) {
+        this.updateFieldsWhichDontRequireConfirmation();
+      }
     });
   }
 
@@ -73,5 +77,15 @@ export class StaffRecordSummaryComponent implements OnInit {
         .updateWorker(this.workplace.uid, this.worker.uid, props)
         .subscribe((data) => console.log(data)),
     );
+  }
+
+  private updateFieldsWhichDontRequireConfirmation(): void {
+    const fieldsWhichDontRequireConfirmation = ['dateOfBirth', 'gender', 'nationality', 'recruitedFrom'];
+
+    for (const field of fieldsWhichDontRequireConfirmation) {
+      if (this.worker.wdf?.[field].isEligible === 'Yes' && !this.worker.wdf?.[field].updatedSinceEffectiveDate) {
+        this.confirmField(field);
+      }
+    }
   }
 }
