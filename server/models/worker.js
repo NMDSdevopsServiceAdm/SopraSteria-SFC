@@ -211,7 +211,7 @@ module.exports = function (sequelize, DataTypes) {
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberEncryptedValue"',
+        field: '"NationalInsuranceNumberValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -234,9 +234,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.TEXT,
+        type: DataTypes.DATE,
         allowNull: true,
-        field: '"DateOfBirthEncryptedValue"',
+        field: '"DateOfBirthValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -1058,32 +1058,6 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      hooks: {
-        beforeBulkUpdate: async (workerUpdate) => {
-          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
-            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
-          }
-
-          if (workerUpdate.attributes.DateOfBirthValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
-            workerUpdate.attributes.DateOfBirthValue = encrypted;
-          }
-        },
-        afterFind: async (worker) => {
-          if (worker && worker.dataValues) {
-            if (worker.dataValues.NationalInsuranceNumberValue) {
-              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
-              worker.dataValues.NationalInsuranceNumberValue = decrypted;
-            }
-
-            if (worker.dataValues.DateOfBirthValue) {
-              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
-              worker.dataValues.DateOfBirthValue = decrypted;
-            }
-          }
-        },
-      },
       scopes: {
         active: {
           where: {
