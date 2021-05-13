@@ -32,7 +32,10 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
-        wdfNewDesign && worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.mainJob.isEligible === 'Yes' &&
+          !worker.wdf?.mainJob.updatedSinceEffectiveDate
         "
         (fieldConfirmation)="this.confirmField('mainJob')"
         [changeLink]="getRoutePath('staff-details')"
@@ -50,9 +53,12 @@
       >
         {{ worker.contract }}
       </app-summary-record-value>
-        <app-wdf-field-confirmation
+      <app-wdf-field-confirmation
         *ngIf="
-        wdfNewDesign && worker.wdf?.contract.isEligible === 'Yes' && !worker.wdf?.contract.updatedSinceEffectiveDate
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.contract.isEligible === 'Yes' &&
+          !worker.wdf?.contract.updatedSinceEffectiveDate
         "
         (fieldConfirmation)="this.confirmField('contract')"
         [changeLink]="getRoutePath('staff-details')"

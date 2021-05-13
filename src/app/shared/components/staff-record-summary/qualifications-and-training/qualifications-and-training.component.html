@@ -12,6 +12,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          wdfView &&
           wdfNewDesign &&
           worker.wdf?.careCertificate.isEligible === 'Yes' &&
           !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
@@ -26,6 +27,7 @@
       <app-summary-record-change
         *ngIf="
           !(
+            wdfView &&
             wdfNewDesign &&
             worker.wdf?.careCertificate.isEligible === 'Yes' &&
             !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
@@ -52,6 +54,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          wdfView &&
           wdfNewDesign &&
           worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
           !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
@@ -65,6 +68,7 @@
       <app-summary-record-change
         *ngIf="
           !(
+            wdfView &&
             wdfNewDesign &&
             worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
             !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
@@ -91,6 +95,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          wdfView &&
           wdfNewDesign &&
           worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
           !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
@@ -103,6 +108,7 @@
       <app-summary-record-change
         *ngIf="
           !(
+            wdfView &&
             wdfNewDesign &&
             worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
             !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
@@ -128,6 +134,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          wdfView &&
           wdfNewDesign &&
           worker.wdf?.otherQualification.isEligible === 'Yes' &&
           !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
@@ -159,6 +166,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          wdfView &&
           wdfNewDesign &&
           worker.wdf?.highestQualification.isEligible === 'Yes' &&
           !worker.wdf?.highestQualification.updatedSinceEffectiveDate
@@ -171,6 +179,7 @@
       <app-summary-record-change
         *ngIf="
           !(
+            wdfView &&
             wdfNewDesign &&
             worker.wdf?.highestQualification.isEligible === 'Yes' &&
             !worker.wdf?.highestQualification.updatedSinceEffectiveDate
