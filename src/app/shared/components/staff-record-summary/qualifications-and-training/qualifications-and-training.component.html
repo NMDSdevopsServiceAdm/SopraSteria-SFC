@@ -157,9 +157,25 @@
       >
         {{ worker.highestQualification?.title || '-' }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfNewDesign &&
+          worker.wdf?.highestQualification.isEligible === 'Yes' &&
+          !worker.wdf?.highestQualification.updatedSinceEffectiveDate
+        "
+        (fieldConfirmation)="this.confirmField('highestQualification')"
+        [changeLink]="getRoutePath('other-qualifications-level')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfNewDesign &&
+            worker.wdf?.highestQualification.isEligible === 'Yes' &&
+            !worker.wdf?.highestQualification.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' other qualification level'"
         [link]="getRoutePath('other-qualifications-level')"
         [hasData]="!!worker.highestQualification"

@@ -80,8 +80,8 @@ const workerBuilder = build('Worker', {
     ],
     wdfEligible: false,
     wdf: {
-      isEligible: false
-    }
+      isEligible: false,
+    },
   },
 });
 
@@ -115,6 +115,7 @@ const workerBuilderWithWdf = build('Worker', {
       qualificationInSocialCare: { isEligible: true, updatedSinceEffectiveDate: true },
       careCertificate: { isEligible: true, updatedSinceEffectiveDate: true },
       otherQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+      highestQualification: { isEligible: true, updatedSinceEffectiveDate: true },
     },
   },
 });

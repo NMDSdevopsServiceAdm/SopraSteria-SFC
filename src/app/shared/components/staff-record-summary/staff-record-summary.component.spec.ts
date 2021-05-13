@@ -22,8 +22,6 @@ import { of } from 'rxjs';
 import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
-const sinon = require('sinon');
-
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
     const { fixture, getByText, queryByText } = await render(StaffRecordSummaryComponent, {
@@ -600,6 +598,46 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
       component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
       component.worker.otherQualification = 'No';
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
+  });
+
+  describe('Field confirmation for Highest level of non-social care qualification', () => {
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Highest level of non-social care qualification', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.otherQualification = 'Yes';
+      component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
+      component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.highestQualification.updatedSinceEffectiveDate = false;
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Highest level of non-social care qualification', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const workerService = TestBed.inject(WorkerService);
+      spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+
+      component.wdfNewDesign = true;
+      component.worker.otherQualification = 'Yes';
+      component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
+      component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.highestQualification.updatedSinceEffectiveDate = false;
 
       fixture.detectChanges();
 
