@@ -5,8 +5,8 @@ const axios = require('axios');
 
 const { getWorkplaceCQCData } = require('../../../../server/utils/CQCDataAPI');
 
-describe('server/utils/CQCDataAPI', async () => {
-  afterEach(async () => {
+describe('server/utils/CQCDataAPI', () => {
+  afterEach(() => {
     sinon_sandbox.restore();
   });
 
@@ -14,7 +14,7 @@ describe('server/utils/CQCDataAPI', async () => {
 
   const locationId = '1-109009203';
 
-  const cqcAPIStub = sinon_sandbox.stub(axios, 'get').returns({ data: true });
+  const cqcAPIStub = sinon.stub(axios, 'get').returns({ data: true });
 
   it('should call the CQC API', async () => {
     await getWorkplaceCQCData(locationId);

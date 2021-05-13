@@ -4,8 +4,6 @@ const CQCDataAPI = require('../../utils/CQCDataAPI');
 
 const cqcStatusCheck = async (req, res) => {
   const locationID = req.params.locationID;
-  const postcode = req.query.postcode;
-
   const result = {};
 
   if (!locationID) {
@@ -15,9 +13,7 @@ const cqcStatusCheck = async (req, res) => {
   try {
     const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
 
-    const cqcStatusMatch =
-      checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
-      checkPostcodeMatch(postcode, workplaceCQCData.postalCode);
+    const cqcStatusMatch = workplaceCQCData.registrationStatus === 'Registered';
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
@@ -33,20 +29,6 @@ const cqcStatusCheck = async (req, res) => {
 
   return res.status(200).send(result);
 };
-
-function checkRegistrationStatus(cqcRegistrationStatus) {
-  if (cqcRegistrationStatus !== 'Registered') {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function checkPostcodeMatch(postcode, cqcPostcode) {
-  if (postcode && cqcPostcode) {
-    return postcode.toUpperCase() === cqcPostcode.toUpperCase() ? true : false;
-  }
-}
 
 router.route('/:locationID').get(cqcStatusCheck);
 
