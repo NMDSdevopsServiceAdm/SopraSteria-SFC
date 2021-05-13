@@ -59,22 +59,28 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
         }
         this.workplaces.unshift(workplaces.primary);
         this.getParentOverallWdfEligibility();
+        this.getLastOverallEligibilyDate();
+        console.log(this.workplaces);
       }),
     );
   }
 
-  private getParentOverallWdfEligibility(): void {
+  public getParentOverallWdfEligibility(): void {
     this.parentOverallWdfEligibility = !this.workplaces.some((workplace) => {
       return workplace.wdf.overall === false;
     });
-    this.parentOverallEligibilityDate = moment('2021-07-31').format('D MMMM YYYY');
+  }
+
+  public getLastOverallEligibilyDate(): void {
+    if (this.parentOverallWdfEligibility) {
+      this.parentOverallEligibilityDate = moment(this.workplaces[0].wdf.overallWdfEligibility).format('D MMMM YYYY');
+    }
   }
 
   private getWdfReport(): void {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
         this.report = report;
-        console.log(report);
         this.overallWdfEligibility = report.wdf.overall;
         this.setDates(report);
       }),

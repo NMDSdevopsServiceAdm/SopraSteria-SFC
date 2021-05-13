@@ -135,4 +135,52 @@ describe('WdfOverviewComponent', () => {
       expect(getByText(viewWorkplacesSentence, { exact: false })).toBeTruthy();
     });
   });
+
+  describe('getParentsAndSubs', async () => {
+    it('should correctly calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
+      const { component, fixture } = await setup();
+
+      component.isParent = true;
+      component.workplaces = [
+        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+        { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
+      ];
+
+      component.getParentOverallWdfEligibility();
+      fixture.detectChanges();
+
+      expect(component.parentOverallWdfEligibility).toBeTrue();
+    });
+
+    it('should correctly calculate parentOverallWdfEligibility to be false if a workplace is ineligible', async () => {
+      const { component, fixture } = await setup();
+
+      component.isParent = true;
+      component.workplaces = [
+        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+        { wdf: { overall: false, overallWdfEligibility: '' } },
+      ];
+
+      component.getParentOverallWdfEligibility();
+      fixture.detectChanges();
+
+      expect(component.parentOverallWdfEligibility).toBeFalse();
+    });
+
+    it('should correctly calculate parentOverallEligibilityDate if all workplaces are eligible', async () => {
+      const { component, fixture } = await setup();
+
+      component.isParent = true;
+      component.parentOverallWdfEligibility = true;
+      component.workplaces = [
+        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+        { wdf: { overall: false, overallWdfEligibility: '2021-05-01' } },
+      ];
+
+      component.getLastOverallEligibilyDate();
+      fixture.detectChanges();
+
+      expect(component.parentOverallEligibilityDate).toEqual('31 July 2021');
+    });
+  });
 });
