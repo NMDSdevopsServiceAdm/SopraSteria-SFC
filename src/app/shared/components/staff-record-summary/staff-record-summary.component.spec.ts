@@ -543,4 +543,72 @@ describe('StaffRecordSummaryComponent', () => {
       expect(getByText('Meeting requirements')).toBeTruthy();
     });
   });
+
+  describe('Field confirmation for Non-social care qualification', () => {
+    it('should show WdfFieldConfirmation component when is eligible(set to No) but needs to be confirmed for Non-social care qualification', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
+      component.worker.otherQualification = 'No';
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it("should show WdfFieldConfirmation component when is eligible(set to Don't know) but needs to be confirmed for Non-social care qualification", async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
+      component.worker.otherQualification = "Don't know";
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Non-social care qualification', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
+      component.worker.otherQualification = 'Yes';
+
+      fixture.detectChanges();
+
+      expect(queryByText('Is this still correct?')).toBeFalsy();
+      expect(queryByText('Yes, it is')).toBeFalsy();
+      expect(queryByText('No, change it')).toBeFalsy();
+    });
+
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Non-social care qualification', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const workerService = TestBed.inject(WorkerService);
+      spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
+      component.worker.otherQualification = 'No';
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
+  });
 });

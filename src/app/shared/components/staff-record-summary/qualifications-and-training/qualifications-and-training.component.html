@@ -17,8 +17,8 @@
           !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
           worker.careCertificate !== 'Yes, completed'
         "
-        (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
-        [changeLink]="getRoutePath('social-care-qualification')"
+        (fieldConfirmation)="this.confirmField('careCertificate')"
+        [changeLink]="getRoutePath('care-certificate')"
       ></app-wdf-field-confirmation>
     </dd>
 
@@ -126,6 +126,16 @@
       >
         {{ worker.otherQualification || '-' | closedEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfNewDesign &&
+          worker.wdf?.otherQualification.isEligible === 'Yes' &&
+          !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
+          worker.otherQualification !== 'Yes'
+        "
+        (fieldConfirmation)="this.confirmField('otherQualification')"
+        [changeLink]="getRoutePath('other-qualifications')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change

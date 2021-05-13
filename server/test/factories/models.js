@@ -114,6 +114,7 @@ const workerBuilderWithWdf = build('Worker', {
       socialCareQualification: { isEligible: true, updatedSinceEffectiveDate: true },
       qualificationInSocialCare: { isEligible: true, updatedSinceEffectiveDate: true },
       careCertificate: { isEligible: true, updatedSinceEffectiveDate: true },
+      otherQualification: { isEligible: true, updatedSinceEffectiveDate: true },
     },
   },
 });
