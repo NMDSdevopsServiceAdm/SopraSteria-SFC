@@ -100,7 +100,9 @@
           worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
           !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
         "
-        (fieldConfirmation)="this.confirmField('socialCareQualification')"
+        (fieldConfirmation)="
+          this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
+        "
         [changeLink]="getRoutePath('social-care-qualification-level')"
       ></app-wdf-field-confirmation>
     </dd>
@@ -171,7 +173,7 @@
           worker.wdf?.highestQualification.isEligible === 'Yes' &&
           !worker.wdf?.highestQualification.updatedSinceEffectiveDate
         "
-        (fieldConfirmation)="this.confirmField('highestQualification')"
+        (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
         [changeLink]="getRoutePath('other-qualifications-level')"
       ></app-wdf-field-confirmation>
     </dd>
