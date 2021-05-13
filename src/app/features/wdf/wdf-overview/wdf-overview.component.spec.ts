@@ -87,7 +87,7 @@ describe('WdfOverviewComponent', () => {
     });
   });
 
-  describe('Parent workplaces', () => {
+  describe('Parent workplaces happy path', () => {
     it('should display the correct timeframe for parents for meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
       const timeframeSentence = 'All of your workplaces have met the WDF 2021 to 2022 data requirements';
@@ -122,7 +122,7 @@ describe('WdfOverviewComponent', () => {
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
 
-    it('should display the not View your workplaces message when parent and all subs are eligible', async () => {
+    it('should display the "View your workplaces" message when parent and all subs are eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const viewWorkplacesLink = 'View your workplaces';
       const viewWorkplacesSentence = 'and keep your data up to date to save time next year';
@@ -136,8 +136,37 @@ describe('WdfOverviewComponent', () => {
     });
   });
 
+  describe('Parent workplaces unhappy path', () => {
+    it('should not display the meeting requirements message when the parent is not eligible', async () => {
+      const { component, fixture, queryByText } = await setup();
+      const timeframeSentence = 'All of your workplaces have met the WDF 2021 to 2022 data requirements';
+
+      component.isParent = true;
+      component.parentOverallWdfEligibility = false;
+      fixture.detectChanges();
+
+      expect(queryByText(timeframeSentence, { exact: false })).toBeFalsy();
+    });
+
+    it('should display the not meeting requirements message when the user is not eligible', async () => {
+      const { component, fixture, getByText } = await setup();
+      const requirementsNotMetSentence =
+        "Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements";
+      const viewWorkplacesLink = 'View your workplaces';
+      const viewWorkplacesSentence = 'to see which have data that does not meet the requirements.';
+
+      component.isParent = true;
+      component.parentOverallWdfEligibility = false;
+      fixture.detectChanges();
+
+      expect(getByText(requirementsNotMetSentence, { exact: false })).toBeTruthy();
+      expect(getByText(viewWorkplacesLink, { exact: false })).toBeTruthy();
+      expect(getByText(viewWorkplacesSentence, { exact: false })).toBeTruthy();
+    });
+  });
+
   describe('getParentsAndSubs', async () => {
-    it('should correctly calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
+    it('should calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
       const { component, fixture } = await setup();
 
       component.isParent = true;
@@ -152,7 +181,7 @@ describe('WdfOverviewComponent', () => {
       expect(component.parentOverallWdfEligibility).toBeTrue();
     });
 
-    it('should correctly calculate parentOverallWdfEligibility to be false if a workplace is ineligible', async () => {
+    it('should calculate parentOverallWdfEligibility to be false if a workplace is ineligible', async () => {
       const { component, fixture } = await setup();
 
       component.isParent = true;
@@ -174,7 +203,7 @@ describe('WdfOverviewComponent', () => {
       component.parentOverallWdfEligibility = true;
       component.workplaces = [
         { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-        { wdf: { overall: false, overallWdfEligibility: '2021-05-01' } },
+        { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
       ];
 
       component.getLastOverallEligibilyDate();

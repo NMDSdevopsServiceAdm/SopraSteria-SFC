@@ -38,7 +38,7 @@
     </ng-container>
 
     <ng-template #parent>
-      <ng-container *ngIf="parentOverallWdfEligibility">
+      <ng-container *ngIf="parentOverallWdfEligibility; else parentNotEligible">
         <span>
           <h2 class="govuk-heading-s">
             <img
@@ -55,6 +55,23 @@
         </p>
         <p><a [routerLink]="['']">View your workplaces</a> and keep your data up to date to save time next year.</p>
       </ng-container>
+
+      <ng-template #parentNotEligible>
+        <span>
+          <h2 class="govuk-heading-s govuk-!-margin-bottom-6">
+            <img
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              src="/assets/images/cross-icon.svg"
+              alt=""
+            />Some of your workplaces' data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }} requirements
+          </h2>
+        </span>
+        <p>
+          <a [routerLink]="['/wdf/data']">View your workplaces</a> to see which have data that does not meet the
+          requirements.
+        </p>
+      </ng-template>
     </ng-template>
 
     <h2 class="govuk-heading-s">Find out more</h2>
