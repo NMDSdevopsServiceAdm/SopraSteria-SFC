@@ -92,7 +92,7 @@ describe('StaffRecordSummaryComponent', () => {
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -109,8 +109,8 @@ describe('StaffRecordSummaryComponent', () => {
     component.worker.contract = Contracts.Permanent;
     const myWorkerDay: WorkerDays = {
       days: 4,
-      value: null
-    }
+      value: null,
+    };
     component.worker.daysSick = myWorkerDay;
 
     fixture.detectChanges();
@@ -132,13 +132,13 @@ describe('StaffRecordSummaryComponent', () => {
     component.worker.contract = Contracts.Permanent;
     const myWorkerDay: WorkerDays = {
       days: 4,
-      value: null
-    }
+      value: null,
+    };
     component.worker.daysSick = myWorkerDay;
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -152,7 +152,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.zeroHoursContract.isEligible = Eligibility.YES;
     component.worker.wdf.zeroHoursContract.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = "Yes";
+    component.worker.zeroHoursContract = 'Yes';
 
     fixture.detectChanges();
 
@@ -170,11 +170,11 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.zeroHoursContract.isEligible = Eligibility.YES;
     component.worker.wdf.zeroHoursContract.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = "Yes";
+    component.worker.zeroHoursContract = 'Yes';
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -188,7 +188,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
-    component.worker.weeklyHoursContracted = { value: "Yes", hours: 30 };
+    component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
     component.worker.contract = Contracts.Permanent;
 
     fixture.detectChanges();
@@ -207,12 +207,12 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
-    component.worker.weeklyHoursContracted = { value: "Yes", hours: 30 };
+    component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
     component.worker.contract = Contracts.Permanent;
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -226,8 +226,8 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = "Yes";
-    component.worker.weeklyHoursAverage = { value: "Yes", hours: 30 };
+    component.worker.zeroHoursContract = 'Yes';
+    component.worker.weeklyHoursAverage = { value: 'Yes', hours: 30 };
     component.worker.contract = Contracts.Agency;
 
     fixture.detectChanges();
@@ -246,13 +246,13 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = "Yes";
-    component.worker.weeklyHoursAverage = { value: "Yes", hours: 30 };
+    component.worker.zeroHoursContract = 'Yes';
+    component.worker.weeklyHoursAverage = { value: 'Yes', hours: 30 };
     component.worker.contract = Contracts.Agency;
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -266,7 +266,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
     component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
-    component.worker.annualHourlyPay = { value: "Annually", rate: 24000 };
+    component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
     component.worker.contract = Contracts.Permanent;
 
     fixture.detectChanges();
@@ -285,12 +285,12 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
     component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
-    component.worker.annualHourlyPay = { value: "Annually", rate: 24000 };
+    component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
     component.worker.contract = Contracts.Permanent;
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -304,7 +304,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.mainJob.isEligible = Eligibility.YES;
     component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
-    component.worker.mainJob = { jobId: 10, title: "Care Worker" };
+    component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
     component.worker.contract = Contracts.Permanent;
 
     fixture.detectChanges();
@@ -323,12 +323,12 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.mainJob.isEligible = Eligibility.YES;
     component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
-    component.worker.mainJob = { jobId: 10, title: "Care Worker" };
+    component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
     component.worker.contract = Contracts.Permanent;
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -364,7 +364,7 @@ describe('StaffRecordSummaryComponent', () => {
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -378,8 +378,8 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
     component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = "Yes";
-    component.worker.socialCareQualification = { qualificationId: 4, title: "Level 3"}
+    component.worker.qualificationInSocialCare = 'Yes';
+    component.worker.socialCareQualification = { qualificationId: 4, title: 'Level 3' };
 
     fixture.detectChanges();
 
@@ -397,12 +397,12 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
     component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = "Yes";
-    component.worker.socialCareQualification = { qualificationId: 4, title: "Level 3"}
+    component.worker.qualificationInSocialCare = 'Yes';
+    component.worker.socialCareQualification = { qualificationId: 4, title: 'Level 3' };
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
@@ -416,7 +416,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
     component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = "No";
+    component.worker.qualificationInSocialCare = 'No';
 
     fixture.detectChanges();
 
@@ -425,7 +425,7 @@ describe('StaffRecordSummaryComponent', () => {
     expect(getByText('No, change it')).toBeTruthy();
   });
 
-  it('should show WdfFieldConfirmation component when is eligible, set to Don\'t know but needs to be confirmed for Any social care qualification', async () => {
+  it("should show WdfFieldConfirmation component when is eligible, set to Don't know but needs to be confirmed for Any social care qualification", async () => {
     const { component, fixture, getByText } = await setup();
 
     component.wdfNewDesign = true;
@@ -446,7 +446,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
     component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = "Yes";
+    component.worker.qualificationInSocialCare = 'Yes';
 
     fixture.detectChanges();
 
@@ -468,11 +468,79 @@ describe('StaffRecordSummaryComponent', () => {
 
     fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is',  { exact: false });
+    const yesItIsButton = getByText('Yes, it is', { exact: false });
     yesItIsButton.click();
 
     fixture.detectChanges();
 
     expect(getByText('Meeting requirements')).toBeTruthy();
+  });
+
+  describe('Field confirmation for Started or completed Care Certificate', () => {
+    it('should show WdfFieldConfirmation component when is eligible(set to No) but needs to be confirmed for Started or completed Care Certificate', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
+      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
+      component.worker.careCertificate = 'No';
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should show WdfFieldConfirmation component when is eligible(set to Yes, in progress or partially completed) but needs to be confirmed for Started or completed Care Certificate', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
+      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
+      component.worker.careCertificate = 'Yes, in progress or partially completed';
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Any social care qualification', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
+      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
+      component.worker.careCertificate = 'Yes, completed';
+
+      fixture.detectChanges();
+
+      expect(queryByText('Is this still correct?')).toBeFalsy();
+      expect(queryByText('Yes, it is')).toBeFalsy();
+      expect(queryByText('No, change it')).toBeFalsy();
+    });
+
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Started or completed Care Certificate', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const workerService = TestBed.inject(WorkerService);
+      spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
+      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
+      component.worker.careCertificate = 'No';
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
   });
 });
