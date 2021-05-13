@@ -42,7 +42,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace.isParent;
 
-    this.getParentsAndSubs();
+    this.getParentAndSubs();
     this.getWdfReport();
   }
 
@@ -50,7 +50,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private getParentsAndSubs(): void {
+  private getParentAndSubs(): void {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
