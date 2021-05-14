@@ -140,7 +140,6 @@ commands:
 
 orbs:
   node: circleci/node@3.0.0
-  configcat: configcat/feature-flag-reference-validator@2.0.1
 
 jobs:
   install:
@@ -202,10 +201,6 @@ jobs:
       or workspace_path for assets to deploy.
     docker:
       - image: circleci/python:2.7
-    parameters:
-      env_prefix:
-        description: Enviroment Prefix
-        type: string
     steps:
       - checkout
       - attach_workspace:
@@ -219,11 +214,11 @@ jobs:
           command: sudo pip install configcat-flag-reference-validator==2.0.1
       - run:
           command: |
-            if [[ -z "${<<parameters.env_prefix>>_CONFIG_CAT_SDK_KEY}" ]]; then
+            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
               echo "Please, set the feature flag environment variables. Will stop now."
               exit 1
             fi
-            configcat-validator.py "${<<parameters.env_prefix>>_CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=true
+            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=true
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
@@ -415,10 +410,12 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
-      - configcat/validate-flag-references:
-          name: feature_flag
-          debug: true
-          fail-on-warnings: true
+      - feature_flag:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks
@@ -427,6 +424,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
+            - feature_flag
           filters:
             branches:
               only:
