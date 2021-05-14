@@ -9,7 +9,9 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -33,6 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplaceUid: string | null;
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
+  public showCQCDetailsBanner = false;
 
   constructor(
     private alertService: AlertService,
@@ -48,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
+    this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
@@ -56,6 +60,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.workplace) {
       this.getCanViewBenchmarks();
       this.getTotalStaffRecords();
+
+      if (this.workplace.locationId) {
+        this.subscriptions.add(
+          this.establishmentService
+            .getCQCRegistrationStatus(this.workplace.locationId, {
+              postcode: this.workplace.postcode,
+              mainService: this.workplace.mainService.name,
+            })
+            .subscribe((response) => {
+              this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
+            }),
+        );
+      }
+
+      this.subscriptions.add(
+        this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+          this.showCQCDetailsBanner = showBanner;
+        }),
+      );
 
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();

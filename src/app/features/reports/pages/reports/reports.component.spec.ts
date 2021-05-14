@@ -18,12 +18,15 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ReportsComponent } from './reports.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('ReportsComponent', async () => {
   const setup = async (isAdmin = true, isLoggedIn: boolean = true) => {
     return await render(ReportsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
