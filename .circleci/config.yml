@@ -416,8 +416,9 @@ workflows:
           requires:
             - install
       - configcat/validate-flag-references:
-            debug: true
-            fail-on-warnings: true
+          name: feature_flag
+          debug: true
+          fail-on-warnings: true
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks
@@ -448,7 +449,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag_staging
+            - feature_flag
           filters:
             branches:
               only:
@@ -471,7 +472,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag_prod
+            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
@@ -509,7 +510,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag_prod
+            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
