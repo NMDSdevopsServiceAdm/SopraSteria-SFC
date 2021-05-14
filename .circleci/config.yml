@@ -418,9 +418,8 @@ workflows:
           name: feature_flag_staging
           env_prefix: SFC_TEST
           filters:
-            branches:
-              only:
-                - test
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
       - feature_flag:
