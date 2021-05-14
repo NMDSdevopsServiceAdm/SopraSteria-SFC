@@ -102,7 +102,7 @@
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
         <li *ngIf="canAddWorker">
-          <a [routerLink]="['/add-mandatory-training']">Manage mandatory training</a>
+          <a [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']">Manage mandatory training</a>
         </li>
       </ul>
     </ng-container>
