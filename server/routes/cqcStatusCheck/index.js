@@ -1,23 +1,24 @@
 'use strict';
 const router = require('express').Router();
 const CQCDataAPI = require('../../utils/CQCDataAPI');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const cqcStatusCheck = async (req, res) => {
   const locationID = req.params.locationID;
   const postcode = req.query.postcode;
+  const mainService = req.query.mainService;
 
   const result = {};
-
-  if (!locationID) {
-    return res.status(500).send();
-  }
 
   try {
     const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
 
+    console.log(workplaceCQCData);
+
     const cqcStatusMatch =
       checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
-      checkPostcodeMatch(postcode, workplaceCQCData.postalCode);
+      checkPostcodeMatch(postcode, workplaceCQCData.postalCode) &&
+      checkMainServiceMatch(mainService, workplaceCQCData.gacServiceTypes);
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
@@ -43,12 +44,33 @@ function checkRegistrationStatus(cqcRegistrationStatus) {
 }
 
 function checkPostcodeMatch(postcode, cqcPostcode) {
+  if (!postcode) return true;
+
   if (postcode && cqcPostcode) {
     return postcode.toUpperCase() === cqcPostcode.toUpperCase() ? true : false;
   }
 }
 
-router.route('/:locationID').get(cqcStatusCheck);
+function checkMainServiceMatch(mainService, cqcServices) {
+  if (!mainService) return true;
+
+  if (mainService && cqcServices) {
+    return cqcServices.find((service) => service.description === mainService).length > 0;
+  }
+}
+
+router.route('/:locationID').get(
+  cqcStatusCheck,
+  celebrate({
+    query: Joi.object().keys({
+      locationID: Joi.string().required(),
+      postcode: Joi.string(),
+      mainService: Joi.string(),
+    }),
+  }),
+);
+
+router.use('/:locationID', errors());
 
 module.exports = router;
 module.exports.cqcStatusCheck = cqcStatusCheck;
