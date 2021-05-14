@@ -9,7 +9,7 @@
     >
       Yes, it is
     </button>
-    <a class="govuk-link" [routerLink]="changeLink">No, change it</a>
+    <a class="govuk-link" [routerLink]="changeLink" (click)="setReturn()">No, change it</a>
   </ng-container>
   <ng-template #confirmed>
     <img class="govuk-!-margin-right-2" src="../../../../assets/images/tick-icon.svg" alt="" />

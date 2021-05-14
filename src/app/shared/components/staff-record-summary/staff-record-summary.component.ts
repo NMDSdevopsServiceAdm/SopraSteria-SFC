@@ -57,12 +57,17 @@ export class StaffRecordSummaryComponent implements OnInit {
 
       if (this.wdfView && this.wdfNewDesign) {
         this.updateFieldsWhichDontRequireConfirmation();
+        this.setNewWdfReturn();
       }
     });
   }
 
   setReturn() {
     this.workerService.setReturnTo(this.return);
+  }
+
+  private setNewWdfReturn(): void {
+    this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
   }
 
   public getRoutePath(name: string) {

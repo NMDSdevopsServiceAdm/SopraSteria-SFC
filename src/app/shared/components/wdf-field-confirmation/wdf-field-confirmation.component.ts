@@ -7,10 +7,16 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class WdfFieldConfirmationComponent {
   @Input() changeLink: any[];
   @Output() fieldConfirmation: EventEmitter<Event> = new EventEmitter();
-  public confirmButtonClicked: boolean = false;
+  @Output() setReturnClicked: EventEmitter<Event> = new EventEmitter();
+
+  public confirmButtonClicked = false;
 
   confirmField() {
     this.fieldConfirmation.emit();
     this.confirmButtonClicked = true;
+  }
+
+  setReturn() {
+    this.setReturnClicked.emit();
   }
 }
