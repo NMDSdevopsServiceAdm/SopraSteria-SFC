@@ -25,9 +25,9 @@
   </div>
   <p *ngIf="this.type == 'moreStaffRecords' || this.type == 'moreStaff' || this.type == 'moreStaffZeroRecords'">
     You said the total number of staff at your workplace was {{ numberOfStaff }}, but
-    <ng-container *ngIf="this.type == 'moreStaff' && this.workersCount">only</ng-container>
-    {{ workersCount }} staff
-    <ng-container [ngPlural]="this.workersCount">
+    <ng-container *ngIf="this.type == 'moreStaff' && this.workerCount">only</ng-container>
+    {{ workerCount }} staff
+    <ng-container [ngPlural]="this.workerCount">
       <ng-template ngPluralCase="=1"> record has</ng-template>
       <ng-template ngPluralCase="other"> records have</ng-template>
     </ng-container>

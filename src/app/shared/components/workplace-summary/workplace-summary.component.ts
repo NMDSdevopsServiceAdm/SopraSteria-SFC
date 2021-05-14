@@ -26,12 +26,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
   public canViewListOfWorkers: boolean;
-  public workerCount: number;
   public wdfNewDesign: boolean;
 
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
-
+  @Input() workerCount: number;
   @Input()
   set workplace(workplace: any) {
     this._workplace = workplace;
@@ -120,14 +119,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
       }),
     );
-
-    if (this.canViewListOfWorkers) {
-      this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplace.uid)
-          .subscribe((workers) => (this.workerCount = workers.length ? workers.length : 0)),
-      );
-    }
 
     this.cqcStatusRequested = false;
     this.subscriptions.add(
