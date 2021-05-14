@@ -140,6 +140,7 @@ commands:
 
 orbs:
   node: circleci/node@3.0.0
+  configcat: configcat/feature-flag-reference-validator@2.0.1
 
 jobs:
   install:
@@ -414,23 +415,9 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
-      - feature_flag:
-          name: feature_flag_staging
-          env_prefix: SFC_TEST
-          filters:
-            tags:
-              only: /^v[0-9]+(\.[0-9]+)*$/
-          requires:
-            - install
-      - feature_flag:
-          name: feature_flag_prod
-          env_prefix: SFC_PROD
-          filters:
-            branches:
-              only:
-                - live
-          requires:
-            - install
+      - configcat/validate-flag-references:
+            debug: true
+            fail-on-warnings: true
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks
