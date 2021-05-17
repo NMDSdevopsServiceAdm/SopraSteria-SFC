@@ -13,8 +13,6 @@ const cqcStatusCheck = async (req, res) => {
   try {
     const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
 
-    console.log(workplaceCQCData);
-
     const cqcStatusMatch =
       checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
       checkPostcodeMatch(postcode, workplaceCQCData.postalCode) &&
@@ -22,14 +20,13 @@ const cqcStatusCheck = async (req, res) => {
 
     result.cqcStatusMatch = cqcStatusMatch;
   } catch (error) {
+    console.error('CQC API Error: ', error);
     // If the CQC API responds with a 404, we treat that as an unregistered workplace
     if (error.response.status === 404) {
       result.cqcStatusMatch = false;
     } else {
       result.cqcStatusMatch = true;
     }
-
-    console.error('CQC API Error: ', error.message);
   }
 
   return res.status(200).send(result);
@@ -52,11 +49,55 @@ function checkPostcodeMatch(postcode, cqcPostcode) {
 }
 
 function checkMainServiceMatch(mainService, cqcServices) {
-  if (!mainService) return true;
+  if (!mainService || !cqcServices) return true;
+
+  const cqcMainService = convertMainServiceToCQC(mainService);
 
   if (mainService && cqcServices) {
-    return cqcServices.find((service) => service.description === mainService).length > 0;
+    return cqcServices.some((service) => cqcMainService.cqc.includes(service.name));
   }
+}
+
+function convertMainServiceToCQC(mainService) {
+  const services = [
+    { asc: 'Care home services with nursing', cqc: ['Nursing homes'] },
+    { asc: 'Care home services without nursing', cqc: ['Residential homes'] },
+    {
+      asc: 'Community based services for people who misuse substances',
+      cqc: ['Rehabilitation (substance abuse)'],
+    },
+    { asc: 'Community based services for people with a learning disability', cqc: ['Supported living'] },
+    { asc: 'Community based services for people with mental health needs', cqc: ['Residential homes'] },
+    { asc: 'Community healthcare services', cqc: ['Homecare agencies'] },
+    { asc: 'Domiciliary care services', cqc: ['Homecare agencies'] },
+    { asc: 'Extra care housing services', cqc: ['Supported housing'] },
+    { asc: 'Hospice services', cqc: ['Hospice'] },
+    {
+      asc:
+        'Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse',
+      cqc: ['Hospitals - Mental health/capacity'],
+    },
+    { asc: 'Long term conditions services', cqc: ['Nursing homes', 'Homecare agencies'] },
+    { asc: 'Nurses agency', cqc: ['Community services - Nursing'] },
+    {
+      asc: 'Rehabilitation services',
+      cqc: ['Nursing homes', 'Residential Rehabilitation (illness/injury)', 'Residential homes'],
+    },
+    {
+      asc: 'Residential substance misuse treatment/ rehabilitation services',
+      cqc: [
+        'Rehabilitation (substance abuse)',
+        'Rehabilitation (illness/injury)',
+        'Homecare agencies',
+        'Nursing homes',
+      ],
+    },
+    { asc: 'Shared lives', cqc: ['Shared lives'] },
+    { asc: 'Specialist college services', cqc: ['Specialist college service'] },
+    { asc: 'Supported living services', cqc: ['Supported living'] },
+  ];
+
+  return services.find((service) => service.asc === mainService);
 }
 
 router.route('/:locationID').get(
@@ -74,3 +115,4 @@ router.use('/:locationID', errors());
 
 module.exports = router;
 module.exports.cqcStatusCheck = cqcStatusCheck;
+module.exports.checkMainServiceMatch = checkMainServiceMatch;
