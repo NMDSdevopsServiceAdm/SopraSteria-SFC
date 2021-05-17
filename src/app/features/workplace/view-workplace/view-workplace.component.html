@@ -26,7 +26,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab [title]="'Workplace'">
+      <app-tab [title]="'Workplace'" [alert]="workplace?.employerType && showCQCDetailsBanner">
         <app-workplace-tab [workplace]="workplace" [summaryReturnUrl]="summaryReturnUrl"></app-workplace-tab>
       </app-tab>
 

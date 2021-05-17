@@ -11,7 +11,6 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockReportService } from '@core/test-utils/MockReportService.js';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { workers } from 'node:cluster';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models.js';
 import { WdfModule } from '../wdf.module.js';
@@ -47,7 +46,7 @@ describe('WdfStaffSummaryComponent', () => {
   it('should display green ticks on 3 staff records when the user has qualified for WDF and all staff records are eligible', async () => {
     const { component, fixture, getAllByText } = await setup();
     const greenTickVisuallyHiddenMessage = 'Green tick';
-    const meetingMessage = 'Meeting requirements';
+    const meetingMessage = 'Meeting';
 
     component.overallWdfEligibility = true;
     component.workers[0].wdfEligible = true;
@@ -56,13 +55,13 @@ describe('WdfStaffSummaryComponent', () => {
     fixture.detectChanges();
 
     expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(3);
-    expect(getAllByText(meetingMessage, { exact: false }).length).toBe(3);
+    expect(getAllByText(meetingMessage, { exact: true }).length).toBe(3);
   });
 
   it('should display an orange flag on staff record when the user has qualified for WDF but 1 staff record is no longer eligible', async () => {
     const { component, fixture, getByText } = await setup();
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-    const checkMessage = 'Check this staff record';
+    const notMeetingMessage = 'Not meeting';
 
     component.overallWdfEligibility = true;
     component.workers[0].wdfEligible = false;
@@ -71,15 +70,15 @@ describe('WdfStaffSummaryComponent', () => {
     fixture.detectChanges();
 
     expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(checkMessage, { exact: false })).toBeTruthy();
+    expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
   });
 
   it('should display one orange flag and two green flags when the user has qualified for WDF but 1 staff record is no longer eligible and two still are', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-    const checkMessage = 'Check this staff record';
+    const notMeetingMessage = 'Not meeting';
     const greenTickVisuallyHiddenMessage = 'Green tick';
-    const meetingMessage = 'Meeting requirements';
+    const meetingMessage = 'Meeting';
 
     component.overallWdfEligibility = true;
     component.workers[0].wdfEligible = false;
@@ -88,15 +87,15 @@ describe('WdfStaffSummaryComponent', () => {
     fixture.detectChanges();
 
     expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(checkMessage, { exact: false })).toBeTruthy();
+    expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
     expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    expect(getAllByText(meetingMessage, { exact: false }).length).toBe(2);
+    expect(getAllByText(meetingMessage, { exact: true }).length).toBe(2);
   });
 
   it('should display a red cross on staff record when the user has not qualified for WDF overall and 1 staff record is not eligible', async () => {
     const { component, fixture, getByText } = await setup();
     const redCrossVisuallyHiddenMessage = 'Red cross';
-    const checkMessage = 'Check this staff record';
+    const notMeetingMessage = 'Not meeting';
 
     component.overallWdfEligibility = false;
     component.workers[0].wdfEligible = false;
@@ -105,15 +104,15 @@ describe('WdfStaffSummaryComponent', () => {
     fixture.detectChanges();
 
     expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(checkMessage, { exact: false })).toBeTruthy();
+    expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
   });
 
   it('should display two red crosses and one green tick when the user has not qualified for WDF but 1 staff record is eligible and two are not', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     const redCrossVisuallyHiddenMessage = 'Red cross';
-    const checkMessage = 'Check this staff record';
+    const notMeetingMessage = 'Not meeting';
     const greenTickVisuallyHiddenMessage = 'Green tick';
-    const meetingMessage = 'Meeting requirements';
+    const meetingMessage = 'Meeting';
 
     component.overallWdfEligibility = false;
     component.workers[0].wdfEligible = false;
@@ -122,8 +121,8 @@ describe('WdfStaffSummaryComponent', () => {
     fixture.detectChanges();
 
     expect(getAllByText(redCrossVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    expect(getAllByText(checkMessage, { exact: false }).length).toBe(2);
+    expect(getAllByText(notMeetingMessage, { exact: true }).length).toBe(2);
     expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(meetingMessage, { exact: false })).toBeTruthy();
+    expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
   });
 });

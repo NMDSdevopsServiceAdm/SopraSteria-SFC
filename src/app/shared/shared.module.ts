@@ -8,6 +8,7 @@ import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-chan
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
+import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
@@ -46,6 +47,7 @@ import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
+import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
@@ -57,6 +59,9 @@ import { TrainingInfoPanelComponent } from './components/training-info-panel/tra
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
+import {
+  WdfStaffMismatchMessageComponent,
+} from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -150,6 +155,8 @@ import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmati
     TotalStaffComponent,
     MoveWorkplaceDialogComponent,
     WdfFieldConfirmationComponent,
+    WdfStaffMismatchMessageComponent,
+    CheckCQCDetailsComponent,
   ],
   exports: [
     AlertComponent,
@@ -220,6 +227,7 @@ import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmati
     TotalStaffComponent,
     BulkUploadFileTypePipePipe,
     MoveWorkplaceDialogComponent,
+    CheckCQCDetailsComponent,
   ],
   providers: [DialogService, TotalStaffComponent],
 })

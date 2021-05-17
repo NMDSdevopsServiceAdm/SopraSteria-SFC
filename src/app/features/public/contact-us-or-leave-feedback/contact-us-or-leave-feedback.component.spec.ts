@@ -9,6 +9,8 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('ContactUsOrLeaveFeedbackComponent', () => {
   const setup = async () => {
@@ -16,7 +18,7 @@ describe('ContactUsOrLeaveFeedbackComponent', () => {
       ContactUsOrLeaveFeedbackComponent,
       {
         imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-        providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder, ErrorSummaryService],
+        providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService },{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }, FormBuilder, ErrorSummaryService],
       },
     );
     const component = fixture.componentInstance;
