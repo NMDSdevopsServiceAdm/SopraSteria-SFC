@@ -223,6 +223,15 @@ export enum WdfSortStaffOptions {
   '2_not_meeting' = 'WDF requirements (not meeting)',
 }
 
+export enum WdfParentSortStaffOptions {
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
+  '2_meeting' = 'WDF requirements (meeting)',
+  '2_not_meeting' = 'WDF requirements (not meeting)',
+}
+
 export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',

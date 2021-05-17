@@ -14,7 +14,7 @@
   [isParent]="true"
 ></app-wdf-status-message>
 
-<ul class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-8">
+<ul class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
   <li>
     <a
       href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
@@ -23,3 +23,5 @@
     >
   </li>
 </ul>
+
+<app-wdf-workplaces-summary-table [workplaces]="workplaces"></app-wdf-workplaces-summary-table>

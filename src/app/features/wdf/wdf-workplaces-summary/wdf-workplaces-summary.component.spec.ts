@@ -22,7 +22,7 @@ import { of } from 'rxjs';
 import { WdfModule } from '../wdf.module.js';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
-fdescribe('WdfWorkplacesSummaryComponent', () => {
+describe('WdfWorkplacesSummaryComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfWorkplacesSummaryComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],

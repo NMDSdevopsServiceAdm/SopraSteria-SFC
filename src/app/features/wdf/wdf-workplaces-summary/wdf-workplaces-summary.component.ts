@@ -1,11 +1,14 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
+import { UserService } from '@core/services/user.service';
+import { orderBy } from 'lodash';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -14,12 +17,14 @@ import { Subscription } from 'rxjs';
   templateUrl: './wdf-workplaces-summary.component.html',
 })
 export class WdfWorkplacesSummaryComponent implements OnInit {
+  public workplaces = [];
   public workplaceUid: string;
   public wdfStartDate: string;
   public wdfEndDate: string;
   public returnUrl: URLStructure;
   public report: WDFReport;
   public parentWdfEligibilityStatus: boolean;
+  public parentOverallEligibilityDate: string;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
 
@@ -27,6 +32,7 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -34,7 +40,28 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
     this.returnUrl = { url: ['/wdf', 'workplaces'] };
 
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.getParentAndSubs();
     this.getWdfReport();
+  }
+
+  private getParentAndSubs(): void {
+    this.subscriptions.add(
+      this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
+        this.workplaces.push(workplaces.primary);
+        if (workplaces.subsidaries) {
+          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
+        }
+        this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+        this.getParentOverallWdfEligibility();
+        console.log(this.workplaces);
+      }),
+    );
+  }
+
+  public getParentOverallWdfEligibility(): void {
+    this.parentWdfEligibilityStatus = !this.workplaces.some((workplace) => {
+      return workplace.wdf.overall === false;
+    });
   }
 
   private getWdfReport() {
