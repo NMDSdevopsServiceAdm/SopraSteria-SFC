@@ -118,7 +118,7 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workerCount = 10;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
     component.fixture.componentInstance.canViewListOfWorkers = true;
 
@@ -132,7 +132,7 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
@@ -147,7 +147,7 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
@@ -163,7 +163,7 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 0;
+    component.fixture.componentInstance.workerCount = 0;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
