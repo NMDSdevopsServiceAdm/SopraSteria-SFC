@@ -15,6 +15,7 @@ import { WdfPaginationComponent } from './wdf-staff-record/wdf-pagination/wdf-pa
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';
 import { WdfStatusMessageComponent } from './wdf-status-message/wdf-status-message.component';
+import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table/wdf-workplaces-summary-table.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
 
 @NgModule({
@@ -29,6 +30,7 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     WdfStaffRecordStatusMessageComponent,
     WdfPaginationComponent,
     WdfWorkplacesSummaryComponent,
+    WdfWorkplacesSummaryTableComponent,
   ],
 })
 export class WdfModule {}
