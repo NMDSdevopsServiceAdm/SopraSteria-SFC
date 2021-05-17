@@ -24,7 +24,7 @@ describe('WdfPagination', () => {
             snapshot: {
               paramMap: {
                 get(id) {
-                  return id;
+                  return "123";
                 },
               },
             },
