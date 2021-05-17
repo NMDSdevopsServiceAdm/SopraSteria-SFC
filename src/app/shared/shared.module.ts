@@ -59,9 +59,8 @@ import { TrainingInfoPanelComponent } from './components/training-info-panel/tra
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
-import {
-  WdfStaffMismatchMessageComponent,
-} from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
+import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
+import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -78,8 +77,6 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
-import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
