@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -15,12 +16,13 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { WdfModule } from '../wdf.module.js';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
-describe('WdfWorkplacesSummaryComponent', () => {
+fdescribe('WdfWorkplacesSummaryComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfWorkplacesSummaryComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
@@ -44,6 +46,19 @@ describe('WdfWorkplacesSummaryComponent', () => {
   it('should render a WdfWorkplacesSummaryComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should download a WDF report when the download link is clicked', async () => {
+    const { fixture, getByText } = await setup();
+
+    const reportService = TestBed.inject(ReportService);
+    const getReport = spyOn(reportService, 'getParentWDFReport').and.callFake(() => of(null));
+    const saveAs = spyOn(fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+
+    fireEvent.click(getByText('Download your WDF report PDF', { exact: false }));
+
+    expect(getReport).toHaveBeenCalled();
+    expect(saveAs).toHaveBeenCalled();
   });
 
   describe('WdfStatusMessageComponent', async () => {

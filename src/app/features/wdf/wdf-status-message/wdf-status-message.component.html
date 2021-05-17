@@ -1,5 +1,5 @@
-<h4 class="govuk-heading-s govuk-!-margin-bottom-8">
-  <ng-container *ngIf="!isParent; else parent">
+<ng-container *ngIf="!isParent; else parent">
+  <h4 class="govuk-heading-s govuk-!-margin-bottom-8">
     <ng-container *ngIf="!wdfEligibilityStatus.overall">
       Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
     </ng-container>
@@ -15,10 +15,12 @@
     >
       Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
     </ng-container>
-  </ng-container>
+  </h4>
+</ng-container>
 
-  <ng-template #parent>
+<ng-template #parent>
+  <h4 class="govuk-heading-s">
     All your workplaces' data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to
     {{ wdfEndDate | date: 'yyyy' }} requirements
-  </ng-template>
-</h4>
+  </h4>
+</ng-template>

@@ -1,3 +1,4 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { WDFReport } from '@core/model/reports.model';
@@ -19,6 +20,7 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   public returnUrl: URLStructure;
   public report: WDFReport;
   public parentWdfEligibilityStatus: boolean;
+  public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -47,5 +49,24 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   private setDates(report: WDFReport): void {
     this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+  }
+
+  public downloadWdfParentReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportService.getParentWDFReport(this.workplaceUid).subscribe(
+        (response) => this.saveFile(response),
+        () => {},
+      ),
+    );
+  }
+
+  public saveFile(response: HttpResponse<Blob>) {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
   }
 }
