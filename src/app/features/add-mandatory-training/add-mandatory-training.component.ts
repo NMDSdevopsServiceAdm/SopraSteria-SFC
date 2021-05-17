@@ -98,7 +98,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     );
   }
 
-  private setBackLink(): void {
+  public setBackLink(): void {
     const url =
       this.establishment.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.establishment.uid];
     this.return = { url: url, fragment: 'training-and-qualifications' };
