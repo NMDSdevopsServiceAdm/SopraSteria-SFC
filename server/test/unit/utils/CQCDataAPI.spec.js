@@ -19,6 +19,6 @@ describe('server/utils/CQCDataAPI', async () => {
   it('should call the CQC API', async () => {
     await getWorkplaceCQCData(locationId);
 
-    expect(cqcAPIStub.calledOnceWith(url + locationId)).to.be.true;
+    expect(cqcAPIStub.calledOnceWith(url + locationId + '?partnerCode=SkillsForCare')).to.be.true;
   });
 });
