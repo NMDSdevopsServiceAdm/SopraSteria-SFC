@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+var config = require('../../server/config/config');
 
 const { encrypt } = require('../utils/db/openpgp/encrypt');
 const { decrypt } = require('../utils/db/openpgp/decrypt');
@@ -1070,16 +1071,44 @@ module.exports = function (sequelize, DataTypes) {
             workerUpdate.attributes.DateOfBirthValue = encrypted;
           }
         },
-        afterFind: async (worker) => {
+        beforeSave:async (workerUpdate) => {
+          if (workerUpdate.NationalInsuranceNumberValue) {
+            const encrypted = await encrypt(workerUpdate.NationalInsuranceNumberValue);
+            workerUpdate.NationalInsuranceNumberValue = encrypted;
+          }
+          if (workerUpdate.DateOfBirthValue) {
+            const encrypted = await encrypt(workerUpdate.DateOfBirthValue);
+            workerUpdate.DateOfBirthValue = encrypted;
+          }
+          },
+        afterFind:async (worker) => {
           if (worker && worker.dataValues) {
             if (worker.dataValues.NationalInsuranceNumberValue) {
-              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
-              worker.dataValues.NationalInsuranceNumberValue = decrypted;
+              const encryptedValue = worker.dataValues.NationalInsuranceNumberValue;
+              const decrypted = await sequelize.query(`SELECT pgp_pub_decrypt(dearmor(:value) :: bytea, dearmor(convert_from(decode(:privateKey,'base64'), 'UTF8')),:passphrase) AS "decryptedValue"`,
+                {
+                  plain: true,
+                  replacements: {
+                    value: encryptedValue,
+                    privateKey: config.get('encryption.privateKey'),
+                    passphrase: config.get('encryption.passphrase'),
+                  }
+                });
+              worker.dataValues.NationalInsuranceNumberValue = decrypted.decryptedValue;
             }
 
-            if (worker.dataValues.DateOfBirthValue) {
-              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
-              worker.dataValues.DateOfBirthValue = decrypted;
+            if (worker.dataValues.DateOfBirthValue){
+              const encryptedValue = worker.dataValues.DateOfBirthValue;
+              const decrypted = await sequelize.query(`SELECT pgp_pub_decrypt(dearmor(:value) :: bytea, dearmor(convert_from(decode(:privateKey,'base64'), 'UTF8')),:passphrase) AS "decryptedValue"`,
+                {
+                  plain: true,
+                  replacements: {
+                    value: encryptedValue,
+                    privateKey: config.get('encryption.privateKey'),
+                    passphrase: config.get('encryption.passphrase'),
+                  }
+                });
+            worker.dataValues.DateOfBirthValue = decrypted.decryptedValue;
             }
           }
         },
