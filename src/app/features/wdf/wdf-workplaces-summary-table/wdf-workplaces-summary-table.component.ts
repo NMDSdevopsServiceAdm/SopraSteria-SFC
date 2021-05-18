@@ -18,11 +18,10 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
   }
 
   ngOnChanges() {
-    this.workplaces = this.workplaces.map((worker) => {
-      worker.jobRole = worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title;
-      return worker;
+    this.workplaces = this.workplaces.map((workplace) => {
+      return workplace;
     });
-    this.workplaces = orderBy(this.workplaces, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
+    this.workplaces = orderBy(this.workplaces, [(workplace) => workplace.name.toLowerCase()], ['asc']);
   }
 
   public sortByColumn(selectedColumn: any) {
