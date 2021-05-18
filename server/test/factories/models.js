@@ -17,7 +17,11 @@ const establishmentBuilder = build('Establishment', {
       id: 16,
       name: fake((f) => f.lorem.sentence()),
     },
-    otherServices: { value: 'Yes', services: [{ id: 9 }] },
+    otherServices: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+    wdf: {
+      mainService: { isEligible: false, updatedSinceEffectiveDate: true },
+      starters: { isEligible: false, updatedSinceEffectiveDate: true },
+    },
   },
 });
 

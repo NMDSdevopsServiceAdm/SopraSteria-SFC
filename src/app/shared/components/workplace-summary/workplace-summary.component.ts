@@ -181,4 +181,16 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
       this.wdfNewDesign = value;
     });
   }
+
+  public getRoutePath(name: string) {
+    return ['/workplace', this.workplace.uid, name];
+  }
+
+  public confirmField(dataField) {
+    const props = { [dataField]: this.workplace[dataField] };
+
+    this.subscriptions.add(
+      this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => console.log(data)),
+    );
+  }
 }
