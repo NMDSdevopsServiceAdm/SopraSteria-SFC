@@ -187,7 +187,7 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     expect(queryByText('No, change it')).toBeFalsy();
   });
 
-  describe('Starters field confirmation', async () => {
+  describe('New starters field confirmation', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Starters', async () => {
       const { component, fixture, getByText } = await setup();
 
@@ -267,8 +267,8 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     });
   });
 
-  describe('Leavers field confirmation', async () => {
-    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Leavers', async () => {
+  describe('Staff leavers field confirmation', async () => {
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Staff Leavers', async () => {
       const { component, fixture, getByText } = await setup();
 
       component.wdfNewDesign = true;
@@ -289,13 +289,60 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
       expect(getByText('No, change it')).toBeTruthy();
     });
 
-    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Leavers', async () => {
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Staff Leavers', async () => {
       const { component, fixture, getByText } = await setup();
 
       component.wdfNewDesign = true;
       component.workplace.wdf.leavers.isEligible = Eligibility.YES;
       component.workplace.wdf.leavers.updatedSinceEffectiveDate = false;
       component.workplace.leavers = [
+        {
+          jobId: 1,
+          title: 'Activities worker or co-ordinator',
+          total: 1,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
+  });
+
+  describe('Current staff vacancies field confirmation', async () => {
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Current Staff Vacancies', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.vacancies.isEligible = Eligibility.YES;
+      component.workplace.wdf.vacancies.updatedSinceEffectiveDate = false;
+      component.workplace.vacancies = [
+        {
+          jobId: 1,
+          title: 'Activities worker or co-ordinator',
+          total: 1,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Current Staff Vacancies', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.vacancies.isEligible = Eligibility.YES;
+      component.workplace.wdf.vacancies.updatedSinceEffectiveDate = false;
+      component.workplace.vacancies = [
         {
           jobId: 1,
           title: 'Activities worker or co-ordinator',

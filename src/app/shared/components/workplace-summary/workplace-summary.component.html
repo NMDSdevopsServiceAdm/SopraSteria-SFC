@@ -366,9 +366,28 @@
           <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.vacancies.isEligible === 'Yes' &&
+          !workplace.wdf?.vacancies.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('vacancies')"
+        (fieldConfirmation)="this.confirmField('vacancies')"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.vacancies.isEligible === 'Yes' &&
+            !workplace.wdf?.vacancies.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' staff vacancies'"
         [link]="['/workplace', workplace.uid, 'vacancies']"
         [hasData]="workplace.vacancies?.length"

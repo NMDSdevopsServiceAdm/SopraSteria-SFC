@@ -22,6 +22,7 @@ const establishmentBuilder = build('Establishment', {
       mainService: { isEligible: false, updatedSinceEffectiveDate: true },
       starters: { isEligible: false, updatedSinceEffectiveDate: true },
       leavers: { isEligible: false, updatedSinceEffectiveDate: true },
+      vacancies: { isEligible: false, updatedSinceEffectiveDate: true },
     },
   },
 });
