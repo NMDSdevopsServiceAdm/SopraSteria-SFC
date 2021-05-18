@@ -187,48 +187,83 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     expect(queryByText('No, change it')).toBeFalsy();
   });
 
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Starters', async () => {
-    const { component, fixture, getByText } = await setup();
+  describe('Starters field confirmation', async () => {
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Starters', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
-    component.workplace.wdf.starters.isEligible = Eligibility.YES;
-    component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
-    component.workplace.starters = [
-      {
-        jobId: 4,
-        title: 'Allied Health Professional (not Occupational Therapist)',
-        total: 3,
-      },
-    ];
+      component.wdfNewDesign = true;
+      component.workplace.wdf.starters.isEligible = Eligibility.YES;
+      component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
+      component.workplace.starters = [
+        {
+          jobId: 4,
+          title: 'Allied Health Professional (not Occupational Therapist)',
+          total: 3,
+        },
+      ];
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Starters', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.starters.isEligible = Eligibility.YES;
+      component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
+      component.workplace.starters = [
+        {
+          jobId: 4,
+          title: 'Allied Health Professional (not Occupational Therapist)',
+          total: 3,
+        },
+      ];
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
   });
 
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Starters', async () => {
-    const { component, fixture, getByText } = await setup();
+  describe('Main Service field confirmation', async () => {
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Main Service', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
-    component.workplace.wdf.starters.isEligible = Eligibility.YES;
-    component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
-    component.workplace.starters = [
-      {
-        jobId: 4,
-        title: 'Allied Health Professional (not Occupational Therapist)',
-        total: 3,
-      },
-    ];
+      component.wdfNewDesign = true;
+      component.workplace.wdf.mainService.isEligible = Eligibility.YES;
+      component.workplace.wdf.mainService.updatedSinceEffectiveDate = false;
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
 
-    fixture.detectChanges();
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Main Service', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    expect(getByText('Meeting requirements')).toBeTruthy();
+      component.wdfNewDesign = true;
+      component.workplace.wdf.mainService.isEligible = Eligibility.YES;
+      component.workplace.wdf.mainService.updatedSinceEffectiveDate = false;
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
   });
 });
