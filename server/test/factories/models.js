@@ -21,6 +21,7 @@ const establishmentBuilder = build('Establishment', {
     wdf: {
       mainService: { isEligible: false, updatedSinceEffectiveDate: true },
       starters: { isEligible: false, updatedSinceEffectiveDate: true },
+      leavers: { isEligible: false, updatedSinceEffectiveDate: true },
     },
   },
 });

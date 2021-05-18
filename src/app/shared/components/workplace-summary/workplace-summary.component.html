@@ -448,9 +448,28 @@
           </ng-container>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.leavers.isEligible === 'Yes' &&
+          !workplace.wdf?.leavers.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('leavers')"
+        (fieldConfirmation)="this.confirmField('leavers')"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.leavers.isEligible === 'Yes' &&
+            !workplace.wdf?.leavers.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' staff leavers'"
         [link]="['/workplace', workplace.uid, 'leavers']"
         [hasData]="workplace.leavers?.length"
