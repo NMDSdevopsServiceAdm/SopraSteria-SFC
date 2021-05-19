@@ -47,10 +47,10 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   private getParentAndSubs(): void {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
-        this.workplaces.push(workplaces.primary);
         if (workplaces.subsidaries) {
           this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
         }
+        this.workplaces.push(workplaces.primary);
         this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
         this.getParentOverallWdfEligibility();
       }),

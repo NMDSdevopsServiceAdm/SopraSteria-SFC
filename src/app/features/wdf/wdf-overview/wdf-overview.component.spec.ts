@@ -165,7 +165,7 @@ describe('WdfOverviewComponent', () => {
     });
   });
 
-  describe('getParentsAndSubs', async () => {
+  describe('getParentAndSubs', async () => {
     it('should calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
       const { component, fixture } = await setup();
 
