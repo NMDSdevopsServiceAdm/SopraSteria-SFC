@@ -208,18 +208,6 @@ const routes: Routes = [
         loadChildren: () => import('@features/notifications/notifications.module').then((m) => m.NotificationsModule),
       },
       {
-        path: 'add-mandatory-training',
-        loadChildren: () =>
-          import('@features/add-mandatory-training/add-mandatory-training.module').then(
-            (m) => m.AddMandatoryTrainingModule,
-          ),
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canAddEstablishment'],
-          title: 'Add Mandatory Training',
-        },
-      },
-      {
         path: 'registration-survey',
         loadChildren: () =>
           import('@features/registration-survey/registration-survey.module').then((m) => m.RegistrationSurveyModule),
