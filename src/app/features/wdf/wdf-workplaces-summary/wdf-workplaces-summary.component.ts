@@ -53,7 +53,6 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
         }
         this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
         this.getParentOverallWdfEligibility();
-        console.log(this.workplaces);
       }),
     );
   }
@@ -83,7 +82,7 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
     this.subscriptions.add(
       this.reportService.getParentWDFReport(this.workplaceUid).subscribe(
         (response) => this.saveFile(response),
-        () => {},
+        (error) => console.error(error),
       ),
     );
   }
