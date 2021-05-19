@@ -9,6 +9,7 @@
 
   <ng-template #redFlags>
     <ng-container *ngIf="wdfView && !overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; else response">
+      <span>-</span>
       <app-eligibility-icon [overallEligibility]="false" [eligible]="false"></app-eligibility-icon>
     </ng-container>
   </ng-template>
