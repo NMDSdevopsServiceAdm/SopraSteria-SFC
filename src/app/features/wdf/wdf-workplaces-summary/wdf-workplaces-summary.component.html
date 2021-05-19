@@ -1,18 +1,18 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-three-quarters">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
       <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
       Workplaces
     </h1>
+
+    <app-wdf-status-message
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [wdfEligibilityStatus]="parentWdfEligibilityStatus"
+      [isParent]="true"
+    ></app-wdf-status-message>
   </div>
 </div>
-
-<app-wdf-status-message
-  [wdfStartDate]="wdfStartDate"
-  [wdfEndDate]="wdfEndDate"
-  [wdfEligibilityStatus]="parentWdfEligibilityStatus"
-  [isParent]="true"
-></app-wdf-status-message>
 
 <ul class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
   <li>

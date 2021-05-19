@@ -66,7 +66,22 @@ describe('WdfWorkplacesSummaryComponent', () => {
       const { component, fixture, getByText } = await setup();
       const timeframeSentence = "All your workplaces' data meets the WDF 2021 to 2022 requirements";
 
-      component.parentWdfEligibilityStatus = true;
+      component.parentWdfEligibilityStatus.overall = true;
+      component.parentWdfEligibilityStatus.currentWorkplace = true;
+      component.parentWdfEligibilityStatus.currentStaff = true;
+      fixture.detectChanges();
+
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the correct message if workplaces have met WDF requirements this year but not meeting currently', async () => {
+      const { component, fixture, getByText } = await setup();
+      const timeframeSentence =
+        "Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save you time next year.";
+
+      component.parentWdfEligibilityStatus.overall = true;
+      component.parentWdfEligibilityStatus.currentWorkplace = false;
+      component.parentWdfEligibilityStatus.currentStaff = false;
       fixture.detectChanges();
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();

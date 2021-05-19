@@ -4,6 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
+import { WdfEligibilityStatus } from '@core/model/wdf.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
@@ -23,7 +24,7 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   public wdfEndDate: string;
   public returnUrl: URLStructure;
   public report: WDFReport;
-  public parentWdfEligibilityStatus: boolean;
+  public parentWdfEligibilityStatus: WdfEligibilityStatus = {};
   public parentOverallEligibilityDate: string;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
@@ -52,14 +53,21 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
         }
         this.workplaces.push(workplaces.primary);
         this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
-        this.getParentOverallWdfEligibility();
+        this.getParentWdfEligibility();
+        console.log(this.workplaces);
       }),
     );
   }
 
-  public getParentOverallWdfEligibility(): void {
-    this.parentWdfEligibilityStatus = !this.workplaces.some((workplace) => {
+  private getParentWdfEligibility(): void {
+    this.parentWdfEligibilityStatus.overall = !this.workplaces.some((workplace) => {
       return workplace.wdf.overall === false;
+    });
+    this.parentWdfEligibilityStatus.currentWorkplace = !this.workplaces.some((workplace) => {
+      return workplace.wdf.workplace === false;
+    });
+    this.parentWdfEligibilityStatus.currentStaff = !this.workplaces.some((workplace) => {
+      return workplace.wdf.staff === false;
     });
   }
 
