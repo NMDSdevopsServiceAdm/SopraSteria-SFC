@@ -17,7 +17,19 @@ const establishmentBuilder = build('Establishment', {
       id: 16,
       name: fake((f) => f.lorem.sentence()),
     },
+    otherServices: { value: 'Yes', services: [{ id: 9 }] },
+  },
+});
+
+const establishment = establishmentBuilder({
+  overrides: {
     otherServices: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+  },
+});
+
+const establishmentWithWdfBuilder = build('Establishment', {
+  fields: {
+    ...establishment,
     wdf: {
       mainService: { isEligible: false, updatedSinceEffectiveDate: true },
       starters: { isEligible: false, updatedSinceEffectiveDate: true },
@@ -129,6 +141,7 @@ const workerBuilderWithWdf = build('Worker', {
 });
 
 module.exports.establishmentBuilder = establishmentBuilder;
+module.exports.establishmentWithWdfBuilder = establishmentWithWdfBuilder;
 module.exports.workerBuilder = workerBuilder;
 module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;

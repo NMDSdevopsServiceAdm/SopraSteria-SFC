@@ -21,7 +21,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
+import { establishmentWithWdfBuilder } from '../../../../../server/test/factories/models';
 import { Establishment } from '../../../../mockdata/establishment';
 import { EligibilityIconComponent } from '../eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '../inset-text/inset-text.component';
@@ -169,7 +169,7 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
       ],
       componentProperties: {
         wdfView: true,
-        workplace: establishmentBuilder() as Establishment,
+        workplace: establishmentWithWdfBuilder() as Establishment,
       },
     });
 
