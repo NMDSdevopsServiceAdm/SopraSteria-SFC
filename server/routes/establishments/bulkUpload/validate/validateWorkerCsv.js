@@ -1,6 +1,5 @@
 'use strict';
 
-const postcodes = require('../../../../models/postcodes');
 const { Worker } = require('../../../../models/classes/worker');
 const { Qualification } = require('../../../../models/classes/qualification');
 
@@ -60,18 +59,6 @@ const validateWorkerCsv = async (
   const thisWorkerAsAPI = lineValidator.toAPI();
 
   try {
-    const foundCurrentEstablishment = myCurrentEstablishments.find(
-      (establishment) => establishment.key === lineValidator.establishmentKey,
-    );
-    const foundCurrentWorker = foundCurrentEstablishment.theWorker(lineValidator.key);
-
-    if (thisWorkerAsAPI.postcode && foundCurrentWorker && foundCurrentWorker.postcode !== thisWorkerAsAPI.postcode) {
-      const { Latitude, Longitude } = (await postcodes.firstOrCreate(thisWorkerAsAPI.postcode)) || {};
-
-      thisWorkerAsAPI.Latitude = Latitude;
-      thisWorkerAsAPI.Longitude = Longitude;
-    }
-
     // construct Worker entity
     const thisApiWorker = new Worker();
     await thisApiWorker.load(thisWorkerAsAPI);

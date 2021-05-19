@@ -103,7 +103,10 @@ export interface Establishment {
   };
   numberOfStaff: number;
   totalWorkers: number;
-  otherServices: any[];
+  otherServices: {
+    value: string;
+    services: any[];
+  };
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
   share: Share;
@@ -205,10 +208,19 @@ export interface adminMoveWorkplace {
 }
 
 export enum SortStaffOptions {
-  '0_asc' = 'Staff name ascending',
-  '0_dsc' = 'Staff name descending',
-  '1_asc' = 'Job role ascending',
-  '1_dsc' = 'Job role descending',
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
+}
+
+export enum WdfSortStaffOptions {
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
+  '2_meeting' = 'WDF requirements (meeting)',
+  '2_not_meeting' = 'WDF requirements (not meeting)',
 }
 
 export enum SortTrainingAndQualsOptionsWorker {

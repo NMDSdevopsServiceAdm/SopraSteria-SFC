@@ -2,15 +2,17 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from '@shared/shared.module';
-import { render, within, fireEvent } from '@testing-library/angular';
+import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { SearchComponent } from './search.component';
-import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
-import { WindowRef } from '@core/services/window.ref';
-import { RegistrationsService } from '@core/services/registrations.service';
-import { of } from 'rxjs';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const getSearchComponent = async () => {
   return render(SearchComponent, {
@@ -30,6 +32,7 @@ const getSearchComponent = async () => {
         provide: WindowRef,
         useClass: WindowRef,
       },
+      { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       {
         provide: SwitchWorkplaceService,
         useClass: MockSwitchWorkplaceService,
@@ -91,6 +94,17 @@ describe('SearchComponent', () => {
       await setup(fixture, navigate, getByText);
 
       await within(getByTestId('user-search-results')).getByText('John Doe');
+    });
+    it('should show a flag when user\'s workplace is pending', async () => {
+      const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
+
+      await setup(fixture, navigate, getByText);
+
+      fixture.componentInstance.results[0].establishment.ustatus = 'PENDING';
+      fixture.detectChanges();
+
+      const result = getByTestId('user-search-results').querySelector('img');
+      expect(result.src).toContain('flag-orange')
     });
 
     it('should expand the User details when clicking Open', async () => {
@@ -273,6 +287,14 @@ describe('SearchComponent', () => {
       fixture.detectChanges();
 
       expect(getByTestId('no-search-results'));
+    });
+  });
+
+  describe('Emails', () => {
+    it('should click the Emails tab', async () => {
+      const { getByText } = await getSearchComponent();
+
+      fireEvent.click(getByText('Emails'));
     });
   });
 });

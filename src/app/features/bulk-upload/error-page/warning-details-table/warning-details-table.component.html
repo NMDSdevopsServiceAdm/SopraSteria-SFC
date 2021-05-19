@@ -1,0 +1,66 @@
+<table class="govuk-table govuk-!-margin-bottom-0" data-testid="warning-details-table">
+  <ng-container *ngIf="warnings?.length > 0; else noWarnings">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-!-width-three-quarters">Warnings</th>
+        <th scope="col" class="govuk-table__header">
+          <ng-container *ngIf="fileType == 'Workplace'; else staffOrTraining">Workplaces</ng-container>
+          <ng-template #staffOrTraining>{{ fileType }} records</ng-template>
+        </th>
+        <th scope="col" class="govuk-table__header">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let warn of warnings">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell govuk-!-padding-right-8">{{ warn.warning }}:</td>
+          <td class="govuk-table__cell">
+            {{ warn.items.length }}
+          </td>
+          <td class="govuk-table__cell govuk-util__align-right govuk-!-font-weight-regular">
+            <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(warn.warnCode, $event)">{{
+              openWarnings.includes(warn.warnCode) ? 'Close' : 'Open'
+            }}</a>
+          </td>
+        </tr>
+        <tr class="govuk-table__row govuk-panel--gray" scope="row" *ngIf="openWarnings.includes(warn.warnCode)">
+          <td colspan="3">
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-full">
+                <ul>
+                  <li *ngFor="let item of warn.items" class="govuk-!-margin-2">
+                    <ng-container [ngSwitch]="fileType">
+                      <ng-container *ngSwitchCase="'Workplace'"
+                        >for workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                      >
+                      <ng-container *ngSwitchCase="'Staff'">
+                        <ng-container *ngIf="item.worker">for staff record '{{ item.worker }}' </ng-container>at
+                        workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                      >
+                      <ng-container *ngSwitchCase="'Training'"
+                        ><ng-container *ngIf="item.worker">for staff record '{{ item.worker }}' </ng-container>at
+                        workplace '{{ item.name }}' on line {{ item.lineNumber }}</ng-container
+                      >
+                    </ng-container>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </ng-container>
+  <ng-template #noWarnings>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Warnings</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row" scope="row">
+        <td class="govuk-table__cell" colspan="3">There are 0 warnings in the {{ fileType }} data file.</td>
+      </tr>
+    </tbody>
+  </ng-template>
+</table>

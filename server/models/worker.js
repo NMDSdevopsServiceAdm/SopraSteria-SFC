@@ -1,3 +1,11 @@
+const { Op } = require('sequelize');
+const moment = require('moment');
+
+const { encrypt } = require('../utils/db/openpgp/encrypt');
+const { decrypt } = require('../utils/db/openpgp/decrypt');
+
+const currentDate = moment().toISOString();
+const expiresSoon = moment().add(90, 'days').toISOString();
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -203,7 +211,7 @@ module.exports = function (sequelize, DataTypes) {
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberValue"',
+        field: '"NationalInsuranceNumberEncryptedValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -226,9 +234,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
-        field: '"DateOfBirthValue"',
+        field: '"DateOfBirthEncryptedValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -1050,19 +1058,45 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      scopes:{
+      hooks: {
+        beforeBulkUpdate: async (workerUpdate) => {
+          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
+            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
+            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
+          }
+
+          if (workerUpdate.attributes.DateOfBirthValue) {
+            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
+            workerUpdate.attributes.DateOfBirthValue = encrypted;
+          }
+        },
+        afterFind: async (worker) => {
+          if (worker && worker.dataValues) {
+            if (worker.dataValues.NationalInsuranceNumberValue) {
+              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
+              worker.dataValues.NationalInsuranceNumberValue = decrypted;
+            }
+
+            if (worker.dataValues.DateOfBirthValue) {
+              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
+              worker.dataValues.DateOfBirthValue = decrypted;
+            }
+          }
+        },
+      },
+      scopes: {
         active: {
           where: {
             archived: false,
-          }
+          },
         },
         noLocalIdentifier: {
           where: {
             LocalIdentifierValue: {
-              [sequelize.Op.is]: null
-            }
-          }
-        }
+              [Op.is]: null,
+            },
+          },
+        },
       },
       tableName: '"Worker"',
       schema: 'cqc',
@@ -1132,14 +1166,12 @@ module.exports = function (sequelize, DataTypes) {
     Worker.belongsToMany(models.job, {
       through: 'workerJobs',
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
       otherKey: 'jobFk',
       as: 'otherJobs',
     });
     Worker.belongsToMany(models.workerNurseSpecialism, {
       through: 'workerNurseSpecialisms',
       foreignKey: 'workerFk',
-      targetKey: 'workerFk',
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
     });
@@ -1227,11 +1259,79 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
-          [sequelize.Op.not]: null,
+          [Op.not]: null,
         },
         establishmentFk: establishmentId,
       },
       raw: true,
+    });
+  };
+
+  Worker.workersAndTraining = async function (establishmentId) {
+    return this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'LocalIdentifierValue',
+        'NameOrIdValue',
+        'ContractValue',
+        'CompletedValue',
+        'created',
+        'updated',
+        'updatedBy',
+        'lastWdfEligibility',
+        [
+          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
+          'trainingCount',
+        ],
+        [
+          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "worker"."ID")'),
+          'qualificationCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}')`,
+          ),
+          'expiredTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+          ),
+          'expiringTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `
+              (
+                SELECT
+                    COUNT(0)
+                  FROM cqc."MandatoryTraining"
+                  WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                  AND "JobFK" = "worker"."MainJobFKValue"
+                  AND "TrainingCategoryFK" NOT IN (
+                    SELECT
+                      DISTINCT "CategoryFK"
+                    FROM cqc."WorkerTraining"
+                    WHERE "WorkerFK" = "worker"."ID"
+                  )
+              )
+              `,
+          ),
+          'missingMandatoryTrainingCount',
+        ],
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+      ],
     });
   };
 

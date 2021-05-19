@@ -1,0 +1,42 @@
+<div class="govuk-grid-row">
+  <div class="govuk-form-group">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <span class="govuk-caption-xl">Question 1</span>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-7">Why did you create an account?</h1>
+      <p>Select all that apply.</p>
+      <div class="govuk-form-group govuk-!-margin-top-6">
+        <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="govuk-checkboxes">
+            <ng-container
+              *ngFor="let control of whyCreateAccountArray.controls; let i = index"
+              formArrayName="whyCreateAccount"
+            >
+              <div class="govuk-checkboxes__item">
+                <input
+                  class="govuk-checkboxes__input"
+                  type="checkbox"
+                  id="whyCreateAccount-{{ i }}"
+                  name="whyCreateAccount-{{ i }}"
+                  (change)="control.value.checked = !control.value.checked"
+                  (change)="updateState()"
+                  [checked]="control.value.checked"
+                  [value]="control.value.response"
+                />
+
+                <label
+                  for="whyCreateAccount-{{ i }}"
+                  class="govuk-label govuk-checkboxes__label"
+                  for="why-create-account"
+                >
+                  {{ control.value.response }}
+                </label>
+              </div>
+            </ng-container>
+          </div>
+
+          <button type="submit" class="govuk-button govuk-!-margin-top-7">Next question</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

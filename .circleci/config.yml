@@ -18,14 +18,14 @@ commands:
           <dark_subdomain>.<dark_domain>)
         type: string
       manifest:
-        default: ""
+        default: ''
         description: The Cloud Foundry manifest for this environment
         type: string
       package:
         description: path to the asset/package to push
         type: string
       vars:
-        default: ""
+        default: ''
         description: Vars file for variable substitution.
         type: string
       env_prefix:
@@ -60,11 +60,29 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" DB_PASS "${<<parameters.env_prefix>>_DB_PASS}"
             fi
 
+            if [ -n "${<<parameters.env_prefix>>_SQREEN_APP_NAME}" ]; then
+                cf set-env "<<parameters.appname>>-dark" SQREEN_APP_NAME "${<<parameters.env_prefix>>_SQREEN_APP_NAME}"
+            fi
+
+            if [ -n "${<<parameters.env_prefix>>_SQREEN_TOKEN}" ]; then
+                cf set-env "<<parameters.appname>>-dark" SQREEN_TOKEN "${<<parameters.env_prefix>>_SQREEN_TOKEN}"
+            fi
+
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
             cf unmap-route "<<parameters.appname>>" "<<parameters.dark_domain>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> || echo "Already exclusive"
           name: Cloud Foundry Dark Deployment
+  attach_autoscale_policy:
+    parameters:
+      appname:
+        description: App Name
+        type: string
+    steps:
+      - run:
+          command: |
+            cf attach-autoscaling-policy <<parameters.appname>> policy.<<parameters.appname>>.json
+          name: Cloud Foundry Bind auto scaling policy
   install:
     description: Installs and authenticates with the latest CLI version if not present.
     parameters:
@@ -90,6 +108,7 @@ commands:
             cf api "<<parameters.endpoint>>"
             cf auth "$CF_USERNAME" "$CF_PASSWORD"
             cf target -o "<<parameters.org>>" -s "<<parameters.space>>"
+            cf install-plugin -r CF-Community app-autoscaler-plugin -f
           name: Setup CF CLI
   live_deploy:
     parameters:
@@ -127,31 +146,30 @@ jobs:
     working_directory: ~/project
     docker:
       - image: circleci/node:12.19.0-browsers
-    environment:
-      NODE_OPTIONS=--max_old_space_size=4096
+    environment: NODE_OPTIONS=--max_old_space_size=4096
     steps:
-        - checkout
-        - node/install-packages:
-            cache-path: ~/project/node_modules
-            cache-version: v2
-        - run: |
-            if [ -n "$CIRCLE_TAG" ]; then
-                npm run build:prod
-            else
-                npm run build
-            fi
-        - persist_to_workspace:
-            root: .
-            paths:
-                - dist
+      - checkout
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          cache-version: v2
+      - run: |
+          if [ -n "$CIRCLE_TAG" ] || [ "$CIRCLE_BRANCH" == 'live' ]; then
+              npm run build:prod
+          else
+              npm run build:test
+          fi
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist
   test_frontend:
     docker:
       - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
-            keys:
-                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          keys:
+            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: sudo apt-get install -yq libxss1
       - run:
@@ -162,22 +180,45 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-            keys:
-                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          keys:
+            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: npm run server:test:unit
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
     steps:
-        - checkout
-        - attach_workspace:
-            at: .
-        - restore_cache:
-            keys:
-                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
-        - run:
-            command: $(npm bin)/lhci autorun
+      - checkout
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          command: $(npm bin)/lhci autorun
+  feature_flag:
+    description: Checks for redundant feature flags
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          command: sudo apt-get install silversearcher-ag
+      - run:
+          command: sudo pip install configcat-flag-reference-validator==2.0.1
+      - run:
+          command: |
+            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
+              echo "Please, set the feature flag environment variables. Will stop now."
+              exit 1
+            fi
+            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=true
+
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -218,7 +259,7 @@ jobs:
           defaults to "www")
         type: string
       manifest:
-        default: ""
+        default: ''
         description: The Cloud Foundry manifest for this environment
         type: string
       org:
@@ -235,11 +276,11 @@ jobs:
         description: Optional steps to run between the dark and live deployments.
         type: steps
       vars:
-        default: ""
+        default: ''
         description: Vars file for variable substitution.
         type: string
       workspace_path:
-        default: ""
+        default: ''
         description: The key of a workflow workspace which contains artifact. Alternately
           provide `build_steps`
         type: string
@@ -249,8 +290,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-            keys:
-                - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          keys:
+            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>
@@ -278,6 +319,50 @@ jobs:
           appname: <<parameters.appname>>
           live_subdomain: <<parameters.live_subdomain>>
           live_domain: <<parameters.live_domain>>
+  attach_autoscale_policy:
+    description: Attach an auto scaling policy
+    docker:
+      - image: circleci/node:lts
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      build_steps:
+        default: []
+        description: Steps to generate application package or files. Alternately provide
+          `workspace_path`
+        type: steps
+      endpoint:
+        default: https://api.run.pivotal.io
+        description: The domain of the Cloud Foundry runtime API endpoint. Defaults
+          to https://api.run.pivotal.io
+        type: string
+      org:
+        description: Cloud Foundry Org to target
+        type: string
+      space:
+        description: Cloud Foundry space to target
+        type: string
+      workspace_path:
+        default: ''
+        description: The key of a workflow workspace which contains artifact. Alternately
+          provide `build_steps`
+        type: string
+      validate_steps:
+        default: []
+        description: Optional steps to run between the dark and live deployments.
+        type: steps
+    steps:
+      - checkout
+      - install:
+          endpoint: <<parameters.endpoint>>
+          org: <<parameters.org>>
+          space: <<parameters.space>>
+      - attach_autoscale_policy:
+          appname: <<parameters.appname>>
+      - when:
+          condition: <<parameters.validate_steps>>
+          steps: << parameters.validate_steps >>
   sentry_release:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -300,165 +385,206 @@ jobs:
           sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist
           sentry-cli releases finalize $SENTRY_RELEASE
 workflows:
-    build-test-deploy:
-      jobs:
-        - install:
-            filters:
-               tags:
-                 only: /^v[0-9]+(\.[0-9]+)*$/
-        - test_frontend:
-            filters:
-               tags:
-                 only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - test_backend:
-            filters:
-               tags:
-                 only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - performance:
-            filters:
-               tags:
-                 only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - blue_green:
-            name: blue_green_benchmarks
-            appname: sfcbenchmarks
-            env_prefix: SFC_BENCHMARKS
-            requires:
-                - test_frontend
-                - test_backend
-                - performance
-            filters:
-                branches:
-                    only:
-                        - feat/benchmarks
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: sandbox
-            manifest: manifest.benchmarks.yml
-            package: '.'
-            dark_subdomain: sfcbenchmarks-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: sfcbenchmarks
-            live_domain: cloudapps.digital
-            workspace_path: .
-        - blue_green:
-            name: blue_green_staging
-            appname: sfcstaging
-            env_prefix: SFC_STAGING
-            requires:
-              - test_frontend
-              - test_backend
-              - performance
-            filters:
-              branches:
-                only:
-                  - test
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: sandbox
-            manifest: manifest.test.yml
-            package: '.'
-            dark_subdomain: sfcstaging-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: sfcstaging
-            live_domain: cloudapps.digital
-            workspace_path: .
-        - blue_green:
-             name: preprod_deploy
-             appname: sfcpreprod
-             env_prefix: SFC_PREPROD
-             requires:
-               - test_frontend
-               - test_backend
-               - performance
-             filters:
-               # ignore any commit on any branch by default
-               branches:
-                 only:
-                  - live
-             endpoint: https://api.cloud.service.gov.uk
-             org: dhsc-skills-for-care-nmds-sc-2
-             space: production
-             manifest: manifest.preprod.yml
-             package: '.'
-             dark_subdomain: sfcpreprod-dark
-             dark_domain: cloudapps.digital
-             live_subdomain: sfcpreprod
-             live_domain: cloudapps.digital
-             workspace_path: .
-        - hold_prod:
-            type: approval
-            requires:
-                - test_frontend
-                - test_backend
-                - performance
-            filters:
-                # ignore any commit on any branch by default
-                branches:
-                    ignore: /.*/
-                # only act on version tags
-                tags:
-                    only: /^v[0-9]+(\.[0-9]+)*$/
-        - blue_green:
-            name: prod_deploy
-            appname: sfcprod
-            env_prefix: SFC_PROD
-            requires:
-                - hold_prod
-            filters:
-                # ignore any commit on any branch by default
-                branches:
-                    ignore: /.*/
-                # only act on version tags
-                tags:
-                    only: /^v[0-9]+(\.[0-9]+)*$/
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: production
-            manifest: manifest.prod.yml
-            package: '.'
-            dark_subdomain: sfcprod-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: asc-wds
-            live_domain: skillsforcare.org.uk
-            workspace_path: .
-        -  sentry_release:
-             requires:
-               - blue_green_benchmarks
-             filters:
-               branches:
-                 only:
-                   - feat/benchmarks
-             env: development
-        - sentry_release:
-            requires:
-              - blue_green_staging
-            filters:
-              branches:
-                only:
-                  - test
-            env: test
-        - sentry_release:
-            requires:
-              - preprod_deploy
-            filters:
-              branches:
-                only:
-                  - live
-            env: preproduction
-        - sentry_release:
-            requires:
-              - prod_deploy
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                ignore: /.*/
-              # only act on version tags
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            env: production
+  build-test-deploy:
+    jobs:
+      - install:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - test_frontend:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - test_backend:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - performance:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - feature_flag:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - blue_green:
+          name: blue_green_benchmarks
+          appname: sfcbenchmarks
+          env_prefix: SFC_BENCHMARKS
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+            - feature_flag
+          filters:
+            branches:
+              only:
+                - feat/benchmarks
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: sandbox
+          manifest: manifest.benchmarks.yml
+          package: '.'
+          dark_subdomain: sfcbenchmarks-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: sfcbenchmarks
+          live_domain: cloudapps.digital
+          workspace_path: .
+      - blue_green:
+          name: blue_green_staging
+          appname: sfcstaging
+          env_prefix: SFC_STAGING
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+            - feature_flag
+          filters:
+            branches:
+              only:
+                - test
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: sandbox
+          manifest: manifest.test.yml
+          package: '.'
+          dark_subdomain: sfcstaging-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: sfcstaging
+          live_domain: cloudapps.digital
+          workspace_path: .
+      - blue_green:
+          name: preprod_deploy
+          appname: sfcpreprod
+          env_prefix: SFC_PREPROD
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+            - feature_flag
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              only:
+                - live
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          manifest: manifest.preprod.yml
+          package: '.'
+          dark_subdomain: sfcpreprod-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: sfcpreprod
+          live_domain: cloudapps.digital
+          workspace_path: .
+      - attach_autoscale_policy:
+          appname: sfcpreprod
+          requires:
+            - preprod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              only:
+                - live
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          workspace_path: .
+      - hold_prod:
+          type: approval
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+            - feature_flag
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - blue_green:
+          name: prod_deploy
+          appname: sfcprod
+          env_prefix: SFC_PROD
+          requires:
+            - hold_prod
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          manifest: manifest.prod.yml
+          package: '.'
+          dark_subdomain: sfcprod-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: asc-wds
+          live_domain: skillsforcare.org.uk
+          workspace_path: .
+      - attach_autoscale_policy:
+          appname: sfcprod
+          requires:
+            - prod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          workspace_path: .
+      - sentry_release:
+          requires:
+            - blue_green_benchmarks
+          filters:
+            branches:
+              only:
+                - feat/benchmarks
+          env: development
+      - sentry_release:
+          requires:
+            - blue_green_staging
+          filters:
+            branches:
+              only:
+                - test
+          env: test
+      - sentry_release:
+          requires:
+            - preprod_deploy
+          filters:
+            branches:
+              only:
+                - live
+          env: preproduction
+      - sentry_release:
+          requires:
+            - prod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          env: production

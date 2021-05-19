@@ -44,6 +44,7 @@ export class BulkUploadService {
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
   public establishmentsWithMissingWorkerIds$ = new BehaviorSubject<[EstablishmentList]>(null);
+  public showNonCsvError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
   protected endpoint = 'uploaded';
 
@@ -75,12 +76,12 @@ export class BulkUploadService {
     this.establishmentsWithMissingWorkerIds$.next(workplaces);
   }
 
-  public nextMissingReferencesNavigation() {
+  public nextMissingReferencesNavigation(index: number = 0) {
     const establishments = this.establishmentsWithMissingWorkerIds$.value;
-    if (!establishments.length) {
+    if (!establishments.length || index > establishments.length - 1) {
       return ['/bulk-upload'];
     }
-    return ['/bulk-upload', establishments[0].uid, 'missing-staff-references'];
+    return ['/bulk-upload', establishments[index].uid, 'missing-staff-references'];
   }
 
   public setWorkplaceReferences(references: Workplace[]) {
@@ -280,6 +281,11 @@ export class BulkUploadService {
       },
     ];
   }
+
+  public showNonCsvErrorMessage(show: boolean) {
+    this.showNonCsvError$.next(show);
+  }
+
   // Function to check for the lock status
   private checkLockStatus(callback, httpOptions): Observable<any> {
     const establishmentUid = this.establishmentService.establishmentId;

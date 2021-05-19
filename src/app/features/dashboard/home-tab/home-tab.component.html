@@ -23,25 +23,13 @@
         </div>
       </app-inset-text>
     </ng-container>
-    <ng-container *ngIf="workplace && canViewListOfWorkers">
-      <app-inset-text *ngIf="workplace.numberOfStaff < workersCount" [color]="'todo'" data-testid="morerecords">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
-            <h3 class="govuk-heading-s govuk-!-margin-top-0">You've more staff records than staff</h3>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <a href="#" class="govuk-util__float-right" (click)="selectStaffTab($event)">View staff records</a>
-          </div>
-        </div>
-        <p>
-          You said the total number of staff at your workplace was {{ workplace.numberOfStaff }}, but
-          {{ workersCount }} staff records have been added.
-        </p>
-        <p>
-          You either need to delete {{ workersCount - workplace.numberOfStaff }} staff records or change the total
-          number of staff for your workplace.
-        </p>
-      </app-inset-text>
+    <ng-container *ngIf="workplace && canAddWorker && workerCount !== workplace.numberOfStaff && workerCount > 0">
+      <app-staff-mismatch-banner
+        (selectStaffTab)="selectStaffTab($event)"
+        (selectTotalStaff)="selectTotalStaff($event)"
+        [workerCount]="workerCount"
+        [numberOfStaff]="workplace.numberOfStaff"
+      ></app-staff-mismatch-banner>
     </ng-container>
     <div *ngIf="workplace">
       <div *ngIf="canAddWorker">
@@ -67,7 +55,7 @@
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()"> Bulk upload </a>
         </h3>
-        <p>Bulk upload is used to edit large quantities of staff, workplace and training information.</p>
+        <p>Bulk upload is used to edit large quantities of workplace, staff and training information.</p>
       </div>
     </div>
   </div>
@@ -114,7 +102,7 @@
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
         <li *ngIf="canAddWorker">
-          <a [routerLink]="['/add-mandatory-training']">Manage mandatory training</a>
+          <a [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']">Manage mandatory training</a>
         </li>
       </ul>
     </ng-container>

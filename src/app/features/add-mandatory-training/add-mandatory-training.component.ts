@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import {
   allMandatoryTrainingCategories,
@@ -59,8 +59,9 @@ export class AddMandatoryTrainingComponent implements OnInit {
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
-    protected router: Router
-  ) { }
+    protected router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   get categoriesArray(): FormArray {
     return this.form.get('categories') as FormArray;
@@ -71,29 +72,23 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.establishmentService.isMandatoryTrainingView.subscribe(value => {
-      if (value === true) {
-        this.return = { url: ['/workplace/view-all-mandatory-training'] };
-      } else {
-        this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
-      }
-    });
-
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.establishment = this.route.parent.snapshot.data.establishment;
     this.setBackLink();
+
     this.getAllTrainingCategories();
     this.getAlJobs();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(establishment => {
-        this.establishment = establishment;
+      this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
-          trainings => {
+          (trainings) => {
             this.existingMandatoryTrainings = trainings;
             this.prefill(trainings);
           },
-          error => {
+          (error) => {
             if (error.error.message) {
               this.serverError = error.error.message;
             }
@@ -103,7 +98,10 @@ export class AddMandatoryTrainingComponent implements OnInit {
     );
   }
 
-  private setBackLink(): void {
+  public setBackLink(): void {
+    const url =
+      this.establishment.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.establishment.uid];
+    this.return = { url: url, fragment: 'training-and-qualifications' };
     this.backService.setBackLink(this.return);
   }
 
@@ -119,7 +117,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs)),
+        .subscribe((jobs) => (this.jobs = jobs)),
     );
   }
   //get all trainings
@@ -128,7 +126,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
       this.trainingService
         .getCategories()
         .pipe(take(1))
-        .subscribe(trainings => (this.trainings = trainings)),
+        .subscribe((trainings) => (this.trainings = trainings)),
     );
   }
   //setup form error message
@@ -181,9 +179,9 @@ export class AddMandatoryTrainingComponent implements OnInit {
   //Select training
   public selectableTrainings(index): TrainingCategory[] {
     return this.trainings.filter(
-      training =>
+      (training) =>
         !this.categoriesArray.controls.some(
-          category =>
+          (category) =>
             category !== this.categoriesArray.controls[index] &&
             parseInt(category.get('trainingCategory').value, 10) === training.id,
         ),
@@ -204,14 +202,12 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public removeAllCategories(event: Event): void {
     event.preventDefault();
 
-    this.dialogService
-      .open(RemoveAllSelectionsDialogComponent, { })
-      .afterClosed.subscribe(deleteConfirmed => {
-        if(deleteConfirmed) {
-          this.categoriesArray.clear();
-          const props = this.generateUpdateProps();
-          this.updateMandatoryTraining(props, true);
-        }
+    this.dialogService.open(RemoveAllSelectionsDialogComponent, {}).afterClosed.subscribe((deleteConfirmed) => {
+      if (deleteConfirmed) {
+        this.categoriesArray.clear();
+        const props = this.generateUpdateProps();
+        this.updateMandatoryTraining(props, true);
+      }
     });
   }
 
@@ -228,9 +224,10 @@ export class AddMandatoryTrainingComponent implements OnInit {
   public selectableJobs(categoryIndex, jobIndex): Job[] {
     const vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[categoryIndex]).controls.vacancies;
     return this.jobs.filter(
-      job =>
+      (job) =>
         !vacanciesArray.controls.some(
-          vacancy => vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('id').value, 10) === job.id,
+          (vacancy) =>
+            vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('id').value, 10) === job.id,
         ),
     );
   }
@@ -257,7 +254,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
 
   //set vancancy
   public setVacancy(index, jobs: any[]) {
-    jobs.forEach(job => {
+    jobs.forEach((job) => {
       (<FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies).push(
         this.createVacancyControl(job.id),
       );
@@ -284,7 +281,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   //Generate training object arrording to server requirement
   protected generateUpdateProps(): any {
     return {
-      categories: this.categoriesArray.value.map(category => ({
+      categories: this.categoriesArray.value.map((category) => ({
         trainingCategoryId: parseInt(category.trainingCategory, 10),
         allJobRoles: category.vacancyType === mandatoryTrainingJobOption.all ? true : false,
         jobs: category.vacancies,
@@ -296,17 +293,17 @@ export class AddMandatoryTrainingComponent implements OnInit {
   protected updateMandatoryTraining(props: mandatoryTrainingCategories, remove: boolean = false): void {
     this.subscriptions.add(
       this.establishmentService.updateMandatoryTraining(this.establishment.uid, props.categories).subscribe(
-        data => {
+        (data) => {
           this.router.navigate(this.return.url, { fragment: this.return.fragment }).then(() => {
             if (remove) {
               this.alertService.addAlert({
                 type: 'success',
-                message: "You've removed all the selections for mandatory training in your workplace."
+                message: "You've removed all the selections for mandatory training in your workplace.",
               });
             }
           });
         },
-        error => {
+        (error) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         },
       ),

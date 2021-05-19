@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
@@ -35,6 +37,7 @@ describe('WorkplaceSummaryComponent', () => {
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     }).compileComponents();
   }));
@@ -99,24 +102,14 @@ describe('WorkplaceSummaryComponent', () => {
     expect(moreRecords.innerHTML).toContain('View staff records');
   });
 
-  it('should not show banner if you have more total staff', async () => {
+  it('should show banner if you have more total staff', async () => {
     component.workerCount = 8;
     component.workplace.numberOfStaff = 9;
     component.wdfView = false;
     component.canViewListOfWorkers = true;
     fixture.detectChanges();
     const moreRecords = within(document.body).queryByTestId('morerecords');
-    expect(moreRecords).toBe(null);
-  });
-
-  it('should not show banner if you have more total staff', async () => {
-    component.workerCount = 10;
-    component.workplace.numberOfStaff = 9;
-    component.wdfView = false;
-    component.canViewListOfWorkers = false;
-    fixture.detectChanges();
-    const moreRecords = within(document.body).queryByTestId('morerecords');
-    expect(moreRecords).toBe(null);
+    expect(moreRecords.innerHTML).toContain("You've more staff than staff records");
   });
 
   it("should not show banner if you don't have permission to list workers", async () => {

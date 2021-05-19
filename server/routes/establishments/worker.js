@@ -6,11 +6,13 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 
+const moment = require('moment');
+const get = require('lodash/get');
+
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
 const models = require('../../models');
-const Training = require('../../models/classes/training').Training;
-const Qualification = require('../../models/classes/qualification').Qualification;
+const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
 // parent route defines the "id" parameter
 
@@ -225,57 +227,63 @@ const deleteWorker = async (req, res) => {
   }
 };
 
-router.route('/total').get(async (req, res) => {
+const getTotalWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
 
+  const where = {
+    archived: false,
+  };
+
   try {
-    const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+    const allWorkers = await models.establishment.workers(establishmentId, where, []);
+
     return res.status(200).json({
-      total: allTheseWorkers.length,
+      total: get(allWorkers, 'workers') ? allWorkers.workers.length : 0,
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);
     return res.status(503).send('Failed to get total workers for establishment having id: ' + establishmentId);
   }
-});
+};
 
 const viewAllWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
+  const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
   try {
-    let trainingAlert;
-    let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
-    if (allTheseWorkers && allTheseWorkers.length) {
-      const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, allTheseWorkers);
-      if (updateTrainingRecords) {
-        const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
-        if (updateQualsRecords) {
-          if (updateQualsRecords.length > 0) {
-            const expiriedTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.expiredTrainingCount > 0).length || 0;
-            const expiringTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.expiringTrainingCount > 0).length || 0;
-            const missingMandatoryTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.missingMandatoryTrainingCount > 0).length || 0;
-            if (expiriedTrainingCountFlag > 0 || missingMandatoryTrainingCountFlag > 0) {
-              trainingAlert = 2;
-            } else if (expiringTrainingCountFlag > 0) {
-              trainingAlert = 1;
-            } else {
-              trainingAlert = 0;
-            }
-          } else {
-            trainingAlert = 0;
-          }
-          if (updateQualsRecords.length > 0) {
-            updateQualsRecords[0].trainingAlert = trainingAlert;
-          }
-          return res.status(200).json({
-            workers: updateQualsRecords,
-          });
-        }
-      }
-    }
+    const allWorkers = await models.worker.workersAndTraining(establishmentId);
+
+    res.status(200).send({
+      workers: allWorkers
+        ? allWorkers.map((worker) => {
+            return {
+              uid: worker.uid,
+              localIdentifier: worker.LocalIdentifierValue ? worker.LocalIdentifierValue : null,
+              nameOrId: worker.NameOrIdValue,
+              contract: worker.ContractValue,
+              mainJob: {
+                jobId: worker.mainJob.id,
+                title: worker.mainJob.title,
+                other: worker.MainJobFkOther ? worker.MainJobFkOther : undefined,
+              },
+              completed: worker.CompletedValue,
+              created: worker.created,
+              updated: worker.updated,
+              updatedBy: worker.updatedBy,
+              effectiveFrom: effectiveFromIso,
+              wdfEligible: moment(worker.lastWdfEligibility).isAfter(effectiveFromIso),
+              wdfEligibilityLastUpdated: worker.lastWdfEligibility
+                ? worker.lastWdfEligibility.toISOString()
+                : undefined,
+              trainingCount: parseInt(worker.get('trainingCount')),
+              qualificationCount: parseInt(worker.get('qualificationCount')),
+              expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
+              expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
+              missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+            };
+          })
+        : [],
+    });
   } catch (err) {
     console.error('worker::GET:all - failed', err);
     return res.status(503).send('Failed to get workers for establishment having id: ' + establishmentId);
@@ -331,6 +339,7 @@ router.route('/').get(hasPermission('canViewWorker'), viewAllWorkers);
 router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
+router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
 
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
@@ -342,3 +351,5 @@ router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
 
 module.exports = router;
 module.exports.editWorker = editWorker;
+module.exports.viewAllWorkers = viewAllWorkers;
+module.exports.getTotalWorkers = getTotalWorkers;

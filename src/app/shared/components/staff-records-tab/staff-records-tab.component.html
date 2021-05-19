@@ -28,7 +28,7 @@
 <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
   <app-total-staff-panel
     [workplace]="workplace"
-    [totalStaff]="totalStaff"
+    [totalStaff]="this.workplace.numberOfStaff"
     [totalWorkers]="workers?.length"
     [returnToDash]="true"
   ></app-total-staff-panel>

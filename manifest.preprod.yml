@@ -3,7 +3,8 @@ applications:
     memory: 8G
     disk_quota: 4GB
     instances: 10
-    buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.7.31
+    buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.7.45
     services:
       - sfcuatdb02
+      - scale-sfcpreprod
 stack: cflinuxfs3

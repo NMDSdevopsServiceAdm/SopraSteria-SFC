@@ -34,7 +34,6 @@ import {
   SetDataPermissionDialogComponent,
 } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 declare global {
   interface Window {
@@ -52,6 +51,7 @@ window.dataLayer = window.dataLayer || {};
 })
 export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() workerCount: number;
 
   private subscriptions: Subscription = new Subscription();
   public adminRole: Roles = Roles.Admin;
@@ -73,8 +73,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public parentStatusRequested: boolean;
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
-  public workers: any[];
-  public workersCount: number;
   public canViewListOfWorkers: boolean;
 
   constructor(
@@ -96,15 +94,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.setPermissionLinks();
 
     if (this.workplace) {
-      if (this.canEditEstablishment) {
-        this.subscriptions.add(
-          this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
-            this.updateStaffRecords = !(workers.length > 0);
-            this.workersCount = workers.length;
-          }),
-        );
-      }
-
       this.subscriptions.add(
         this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe((parentStatusRequested) => {
           this.parentStatusRequested = parentStatusRequested;
@@ -338,12 +327,20 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       !this.parentStatusRequested &&
       !this.linkToParentRequestedStatus;
   }
-  //open Staff Tab
+
   public selectStaffTab(event: Event) {
     if (event) {
       event.preventDefault();
     }
     this.workerService.tabChanged.next(true);
+  }
+
+  public selectTotalStaff(event: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+    this.router.navigate(['/workplace', this.workplace.uid, 'total-staff']);
   }
 
   ngOnDestroy(): void {

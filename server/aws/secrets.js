@@ -32,6 +32,11 @@ const initialiseSecrets = async (region, wallet) => {
         DD_API_KEY: mySecrets.DD_API_KEY,
         SENTRY_DSN: mySecrets.SENTRY_DSN,
         HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY,
+        SEND_IN_BLUE_KEY: mySecrets.SEND_IN_BLUE_KEY,
+        SEND_IN_BLUE_WHITELIST: mySecrets.SEND_IN_BLUE_WHITELIST,
+        ENCRYPTION_PRIVATE_KEY: mySecrets.ENCRYPTION_PRIVATE_KEY,
+        ENCRYPTION_PUBLIC_KEY: mySecrets.ENCRYPTION_PUBLIC_KEY,
+        ENCRYPTION_PASSPHRASE: mySecrets.ENCRYPTION_PASSPHRASE,
       };
     }
   } catch (err) {
@@ -158,6 +163,64 @@ const honeycombWriteKey = () => {
   }
 };
 
+const sendInBlueKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SEND_IN_BLUE_KEY) {
+      return '';
+    } else {
+      return myLocalSecrets.SEND_IN_BLUE_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+
+const encryptionPrivateKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ENCRYPTION_PRIVATE_KEY) {
+      return '';
+    } else {
+      return myLocalSecrets.ENCRYPTION_PRIVATE_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+const encryptionPublicKey = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ENCRYPTION_PUBLIC_KEY) {
+      return '';
+    } else {
+      return myLocalSecrets.ENCRYPTION_PUBLIC_KEY;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+const encryptionPassphrase = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ENCRYPTION_PASSPHRASE) {
+      return '';
+    } else {
+      return myLocalSecrets.ENCRYPTION_PASSPHRASE;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+
+const sendInBlueWhitelist = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SEND_IN_BLUE_WHITELIST) {
+      return '';
+    } else {
+      return myLocalSecrets.SEND_IN_BLUE_WHITELIST;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+};
+
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_APP_USER_KEY) {
@@ -205,4 +268,12 @@ module.exports.adminUrl = adminUrl;
 module.exports.datadogApiKey = datadogApiKey;
 module.exports.sentryDsn = sentryDsn;
 module.exports.honeycombWriteKey = honeycombWriteKey;
+module.exports.sendInBlueKey = sendInBlueKey;
+module.exports.sendInBlueWhitelist = sendInBlueWhitelist;
 module.exports.getAddressKey = getAddressKey;
+module.exports.encryptionPassphrase = encryptionPassphrase;
+module.exports.encryptionPrivateKey = encryptionPrivateKey;
+module.exports.encryptionPublicKey = encryptionPublicKey;
+
+
+

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,6 +13,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -42,7 +46,7 @@ describe('HomeTabComponent', () => {
         WorkplaceRoutingModule,
         HttpClientTestingModule,
       ],
-      declarations: [HomeTabComponent],
+      declarations: [HomeTabComponent, StaffMismatchBannerComponent],
       providers: [
         {
           provide: WorkerService,
@@ -109,77 +113,65 @@ describe('HomeTabComponent', () => {
     // Assert
     expect(link.innerHTML).toContain('Add staff records');
   });
-  it('should show the more staff records banner', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workersCount = 10;
-    component.fixture.componentInstance.workplace.numberOfStaff = 9;
 
-    component.fixture.detectChanges();
-
-    const moreRecords = component.getByTestId('morerecords');
-    // Assert
-    expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
-  });
-  it('should not show the more staff records banner if there are less staff records', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workersCount = 10;
-    component.fixture.componentInstance.workplace.numberOfStaff = 11;
-
-    component.fixture.detectChanges();
-
-    const moreRecords = component.queryAllByTestId('morerecords');
-    // Assert
-    expect(moreRecords.length).toEqual(0);
-  });
   it('should not show the more staff records banner if there are equal staff records', async () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workerCount = 10;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.canViewListOfWorkers = true;
 
     component.fixture.detectChanges();
 
-    const moreRecords = component.queryAllByTestId('morerecords');
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
     // Assert
-    expect(moreRecords.length).toEqual(0);
+    expect(childDebugElement).toBeFalsy();
   });
-  it('should not show the more staff records banner if the user does not have persmission to viewListOfWorkers', async () => {
+  it('should  show the more staff records banner if the user does  have permissions to viewListOfWorkers', async () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
 
-    component.fixture.componentInstance.canViewListOfWorkers = false;
+    component.fixture.componentInstance.canViewListOfWorkers = true;
 
     component.fixture.detectChanges();
-
-    const moreRecords = component.queryAllByTestId('morerecords');
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
     // Assert
-    expect(moreRecords.length).toEqual(0);
+    expect(childDebugElement).toBeTruthy();
   });
-  it('should contain the workplace and worker numbers', async () => {
+
+  it('should not show the more staff records banner if the user doesnt  have permissions to addWorker', async () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 14;
-    component.fixture.componentInstance.workplace.numberOfStaff = 11;
+    component.fixture.componentInstance.workerCount = 11;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = false;
 
     component.fixture.detectChanges();
-
-    const moreRecords = component.getByTestId('morerecords');
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
     // Assert
-    expect(moreRecords.innerHTML).toContain(String(component.fixture.componentInstance.workersCount));
-    expect(moreRecords.innerHTML).toContain(String(component.fixture.componentInstance.workplace.numberOfStaff));
-    expect(moreRecords.innerHTML).toContain(
-      String(
-        component.fixture.componentInstance.workersCount - component.fixture.componentInstance.workplace.numberOfStaff,
-      ),
-    );
+    expect(childDebugElement).toBeFalsy();
+  });
+
+  it('should not show the staff mismatch banner if no workers have been added', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workerCount = 0;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeFalsy();
   });
 });

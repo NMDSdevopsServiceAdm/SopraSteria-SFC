@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -13,6 +14,7 @@ export class BulkUploadStartGuard implements CanActivate {
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
     private router: Router,
+    private adminSkipService: AdminSkipService,
   ) {}
 
   canActivate(): Observable<boolean | UrlTree> {
@@ -22,6 +24,12 @@ export class BulkUploadStartGuard implements CanActivate {
 
     return this.bulkUploadService.isFirstBulkUpload(workplaceID).pipe(
       map((response) => {
+        if (this.adminSkipService.skippedWorkplaces.includes(workplaceID)) {
+          return true;
+        }
+        if (this.adminSkipService.skipWorkplaceReferences) {
+          return true;
+        }
         if (response.isFirstBulkUpload) {
           const redirect: UrlTree = this.router.parseUrl('/bulk-upload/start');
           return redirect;

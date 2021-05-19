@@ -1,3 +1,4 @@
+const Sqreen = process.env.SQREEN_APP_NAME ? require('sqreen') : require('./server/utils/middleware/sqreen.mock');
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
 const { Integrations } = require('@sentry/tracing');
@@ -62,6 +63,8 @@ var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
+var registrationSurvey = require('./server/routes/registrationSurvey');
+var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -79,6 +82,9 @@ AWSsns.initialise(config.get('aws.region'));
 var testOnly = require('./server/routes/testOnly');
 
 var app = express();
+
+app.use(Sqreen.middleware);
+
 if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
@@ -137,6 +143,30 @@ var unless = function (root, path, middleware) {
   };
 };
 
+app.disable('x-powered-by');
+
+app.use(
+  helmet({
+    referrerPolicy: {
+      policy: 'strict-origin-when-cross-origin',
+    },
+    frameguard: {
+      action: 'deny',
+    },
+    permittedCrossDomainPolicies: {
+      permittedPolicies: 'none',
+    },
+    expectCt: {
+      maxAge: 86400,
+    },
+    dnsPrefetchControl: {
+      allow: true,
+    },
+    hsts: false,
+    contentSecurityPolicy: false,
+  }),
+);
+
 // disable Helmet's caching - because we control that directly - cahcing is not enabled by default; but explicitly disabling it here
 // set frame policy to deny
 // only use on '/api' endpoint, because these changes may otherwise impact on the UI.
@@ -144,9 +174,6 @@ app.use(
   '/api',
   helmet({
     noCache: false,
-    frameguard: {
-      action: 'deny',
-    },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -222,6 +249,8 @@ app.use('/api/test', [cacheMiddleware.nocache, testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);
+app.use('/api/registrationSurvey', [cacheMiddleware.nocache, registrationSurvey]);
+app.use('/api/cqcStatusCheck', [cacheMiddleware.nocache], cqcStatusCheck);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
