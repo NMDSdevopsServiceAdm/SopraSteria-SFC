@@ -16,6 +16,7 @@ const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+const { TrainingCategoriesCache } = require('../cache/singletons/trainingCategories');
 
 class Training extends EntityValidator {
   constructor(establishmentId, workerUid) {
@@ -195,9 +196,7 @@ class Training extends EntityValidator {
   // validates a given training record; returns the training record if valid
   async validateTrainingRecord(document) {
     // to validate a training record, need the list of available training categories
-    const trainingCategories = await models.workerTrainingCategories.findAll({
-      order: [['seq', 'ASC']],
-    });
+    const trainingCategories = TrainingCategoriesCache.allTrainingCategories();
 
     if (!trainingCategories || !Array.isArray(trainingCategories)) {
       this._validations.push(

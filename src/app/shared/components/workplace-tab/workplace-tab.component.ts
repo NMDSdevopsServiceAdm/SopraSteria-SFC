@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class WorkplaceTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
+  @Input() workerCount: number;
 
   protected subscriptions: Subscription = new Subscription();
 
@@ -21,7 +22,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
 
   constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.locationId = this.workplace.locationId;
     this.establishmentService.setCheckCQCDetailsBanner(false);
 

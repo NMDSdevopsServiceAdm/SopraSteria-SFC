@@ -10,12 +10,14 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -71,6 +73,7 @@ describe('DashboardComponent', () => {
         },
         { provide: WindowToken, useValue: MockWindow },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: WorkerService, useClass: MockWorkerService },
       ],
     });
 

@@ -23,11 +23,11 @@
         </div>
       </app-inset-text>
     </ng-container>
-    <ng-container *ngIf="workplace && canAddWorker && workersCount !== workplace.numberOfStaff && workersCount > 0">
+    <ng-container *ngIf="workplace && canAddWorker && workerCount !== workplace.numberOfStaff && workerCount > 0">
       <app-staff-mismatch-banner
         (selectStaffTab)="selectStaffTab($event)"
         (selectTotalStaff)="selectTotalStaff($event)"
-        [workersCount]="workersCount"
+        [workerCount]="workerCount"
         [numberOfStaff]="workplace.numberOfStaff"
       ></app-staff-mismatch-banner>
     </ng-container>
@@ -102,7 +102,7 @@
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
         <li *ngIf="canAddWorker">
-          <a [routerLink]="['/add-mandatory-training']">Manage mandatory training</a>
+          <a [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']">Manage mandatory training</a>
         </li>
       </ul>
     </ng-container>

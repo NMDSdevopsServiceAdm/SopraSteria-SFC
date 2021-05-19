@@ -23,7 +23,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -50,9 +50,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('other-job-roles');
-    this.previous = this.workerService.addStaffRecordInProgress$.value
-      ? this.getRoutePath('staff-details')
-      : ['/dashboard'];
+    this.previous = this.getReturnPath();
   }
 
   public setupFormErrorsMap(): void {
@@ -88,5 +86,15 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     return { mainJobStartDate: null };
+  }
+
+  private getReturnPath() {
+    if (this.workerService.addStaffRecordInProgress$.value) {
+      return this.getRoutePath('staff-details');
+    }
+    if (this.workplace.uid === this.primaryWorkplace.uid) {
+      return ['/dashboard'];
+    }
+    return [`/workplace/${this.workplace.uid}`];
   }
 }
