@@ -23,6 +23,7 @@ const establishmentBuilder = build('Establishment', {
       starters: { isEligible: false, updatedSinceEffectiveDate: true },
       leavers: { isEligible: false, updatedSinceEffectiveDate: true },
       vacancies: { isEligible: false, updatedSinceEffectiveDate: true },
+      capacities: { isEligible: false, updatedSinceEffectiveDate: true },
     },
   },
 });

@@ -173,9 +173,28 @@
           </ul>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.capacities.isEligible === 'Yes' &&
+          !workplace.wdf?.capacities.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('capacity-of-services')"
+        (fieldConfirmation)="this.confirmField('capacities')"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.capacities.isEligible === 'Yes' &&
+            !workplace.wdf?.capacities.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' service capacities'"
         [link]="['/workplace', workplace.uid, 'capacity-of-services']"
         [hasData]="workplace.capacities?.length"
