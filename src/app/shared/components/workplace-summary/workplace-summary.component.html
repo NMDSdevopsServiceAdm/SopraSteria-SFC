@@ -221,9 +221,27 @@
           </ul>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
+          !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('service-users')"
+        (fieldConfirmation)="this.confirmField('serviceUsers')"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
+            !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' service users'"
         [link]="['/workplace', workplace.uid, 'service-users']"
         [hasData]="workplace.serviceUsers?.length"
