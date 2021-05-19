@@ -1,6 +1,5 @@
 'use strict';
 
-const models = require('../../../../models');
 const { Worker } = require('../../../../models/classes/worker');
 const { Qualification } = require('../../../../models/classes/qualification');
 
