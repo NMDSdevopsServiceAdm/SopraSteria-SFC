@@ -458,4 +458,41 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
       expect(getByText('Meeting requirements')).toBeTruthy();
     });
   });
+
+  describe('Total Number of Staff field confirmation', async () => {
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Total Number of Staff', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.numberOfStaff.isEligible = Eligibility.YES;
+      component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
+      component.workplace.numberOfStaff = 2;
+      component.workerCount = 2;
+
+      fixture.detectChanges();
+
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
+
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Total Number of Staff', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.numberOfStaff.isEligible = Eligibility.YES;
+      component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
+      component.workplace.numberOfStaff = 2;
+      component.workerCount = 2;
+
+      fixture.detectChanges();
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
+  });
 });

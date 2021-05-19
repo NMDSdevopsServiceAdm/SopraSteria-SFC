@@ -303,6 +303,17 @@
       >
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
+          !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
+          workplace.numberOfStaff === workerCount
+        "
+        [changeLink]="getRoutePath('total-staff')"
+        (fieldConfirmation)="this.confirmField('numberOfStaff')"
+      ></app-wdf-field-confirmation>
       <app-wdf-staff-mismatch-message
         *ngIf="wdfView && wdfNewDesign && totalStaffWarning"
         [workplace]="workplace"
@@ -312,6 +323,15 @@
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
+            !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
+            workplace.numberOfStaff === workerCount
+          )
+        "
         [explanationText]="' total number of staff'"
         [link]="['/workplace', workplace.uid, 'total-staff']"
         [hasData]="isNumber(workplace.numberOfStaff)"
