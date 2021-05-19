@@ -41,13 +41,6 @@ const loadWorkerQualifications = async (
   }
 };
 
-const addLatLng = async (thisWorkerAsAPI) => {
-  const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(thisWorkerAsAPI.postcode)) || {};
-
-  thisWorkerAsAPI.Latitude = Latitude;
-  thisWorkerAsAPI.Longitude = Longitude;
-};
-
 const validateWorkerCsv = async (
   thisLine,
   currentLineNumber,
@@ -67,21 +60,6 @@ const validateWorkerCsv = async (
   const thisWorkerAsAPI = lineValidator.toAPI();
 
   try {
-    if (thisWorkerAsAPI.status === 'NEW') {
-      if (thisWorkerAsAPI.postcode) {
-        await addLatLng(thisWorkerAsAPI);
-      }
-    } else {
-      const foundCurrentEstablishment = myCurrentEstablishments.find(
-        (establishment) => establishment.key === lineValidator.establishmentKey,
-      );
-
-      const foundCurrentWorker = foundCurrentEstablishment.theWorker(lineValidator.key);
-      if (thisWorkerAsAPI.postcode && foundCurrentWorker && foundCurrentWorker.postcode !== thisWorkerAsAPI.postcode) {
-        await addLatLng(thisWorkerAsAPI);
-      }
-    }
-
     // construct Worker entity
     const thisApiWorker = new Worker();
     await thisApiWorker.load(thisWorkerAsAPI);
