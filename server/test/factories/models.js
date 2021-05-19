@@ -80,8 +80,43 @@ const workerBuilder = build('Worker', {
     ],
     wdfEligible: false,
     wdf: {
-      isEligible: false
-    }
+      isEligible: false,
+    },
+  },
+});
+
+const workerBuilderWithWdf = build('Worker', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.random.uuid()),
+    NameOrIdValue: fake((f) => f.name.findName()),
+    nameOrId: fake((f) => f.name.findName()),
+    jobRole: fake((f) => f.name.jobTitle()),
+    mainJob: perBuild(() => {
+      return jobBuilder();
+    }),
+    mainJobStartDate: '2020-12-01',
+    workerTraining: [
+      perBuild(() => {
+        return trainingBuilder();
+      }),
+    ],
+    wdfEligible: false,
+    wdf: {
+      mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: true },
+      daysSick: { isEligible: true, updatedSinceEffectiveDate: true },
+      zeroHoursContract: { isEligible: true, updatedSinceEffectiveDate: true },
+      weeklyHoursContracted: { isEligible: true, updatedSinceEffectiveDate: true },
+      weeklyHoursAverage: { isEligible: true, updatedSinceEffectiveDate: true },
+      annualHourlyPay: { isEligible: true, updatedSinceEffectiveDate: true },
+      mainJob: { isEligible: true, updatedSinceEffectiveDate: true },
+      contract: { isEligible: true, updatedSinceEffectiveDate: true },
+      socialCareQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+      qualificationInSocialCare: { isEligible: true, updatedSinceEffectiveDate: true },
+      careCertificate: { isEligible: true, updatedSinceEffectiveDate: true },
+      otherQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+      highestQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+    },
   },
 });
 
@@ -91,3 +126,4 @@ module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;
 module.exports.trainingBuilder = trainingBuilder;
 module.exports.mandatoryTrainingBuilder = mandatoryTrainingBuilder;
+module.exports.workerBuilderWithWdf = workerBuilderWithWdf;

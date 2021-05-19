@@ -30,6 +30,30 @@
           <span>{{ worker.mainJob.title }}</span>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.mainJob.isEligible === 'Yes' &&
+          !worker.wdf?.mainJob.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('staff-details')"
+        (fieldConfirmation)="this.confirmField('mainJob')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
+    </dd>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          !(worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate)
+        "
+        [explanationText]="' basic record details'"
+        [link]="getRoutePath('staff-details')"
+        [hasData]="true"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -43,6 +67,30 @@
       >
         {{ worker.contract }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.contract.isEligible === 'Yes' &&
+          !worker.wdf?.contract.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('staff-details')"
+        (fieldConfirmation)="this.confirmField('contract')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
+    </dd>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          !(worker.wdf?.contract.isEligible === 'Yes' && !worker.wdf?.contract.updatedSinceEffectiveDate)
+        "
+        [explanationText]="' basic record details'"
+        [link]="getRoutePath('staff-details')"
+        [hasData]="true"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 </dl>

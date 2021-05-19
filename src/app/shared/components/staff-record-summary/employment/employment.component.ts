@@ -5,6 +5,7 @@ import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { isNumber } from 'lodash';
 import * as moment from 'moment';
 
@@ -18,14 +19,16 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 export class EmploymentComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
+  @Input() wdfNewDesign: boolean;
 
   constructor(
     location: Location,
     permissionsService: PermissionsService,
     route: ActivatedRoute,
     workerService: WorkerService,
+    featureFlagsService: FeatureFlagsService,
   ) {
-    super(location, permissionsService, route, workerService);
+    super(location, permissionsService, route, workerService, featureFlagsService);
   }
 
   isNumber(number: number) {
