@@ -1,4 +1,5 @@
 const models = require('../..');
+const { ready } = require('./ready');
 
 let ALL_TRAINING_CATEGORIES = [];
 
@@ -19,21 +20,6 @@ class TrainingCategoriesCache {
   }
 }
 
-if (models.status.ready) {
-  TrainingCategoriesCache.initialize()
-    .then()
-    .catch((err) => {
-      console.error('Failed to initialise TrainingCategoriesCache: ', err);
-    });
-} else {
-  models.status.on(models.status.READY_EVENT, () => {
-    // initialising BUDI
-    TrainingCategoriesCache.initialize()
-      .then()
-      .catch((err) => {
-        console.error('Failed to initialise TrainingCategoriesCache: ', err);
-      });
-  });
-}
+ready(models, TrainingCategoriesCache, 'TrainingCategoriesCache');
 
 exports.TrainingCategoriesCache = TrainingCategoriesCache;
