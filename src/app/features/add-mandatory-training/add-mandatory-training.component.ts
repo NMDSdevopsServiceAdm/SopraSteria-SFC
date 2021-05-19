@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import {
   allMandatoryTrainingCategories,
@@ -60,6 +60,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
     protected router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   get categoriesArray(): FormArray {
@@ -71,9 +72,10 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
-
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.establishment = this.route.parent.snapshot.data.establishment;
     this.setBackLink();
+
     this.getAllTrainingCategories();
     this.getAlJobs();
     this.setupForm();
@@ -81,7 +83,6 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.setupServerErrorsMap();
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
-        this.establishment = establishment;
         this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
           (trainings) => {
             this.existingMandatoryTrainings = trainings;
@@ -97,7 +98,10 @@ export class AddMandatoryTrainingComponent implements OnInit {
     );
   }
 
-  private setBackLink(): void {
+  public setBackLink(): void {
+    const url =
+      this.establishment.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.establishment.uid];
+    this.return = { url: url, fragment: 'training-and-qualifications' };
     this.backService.setBackLink(this.return);
   }
 

@@ -2,6 +2,7 @@
 
 // uses Database Reference data - initialised within the singleton on startup
 const dbmodels = require('../../../models');
+const { ready } = require('../../cache/singletons/ready');
 
 let ALL_CSSRS = null;
 let ALL_CAPACITIES = null;
@@ -902,14 +903,14 @@ class BUDI {
 
   static mapNurseSpecialismsToDb(specialisms) {
     if (specialisms.length === 1 && specialisms[0] === 7) {
-      return { value: 'No' }
+      return { value: 'No' };
     } else if (specialisms.length === 1 && specialisms[0] === 8) {
-      return { value: `Don't know` }
+      return { value: `Don't know` };
     } else {
       return {
         value: 'Yes',
-        specialisms: specialisms.filter(s => s !== 7 && s !== 8).map(s => ({ id: s }))
-      }
+        specialisms: specialisms.filter((s) => s !== 7 && s !== 8).map((s) => ({ id: s })),
+      };
     }
   }
 
@@ -1135,22 +1136,6 @@ class BUDI {
   }
 }
 
-// and now to initialise BUDI
-if (dbmodels.status.ready) {
-  BUDI.initialize()
-    .then()
-    .catch((err) => {
-      console.error('Failed to initialise BUDI: ', err);
-    });
-} else {
-  dbmodels.status.on(dbmodels.status.READY_EVENT, () => {
-    // initialising BUDI
-    BUDI.initialize()
-      .then()
-      .catch((err) => {
-        console.error('Failed to initialise BUDI: ', err);
-      });
-  });
-}
+ready(dbmodels, BUDI, 'BUDI');
 
 exports.BUDI = BUDI;
