@@ -81,20 +81,16 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe((establishment) => {
-        this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
-          (trainings) => {
-            this.existingMandatoryTrainings = trainings;
-            this.prefill(trainings);
-          },
-          (error) => {
-            if (error.error.message) {
-              this.serverError = error.error.message;
-            }
-          },
-        );
-      }),
+    this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
+      (trainings) => {
+        this.existingMandatoryTrainings = trainings;
+        this.prefill(trainings);
+      },
+      (error) => {
+        if (error.error.message) {
+          this.serverError = error.error.message;
+        }
+      },
     );
   }
 
