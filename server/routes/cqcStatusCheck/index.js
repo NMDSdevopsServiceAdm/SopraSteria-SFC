@@ -41,11 +41,9 @@ function checkRegistrationStatus(cqcRegistrationStatus) {
 }
 
 function checkPostcodeMatch(postcode, cqcPostcode) {
-  if (!postcode) return true;
+  if (!postcode || !cqcPostcode) return true;
 
-  if (postcode && cqcPostcode) {
-    return postcode.toUpperCase() === cqcPostcode.toUpperCase() ? true : false;
-  }
+  return postcode.toUpperCase() === cqcPostcode.toUpperCase() ? true : false;
 }
 
 function checkMainServiceMatch(mainService, cqcServices) {
@@ -53,9 +51,7 @@ function checkMainServiceMatch(mainService, cqcServices) {
 
   const cqcMainService = convertMainServiceToCQC(mainService);
 
-  if (mainService && cqcServices) {
-    return cqcServices.some((service) => cqcMainService.cqc.includes(service.name));
-  }
+  return cqcServices.some((service) => cqcMainService.cqc.includes(service.name));
 }
 
 function convertMainServiceToCQC(mainService) {
