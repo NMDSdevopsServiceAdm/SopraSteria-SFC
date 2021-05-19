@@ -59,9 +59,8 @@ import { TrainingInfoPanelComponent } from './components/training-info-panel/tra
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
-import {
-  WdfStaffMismatchMessageComponent,
-} from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
+import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
+import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -152,6 +151,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CqcConfirmationDialogComponent,
     TotalStaffComponent,
     MoveWorkplaceDialogComponent,
+    WdfFieldConfirmationComponent,
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
   ],

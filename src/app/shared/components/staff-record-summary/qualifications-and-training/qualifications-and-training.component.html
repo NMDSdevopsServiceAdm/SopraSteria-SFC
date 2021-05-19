@@ -10,10 +10,30 @@
       >
         {{ worker.careCertificate || '-' }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.careCertificate.isEligible === 'Yes' &&
+          !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
+          worker.careCertificate !== 'Yes, completed'
+        "
+        [changeLink]="getRoutePath('care-certificate')"
+        (fieldConfirmation)="this.confirmField('careCertificate')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
     </dd>
-
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            worker.wdf?.careCertificate.isEligible === 'Yes' &&
+            !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
+            worker.careCertificate !== 'Yes, completed'
+          )
+        "
         [explanationText]="' care certificate'"
         [link]="getRoutePath('care-certificate')"
         [hasData]="!!worker.careCertificate"
@@ -32,9 +52,30 @@
       >
         {{ worker.qualificationInSocialCare || '-' | closedEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
+          !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
+          worker.qualificationInSocialCare !== 'Yes'
+        "
+        [changeLink]="getRoutePath('social-care-qualification')"
+        (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
+            !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
+            worker.qualificationInSocialCare !== 'Yes'
+          )
+        "
         [explanationText]="' relevant social care qualification'"
         [link]="getRoutePath('social-care-qualification')"
         [hasData]="!!worker.qualificationInSocialCare"
@@ -53,9 +94,30 @@
       >
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
+          !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('social-care-qualification-level')"
+        (fieldConfirmation)="
+          this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
+        "
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
+            !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' social care qualification level'"
         [link]="getRoutePath('social-care-qualification-level')"
         [hasData]="!!worker.socialCareQualification"
@@ -74,6 +136,18 @@
       >
         {{ worker.otherQualification || '-' | closedEndedAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.otherQualification.isEligible === 'Yes' &&
+          !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
+          worker.otherQualification !== 'Yes'
+        "
+        [changeLink]="getRoutePath('other-qualifications')"
+        (fieldConfirmation)="this.confirmField('otherQualification')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -95,9 +169,28 @@
       >
         {{ worker.highestQualification?.title || '-' }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          wdfView &&
+          wdfNewDesign &&
+          worker.wdf?.highestQualification.isEligible === 'Yes' &&
+          !worker.wdf?.highestQualification.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('other-qualifications-level')"
+        (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            worker.wdf?.highestQualification.isEligible === 'Yes' &&
+            !worker.wdf?.highestQualification.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' other qualification level'"
         [link]="getRoutePath('other-qualifications-level')"
         [hasData]="!!worker.highestQualification"

@@ -9,6 +9,7 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
+  @Input() wdfNewDesign: boolean;
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';

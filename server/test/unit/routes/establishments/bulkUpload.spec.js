@@ -33,6 +33,7 @@ const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const { Establishment } = require('../../../../models/classes/establishment');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
 const buildWorkerCSV = require('../../../../test/factories/worker/csv');
+const { TrainingCategoriesCache } = require('../../../../models/cache/singletons/trainingCategories');
 
 const errorsBuilder = build('Error', {
   fields: {
@@ -885,7 +886,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
 
   describe('exportToCsv()', () => {
     it('should have a blank UNIQUEWORKERID if worker does not have a LocalIdentifier', async () => {
-      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
+      sinon.stub(TrainingCategoriesCache, 'allTrainingCategories').returns([
         {
           id: 1,
         },
@@ -938,7 +939,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
     });
 
     it('should have a UNIQUEWORKERID if worker has a LocalIdentifier', async () => {
-      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
+      sinon.stub(TrainingCategoriesCache, 'allTrainingCategories').returns([
         {
           id: 1,
         },
