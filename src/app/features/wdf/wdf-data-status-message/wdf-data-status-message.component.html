@@ -1,38 +1,17 @@
-<ng-container *ngIf="!isParent; else parent">
-  <h4 class="govuk-heading-s govuk-!-margin-bottom-8">
-    <ng-container *ngIf="!wdfEligibilityStatus.overall">
-      Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
-    </ng-container>
-    <ng-container
-      *ngIf="
-        wdfEligibilityStatus.overall && !(wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff)
-      "
-    >
-      Keeping your data up to date will save you time next year
-    </ng-container>
-    <ng-container
-      *ngIf="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff"
-    >
-      Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
-    </ng-container>
-  </h4>
-</ng-container>
-
-<ng-template #parent>
-  <h4 class="govuk-heading-s">
-    <ng-container
-      *ngIf="
-        wdfEligibilityStatus.overall && !(wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff)
-      "
-    >
-      Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will
-      save you time next year.
-    </ng-container>
-    <ng-container
-      *ngIf="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff"
-    >
-      All your workplaces' data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to
-      {{ wdfEndDate | date: 'yyyy' }} requirements
-    </ng-container>
-  </h4>
-</ng-template>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-8">
+  <ng-container *ngIf="!wdfEligibilityStatus.overall">
+    Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+  </ng-container>
+  <ng-container
+    *ngIf="
+      wdfEligibilityStatus.overall && !(wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff)
+    "
+  >
+    Keeping your data up to date will save you time next year
+  </ng-container>
+  <ng-container
+    *ngIf="wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff"
+  >
+    Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+  </ng-container>
+</h4>
