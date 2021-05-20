@@ -92,6 +92,7 @@
         "
         [changeLink]="getRoutePath('main-service-cqc')"
         (fieldConfirmation)="this.confirmField('mainService')"
+        (setReturnClicked)="this.setReturn()"
       >
       </app-wdf-field-confirmation>
     </dd>
@@ -182,6 +183,7 @@
         "
         [changeLink]="getRoutePath('capacity-of-services')"
         (fieldConfirmation)="this.confirmField('capacities')"
+        (setReturnClicked)="this.setReturn()"
       >
       </app-wdf-field-confirmation>
     </dd>
@@ -230,6 +232,7 @@
         "
         [changeLink]="getRoutePath('service-users')"
         (fieldConfirmation)="this.confirmField('serviceUsers')"
+        (setReturnClicked)="this.setReturn()"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
@@ -313,6 +316,7 @@
         "
         [changeLink]="getRoutePath('total-staff')"
         (fieldConfirmation)="this.confirmField('numberOfStaff')"
+        (setReturnClicked)="this.setReturn()"
       ></app-wdf-field-confirmation>
       <app-wdf-staff-mismatch-message
         *ngIf="wdfView && wdfNewDesign && totalStaffWarning"
@@ -432,6 +436,7 @@
         "
         [changeLink]="getRoutePath('vacancies')"
         (fieldConfirmation)="this.confirmField('vacancies')"
+        (setReturnClicked)="this.setReturn()"
       >
       </app-wdf-field-confirmation>
     </dd>
@@ -482,6 +487,7 @@
         "
         [changeLink]="getRoutePath('starters')"
         (fieldConfirmation)="this.confirmField('starters')"
+        (setReturnClicked)="this.setReturn()"
       >
       </app-wdf-field-confirmation>
     </dd>
@@ -533,6 +539,7 @@
         "
         [changeLink]="getRoutePath('leavers')"
         (fieldConfirmation)="this.confirmField('leavers')"
+        (setReturnClicked)="this.setReturn()"
       >
       </app-wdf-field-confirmation>
     </dd>
