@@ -19,7 +19,7 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
     this.workplaces = this.workplaces.map((workplace) => {
       return workplace;
     });
-    this.workplaces = orderBy(this.workplaces, [(workplace) => workplace.name.toLowerCase()], ['asc']);
+    this.sortByColumn('1_not_meeting');
   }
 
   public sortByColumn(selectedColumn: any) {
@@ -27,16 +27,24 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
       case '1_not_meeting': {
         this.workplaces = orderBy(
           this.workplaces,
-          [(workplace) => workplace.wdf.workplace, (workplace) => workplace.wdf.staff],
-          ['asc', 'asc'],
+          [
+            (workplace) => workplace.wdf.overall,
+            (workplace) => workplace.wdf.workplace,
+            (workplace) => workplace.wdf.staff,
+          ],
+          ['asc', 'asc', 'asc'],
         );
         break;
       }
       case '2_meeting': {
         this.workplaces = orderBy(
           this.workplaces,
-          [(workplace) => workplace.wdf.workplace, (workplace) => workplace.wdf.staff],
-          ['desc', 'desc'],
+          [
+            (workplace) => workplace.wdf.overall,
+            (workplace) => workplace.wdf.workplace,
+            (workplace) => workplace.wdf.staff,
+          ],
+          ['desc', 'desc', 'desc'],
         );
         break;
       }
@@ -49,16 +57,17 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
         break;
       }
       default: {
-        // same as first option
         this.workplaces = orderBy(
           this.workplaces,
-          [(workplace) => workplace.wdf.workplace, (workplace) => workplace.wdf.staff],
-          ['asc', 'asc'],
+          [
+            (workplace) => workplace.wdf.overall,
+            (workplace) => workplace.wdf.workplace,
+            (workplace) => workplace.wdf.staff,
+          ],
+          ['asc', 'asc', 'asc'],
         );
         break;
       }
     }
   }
-
-  private sortByWdfRequirement() {}
 }

@@ -106,5 +106,26 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
       expect(workplaces[1].wdf.workplace).toEqual(false);
       expect(workplaces[1].wdf.staff).toEqual(true);
     });
+
+    it('should put workplaces not meeting WDF (red crosses) before those meeting with changes (orange flags) when sorting by WDF requirements (not meeting)', async () => {
+      const { component, fixture } = await setup();
+
+      component.workplaces[0].wdf.overall = false;
+      component.workplaces[0].wdf.workplace = true;
+      component.workplaces[0].wdf.staff = false;
+
+      component.workplaces[1].wdf.overall = true;
+      component.workplaces[1].wdf.workplace = false;
+      component.workplaces[1].wdf.staff = true;
+
+      fixture.componentInstance.sortByColumn('1_not_meeting');
+      const workplaces = component.workplaces;
+      fixture.detectChanges();
+
+      expect(workplaces[0].wdf.workplace).toEqual(true);
+      expect(workplaces[0].wdf.staff).toEqual(false);
+      expect(workplaces[1].wdf.workplace).toEqual(false);
+      expect(workplaces[1].wdf.staff).toEqual(true);
+    });
   });
 });
