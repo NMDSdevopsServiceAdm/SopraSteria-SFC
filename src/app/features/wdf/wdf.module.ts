@@ -4,8 +4,10 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 
+import { WdfDataStatusMessageComponent } from './wdf-data-status-message/wdf-data-status-message.component';
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
+import { WdfParentStatusMessageComponent } from './wdf-parent-status-message/wdf-parent-status-message.component';
 import { WdfRequirementsStateComponent } from './wdf-requirements-state/wdf-requirements-state.component';
 import { WdfRoutingModule } from './wdf-routing.module';
 import {
@@ -14,7 +16,6 @@ import {
 import { WdfPaginationComponent } from './wdf-staff-record/wdf-pagination/wdf-pagination.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';
-import { WdfStatusMessageComponent } from './wdf-status-message/wdf-status-message.component';
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table/wdf-workplaces-summary-table.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
 
@@ -26,11 +27,12 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     WdfStaffSummaryComponent,
     WdfStaffRecordComponent,
     WdfRequirementsStateComponent,
-    WdfStatusMessageComponent,
+    WdfDataStatusMessageComponent,
     WdfStaffRecordStatusMessageComponent,
     WdfPaginationComponent,
     WdfWorkplacesSummaryComponent,
     WdfWorkplacesSummaryTableComponent,
+    WdfParentStatusMessageComponent,
   ],
 })
 export class WdfModule {}

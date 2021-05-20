@@ -5,12 +5,12 @@
       Workplaces
     </h1>
 
-    <app-wdf-status-message
+    <app-wdf-parent-status-message
       [wdfStartDate]="wdfStartDate"
       [wdfEndDate]="wdfEndDate"
-      [wdfEligibilityStatus]="parentWdfEligibilityStatus"
-      [isParent]="true"
-    ></app-wdf-status-message>
+      [overallEligibilityStatus]="parentOverallEligibilityStatus"
+      [currentEligibilityStatus]="parentCurrentEligibilityStatus"
+    ></app-wdf-parent-status-message>
   </div>
 </div>
 
