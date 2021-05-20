@@ -122,10 +122,37 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
       const workplaces = component.workplaces;
       fixture.detectChanges();
 
+      expect(workplaces[0].wdf.overall).toEqual(false);
       expect(workplaces[0].wdf.workplace).toEqual(true);
       expect(workplaces[0].wdf.staff).toEqual(false);
+
+      expect(workplaces[1].wdf.overall).toEqual(true);
       expect(workplaces[1].wdf.workplace).toEqual(false);
       expect(workplaces[1].wdf.staff).toEqual(true);
+    });
+
+    it('should put workplaces meeting WDF with changes (orange flags) before those not meeting (red crosses) when sorting by WDF requirements (meeting)', async () => {
+      const { component, fixture } = await setup();
+
+      component.workplaces[0].wdf.overall = false;
+      component.workplaces[0].wdf.workplace = false;
+      component.workplaces[0].wdf.staff = false;
+
+      component.workplaces[1].wdf.overall = true;
+      component.workplaces[1].wdf.workplace = false;
+      component.workplaces[1].wdf.staff = true;
+
+      fixture.componentInstance.sortByColumn('2_meeting');
+      const workplaces = component.workplaces;
+      fixture.detectChanges();
+
+      expect(workplaces[0].wdf.overall).toEqual(true);
+      expect(workplaces[0].wdf.workplace).toEqual(false);
+      expect(workplaces[0].wdf.staff).toEqual(true);
+
+      expect(workplaces[1].wdf.overall).toEqual(false);
+      expect(workplaces[1].wdf.workplace).toEqual(false);
+      expect(workplaces[1].wdf.staff).toEqual(false);
     });
   });
 });
