@@ -151,7 +151,7 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
       providers: [
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
 

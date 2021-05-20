@@ -85,6 +85,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.mainService.isEligible === 'Yes' &&
@@ -176,6 +177,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.capacities.isEligible === 'Yes' &&
@@ -225,6 +227,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
@@ -308,6 +311,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
@@ -429,6 +433,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.vacancies.isEligible === 'Yes' &&
@@ -480,6 +485,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.starters.isEligible === 'Yes' &&
@@ -532,6 +538,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditEstablishment &&
           wdfView &&
           wdfNewDesign &&
           workplace.wdf?.leavers.isEligible === 'Yes' &&
