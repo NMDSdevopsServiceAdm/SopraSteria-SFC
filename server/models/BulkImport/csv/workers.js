@@ -3905,7 +3905,7 @@ class Worker {
     // if no contract type, or contract type is not contractedHoursContract, then always empty (null)
     let contHours = '';
     if (['Permanent', 'Temporary'].includes(entity.ContractValue) && entity.ZeroHoursContractValue !== 'Yes') {
-      switch (entity.WeeklyHoursAverageValue) {
+      switch (entity.WeeklyHoursContractedValue) {
         case 'Yes':
           // if contracted hours is 'Yes', then the contracted hours value - which itself could still be empty (null)
           contHours = entity.WeeklyHoursContractedHours;
