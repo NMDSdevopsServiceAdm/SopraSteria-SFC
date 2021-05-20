@@ -7,8 +7,8 @@ import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
   templateUrl: './wdf-data-status-message.component.html',
 })
 export class WdfDataStatusMessageComponent {
-  @Input() wdfStartDate: string;
-  @Input() wdfEndDate: string;
-  @Input() wdfEligibilityStatus: WdfEligibilityStatus;
-  @Input() isParent = false;
+  @Input() public wdfStartDate: string;
+  @Input() public wdfEndDate: string;
+  @Input() public wdfEligibilityStatus: WdfEligibilityStatus;
+  @Input() public isParent = false;
 }

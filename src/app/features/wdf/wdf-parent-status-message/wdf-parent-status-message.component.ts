@@ -5,8 +5,8 @@ import { Component, Input } from '@angular/core';
   templateUrl: './wdf-parent-status-message.component.html',
 })
 export class WdfParentStatusMessageComponent {
-  @Input() wdfStartDate: string;
-  @Input() wdfEndDate: string;
-  @Input() overallEligibilityStatus: boolean;
-  @Input() currentEligibilityStatus: boolean;
+  @Input() public wdfStartDate: string;
+  @Input() public wdfEndDate: string;
+  @Input() public overallEligibilityStatus: boolean;
+  @Input() public currentEligibilityStatus: boolean;
 }
