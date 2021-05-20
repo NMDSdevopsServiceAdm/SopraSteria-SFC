@@ -84,5 +84,16 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
+
+    it('should display the correct message if workplaces have not met WDF requirements this year', async () => {
+      const { component, fixture, getByText } = await setup();
+      const timeframeSentence = "Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements";
+
+      component.parentOverallEligibilityStatus = false;
+      component.parentCurrentEligibilityStatus = false;
+      fixture.detectChanges();
+
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+    });
   });
 });
