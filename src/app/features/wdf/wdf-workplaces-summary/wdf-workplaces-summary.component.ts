@@ -23,7 +23,8 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   public wdfEndDate: string;
   public returnUrl: URLStructure;
   public report: WDFReport;
-  public parentWdfEligibilityStatus: boolean;
+  public parentOverallEligibilityStatus: boolean;
+  public parentCurrentEligibilityStatus: boolean;
   public parentOverallEligibilityDate: string;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
@@ -52,14 +53,17 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
         }
         this.workplaces.push(workplaces.primary);
         this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
-        this.getParentOverallWdfEligibility();
+        this.getParentWdfEligibility();
       }),
     );
   }
 
-  public getParentOverallWdfEligibility(): void {
-    this.parentWdfEligibilityStatus = !this.workplaces.some((workplace) => {
+  private getParentWdfEligibility(): void {
+    this.parentOverallEligibilityStatus = !this.workplaces.some((workplace) => {
       return workplace.wdf.overall === false;
+    });
+    this.parentCurrentEligibilityStatus = !this.workplaces.some((workplace) => {
+      return workplace.wdf.workplace === false || workplace.wdf.staff === false;
     });
   }
 
