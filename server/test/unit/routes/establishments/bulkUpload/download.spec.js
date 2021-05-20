@@ -2,13 +2,14 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const models = require('../../../../../models');
 const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
-const { downloadGet } = require('../../../../../routes/establishments/bulkUpload/download');
+const { downloadGet, workerCsv } = require('../../../../../routes/establishments/bulkUpload/download');
 const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const httpMocks = require('node-mocks-http');
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
 const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
 const mockEstablishment = require('../../../mockdata/establishment');
 const mockWorker = require('../../../mockdata/workers');
+const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 
 describe('download', () => {
   afterEach(() => {
@@ -104,5 +105,41 @@ describe('download', () => {
 
     await downloadGet(req, res);
     sinon.assert.calledOnce(downloadWorkers);
+  });
+  it('should get the correct amount of qualifications', async () => {
+    const establishment = {
+      id: 123,
+      LocalIdentifierValue: 'Test McTestface',
+    };
+    const worker = apiWorkerBuilder();
+    const qualifications = [];
+    for (let i = 1; i < 10; i++) {
+      qualifications.push({
+        id: i,
+        notes: 'Notes for ' + i,
+        year: 2000 + i,
+        qualification: {
+          id: i,
+        },
+      });
+    }
+    worker.qualifications = qualifications;
+    const establishments = [
+      {
+        ...establishment,
+        workers: [worker],
+      },
+    ];
+    const responseSend = () => {};
+    sinon.stub(WorkerCsvValidator, 'headers').callsFake((maxQuals) => {
+      expect(maxQuals).to.deep.equal(9);
+    });
+    sinon.stub(WorkerCsvValidator, 'toCSV').callsFake((LocalIdentifierValue, worker, maxQualifications) => {
+      expect(LocalIdentifierValue).to.deep.equal(establishment.LocalIdentifierValue);
+      expect(worker).to.deep.equal(worker);
+      expect(maxQualifications).to.deep.equal(9);
+    });
+
+    await workerCsv(establishments, responseSend);
   });
 });
