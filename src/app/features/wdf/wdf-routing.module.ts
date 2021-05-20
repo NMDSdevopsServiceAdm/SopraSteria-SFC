@@ -26,6 +26,12 @@ const routes: Routes = [
     path: 'workplaces',
     component: WdfWorkplacesSummaryComponent,
     data: { title: 'WDF Workplaces' },
+    children: [],
+  },
+  {
+    path: ':id/data',
+    component: WdfDataComponent,
+    data: { title: 'WDF data' },
   },
 ];
 

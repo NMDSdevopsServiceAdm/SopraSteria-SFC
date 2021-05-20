@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
@@ -23,6 +24,7 @@ import { Worker } from '../../../core/model/worker.model';
 export class WdfDataComponent implements OnInit {
   public workplace: Establishment;
   public workplaceUid: string;
+  public primaryWorkplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
   public canViewWorker: boolean;
@@ -31,6 +33,7 @@ export class WdfDataComponent implements OnInit {
   public wdfEndDate: string;
   public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
+  public isParent: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -39,13 +42,19 @@ export class WdfDataComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.WDF);
-    this.returnUrl = { url: ['/wdf', 'data'] };
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.workplaceUid = this.route.snapshot.params.id;
 
-    this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.isParent = this.checkIfParent();
+    this.isParent ? this.breadcrumbService.show(JourneyType.WDF_PARENT) : this.breadcrumbService.show(JourneyType.WDF);
+    this.isParent
+      ? (this.returnUrl = { url: ['/wdf', this.workplaceUid, 'data'] })
+      : (this.returnUrl = { url: ['/wdf', 'data'] });
+
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
 
     this.setWorkplace();
@@ -111,5 +120,9 @@ export class WdfDataComponent implements OnInit {
 
   public getStaffWdfEligibility(workers: Worker[]): boolean {
     return workers.every((worker) => worker.wdfEligible === true);
+  }
+
+  private checkIfParent(): boolean {
+    return this.primaryWorkplaceUid === this.workplaceUid ? true : false;
   }
 }
