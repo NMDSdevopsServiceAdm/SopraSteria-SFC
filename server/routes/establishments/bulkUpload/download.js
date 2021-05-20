@@ -107,7 +107,7 @@ const workerCsv = async (establishments, responseSend) => {
       if (worker.qualifications.length > maxQualifications) maxQualifications = worker.qualifications.length;
     });
   });
-  // Need to get the max quals
+
   responseSend(WorkerCsvValidator.headers(maxQualifications));
 
   await Promise.all(
