@@ -94,10 +94,31 @@ const exportToCsv = async (
 const establishmentCsv = async (establishments, responseSend) => {
   responseSend(EstablishmentCsvValidator.headers());
 
-  establishments.map((establishment) => {
-    responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(establishment));
-  });
+  await Promise.all(
+    establishments.map((establishment) => responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(establishment))),
+  );
 };
+
+const workerCsv = async (establishments, responseSend) => {
+  let maxQualifications = 3;
+
+  establishments.map((establishment) => {
+    establishment.workers.map((worker) => {
+      if (worker.qualifications.length > maxQualifications) maxQualifications = worker.qualifications.length;
+    });
+  });
+  // Need to get the max quals
+  responseSend(WorkerCsvValidator.headers(maxQualifications));
+
+  await Promise.all(
+    establishments.map((establishment) =>
+      establishment.workers.map((worker) =>
+        responseSend(NEWLINE + WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, maxQualifications)),
+      ),
+    ),
+  );
+};
+
 // TODO: Note, regardless of which download type is requested, the way establishments, workers and training
 // entities are restored, it is easy enough to create all three exports every time. Ideally the CSV content should
 // be prepared and uploaded to S3, and then signed URLs returned for the browsers to download directly, thus not
@@ -135,6 +156,13 @@ const downloadGet = async (req, res) => {
         case 'establishments': {
           const establishments = await models.establishment.downloadEstablishments(primaryEstablishmentId);
           establishmentCsv(establishments, responseSend);
+          break;
+        }
+        case 'workers': {
+          const workers = await models.establishment.downloadWorkers(primaryEstablishmentId);
+
+          console.log(workers);
+          workerCsv(workers, responseSend, WorkerCsvValidator);
           break;
         }
         default: {

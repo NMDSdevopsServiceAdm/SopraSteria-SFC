@@ -1,5 +1,6 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
+const get = require('lodash/get');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -3589,102 +3590,6 @@ class Worker {
     });
   }
 
-  // returns the BUDI mapped nationality
-  static _maptoCSVnationality(nationality) {
-    if (nationality) {
-      if (nationality.value === 'British') {
-        return 826;
-      } else if (nationality.value === "Don't know") {
-        return 998;
-      } else {
-        if (nationality.value === 'Other' && nationality.other && nationality.other.nationalityId) {
-          // the other nationality is specific - BUDI lookup
-          return BUDI.nationality(BUDI.FROM_ASC, nationality.other.nationalityId);
-        } else {
-          // other nationality is not specific - fixed BUDI code
-          return 999;
-        }
-      }
-    } else {
-      return ''; // not specified
-    }
-  }
-
-  // returns the BUDI mapped country
-  static _maptoCSVcountry(country) {
-    if (country) {
-      if (country.value === 'United Kingdom') {
-        return 826;
-      } else if (country.value === "Don't know") {
-        return 998;
-      } else {
-        // it's other - other
-        if (country.value === 'Other' && country.other && country.other.countryId) {
-          // the other country is specific - BUDI lookup
-          return BUDI.country(BUDI.FROM_ASC, country.other.countryId);
-        } else {
-          // other country is not specific - fixed BUDI code
-          return 999;
-        }
-      }
-    } else {
-      return ''; // not specified
-    }
-  }
-
-  // returns the BUDI mapped recruitment source
-  static _maptoCSVrecruitedFrom(source) {
-    if (source) {
-      if (source.value === 'No') {
-        return 16;
-      } else {
-        // it's other
-        return BUDI.recruitment(BUDI.FROM_ASC, source.from.recruitedFromId);
-      }
-    } else {
-      return ''; // not specified
-    }
-  }
-
-  // returns the BUDI mapped started in sector
-  static _maptoCSVStartedInSector(started) {
-    if (started) {
-      if (started.value === 'No') {
-        return '';
-      } else {
-        return started.year;
-      }
-    } else {
-      return ''; // not specified
-    }
-  }
-
-  // returns the BUDI mapped days sick
-  static _maptoCSVDaysSick(daysSick) {
-    if (daysSick) {
-      if (daysSick.value === 'No') {
-        return 999;
-      } else {
-        return daysSick.days;
-      }
-    } else {
-      return ''; // not specified
-    }
-  }
-
-  // returns the BUDI mapped days sick
-  static _maptoCSVsalary(annualHourlyPay) {
-    if (annualHourlyPay) {
-      if (annualHourlyPay.value === 'Annually') {
-        return [1, annualHourlyPay.rate, ''];
-      } else {
-        return [3, '', annualHourlyPay.rate];
-      }
-    } else {
-      return ['', '', '']; // not specified
-    }
-  }
-
   static _maptoCSVregisteredNurse(registeredNurse) {
     let mappedValue = '';
     switch (registeredNurse) {
@@ -3719,17 +3624,17 @@ class Worker {
     columns.push(establishmentId);
 
     // "UNIQUEWORKERID"
-    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.LocalIdentifierValue)); // todo - this will be local identifier
 
     // "STATUS"
     columns.push('UNCHECKED');
 
     // "DISPLAYID"
-    columns.push(csvQuote(entity.nameOrId));
+    columns.push(csvQuote(entity.NameOrIdValue));
 
     // "FLUVAC"
     let fluvac = '';
-    switch (entity.fluJab) {
+    switch (entity.FluJabValue) {
       case 'Yes':
         fluvac = 1;
         break;
@@ -3745,18 +3650,18 @@ class Worker {
     columns.push(fluvac);
 
     // "NINUMBER"
-    columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g, '') : ''); // remove whitespace
+    columns.push(entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : ''); // remove whitespace
 
     // "POSTCODE"
-    columns.push(entity.postcode ? entity.postcode : '');
+    columns.push(csvQuote(entity.PostcodeValue));
 
     // "DOB"
-    const dobParts = entity.dateOfBirth ? entity.dateOfBirth.split('-') : null;
+    const dobParts = entity.DateOfBirthValue ? entity.DateOfBirthValue.split('-') : null;
     columns.push(dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
     // "GENDER",
     let genderId = '';
-    switch (entity.gender) {
+    switch (entity.GenderValue) {
       case 'Female':
         genderId = 2;
         break;
@@ -3776,14 +3681,26 @@ class Worker {
     columns.push(genderId);
 
     // "ETHNICITY"
-    columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.ethnicityId) : '');
+    columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.id) : '');
 
     // "NATIONALITY"
-    columns.push(entity.nationality ? Worker._maptoCSVnationality(entity.nationality) : '');
+    let nationality = '';
+    switch (entity.NationalityValue) {
+      case 'British':
+        nationality = 826;
+        break;
+      case "Don't know":
+        nationality = 998;
+        break;
+      case 'Other':
+        nationality = get(entity, 'nationality.id') ? BUDI.nationality(BUDI.FROM_ASC, entity.nationality.id) : 999;
+        break;
+    }
+    columns.push(nationality);
 
     // "BRITISHCITIZENSHIP"
     let britishCitizenship = '';
-    switch (entity.britishCitizenship) {
+    switch (entity.BritishCitizenshipValue) {
       case 'Yes':
         britishCitizenship = 1;
         break;
@@ -3799,14 +3716,26 @@ class Worker {
     columns.push(britishCitizenship);
 
     // "COUNTRYOFBIRTH"
-    columns.push(entity.countryOfBirth ? Worker._maptoCSVcountry(entity.countryOfBirth) : '');
+    let countryOfBirth = '';
+    switch (entity.CountryOfBirthValue) {
+      case 'United Kingdom':
+        countryOfBirth = 826;
+        break;
+      case "Don't know":
+        countryOfBirth = 998;
+        break;
+      case 'Other':
+        countryOfBirth = get(entity, 'countryOfBirth.id') ? BUDI.country(BUDI.FROM_ASC, entity.countryOfBirth.id) : 999;
+        break;
+    }
+    columns.push(countryOfBirth);
 
     // "YEAROFENTRY"
-    columns.push(entity.yearArrived ? entity.yearArrived.year : '');
+    columns.push(entity.YearArrivedValue === 'Yes' ? entity.YearArrivedYear : '');
 
     // "DISABLED"
     let disability = '';
-    switch (entity.disabiliity) {
+    switch (entity.DisabilityValue) {
       case 'Yes':
         disability = 1;
         break;
@@ -3827,7 +3756,7 @@ class Worker {
 
     // "CARECERT"
     let careCert = '';
-    switch (entity.careCerticate) {
+    switch (entity.CareCertificateValue) {
       case 'Yes, completed':
         careCert = 1;
         break;
@@ -3843,10 +3772,22 @@ class Worker {
     columns.push(careCert);
 
     // "RECSOURCE"
-    columns.push(entity.recruitmentSource ? Worker._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
+    let recruitmentSource = '';
+    switch (entity.RecruitedFromValue) {
+      case 'No':
+        recruitmentSource = 16;
+        break;
+      case 'Yes':
+        recruitmentSource = get(entity, 'recruitedFrom.id')
+          ? BUDI.recruitment(BUDI.FROM_ASC, entity.recruitedFrom.id)
+          : '';
+        break;
+    }
+    columns.push(recruitmentSource);
 
     // "STARTDATE"
-    const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
+    const mainJobStartDateParts = entity.MainJobStartDateValue ? entity.MainJobStartDateValue.split('-') : null;
+
     columns.push(
       mainJobStartDateParts
         ? `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`
@@ -3854,11 +3795,11 @@ class Worker {
     ); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
     // "STARTINSECT"
-    columns.push(Worker._maptoCSVStartedInSector(entity.socialCareStartDate));
+    columns.push(entity.SocialCareStartDateValue === 'Yes' ? entity.SocialCareStartDateYear : '');
 
     // "APPRENTICE"
     let apprenticeship = '';
-    switch (entity.apprenticeship) {
+    switch (entity.ApprenticeshipTrainingValue) {
       case 'Yes':
         apprenticeship = 1;
         break;
@@ -3875,7 +3816,7 @@ class Worker {
 
     // EMPLSTATUS/;contract - mandatory
     let empStatus = '';
-    switch (entity.contract) {
+    switch (entity.ContractValue) {
       case 'Permanent':
         empStatus = 1;
         break;
@@ -3900,7 +3841,7 @@ class Worker {
 
     // "ZEROHRCONT"
     let zeroHours = '';
-    switch (entity.zeroContractHours) {
+    switch (entity.ZeroHoursContractValue) {
       case 'Yes':
         zeroHours = 1;
         break;
@@ -3916,44 +3857,63 @@ class Worker {
     columns.push(zeroHours);
 
     // "DAYSSICK"
-    columns.push(Worker._maptoCSVDaysSick(entity.daysSick));
+    let daysSick = '';
+    switch (entity.DaysSickValue) {
+      case 'No':
+        daysSick = 999;
+        break;
+      case 'Yes':
+        daysSick = entity.DaysSickDays;
+        break;
+    }
+    columns.push(daysSick);
 
-    const salaryMap = Worker._maptoCSVsalary(entity.annualHourlyPay);
-
-    // "SALARYINT"
-    columns.push(salaryMap[0]);
-
-    // "SALARY"
-    columns.push(salaryMap[1]);
-
-    // "HOURLYRATE"
-    columns.push(salaryMap[2]);
+    switch (entity.AnnualHourlyPayValue) {
+      case 'Hourly':
+        // "SALARYINT"
+        columns.push(3);
+        // "SALARY"
+        columns.push('');
+        // "HOURLYRATE"
+        columns.push(entity.AnnualHourlyPayRate);
+        break;
+      case 'Anually':
+        // "SALARYINT"
+        columns.push(1);
+        // "SALARY"
+        columns.push(entity.AnnualHourlyPayRate);
+        // "HOURLYRATE"
+        columns.push('');
+        break;
+      default:
+        // "SALARYINT"
+        columns.push('');
+        // "SALARY"
+        columns.push('');
+        // "HOURLYRATE"
+        columns.push('');
+    }
 
     // "MAINJOBROLE"
-    columns.push(entity.mainJob ? BUDI.jobRoles(BUDI.FROM_ASC, entity.mainJob.jobId) : '');
+    columns.push(get(entity, 'mainJob.id') ? BUDI.jobRoles(BUDI.FROM_ASC, entity.mainJob.id) : '');
 
     // "MAINJRDESC"
-    columns.push(entity.mainJob && entity.mainJob.other ? entity.mainJob.other : '');
+    columns.push(get(entity, 'mainJob.other') && entity.mainJob.other ? entity.MainJobFkOther : '');
 
     // "CONTHOURS"
     // if no contracted hours, then output empty (null)
     // if no contract type, or contract type is not contractedHoursContract, then always empty (null)
     let contHours = '';
-    if (
-      entity.contract &&
-      ['Permanent', 'Temporary'].includes(entity.contract) &&
-      entity.zeroContractHours !== 'Yes' &&
-      entity.contractedHours
-    ) {
-      switch (entity.contractedHours.value) {
+    if (['Permanent', 'Temporary'].includes(entity.ContractValue) && entity.ZeroHoursContractValue !== 'Yes') {
+      switch (entity.WeeklyHoursAverageValue) {
         case 'Yes':
           // if contracted hours is 'Yes', then the contracted hours value - which itself could still be empty (null)
-          contHours = entity.contractedHours.hours;
+          contHours = entity.WeeklyHoursContractedHours;
           break;
 
         case 'No':
           // if contracted hours is 'No', then output "999" (don't know)
-          contHours = '999';
+          contHours = 999;
           break;
       }
     }
@@ -3961,20 +3921,16 @@ class Worker {
 
     // "AVGHOURS"
     let avgHours = ''; // if no average hours, then output empty (null)
-    if (
-      ((entity.contract && ['Pool/Bank', 'Agency', 'Other'].includes(entity.contract)) ||
-        entity.zeroContractHours === 'Yes') &&
-      entity.averageHours
-    ) {
-      switch (entity.averageHours.value) {
+    if (['Pool/Bank', 'Agency', 'Other'].includes(entity.ContractValue) || entity.ZeroHoursContractValue === 'Yes') {
+      switch (entity.WeeklyHoursAverageValue) {
         case 'Yes':
           // if average hours is 'Yes', then the average hours value - which itself could still be empty (null)
-          avgHours = entity.averageHours.hours;
+          avgHours = entity.WeeklyHoursAverageHours;
           break;
 
         case 'No':
           // if average hours is 'No', then output "999" (don't know)
-          avgHours = '999';
+          avgHours = 999;
           break;
       }
     }
@@ -3982,15 +3938,17 @@ class Worker {
 
     // "OTHERJOBROLE"
     columns.push(
-      entity.otherJobs && entity.otherJobs.value === 'Yes'
-        ? entity.otherJobs.jobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';')
+      entity.OtherJobsValue === 'Yes'
+        ? entity.otherJobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.id)).join(';')
         : '',
     );
 
     // "OTHERJRDESC"
     columns.push(
-      entity.otherJobs && entity.otherJobs.value === 'Yes'
-        ? entity.otherJobs.jobs.map((thisJob) => thisJob.other).join(';')
+      entity.OtherJobsValue === 'Yes'
+        ? entity.otherJobs
+            .map((thisJob) => (thisJob.other && thisJob.workerJobs.other ? thisJob.workerJobs.other : ''))
+            .join(';')
         : '',
     );
 
@@ -3998,20 +3956,18 @@ class Worker {
 
     // "NMCREG"
     columns.push(
-      entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
-        ? Worker._maptoCSVregisteredNurse(entity.registeredNurse)
-        : '',
+      entity.mainJob.id === NURSE_JOB_ID ? Worker._maptoCSVregisteredNurse(entity.RegisteredNurseValue) : '',
     );
 
     // "NURSESPEC"
-    if (entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialisms) {
-      if (entity.nurseSpecialisms.value === 'No') {
+    if (entity.mainJob.id === NURSE_JOB_ID && entity.NurseSpecialismsValue) {
+      if (entity.NurseSpecialismsValue === 'No') {
         columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
-      } else if (entity.nurseSpecialisms.value === "Don't know") {
+      } else if (entity.NurseSpecialismsValue === "Don't know") {
         columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 8));
-      } else if (entity.nurseSpecialisms.value === 'Yes') {
+      } else if (entity.NurseSpecialismsValue === 'Yes') {
         columns.push(
-          entity.nurseSpecialisms.specialisms
+          entity.nurseSpecialisms
             .map((thisSpecialism) => BUDI.nursingSpecialist(BUDI.FROM_ASC, thisSpecialism.id))
             .join(';'),
         );
@@ -4022,7 +3978,7 @@ class Worker {
 
     // "AMHP"
     let amhp = '';
-    switch (entity.approvedMentalHealthWorker) {
+    switch (entity.ApprovedMentalHealthWorkerValue) {
       case 'Yes':
         amhp = 1;
         break;
@@ -4039,11 +3995,11 @@ class Worker {
 
     // "SCQUAL"
     let scqual = '';
-    switch (entity.socialCareQualification) {
+    switch (entity.QualificationInSocialCareValue) {
       case 'Yes':
         {
-          const budi = entity.socialCareQualificationLevel
-            ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.socialCareQualificationLevel.qualificationId)
+          const budi = entity.socialCareQualification
+            ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.socialCareQualification.id)
             : null;
 
           if (budi !== null) {
@@ -4066,11 +4022,11 @@ class Worker {
 
     // "NONSCQUAL"
     let nonscqual = '';
-    switch (entity.nonSocialCareQualification) {
+    switch (entity.OtherQualificationsValue) {
       case 'Yes':
         {
-          const budi = entity.nonSocialCareQualificationLevel
-            ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.nonSocialCareQualificationLevel.qualificationId)
+          const budi = entity.highestQualification
+            ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.highestQualification.id)
             : null;
 
           if (budi !== null) {
@@ -4100,7 +4056,7 @@ class Worker {
 
       if (mappedQualification) {
         columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
-        columns.push(thisQual.notes ? thisQual.notes : '');
+        columns.push(csvQuote(thisQual.notes ? thisQual.notes : ''));
       } else {
         columns.push('');
         columns.push('');
