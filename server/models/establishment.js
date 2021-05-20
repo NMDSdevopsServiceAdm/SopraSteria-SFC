@@ -1071,5 +1071,99 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.downloadEstablishments = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'LocalIdentifierValue',
+        'id',
+        'NameValue',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'postcode',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+        'isRegulated',
+        'shareWithCQC',
+        'shareWithLA',
+        'provId',
+        'locationId',
+        'NumberOfStaffValue',
+        'VacanciesValue',
+        'StartersValue',
+        'LeaversValue',
+        'reasonsForLeaving',
+      ],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'uid', 'nmdsId'],
+          as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'mainService',
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'otherServices',
+        },
+        {
+          model: sequelize.models.serviceUsers,
+          as: 'serviceUsers',
+        },
+        {
+          model: sequelize.models.establishmentCapacity,
+          attributes: ['id', 'serviceCapacityId', 'answer'],
+          as: 'capacity',
+          include: [
+            {
+              model: sequelize.models.serviceCapacity,
+              as: 'reference',
+              attributes: ['id', 'question', 'type'],
+              include: [
+                {
+                  model: sequelize.models.services,
+                  attributes: ['id', 'reportingID'],
+                  as: 'service',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.establishmentJobs,
+          attributes: ['jobId', 'type', 'total'],
+          as: 'jobs',
+        },
+        {
+          model: sequelize.models.establishmentLocalAuthority,
+          attributes: ['cssrId'],
+          as: 'localAuthorities',
+        },
+      ],
+    });
+  };
+
   return Establishment;
 };
