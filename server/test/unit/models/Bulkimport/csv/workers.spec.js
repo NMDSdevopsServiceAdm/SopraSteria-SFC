@@ -1,8 +1,6 @@
 const expect = require('chai').expect;
-const workers = require('../../../mockdata/workers').data;
-const establishmentId = require('../../../mockdata/workers').establishmentId;
-const yesNoDontKnow = require('../../../mockdata/workers').yesNoDontKnow;
 const maxquals = require('../../../mockdata/workers').maxquals;
+const yesNoDontKnow = require('../../../mockdata/workers').yesNoDontKnow;
 const knownHeaders = require('../../../mockdata/workers').knownHeaders;
 const moment = require('moment');
 const filename = 'server/models/BulkImport/csv/workers.js';
@@ -12,16 +10,17 @@ sinon.stub(dbmodels.status, 'ready').value(false);
 const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 const testUtils = require('../../../../../utils/testUtils');
-const csv = require('csvtojson');
 const { build } = require('@jackfranklin/test-data-bot');
+const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
+const get = require('lodash/get');
 
-function mapCsvToWorker(worker, headers) {
-  const mapped = {};
-  headers.forEach((header, index) => {
-    mapped[header] = worker[index];
-  });
-  return mapped;
-}
+const sandbox = require('sinon').createSandbox();
+
+const establishment = {
+  id: 123,
+  LocalIdentifierValue: 'Test McTestface',
+};
+const workers = [apiWorkerBuilder(), apiWorkerBuilder(), apiWorkerBuilder()];
 
 const buildWorkerCsv = build('WorkerCSV', {
   fields: {
@@ -158,6 +157,7 @@ const getUnitInstance = () => {
         moment: {
           moment,
         },
+        'lodash/get': get,
       }),
     },
   });
@@ -196,6 +196,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               BUDI,
             },
             moment: moment,
+            'lodash/get': get,
           }),
         },
       }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord(), buildSecondEstablishmentRecord()]);
@@ -244,6 +245,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               BUDI,
             },
             moment: moment,
+            'lodash/get': get,
           }),
         },
       }).Worker)(buildWorkerCsv(), 2, [
@@ -289,6 +291,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               BUDI,
             },
             moment: moment,
+            'lodash/get': get,
           }),
         },
       }).Worker)(buildWorkerCsv(), 2, [
@@ -334,6 +337,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               BUDI,
             },
             moment: moment,
+            'lodash/get': get,
           }),
         },
       }).Worker)(
@@ -387,6 +391,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               BUDI,
             },
             moment: moment,
+            'lodash/get': get,
           }),
         },
       }).Worker)(
@@ -442,6 +447,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
@@ -473,6 +479,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
@@ -499,6 +506,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                   BUDI,
                 },
                 moment: moment,
+                'lodash/get': get,
               }),
             },
           }).Worker)(
@@ -531,6 +539,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(
@@ -577,6 +586,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(
@@ -611,6 +621,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(
@@ -645,6 +656,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(
@@ -692,6 +704,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(
@@ -739,6 +752,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 BUDI,
               },
               moment: moment,
+              'lodash/get': get,
             }),
           },
         }).Worker)(
@@ -833,261 +847,98 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       });
     });
   });
-  workers.forEach((worker, index) => {
-    describe('toCSV(establishmentId, entity, MAX_QUALIFICATIONS) with worker ' + index, () => {
-      it('should match the header values', async () => {
-        let workerCSV = getUnitInstance();
-        const columnHeaders = workerCSV.headers(maxquals).split(',');
-        workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
-        expect(typeof workerCSV).to.equal('string');
-
-        workerCSV = (
-          await csv({
-            noheader: true,
-            output: 'csv',
-          }).fromString(workerCSV)
-        )[0];
-
-        expect(Array.isArray(workerCSV)).to.equal(true);
-
-        expect(workerCSV.length).to.equal(knownHeaders.length);
-
-        let otherJobs = '';
-        let otherJobsDesc = '';
-        let scqual = '';
-        let nonscqual = '';
-        const mappedCsv = mapCsvToWorker(workerCSV, columnHeaders);
-
-        if (Array.isArray(worker.otherJobs.jobs)) {
-          worker.otherJobs.jobs.forEach((job, index) => {
-            otherJobs += job.budi;
-            if (job.other) {
-              otherJobsDesc += job.other;
-            }
-            index < worker.otherJobs.jobs.length - 1 ? (otherJobs += ';') : (otherJobs += '');
-            index < worker.otherJobs.jobs.length - 1 ? (otherJobsDesc += ';') : (otherJobsDesc += '');
-          });
-        } else {
-          expect(worker.otherJobs.otherJobs).to.equal(null);
-        }
-
-        if (worker.socialCareQualification) {
-          scqual += worker.socialCareQualificationId;
-        }
-        if (worker.socialCareQualificationLevel) {
-          scqual += ';';
-          scqual += worker.socialCareQualificationLevel.budi;
-        }
-        if (worker.nonSocialCareQualification) {
-          nonscqual += worker.nonSocialCareQualificationId;
-        }
-        if (worker.nonSocialCareQualificationLevel) {
-          nonscqual += ';';
-          nonscqual += worker.nonSocialCareQualificationLevel.budi;
-        }
-        expect(mappedCsv.LOCALESTID).to.equal(establishmentId);
-        expect(mappedCsv.UNIQUEWORKERID).to.equal(worker.localIdentifier);
-        expect(mappedCsv.STATUS).to.equal('UNCHECKED');
-        expect(mappedCsv.DISPLAYID).to.equal(worker.nameOrId);
-        if (worker.fluJab) {
-          expect(mappedCsv.FLUVAC).to.equal('2');
-        } else {
-          expect(mappedCsv.FLUVAC).to.equal('');
-        }
-        if (worker.nationalInsuranceNumber) {
-          expect(mappedCsv.NINUMBER).to.equal(worker.nationalInsuranceNumber.replace(/\s+/g, ''));
-        } else {
-          expect(mappedCsv.NINUMBER).to.equal('');
-        }
-        if (worker.postcode) {
-          expect(mappedCsv.POSTCODE).to.equal(worker.postcode);
-        } else {
-          expect(mappedCsv.POSTCODE).to.equal('');
-        }
-        if (worker.dateOfBirth) {
-          const dobParts = worker.dateOfBirth.split('-');
-          expect(mappedCsv.DOB).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
-        } else {
-          expect(mappedCsv.DOB).to.equal('');
-        }
-        if (worker.gender) {
-          expect(parseInt(mappedCsv.GENDER)).to.equal(worker.genderId);
-        } else {
-          expect(mappedCsv.GENDER).to.equal('');
-        }
-        if (worker.ethnicity) {
-          expect(parseInt(mappedCsv.ETHNICITY)).to.equal(worker.ethnicity.budi);
-        } else {
-          expect(mappedCsv.ETHNICITY).to.equal('');
-        }
-        // Needs sandbox
-        if (worker.nationality) {
-          expect(parseInt(mappedCsv.NATIONALITY)).to.deep.equal(826);
-        } else {
-          expect(mappedCsv.NATIONALITY).to.equal('');
-        }
-        if (worker.britishCitizenship) {
-          expect(parseInt(mappedCsv.BRITISHCITIZENSHIP)).to.deep.equal(2);
-        } else {
-          expect(mappedCsv.BRITISHCITIZENSHIP).to.equal('');
-        }
-        // Needs sandbox
-        if (worker.countryOfBirth) {
-          expect(parseInt(mappedCsv.COUNTRYOFBIRTH)).to.equal(999);
-        } else {
-          expect(mappedCsv.COUNTRYOFBIRTH).to.equal('');
-        }
-        if (worker.disabiliity) {
-          expect(parseInt(mappedCsv.DISABLED)).to.equal(worker.disabiliityId);
-        } else {
-          expect(mappedCsv.DISABLED).to.equal('');
-        }
-        if (worker.careCerticate) {
-          expect(parseInt(mappedCsv.CARECERT)).to.equal(worker.careCerticateId);
-        } else {
-          expect(mappedCsv.CARECERT).to.equal('');
-        }
-        // Needs sandbox
-        if (worker.recruitmentSource) {
-          expect(parseInt(mappedCsv.RECSOURCE)).to.equal(worker.recruitmentSource.budi);
-        } else {
-          expect(mappedCsv.CARECERT).to.equal('');
-        }
-        if (worker.mainJobStartDate) {
-          const mainJobStartDateParts = worker.mainJobStartDate.split('-');
-          expect(mappedCsv.STARTDATE).to.equal(
-            `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`,
-          );
-        } else {
-          expect(mappedCsv.STARTDATE).to.equal('');
-        }
-        if (worker.socialCareStartDate) {
-          expect(parseInt(mappedCsv.STARTINSECT)).to.equal(2019);
-        } else {
-          expect(mappedCsv.STARTINSECT).to.equal('');
-        }
-        if (worker.apprenticeship) {
-          expect(parseInt(mappedCsv.APPRENTICE)).to.equal(worker.apprenticeshipId);
-        } else {
-          expect(mappedCsv.APPRENTICE).to.equal(999);
-        }
-        if (worker.contract) {
-          expect(parseInt(mappedCsv.EMPLSTATUS)).to.equal(worker.contractId);
-        } else {
-          expect(mappedCsv.EMPLSTATUS).to.equal('');
-        }
-        if (worker.zeroContractHours) {
-          expect(parseInt(mappedCsv.ZEROHRCONT)).to.equal(worker.zeroContractHoursId);
-        } else {
-          expect(mappedCsv.ZEROHRCONT).to.equal('');
-        }
-        // Needs sandbox
-        if (worker.daysSick) {
-          expect(parseInt(mappedCsv.DAYSSICK)).to.equal(worker.daysSick.days);
-        } else {
-          expect(mappedCsv.DAYSSICK).to.equal('');
-        }
-        if (worker.annualHourlyPay) {
-          const salaryMap = [1, worker.annualHourlyPay.rate, ''];
-          expect(mappedCsv.SALARYINT).to.equal(String(salaryMap[0]));
-          expect(mappedCsv.SALARY).to.equal(String(salaryMap[1]));
-          expect(mappedCsv.HOURLYRATE).to.equal(String(salaryMap[2]));
-        } else {
-          expect(mappedCsv.SALARYINT).to.equal('');
-          expect(mappedCsv.SALARY).to.equal('');
-          expect(mappedCsv.HOURLYRATE).to.equal('');
-        }
-        if (worker.mainJob) {
-          expect(parseInt(mappedCsv.MAINJOBROLE)).to.equal(worker.mainJob.budi);
-        } else {
-          expect(mappedCsv.MAINJOBROLE).to.equal('');
-        }
-        // Needs sandbox
-        if (worker.mainJob) {
-          expect(parseInt(mappedCsv.MAINJOBROLE)).to.equal(worker.mainJob.budi);
-        } else {
-          expect(mappedCsv.MAINJOBROLE).to.equal('');
-        }
-        if (worker.mainJob.other) {
-          expect(mappedCsv.MAINJRDESC).to.equal(worker.mainJob.other);
-        } else {
-          expect(mappedCsv.MAINJRDESC).to.equal('');
-        }
-        if (
-          worker.contract &&
-          ['Permanent', 'Temporary'].includes(worker.contract) &&
-          worker.zeroContractHours !== 'Yes' &&
-          worker.contractedHours
-        ) {
-          expect(mappedCsv.CONTHOURS).to.equal(worker.contractedHours.hours);
-        } else {
-          expect(mappedCsv.CONTHOURS).to.equal('');
-        }
-        if (
-          ((worker.contract && ['Pool/Bank', 'Agency', 'Other'].includes(worker.contract)) ||
-            worker.zeroContractHours === 'Yes') &&
-          worker.averageHours
-        ) {
-          expect(parseInt(mappedCsv.AVGHOURS)).to.equal(worker.averageHours.hours);
-        } else {
-          expect(mappedCsv.AVGHOURS).to.equal('');
-        }
-        expect(mappedCsv.OTHERJOBROLE).to.equal(otherJobs);
-        expect(mappedCsv.OTHERJRDESC).to.equal(otherJobsDesc);
-        if (worker.registeredNurse) {
-          expect(mappedCsv.NMCREG).to.equal(worker.registeredNurseId);
-        } else {
-          expect(mappedCsv.NMCREG).to.equal('');
-        }
-        // Needs sandbox
-        if (worker.nurseSpecialisms && worker.nurseSpecialisms.value === 'Yes') {
-          expect(parseInt(mappedCsv.NURSESPEC)).to.equal(worker.nurseSpecialisms.specialisms[0].id);
-        } else {
-          expect(mappedCsv.NURSESPEC).to.equal('');
-        }
-        if (worker.approvedMentalHealthWorker) {
-          expect(parseInt(mappedCsv.AMHP)).to.equal(worker.approvedMentalHealthWorkerId);
-        } else {
-          expect(mappedCsv.AMHP).to.equal('');
-        }
-        if (worker.socialCareQualification) {
-          expect(mappedCsv.SCQUAL).to.equal(scqual);
-        } else {
-          expect(mappedCsv.SCQUAL).to.equal('');
-        }
-        if (worker.nonSocialCareQualification) {
-          expect(mappedCsv.NONSCQUAL).to.equal(nonscqual);
-        } else {
-          expect(mappedCsv.NONSCQUAL).to.equal('');
-        }
-        for (var i = 0; i < maxquals; i++) {
-          if (worker.qualifications[i]) {
-            const year = worker.qualifications[i].year ? worker.qualifications[i].year : '';
-            expect(mappedCsv['QUALACH0' + (i + 1)]).to.equal(worker.qualifications[i].qualification.budi + ';' + year);
-            if (worker.qualifications[i].notes) {
-              expect(mappedCsv['QUALACH0' + (i + 1) + 'NOTES']).to.equal(worker.qualifications[i].notes);
-            } else {
-              expect(mappedCsv['QUALACH0' + (i + 1) + 'NOTES']).to.equal('');
-            }
-          } else {
-            expect(mappedCsv['QUALACH0' + (i + 1)]).to.equal('');
-            expect(mappedCsv['QUALACH0' + (i + 1) + 'NOTES']).to.equal('');
-          }
-        }
-      });
+  // Need to test if nationality is other and no nationality
+  describe('toCSV', () => {
+    beforeEach(() => {
+      sandbox.stub(BUDI, 'ethnicity').callsFake((method, value) => value);
+      sandbox.stub(BUDI, 'nationality').callsFake((method, value) => value);
+      sandbox.stub(BUDI, 'country').callsFake((method, value) => value);
     });
-    yesNoDontKnow.forEach((apprenticeshipType) => {
-      it(
-        'should output the correct apprenticeship figure with apprenticeship value ' + apprenticeshipType.value,
-        async () => {
-          worker.apprenticeship = apprenticeshipType.value;
-          let workerCSV = getUnitInstance();
-          workerCSV = workerCSV.toCSV(establishmentId, worker, maxquals);
-          const output = workerCSV.split(',');
-          // 19 column is apprenticeship
-          expect(output[19]).to.deep.equal(apprenticeshipType.code);
-        },
-      );
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    workers.forEach((worker, index) => {
+      describe('worker' + index, () => {
+        it('should return basic CSV info in expected order', async () => {
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[0]).to.equal(establishment.LocalIdentifierValue);
+          expect(csvAsArray[1]).to.equal(worker.LocalIdentifierValue);
+          expect(csvAsArray[2]).to.equal('UNCHECKED');
+          expect(csvAsArray[3]).to.equal(worker.NameOrIdValue);
+        });
+        yesNoDontKnow.forEach((value) => {
+          it('should return return flu vaccine information', async () => {
+            let fluvac = '';
+            worker.FluJabValue = value.value;
+            switch (worker.FluJabValue) {
+              case 'Yes':
+                fluvac = '1';
+                break;
+
+              case 'No':
+                fluvac = '2';
+                break;
+
+              case "Don't know":
+                fluvac = '999';
+                break;
+            }
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[4]).to.equal(fluvac);
+          });
+        });
+        it('should return national insurance number', async () => {
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[5]).to.equal(worker.NationalInsuranceNumberValue);
+        });
+        it('should return postcode', async () => {
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[6]).to.equal(worker.PostcodeValue);
+        });
+        it('should return dob', async () => {
+          const dobParts = worker.DateOfBirthValue.split('-');
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[7]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
+        });
+        [
+          {
+            name: 'Female',
+            code: '2',
+          },
+          {
+            name: 'Male',
+            code: '1',
+          },
+          {
+            name: 'Other',
+            code: '4',
+          },
+          {
+            name: "Don't know",
+            code: '3',
+          },
+        ].forEach((value) => {
+          it('should return correct gender for ' + value.name, async () => {
+            worker.GenderValue = value.name;
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[8]).to.equal(value.code);
+          });
+        });
+      });
     });
   });
   describe('isContent()', () => {
