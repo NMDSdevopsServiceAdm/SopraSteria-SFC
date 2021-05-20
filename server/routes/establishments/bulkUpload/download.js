@@ -161,8 +161,7 @@ const downloadGet = async (req, res) => {
         case 'workers': {
           const workers = await models.establishment.downloadWorkers(primaryEstablishmentId);
 
-          console.log(workers);
-          workerCsv(workers, responseSend, WorkerCsvValidator);
+          workerCsv(workers, responseSend);
           break;
         }
         default: {
@@ -220,3 +219,4 @@ router.route('/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.
 module.exports = router;
 module.exports.exportToCsv = exportToCsv;
 module.exports.downloadGet = downloadGet;
+module.exports.workerCsv = workerCsv;
