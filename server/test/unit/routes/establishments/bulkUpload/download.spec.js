@@ -6,7 +6,9 @@ const { downloadGet } = require('../../../../../routes/establishments/bulkUpload
 const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const httpMocks = require('node-mocks-http');
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
-const { knownHeaders } = require('../../../mockdata/establishment');
+const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
+const mockEstablishment = require('../../../mockdata/establishment');
+const mockWorker = require('../../../mockdata/workers');
 
 describe('download', () => {
   afterEach(() => {
@@ -37,7 +39,7 @@ describe('download', () => {
       expect(body).to.contain(establishment.postcode);
       expect(body).to.contain(establishment.EmployerTypeValue);
       expect(body).to.contain(establishment.EmployerTypeOther);
-      expect(body).to.contain(knownHeaders);
+      expect(body).to.contain(mockEstablishment.knownHeaders);
     });
     const req = httpMocks.createRequest({
       method: 'GET',
@@ -58,5 +60,49 @@ describe('download', () => {
 
     await downloadGet(req, res);
     sinon.assert.calledOnce(downloadEstablishents);
+  });
+
+  it('should return workers file', async () => {
+    const establishment = {
+      id: 123,
+      LocalIdentifierValue: 'Test McTestface',
+    };
+    const worker = apiWorkerBuilder();
+    const downloadType = 'workers';
+    const downloadWorkers = sinon.stub(models.establishment, 'downloadWorkers').returns([
+      {
+        ...establishment,
+        workers: [worker],
+      },
+    ]);
+    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+      expect(statusCode).to.deep.equal(200);
+      expect(body).to.contain(establishment.LocalIdentifierValue);
+      expect(body).to.contain(worker.LocalIdentifierValue);
+      expect(body).to.contain('UNCHECKED');
+      expect(body).to.contain(worker.NameOrIdValue);
+      expect(body).to.contain(worker.PostcodeValue);
+      expect(body).to.contain(worker.NationalInsuranceNumberValue);
+      expect(body).to.contain(mockWorker.knownHeaders);
+    });
+    const req = httpMocks.createRequest({
+      method: 'GET',
+      url: `/api/establishment/${establishmentId}/bulkupload/download/${downloadType}`,
+      params: {
+        establishmentId,
+        downloadType,
+      },
+    });
+    req.establishment = {
+      id: establishmentId,
+    };
+
+    req.setTimeout = () => {};
+
+    req.establishmentId = establishmentId;
+    const res = httpMocks.createResponse();
+
+    await downloadGet(req, res);
+    sinon.assert.calledOnce(downloadWorkers);
   });
 });
