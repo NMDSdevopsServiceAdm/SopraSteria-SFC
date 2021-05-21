@@ -28,6 +28,10 @@ export class MockEstablishmentService extends EstablishmentService {
     return of(this.establishment);
   }
 
+  public updateWorkplace(workplaceUid: string, data): Observable<any> {
+    return of(null);
+  }
+
   public getAllServices(): Observable<ServiceGroup[]> {
     return of([{ category: 'any', value: null, services: [{ id: 123, name: 'Mock Service' }] }]);
   }
