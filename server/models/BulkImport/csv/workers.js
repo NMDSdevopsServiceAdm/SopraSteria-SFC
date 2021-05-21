@@ -3877,7 +3877,7 @@ class Worker {
         // "HOURLYRATE"
         columns.push(entity.AnnualHourlyPayRate);
         break;
-      case 'Anually':
+      case 'Annually':
         // "SALARYINT"
         columns.push(1);
         // "SALARY"

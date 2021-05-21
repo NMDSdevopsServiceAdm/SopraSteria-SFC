@@ -1301,7 +1301,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           expect(csvAsArray[25]).to.equal(String(worker.AnnualHourlyPayRate));
         });
         it('should return annual value and rate', async () => {
-          worker.AnnualHourlyPayValue = 'Anually';
+          worker.AnnualHourlyPayValue = 'Annually';
 
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
