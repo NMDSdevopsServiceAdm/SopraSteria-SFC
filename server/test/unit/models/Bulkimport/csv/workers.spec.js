@@ -1388,6 +1388,346 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
 
           expect(csvAsArray[28]).to.equal('');
         });
+        ['Pool/Bank', 'Agency', 'Other'].forEach((contract) => {
+          it('should return average hours if the contract is ' + contract, async () => {
+            worker.ContractValue = contract;
+            worker.WeeklyHoursAverageValue = 'Yes';
+            worker.ZeroHoursContractValue = 'Yes';
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[29]).to.equal(String(worker.WeeklyHoursAverageHours));
+          });
+        });
+        it('should not return average hours if the contract is Temporary', async () => {
+          worker.ContractValue = 'Temporary';
+          worker.WeeklyHoursAverageValue = null;
+          worker.ZeroHoursContractValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[29]).to.equal('');
+        });
+        it('should return other jobs if other jobs value is Yes', async () => {
+          worker.OtherJobsValue = 'Yes';
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[30]).to.equal(String(worker.otherJobs[0].id));
+        });
+        it('should not return other jobs if other jobs value is No', async () => {
+          worker.OtherJobsValue = 'No';
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[30]).to.equal('');
+        });
+        it('should not return other jobs if other jobs value is null', async () => {
+          worker.OtherJobsValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[30]).to.equal('');
+        });
+        it('should return other jobs desc if other jobs value is Yes and is an other value', async () => {
+          worker.OtherJobsValue = 'Yes';
+          worker.otherJobs[0].other = true;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[31]).to.equal(worker.otherJobs[0].workerJobs.other);
+        });
+        it('should not return other jobs desc if other jobs value is No', async () => {
+          worker.OtherJobsValue = 'No';
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[31]).to.equal('');
+        });
+        it('should not return other jobs desc if other jobs value is null', async () => {
+          worker.OtherJobsValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[31]).to.equal('');
+        });
+        [
+          {
+            name: 'Adult Nurse',
+            code: '01',
+          },
+          {
+            name: 'Mental Health Nurse',
+            code: '02',
+          },
+          {
+            name: 'Learning Disabilities Nurse',
+            code: '03',
+          },
+          {
+            name: "Children's Nurse",
+            code: '04',
+          },
+          {
+            name: 'Enrolled Nurse',
+            code: '05',
+          },
+        ].forEach((regNurse) => {
+          it(
+            'should return registered nurse value if main job is nurse and they have registered value of ' +
+              regNurse.name,
+            async () => {
+              worker.RegisteredNurseValue = regNurse.name;
+              worker.mainJob = {
+                id: 23,
+              };
+
+              const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+              const csvAsArray = csv.split(',');
+
+              expect(csvAsArray[32]).to.equal(regNurse.code);
+            },
+          );
+        });
+        it("should not return registered nurse value if main job is nurse and they don't have reg value", async () => {
+          worker.RegisteredNurseValue = null;
+          worker.mainJob = {
+            id: 23,
+          };
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[32]).to.equal('');
+        });
+        it("should return reistered nurse value if main job is nurse and they don't have reg value", async () => {
+          worker.RegisteredNurseValue = 'Adult Nurse';
+          worker.mainJob = {
+            id: 24,
+          };
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[32]).to.equal('');
+        });
+        yesNoDontKnow.forEach((value) => {
+          it('should return the correct code nurse specialism ' + value.value, async () => {
+            worker.mainJob = {
+              id: 23,
+            };
+            worker.NurseSpecialismsValue = value.value;
+            worker.nurseSpecialisms = [
+              {
+                id: '138',
+              },
+              {
+                id: '23',
+              },
+            ];
+            let nurseSpec = '';
+            switch (worker.NurseSpecialismsValue) {
+              case 'Yes':
+                nurseSpec = `${worker.nurseSpecialisms[0].id};${worker.nurseSpecialisms[1].id}`;
+                break;
+
+              case 'No':
+                nurseSpec = '7';
+                break;
+
+              case "Don't know":
+                nurseSpec = '8';
+                break;
+            }
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[33]).to.equal(nurseSpec);
+          });
+        });
+        it('should not return a code for nurse specialism if not a nurse', async () => {
+          worker.NurseSpecialismsValue = 'No';
+          worker.mainJob = {
+            id: 24,
+          };
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[33]).to.equal('');
+        });
+        yesNoDontKnow.forEach((value) => {
+          it('should return the correct code for approved mental health worker ' + value.value, async () => {
+            worker.ApprovedMentalHealthWorkerValue = value.value;
+
+            let amhp = '';
+            switch (worker.ApprovedMentalHealthWorkerValue) {
+              case 'Yes':
+                amhp = '1';
+                break;
+
+              case 'No':
+                amhp = '2';
+                break;
+
+              case "Don't know":
+                amhp = '999';
+                break;
+            }
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[34]).to.equal(amhp);
+          });
+        });
+        yesNoDontKnow.forEach((value) => {
+          it('should return the correct code sc qual ' + value.value, async () => {
+            worker.QualificationInSocialCareValue = value.value;
+            worker.socialCareQualification = [
+              {
+                id: '239',
+              },
+            ];
+            let scqual = '';
+            switch (worker.QualificationInSocialCareValue) {
+              case 'Yes':
+                scqual = `1;${worker.socialCareQualification.id}`;
+                break;
+              case 'No':
+                scqual = '2';
+                break;
+
+              case "Don't know":
+                scqual = '999';
+                break;
+            }
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[35]).to.equal(scqual);
+          });
+          it('should not return the correct code sc qual ' + value.value, async () => {
+            worker.QualificationInSocialCareValue = value.value;
+            worker.socialCareQualification = null;
+            let scqual = '';
+            switch (worker.QualificationInSocialCareValue) {
+              case 'Yes':
+                scqual = '1';
+                break;
+              case 'No':
+                scqual = '2';
+                break;
+
+              case "Don't know":
+                scqual = '999';
+                break;
+            }
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[35]).to.equal(scqual);
+          });
+        });
+        it('should not return the correct code sc qual ', async () => {
+          worker.QualificationInSocialCareValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[35]).to.equal('');
+        });
+        yesNoDontKnow.forEach((value) => {
+          it('should return the correct code non sc qual ' + value.value, async () => {
+            worker.OtherQualificationsValue = value.value;
+            worker.highestQualification = [
+              {
+                id: '239',
+              },
+            ];
+            let nonscqual = '';
+            switch (worker.OtherQualificationsValue) {
+              case 'Yes':
+                nonscqual = `1;${worker.highestQualification.id}`;
+                break;
+              case 'No':
+                nonscqual = '2';
+                break;
+
+              case "Don't know":
+                nonscqual = '999';
+                break;
+            }
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[36]).to.equal(nonscqual);
+          });
+          it('should not return the correct code non sc qual ' + value.value, async () => {
+            worker.OtherQualificationsValue = value.value;
+            worker.highestQualification = null;
+            let nonscqual = '';
+            switch (worker.OtherQualificationsValue) {
+              case 'Yes':
+                nonscqual = '1';
+                break;
+              case 'No':
+                nonscqual = '2';
+                break;
+
+              case "Don't know":
+                nonscqual = '999';
+                break;
+            }
+
+            const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[36]).to.equal(nonscqual);
+          });
+        });
+        it('should not return the correct code non sc qual ', async () => {
+          worker.OtherQualificationsValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[36]).to.equal('');
+        });
+        it('should return the correct code and year for qual 01 ', async () => {
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[37]).to.equal(
+            `${worker.qualifications[0].qualification.id};${worker.qualifications[0].year}`,
+          );
+        });
+        it('should return the correct notes for qual 01 notes ', async () => {
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[38]).to.equal(worker.qualifications[0].notes);
+        });
+        it('should return the correct code and year for qual 01 ', async () => {
+          worker.qualifications = [];
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[37]).to.equal('');
+        });
       });
     });
   });
