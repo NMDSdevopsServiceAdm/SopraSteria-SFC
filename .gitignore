@@ -51,6 +51,7 @@ Thumbs.db
 # localhost config variations
 /server/config/localhost.*.yaml
 /server/config/localhost-*.yaml
+/server/config/localhost.yaml
 
 // nodemon localisations
 nodemon.json

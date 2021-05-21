@@ -172,7 +172,7 @@ jobs:
           keys:
             - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          command: npm run server:test:unit
+          command: export NODE_ENV=example && npm run server:test:unit
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers

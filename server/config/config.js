@@ -14,7 +14,16 @@ convict.addFormat(require('convict-format-with-validator').url);
 const config = convict({
   env: {
     doc: 'The application environment',
-    format: ['production', 'preproduction', 'benchmarks', 'development', 'test', 'accessibility', 'localhost'],
+    format: [
+      'production',
+      'preproduction',
+      'benchmarks',
+      'development',
+      'test',
+      'accessibility',
+      'localhost',
+      'example',
+    ],
     default: 'localhost',
     env: 'NODE_ENV',
   },
@@ -459,19 +468,19 @@ const config = convict({
       doc: 'The public key for encryption',
       format: String,
       default: '',
-      env: 'ENCRYPTION_PUBLIC_KEY'
+      env: 'ENCRYPTION_PUBLIC_KEY',
     },
     privateKey: {
       doc: 'The private key for encryption',
       format: String,
       default: '',
-      env: 'ENCRYPTION_PRIVATE_KEY'
+      env: 'ENCRYPTION_PRIVATE_KEY',
     },
     passphrase: {
       doc: 'The passphrase used for encryption',
       format: String,
       default: '',
-      env: 'ENCRYPTION_PASSPHRASE'
+      env: 'ENCRYPTION_PASSPHRASE',
     },
   },
   sendInBlue: {
@@ -518,7 +527,7 @@ const config = convict({
         id: {
           doc: 'Template ID for the 18 month inactive email',
           format: Number,
-          default: 10
+          default: 10,
         },
         name: {
           doc: 'Template Name for the 18 month inactive email',
@@ -530,7 +539,7 @@ const config = convict({
         id: {
           doc: 'Template ID for the 24 month inactive email',
           format: Number,
-          default: 12
+          default: 12,
         },
         name: {
           doc: 'Template Name for the 24 month inactive email',
@@ -590,7 +599,6 @@ if (config.get('aws.secrets.use')) {
     config.set('encryption.privateKey', AWSSecrets.encryptionPrivateKey());
     config.set('encryption.publicKey', AWSSecrets.encryptionPublicKey());
     config.set('encryption.passphrase', AWSSecrets.encryptionPassphrase());
-
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
