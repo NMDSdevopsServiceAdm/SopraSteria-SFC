@@ -7,8 +7,10 @@ const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const httpMocks = require('node-mocks-http');
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
 const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
+const { apiTrainingBuilder } = require('../../../../integration/utils/training');
 const mockEstablishment = require('../../../mockdata/establishment');
 const mockWorker = require('../../../mockdata/workers');
+const mockTraining = require('../../../mockdata/training');
 const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 
 describe('download', () => {
@@ -141,5 +143,56 @@ describe('download', () => {
     });
 
     await workerCsv(establishments, responseSend);
+  });
+
+  it('should return training file', async () => {
+    const establishment = {
+      id: 123,
+      LocalIdentifierValue: 'Test McTestface Org',
+    };
+    const worker = {
+      id: 123,
+      LocalIdentifierValue: 'Test McTestface Worker',
+    };
+    const trainingRecord = apiTrainingBuilder();
+    const downloadType = 'training';
+    const downloadWorkers = sinon.stub(models.establishment, 'downloadTrainingRecords').returns([
+      {
+        ...establishment,
+        workers: [
+          {
+            ...worker,
+            workerTraining: [trainingRecord],
+          },
+        ],
+      },
+    ]);
+    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+      expect(statusCode).to.deep.equal(200);
+      expect(body).to.contain(establishment.LocalIdentifierValue);
+      expect(body).to.contain(worker.LocalIdentifierValue);
+      expect(body).to.contain(trainingRecord.title);
+      expect(body).to.contain(trainingRecord.notes);
+      expect(body).to.contain(mockTraining.knownHeaders);
+    });
+    const req = httpMocks.createRequest({
+      method: 'GET',
+      url: `/api/establishment/${establishmentId}/bulkupload/download/${downloadType}`,
+      params: {
+        establishmentId,
+        downloadType,
+      },
+    });
+    req.establishment = {
+      id: establishmentId,
+    };
+
+    req.setTimeout = () => {};
+
+    req.establishmentId = establishmentId;
+    const res = httpMocks.createResponse();
+
+    await downloadGet(req, res);
+    sinon.assert.calledOnce(downloadWorkers);
   });
 });

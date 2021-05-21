@@ -1,0 +1,10 @@
+exports.knownHeaders = [
+  'LOCALESTID',
+  'UNIQUEWORKERID',
+  'CATEGORY',
+  'DESCRIPTION',
+  'DATECOMPLETED',
+  'EXPIRYDATE',
+  'ACCREDITED',
+  'NOTES',
+];

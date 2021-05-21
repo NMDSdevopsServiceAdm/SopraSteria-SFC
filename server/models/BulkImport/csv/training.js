@@ -608,7 +608,7 @@ class Training {
         break;
     }
     columns.push(accredited);
-    columns.push(entity.notes ? csvQuote(entity.notes) : '');
+    columns.push(entity.notes ? csvQuote(decodeURI(entity.notes)) : '');
 
     return columns.join(',');
   }
@@ -620,3 +620,4 @@ class Training {
 
 module.exports.Training = Training;
 module.exports.TrainingFileHeaders = _headers_v1;
+module.exports.convertIso8601ToUkDate = convertIso8601ToUkDate;
