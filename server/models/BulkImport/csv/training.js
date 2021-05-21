@@ -608,7 +608,7 @@ class Training {
         break;
     }
     columns.push(accredited);
-    columns.push(entity.notes ? csvQuote(entity.notes) : '');
+    columns.push(entity.notes ? csvQuote(decodeURI(entity.notes)) : '');
 
     return columns.join(',');
   }

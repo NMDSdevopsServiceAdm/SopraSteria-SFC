@@ -1282,5 +1282,48 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.downloadTrainingRecords = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['LocalIdentifierValue', 'id'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: ['LocalIdentifierValue', 'id'],
+          as: 'workers',
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              attributes: ['title', 'completed', 'expires', 'accredited', 'notes'],
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              include: {
+                model: sequelize.models.workerTrainingCategories,
+                as: 'category',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
   return Establishment;
 };
