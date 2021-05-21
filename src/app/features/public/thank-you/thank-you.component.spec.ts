@@ -8,12 +8,14 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { ThankYouComponent } from './thank-you.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('ThankYouComponent', () => {
   const setup = async () => {
     const { fixture } = await render(ThankYouComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, FormBuilder],
+      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService },{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }, FormBuilder],
     });
     const component = fixture.componentInstance;
 

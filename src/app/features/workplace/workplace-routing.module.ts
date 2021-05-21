@@ -359,6 +359,18 @@ const routes: Routes = [
           permissions: ['canViewBenchmarks'],
         },
       },
+      {
+        path: 'add-mandatory-training',
+        loadChildren: () =>
+          import('@features/add-mandatory-training/add-mandatory-training.module').then(
+            (m) => m.AddMandatoryTrainingModule,
+          ),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canAddEstablishment'],
+          title: 'Add Mandatory Training',
+        },
+      },
     ],
   },
 ];

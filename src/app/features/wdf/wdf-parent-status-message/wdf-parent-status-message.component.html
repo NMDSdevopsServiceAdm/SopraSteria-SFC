@@ -1,0 +1,13 @@
+<h4 class="govuk-heading-s">
+  <ng-container *ngIf="!overallEligibilityStatus">
+    Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements
+  </ng-container>
+  <ng-container *ngIf="overallEligibilityStatus && !currentEligibilityStatus">
+    Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save
+    you time next year.
+  </ng-container>
+  <ng-container *ngIf="overallEligibilityStatus && currentEligibilityStatus">
+    All your workplaces' data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to
+    {{ wdfEndDate | date: 'yyyy' }} requirements
+  </ng-container>
+</h4>

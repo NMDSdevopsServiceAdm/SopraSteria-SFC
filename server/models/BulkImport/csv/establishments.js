@@ -2823,109 +2823,64 @@ class Establishment {
   static toCSV(entity) {
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.LocalIdentifierValue));
     columns.push('UNCHECKED');
-    columns.push(csvQuote(entity.name));
+    columns.push(csvQuote(entity.NameValue));
     columns.push(csvQuote(entity.address1));
     columns.push(csvQuote(entity.address2));
     columns.push(csvQuote(entity.address3));
     columns.push(csvQuote(entity.town));
-    columns.push(entity.postcode);
+    columns.push(csvQuote(entity.postcode));
+    columns.push(entity.EmployerTypeValue ? BUDI.establishmentType(BUDI.FROM_ASC, entity.EmployerTypeValue) : '');
+    columns.push(csvQuote(entity.EmployerTypeOther ? entity.EmployerTypeOther : ''));
 
-    let employerType = '';
-    let employerTypeOther = '';
-    if (entity.employerType) {
-      employerType = BUDI.establishmentType(BUDI.FROM_ASC, entity.employerType.value);
+    columns.push(entity.shareWithCQC ? 1 : 0);
+    columns.push(entity.shareWithLA ? 1 : 0);
 
-      if (entity.employerType.other) {
-        employerTypeOther = csvQuote(entity.employerType.other);
-      }
-    }
-    columns.push(employerType);
-    columns.push(employerTypeOther);
-
-    // share with CQC/LA, LAs sharing with
-    const shareWith = entity.shareWith;
-    const shareWithLA = entity.shareWithLA;
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
-    columns.push(
-      shareWith &&
-        shareWith.enabled &&
-        shareWith.with.includes('Local Authority') &&
-        shareWithLA &&
-        Array.isArray(shareWithLA)
-        ? shareWithLA.map((thisLA) => thisLA.cssrId).join(';')
-        : '',
-    );
+    const localAuthorities = entity.localAuthorities.map((localAuthority) => localAuthority.cssrId);
+    columns.push(entity.shareWithLA ? localAuthorities.join(';') : '');
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
     columns.push(entity.isRegulated ? entity.provId : '');
     columns.push(entity.isRegulated ? entity.locationId : '');
 
+    const services = entity.otherServices;
+    services.unshift(entity.mainService);
     // main service - this is mandatory in ASC WDS so no need to check for it being available or not
-    const mainService = entity.mainService;
-    const budiMappedMainService = BUDI.services(BUDI.FROM_ASC, mainService.id);
-    columns.push(budiMappedMainService);
-    let otherServices = [];
-    // all services - this is main service and other services
-    if (entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services)) {
-      otherServices = entity.otherServices.services;
-    }
-    otherServices.unshift(mainService);
-    const transformedOtherService = otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id));
+    columns.push(entity.mainService.reportingID);
+
     if (entity.otherServices.value === 'No') {
-      transformedOtherService.push('0');
+      columns.push('0');
+    } else {
+      columns.push(services.map((service) => service.reportingID).join(';'));
     }
-    columns.push(transformedOtherService.join(';'));
 
-    // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
-    const entityCapacities = Array.isArray(entity.capacities)
-      ? entity.capacities.map((thisCap) => {
-          const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
-          const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
+    const capacities = [];
+    const utilisations = [];
 
-          return {
-            isUtilisation: isUtilisation !== null,
-            isCapacity: isCapacity !== null,
-            serviceId: isCapacity !== null ? isCapacity : isUtilisation,
-            answer: thisCap.answer,
-          };
-        })
-      : [];
+    const findUtilCap = (type, service, capacities) =>
+      capacities.find((capacity) => capacity.reference.service.id === service.id && capacity.reference.type === type);
 
-    // for CSV output, the capacities need to be separated from utilisations
+    services.map((service) => {
+      const capacity = findUtilCap('Capacity', service, entity.capacity);
+      const utilisation = findUtilCap('Utilisation', service, entity.capacity);
+      capacities.push(capacity && capacity.answer ? capacity.answer : '');
+      utilisations.push(utilisation && utilisation.answer ? utilisation.answer : '');
+    });
 
-    // the capacities must be written out in the same sequence of semi-colon delimited values as ALLSERVICES
-    columns.push(
-      otherServices
-        .map((thisService) => {
-          // capacities only
-          const matchedCapacityForGivenService = entityCapacities.find(
-            (thisCap) => thisCap.isCapacity && thisCap.serviceId === thisService.id,
-          );
-          return matchedCapacityForGivenService ? matchedCapacityForGivenService.answer : '';
-        })
-        .join(';'),
-    );
-
-    columns.push(
-      otherServices
-        .map((thisService) => {
-          // capacities only
-          const matchedUtilisationForGivenService = entityCapacities.find(
-            (thisCap) => thisCap.isUtilisation && thisCap.serviceId === thisService.id,
-          );
-          return matchedUtilisationForGivenService ? matchedUtilisationForGivenService.answer : '';
-        })
-        .join(';'),
-    );
+    columns.push(capacities.join(';'));
+    columns.push(utilisations.join(';'));
 
     // all service "other" descriptions
+
     columns.push(
-      otherServices
-        .map((thisService) => (thisService.other && thisService.other.length > 0 ? thisService.other : ''))
+      services
+        .map((thisService) =>
+          thisService.establishmentServices && thisService.establishmentServices.other
+            ? thisService.establishmentServices.other
+            : '',
+        )
         .join(';'),
     );
 
@@ -2933,113 +2888,58 @@ class Establishment {
     const serviceUsers = Array.isArray(entity.serviceUsers) ? entity.serviceUsers : [];
     columns.push(serviceUsers.map((thisUser) => BUDI.serviceUsers(BUDI.FROM_ASC, thisUser.id)).join(';'));
     columns.push(
-      serviceUsers.map((thisUser) => (thisUser.other && thisUser.other.length > 0 ? thisUser.other : '')).join(';'),
+      serviceUsers
+        .map((thisServiceUser) =>
+          thisServiceUser.establishmentServiceUsers && thisServiceUser.establishmentServiceUsers.other
+            ? thisServiceUser.establishmentServiceUsers.other
+            : '',
+        )
+        .join(';'),
     );
 
     // total perm/temp staff
-    columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
+    columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);
 
     // all job roles, starters, leavers and vacancies
-
-    const allJobs = [];
-
-    if (entity.starters && Array.isArray(entity.starters)) {
-      entity.starters.forEach((thisStarter) => allJobs.push(thisStarter));
-    }
-
-    if (entity.leavers && Array.isArray(entity.leavers)) {
-      entity.leavers.forEach((thisLeaver) => allJobs.push(thisLeaver));
-    }
-
-    if (entity.vacancies && Array.isArray(entity.vacancies)) {
-      entity.vacancies.forEach((thisVacancy) => allJobs.push(thisVacancy));
-    }
-
     // all jobs needs to be a set of unique ids (which across starters, leavers and vacancies may be repeated)
-    const uniqueJobs = [];
-
-    allJobs.forEach((thisAllJob) => {
-      if (!uniqueJobs.includes(thisAllJob.jobId)) {
-        uniqueJobs.push(thisAllJob.jobId);
-      }
-    });
+    const uniqueJobs = entity.jobs
+      .map((job) => job.jobId)
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     columns.push(uniqueJobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
 
-    let starters = '';
-    if (entity.starters && !Array.isArray(entity.starters)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        starters = '0';
-      } else if (entity.starters === 'None') {
-        starters = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.starters === "Don't know") {
-        starters = 999;
-      }
-    } else if (entity.starters !== null) {
-      starters = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobAStarterJob = entity.starters
-            ? entity.starters.find((myStarter) => myStarter.jobId === thisJob)
-            : false;
-          if (isThisJobAStarterJob) {
-            return isThisJobAStarterJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(starters);
+    const starters = entity.jobs.filter((value) => value.type === 'Starters');
+    const leavers = entity.jobs.filter((value) => value.type === 'Leavers');
+    const vacancies = entity.jobs.filter((value) => value.type === 'Vacancies');
 
-    let leavers = '';
-    if (entity.leavers && !Array.isArray(entity.leavers)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        leavers = '0';
-      } else if (entity.leavers === 'None') {
-        leavers = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.leavers === "Don't know") {
-        leavers = 999;
-      }
-    } else if (entity.leavers !== null) {
-      leavers = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobALeaverJob = entity.leavers
-            ? entity.leavers.find((myLeaver) => myLeaver.jobId === thisJob)
-            : false;
-          if (isThisJobALeaverJob) {
-            return isThisJobALeaverJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(leavers);
+    const starterCounts = [];
+    const leaverCounts = [];
+    const vacancyCounts = [];
 
-    let vacancies = '';
-    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        vacancies = '0';
-      } else if (entity.vacancies === 'None') {
-        vacancies = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.vacancies === "Don't know") {
-        vacancies = 999;
+    uniqueJobs.map((job) => {
+      const starterCount = starters.find((starter) => starter.jobId === job);
+      const leaverCount = leavers.find((leaver) => leaver.jobId === job);
+      const vacancyCount = vacancies.find((vacancy) => vacancy.jobId === job);
+      starterCounts.push(starterCount && starterCount.total ? starterCount.total : 0);
+      leaverCounts.push(leaverCount && leaverCount.total ? leaverCount.total : 0);
+      vacancyCounts.push(vacancyCount && vacancyCount.total ? vacancyCount.total : 0);
+    });
+
+    const slv = (value, counts) => {
+      if (value === "Don't know") {
+        return 999;
+      } else if (value === null) {
+        return '';
+      } else if (value === 'None') {
+        return 0;
+      } else {
+        return counts.join(';');
       }
-    } else {
-      vacancies = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobAVacancyJob = entity.vacancies
-            ? entity.vacancies.find((myVacancy) => myVacancy.jobId === thisJob)
-            : false;
-          if (isThisJobAVacancyJob) {
-            return isThisJobAVacancyJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(vacancies);
+    };
+
+    columns.push(slv(entity.StartersValue, starterCounts));
+    columns.push(slv(entity.LeaversValue, leaverCounts));
+    columns.push(slv(entity.VacanciesValue, vacancyCounts));
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
     if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {

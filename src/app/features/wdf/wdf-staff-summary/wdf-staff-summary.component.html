@@ -1,7 +1,11 @@
 <div class="govuk-form-group">
   <label class="govuk-label" for="sortByStaff"> Sort by </label>
   <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortByColumn($event.target.value)">
-    <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
+    <option
+      *ngFor="let sortStaffOption of sortStaffOptions | keyvalue"
+      value="{{ sortStaffOption.key }}"
+      [selected]="sortStaffOption.key == this.sortBy"
+    >
       {{ sortStaffOption.value }}
     </option>
   </select>
@@ -35,7 +39,7 @@
       <td class="govuk-table__cell">
         <app-wdf-requirements-state
           [overallWdfEligibility]="overallWdfEligibility"
-          [worker]="worker"
+          [currentWdfEligibility]="worker.wdfEligible"
         ></app-wdf-requirements-state>
       </td>
     </tr>

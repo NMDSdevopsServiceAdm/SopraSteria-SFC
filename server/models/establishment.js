@@ -1,8 +1,4 @@
 const { Op } = require('sequelize');
-const moment = require('moment');
-
-const currentDate = moment().toISOString();
-const expiresSoon = moment().add(90, 'days').toISOString();
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -929,83 +925,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.workersAndTraining = async function (establishmentId) {
-    return this.findOne({
-      attributes: ['id'],
-      include: {
-        model: sequelize.models.worker,
-        attributes: [
-          'id',
-          'uid',
-          'LocalIdentifierValue',
-          'NameOrIdValue',
-          'ContractValue',
-          'CompletedValue',
-          'created',
-          'updated',
-          'updatedBy',
-          'lastWdfEligibility',
-          [
-            sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
-            'trainingCount',
-          ],
-          [
-            sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
-            'qualificationCount',
-          ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
-            ),
-            'expiredTrainingCount',
-          ],
-          [
-            sequelize.literal(
-              `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" >= '${currentDate}' AND "Expires" <= '${expiresSoon}')`,
-            ),
-            'expiringTrainingCount',
-          ],
-          [
-            sequelize.literal(
-              `(
-                SELECT
-                  COUNT(0)
-                FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
-                AND "JobFK" = "workers"."MainJobFKValue"
-                AND "TrainingCategoryFK" NOT IN (
-                  SELECT
-                    "CategoryFK"
-                  FROM cqc."WorkerTraining"
-                  WHERE "WorkerFK" = "workers"."ID"
-                )
-              )`,
-            ),
-            'missingMandatoryTrainingCount',
-          ],
-        ],
-        as: 'workers',
-        where: {
-          archived: false,
-        },
-        include: [
-          {
-            model: sequelize.models.job,
-            as: 'mainJob',
-            attributes: ['id', 'title'],
-          },
-          {
-            model: sequelize.models.workerTraining,
-            as: 'workerTraining',
-          },
-        ],
-      },
-      where: {
-        id: establishmentId,
-      },
-    });
-  };
-
   Establishment.searchEstablishments = async function (where) {
     return await this.findAll({
       attributes: [
@@ -1149,6 +1068,100 @@ module.exports = function (sequelize, DataTypes) {
         model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
         as: 'workers',
       },
+    });
+  };
+
+  Establishment.downloadEstablishments = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'LocalIdentifierValue',
+        'id',
+        'NameValue',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'postcode',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+        'isRegulated',
+        'shareWithCQC',
+        'shareWithLA',
+        'provId',
+        'locationId',
+        'NumberOfStaffValue',
+        'VacanciesValue',
+        'StartersValue',
+        'LeaversValue',
+        'reasonsForLeaving',
+      ],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'uid', 'nmdsId'],
+          as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'mainService',
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'otherServices',
+        },
+        {
+          model: sequelize.models.serviceUsers,
+          as: 'serviceUsers',
+        },
+        {
+          model: sequelize.models.establishmentCapacity,
+          attributes: ['id', 'serviceCapacityId', 'answer'],
+          as: 'capacity',
+          include: [
+            {
+              model: sequelize.models.serviceCapacity,
+              as: 'reference',
+              attributes: ['id', 'question', 'type'],
+              include: [
+                {
+                  model: sequelize.models.services,
+                  attributes: ['id', 'reportingID'],
+                  as: 'service',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.establishmentJobs,
+          attributes: ['jobId', 'type', 'total'],
+          as: 'jobs',
+        },
+        {
+          model: sequelize.models.establishmentLocalAuthority,
+          attributes: ['cssrId'],
+          as: 'localAuthorities',
+        },
+      ],
     });
   };
 

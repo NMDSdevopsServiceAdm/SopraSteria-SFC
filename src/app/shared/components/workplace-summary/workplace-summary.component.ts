@@ -6,6 +6,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -25,10 +26,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
   public canViewListOfWorkers: boolean;
-  public workerCount: number;
+  public wdfNewDesign: boolean;
 
   @Input() wdfView = false;
-
+  @Input() overallWdfEligibility: boolean;
+  @Input() workerCount: number;
   @Input()
   set workplace(workplace: any) {
     this._workplace = workplace;
@@ -56,7 +58,15 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   @Input() return: URLStructure = null;
+
   get totalStaffWarning() {
+    if (this.wdfNewDesign) {
+      return (
+        this.workplace.numberOfStaff &&
+        (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
+        this.workplace.numberOfStaff !== this.workerCount
+      );
+    }
     return (
       (this.workplace.numberOfStaff > 0 || this.workplace.totalWorkers > 0) &&
       this.workplace.numberOfStaff !== this.workplace.totalWorkers
@@ -76,6 +86,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
       '=1': '# bed available',
@@ -100,6 +111,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.setFeatureFlags();
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.subscriptions.add(
@@ -107,14 +119,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
       }),
     );
-
-    if (this.canViewListOfWorkers) {
-      this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplace.uid)
-          .subscribe((workers) => (this.workerCount = workers.length ? workers.length : 0)),
-      );
-    }
 
     this.cqcStatusRequested = false;
     this.subscriptions.add(
@@ -160,6 +164,24 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public staffMismatchWarning(): boolean {
     return (
       this.canViewListOfWorkers && this.isNumber(this.workerCount) && !this.wdfView && this.totalStaffWarningNonWDF
+    );
+  }
+
+  private setFeatureFlags(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
+      this.wdfNewDesign = value;
+    });
+  }
+
+  public getRoutePath(name: string) {
+    return ['/workplace', this.workplace.uid, name];
+  }
+
+  public confirmField(dataField) {
+    const props = { [dataField]: this.workplace[dataField] };
+
+    this.subscriptions.add(
+      this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => console.log(data)),
     );
   }
 }

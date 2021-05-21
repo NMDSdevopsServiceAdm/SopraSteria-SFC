@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -9,7 +10,9 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -33,6 +36,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workplaceUid: string | null;
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
+  public showCQCDetailsBanner = false;
+  public workers: Worker[];
+  public workerCount: number;
 
   constructor(
     private alertService: AlertService,
@@ -48,6 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.isOnAdminScreen = false;
+    this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
@@ -63,6 +70,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
         }),
       );
+
+      if (this.workplace && this.workplace.locationId) {
+        this.subscriptions.add(
+          this.establishmentService
+            .getCQCRegistrationStatus(this.workplace.locationId, {
+              postcode: this.workplace.postcode,
+              mainService: this.workplace.mainService.name,
+            })
+            .subscribe((response) => {
+              this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
+            }),
+        );
+      }
+
+      this.subscriptions.add(
+        this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+          this.showCQCDetailsBanner = showBanner;
+        }),
+      );
+
       this.subscriptions.add(
         this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
           (total) => {
@@ -79,6 +106,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.getAllWorkers(this.workplace.uid).subscribe(
             (workers) => {
+              this.workers = workers;
+              this.workerCount = workers.length;
               this.workerService.setWorkers(workers);
               if (workers.length > 0) {
                 this.trainingAlert = workers[0].trainingAlert;
