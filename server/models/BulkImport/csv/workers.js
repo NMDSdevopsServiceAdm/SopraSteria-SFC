@@ -4058,7 +4058,7 @@ class Worker {
 
       if (mappedQualification) {
         columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
-        columns.push(csvQuote(thisQual.notes ? thisQual.notes : ''));
+        columns.push(csvQuote(thisQual.notes ? decodeURI(thisQual.notes) : ''));
       } else {
         columns.push('');
         columns.push('');
