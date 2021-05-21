@@ -1373,7 +1373,11 @@ class Worker {
         column: 'STARTINSECT',
       });
       return false;
-    } else if (this._startDate && parseInt(myStartInsect, 10) > this._startDate.year()) {
+    } else if (
+      parseInt(myStartInsect, 10) !== 999 &&
+      this._startDate &&
+      parseInt(myStartInsect, 10) > this._startDate.year()
+    ) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1385,7 +1389,11 @@ class Worker {
         column: 'STARTINSECT',
       });
       return false;
-    } else if (myRealDOBDate && myRealDOBDate.year() + AGE > parseInt(myStartInsect, 10)) {
+    } else if (
+      parseInt(myStartInsect, 10) !== 999 &&
+      myRealDOBDate &&
+      myRealDOBDate.year() + AGE > parseInt(myStartInsect, 10)
+    ) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
