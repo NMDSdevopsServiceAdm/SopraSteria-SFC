@@ -76,7 +76,6 @@ export class OtherJobRolesComponent extends QuestionComponent {
         () => this.updateForm(),
       ),
     );
-    console.log(this.worker);
     if (this.worker.otherJobs) {
       this.worker.otherJobs.value === 'Yes'
         ? this.form.patchValue({ otherJobs: 'Yes' })
