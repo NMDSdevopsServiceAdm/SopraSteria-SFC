@@ -577,6 +577,162 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       });
     });
 
+    describe('start in sector', () => {
+      it("should not emit a warning when STARTINSECT is set to 999(Don't know)", async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+              'lodash/get': get,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              STARTINSECT: '999',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+        const validationErrors = bulkUpload._validationErrors;
+
+        expect(validationErrors.length).to.equal(0);
+      });
+
+      it('should emit incorrect formatting warning when STARTINSECT is not a valid number', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+              'lodash/get': get,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              STARTINSECT: 'abcd',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+        const validationErrors = bulkUpload._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3200,
+            warnType: 'START_INSECT_WARNING',
+            warning: 'STARTINSECT is incorrectly formatted and will be ignored',
+            source: 'abcd',
+            column: 'STARTINSECT',
+          },
+        ]);
+      });
+
+      it('should emit a birthday warning when STARTINSECT is set to within 14 years of birthday', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+              'lodash/get': get,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              STARTINSECT: '1993',
+              DOB: '10/12/1982',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+        const validationErrors = bulkUpload._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3200,
+            warnType: 'START_INSECT_WARNING',
+            warning: 'STARTINSECT is before workers 14th birthday and will be ignored',
+            source: '1993',
+            column: 'STARTINSECT',
+          },
+        ]);
+      });
+
+      it('should emit an after start date warning when STARTINSECT is after STARTDATE', async () => {
+        const bulkUpload = new (testUtils.sandBox(filename, {
+          locals: {
+            require: testUtils.wrapRequire({
+              '../BUDI': {
+                BUDI,
+              },
+              moment: moment,
+              'lodash/get': get,
+            }),
+          },
+        }).Worker)(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              STARTINSECT: '2020',
+              STARTDATE: '10/12/2019',
+            },
+          }),
+          2,
+          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await bulkUpload.validate();
+        const validationErrors = bulkUpload._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 3200,
+            warnType: 'START_INSECT_WARNING',
+            warning: 'STARTINSECT is after STARTDATE and will be ignored',
+            source: '2020',
+            column: 'STARTINSECT',
+          },
+        ]);
+      });
+    });
+
     describe('nurse specialisms', () => {
       it('should not emit a warning for any combination of specialisms 1-6', async () => {
         const bulkUpload = new (testUtils.sandBox(filename, {
