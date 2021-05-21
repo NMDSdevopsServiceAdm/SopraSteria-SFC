@@ -898,6 +898,14 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
 
           expect(csvAsArray[5]).to.equal(worker.NationalInsuranceNumberValue);
         });
+        it('should return blank if no national insurance number', async () => {
+          worker.NationalInsuranceNumberValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[5]).to.equal('');
+        });
         it('should return postcode', async () => {
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
@@ -910,6 +918,14 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[7]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
+        });
+        it('should return blank if no dob', async () => {
+          worker.DateOfBirthValue = null;
+
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[7]).to.equal('');
         });
         [
           {
