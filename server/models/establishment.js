@@ -1165,5 +1165,122 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.downloadWorkers = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['LocalIdentifierValue', 'id'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: [
+            'id',
+            'uid',
+            'LocalIdentifierValue',
+            'NameOrIdValue',
+            'FluJabValue',
+            'NationalInsuranceNumberValue',
+            'PostcodeValue',
+            'DateOfBirthValue',
+            'GenderValue',
+            'NationalityValue',
+            'BritishCitizenshipValue',
+            'CountryOfBirthValue',
+            'YearArrivedValue',
+            'YearArrivedYear',
+            'DisabilityValue',
+            'CareCertificateValue',
+            'RecruitedFromValue',
+            'MainJobStartDateValue',
+            'SocialCareStartDateValue',
+            'SocialCareStartDateYear',
+            'ApprenticeshipTrainingValue',
+            'ContractValue',
+            'ZeroHoursContractValue',
+            'DaysSickValue',
+            'DaysSickDays',
+            'AnnualHourlyPayValue',
+            'AnnualHourlyPayRate',
+            'MainJobFkOther',
+            'WeeklyHoursContractedValue',
+            'WeeklyHoursContractedHours',
+            'WeeklyHoursAverageValue',
+            'WeeklyHoursAverageHours',
+            'OtherJobsValue',
+            'NurseSpecialismsValue',
+            'RegisteredNurseValue',
+            'ApprovedMentalHealthWorkerValue',
+            'QualificationInSocialCareValue',
+            'OtherQualificationsValue',
+          ],
+          as: 'workers',
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              model: sequelize.models.ethnicity,
+              as: 'ethnicity',
+            },
+            {
+              model: sequelize.models.nationality,
+              as: 'nationality',
+            },
+            {
+              model: sequelize.models.country,
+              as: 'countryOfBirth',
+            },
+            {
+              model: sequelize.models.recruitedFrom,
+              as: 'recruitedFrom',
+            },
+            {
+              model: sequelize.models.job,
+              as: 'otherJobs',
+            },
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'highestQualification',
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'socialCareQualification',
+            },
+            {
+              model: sequelize.models.workerNurseSpecialism,
+              as: 'nurseSpecialisms',
+            },
+            {
+              model: sequelize.models.workerQualifications,
+              as: 'qualifications',
+              include: {
+                model: sequelize.models.workerAvailableQualifications,
+                as: 'qualification',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
   return Establishment;
 };
