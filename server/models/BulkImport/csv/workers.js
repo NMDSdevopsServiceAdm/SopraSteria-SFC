@@ -3681,7 +3681,7 @@ class Worker {
     columns.push(genderId);
 
     // "ETHNICITY"
-    columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.id) : '');
+    columns.push(get(entity, 'ethnicity.id') ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.id) : '');
 
     // "NATIONALITY"
     let nationality = '';
@@ -3956,11 +3956,13 @@ class Worker {
 
     // "NMCREG"
     columns.push(
-      entity.mainJob.id === NURSE_JOB_ID ? Worker._maptoCSVregisteredNurse(entity.RegisteredNurseValue) : '',
+      get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID
+        ? Worker._maptoCSVregisteredNurse(entity.RegisteredNurseValue)
+        : '',
     );
 
     // "NURSESPEC"
-    if (entity.mainJob.id === NURSE_JOB_ID && entity.NurseSpecialismsValue) {
+    if (get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID && entity.NurseSpecialismsValue) {
       if (entity.NurseSpecialismsValue === 'No') {
         columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
       } else if (entity.NurseSpecialismsValue === "Don't know") {
