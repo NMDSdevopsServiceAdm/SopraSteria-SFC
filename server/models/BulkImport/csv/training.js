@@ -620,3 +620,4 @@ class Training {
 
 module.exports.Training = Training;
 module.exports.TrainingFileHeaders = _headers_v1;
+module.exports.convertIso8601ToUkDate = convertIso8601ToUkDate;
