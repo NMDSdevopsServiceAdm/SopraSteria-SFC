@@ -1346,6 +1346,7 @@ class Worker {
   _validateStartInsect() {
     const AGE = 14;
     const myStartInsect = this._currentLine.STARTINSECT;
+    const myStartInsectNumber = parseInt(myStartInsect, 10);
     const yearRegex = /^\d{4}|999$/;
     const myRealDOBDate = moment.utc(this._currentLine.DOB, 'DD/MM/YYYY');
 
@@ -1373,11 +1374,7 @@ class Worker {
         column: 'STARTINSECT',
       });
       return false;
-    } else if (
-      parseInt(myStartInsect, 10) !== 999 &&
-      this._startDate &&
-      parseInt(myStartInsect, 10) > this._startDate.year()
-    ) {
+    } else if (myStartInsectNumber !== 999 && this._startDate && myStartInsectNumber > this._startDate.year()) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1389,11 +1386,7 @@ class Worker {
         column: 'STARTINSECT',
       });
       return false;
-    } else if (
-      parseInt(myStartInsect, 10) !== 999 &&
-      myRealDOBDate &&
-      myRealDOBDate.year() + AGE > parseInt(myStartInsect, 10)
-    ) {
+    } else if (myStartInsectNumber !== 999 && myRealDOBDate && myRealDOBDate.year() + AGE > myStartInsectNumber) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1406,7 +1399,7 @@ class Worker {
       });
       return false;
     } else {
-      this._startInsect = parseInt(myStartInsect, 10);
+      this._startInsect = myStartInsectNumber;
       return true;
     }
   }
