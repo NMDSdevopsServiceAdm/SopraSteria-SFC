@@ -22,7 +22,7 @@
   <tbody class="govuk-table__body">
     <tr *ngFor="let workplace of workplaces" class="govuk-table__row">
       <td class="govuk-table__cell">
-        <a [routerLink]="[]">
+        <a [routerLink]="[workplace.uid]">
           {{ workplace.name }}
         </a>
       </td>

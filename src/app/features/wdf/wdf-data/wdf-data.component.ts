@@ -15,6 +15,7 @@ import { take } from 'rxjs/operators';
 
 import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
 import { Worker } from '../../../core/model/worker.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-wdf-data',
@@ -39,14 +40,19 @@ export class WdfDataComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
+    private route : ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.WDF);
-    this.returnUrl = { url: ['/wdf', 'data'] };
-
-    this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
+    if(this.route.snapshot.params.establishmentuid){
+      this.workplaceUid = this.route.snapshot.params.establishmentuid;
+      this.returnUrl = { url: ['/wdf', 'workplaces'] };
+    }else{
+      this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+      this.returnUrl = { url: ['/wdf', 'data'] };
+    }
+    this.canViewWorker = this.permissionsService.can(this.establishmentService.primaryWorkplace.uid, 'canViewWorker');
 
     this.setWorkplace();
     this.getWdfReport();
