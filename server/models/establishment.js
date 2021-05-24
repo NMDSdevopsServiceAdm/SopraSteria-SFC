@@ -1071,5 +1071,259 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.downloadEstablishments = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'LocalIdentifierValue',
+        'id',
+        'NameValue',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'postcode',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+        'isRegulated',
+        'shareWithCQC',
+        'shareWithLA',
+        'provId',
+        'locationId',
+        'NumberOfStaffValue',
+        'VacanciesValue',
+        'StartersValue',
+        'LeaversValue',
+        'reasonsForLeaving',
+      ],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'uid', 'nmdsId'],
+          as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'mainService',
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'otherServices',
+        },
+        {
+          model: sequelize.models.serviceUsers,
+          as: 'serviceUsers',
+        },
+        {
+          model: sequelize.models.establishmentCapacity,
+          attributes: ['id', 'serviceCapacityId', 'answer'],
+          as: 'capacity',
+          include: [
+            {
+              model: sequelize.models.serviceCapacity,
+              as: 'reference',
+              attributes: ['id', 'question', 'type'],
+              include: [
+                {
+                  model: sequelize.models.services,
+                  attributes: ['id', 'reportingID'],
+                  as: 'service',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.establishmentJobs,
+          attributes: ['jobId', 'type', 'total'],
+          as: 'jobs',
+        },
+        {
+          model: sequelize.models.establishmentLocalAuthority,
+          attributes: ['cssrId'],
+          as: 'localAuthorities',
+        },
+      ],
+    });
+  };
+
+  Establishment.downloadWorkers = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['LocalIdentifierValue', 'id'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: [
+            'id',
+            'uid',
+            'LocalIdentifierValue',
+            'NameOrIdValue',
+            'FluJabValue',
+            'NationalInsuranceNumberValue',
+            'PostcodeValue',
+            'DateOfBirthValue',
+            'GenderValue',
+            'NationalityValue',
+            'BritishCitizenshipValue',
+            'CountryOfBirthValue',
+            'YearArrivedValue',
+            'YearArrivedYear',
+            'DisabilityValue',
+            'CareCertificateValue',
+            'RecruitedFromValue',
+            'MainJobStartDateValue',
+            'SocialCareStartDateValue',
+            'SocialCareStartDateYear',
+            'ApprenticeshipTrainingValue',
+            'ContractValue',
+            'ZeroHoursContractValue',
+            'DaysSickValue',
+            'DaysSickDays',
+            'AnnualHourlyPayValue',
+            'AnnualHourlyPayRate',
+            'MainJobFkOther',
+            'WeeklyHoursContractedValue',
+            'WeeklyHoursContractedHours',
+            'WeeklyHoursAverageValue',
+            'WeeklyHoursAverageHours',
+            'OtherJobsValue',
+            'NurseSpecialismsValue',
+            'RegisteredNurseValue',
+            'ApprovedMentalHealthWorkerValue',
+            'QualificationInSocialCareValue',
+            'OtherQualificationsValue',
+          ],
+          as: 'workers',
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              model: sequelize.models.ethnicity,
+              as: 'ethnicity',
+            },
+            {
+              model: sequelize.models.nationality,
+              as: 'nationality',
+            },
+            {
+              model: sequelize.models.country,
+              as: 'countryOfBirth',
+            },
+            {
+              model: sequelize.models.recruitedFrom,
+              as: 'recruitedFrom',
+            },
+            {
+              model: sequelize.models.job,
+              as: 'otherJobs',
+            },
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'highestQualification',
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'socialCareQualification',
+            },
+            {
+              model: sequelize.models.workerNurseSpecialism,
+              as: 'nurseSpecialisms',
+            },
+            {
+              model: sequelize.models.workerQualifications,
+              as: 'qualifications',
+              include: {
+                model: sequelize.models.workerAvailableQualifications,
+                as: 'qualification',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.downloadTrainingRecords = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['LocalIdentifierValue', 'id'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: ['LocalIdentifierValue', 'id'],
+          as: 'workers',
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              attributes: ['title', 'completed', 'expires', 'accredited', 'notes'],
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              include: {
+                model: sequelize.models.workerTrainingCategories,
+                as: 'category',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
   return Establishment;
 };

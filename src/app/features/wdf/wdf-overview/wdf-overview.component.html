@@ -53,7 +53,10 @@
           Your workplaces' data met the requirements on {{ parentOverallEligibilityDate }} and will continue to meet
           them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
         </p>
-        <p><a [routerLink]="['']">View your workplaces</a> and keep your data up to date to save time next year.</p>
+        <p>
+          <a [routerLink]="['/wdf/workplaces']">View your workplaces</a> and keep your data up to date to save time next
+          year.
+        </p>
       </ng-container>
 
       <ng-template #parentNotEligible>
@@ -68,7 +71,7 @@
           </h2>
         </span>
         <p>
-          <a [routerLink]="['/wdf/data']">View your workplaces</a> to see which have data that does not meet the
+          <a [routerLink]="['/wdf/workplaces']">View your workplaces</a> to see which have data that does not meet the
           requirements.
         </p>
       </ng-template>

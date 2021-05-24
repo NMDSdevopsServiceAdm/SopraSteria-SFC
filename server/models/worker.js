@@ -1149,6 +1149,12 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
     });
+    Worker.belongsToMany(models.workerQualifications, {
+      foreignKey: 'workerFk',
+      through: 'workerQualifications',
+      otherKey: 'ID',
+      as: 'qualifications',
+    });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
     return this.count({

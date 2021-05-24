@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -26,7 +26,7 @@ import { take } from 'rxjs/internal/operators/take';
   selector: 'app-add-mandatory-training',
   templateUrl: './add-mandatory-training.component.html',
 })
-export class AddMandatoryTrainingComponent implements OnInit {
+export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
@@ -82,20 +82,22 @@ export class AddMandatoryTrainingComponent implements OnInit {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe((establishment) => {
-        this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
-          (trainings) => {
-            this.existingMandatoryTrainings = trainings;
-            this.prefill(trainings);
-          },
-          (error) => {
-            if (error.error.message) {
-              this.serverError = error.error.message;
-            }
-          },
-        );
-      }),
+      this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
+        (trainings) => {
+          this.existingMandatoryTrainings = trainings;
+          this.prefill(trainings);
+        },
+        (error) => {
+          if (error.error.message) {
+            this.serverError = error.error.message;
+          }
+        },
+      ),
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   public setBackLink(): void {
