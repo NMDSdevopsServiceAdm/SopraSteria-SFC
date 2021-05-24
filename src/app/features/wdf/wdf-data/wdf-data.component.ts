@@ -11,7 +11,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 
 import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
 import { Worker } from '../../../core/model/worker.model';
@@ -26,7 +26,7 @@ export class WdfDataComponent implements OnInit {
   public workplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
-  public canViewWorker: boolean;
+  public canViewWorker = false;
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
@@ -52,7 +52,11 @@ export class WdfDataComponent implements OnInit {
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
       this.returnUrl = { url: ['/wdf', 'data'] };
     }
-    this.canViewWorker = this.permissionsService.can(this.establishmentService.primaryWorkplace.uid, 'canViewWorker');
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
+        this.canViewWorker = permission.permissions.canViewWorker;
+      }),
+    );
 
     this.setWorkplace();
     this.getWdfReport();
