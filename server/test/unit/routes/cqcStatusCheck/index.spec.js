@@ -37,6 +37,8 @@ describe('server/routes/establishments/cqcStatus', async () => {
           return registeredURLResponse;
         } else if (locationID === deregisteredLocationId) {
           return deregisteredURLResponse;
+        } else if (locationID === noRegistrationStatusLocationId) {
+          return noRegistrationStatusURLResponse;
         } else {
           return null;
         }
@@ -49,9 +51,14 @@ describe('server/routes/establishments/cqcStatus', async () => {
 
     const registeredLocationId = '1-109009203';
     const deregisteredLocationId = '1-799116841';
+    const noRegistrationStatusLocationId = '1-12345678';
 
     const registeredURLResponse = {
       registrationStatus: 'Registered',
+      postalCode: 'SK10 7ED',
+    };
+
+    const noRegistrationStatusURLResponse = {
       postalCode: 'SK10 7ED',
     };
 
@@ -106,6 +113,30 @@ describe('server/routes/establishments/cqcStatus', async () => {
         url: `/api/cqcStatusCheck/${registeredLocationId}`,
         params: {
           locationID: registeredLocationId,
+        },
+        query: {
+          postcode: 'SK10 7ED',
+        },
+      };
+
+      const expectedResult = {
+        cqcStatusMatch: true,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await cqcStatusCheck(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+    });
+
+    it("should return a true flag is the service doesn't have a registration status", async () => {
+      const request = {
+        method: 'GET',
+        url: `/api/cqcStatusCheck/${noRegistrationStatusLocationId}`,
+        params: {
+          locationID: noRegistrationStatusLocationId,
         },
         query: {
           postcode: 'SK10 7ED',
