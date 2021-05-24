@@ -14,7 +14,7 @@ const cqcStatusCheck = async (req, res) => {
     const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
 
     const cqcStatusMatch =
-      checkRegistrationStatus(workplaceCQCData.registrationStatus) &&
+      checkRegistrationStatus(workplaceCQCData) &&
       checkPostcodeMatch(postcode, workplaceCQCData.postalCode) &&
       checkMainServiceMatch(mainService, workplaceCQCData.gacServiceTypes);
 
@@ -33,7 +33,7 @@ const cqcStatusCheck = async (req, res) => {
 };
 
 function checkRegistrationStatus(cqcRegistrationStatus) {
-  if (cqcRegistrationStatus !== 'Registered') {
+  if (cqcRegistrationStatus.registrationStatus && cqcRegistrationStatus.registrationStatus !== 'Registered') {
     return false;
   } else {
     return true;
