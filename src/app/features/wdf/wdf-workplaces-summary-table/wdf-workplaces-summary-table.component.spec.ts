@@ -66,7 +66,7 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(4);
     expect(getAllByText(meetingMessage, { exact: true }).length).toBe(4);
   });
-  fit('should not display a link for workplaces without rights', async () => {
+  it('should not display a link for workplaces without rights', async () => {
     const { component, fixture, getAllByText } = await setup();
 
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
@@ -76,7 +76,7 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     fixture.detectChanges();
     expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('<p>');
   });
-  fit('should display a link for workplaces with rights to at least workplace', async () => {
+  it('should display a link for workplaces with rights to at least workplace', async () => {
     const { component, fixture, getAllByText } = await setup();
 
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
