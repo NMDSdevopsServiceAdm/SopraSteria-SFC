@@ -25,7 +25,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public cqcStatusRequested: boolean;
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
-  public canViewListOfWorkers: boolean;
+  public canViewListOfWorkers = false;
   public wdfNewDesign: boolean;
 
   @Input() wdfView = false;
@@ -112,8 +112,16 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setFeatureFlags();
-    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
+        this.canViewListOfWorkers = permission.permissions.canViewListOfWorkers;
+        this.canEditEstablishment = permission.permissions.canEditEstablishment;
+      }),
+    );
+
+    // this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    // this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;

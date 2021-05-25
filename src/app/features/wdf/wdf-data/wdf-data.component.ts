@@ -27,7 +27,8 @@ export class WdfDataComponent implements OnInit {
   public primaryWorkplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
-  public canViewWorker: boolean;
+  public canViewWorker = false;
+  public canEditWorker: boolean;
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
@@ -47,20 +48,29 @@ export class WdfDataComponent implements OnInit {
 
   ngOnInit(): void {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.workplaceUid = this.route.snapshot.params.id;
+
+    if (this.route.snapshot.params.establishmentuid) {
+      this.workplaceUid = this.route.snapshot.params.establishmentuid;
+      this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
+    } else {
+      this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+      this.returnUrl = { url: ['/wdf', 'data'] };
+    }
 
     this.isParent = this.checkIfParent();
     this.isParent ? this.breadcrumbService.show(JourneyType.WDF_PARENT) : this.breadcrumbService.show(JourneyType.WDF);
-    this.isParent
-      ? (this.returnUrl = { url: ['/wdf', this.workplaceUid, 'data'] })
-      : (this.returnUrl = { url: ['/wdf', 'data'] });
 
-    this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
+        this.canViewWorker = permission.permissions.canViewWorker;
+        this.canEditWorker = permission.permissions.canEditWorker;
+        this.getWorkers();
+      }),
+    );
 
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
-    this.getWorkers();
   }
 
   ngOnDestroy() {

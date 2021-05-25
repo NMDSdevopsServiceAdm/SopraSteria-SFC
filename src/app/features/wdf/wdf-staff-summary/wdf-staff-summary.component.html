@@ -22,14 +22,9 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let worker of workers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
-        <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a [routerLink]="getWorkerRecordPath(worker)">
-            {{ worker.nameOrId }}
-          </a>
-        </ng-container>
-        <ng-template #nameOrId>
+        <a [routerLink]="getWorkerRecordPath(worker)">
           {{ worker.nameOrId }}
-        </ng-template>
+        </a>
       </td>
       <td class="govuk-table__cell">{{ worker.jobRole }}</td>
       <td class="govuk-table__cell">
