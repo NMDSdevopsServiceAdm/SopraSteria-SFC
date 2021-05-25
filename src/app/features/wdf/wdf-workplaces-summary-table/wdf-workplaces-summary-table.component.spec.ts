@@ -6,6 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { WdfModule } from '../wdf.module.js';
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table.component';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 
 describe('WdfWorkplacesSummaryTableComponent', () => {
   const workplaces = [
@@ -65,6 +66,27 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(4);
     expect(getAllByText(meetingMessage, { exact: true }).length).toBe(4);
   });
+  it('should not display a link for workplaces without rights', async () => {
+    const { component, fixture, getAllByText } = await setup();
+
+    component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
+    component.workplaces[0].dataPermissions = DataPermissions.None;
+    component.workplaces[0].name = "Test Workplace"
+
+    fixture.detectChanges();
+    expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('<p>');
+  });
+  it('should display a link for workplaces with rights to at least workplace', async () => {
+    const { component, fixture, getAllByText } = await setup();
+
+    component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
+    component.workplaces[0].dataPermissions = DataPermissions.Workplace;
+    component.workplaces[0].name = "Test Workplace"
+
+    fixture.detectChanges();
+    expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('</a>');
+  });
+
 
   describe('sortByColumn', async () => {
     it('should put workplaces not meeting WDF at top of table when sorting by WDF requirements (not meeting)', async () => {
