@@ -60,14 +60,10 @@ export class WdfDataComponent implements OnInit {
     this.isParent = this.checkIfParent();
     this.isParent ? this.breadcrumbService.show(JourneyType.WDF_PARENT) : this.breadcrumbService.show(JourneyType.WDF);
 
-    this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
-        this.canViewWorker = permission.permissions.canViewWorker;
-        this.canEditWorker = permission.permissions.canEditWorker;
-        this.getWorkers();
-      }),
-    );
+    this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
+    this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
 
+    this.getWorkers();
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
