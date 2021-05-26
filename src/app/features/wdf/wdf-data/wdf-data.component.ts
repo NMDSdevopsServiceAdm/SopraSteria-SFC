@@ -35,6 +35,7 @@ export class WdfDataComponent implements OnInit {
   public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
   public isParent: boolean;
+  public isStandalone = true;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -77,6 +78,7 @@ export class WdfDataComponent implements OnInit {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
+        this.isStandalone = this.checkIfStandalone();
         this.establishmentService.setState(workplace);
       }),
     );
@@ -130,5 +132,14 @@ export class WdfDataComponent implements OnInit {
 
   private checkIfParent(): boolean {
     return this.primaryWorkplaceUid === this.workplaceUid ? true : false;
+  }
+  private checkIfStandalone(): boolean {
+    if (this.workplace) {
+      if (this.primaryWorkplaceUid !== this.workplaceUid) {
+        return false;
+      }
+      return !this.workplace.isParent;
+    }
+    return true;
   }
 }
