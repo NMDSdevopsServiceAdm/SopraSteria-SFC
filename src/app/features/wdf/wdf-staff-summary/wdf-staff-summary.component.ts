@@ -34,8 +34,6 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    //this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
-    //this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = WdfSortStaffOptions;
     this.getOverallWdfEligibility();
     this.restoreSortBy();

@@ -120,8 +120,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
       }),
     );
 
-    // this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-    // this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
