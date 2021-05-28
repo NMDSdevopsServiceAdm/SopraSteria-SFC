@@ -57,7 +57,7 @@ function checkMainServiceMatch(mainService, cqcServices) {
 function convertMainServiceToCQC(mainService) {
   const services = [
     { asc: 'Care home services with nursing', cqc: ['Nursing homes'] },
-    { asc: 'Care home services without nursing', cqc: ['Residential homes'] },
+    { asc: 'Care home services without nursing', cqc: ['Residential homes', 'Care home service without nursing'] },
     {
       asc: 'Community based services for people who misuse substances',
       cqc: ['Rehabilitation (substance abuse)'],
