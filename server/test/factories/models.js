@@ -21,6 +21,27 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
+const establishment = establishmentBuilder({
+  overrides: {
+    otherServices: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+  },
+});
+
+const establishmentWithWdfBuilder = build('Establishment', {
+  fields: {
+    ...establishment,
+    wdf: {
+      mainService: { isEligible: false, updatedSinceEffectiveDate: true },
+      starters: { isEligible: false, updatedSinceEffectiveDate: true },
+      leavers: { isEligible: false, updatedSinceEffectiveDate: true },
+      vacancies: { isEligible: false, updatedSinceEffectiveDate: true },
+      capacities: { isEligible: false, updatedSinceEffectiveDate: true },
+      serviceUsers: { isEligible: false, updatedSinceEffectiveDate: true },
+      numberOfStaff: { isEligible: false, updatedSinceEffectiveDate: true },
+    },
+  },
+});
+
 const categoryBuilder = build('Category', {
   fields: {
     id: sequence(),
@@ -121,6 +142,7 @@ const workerBuilderWithWdf = build('Worker', {
 });
 
 module.exports.establishmentBuilder = establishmentBuilder;
+module.exports.establishmentWithWdfBuilder = establishmentWithWdfBuilder;
 module.exports.workerBuilder = workerBuilder;
 module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;

@@ -1333,8 +1333,12 @@ class Establishment {
   }
 
   _checkForTrailingSemiColon(listOfEntities) {
+   const zeroInService = this._currentLine.ALLSERVICES.split(';').filter((service) =>{
+      return service === '0';
+    });
+
     if (
-      (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2) ||
+      (zeroInService.length !== 0 && listOfEntities.length === 2) ||
       this._currentLine.ALLSERVICES.split(';').length === 1
     ) {
       listOfEntities = listOfEntities.filter((thisItem) => !Number.isNaN(parseInt(thisItem, 10)));

@@ -178,6 +178,24 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       expect(apiObject).to.deep.equal(expectedResult);
     });
+    it('should return a correct all services when its YES and there are two ALLSERVICES ', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.MAINSERVICE = '8';
+      establishmentRow.ALLSERVICES = '8;10';
+      establishmentRow.SERVICEDESC = ';';
+      establishmentRow.UTILISATION = '78;9';
+      establishmentRow.CAPACITY = ';';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      const apiObject = establishment.toAPI();
+
+      const expectedResult = validateAPIObject(establishmentRow);
+      expectedResult.services = { value: 'Yes', services: [{ id: 8 }, { id: 10 }] };
+      expectedResult.capacities = [null, null, 78, 9];
+      expect(establishment.validationErrors.length).to.equal(0);
+      expect(apiObject).to.deep.equal(expectedResult);
+    });
+
     it('should return a correct all services when its null ', async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
