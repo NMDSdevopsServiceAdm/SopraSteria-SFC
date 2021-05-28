@@ -36,11 +36,10 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     }
     // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
     if (document.otherServices) {
-      document.services =
-        {
-          value: document.otherServices.value,
-          services: []
-        };
+      document.services = {
+        value: document.otherServices.value,
+        services: [],
+      };
       if (document.otherServices.value === 'Yes') {
         document.otherServices.services.forEach((thisServiceCategory) => {
           thisServiceCategory.services.forEach((thisService) => {
@@ -53,11 +52,12 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     }
 
     if (document.services) {
-      if (document.services.value === 'No' || document.services.value === null ){
-         this.property = {
-          value: document.services.value
+      if (document.services.value === 'No' || document.services.value === null) {
+        this.property = {
+          value: document.services.value,
+          services: [],
         };
-         return;
+        return;
       }
 
       if (
@@ -65,7 +65,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         Array.isArray(document.services.services) &&
         document.services.services.length > 0
       ) {
-
         const validatedServices = await this._validateServices(document.services.services);
         const validatedServicesValue = this._validateValue(document.services.value);
 
@@ -88,7 +87,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
   }
 
   restorePropertyFromSequelize(document) {
-
     const otherServicesDocument = {
       value: document.otherServicesValue,
     };
@@ -100,13 +98,13 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     if (document.otherServicesValue === 'Yes') {
       otherServicesDocument.services = document.otherServices.map((thisService) => {
-          return {
-            id: thisService.id,
-            name: thisService.name,
-            category: thisService.category,
-            other: thisService.other ? thisService.other : undefined,
-          };
-        });
+        return {
+          id: thisService.id,
+          name: thisService.name,
+          category: thisService.category,
+          other: thisService.other ? thisService.other : undefined,
+        };
+      });
     }
     return otherServicesDocument;
   }
@@ -117,7 +115,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
     };
 
     // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
-    if (this.property && this.property.value === 'Yes' && Array.isArray(this.property.services)) {
+    if (this.property && Array.isArray(this.property.services)) {
       servicesDocument.additionalModels = {
         establishmentServices: this.property.services.map((thisService) => {
           return {
@@ -133,9 +131,14 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
   isEqual(currentValue, newValue) {
     let arraysEqual;
 
-    if (currentValue && newValue && currentValue.value === 'Yes' && newValue.value === 'Yes' &&
-      currentValue.services && newValue.services) {
-
+    if (
+      currentValue &&
+      newValue &&
+      currentValue.value === 'Yes' &&
+      newValue.value === 'Yes' &&
+      currentValue.services &&
+      newValue.services
+    ) {
       if (currentValue.services.length === newValue.services.length) {
         arraysEqual = currentValue.services.every((thisService) => {
           return newValue.services.find(
@@ -161,7 +164,9 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
           ? ServiceFormatters.createServicesByCategoryJSON(otherServices.services, false, false, false)
           : undefined,
       },
-      allOtherServices: allServices ? ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true) : undefined,
+      allOtherServices: allServices
+        ? ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true)
+        : undefined,
     };
   }
 
@@ -172,8 +177,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     const result = {
       otherServices: {
-        value:this.property.value ? this.property.value : null,
-
+        value: this.property.value ? this.property.value : null,
       },
     };
     result.services = ServiceFormatters.createServicesByCategoryJSON(this.property.services, false, false, false);
@@ -188,7 +192,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     // if id is given, it must be an integer
     return !(thisService.id && !Number.isInteger(thisService.id));
-
   }
 
   // returns false if service definitions are not valid, otherwise returns
@@ -250,6 +253,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
   }
 
   _validateValue(value) {
-    return allowedValues.includes(value)? value : false;
+    return allowedValues.includes(value) ? value : false;
   }
 };
