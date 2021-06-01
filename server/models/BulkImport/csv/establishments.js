@@ -1317,13 +1317,19 @@ class Establishment {
   }
   _ignoreZerosIfNo(listOfEntities) {
     const allServices = this._currentLine.ALLSERVICES.split(';');
-
-    if (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2 && allServices.length === 2) {
+    const zeroInService = this._currentLine.ALLSERVICES.split(';').filter((service) =>{
+      return service === '0';
+    });
+    if (zeroInService.length > 0 && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
       if (indexOfZero > -1) {
+        console.log(indexOfZero);
+        console.log(listOfEntities[indexOfZero]);
+
         listOfEntities[indexOfZero] = listOfEntities[indexOfZero] === '0' ? '' : listOfEntities[indexOfZero];
       }
     }
+    console.log(listOfEntities);
     return listOfEntities;
   }
   _prepArray(listOfEntities) {
@@ -1353,7 +1359,11 @@ class Establishment {
     let listOfUtilisations = this._currentLine.UTILISATION.split(';');
 
     //remove excess semicolon when no other services = 0
+    console.log("listOfCapacities");
+
     listOfCapacities = this._prepArray(listOfCapacities);
+    console.log("listOfUtilisations");
+
     listOfUtilisations = this._prepArray(listOfUtilisations);
 
     const localValidationErrors = [];
