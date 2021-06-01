@@ -14,8 +14,8 @@ import { Subscription } from 'rxjs';
 export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
+  @Input() canEditWorker: boolean;
   public canViewWorker: boolean;
-  public canEditWorker: boolean;
   public sortStaffOptions;
   public sortBy: string;
   public overallWdfEligibility: boolean;
@@ -34,8 +34,6 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = WdfSortStaffOptions;
     this.getOverallWdfEligibility();
     this.restoreSortBy();
@@ -52,16 +50,15 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
     this.saveWorkerList();
   }
   public saveWorkerList() {
-    const listOfWorkerUids =  this.workers.map((worker) => worker.uid );
+    const listOfWorkerUids = this.workers.map((worker) => worker.uid);
     localStorage.setItem('ListOfWorkers', JSON.stringify(listOfWorkerUids));
   }
-  public restoreSortBy(){
-    this.sortBy = localStorage.getItem("SortBy");
-    if(this.sortBy){
+  public restoreSortBy() {
+    this.sortBy = localStorage.getItem('SortBy');
+    if (this.sortBy) {
       this.sortByColumn(this.sortBy);
     }
   }
-
 
   public sortByColumn(selectedColumn: any) {
     localStorage.setItem('SortBy', selectedColumn);

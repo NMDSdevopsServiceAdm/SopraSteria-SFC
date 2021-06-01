@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
@@ -23,14 +24,18 @@ import { Worker } from '../../../core/model/worker.model';
 export class WdfDataComponent implements OnInit {
   public workplace: Establishment;
   public workplaceUid: string;
+  public primaryWorkplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
-  public canViewWorker: boolean;
+  public canViewWorker = false;
+  public canEditWorker: boolean;
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
   public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
+  public isParent: boolean;
+  public isStandalone = true;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -39,19 +44,30 @@ export class WdfDataComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.WDF);
-    this.returnUrl = { url: ['/wdf', 'data'] };
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
 
-    this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+    if (this.route.snapshot.params.establishmentuid) {
+      this.workplaceUid = this.route.snapshot.params.establishmentuid;
+      this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
+    } else {
+      this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+      this.returnUrl = { url: ['/wdf', 'data'] };
+    }
+
+    this.isParent = this.checkIfParent();
+    this.isParent ? this.breadcrumbService.show(JourneyType.WDF_PARENT) : this.breadcrumbService.show(JourneyType.WDF);
+
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
+    this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
 
+    this.getWorkers();
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
-    this.getWorkers();
   }
 
   ngOnDestroy() {
@@ -62,6 +78,7 @@ export class WdfDataComponent implements OnInit {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
+        this.isStandalone = this.checkIfStandalone();
         this.establishmentService.setState(workplace);
       }),
     );
@@ -111,5 +128,18 @@ export class WdfDataComponent implements OnInit {
 
   public getStaffWdfEligibility(workers: Worker[]): boolean {
     return workers.every((worker) => worker.wdfEligible === true);
+  }
+
+  private checkIfParent(): boolean {
+    return this.primaryWorkplaceUid === this.workplaceUid ? true : false;
+  }
+  private checkIfStandalone(): boolean {
+    if (this.workplace) {
+      if (this.primaryWorkplaceUid !== this.workplaceUid) {
+        return false;
+      }
+      return !this.workplace.isParent;
+    }
+    return true;
   }
 }

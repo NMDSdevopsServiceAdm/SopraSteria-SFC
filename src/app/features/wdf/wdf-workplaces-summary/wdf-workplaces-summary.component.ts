@@ -37,7 +37,7 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.WDF);
+    this.breadcrumbService.show(JourneyType.WDF_PARENT);
     this.returnUrl = { url: ['/wdf', 'workplaces'] };
 
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
