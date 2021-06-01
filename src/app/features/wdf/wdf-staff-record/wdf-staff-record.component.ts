@@ -43,11 +43,6 @@ export class WdfStaffRecordComponent implements OnInit {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.setExitUrl();
 
-    this.isStandalone = this.checkIfStandalone();
-    this.isStandalone
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
-
     this.refreshSubscription();
     this.getEstablishment();
     this.getWorker(this.route.snapshot.params);
@@ -67,6 +62,8 @@ export class WdfStaffRecordComponent implements OnInit {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
+        this.isStandalone = this.checkIfStandalone();
+        this.setBreadcrumbs();
         this.establishmentService.setState(workplace);
       }),
     );
@@ -109,6 +106,12 @@ export class WdfStaffRecordComponent implements OnInit {
       return !this.workplace.isParent;
     }
     return true;
+  }
+
+  private setBreadcrumbs(): void {
+    this.isStandalone
+      ? this.breadcrumbService.show(JourneyType.WDF)
+      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
 
   private refreshSubscription() {
