@@ -4,6 +4,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { InMemoryCache } from '@apollo/client/core';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServiceComponent,
@@ -47,9 +48,13 @@ import { ResetPasswordConfirmationComponent } from '@features/reset-password/con
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
+import { APOLLO_OPTIONS } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { environment } from 'src/environments/environment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -61,7 +66,6 @@ import {
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @NgModule({
   declarations: [
@@ -136,7 +140,19 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     LoggedInUserResolver,
     PrimaryWorkplaceResolver,
     NotificationsListResolver,
-    FeatureFlagsService
+    FeatureFlagsService,
+    {
+      provide: APOLLO_OPTIONS,
+      useFactory: (httpLink: HttpLink) => {
+        return {
+          cache: new InMemoryCache(),
+          link: httpLink.create({
+            uri: environment.cmsUri,
+          }),
+        };
+      },
+      deps: [HttpLink],
+    },
   ],
   bootstrap: [AppComponent],
 })
