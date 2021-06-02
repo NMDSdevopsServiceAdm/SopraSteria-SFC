@@ -1,18 +1,28 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
   selector: 'app-wdf-staff-mismatch-message',
   templateUrl: './wdf-staff-mismatch-message.component.html',
 })
 export class WdfStaffMismatchMessageComponent implements OnInit {
-  @Input() workplace: Establishment;
-  @Input() workerCount: number;
-  @Input() overallWdfEligibility: boolean;
+  @Input() public workplace: Establishment;
+  @Input() public workerCount: number;
+  @Input() public overallWdfEligibility: boolean;
   public staffMismatchMessage: string;
   public icon: string;
+  public staffRecordsUrl: URLStructure;
+  private primaryWorkplaceUid: string;
+
+  constructor(private route: ActivatedRoute, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+
+    this.setStaffRecordsUrl();
     this.setMessage();
     this.setIcon();
   }
@@ -41,6 +51,14 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
     if (this.overallWdfEligibility == false) {
       this.icon = 'cross-icon';
       return;
+    }
+  }
+
+  private setStaffRecordsUrl(): void {
+    if (this.route.snapshot.params.establishmentuid && this.primaryWorkplaceUid !== this.workplace.uid) {
+      this.staffRecordsUrl = { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
+    } else {
+      this.staffRecordsUrl = { url: ['/dashboard'], fragment: 'staff-records' };
     }
   }
 }
