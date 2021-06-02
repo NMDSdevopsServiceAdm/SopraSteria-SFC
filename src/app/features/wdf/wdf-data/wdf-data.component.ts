@@ -34,7 +34,6 @@ export class WdfDataComponent implements OnInit {
   public wdfEndDate: string;
   public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
-  public isParent: boolean;
   public isStandalone = true;
   private subscriptions: Subscription = new Subscription();
 
@@ -58,9 +57,6 @@ export class WdfDataComponent implements OnInit {
       this.returnUrl = { url: ['/wdf', 'data'] };
     }
 
-    this.isParent = this.checkIfParent();
-    this.isParent ? this.breadcrumbService.show(JourneyType.WDF_PARENT) : this.breadcrumbService.show(JourneyType.WDF);
-
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
 
@@ -79,6 +75,7 @@ export class WdfDataComponent implements OnInit {
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.isStandalone = this.checkIfStandalone();
+        this.setBreadcrumbs();
         this.establishmentService.setState(workplace);
       }),
     );
@@ -130,9 +127,12 @@ export class WdfDataComponent implements OnInit {
     return workers.every((worker) => worker.wdfEligible === true);
   }
 
-  private checkIfParent(): boolean {
-    return this.primaryWorkplaceUid === this.workplaceUid ? true : false;
+  private setBreadcrumbs(): void {
+    this.isStandalone
+      ? this.breadcrumbService.show(JourneyType.WDF)
+      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
+
   private checkIfStandalone(): boolean {
     if (this.workplace) {
       if (this.primaryWorkplaceUid !== this.workplaceUid) {

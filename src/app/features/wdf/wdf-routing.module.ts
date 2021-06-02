@@ -34,9 +34,19 @@ const routes: Routes = [
       },
       {
         path: ':establishmentuid',
-        component: WdfDataComponent,
-        canActivate: [HasPermissionsGuard],
-        data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
+        children: [
+          {
+            path: '',
+            component: WdfDataComponent,
+            canActivate: [HasPermissionsGuard],
+            data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
+          },
+          {
+            path: 'staff-record/:id',
+            component: WdfStaffRecordComponent,
+            data: { title: 'WDF Staff Record' },
+          },
+        ],
       },
     ],
   },
