@@ -1,6 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -13,6 +15,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
       WdfStaffMismatchMessageComponent,
       {
         imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+        providers: [{ provide: EstablishmentService, useClass: MockEstablishmentService }],
         componentProperties: { workplace: establishmentBuilder(), workerCount: 1 },
       },
     );
