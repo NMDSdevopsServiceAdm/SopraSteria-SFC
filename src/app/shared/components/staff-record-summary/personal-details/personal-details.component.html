@@ -63,7 +63,7 @@
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="!(wdfView && wdfNewDesign)"
+        *ngIf="!(wdfView && wdfNewDesign && !!worker.dateOfBirth)"
         [explanationText]="' date of birth'"
         [link]="getRoutePath('date-of-birth')"
         [hasData]="!!worker.dateOfBirth"
@@ -101,7 +101,7 @@
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="!(wdfView && wdfNewDesign)"
+        *ngIf="!(wdfView && wdfNewDesign && !!worker.gender)"
         [explanationText]="' gender'"
         [link]="getRoutePath('gender')"
         [hasData]="!!worker.gender"
