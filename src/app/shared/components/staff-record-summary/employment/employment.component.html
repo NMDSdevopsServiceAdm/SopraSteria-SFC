@@ -27,6 +27,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.mainJobStartDate.isEligible === 'Yes' &&
@@ -193,6 +194,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.daysSick.isEligible === 'Yes' &&
@@ -233,6 +235,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.zeroHoursContract.isEligible === 'Yes' &&
@@ -277,6 +280,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.weeklyHoursAverage.isEligible === 'Yes' &&
@@ -321,6 +325,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.weeklyHoursContracted.isEligible === 'Yes' &&
@@ -362,6 +367,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.annualHourlyPay.isEligible === 'Yes' &&
