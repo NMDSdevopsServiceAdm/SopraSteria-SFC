@@ -10,5 +10,5 @@ export class WdfDataStatusMessageComponent {
   @Input() public wdfStartDate: string;
   @Input() public wdfEndDate: string;
   @Input() public wdfEligibilityStatus: WdfEligibilityStatus;
-  @Input() public isStandalone = true;
+  @Input() public isStandalone: boolean;
 }
