@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -10,12 +11,24 @@ import { establishmentBuilder } from '../../../../../server/test/factories/model
 import { WdfStaffMismatchMessageComponent } from './wdf-staff-mismatch-message.component';
 
 describe('WdfStaffMismatchMessageComponent', () => {
-  const setup = async () => {
+  const setup = async (uid = '') => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(
       WdfStaffMismatchMessageComponent,
       {
         imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
-        providers: [{ provide: EstablishmentService, useClass: MockEstablishmentService }],
+        providers: [
+          { provide: EstablishmentService, useClass: MockEstablishmentService },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                params: {
+                  establishmentuid: uid,
+                },
+              },
+            },
+          },
+        ],
         componentProperties: { workplace: establishmentBuilder(), workerCount: 1 },
       },
     );
@@ -73,5 +86,31 @@ describe('WdfStaffMismatchMessageComponent', () => {
 
     const crossIcon = 'cross-icon';
     expect(component.icon).toEqual(crossIcon);
+  });
+
+  describe('setStaffRecordsUrl', async () => {
+    it("should set URL to subs's staff records if user is a parent viewing their subsidiary", async () => {
+      const { component, fixture } = await setup('123');
+      const expectedUrl = { url: ['/workplace', '456'], fragment: 'staff-records' };
+
+      component.primaryWorkplaceUid = '123';
+      component.workplace.uid = '456';
+      fixture.componentInstance.setStaffRecordsUrl();
+      fixture.detectChanges();
+
+      expect(component.staffRecordsUrl).toEqual(expectedUrl);
+    });
+
+    it('should set URL to staff records tab on dashboard if the user is the primary user', async () => {
+      const { component, fixture } = await setup();
+      const expectedUrl = { url: ['/dashboard'], fragment: 'staff-records' };
+
+      component.primaryWorkplaceUid = '123';
+      component.workplace.uid = '123';
+      fixture.componentInstance.setStaffRecordsUrl();
+      fixture.detectChanges();
+
+      expect(component.staffRecordsUrl).toEqual(expectedUrl);
+    });
   });
 });

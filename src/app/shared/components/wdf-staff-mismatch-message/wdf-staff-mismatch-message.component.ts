@@ -15,7 +15,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
   public staffMismatchMessage: string;
   public icon: string;
   public staffRecordsUrl: URLStructure;
-  private primaryWorkplaceUid: string;
+  public primaryWorkplaceUid: string;
 
   constructor(private route: ActivatedRoute, private establishmentService: EstablishmentService) {}
 
@@ -54,7 +54,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
     }
   }
 
-  private setStaffRecordsUrl(): void {
+  public setStaffRecordsUrl(): void {
     if (this.route.snapshot.params.establishmentuid && this.primaryWorkplaceUid !== this.workplace.uid) {
       this.staffRecordsUrl = { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
     } else {
