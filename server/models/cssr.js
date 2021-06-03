@@ -1,5 +1,6 @@
 /* jshint indent: 2 */
 const getAddressAPI = require('../utils/getAddressAPI');
+const get = require('lodash/get');
 
 module.exports = function (sequelize, DataTypes) {
   const CSSR = sequelize.define(
@@ -52,7 +53,7 @@ module.exports = function (sequelize, DataTypes) {
 
   CSSR.getIdFromDistrict = async function (postcode) {
     const postcodeData = await getAddressAPI.getPostcodeData(postcode);
-    if (!postcodeData || !postcodeData.addresses) {
+    if (!get(postcodeData, 'addresses[0].district')) {
       return false;
     }
 
