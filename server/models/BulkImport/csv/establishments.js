@@ -1315,34 +1315,26 @@ class Establishment {
 
     return true;
   }
-  _ignoreZerosIfNo(listOfEntities) {
-    const allServices = this._currentLine.ALLSERVICES.split(';');
-    const zeroInService = this._currentLine.ALLSERVICES.split(';').filter((service) =>{
-      return service === '0';
-    });
+  _ignoreZerosIfNo(listOfEntities, zeroInService, allServices) {
     if (zeroInService.length > 0 && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
       if (indexOfZero > -1) {
-        console.log(indexOfZero);
-        console.log(listOfEntities[indexOfZero]);
-
         listOfEntities[indexOfZero] = listOfEntities[indexOfZero] === '0' ? '' : listOfEntities[indexOfZero];
       }
     }
-    console.log(listOfEntities);
     return listOfEntities;
   }
   _prepArray(listOfEntities) {
-    listOfEntities = this._ignoreZerosIfNo(listOfEntities);
-    listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
+    const allServices = this._currentLine.ALLSERVICES.split(';');
+    const zeroInService = allServices.filter((service) => {
+      return service === '0';
+    });
+    listOfEntities = this._ignoreZerosIfNo(listOfEntities, zeroInService, allServices);
+    listOfEntities = this._checkForTrailingSemiColon(listOfEntities, zeroInService);
     return listOfEntities;
   }
 
-  _checkForTrailingSemiColon(listOfEntities) {
-   const zeroInService = this._currentLine.ALLSERVICES.split(';').filter((service) =>{
-      return service === '0';
-    });
-
+  _checkForTrailingSemiColon(listOfEntities, zeroInService) {
     if (
       (zeroInService.length !== 0 && listOfEntities.length === 2) ||
       this._currentLine.ALLSERVICES.split(';').length === 1
@@ -1359,11 +1351,7 @@ class Establishment {
     let listOfUtilisations = this._currentLine.UTILISATION.split(';');
 
     //remove excess semicolon when no other services = 0
-    console.log("listOfCapacities");
-
     listOfCapacities = this._prepArray(listOfCapacities);
-    console.log("listOfUtilisations");
-
     listOfUtilisations = this._prepArray(listOfUtilisations);
 
     const localValidationErrors = [];
