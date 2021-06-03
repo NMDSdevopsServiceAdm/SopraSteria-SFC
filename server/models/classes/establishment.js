@@ -428,7 +428,12 @@ class Establishment extends EntityValidator {
           allAssociatedServiceIndices.push(document.mainService.id);
           mainServiceAdded = true;
         }
-        if (document && document.otherServices && document.otherServices.services &&  Array.isArray(document.otherServices)) {
+        if (
+          document &&
+          document.otherServices &&
+          document.otherServices.services &&
+          Array.isArray(document.otherServices.services)
+        ) {
           document.otherServices.services.forEach((thisService) => {
             if (thisService.id) {
               allAssociatedServiceIndices.push(thisService.id);
@@ -440,7 +445,8 @@ class Establishment extends EntityValidator {
           });
           servicesAdded = true;
         }
-        if (document && document.services && document.services.services && Array.isArray(document.services)) {
+
+        if (document && document.services && document.services.services && Array.isArray(document.services.services)) {
           document.services.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
 
           // if no main service given in document, then use the current known main service property
