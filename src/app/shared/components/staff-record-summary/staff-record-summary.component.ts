@@ -67,7 +67,14 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   private setNewWdfReturn(): void {
-    this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
+    if (this.route.snapshot.params.establishmentuid) {
+      this.returnTo = {
+        url: ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid],
+        fragment: 'staff-records',
+      };
+    } else {
+      this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
+    }
   }
 
   public getRoutePath(name: string) {

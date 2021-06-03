@@ -3,8 +3,10 @@ import { JourneyRoute } from './breadcrumb.model';
 enum Path {
   OVERVIEW = '/wdf',
   DATA = '/wdf/data',
-  STAFF_RECORD = 'wdf/data/staffrecord/:id',
+  STAFF_RECORD = 'wdf/data/staff-record/:id',
   WORKPLACES = 'wdf/workplaces',
+  PARENT_DATA = 'wdf/workplaces/:establishmentuid',
+  PARENT_STAFF_RECORD = 'wdf/workplaces/:establishmentuid/staff-record/:id',
 }
 
 export const wdfJourney: JourneyRoute = {
@@ -14,17 +16,39 @@ export const wdfJourney: JourneyRoute = {
       path: Path.OVERVIEW,
       children: [
         {
-          title: 'Workplaces',
-          path: Path.WORKPLACES,
-          children: [],
-        },
-        {
           title: 'WDF data',
           path: Path.DATA,
           children: [
             {
               title: 'Staff record',
               path: Path.STAFF_RECORD,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const wdfParentJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'WDF',
+      path: Path.OVERVIEW,
+      children: [
+        {
+          title: 'Workplaces',
+          path: Path.WORKPLACES,
+          children: [
+            {
+              title: 'WDF data',
+              path: Path.PARENT_DATA,
+              children: [
+                {
+                  title: 'Staff record',
+                  path: Path.PARENT_STAFF_RECORD,
+                },
+              ],
             },
           ],
         },

@@ -4,16 +4,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service.js';
 import { UserService } from '@core/services/user.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockReportService } from '@core/test-utils/MockReportService.js';
+import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models.js';
-import { WdfModule } from '../wdf.module.js';
+import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
+import { WdfModule } from '../wdf.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
 describe('WdfStaffSummaryComponent', () => {
@@ -27,6 +29,7 @@ describe('WdfStaffSummaryComponent', () => {
           useFactory: MockPermissionsService.factory(['canViewWorker']),
           deps: [HttpClient, Router, UserService],
         },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
