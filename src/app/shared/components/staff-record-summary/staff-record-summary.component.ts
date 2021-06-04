@@ -92,10 +92,20 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   private updateFieldsWhichDontRequireConfirmation(): void {
-    const fieldsWhichDontRequireConfirmation = ['dateOfBirth', 'gender', 'nationality', 'recruitedFrom'];
+    const fieldsWhichDontRequireConfirmation = [
+      'dateOfBirth',
+      'gender',
+      'nationality',
+      'recruitedFrom',
+      'careCertificate',
+    ];
 
     for (const field of fieldsWhichDontRequireConfirmation) {
       if (this.worker.wdf?.[field].isEligible === 'Yes' && !this.worker.wdf?.[field].updatedSinceEffectiveDate) {
+        if (field === 'careCertificate' && this.worker.careCertificate === 'Yes, completed') {
+          this.confirmField(field);
+          continue;
+        }
         this.confirmField(field);
       }
     }
