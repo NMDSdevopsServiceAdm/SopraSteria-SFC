@@ -1,7 +1,7 @@
 <h2 class="govuk-heading-m">Personal details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top">
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Flu vaccination</dt>
+    <dt class="govuk-summary-list__key">Flu vaccination since <br />1 September 2020</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.fluJab || '-' }}
     </dd>
@@ -111,7 +111,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Disability</dt>
+    <dt class="govuk-summary-list__key">Disabled</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.disability || '-' | closedEndedAnswer }}
     </dd>

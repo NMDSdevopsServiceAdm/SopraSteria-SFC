@@ -6,9 +6,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('hours').invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Do you know how many hours they are contracted to work each week?
-            </h1>
+            <h1 class="govuk-fieldset__heading">Do you know how many hours they're contracted to work each week?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
@@ -21,9 +19,7 @@
                 value="Yes"
                 aria-controls="conditional-hoursKnown-conditional-1"
               />
-              <label class="govuk-label govuk-radios__label" for="hoursKnown-conditional-1">
-                Yes
-              </label>
+              <label class="govuk-label govuk-radios__label" for="hoursKnown-conditional-1"> Yes </label>
             </div>
             <div
               class="govuk-radios__conditional govuk-input--width-20"
@@ -31,9 +27,7 @@
               id="conditional-hoursKnown-conditional-1"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="hours">
-                  Contracted weekly hours
-                </label>
+                <label class="govuk-label" for="hours"> Contracted weekly hours </label>
                 <span *ngIf="submitted && form.get('hours').errors" id="hours-error" class="govuk-error-message">
                   <ng-container *ngIf="form.get('hours').hasError('required')">
                     <span class="govuk-visually-hidden">Error:</span>
@@ -69,9 +63,7 @@
                 type="radio"
                 value="No"
               />
-              <label class="govuk-label govuk-radios__label" for="hoursKnown-2">
-                No
-              </label>
+              <label class="govuk-label govuk-radios__label" for="hoursKnown-2"> No </label>
             </div>
           </div>
         </fieldset>
