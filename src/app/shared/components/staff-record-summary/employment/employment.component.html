@@ -16,7 +16,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Date started</dt>
+    <dt class="govuk-summary-list__key">Date started in main job role</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
         [wdfView]="wdfView"
@@ -114,7 +114,7 @@
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
-    <dt class="govuk-summary-list__key">Nurse specialisms in current role</dt>
+    <dt class="govuk-summary-list__key">Nursing specialisms used in current role</dt>
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="!worker.nurseSpecialisms"> - </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'No'"> Not using any of their specialisms </ng-container>
@@ -163,7 +163,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Worked in adult social care</dt>
+    <dt class="govuk-summary-list__key">Year started in adult social care</dt>
     <dd class="govuk-summary-list__value">
       {{
         worker.socialCareStartDate?.year
@@ -182,7 +182,7 @@
   </div>
 
   <div class="govuk-summary-list__row" *ngIf="displayDaysSickness">
-    <dt class="govuk-summary-list__key">Sickness in last 12 months</dt>
+    <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
         [wdfView]="wdfView"
@@ -350,7 +350,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Salary</dt>
+    <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
 
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
