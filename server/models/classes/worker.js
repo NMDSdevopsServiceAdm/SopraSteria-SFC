@@ -722,9 +722,7 @@ class Worker extends EntityValidator {
           // every time the worker is saved, need to calculate
           //  it's current WDF Eligibility, and if it is eligible, update
           //  the last WDF Eligibility status
-          let wdfAudit = null;
-
-          await this.setWdfProperties(updateDocument, updatedTimestamp, wdfAudit, savedBy);
+          const wdfAudit = await this.setWdfProperties(updateDocument, updatedTimestamp, savedBy);
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
@@ -864,7 +862,7 @@ class Worker extends EntityValidator {
     return mustSave;
   }
 
-  async setWdfProperties(document, updatedTimestamp, wdfAudit, savedBy) {
+  async setWdfProperties(document, updatedTimestamp, savedBy) {
     const currentWdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
     const effectiveDateTime = WdfCalculator.effectiveTime;
 
@@ -875,10 +873,12 @@ class Worker extends EntityValidator {
       (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
     ) {
       document.lastWdfEligibility = updatedTimestamp;
-      wdfAudit = {
+     return {
         username: savedBy.toLowerCase(),
         type: 'wdfEligible',
       };
+    } else {
+      return null;
     }
   }
 
