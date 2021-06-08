@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Article } from '@core/model/article.model';
 
 @Component({
+  selector: 'app-article',
   templateUrl: './article.component.html',
   providers: [],
 })
