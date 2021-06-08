@@ -1,8 +1,11 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-0 govuk-caption-xl">ASC-WDS news</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
+      <span class="govuk-caption-xl">ASC-WDS news</span>
+      <span [innerHTML]="article.title"></span>
+    </h1>
     <div [innerHTML]="article.content"></div>
-    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-6" [routerLink]="['/']">
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-3" [routerLink]="['/']">
       Return to home
     </a>
   </div>
