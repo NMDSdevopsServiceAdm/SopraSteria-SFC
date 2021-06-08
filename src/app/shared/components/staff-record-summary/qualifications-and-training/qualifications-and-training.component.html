@@ -1,6 +1,6 @@
 <dl class="govuk-summary-list">
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Started or completed Care Certificate</dt>
+    <dt class="govuk-summary-list__key">Care Certificate</dt>
 
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
@@ -43,7 +43,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Any social care qualification</dt>
+    <dt class="govuk-summary-list__key">Has a social care qualification</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
         [wdfView]="wdfView"
@@ -127,7 +127,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Non-social care qualification</dt>
+    <dt class="govuk-summary-list__key">Other qualifications</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
         [wdfView]="wdfView"
@@ -200,7 +200,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Completing apprenticeship training</dt>
+    <dt class="govuk-summary-list__key">Apprenticeship training</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
     </dd>

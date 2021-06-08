@@ -18,6 +18,7 @@ export enum JourneyType {
   BENCHMARK_RANKINGS_SICKNESS,
   BENCHMARK_RANKINGS_QUALIFICATIONS,
   WDF,
+  WDF_PARENT,
 }
 
 export interface JourneyRoute {

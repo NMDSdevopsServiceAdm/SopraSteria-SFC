@@ -67,7 +67,14 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   private setNewWdfReturn(): void {
-    this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
+    if (this.route.snapshot.params.establishmentuid) {
+      this.returnTo = {
+        url: ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid],
+        fragment: 'staff-records',
+      };
+    } else {
+      this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
+    }
   }
 
   public getRoutePath(name: string) {
@@ -85,10 +92,20 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   private updateFieldsWhichDontRequireConfirmation(): void {
-    const fieldsWhichDontRequireConfirmation = ['dateOfBirth', 'gender', 'nationality', 'recruitedFrom'];
+    const fieldsWhichDontRequireConfirmation = [
+      'dateOfBirth',
+      'gender',
+      'nationality',
+      'recruitedFrom',
+      'careCertificate',
+    ];
 
     for (const field of fieldsWhichDontRequireConfirmation) {
       if (this.worker.wdf?.[field].isEligible === 'Yes' && !this.worker.wdf?.[field].updatedSinceEffectiveDate) {
+        if (field === 'careCertificate' && this.worker.careCertificate === 'Yes, completed') {
+          this.confirmField(field);
+          continue;
+        }
         this.confirmField(field);
       }
     }

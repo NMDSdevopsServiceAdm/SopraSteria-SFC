@@ -1,17 +1,17 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
       <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
-      WDF data
+      WDF data<ng-container *ngIf="workplace && !isStandalone">: {{ workplace.name }}</ng-container>
     </h1>
+    <app-wdf-data-status-message
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [wdfEligibilityStatus]="wdfEligibilityStatus"
+      [isStandalone]="isStandalone"
+    ></app-wdf-data-status-message>
   </div>
 </div>
-
-<app-wdf-data-status-message
-  [wdfStartDate]="wdfStartDate"
-  [wdfEndDate]="wdfEndDate"
-  [wdfEligibilityStatus]="wdfEligibilityStatus"
-></app-wdf-data-status-message>
 
 <app-tabs>
   <app-tab
@@ -40,6 +40,7 @@
       *ngIf="workers && workplace"
       [workplace]="workplace"
       [workers]="workers"
+      [canEditWorker]="canEditWorker"
     ></app-wdf-staff-summary>
   </app-tab>
 </app-tabs>

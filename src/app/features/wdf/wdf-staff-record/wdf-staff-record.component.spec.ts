@@ -71,7 +71,7 @@ describe('WdfStaffRecordComponent', () => {
 
   it('should display the "not meeting requirements" message and red cross when user does not meet WDF requirements overall and current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
-    const expectedStatusMessage = 'Not meeting the WDF 2021 to 2022 requirements';
+    const expectedStatusMessage = 'This record does not meet the WDF 2021 to 2022 requirements';
     const redCrossVisuallyHiddenMessage = 'Red cross';
 
     component.worker = workerBuilder();

@@ -1315,10 +1315,8 @@ class Establishment {
 
     return true;
   }
-  _ignoreZerosIfNo(listOfEntities) {
-    const allServices = this._currentLine.ALLSERVICES.split(';');
-
-    if (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2 && allServices.length === 2) {
+  _ignoreZerosIfNo(listOfEntities, zeroInService, allServices) {
+    if (zeroInService.length > 0 && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
       if (indexOfZero > -1) {
         listOfEntities[indexOfZero] = listOfEntities[indexOfZero] === '0' ? '' : listOfEntities[indexOfZero];
@@ -1327,14 +1325,18 @@ class Establishment {
     return listOfEntities;
   }
   _prepArray(listOfEntities) {
-    listOfEntities = this._ignoreZerosIfNo(listOfEntities);
-    listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
+    const allServices = this._currentLine.ALLSERVICES.split(';');
+    const zeroInService = allServices.filter((service) => {
+      return service === '0';
+    });
+    listOfEntities = this._ignoreZerosIfNo(listOfEntities, zeroInService, allServices);
+    listOfEntities = this._checkForTrailingSemiColon(listOfEntities, zeroInService);
     return listOfEntities;
   }
 
-  _checkForTrailingSemiColon(listOfEntities) {
+  _checkForTrailingSemiColon(listOfEntities, zeroInService) {
     if (
-      (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2) ||
+      (zeroInService.length !== 0 && listOfEntities.length === 2) ||
       this._currentLine.ALLSERVICES.split(';').length === 1
     ) {
       listOfEntities = listOfEntities.filter((thisItem) => !Number.isNaN(parseInt(thisItem, 10)));
