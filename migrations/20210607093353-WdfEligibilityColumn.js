@@ -21,6 +21,10 @@ module.exports = {
               },
               { transaction },
             ),
+            queryInterface.sequelize.query(`
+            ALTER TABLE cqc."Worker"
+            DROP COLUMN IF EXISTS "CurrentWdfEligibiity";
+          `),
           ]
         )
         return Promise.resolve();
