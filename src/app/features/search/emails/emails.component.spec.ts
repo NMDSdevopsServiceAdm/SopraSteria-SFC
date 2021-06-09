@@ -220,4 +220,17 @@ describe('EmailsComponent', () => {
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
   });
+
+  it('should download a WDF Summary report when the "WDF Summary Report" button is clicked', async () => {
+    const component = await setup();
+
+    const reportService = TestBed.inject(ReportService);
+    const getReport = spyOn(reportService, 'getWdfSummaryReport').and.callFake(() => of(null));
+    const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+
+    fireEvent.click(component.getByText('WDF summary report', { exact: false }));
+
+    expect(getReport).toHaveBeenCalled();
+    expect(saveAs).toHaveBeenCalled();
+  });
 });

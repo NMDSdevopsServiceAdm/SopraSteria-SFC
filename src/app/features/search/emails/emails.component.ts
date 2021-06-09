@@ -119,6 +119,11 @@ export class EmailsComponent implements OnDestroy {
     this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
   }
 
+  public downloadWdfSummaryReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
+  }
+
   public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');

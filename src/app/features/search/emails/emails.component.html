@@ -62,7 +62,7 @@
           href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-report.xls'"
           (click)="downloadLocalAuthorityAdminReport($event)"
         >
-          Local authority progress
+          Local admin authority progress
         </a>
       </li>
       <li class="govuk-!-margin-right-8">
@@ -90,6 +90,15 @@
           (click)="downloadSatisfactionSurveyReport($event)"
         >
           Satisfaction survey
+        </a>
+      </li>
+      <li class="govuk-!-margin-right-8">
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-summary-report.csv"
+          class="govuk-body-m"
+          (click)="downloadWdfSummaryReport($event)"
+        >
+          WDF summary report
         </a>
       </li>
     </ul>
