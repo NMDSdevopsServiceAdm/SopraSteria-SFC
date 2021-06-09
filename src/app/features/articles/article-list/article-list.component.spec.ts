@@ -21,6 +21,7 @@ describe('ArticleListComponent', () => {
     { title: 'test2', slug: 'test2-slug' },
     { title: 'test3', slug: 'test3-slug' },
   ] as Article[];
+  const articles = [{ title: 'test2', slug: 'test2-slug' }];
 
   async function setup() {
     const { fixture, getByText } = await render(ArticleListComponent, {
@@ -35,6 +36,7 @@ describe('ArticleListComponent', () => {
             snapshot: {
               data: {
                 articleList,
+                articles,
               },
             },
           },
@@ -46,7 +48,7 @@ describe('ArticleListComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const component = fixture.componentInstance;
-    return { component, router, getByText };
+    return { component, fixture, router, getByText };
   }
 
   it('should render a ArticleListComponent', async () => {
@@ -71,5 +73,20 @@ describe('ArticleListComponent', () => {
     expect(firstArticleLink.getAttribute('href')).toContain(articleList[0].slug);
     expect(secondArticleLink.getAttribute('href')).toContain(articleList[1].slug);
     expect(thirdArticleLink.getAttribute('href')).toContain(articleList[2].slug);
+  });
+
+  it('should show current article in bold and not show other articles in bold', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const secondArticleLink = getByText(articleList[1].title).closest('li');
+    const firstArticleLink = getByText(articleList[0].title).closest('li');
+    const thirdArticleLink = getByText(articleList[2].title).closest('li');
+
+    component.currentArticleSlug = articleList[1].slug;
+    fixture.detectChanges();
+
+    expect(secondArticleLink.classList).toContain('govuk-!-font-weight-bold');
+    expect(firstArticleLink.classList).not.toContain('govuk-!-font-weight-bold');
+    expect(thirdArticleLink.classList).not.toContain('govuk-!-font-weight-bold');
   });
 });

@@ -11,4 +11,5 @@ export class ArticleListComponent {
   constructor(private route: ActivatedRoute) {}
 
   public articleList: Article[] = this.route.snapshot.data.articleList;
+  public currentArticleSlug: string = this.route.snapshot.data.articles[0].slug;
 }
