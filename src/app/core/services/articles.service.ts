@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApolloQueryResult } from '@apollo/client/core';
-import { Article } from '@core/model/article.model';
+import { Article, Articles } from '@core/model/article.model';
 import { Apollo, gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,7 +10,7 @@ import { map } from 'rxjs/operators';
 export class ArticlesService {
   constructor(private apollo: Apollo) {}
 
-  public getArticle(articleSlug: string): Observable<ApolloQueryResult<Article>> {
+  public getArticle(articleSlug: string): Observable<Article[]> {
     const articleQuery = {
       query: gql`
           query GetArticle {
@@ -29,7 +28,21 @@ export class ArticlesService {
     return this.apolloGet(articleQuery);
   }
 
-  private apolloGet(query: any): Observable<ApolloQueryResult<Article>> {
-    return this.apollo.watchQuery<Article>(query).valueChanges.pipe(map((data: ApolloQueryResult<Article>) => data));
+  public getThreeLatestArticles(): Observable<Article[]> {
+    const articleQuery = {
+      query: gql`
+        query GetArticle {
+          articles(limit: 3, sort: ["-publish_date"]) {
+            slug
+            title
+          }
+        }
+      `,
+    };
+    return this.apolloGet(articleQuery);
+  }
+
+  private apolloGet(query: any): Observable<Article[]> {
+    return this.apollo.watchQuery<Articles>(query).valueChanges.pipe(map((response: any) => response.data.articles));
   }
 }

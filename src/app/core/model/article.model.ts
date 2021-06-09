@@ -9,3 +9,7 @@ export interface Article {
   title?: string;
   publish_date?: Date;
 }
+
+export interface Articles {
+  articles: Article[];
+}

@@ -9,7 +9,7 @@ const routes: Routes = [
     path: ':slug',
     component: ArticleComponent,
     resolve: {
-      article: ArticleResolver,
+      articles: ArticleResolver,
     },
     data: { title: 'Article' },
   },

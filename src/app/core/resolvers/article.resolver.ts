@@ -9,7 +9,7 @@ import { catchError, take } from 'rxjs/operators';
 export class ArticleResolver implements Resolve<any> {
   constructor(private router: Router, private articlesService: ArticlesService) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<null | Article> {
+  resolve(route: ActivatedRouteSnapshot): Observable<null | Article[]> {
     const articleSlug = route.paramMap.get('slug');
     if (articleSlug) {
       return this.articlesService.getArticle(articleSlug).pipe(

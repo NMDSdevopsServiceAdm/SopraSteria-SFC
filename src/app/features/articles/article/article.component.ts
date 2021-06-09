@@ -12,7 +12,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 export class ArticleComponent implements OnInit {
   constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
 
-  public article: Article = this.route.snapshot.data.article.data.articles[0];
+  public article: Article = this.route.snapshot.data.articles[0];
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.PUBLIC);
