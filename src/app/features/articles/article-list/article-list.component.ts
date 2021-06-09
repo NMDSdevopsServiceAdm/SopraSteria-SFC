@@ -10,5 +10,5 @@ import { Article } from '@core/model/article.model';
 export class ArticleListComponent {
   constructor(private route: ActivatedRoute) {}
 
-  public articles: Article[] = this.route.snapshot.data.articleList;
+  public articleList: Article[] = this.route.snapshot.data.articleList;
 }

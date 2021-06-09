@@ -46,14 +46,30 @@ describe('ArticleListComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const component = fixture.componentInstance;
-    return {
-      component,
-      router,
-    };
+    return { component, router, getByText };
   }
 
   it('should render a ArticleListComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should display the titles of the three latest articles', async () => {
+    const { getByText } = await setup();
+    expect(getByText(articleList[0].title)).toBeTruthy();
+    expect(getByText(articleList[1].title)).toBeTruthy();
+    expect(getByText(articleList[2].title)).toBeTruthy();
+  });
+
+  it('should have the slugs of the three latest articles in the hrefs', async () => {
+    const { getByText } = await setup();
+
+    const firstArticleLink = getByText(articleList[0].title);
+    const secondArticleLink = getByText(articleList[1].title);
+    const thirdArticleLink = getByText(articleList[2].title);
+
+    expect(firstArticleLink.getAttribute('href')).toContain(articleList[0].slug);
+    expect(secondArticleLink.getAttribute('href')).toContain(articleList[1].slug);
+    expect(thirdArticleLink.getAttribute('href')).toContain(articleList[2].slug);
   });
 });
