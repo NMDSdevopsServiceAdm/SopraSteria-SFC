@@ -195,7 +195,7 @@ describe('EmailsComponent', () => {
     expect(saveAs).toHaveBeenCalled();
   });
 
-  it('should download a satisfaction survey report when the "Delete report" button is clicked', async () => {
+  it('should download a delete report when the "Delete report" button is clicked', async () => {
     const component = await setup();
 
     const reportService = TestBed.inject(ReportService);
