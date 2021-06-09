@@ -195,7 +195,7 @@ describe('EmailsComponent', () => {
     expect(saveAs).toHaveBeenCalled();
   });
 
-  it('should download a satisfaction survey report when the "Delete report" button is clicked', async () => {
+  it('should download a delete survey report when the "Delete report" button is clicked', async () => {
     const component = await setup();
 
     const reportService = TestBed.inject(ReportService);
@@ -208,14 +208,14 @@ describe('EmailsComponent', () => {
     expect(saveAs).toHaveBeenCalled();
   });
 
-  it('should download a local authority progress report when the "Local authority progress" button is clicked', async () => {
+  it('should download a local authority progress report when the "Local admin authority progress" button is clicked', async () => {
     const component = await setup();
 
     const reportService = TestBed.inject(ReportService);
     const getReport = spyOn(reportService, 'getLocalAuthorityAdminReport').and.callFake(() => of(null));
     const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-    fireEvent.click(component.getByText('Local authority progress', { exact: false }));
+    fireEvent.click(component.getByText('Local admin authority progress', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();

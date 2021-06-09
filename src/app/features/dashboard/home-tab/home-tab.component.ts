@@ -102,8 +102,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
           this.isLocalAuthority =
             this.workplace.employerType && this.workplace.employerType.value.startsWith('Local Authority');
-          console.log('here isAuth ' + this.isLocalAuthority);
-          //this.workplaceUid = this.primaryWorkplace ? this.primaryWorkplace.uid : workplace.uid;
 
           this.canRunLocalAuthorityReport =
             this.workplace.isParent &&
