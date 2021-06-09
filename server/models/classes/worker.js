@@ -61,6 +61,7 @@ class Worker extends EntityValidator {
     // local attributes
     this._reason = null;
     this._lastWdfEligibility = null;
+    this._wdfEligible = null;
 
     // associated entities
     this._qualificationsEntities = [];
@@ -625,21 +626,7 @@ class Worker extends EntityValidator {
           // every time the worker is saved, need to calculate
           //  it's current WDF Eligibility, and if it is eligible, update
           //  the last WDF Eligibility status
-          const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
-
-          const effectiveDateTime = WdfCalculator.effectiveTime;
-
-          let wdfAudit = null;
-          if (
-            currentWdfEligibiity.isEligible &&
-            (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
-          ) {
-            modifedCreationDocument.lastWdfEligibility = updatedTimestamp;
-            wdfAudit = {
-              username: savedBy.toLowerCase(),
-              type: 'wdfEligible',
-            };
-          }
+          const wdfAudit = await this.setWdfProperties(modifedCreationDocument, updatedTimestamp, savedBy);
 
           // now save the document
           const creation = await models.worker.create(modifedCreationDocument, { transaction: thisTransaction });
@@ -733,21 +720,7 @@ class Worker extends EntityValidator {
           // every time the worker is saved, need to calculate
           //  it's current WDF Eligibility, and if it is eligible, update
           //  the last WDF Eligibility status
-          const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
-
-          const effectiveDateTime = WdfCalculator.effectiveTime;
-
-          let wdfAudit = null;
-          if (
-            currentWdfEligibiity.isEligible &&
-            (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
-          ) {
-            updateDocument.lastWdfEligibility = updatedTimestamp;
-            wdfAudit = {
-              username: savedBy.toLowerCase(),
-              type: 'wdfEligible',
-            };
-          }
+          const wdfAudit = await this.setWdfProperties(updateDocument, updatedTimestamp, savedBy);
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
@@ -887,6 +860,26 @@ class Worker extends EntityValidator {
     return mustSave;
   }
 
+  async setWdfProperties(document, updatedTimestamp, savedBy) {
+    const currentWdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
+    const effectiveDateTime = WdfCalculator.effectiveTime;
+
+    document.wdfEligible = currentWdfEligibility.isEligible;
+
+    if (
+      currentWdfEligibility.isEligible &&
+      (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
+    ) {
+      document.lastWdfEligibility = updatedTimestamp;
+     return {
+        username: savedBy.toLowerCase(),
+        type: 'wdfEligible',
+      };
+    } else {
+      return null;
+    }
+  }
+
   // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
   // returns true on success; false if no Worker
   // Can throw WorkerRestoreException exception.
@@ -977,6 +970,7 @@ class Worker extends EntityValidator {
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
         this._lastWdfEligibility = fetchResults.lastWdfEligibility;
+        this._wdfEligible = fetchResults.wdfEligible;
 
         // if history of the Worker is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1867,47 +1861,6 @@ class Worker extends EntityValidator {
     } catch (err) {
       console.error('Worker::bulkUpdateLocalIdentifiers error: ', err);
       throw err;
-    }
-  }
-
-  static async recalcWdf(username, establishmentId, workerUid, externalTransaction) {
-    try {
-      const thisWorker = new Worker(establishmentId);
-      await thisWorker.restore(workerUid);
-
-      // only try to update if not yet eligible
-      if (thisWorker._lastWdfEligibility === null) {
-        const wdfEligibility = await thisWorker.wdfToJson();
-        if (wdfEligibility.isEligible) {
-          const updatedWorker = await models.worker.update(
-            {
-              lastWdfEligibility: new Date(),
-            },
-            {
-              where: {
-                uid: workerUid,
-              },
-              returning: true,
-              plain: true,
-              transaction: externalTransaction,
-            },
-          );
-
-          await models.workerAudit.create(
-            {
-              workerFk: updatedWorker[1].dataValues.ID,
-              username,
-              type: 'wdfEligible',
-            },
-            { transaction: externalTransaction },
-          );
-        }
-      } // end if _lastWdfEligibility
-
-      return true;
-    } catch (err) {
-      console.error('Worker::recalcWdf error: ', err);
-      return false;
     }
   }
 }
