@@ -190,6 +190,15 @@ describe('WdfDataComponent', () => {
 
       expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
     });
+
+    it('should return false when there are no workers', async () => {
+      const { component, fixture } = await setup();
+
+      component.workers = [];
+      fixture.detectChanges();
+
+      expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
+    });
   });
 
   describe('WdfDataStatusMessageComponent', async () => {
