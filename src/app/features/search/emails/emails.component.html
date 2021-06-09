@@ -49,3 +49,45 @@
     <p>No emails have been sent yet.</p>
   </ng-template>
 </div>
+
+<div>
+  <h3 class="govuk-heading-s govuk-!-margin-top-1">Admin reports</h3>
+  <ul class="govuk-list govuk-list--download">
+    <li>
+      <a
+        class="govuk-!-margin-bottom-0 govuk-!-margin-right-8"
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-report.xls'"
+        (click)="downloadLocalAuthorityAdminReport($event)"
+      >
+        Local authority progress
+      </a>
+    </li>
+    <li class="govuk-!-margin-right-8">
+      <a
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-delete-report.xlsx"
+        class="govuk-body-m"
+        (click)="downloadDeleteReport($event)"
+      >
+        Delete report
+      </a>
+    </li>
+    <li class="govuk-!-margin-right-8">
+      <a
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-registration-survey-report.xlsx"
+        class="govuk-body-m"
+        (click)="downloadRegistrationSurveyReport($event)"
+      >
+        Registration survey
+      </a>
+    </li>
+    <li class="govuk-!-margin-right-8">
+      <a
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-satisfaction-survey-report.xlsx"
+        class="govuk-body-m"
+        (click)="downloadSatisfactionSurveyReport($event)"
+      >
+        Satisfaction survey report
+      </a>
+    </li>
+  </ul>
+</div>
