@@ -626,9 +626,7 @@ class Worker extends EntityValidator {
           // every time the worker is saved, need to calculate
           //  it's current WDF Eligibility, and if it is eligible, update
           //  the last WDF Eligibility status
-          let wdfAudit = null;
-
-          this.setWdfProperties(modifedCreationDocument, updatedTimestamp, wdfAudit, savedBy);
+          const wdfAudit = await this.setWdfProperties(modifedCreationDocument, updatedTimestamp, savedBy);
 
           // now save the document
           const creation = await models.worker.create(modifedCreationDocument, { transaction: thisTransaction });
