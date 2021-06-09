@@ -52,8 +52,7 @@
               "@babel/runtime/helpers/get",
               "@babel/runtime/regenerator",
               "@babel/runtime-corejs3",
-              "pako",
-              "zen-observable"
+              "pako"
             ]
           },
           "configurations": {
