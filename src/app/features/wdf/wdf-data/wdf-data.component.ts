@@ -124,6 +124,9 @@ export class WdfDataComponent implements OnInit {
   }
 
   public getStaffWdfEligibility(workers: Worker[]): boolean {
+    if (workers.length == 0) {
+      return false;
+    }
     return workers.every((worker) => worker.wdfEligible === true);
   }
 
