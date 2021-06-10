@@ -1,6 +1,5 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Home</h2>
     <ng-container *ngIf="workplace && canEditEstablishment">
       <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
       <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
@@ -32,31 +31,57 @@
       ></app-staff-mismatch-banner>
     </ng-container>
     <div *ngIf="workplace">
-      <div *ngIf="canAddWorker">
-        <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
-          <a href="#" (click)="selectStaffTab($event)"> Add a staff record </a>
-        </h3>
-
-        <p>
-          Create staff records for your workplace by providing current work information, personal details, employment
-          and qualifications and training information.
-        </p>
+      <div *ngIf="wdfNewDesign; else oldWdf">
+        <div *ngIf="canAddWorker">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a href="#" (click)="selectStaffTab($event)"> Add staff records </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">
+            Create records for all your staff and include information like their personal details, employment history,
+            training and qualifications.
+          </p>
+        </div>
+        <div *ngIf="canViewReports">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a [routerLink]="['/wdf']"> Check your WDF data </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">Check if your data meets Workforce Development Fund (WDF) requirements.</p>
+        </div>
+        <div *ngIf="canBulkUpload">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a [routerLink]="['/bulk-upload']" (click)="setReturn()"> Bulk upload your data </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">
+            Use bulk upload to add large amounts of staff, workplace, and training data. Bulk uploads may not be
+            suitable for smaller workplaces.
+          </p>
+        </div>
       </div>
-      <div *ngIf="canViewReports">
-        <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
-          <a [routerLink]="['/reports']"> View reports </a>
-        </h3>
-        <p>
-          View your Workforce Development Fund report to check whether you’re eligible to claim funding towards training
-          and qualifications.
-        </p>
-      </div>
-      <div *ngIf="canBulkUpload">
-        <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
-          <a [routerLink]="['/bulk-upload']" (click)="setReturn()"> Bulk upload </a>
-        </h3>
-        <p>Bulk upload is used to edit large quantities of workplace, staff and training information.</p>
-      </div>
+      <ng-template #oldWdf>
+        <div *ngIf="canAddWorker">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a href="#" (click)="selectStaffTab($event)"> Add a staff record </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">
+            Create staff records for your workplace by providing current work information, personal details, employment
+            and qualifications and training information.
+          </p>
+        </div>
+        <div *ngIf="canViewReports">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a [routerLink]="['/reports']"> View reports </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">Check if your data meets Workforce Development Fund (WDF) requirements.</p>
+        </div>
+        <div *ngIf="canBulkUpload">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a [routerLink]="['/bulk-upload']" (click)="setReturn()"> Bulk upload </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">
+            Bulk upload is used to edit large quantities of workplace, staff and training information.
+          </p>
+        </div>
+      </ng-template>
     </div>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -105,6 +130,21 @@
           <a [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']">Manage mandatory training</a>
         </li>
       </ul>
+      <div *ngIf="canRunLocalAuthorityReport && workplace">
+        <h3 class="govuk-heading-s govuk-!-margin-top-1">Download reports</h3>
+        <ul *ngIf="workplace" class="govuk-list">
+          <li>
+            <a
+              class="govuk__flex govuk__align-items-center"
+              href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-report.xls'"
+              (click)="downloadLocalAuthorityReport($event)"
+            >
+              <img alt="" src="/assets/images/icon-download.svg" />
+              <span class="govuk-!-margin-left-1">Local authority progress</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </ng-container>
   </div>
 </div>
