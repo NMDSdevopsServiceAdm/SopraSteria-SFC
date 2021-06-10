@@ -1,50 +1,36 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Article } from '@core/model/article.model';
-import { Observable, of } from 'rxjs';
+import { Articles } from '@core/model/article.model';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArticlesService {
-  constructor() {}
+  private path: string = 'articles';
 
-  public getArticle(articleSlug: string): Observable<Article[]> {
-    const articleQuery = 'a';
-    // const articleQuery = {
-    //   query: gql`
-    //       query GetArticle {
-    //         articles(limit: 1, filter: {
-    //           slug: {
-    //             _eq: "${articleSlug}"
-    //           }
-    //         }) {
-    //           content
-    //           title
-    //           slug
-    //         }
-    //       }
-    //     `,
-    // };
-    return this.apolloGet(articleQuery);
+  constructor(private http: HttpClient) {}
+
+  public getArticle(articleSlug: string): Observable<Articles> {
+    let params = new HttpParams();
+    const slugFilter = {
+      slug: { _eq: articleSlug },
+    };
+    params = params.set('filter', JSON.stringify(slugFilter));
+    params = params.set('limit', '1');
+    params = params.set('fields', 'content,title,slug');
+
+    return this.http.get<Articles>(`${environment.cmsUri}${this.path}`, { params });
   }
 
-  public getThreeLatestArticles(): Observable<Article[]> {
-    const articleQuery = 'a';
-    // const articleQuery = {
-    //   query: gql`
-    //     query GetArticle {
-    //       articles(limit: 3, sort: ["-publish_date"]) {
-    //         slug
-    //         title
-    //       }
-    //     }
-    //   `,
-    // };
-    return this.apolloGet(articleQuery);
-  }
+  public getThreeLatestArticles(): Observable<Articles> {
+    let params = new HttpParams();
 
-  private apolloGet(query: any): Observable<Article[]> {
-    return of([]);
-    //return this.apollo.watchQuery<Articles>(query).valueChanges.pipe(map((response: any) => response.data.articles));
+    params = params.set('sort', '-publish_date');
+    params = params.set('limit', '3');
+    params = params.set('fields', 'title,slug');
+
+    return this.http.get<Articles>(`${environment.cmsUri}${this.path}`, { params });
   }
 }

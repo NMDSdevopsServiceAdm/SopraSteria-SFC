@@ -10,6 +10,6 @@ import { Article } from '@core/model/article.model';
 export class ArticleListComponent {
   constructor(private route: ActivatedRoute) {}
 
-  public articleList: Article[] = this.route.snapshot.data.articleList;
-  public currentArticleSlug: string = this.route.snapshot.data.articles[0].slug;
+  public articleList: Article[] = this.route.snapshot.data.articleList.data;
+  public currentArticleSlug: string = this.route.snapshot.data.articles.data[0].slug;
 }

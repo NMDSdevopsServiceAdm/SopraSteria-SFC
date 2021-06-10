@@ -12,5 +12,5 @@ export interface Article {
 }
 
 export interface Articles {
-  articles: Article[];
+  data: Article[];
 }
