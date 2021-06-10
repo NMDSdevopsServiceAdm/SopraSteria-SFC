@@ -155,7 +155,7 @@ jobs:
       - run: |
           if [ -n "$CIRCLE_TAG" ] then
               npm run build:prod
-          elif [ "$CIRCLE_BRANCH" == 'live' ] then
+          else if [ "$CIRCLE_BRANCH" == 'live' ] then
               npm run build:preprod
           else
               npm run build:test
