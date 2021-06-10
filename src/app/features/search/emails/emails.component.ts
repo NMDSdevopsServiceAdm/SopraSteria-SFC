@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
+import { ReportService } from '@core/services/report.service';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -18,6 +19,8 @@ import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-con
 export class EmailsComponent implements OnDestroy {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
   public history = this.route.snapshot.data.emailCampaignHistory;
+  public isAdmin: boolean;
+  public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -26,6 +29,7 @@ export class EmailsComponent implements OnDestroy {
     private route: ActivatedRoute,
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
+    private reportsService: ReportService,
   ) {}
 
   ngOnDestroy(): void {
@@ -83,6 +87,41 @@ export class EmailsComponent implements OnDestroy {
         this.saveFile(response);
       }),
     );
+  }
+
+  public downloadRegistrationSurveyReport(event: Event): void {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getRegistrationSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public downloadSatisfactionSurveyReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getSatisfactionSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
+  public downloadLocalAuthorityAdminReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getLocalAuthorityAdminReport().subscribe((response) => this.saveFile(response)),
+    );
+  }
+
+  public downloadDeleteReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));
+  }
+
+  public downloadWdfSummaryReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
   }
 
   public saveFile(response: HttpResponse<Blob>) {
