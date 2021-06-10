@@ -43,6 +43,7 @@ window.dataLayer = window.dataLayer || {};
 export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
+  @Input() wdfNewDesign: boolean;
 
   private subscriptions: Subscription = new Subscription();
   public adminRole: Roles = Roles.Admin;
