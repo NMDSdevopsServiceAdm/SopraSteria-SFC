@@ -8,6 +8,7 @@
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
     "build:prod": "npm run build:clean && npm run build -- --prod",
+    "build:preprod": "npm run build:clean && npm run build -- --configuration=preproduction",
     "build:test": "npm run build:clean && npm run build -- --configuration=test",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
@@ -166,8 +167,8 @@
     "tslint": "~6.1.3"
   },
   "engines": {
-    "node": "12.21.0",
-    "npm": "7.6.3"
+    "node": "12",
+    "npm": "7"
   },
   "nyc": {
     "branches": 10,
