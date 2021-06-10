@@ -153,9 +153,9 @@ jobs:
           cache-path: ~/project/node_modules
           cache-version: v2
       - run: |
-          if [ -n "$CIRCLE_TAG" ] then
+          if [ -n "$CIRCLE_TAG" ]; then
               npm run build:prod
-          else if [ "$CIRCLE_BRANCH" == 'live' ] then
+          elif [ "$CIRCLE_BRANCH" == 'live' ]; then
               npm run build:preprod
           else
               npm run build:test
