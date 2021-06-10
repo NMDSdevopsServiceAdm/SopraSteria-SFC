@@ -15,7 +15,6 @@ export class ArticleResolver implements Resolve<any> {
       return this.articlesService.getArticle(articleSlug).pipe(
         take(1),
         catchError(() => {
-          this.router.navigate(['/']);
           return of(null);
         }),
       );
