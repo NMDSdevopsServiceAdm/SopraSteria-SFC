@@ -1337,10 +1337,9 @@ class Worker {
         column: 'STARTDATE',
       });
       return false;
-    } else {
-      this._startDate = myRealStartDate;
-      return true;
     }
+    this._startDate = myRealStartDate;
+    return true;
   }
 
   _validateStartInsect() {
@@ -1361,7 +1360,8 @@ class Worker {
         source: this._currentLine.STARTINSECT,
         column: 'STARTINSECT',
       });
-      return false;
+      this._startInsect = '';
+      return true;
     } else if (!yearRegex.test(myStartInsect)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1393,15 +1393,14 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.START_INSECT_WARNING,
         warnType: 'START_INSECT_WARNING',
-        warning: 'STARTINSECT is before workers 14th birthday and will be ignored',
+        warning: 'STARTINSECT is before worker\'s 14th birthday and will be ignored',
         source: this._currentLine.STARTINSECT,
         column: 'STARTINSECT',
       });
       return false;
-    } else {
-      this._startInsect = myStartInsectNumber;
-      return true;
     }
+    this._startInsect = myStartInsectNumber;
+    return true;
   }
 
   _validateApprentice() {
