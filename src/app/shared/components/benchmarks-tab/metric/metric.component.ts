@@ -76,7 +76,9 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   }
 
   setRouteData = (data: Data): void => {
-    this.breadcrumbService.show(data.journey);
+    const journeyType =
+      this.establishmentService.primaryWorkplace.uid === this.workplace.uid ? 'dashboard' : 'workplace';
+    this.breadcrumbService.show(data.journey[journeyType]);
     this.title = data.title;
     this.description = data.description;
     this.noData = data.noData;

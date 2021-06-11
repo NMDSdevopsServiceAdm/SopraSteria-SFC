@@ -9,6 +9,10 @@ enum Path {
   USER_PERMISSIONS = '/workplace/:workerUid/user/:workerUid/permissions',
   CREATE_ACCOUNT = '/workplace/:workplaceUid/user/create',
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
+  BENCHMARKS_PAY = '/workplace/:workplaceUid/benchmarks/pay',
+  BENCHMARKS_TURNOVER = '/workplace/:workplaceUid/benchmarks/turnover',
+  BENCHMARKS_SICKNESS = '/workplace/:workplaceUid/benchmarks/sickness',
+  BENCHMARKS_QUALIFICATIONS = '/workplace/:workplaceUid/benchmarks/qualifications',
 }
 
 export const myWorkplaceJourney: JourneyRoute = {
@@ -78,6 +82,38 @@ export const allWorkplacesJourney: JourneyRoute = {
               referrer: {
                 path: Path.WORKPLACE,
                 fragment: 'training-and-qualifications',
+              },
+            },
+            {
+              title: 'Pay',
+              path: Path.BENCHMARKS_PAY,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'benchmarks',
+              },
+            },
+            {
+              title: 'Turnover',
+              path: Path.BENCHMARKS_TURNOVER,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'benchmarks',
+              },
+            },
+            {
+              title: 'Sickness',
+              path: Path.BENCHMARKS_SICKNESS,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'benchmarks',
+              },
+            },
+            {
+              title: 'Qualifications',
+              path: Path.BENCHMARKS_QUALIFICATIONS,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'benchmarks',
               },
             },
             {
