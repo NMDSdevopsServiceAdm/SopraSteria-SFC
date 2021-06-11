@@ -5,7 +5,8 @@ import { WorkerPay } from '@core/model/worker.model';
 @Pipe({
   name: 'workerPay',
 })
-export class WorkerPayPipe extends DecimalPipe implements PipeTransform {
+export class WorkerPayPipe implements PipeTransform {
+  constructor(private decimcalPipe: DecimalPipe) {}
   transform(workerPay: WorkerPay) {
     if (!workerPay) {
       return null;
@@ -22,6 +23,6 @@ export class WorkerPayPipe extends DecimalPipe implements PipeTransform {
         format = '1.2-2';
         break;
     }
-    return `£${super.transform(workerPay.rate, format)} ${workerPay.value}`;
+    return `£${this.decimcalPipe.transform(workerPay.rate, format)} ${workerPay.value}`;
   }
 }

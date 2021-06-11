@@ -19,8 +19,8 @@
           "options": {
             "aot": true,
             "outputPath": "dist",
+            "inlineStyleLanguage": "scss",
             "sourceMap": true,
-            "extractCss": true,
             "index": "index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -52,7 +52,20 @@
               "@babel/runtime/helpers/get",
               "@babel/runtime/regenerator",
               "@babel/runtime-corejs3",
-              "pako"
+              "pako",
+              "core-js-pure/features/array/from",
+              "core-js-pure/features/array/is-array",
+              "core-js-pure/features/instance/slice",
+              "core-js-pure/features/is-iterable",
+              "core-js-pure/features/object/create",
+              "core-js-pure/features/object/define-property",
+              "core-js-pure/features/object/get-own-property-descriptor",
+              "core-js-pure/features/object/get-prototype-of",
+              "core-js-pure/features/object/set-prototype-of",
+              "core-js-pure/features/promise",
+              "core-js-pure/features/reflect/get",
+              "core-js-pure/features/symbol",
+              "core-js-pure/features/symbol/iterator"
             ]
           },
           "configurations": {
