@@ -104,7 +104,6 @@ const routes: Routes = [
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
       },
-
       {
         path: 'reports',
         loadChildren: () => import('@features/reports/reports.module').then((m) => m.ReportsModule),
@@ -211,6 +210,10 @@ const routes: Routes = [
         path: 'registration-survey',
         loadChildren: () =>
           import('@features/registration-survey/registration-survey.module').then((m) => m.RegistrationSurveyModule),
+      },
+      {
+        path: 'articles',
+        loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
       },
     ],
   },

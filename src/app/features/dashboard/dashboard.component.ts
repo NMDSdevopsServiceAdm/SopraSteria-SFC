@@ -10,9 +10,8 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -39,6 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showCQCDetailsBanner = false;
   public workers: Worker[];
   public workerCount: number;
+  public wdfNewDesign: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -50,6 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private router: Router,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit() {
@@ -70,6 +71,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
         }),
       );
+
+      this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
+        this.wdfNewDesign = value;
+      });
 
       if (this.workplace && this.workplace.locationId) {
         this.subscriptions.add(

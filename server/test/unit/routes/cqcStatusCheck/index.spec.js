@@ -7,6 +7,7 @@ const { cqcStatusCheck, checkMainServiceMatch } = require('../../../../routes/cq
 
 const locationIDs = [
   { locationID: '1-2322162968', mainService: 'Care home services with nursing' },
+  { locationID: '1-118415299', mainService: 'Care home services without nursing' },
   { locationID: '1-114954321', mainService: 'Care home services without nursing' },
   { locationID: '1-159609284', mainService: 'Community based services for people who misuse substances' },
   { locationID: '1-110984029', mainService: 'Community based services for people with a learning disability' },

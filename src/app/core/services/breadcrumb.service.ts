@@ -18,7 +18,7 @@ import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_tra
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
-import { wdfJourney } from '@core/breadcrumb/journey.wdf';
+import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -215,6 +215,10 @@ export class BreadcrumbService {
       }
       case JourneyType.WDF: {
         routes = wdfJourney;
+        break;
+      }
+      case JourneyType.WDF_PARENT: {
+        routes = wdfParentJourney;
         break;
       }
       default: {
