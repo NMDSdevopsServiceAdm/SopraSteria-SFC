@@ -13,20 +13,20 @@ import { filter, map } from 'rxjs/operators';
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   public subscriptions = new Subscription();
-  public article: Article = this.route.snapshot.data.articles.data[0];
+  public article: Article;
 
   constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private router: Router) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.PUBLIC);
-    this.addSubscriptionToUpdateArticle();
+    this.setArticle();
     this.addSubscriptionToUpdateBreadcrumbs();
   }
 
-  addSubscriptionToUpdateArticle(): void {
+  setArticle(): void {
     this.subscriptions.add(
       this.route.url.subscribe(() => {
-        this.article = this.route.snapshot.data.articles.data[0];
+        this.article = this.route.snapshot.data.articles?.data[0];
       }),
     );
   }
