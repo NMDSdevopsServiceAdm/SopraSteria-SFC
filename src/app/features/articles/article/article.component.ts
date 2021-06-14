@@ -23,6 +23,10 @@ export class ArticleComponent implements OnInit, OnDestroy {
     this.addSubscriptionToUpdateBreadcrumbs();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
   setArticle(): void {
     this.subscriptions.add(
       this.route.url.subscribe(() => {
@@ -42,9 +46,5 @@ export class ArticleComponent implements OnInit, OnDestroy {
           this.breadcrumbService.show(JourneyType.PUBLIC);
         }),
     );
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }
