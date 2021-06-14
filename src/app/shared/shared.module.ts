@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { DialogService } from '@core/services/dialog.service';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
@@ -154,6 +155,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfFieldConfirmationComponent,
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
+    PageNotFoundComponent,
   ],
   exports: [
     AlertComponent,
@@ -225,6 +227,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BulkUploadFileTypePipePipe,
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
+    PageNotFoundComponent,
   ],
   providers: [DialogService, TotalStaffComponent],
 })

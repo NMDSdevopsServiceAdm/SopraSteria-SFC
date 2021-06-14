@@ -11,7 +11,11 @@ export class MockActivatedRoute {
     this.params = options.params;
     this.fragment = options.fragment;
     this.data = options.data;
-    this.snapshot = options.snapshot;
-    this.url = options.url;
+    if (options.snapshot) {
+      this.snapshot = options.snapshot;
+    }
+    if (options.url) {
+      this.url = options.url;
+    }
   }
 }
