@@ -7,6 +7,7 @@ import { FeedbackComponent } from '@features/public/feedback/feedback.component'
 import { PrivacyNoticeComponent } from '@features/public/privacy-notice/privacy-notice.component';
 import { TermsConditionsComponent } from '@features/public/terms-conditions/terms-conditions.component';
 
+import { AboutUsComponent } from './about-us/about-us.component';
 import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback/contact-us-or-leave-feedback.component';
 import { ThankYouComponent } from './thank-you/thank-you.component';
 
@@ -50,6 +51,11 @@ const routes: Routes = [
     path: 'privacy-notice',
     component: PrivacyNoticeComponent,
     data: { title: 'Privacy notice' },
+  },
+  {
+    path: 'about-us',
+    component: AboutUsComponent,
+    data: { title: 'About Us' },
   },
 ];
 

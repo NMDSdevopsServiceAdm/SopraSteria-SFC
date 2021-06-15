@@ -11,6 +11,7 @@ import { PublicRoutingModule } from './public-routing.module';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback/contact-us-or-leave-feedback.component';
 import { ThankYouComponent } from './thank-you/thank-you.component';
+import { AboutUsComponent } from './about-us/about-us.component';
 
 @NgModule({
   imports: [CommonModule, PublicRoutingModule, ReactiveFormsModule, SharedModule],
@@ -23,6 +24,7 @@ import { ThankYouComponent } from './thank-you/thank-you.component';
     TermsConditionsComponent,
     ContactUsOrLeaveFeedbackComponent,
     ThankYouComponent,
+    AboutUsComponent,
   ],
 })
 export class PublicModule {}
