@@ -1,24 +1,35 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { AboutUsComponent } from './about-us.component';
 
 describe('AboutUsComponent', () => {
-  let component: AboutUsComponent;
-  let fixture: ComponentFixture<AboutUsComponent>;
+  async function setup() {
+    const { fixture, getByText } = await render(AboutUsComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [AboutUsComponent],
-    }).compileComponents();
-  });
+    const component = fixture.componentInstance;
+    return {
+      component,
+      fixture,
+      getByText,
+    };
+  }
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AboutUsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });

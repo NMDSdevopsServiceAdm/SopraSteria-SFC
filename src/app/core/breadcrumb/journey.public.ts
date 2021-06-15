@@ -10,6 +10,7 @@ enum Path {
   CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
   THANK_YOU = '/thank-you',
   ARTICLE = '/articles/:slug',
+  ABOUT_US = '/about-us',
 }
 
 export const publicJourney: JourneyRoute = {
@@ -37,6 +38,10 @@ export const publicJourney: JourneyRoute = {
     {
       title: 'ASC-WDS news',
       path: Path.ARTICLE,
+    },
+    {
+      title: 'About us',
+      path: Path.ABOUT_US,
     },
     {
       title: 'Contact us or leave feedback',
