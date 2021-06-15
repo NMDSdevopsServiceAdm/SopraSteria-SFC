@@ -2,5 +2,7 @@
   <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{ staffMismatchMessage }}
 </span>
 <span class="govuk__nowrap">
-  Either change the total or <a href="dashboard#staff-records">view staff records</a> to add more records.
+  Either change the total or
+  <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a> to add more
+  records.
 </span>

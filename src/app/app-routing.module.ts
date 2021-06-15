@@ -104,7 +104,6 @@ const routes: Routes = [
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
       },
-
       {
         path: 'reports',
         loadChildren: () => import('@features/reports/reports.module').then((m) => m.ReportsModule),
@@ -208,21 +207,13 @@ const routes: Routes = [
         loadChildren: () => import('@features/notifications/notifications.module').then((m) => m.NotificationsModule),
       },
       {
-        path: 'add-mandatory-training',
-        loadChildren: () =>
-          import('@features/add-mandatory-training/add-mandatory-training.module').then(
-            (m) => m.AddMandatoryTrainingModule,
-          ),
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canAddEstablishment'],
-          title: 'Add Mandatory Training',
-        },
-      },
-      {
         path: 'registration-survey',
         loadChildren: () =>
           import('@features/registration-survey/registration-survey.module').then((m) => m.RegistrationSurveyModule),
+      },
+      {
+        path: 'articles',
+        loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
       },
     ],
   },

@@ -25,13 +25,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public cqcStatusRequested: boolean;
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
-  public canViewListOfWorkers: boolean;
-  public workerCount: number;
+  public canViewListOfWorkers = false;
   public wdfNewDesign: boolean;
 
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
-
+  @Input() workerCount: number;
   @Input()
   set workplace(workplace: any) {
     this._workplace = workplace;
@@ -113,21 +112,19 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setFeatureFlags();
-    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+
+    this.subscriptions.add(
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
+        this.canViewListOfWorkers = permission.permissions.canViewListOfWorkers;
+        this.canEditEstablishment = permission.permissions.canEditEstablishment;
+      }),
+    );
+
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
       }),
     );
-
-    if (this.canViewListOfWorkers) {
-      this.subscriptions.add(
-        this.workerService
-          .getAllWorkers(this.workplace.uid)
-          .subscribe((workers) => (this.workerCount = workers.length ? workers.length : 0)),
-      );
-    }
 
     this.cqcStatusRequested = false;
     this.subscriptions.add(
@@ -180,5 +177,17 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
     });
+  }
+
+  public getRoutePath(name: string) {
+    return ['/workplace', this.workplace.uid, name];
+  }
+
+  public confirmField(dataField) {
+    const props = { [dataField]: this.workplace[dataField] };
+
+    this.subscriptions.add(
+      this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => console.log(data)),
+    );
   }
 }

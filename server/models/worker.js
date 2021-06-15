@@ -79,6 +79,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"LastWdfEligibility"',
       },
+      wdfEligible: {
+        type: DataTypes.BOOLEAN,
+        field: '"WdfEligible"',
+      },
       NameOrIdValue: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -1203,6 +1207,12 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
     });
+    Worker.belongsToMany(models.workerQualifications, {
+      foreignKey: 'workerFk',
+      through: 'workerQualifications',
+      otherKey: 'ID',
+      as: 'qualifications',
+    });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
     return this.count({
@@ -1308,6 +1318,7 @@ module.exports = function (sequelize, DataTypes) {
         'updated',
         'updatedBy',
         'lastWdfEligibility',
+        'wdfEligible',
         [
           sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
           'trainingCount',

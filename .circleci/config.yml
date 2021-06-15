@@ -153,8 +153,10 @@ jobs:
           cache-path: ~/project/node_modules
           cache-version: v2
       - run: |
-          if [ -n "$CIRCLE_TAG" ] || [ "$CIRCLE_BRANCH" == 'live' ]; then
+          if [ -n "$CIRCLE_TAG" ]; then
               npm run build:prod
+          elif [ "$CIRCLE_BRANCH" == 'live' ]; then
+              npm run build:preprod
           else
               npm run build:test
           fi
@@ -183,7 +185,7 @@ jobs:
           keys:
             - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          command: npm run server:test:unit
+          command: export NODE_ENV=example && npm run server:test:unit
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -196,6 +198,29 @@ jobs:
             - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
+  feature_flag:
+    description: Checks for redundant feature flags
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          command: sudo apt-get install silversearcher-ag
+      - run:
+          command: sudo pip install configcat-flag-reference-validator==2.0.1
+      - run:
+          command: |
+            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
+              echo "Please, set the feature flag environment variables. Will stop now."
+              exit 1
+            fi
+            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=true
+
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -386,6 +411,12 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
+      - feature_flag:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks
@@ -394,6 +425,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
+            - feature_flag
           filters:
             branches:
               only:
@@ -416,6 +448,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
+            - feature_flag
           filters:
             branches:
               only:
@@ -438,6 +471,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
+            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
@@ -475,6 +509,7 @@ workflows:
             - test_frontend
             - test_backend
             - performance
+            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:

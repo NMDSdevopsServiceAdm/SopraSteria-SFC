@@ -1,0 +1,36 @@
+<h4 class="govuk-heading-s govuk-!-margin-bottom-3">
+  <ng-container
+    *ngIf="
+      wdfEligibilityStatus.overall && wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff;
+      then meeting;
+      else meetingWithChanges
+    "
+  ></ng-container>
+
+  <ng-template #meeting>
+    Your data meets the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+  </ng-template>
+
+  <ng-template #meetingWithChanges>
+    <ng-container
+      *ngIf="
+        wdfEligibilityStatus.overall && !(wdfEligibilityStatus.currentWorkplace && wdfEligibilityStatus.currentStaff);
+        else notMeeting
+      "
+    >
+      <ng-container *ngIf="isStandalone; else parent">
+        Keeping your data up to date will save you time next year
+      </ng-container>
+      <ng-template #parent>
+        Your workplace met the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements,
+        but keeping your data up to date will save you time next year
+      </ng-template>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #notMeeting>
+    <ng-container *ngIf="!wdfEligibilityStatus.overall">
+      Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+    </ng-container>
+  </ng-template>
+</h4>

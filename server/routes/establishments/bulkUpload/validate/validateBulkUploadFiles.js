@@ -233,8 +233,15 @@ const validateBulkUploadFiles = async (
     training.trainingMetadata.fileType === 'Training'
   ) {
     await Promise.all(
-      training.imported.map((thisLine, currentLineNumber) =>
-        validateTrainingCsv(thisLine, currentLineNumber + 2, csvTrainingSchemaErrors, myTrainings, myAPITrainings),
+      training.imported.map(
+        async (thisLine, currentLineNumber) =>
+          await validateTrainingCsv(
+            thisLine,
+            currentLineNumber + 2,
+            csvTrainingSchemaErrors,
+            myTrainings,
+            myAPITrainings,
+          ),
       ),
     );
 
