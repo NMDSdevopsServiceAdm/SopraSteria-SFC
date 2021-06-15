@@ -32,7 +32,7 @@ describe('EmailCampaignService', () => {
   });
 
   it('should create a campaign', () => {
-    service.createCampaign().subscribe();
+    service.createInactiveWorkplacesCampaign().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces');
@@ -41,7 +41,7 @@ describe('EmailCampaignService', () => {
   });
 
   it('should get the history', () => {
-    service.getHistory().subscribe();
+    service.getInactiveWorkplacesHistory().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces/history');
@@ -50,7 +50,7 @@ describe('EmailCampaignService', () => {
   });
 
   it('should get a report of inactive workplaces', () => {
-    service.getReport().subscribe();
+    service.getInactiveWorkplacesReport().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces/report');

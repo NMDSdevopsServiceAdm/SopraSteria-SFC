@@ -10,15 +10,15 @@ export class EmailCampaignService {
     return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces');
   }
 
-  createCampaign(): Observable<any> {
+  createInactiveWorkplacesCampaign(): Observable<any> {
     return this.http.post<any>('/api/admin/email-campaigns/inactive-workplaces', {});
   }
 
-  getHistory(): Observable<any> {
+  getInactiveWorkplacesHistory(): Observable<any> {
     return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/history');
   }
 
-  getReport(): Observable<any> {
+  getInactiveWorkplacesReport(): Observable<any> {
     return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/report', {
       observe: 'response',
       responseType: 'blob' as 'json',
