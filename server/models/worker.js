@@ -1,9 +1,8 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
-var config = require('../../server/config/config');
+const config = require('../../server/config/config');
 
 const { encrypt } = require('../utils/db/openpgp/encrypt');
-const { decrypt } = require('../utils/db/openpgp/decrypt');
 
 const currentDate = moment().toISOString();
 const expiresSoon = moment().add(90, 'days').toISOString();
