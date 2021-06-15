@@ -10,7 +10,9 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import {
+  SendEmailsConfirmationDialogComponent,
+} from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-emails',
@@ -18,6 +20,9 @@ import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-con
 })
 export class EmailsComponent implements OnDestroy {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public totalEmails = 0;
+  public emailGroup = '';
+  public templateId = '';
   public history = this.route.snapshot.data.emailCampaignHistory;
   public isAdmin: boolean;
   public now: Date = new Date();
@@ -34,6 +39,14 @@ export class EmailsComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public updateTotalEmails(groupType: string) {
+    if (groupType === 'primaryUsers') {
+      this.totalEmails = 1500;
+    } else {
+      this.totalEmails = 0;
+    }
   }
 
   public confirmSendEmails(event: Event): void {
@@ -53,7 +66,7 @@ export class EmailsComponent implements OnDestroy {
   private sendEmails(): void {
     this.subscriptions.add(
       this.emailCampaignService
-        .createCampaign()
+        .createInactiveWorkplacesCampaign()
         .pipe(
           switchMap((latestCampaign) => {
             return this.emailCampaignService.getInactiveWorkplaces().pipe(
@@ -83,7 +96,7 @@ export class EmailsComponent implements OnDestroy {
     event.preventDefault();
 
     this.subscriptions.add(
-      this.emailCampaignService.getReport().subscribe((response) => {
+      this.emailCampaignService.getInactiveWorkplacesReport().subscribe((response) => {
         this.saveFile(response);
       }),
     );

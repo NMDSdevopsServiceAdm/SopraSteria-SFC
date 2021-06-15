@@ -104,3 +104,50 @@
     </ul>
   </div>
 </div>
+
+<h1 class="govuk-heading-xl govuk-!-margin-top-5">Targeted Emails</h1>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <dl class="govuk-list--definition">
+      <dt>Total number of users to be emailed</dt>
+      <dd data-testid="totalEmails">
+        {{ totalEmails | number }}
+      </dd>
+    </dl>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-form-group govuk-!-margin-top-3">
+        <div class="govuk-grid-column-one-half">
+          <label class="govuk-label" for="emailGroup"> Email group </label>
+          <select
+            [(ngModel)]="emailGroup"
+            class="govuk-select govuk-!-width-full"
+            id="emailGroup"
+            data-testid="emailGroup"
+            (change)="updateTotalEmails($event.target.value)"
+          >
+            <option value=""></option>
+            <option value="primaryUsers">Primary users</option>
+          </select>
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <label class="govuk-label" for="templateId"> Template ID </label>
+          <select
+            [(ngModel)]="templateId"
+            class="govuk-select govuk-!-width-full"
+            id="templateId"
+            data-testid="templateId"
+          >
+            <option value=""></option>
+            <option value="1">Template 1</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="govuk-button" [disabled]="emailGroup === '' || templateId === ''" type="submit">
+      Send emails to selected group
+    </button>
+  </div>
+</div>
