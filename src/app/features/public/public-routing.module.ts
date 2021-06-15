@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { AccessibilityStatementComponent } from '@features/public/accessibility-statement/accessibility-statement.component';
 import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
 import { CookiePolicyComponent } from '@features/public/cookie-policy/cookie-policy.component';
@@ -55,7 +56,10 @@ const routes: Routes = [
   {
     path: 'about-us',
     component: AboutUsComponent,
-    data: { title: 'About Us' },
+    data: { title: 'About the ASC-WDS' },
+    resolve: {
+      articleList: ArticleListResolver,
+    },
   },
 ];
 
