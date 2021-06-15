@@ -100,7 +100,7 @@ describe('EmailsComponent', () => {
       component.fixture.componentInstance.inactiveWorkplaces = 25;
       component.fixture.detectChanges();
 
-      fireEvent.click(component.getByText('Send emails', { exact: false }));
+      fireEvent.click(component.getByText('Send emails', { exact: true }));
 
       const dialog = await within(document.body).findByRole('dialog');
       const dialogHeader = within(dialog).getByTestId('send-emails-confirmation-header');
@@ -124,7 +124,7 @@ describe('EmailsComponent', () => {
         component.fixture.componentInstance.inactiveWorkplaces = 2500;
         component.fixture.detectChanges();
 
-        fireEvent.click(component.getByText('Send emails', { exact: false }));
+        fireEvent.click(component.getByText('Send emails', { exact: true }));
 
         const emailCampaignService = TestBed.inject(EmailCampaignService);
         spyOn(emailCampaignService, 'createInactiveWorkplacesCampaign').and.returnValue(
