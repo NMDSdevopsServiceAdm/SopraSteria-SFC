@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Article } from '@core/model/article.model';
 import { Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './article-list.component.html',
   providers: [],
 })
-export class ArticleListComponent implements OnDestroy {
+export class ArticleListComponent implements OnInit, OnDestroy {
   public articleList: Article[];
   public currentArticleSlug: string;
   public subscriptions = new Subscription();
@@ -26,8 +26,12 @@ export class ArticleListComponent implements OnDestroy {
   subscribeToUrlToUpdateArticleListAndCurrentSlug(): void {
     this.subscriptions.add(
       this.route.url.subscribe(() => {
-        this.articleList = this.route.snapshot.data.articleList.data;
-        this.currentArticleSlug = this.route.snapshot.data.articles.data[0].slug;
+        if (this.route.snapshot.data.articleList) {
+          this.articleList = this.route.snapshot.data.articleList.data;
+        }
+        if (this.route.snapshot.data.articles) {
+          this.currentArticleSlug = this.route.snapshot.data.articles.data[0].slug;
+        }
       }),
     );
   }
