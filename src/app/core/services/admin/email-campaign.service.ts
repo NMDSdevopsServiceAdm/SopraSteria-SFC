@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class EmailCampaignService {
@@ -23,5 +23,9 @@ export class EmailCampaignService {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
+  }
+
+  getTargetedUsers(groupType: string): Observable<number> {
+    return of(1500);
   }
 }

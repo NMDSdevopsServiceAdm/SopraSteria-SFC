@@ -42,8 +42,12 @@ export class EmailsComponent implements OnDestroy {
   }
 
   public updateTotalEmails(groupType: string) {
-    if (groupType === 'primaryUsers') {
-      this.totalEmails = 1500;
+    if (groupType) {
+      this.subscriptions.add(
+        this.emailCampaignService
+          .getTargetedUsers(groupType)
+          .subscribe((totalEmails: number) => (this.totalEmails = totalEmails)),
+      );
     } else {
       this.totalEmails = 0;
     }
