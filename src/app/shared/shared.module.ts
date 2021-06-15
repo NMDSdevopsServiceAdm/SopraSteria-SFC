@@ -4,7 +4,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
@@ -156,6 +158,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    ArticleListComponent,
   ],
   exports: [
     AlertComponent,
@@ -228,7 +231,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    ArticleListComponent,
   ],
-  providers: [DialogService, TotalStaffComponent],
+  providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })
 export class SharedModule {}
