@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 import { SearchModule } from '../search.module';
 import { EmailsComponent } from './emails.component';
 
-describe('EmailsComponent', () => {
+fdescribe('EmailsComponent', () => {
   async function setup() {
     return render(EmailsComponent, {
       imports: [SharedModule, SearchModule, HttpClientTestingModule, RouterTestingModule],
@@ -241,6 +241,22 @@ describe('EmailsComponent', () => {
 
       expect(templateDropdown.childNodes[1].textContent).toEqual('Template 1');
       expect(templateDropdown.childNodes[2].textContent).toEqual('Template 2');
+    });
+
+    it('should call confirmSendEmails when the "Send emails to selected group" button is clicked', async () => {
+      const component = await setup();
+
+      component.fixture.componentInstance.totalEmails = 45;
+      component.fixture.componentInstance.emailGroup = 'primaryUsers';
+      component.fixture.componentInstance.selectedTemplateId = '1';
+      component.fixture.detectChanges();
+
+      fireEvent.click(component.getByText('Send emails to selected group', { exact: true }));
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const dialogHeader = within(dialog).getByTestId('send-emails-confirmation-header');
+
+      expect(dialogHeader).toBeTruthy();
     });
   });
 

@@ -2,7 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TotalEmailsResponse } from '@core/model/emails.model';
+import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -29,6 +29,7 @@ export class EmailsComponent implements OnDestroy {
   public isAdmin: boolean;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
+  public emailType = EmailType;
 
   constructor(
     public alertService: AlertService,
@@ -55,21 +56,33 @@ export class EmailsComponent implements OnDestroy {
     }
   }
 
-  public confirmSendEmails(event: Event): void {
+  public confirmSendEmails(event: Event, emailCount: number, type: EmailType): void {
     event.preventDefault();
 
     this.subscriptions.add(
       this.dialogService
-        .open(SendEmailsConfirmationDialogComponent, { inactiveWorkplaces: this.inactiveWorkplaces })
+        .open(SendEmailsConfirmationDialogComponent, { emailCount })
         .afterClosed.subscribe((hasConfirmed) => {
           if (hasConfirmed) {
-            this.sendEmails();
+            this.sendEmails(type);
           }
         }),
     );
   }
 
-  private sendEmails(): void {
+  private sendEmails(type: EmailType): void {
+    switch (type) {
+      case EmailType.InactiveWorkplaces:
+        this.sendInactiveEmails();
+        break;
+
+      case EmailType.TargetedEmails:
+        this.sendTargetedEmails();
+        break;
+    }
+  }
+
+  private sendInactiveEmails(): void {
     this.subscriptions.add(
       this.emailCampaignService
         .createInactiveWorkplacesCampaign()
@@ -96,6 +109,11 @@ export class EmailsComponent implements OnDestroy {
           this.inactiveWorkplaces = inactiveWorkplaces;
         }),
     );
+  }
+
+  private sendTargetedEmails(): void {
+    console.log('hello');
+    return;
   }
 
   public downloadReport(event: Event): void {

@@ -1,3 +1,8 @@
+export enum EmailType {
+  'InactiveWorkplaces',
+  'TargetedEmails',
+}
+
 export interface TotalEmailsResponse {
   totalEmails: number;
 }

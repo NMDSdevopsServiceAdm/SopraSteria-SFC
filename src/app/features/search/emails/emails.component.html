@@ -14,7 +14,7 @@
         <button
           class="govuk-button govuk-!-margin-right-9"
           [disabled]="!inactiveWorkplaces"
-          (click)="confirmSendEmails($event)"
+          (click)="confirmSendEmails($event, inactiveWorkplaces, emailType.InactiveWorkplaces)"
           type="submit"
         >
           Send emails
@@ -146,7 +146,12 @@
       </div>
     </div>
 
-    <button class="govuk-button" [disabled]="emailGroup === '' || selectedTemplateId === ''" type="submit">
+    <button
+      class="govuk-button"
+      [disabled]="emailGroup === '' || selectedTemplateId === ''"
+      (click)="confirmSendEmails($event, totalEmails, emailType.TargetedEmails)"
+      type="submit"
+    >
       Send emails to selected group
     </button>
   </div>
