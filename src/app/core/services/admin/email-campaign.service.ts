@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { TemplatesResponse, TotalEmailsResponse } from '@core/model/emails.model';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class EmailCampaignService {
@@ -25,7 +26,16 @@ export class EmailCampaignService {
     });
   }
 
-  getTargetedUsers(groupType: string): Observable<number> {
-    return of(1500);
+  getTargetedTotalEmails(groupType: string): Observable<TotalEmailsResponse> {
+    let params = new HttpParams();
+    params = params.set('groupType', groupType);
+
+    return this.http.get<TotalEmailsResponse>('/api/admin/email-campaigns/targeted-emails/total', {
+      params,
+    });
+  }
+
+  getTargetedTemplates(): Observable<TemplatesResponse> {
+    return this.http.get<TemplatesResponse>('/api/admin/email-campaigns/targeted-emails/templates');
   }
 }

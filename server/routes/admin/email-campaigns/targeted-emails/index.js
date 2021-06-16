@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const getTargetedUsers = async (req, res) => {
-  return res.status(200).send({totalUsers: 1500});
+const getTargetedTotalEmails = async (req, res) => {
+  return res.status(200).send({totalEmails: 1500});
 }
 
-router.route('/').get(getTargetedUsers);
+router.route('/total').get(getTargetedTotalEmails);
 
-module.exports.router = router;
-module.exports.getTargetedUsers = getTargetedUsers;
+module.exports = router;
+module.exports.getTargetedTotalEmails = getTargetedTotalEmails;

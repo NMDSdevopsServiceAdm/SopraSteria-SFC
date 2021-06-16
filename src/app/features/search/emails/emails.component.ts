@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -22,7 +23,8 @@ export class EmailsComponent implements OnDestroy {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
   public totalEmails = 0;
   public emailGroup = '';
-  public templateId = '';
+  public selectedTemplateId = '';
+  public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   public isAdmin: boolean;
   public now: Date = new Date();
@@ -41,12 +43,12 @@ export class EmailsComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public updateTotalEmails(groupType: string) {
+  public updateTotalEmails(groupType: string): void {
     if (groupType) {
       this.subscriptions.add(
         this.emailCampaignService
-          .getTargetedUsers(groupType)
-          .subscribe((totalEmails: number) => (this.totalEmails = totalEmails)),
+          .getTargetedTotalEmails(groupType)
+          .subscribe((totalEmails: TotalEmailsResponse) => (this.totalEmails = totalEmails.totalEmails)),
       );
     } else {
       this.totalEmails = 0;

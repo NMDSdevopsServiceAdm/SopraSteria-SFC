@@ -3,7 +3,7 @@ const httpMocks = require('node-mocks-http');
 const targetedEmailsRoutes = require('../../../../../../routes/admin/email-campaigns/targeted-emails')
 
 describe('server/routes/admin/email-campaigns/targeted-emails', () => {
-    describe('getTargetedUsers()', () => {
+    describe('getTargetedTotalEmails()', () => {
       it('should return 200', async () => {
         const req = httpMocks.createRequest({
           method: 'GET',
@@ -14,7 +14,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
         req.query.groupType = 'primaryUsers';
 
         const res = httpMocks.createResponse();
-        await targetedEmailsRoutes.getTargetedUsers(req, res);
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
         expect(res.statusCode).to.deep.equal(200);
       });
@@ -29,11 +29,11 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
         req.query.groupType = 'primaryUsers';
 
         const res = httpMocks.createResponse();
-        await targetedEmailsRoutes.getTargetedUsers(req, res);
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
         const response = res._getData();
 
-        expect(response.totalUsers).to.deep.equal(1500);
+        expect(response.totalEmails).to.deep.equal(1500);
       })
     });
 });

@@ -57,4 +57,22 @@ describe('EmailCampaignService', () => {
 
     expect(req.request.method).toBe('GET');
   });
+
+  it('should get a total number of emails been sent to targeted users', () => {
+    service.getTargetedTotalEmails('primaryUsers').subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/total?groupType=primaryUsers');
+
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should get a list of templates that can be sent to targeted users', () => {
+    service.getTargetedTemplates().subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/templates');
+
+    expect(req.request.method).toBe('GET');
+  });
 });

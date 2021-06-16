@@ -28,6 +28,9 @@ describe('EmailsComponent', () => {
               data: {
                 emailCampaignHistory: [],
                 inactiveWorkplaces: { inactiveWorkplaces: 0 },
+                emailTemplates: {
+                  templates: [],
+                },
               },
             },
           },
@@ -186,7 +189,7 @@ describe('EmailsComponent', () => {
       const component = await setup();
 
       component.fixture.componentInstance.emailGroup = null;
-      component.fixture.componentInstance.templateId = null;
+      component.fixture.componentInstance.selectedTemplateId = null;
       component.fixture.detectChanges();
 
       const numInactiveWorkplaces = component.getByTestId('totalEmails');
@@ -197,7 +200,7 @@ describe('EmailsComponent', () => {
       const component = await setup();
 
       component.fixture.componentInstance.emailGroup = '';
-      component.fixture.componentInstance.templateId = '';
+      component.fixture.componentInstance.selectedTemplateId = '';
       component.fixture.detectChanges();
 
       const sendEmailsButton = component.fixture.nativeElement.querySelectorAll('button');
@@ -206,12 +209,27 @@ describe('EmailsComponent', () => {
 
     it('should update the total emails when updateTotalEmails() is called', async () => {
       const component = await setup();
+      const emailCampaignService = TestBed.inject(EmailCampaignService);
+      const getTargetedTotalEmailsSpy = spyOn(emailCampaignService, 'getTargetedTotalEmails').and.callFake(() =>
+        of({ totalEmails: 1500 }),
+      );
 
       component.fixture.componentInstance.updateTotalEmails('primaryUsers');
       component.fixture.detectChanges();
 
       expect(component.fixture.componentInstance.totalEmails).toEqual(1500);
+      expect(getTargetedTotalEmailsSpy).toHaveBeenCalled();
     });
+
+    // it('should get a list of template IDs when the getTemplateIds() function is called', async () => {
+    //   const component = await setup();
+    //   const expectedTemplate = { name: 'Template 1', id: 1 };
+
+    //   component.fixture.componentInstance.getTemplateIds();
+    //   component.fixture.detectChanges();
+
+    //   expect(component.fixture.componentInstance.templates).toEqual([expectedTemplate]);
+    // });
   });
 
   describe('Reports', () => {
