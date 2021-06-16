@@ -9,7 +9,6 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -31,7 +30,7 @@ describe('ArticleListComponent', () => {
 
   async function setup() {
     const { fixture, getByText } = await render(ArticleListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },

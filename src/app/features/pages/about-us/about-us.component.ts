@@ -17,10 +17,6 @@ export class AboutUsComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.PUBLIC);
-    this.subscriptions.add(
-      this.route.url.subscribe(() => {
-        this.aboutUsContent = this.route.snapshot.data.pages?.data[0];
-      }),
-    );
+    this.aboutUsContent = this.route.snapshot.data.pages?.data[0];
   }
 }

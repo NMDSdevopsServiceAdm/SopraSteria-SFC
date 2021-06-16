@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { Page } from '@core/model/page.model';
 import { PagesService } from '@core/services/pages.service';
 import { Observable, of } from 'rxjs';
@@ -9,8 +9,9 @@ import { catchError, take } from 'rxjs/operators';
 export class PageResolver implements Resolve<any> {
   constructor(private router: Router, private pagesService: PagesService) {}
 
-  resolve(): Observable<null | Page[]> {
-    const articleId = 'about-us';
+  resolve(route: ActivatedRouteSnapshot): Observable<null | Page[]> {
+    const lastUrlSegment = route.url.length - 1;
+    const articleId = route.url[lastUrlSegment].path;
     if (articleId) {
       return this.pagesService.getPage(articleId).pipe(
         take(1),
