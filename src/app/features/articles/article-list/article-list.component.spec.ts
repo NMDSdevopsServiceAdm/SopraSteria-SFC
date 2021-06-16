@@ -29,7 +29,7 @@ describe('ArticleListComponent', () => {
   };
 
   async function setup() {
-    const { fixture, getByText } = await render(ArticleListComponent, {
+    const { fixture, getByText, queryByText } = await render(ArticleListComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
@@ -56,7 +56,7 @@ describe('ArticleListComponent', () => {
     ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
 
     const component = fixture.componentInstance;
-    return { component, fixture, getByText };
+    return { component, fixture, getByText, queryByText };
   }
 
   it('should render a ArticleListComponent', async () => {
@@ -96,5 +96,14 @@ describe('ArticleListComponent', () => {
     expect(secondArticleLink.classList).toContain('govuk-!-font-weight-bold');
     expect(firstArticleLink.classList).not.toContain('govuk-!-font-weight-bold');
     expect(thirdArticleLink.classList).not.toContain('govuk-!-font-weight-bold');
+  });
+
+  it('should not display anything when article list is empty', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.articleList = [];
+    fixture.detectChanges();
+
+    expect(queryByText('ASC-WDS news')).toBeFalsy();
   });
 });
