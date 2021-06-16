@@ -215,6 +215,10 @@ const routes: Routes = [
         path: 'articles',
         loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
       },
+      {
+        path: '',
+        loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
+      },
     ],
   },
   {
