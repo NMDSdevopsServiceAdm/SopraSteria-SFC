@@ -221,15 +221,27 @@ describe('EmailsComponent', () => {
       expect(getTargetedTotalEmailsSpy).toHaveBeenCalled();
     });
 
-    // it('should get a list of template IDs when the getTemplateIds() function is called', async () => {
-    //   const component = await setup();
-    //   const expectedTemplate = { name: 'Template 1', id: 1 };
+    it('should display the template names as options', async () => {
+      const component = await setup();
+      const templates = [
+        {
+          id: 1,
+          name: 'Template 1',
+        },
+        {
+          id: 2,
+          name: 'Template 2',
+        },
+      ];
 
-    //   component.fixture.componentInstance.getTemplateIds();
-    //   component.fixture.detectChanges();
+      component.fixture.componentInstance.templates = templates;
+      component.fixture.detectChanges();
 
-    //   expect(component.fixture.componentInstance.templates).toEqual([expectedTemplate]);
-    // });
+      const templateDropdown = component.getByTestId('selectedTemplateId');
+
+      expect(templateDropdown.childNodes[1].textContent).toEqual('Template 1');
+      expect(templateDropdown.childNodes[2].textContent).toEqual('Template 2');
+    });
   });
 
   describe('Reports', () => {

@@ -140,7 +140,7 @@
             data-testid="selectedTemplateId"
           >
             <option value="">Select a template</option>
-            <option value="1">Template 1</option>
+            <option *ngFor="let template of templates" [value]="template.id">{{ template.name }}</option>
           </select>
         </div>
       </div>
