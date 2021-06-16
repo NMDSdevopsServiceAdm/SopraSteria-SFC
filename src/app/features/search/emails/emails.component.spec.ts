@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 import { SearchModule } from '../search.module';
 import { EmailsComponent } from './emails.component';
 
-fdescribe('EmailsComponent', () => {
+describe('EmailsComponent', () => {
   async function setup() {
     return render(EmailsComponent, {
       imports: [SharedModule, SearchModule, HttpClientTestingModule, RouterTestingModule],
@@ -257,6 +257,48 @@ fdescribe('EmailsComponent', () => {
       const dialogHeader = within(dialog).getByTestId('send-emails-confirmation-header');
 
       expect(dialogHeader).toBeTruthy();
+    });
+
+    [
+      {
+        emails: 1500,
+        expectedMessage: '1,500 emails have been scheduled to be sent.',
+      },
+      {
+        emails: 1,
+        expectedMessage: '1 email has been scheduled to be sent.',
+      },
+    ].forEach(({ emails, expectedMessage }) => {
+      it('should display an alert when the "Send emails to selected group" button is clicked', async () => {
+        const component = await setup();
+
+        component.fixture.componentInstance.totalEmails = emails;
+        component.fixture.componentInstance.emailGroup = 'primaryUsers';
+        component.fixture.componentInstance.selectedTemplateId = '1';
+        component.fixture.detectChanges();
+
+        fireEvent.click(component.getByText('Send emails to selected group', { exact: true }));
+
+        const emailCampaignService = TestBed.inject(EmailCampaignService);
+        spyOn(emailCampaignService, 'createTargetedEmailsCampaign').and.returnValue(
+          of({
+            emails,
+          }),
+        );
+
+        const addAlert = spyOn(component.fixture.componentInstance.alertService, 'addAlert').and.callThrough();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        within(dialog).getByText('Send emails').click();
+
+        expect(addAlert).toHaveBeenCalledWith({
+          type: 'success',
+          message: expectedMessage,
+        });
+        component.fixture.detectChanges();
+        expect(component.fixture.componentInstance.emailGroup).toEqual('');
+        expect(component.fixture.componentInstance.selectedTemplateId).toEqual('');
+      });
     });
   });
 

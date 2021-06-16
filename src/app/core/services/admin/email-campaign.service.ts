@@ -38,4 +38,11 @@ export class EmailCampaignService {
   getTargetedTemplates(): Observable<TemplatesResponse> {
     return this.http.get<TemplatesResponse>('/api/admin/email-campaigns/targeted-emails/templates');
   }
+
+  createTargetedEmailsCampaign(groupType: string, templateId: string): Observable<any> {
+    return this.http.post<any>('/api/admin/email-campaigns/targeted-emails', {
+      groupType,
+      templateId,
+    });
+  }
 }

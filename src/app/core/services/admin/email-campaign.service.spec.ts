@@ -31,7 +31,7 @@ describe('EmailCampaignService', () => {
     expect(req.request.method).toBe('GET');
   });
 
-  it('should create a campaign', () => {
+  it('should create a campaign for inactive workplaces', () => {
     service.createInactiveWorkplacesCampaign().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
@@ -74,5 +74,16 @@ describe('EmailCampaignService', () => {
     const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/templates');
 
     expect(req.request.method).toBe('GET');
+  });
+
+  it('should create a campaign for targeted users', () => {
+    service.createTargetedEmailsCampaign('primaryUsers', '1').subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails');
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.groupType).toEqual('primaryUsers');
+    expect(req.request.body.templateId).toEqual('1');
   });
 });

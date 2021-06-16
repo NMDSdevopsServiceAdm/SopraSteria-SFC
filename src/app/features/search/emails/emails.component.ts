@@ -112,8 +112,18 @@ export class EmailsComponent implements OnDestroy {
   }
 
   private sendTargetedEmails(): void {
-    console.log('hello');
-    return;
+    this.subscriptions.add(
+      this.emailCampaignService.createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId).subscribe(() => {
+        this.alertService.addAlert({
+          type: 'success',
+          message: `${this.decimalPipe.transform(this.totalEmails)} ${
+            this.totalEmails > 1 ? 'emails have' : 'email has'
+          } been scheduled to be sent.`,
+        });
+        this.emailGroup = '';
+        this.selectedTemplateId = '';
+      }),
+    );
   }
 
   public downloadReport(event: Event): void {

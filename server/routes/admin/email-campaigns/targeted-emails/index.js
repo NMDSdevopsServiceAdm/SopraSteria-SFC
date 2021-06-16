@@ -16,9 +16,15 @@ const getTargetedEmailTemplates = async (req, res) => {
   });
 };
 
+const createTargetedEmailsCampaign = async (req, res) => {
+  return res.status(200).send({ success: true });
+};
+
 router.route('/total').get(getTargetedTotalEmails);
 router.route('/templates').get(getTargetedEmailTemplates);
+router.route('/').post(createTargetedEmailsCampaign);
 
 module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.getTargetedEmailTemplates = getTargetedEmailTemplates;
+module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;

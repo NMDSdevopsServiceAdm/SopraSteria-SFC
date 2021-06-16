@@ -36,6 +36,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       expect(response.totalEmails).to.deep.equal(1500);
     });
   });
+
   describe('getTargetedEmailTemplates()', () => {
     it('should return 200', async () => {
       const req = httpMocks.createRequest({
@@ -71,6 +72,38 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       const response = res._getData();
 
       expect(response.templates).to.deep.equal(templates);
+    });
+  });
+
+  describe('createTargetedEmailsCampaign()', () => {
+    it('should return 200', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return a success when complete', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
+
+      const response = res._getData();
+
+      expect(response).to.deep.equal({ success: true });
     });
   });
 });
