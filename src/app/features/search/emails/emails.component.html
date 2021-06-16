@@ -127,26 +127,26 @@
             data-testid="emailGroup"
             (change)="updateTotalEmails($event.target.value)"
           >
-            <option value=""></option>
+            <option value="">Select a user group</option>
             <option value="primaryUsers">Primary users</option>
           </select>
         </div>
         <div class="govuk-grid-column-one-half">
-          <label class="govuk-label" for="templateId"> Template ID </label>
+          <label class="govuk-label" for="selectedTemplateId"> Template ID </label>
           <select
-            [(ngModel)]="templateId"
+            [(ngModel)]="selectedTemplateId"
             class="govuk-select govuk-!-width-full"
-            id="templateId"
-            data-testid="templateId"
+            id="selectedTemplateId"
+            data-testid="selectedTemplateId"
           >
-            <option value=""></option>
+            <option value="">Select a template</option>
             <option value="1">Template 1</option>
           </select>
         </div>
       </div>
     </div>
 
-    <button class="govuk-button" [disabled]="emailGroup === '' || templateId === ''" type="submit">
+    <button class="govuk-button" [disabled]="emailGroup === '' || selectedTemplateId === ''" type="submit">
       Send emails to selected group
     </button>
   </div>

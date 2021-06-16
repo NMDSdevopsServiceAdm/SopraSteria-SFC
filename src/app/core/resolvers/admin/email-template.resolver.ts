@@ -11,6 +11,7 @@ export class EmailTemplateResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot) {
     return this.emailCampaignService.getTargetedTemplates().pipe(
       catchError(() => {
+        this.router.navigate(['/emails']);
         return EMPTY;
       }),
     );
