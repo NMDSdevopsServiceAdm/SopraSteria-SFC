@@ -1,9 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
-      <span [innerHTML]="aboutUsContent.title"></span>
-    </h1>
-    <div [innerHTML]="aboutUsContent.content"></div>
+    <app-page-content></app-page-content>
     <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-3" [routerLink]="['/']">
       Return to home
     </a>

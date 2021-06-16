@@ -34,6 +34,7 @@ import { LinkToParentDialogComponent } from './components/link-to-parent/link-to
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
+import { PageContentComponent } from './components/page-content/page-content.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -159,6 +160,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
     ArticleListComponent,
+    PageContentComponent,
   ],
   exports: [
     AlertComponent,
@@ -232,6 +234,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
     ArticleListComponent,
+    PageContentComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })
