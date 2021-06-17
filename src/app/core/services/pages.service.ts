@@ -12,12 +12,12 @@ export class PagesService {
 
   constructor(private http: HttpClient) {}
 
-  public getPage(pageId: string): Observable<Pages> {
+  public getPage(slug: string): Observable<Pages> {
     let params = new HttpParams();
-    const pageIdFilter = {
-      slug: { _eq: pageId },
+    const slugFilter = {
+      slug: { _eq: slug },
     };
-    params = params.set('filter', JSON.stringify(pageIdFilter));
+    params = params.set('filter', JSON.stringify(slugFilter));
     params = params.set('limit', '1');
     params = params.set('fields', 'content,title');
 

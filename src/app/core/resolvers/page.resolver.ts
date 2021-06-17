@@ -10,10 +10,10 @@ export class PageResolver implements Resolve<any> {
   constructor(private router: Router, private pagesService: PagesService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | Page[]> {
-    const lastUrlSegment = route.url.length - 1;
-    const articleId = route.url[lastUrlSegment].path;
-    if (articleId) {
-      return this.pagesService.getPage(articleId).pipe(
+    const lastUrlSegmentIndex = route.url.length - 1;
+    const slug = route.url[lastUrlSegmentIndex].path;
+    if (slug) {
+      return this.pagesService.getPage(slug).pipe(
         take(1),
         catchError(() => {
           return of(null);
