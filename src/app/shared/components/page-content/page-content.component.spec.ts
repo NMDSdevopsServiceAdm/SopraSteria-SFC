@@ -1,8 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Pages } from '@core/model/page.model';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -10,19 +10,7 @@ import { of } from 'rxjs';
 import { PageContentComponent } from './page-content.component';
 
 describe('PageContentComponent', () => {
-  const pages = {
-    data: [
-      {
-        title: 'About the ASC-WDS',
-        content: 'Testing',
-        id: 1,
-        date_created: new Date(),
-        date_updated: new Date(),
-        user_created: 'duhefwiuh',
-        user_updated: 'fhewoihf',
-      },
-    ],
-  } as Pages;
+  const pages = MockPagesService.pagesFactory();
 
   async function setup() {
     const { fixture, getByText } = await render(PageContentComponent, {

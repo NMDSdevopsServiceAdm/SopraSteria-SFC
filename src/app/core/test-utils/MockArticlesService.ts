@@ -1,23 +1,35 @@
 import { Injectable } from '@angular/core';
 import { Articles } from '@core/model/article.model';
 import { ArticlesService } from '@core/services/articles.service';
-import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockArticlesService extends ArticlesService {
-  public getArticle(articleSlug: string): Observable<Articles> {
-    return of({
+  public static articlesFactory(): Articles {
+    return {
       data: [
         {
-          title: 'test',
+          title: 'Test article',
           content: 'Testing',
           id: 1,
           date_created: new Date(),
           date_updated: new Date(),
-          user_created: 'duhefwiuh',
-          user_updated: 'fhewoihf',
+          user_created: 'testUser',
+          user_updated: 'testUser',
+          slug: 'test-article',
+          publish_date: new Date(),
+          status: 'Published',
         },
       ],
-    } as Articles);
+    };
+  }
+
+  public static articleListFactory(): Articles {
+    return {
+      data: [
+        { title: 'Test article 1', slug: 'test-slug' },
+        { title: 'Test article 2', slug: 'test2-slug' },
+        { title: 'Test article 3', slug: 'test3-slug' },
+      ],
+    };
   }
 }

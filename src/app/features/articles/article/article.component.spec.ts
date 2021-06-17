@@ -2,14 +2,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Articles } from '@core/model/article.model';
 import { ArticlesService } from '@core/services/articles.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -18,23 +16,11 @@ import { of, Subject } from 'rxjs';
 import { ArticleComponent } from './article.component';
 
 describe('ArticleComponent', () => {
-  const articles = {
-    data: [
-      {
-        title: 'test',
-        content: 'Testing',
-        id: 1,
-        date_created: new Date(),
-        date_updated: new Date(),
-        user_created: 'duhefwiuh',
-        user_updated: 'fhewoihf',
-      },
-    ],
-  } as Articles;
+  const articles = MockArticlesService.articlesFactory();
 
   async function setup() {
     const { fixture, getByText } = await render(ArticleComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -72,7 +58,7 @@ describe('ArticleComponent', () => {
   });
 
   it('should display title of article', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
     expect(getByText(articles.data[0].title)).toBeTruthy();
   });
 
