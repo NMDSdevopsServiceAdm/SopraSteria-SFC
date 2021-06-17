@@ -36,14 +36,6 @@ export const publicJourney: JourneyRoute = {
       path: Path.THANK_YOU,
     },
     {
-      title: 'ASC-WDS news',
-      path: Path.ARTICLE,
-    },
-    {
-      title: 'About us',
-      path: Path.ABOUT_US,
-    },
-    {
       title: 'Contact us or leave feedback',
       path: Path.CONTACT_US_OR_LEAVE_FEEDBACK,
       children: [

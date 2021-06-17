@@ -16,6 +16,7 @@ import {
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
+import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
@@ -219,6 +220,10 @@ export class BreadcrumbService {
       }
       case JourneyType.WDF_PARENT: {
         routes = wdfParentJourney;
+        break;
+      }
+      case JourneyType.PAGES_ARTICLES: {
+        routes = pagesArticlesJourney;
         break;
       }
       default: {

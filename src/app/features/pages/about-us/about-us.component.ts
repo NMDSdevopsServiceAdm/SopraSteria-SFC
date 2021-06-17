@@ -11,6 +11,6 @@ export class AboutUsComponent implements OnInit {
   constructor(private breadcrumbService: BreadcrumbService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.PUBLIC);
+    this.breadcrumbService.show(JourneyType.PAGES_ARTICLES);
   }
 }
