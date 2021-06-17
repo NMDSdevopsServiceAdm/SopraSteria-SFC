@@ -1,5 +1,6 @@
 const express = require('express');
 const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
+const models = require('../../../../models/');
 const router = express.Router();
 
 const templateOptions = {
@@ -10,7 +11,17 @@ const templateOptions = {
 };
 
 const getTargetedTotalEmails = async (req, res) => {
-  return res.status(200).send({ totalEmails: 1500 });
+  const groups = {
+    'primaryUsers': await models.user.allPrimaryUsers(),
+  };
+
+  try {
+    const users = groups[req.query.groupType];
+    return res.status(200).send({ totalEmails: users.length });
+  } catch(error) {
+    console.error(error);
+    return res.status(503).send();
+  }
 };
 
 const getTargetedEmailTemplates = async (req, res) => {

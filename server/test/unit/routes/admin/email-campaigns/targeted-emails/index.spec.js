@@ -3,9 +3,30 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const targetedEmailsRoutes = require('../../../../../../routes/admin/email-campaigns/targeted-emails');
 const sendInBlue = require('../../../../../../utils/email/sendInBlueEmail');
+const models = require('../../../../../../models');
+const { build, fake } = require('@jackfranklin/test-data-bot/build');
+
+const user = build('User', {
+  fields: {
+    FullNameValue: fake((f) => f.name.findName()),
+    email: fake((f) => f.internet.email()),
+    establishment: {
+      NameValue: fake((f) => f.lorem.sentence()),
+      nmdsId: fake((f) => f.helpers.replaceSymbols('?#####'))
+    }
+  },
+});
 
 describe('server/routes/admin/email-campaigns/targeted-emails', () => {
   describe('getTargetedTotalEmails()', () => {
+    beforeEach(() => {
+      sinon.stub(models.user, 'allPrimaryUsers').returns([user, user, user]);
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it('should return 200', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -35,7 +56,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
 
       const response = res._getData();
 
-      expect(response.totalEmails).to.deep.equal(1500);
+      expect(response.totalEmails).to.deep.equal(3);
     });
   });
 
