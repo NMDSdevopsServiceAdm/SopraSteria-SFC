@@ -1,8 +1,10 @@
 const express = require('express');
 const { celebrate, Joi, errors, Segments } = require('celebrate');
 const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
+const sendEmail = require('../../../../services/email-campaigns/targeted-emails/sendEmail');
 const models = require('../../../../models/');
 const router = express.Router();
+const { pRateLimit } = require('p-ratelimit');
 
 const templateOptions = {
   templateStatus: true, // Boolean | Filter on the status of the template. Active = true, inactive = false
@@ -43,7 +45,24 @@ const getTargetedEmailTemplates = async (req, res) => {
 };
 
 const createTargetedEmailsCampaign = async (req, res) => {
-  return res.status(200).send({ success: true });
+  try {
+    const users = await models.user.allPrimaryUsers();
+    const templateId = parseInt(req.body.templateId)
+
+    const limit = pRateLimit({
+      interval: 1000,
+      rate: 5, // 5 emails per second
+    });
+
+    users.map((user) => {
+      return limit(() => sendEmail.sendEmail(user, templateId));
+    });
+
+    return res.status(200).send({ success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(503).send();
+  }
 };
 
 router.route('/total').get(
@@ -57,7 +76,17 @@ router.route('/total').get(
 
 router.use('/total', errors());
 router.route('/templates').get(getTargetedEmailTemplates);
-router.route('/').post(createTargetedEmailsCampaign);
+
+router.use('/', errors());
+router.route('/').post(
+  celebrate({
+    [Segments.BODY]: {
+      templateId: Joi.string().required(),
+      groupType: Joi.string().valid('primaryUsers'),
+    },
+  }),
+  createTargetedEmailsCampaign
+);
 
 module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
