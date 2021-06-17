@@ -134,9 +134,8 @@ export class StaffRecordSummaryComponent implements OnInit {
         continue;
       }
       if (this.worker.wdf?.[fieldCheck].isEligible === 'Yes' && !this.worker.wdf?.[fieldCheck].updatedSinceEffectiveDate) {
-        if ((fieldCheck === 'careCertificate' && this.worker.careCertificate === 'Yes, completed') ||
-        (fieldCheck === 'qualificationInSocialCare' && this.worker.careCertificate === 'Yes') ){
-          this.confirmField(fieldCheck);
+        if ((fieldCheck === 'careCertificate' && this.worker.careCertificate !== 'Yes, completed') ||
+        (fieldCheck === 'qualificationInSocialCare' && this.worker.careCertificate !== 'Yes') ){
           continue;
         }
         this.confirmField(fieldCheck);
