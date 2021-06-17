@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
-import { WorkerDays } from '@core/model/worker.model';
+import { WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -21,6 +21,7 @@ import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
@@ -34,6 +35,10 @@ describe('StaffRecordSummaryComponent', () => {
         },
 
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
+        },
       ],
       componentProperties: {
         wdfView: true,
@@ -43,9 +48,26 @@ describe('StaffRecordSummaryComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const workerService = injector.inject(WorkerService) as WorkerService;
 
-    return { component, fixture, getByText, queryByText };
+    return { component, fixture, getByText, queryByText,workerService };
   };
+  const eligibleObject =
+  {
+    isEligible: Eligibility.YES,
+    updatedSinceEffectiveDate: true
+  };
+  const eligibleButNotUpdatedObject =
+    {
+      isEligible: Eligibility.YES,
+      updatedSinceEffectiveDate: false
+    };
+  const notEligible=
+    {
+      isEligible: Eligibility.NO,
+      updatedSinceEffectiveDate: false
+    };
 
   it('should render a StaffRecordSummaryComponent', async () => {
     const { component } = await setup();
@@ -53,6 +75,45 @@ describe('StaffRecordSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should only auto run confirmField if all other fields confirmed and auto fields have not', async () => {
+    const { component, fixture, workerService } = await setup();
+
+    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+
+    component.wdfNewDesign = true;
+    component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
+
+    fixture.detectChanges();
+    component.updateFieldsWhichDontRequireConfirmation();
+
+    expect(workerService.updateWorker).toHaveBeenCalled();
+  });
+
+  it('should NOT auto run confirmField after all confirmed', async () => {
+    const { component, fixture, workerService } = await setup();
+    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    component.wdfNewDesign = true;
+    component.worker.wdf.dateOfBirth = eligibleObject;
+
+    fixture.detectChanges();
+    component.updateFieldsWhichDontRequireConfirmation();
+    component.confirmField('daysSick');
+    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid,component.worker.uid,{dateOfBirth:component.worker.dateOfBirth});
+  });
+  it('should NOT auto run confirmField if NOT all other fields confirmed', async () => {
+    const { component, fixture, workerService } = await setup();
+
+    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+
+    component.wdfNewDesign = true;
+    component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
+    component.worker.wdf.daysSick = notEligible;
+
+    fixture.detectChanges();
+    component.updateFieldsWhichDontRequireConfirmation();
+
+    expect(workerService.updateWorker).not.toHaveBeenCalled();
+  });
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Date Started', async () => {
     const { component, fixture, getByText } = await setup();
 
