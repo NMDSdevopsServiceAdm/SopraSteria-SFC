@@ -7,13 +7,13 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { PageContentComponent } from './page-content.component';
+import { PageComponent } from './page.component';
 
-describe('PageContentComponent', () => {
+describe('PageComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
-    const { fixture, getByText } = await render(PageContentComponent, {
+    const { fixture, getByText } = await render(PageComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {

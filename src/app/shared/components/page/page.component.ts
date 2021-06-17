@@ -3,10 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { Page } from '@core/model/page.model';
 
 @Component({
-  selector: 'app-page-content',
-  templateUrl: './page-content.component.html',
+  selector: 'app-page',
+  templateUrl: './page.component.html',
 })
-export class PageContentComponent implements OnInit {
+export class PageComponent implements OnInit {
   @Input() public page: Page;
 
   constructor(private route: ActivatedRoute) {}
