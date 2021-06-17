@@ -9,8 +9,6 @@ enum Path {
   PRIVACY_NOTICE = '/privacy-notice',
   CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
   THANK_YOU = '/thank-you',
-  ARTICLE = '/articles/:slug',
-  ABOUT_US = '/about-us',
 }
 
 export const publicJourney: JourneyRoute = {
