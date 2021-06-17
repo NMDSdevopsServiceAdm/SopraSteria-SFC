@@ -122,6 +122,7 @@ export class EmailsComponent implements OnDestroy {
         });
         this.emailGroup = '';
         this.selectedTemplateId = '';
+        this.totalEmails = 0;
       }),
     );
   }
