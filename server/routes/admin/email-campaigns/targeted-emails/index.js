@@ -1,4 +1,5 @@
 const express = require('express');
+const { celebrate, Joi, errors, Segments } = require('celebrate');
 const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
 const models = require('../../../../models/');
 const router = express.Router();
@@ -45,7 +46,16 @@ const createTargetedEmailsCampaign = async (req, res) => {
   return res.status(200).send({ success: true });
 };
 
-router.route('/total').get(getTargetedTotalEmails);
+router.route('/total').get(
+  celebrate({
+    [Segments.QUERY]: {
+      groupType: Joi.string().valid('primaryUsers'),
+    },
+  }),
+  getTargetedTotalEmails,
+);
+
+router.use('/total', errors());
 router.route('/templates').get(getTargetedEmailTemplates);
 router.route('/').post(createTargetedEmailsCampaign);
 
