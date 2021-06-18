@@ -29,6 +29,13 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   public turnoverContent: RankingContent;
   public sicknessContent: RankingContent;
   public qualificationsContent: RankingContent;
+  public establishmentUid: string;
+  public primaryWorkplaceUid: string;
+  public journey: {
+    dashboard: JourneyType;
+    workplace: JourneyType;
+  };
+  public journeyType: string;
 
   constructor(
     private benchmarksService: BenchmarksService,
@@ -38,37 +45,34 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const establishmentUid = this.establishmentService.establishment.uid;
-    let journey: {
-      dashboard: JourneyType;
-      workplace: JourneyType;
-    };
+    this.establishmentUid = this.establishmentService.establishment.uid;
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
 
     this.route.fragment.subscribe((fragment: string) => {
       switch (Metric[fragment]) {
         case Metric.pay: {
-          journey = {
+          this.journey = {
             dashboard: JourneyType.BENCHMARKS_PAY,
             workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_PAY,
           };
           break;
         }
         case Metric.turnover: {
-          journey = {
+          this.journey = {
             dashboard: JourneyType.BENCHMARKS_TURNOVER,
             workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_TURNOVER,
           };
           break;
         }
         case Metric.sickness: {
-          journey = {
+          this.journey = {
             dashboard: JourneyType.BENCHMARKS_SICKNESS,
             workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_SICKNESS,
           };
           break;
         }
         case Metric.qualifications: {
-          journey = {
+          this.journey = {
             dashboard: JourneyType.BENCHMARKS_QUALIFICATIONS,
             workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_QUALIFICATIONS,
           };
@@ -77,11 +81,11 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
       }
     });
 
-    const journeyType = this.establishmentService.primaryWorkplace.uid === establishmentUid ? 'dashboard' : 'workplace';
-    this.breadcrumbService.show(journey[journeyType]);
+    this.calculateJourneyType();
+    this.breadcrumbService.show(this.journey[this.journeyType]);
     this.subscriptions.add(
       this.benchmarksService
-        .getTileData(establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])
+        .getTileData(this.establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])
         .subscribe((data) => {
           if (data) {
             this.tilesData = data;
@@ -94,7 +98,7 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.benchmarksService.getAllRankingData(establishmentUid).subscribe((data: AllRankingsResponse) => {
+      this.benchmarksService.getAllRankingData(this.establishmentUid).subscribe((data: AllRankingsResponse) => {
         this.rankings = data;
         this.payContent = { ...this.rankings.pay, smallText: true, noData: MetricsContent.Pay.noData };
         this.turnoverContent = { ...this.rankings.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
@@ -110,5 +114,9 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public calculateJourneyType(): void {
+    this.journeyType = this.primaryWorkplaceUid === this.establishmentUid ? 'dashboard' : 'workplace';
   }
 }
