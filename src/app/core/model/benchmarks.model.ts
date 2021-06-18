@@ -80,7 +80,7 @@ export class MetricsContent {
       type: Metric.pay,
       journey: {
         dashboard: JourneyType.BENCHMARK_METRIC_PAY,
-        workplace: JourneyType.ALL_WORKPLACES,
+        workplace: JourneyType.BENCHMARK_SUBSIDIARIES_PAY,
       },
     };
   }
@@ -99,7 +99,7 @@ export class MetricsContent {
       type: Metric.turnover,
       journey: {
         dashboard: JourneyType.BENCHMARK_METRIC_TURNOVER,
-        workplace: JourneyType.ALL_WORKPLACES,
+        workplace: JourneyType.BENCHMARK_SUBSIDIARIES_TURNOVER,
       },
     };
   }
@@ -115,7 +115,7 @@ export class MetricsContent {
       type: Metric.sickness,
       journey: {
         dashboard: JourneyType.BENCHMARK_METRIC_SICKNESS,
-        workplace: JourneyType.ALL_WORKPLACES,
+        workplace: JourneyType.BENCHMARK_SUBSIDIARIES_SICKNESS,
       },
     };
   }
@@ -131,7 +131,7 @@ export class MetricsContent {
       type: Metric.qualifications,
       journey: {
         dashboard: JourneyType.BENCHMARK_METRIC_QUALIFICATIONS,
-        workplace: JourneyType.ALL_WORKPLACES,
+        workplace: JourneyType.BENCHMARK_SUBSIDIARIES_QUALIFICATIONS,
       },
     };
   }

@@ -13,6 +13,12 @@ import {
   benchmarkRankingSicknessJourney,
   benchmarkRankingTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_metric';
+import {
+  benchmarkSubsidiariesPayJourney,
+  benchmarkSubsidiariesQualificationsJourney,
+  benchmarkSubsidiariesSicknessJourney,
+  benchmarkSubsidiariesTurnoverJourney,
+} from '@core/breadcrumb/journey.benchmark_subsidiaries';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -219,6 +225,22 @@ export class BreadcrumbService {
       }
       case JourneyType.WDF_PARENT: {
         routes = wdfParentJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_SUBSIDIARIES_PAY: {
+        routes = benchmarkSubsidiariesPayJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_SUBSIDIARIES_TURNOVER: {
+        routes = benchmarkSubsidiariesTurnoverJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_SUBSIDIARIES_SICKNESS: {
+        routes = benchmarkSubsidiariesSicknessJourney;
+        break;
+      }
+      case JourneyType.BENCHMARK_SUBSIDIARIES_QUALIFICATIONS: {
+        routes = benchmarkSubsidiariesQualificationsJourney;
         break;
       }
       default: {

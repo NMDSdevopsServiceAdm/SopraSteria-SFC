@@ -1,14 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import {
-  AllRankingsResponse,
-  BenchmarksResponse,
-  Metric,
-  MetricsContent,
-  NoData,
-  Tile,
-} from '@core/model/benchmarks.model';
+import { AllRankingsResponse, BenchmarksResponse, Metric, MetricsContent, NoData, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -46,29 +39,46 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const establishmentUid = this.establishmentService.establishment.uid;
-    let journey: JourneyType;
+    let journey: {
+      dashboard: JourneyType;
+      workplace: JourneyType;
+    };
+
     this.route.fragment.subscribe((fragment: string) => {
       switch (Metric[fragment]) {
         case Metric.pay: {
-          journey = JourneyType.BENCHMARK_RANKINGS_PAY;
+          journey = {
+            dashboard: JourneyType.BENCHMARK_RANKINGS_PAY,
+            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_PAY,
+          };
           break;
         }
         case Metric.turnover: {
-          journey = JourneyType.BENCHMARK_RANKINGS_TURNOVER;
+          journey = {
+            dashboard: JourneyType.BENCHMARK_RANKINGS_TURNOVER,
+            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_TURNOVER,
+          };
           break;
         }
         case Metric.sickness: {
-          journey = JourneyType.BENCHMARK_RANKINGS_SICKNESS;
+          journey = {
+            dashboard: JourneyType.BENCHMARK_RANKINGS_SICKNESS,
+            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_SICKNESS,
+          };
           break;
         }
         case Metric.qualifications: {
-          journey = JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS;
+          journey = {
+            dashboard: JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS,
+            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_QUALIFICATIONS,
+          };
           break;
         }
       }
     });
 
-    this.breadcrumbService.show(journey);
+    const journeyType = this.establishmentService.primaryWorkplace.uid === establishmentUid ? 'dashboard' : 'workplace';
+    this.breadcrumbService.show(journey[journeyType]);
     this.subscriptions.add(
       this.benchmarksService
         .getTileData(establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])
