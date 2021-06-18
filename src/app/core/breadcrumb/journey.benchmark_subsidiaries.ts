@@ -44,10 +44,10 @@ const route = (title: string, path: Path) => {
   };
 };
 
-export const benchmarkSubsidiariesPayJourney: JourneyRoute = route('Pay', Path.BENCHMARKS_PAY);
-export const benchmarkSubsidiariesTurnoverJourney: JourneyRoute = route('Turnover', Path.BENCHMARKS_TURNOVER);
-export const benchmarkSubsidiariesSicknessJourney: JourneyRoute = route('Sickness', Path.BENCHMARKS_SICKNESS);
-export const benchmarkSubsidiariesQualificationsJourney: JourneyRoute = route(
+export const benchmarksSubsidiariesPayJourney: JourneyRoute = route('Pay', Path.BENCHMARKS_PAY);
+export const benchmarksSubsidiariesTurnoverJourney: JourneyRoute = route('Turnover', Path.BENCHMARKS_TURNOVER);
+export const benchmarksSubsidiariesSicknessJourney: JourneyRoute = route('Sickness', Path.BENCHMARKS_SICKNESS);
+export const benchmarksSubsidiariesQualificationsJourney: JourneyRoute = route(
   'Qualifications',
   Path.BENCHMARKS_QUALIFICATIONS,
 );

@@ -48,29 +48,29 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
       switch (Metric[fragment]) {
         case Metric.pay: {
           journey = {
-            dashboard: JourneyType.BENCHMARK_RANKINGS_PAY,
-            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_PAY,
+            dashboard: JourneyType.BENCHMARKS_PAY,
+            workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_PAY,
           };
           break;
         }
         case Metric.turnover: {
           journey = {
-            dashboard: JourneyType.BENCHMARK_RANKINGS_TURNOVER,
-            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_TURNOVER,
+            dashboard: JourneyType.BENCHMARKS_TURNOVER,
+            workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_TURNOVER,
           };
           break;
         }
         case Metric.sickness: {
           journey = {
-            dashboard: JourneyType.BENCHMARK_RANKINGS_SICKNESS,
-            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_SICKNESS,
+            dashboard: JourneyType.BENCHMARKS_SICKNESS,
+            workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_SICKNESS,
           };
           break;
         }
         case Metric.qualifications: {
           journey = {
-            dashboard: JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS,
-            workplace: JourneyType.BENCHMARK_SUBSIDIARIES_QUALIFICATIONS,
+            dashboard: JourneyType.BENCHMARKS_QUALIFICATIONS,
+            workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_QUALIFICATIONS,
           };
           break;
         }
