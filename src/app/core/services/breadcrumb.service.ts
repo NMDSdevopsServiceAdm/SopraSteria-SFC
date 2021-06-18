@@ -4,15 +4,17 @@ import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/rout
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import {
-  benchmarkMetricPayJourney,
-  benchmarkMetricQualificationsJourney,
-  benchmarkMetricSicknessJourney,
-  benchmarkMetricTurnoverJourney,
-  benchmarkRankingPayJourney,
-  benchmarkRankingQualificationsJourney,
-  benchmarkRankingSicknessJourney,
-  benchmarkRankingTurnoverJourney,
+  benchmarksPayJourney,
+  benchmarksQualificationsJourney,
+  benchmarksSicknessJourney,
+  benchmarksTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_metric';
+import {
+  benchmarksSubsidiariesPayJourney,
+  benchmarksSubsidiariesQualificationsJourney,
+  benchmarksSubsidiariesSicknessJourney,
+  benchmarksSubsidiariesTurnoverJourney,
+} from '@core/breadcrumb/journey.benchmark_subsidiaries';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -181,36 +183,20 @@ export class BreadcrumbService {
         routes = mandatoryTrainingJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_PAY: {
-        routes = benchmarkMetricPayJourney;
+      case JourneyType.BENCHMARKS_PAY: {
+        routes = benchmarksPayJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_SICKNESS: {
-        routes = benchmarkMetricSicknessJourney;
+      case JourneyType.BENCHMARKS_SICKNESS: {
+        routes = benchmarksSicknessJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_TURNOVER: {
-        routes = benchmarkMetricTurnoverJourney;
+      case JourneyType.BENCHMARKS_TURNOVER: {
+        routes = benchmarksTurnoverJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_QUALIFICATIONS: {
-        routes = benchmarkMetricQualificationsJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_PAY: {
-        routes = benchmarkRankingPayJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_TURNOVER: {
-        routes = benchmarkRankingTurnoverJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_SICKNESS: {
-        routes = benchmarkRankingSicknessJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS: {
-        routes = benchmarkRankingQualificationsJourney;
+      case JourneyType.BENCHMARKS_QUALIFICATIONS: {
+        routes = benchmarksQualificationsJourney;
         break;
       }
       case JourneyType.WDF: {
@@ -219,6 +205,22 @@ export class BreadcrumbService {
       }
       case JourneyType.WDF_PARENT: {
         routes = wdfParentJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_PAY: {
+        routes = benchmarksSubsidiariesPayJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_TURNOVER: {
+        routes = benchmarksSubsidiariesTurnoverJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_SICKNESS: {
+        routes = benchmarksSubsidiariesSicknessJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_QUALIFICATIONS: {
+        routes = benchmarksSubsidiariesQualificationsJourney;
         break;
       }
       default: {
