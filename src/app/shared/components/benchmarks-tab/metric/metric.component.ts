@@ -33,6 +33,9 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public currentRank: number;
   public rankStateMessage: string;
   public rankHasValue: boolean;
+  public establishmentUid: string;
+  public primaryWorkplaceUid: string;
+  public journeyType: string;
 
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
   @ViewChild('gauge') gauge: GaugeComponent;
@@ -55,7 +58,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.establishment;
-    const establishmentUid = this.workplace.uid;
+    this.establishmentUid = this.workplace.uid;
 
     const dataObservable$ = this.route.data.pipe(
       tap(this.setRouteData),
@@ -64,21 +67,20 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       dataObservable$
-        .pipe(mergeMap(() => this.benchmarksService.getTileData(establishmentUid, [Metric[this.type]])))
+        .pipe(mergeMap(() => this.benchmarksService.getTileData(this.establishmentUid, [Metric[this.type]])))
         .subscribe(this.handleBenchmarksResponse),
     );
 
     this.subscriptions.add(
       dataObservable$
-        .pipe(mergeMap(() => this.benchmarksService.getRankingData(establishmentUid, Metric[this.type])))
+        .pipe(mergeMap(() => this.benchmarksService.getRankingData(this.establishmentUid, Metric[this.type])))
         .subscribe(this.handleRankingsResponse),
     );
   }
 
   setRouteData = (data: Data): void => {
-    const journeyType =
-      this.establishmentService.primaryWorkplace.uid === this.workplace.uid ? 'dashboard' : 'workplace';
-    this.breadcrumbService.show(data.journey[journeyType]);
+    this.calculateJourneyType();
+    this.breadcrumbService.show(data.journey[this.journeyType]);
     this.title = data.title;
     this.description = data.description;
     this.noData = data.noData;
@@ -107,6 +109,11 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
       console.error(error);
     }
   }
+
+  public calculateJourneyType(): void {
+    this.journeyType = this.primaryWorkplaceUid === this.establishmentUid ? 'dashboard' : 'workplace';
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
