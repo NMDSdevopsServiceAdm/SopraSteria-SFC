@@ -12,7 +12,7 @@ export const pagesArticlesJourney: JourneyRoute = {
       path: Path.ARTICLE,
     },
     {
-      title: 'About us',
+      title: 'About ASC-WDS',
       path: Path.ABOUT_US,
     },
   ],
