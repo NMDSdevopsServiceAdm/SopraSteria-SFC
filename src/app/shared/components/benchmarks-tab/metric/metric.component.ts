@@ -57,6 +57,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.workplace = this.establishmentService.establishment;
     this.establishmentUid = this.workplace.uid;
 
