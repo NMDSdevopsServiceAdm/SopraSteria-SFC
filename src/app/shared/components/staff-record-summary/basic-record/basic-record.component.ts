@@ -11,4 +11,5 @@ export class BasicRecordComponent extends StaffRecordSummaryComponent {
   @Input() public basicTitle = 'Mandatory details';
   @Input() public overallWdfEligibility: boolean;
   @Input() public wdfNewDesign: boolean;
+  @Input() public canEditWorker: boolean;
 }

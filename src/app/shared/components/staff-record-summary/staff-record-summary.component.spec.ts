@@ -649,4 +649,109 @@ describe('StaffRecordSummaryComponent', () => {
       expect(getByText('Meeting requirements')).toBeTruthy();
     });
   });
+
+  describe('Permission check for workers who do not have permission to edit fields', () => {
+    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for basic record fields', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.wdfNewDesign = true;
+      component.worker.wdf.mainJob.isEligible = Eligibility.YES;
+      component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
+      component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
+
+      component.worker.contract = Contracts.Permanent;
+      component.worker.wdf.contract.isEligible = Eligibility.YES;
+      component.worker.wdf.contract.updatedSinceEffectiveDate = false;
+
+      component.canEditWorker = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
+      expect(queryByText('Yes, it is')).toBeFalsy();
+      expect(queryByText('No, change it')).toBeFalsy();
+    });
+
+    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for employment fields', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.wdfNewDesign = true;
+
+      component.worker.contract = Contracts.Permanent;
+      component.worker.wdf.daysSick.isEligible = Eligibility.YES;
+      component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
+      const myWorkerDay: WorkerDays = {
+        days: 4,
+        value: null,
+      };
+      component.worker.daysSick = myWorkerDay;
+
+      component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
+      component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
+      component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
+
+      component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
+      component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
+      component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
+
+      component.canEditWorker = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
+      expect(queryByText('Yes, it is')).toBeFalsy();
+      expect(queryByText('No, change it')).toBeFalsy();
+    });
+
+    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for employment fields with zero hours', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.wdfNewDesign = true;
+
+      component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
+      component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
+      component.worker.zeroHoursContract = 'Yes';
+      component.worker.weeklyHoursAverage = { value: 'Yes', hours: 30 };
+      component.worker.contract = Contracts.Agency;
+
+      component.canEditWorker = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
+      expect(queryByText('Yes, it is')).toBeFalsy();
+      expect(queryByText('No, change it')).toBeFalsy();
+    });
+
+    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for qualification fields', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.wdfNewDesign = true;
+
+      component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
+      component.worker.qualificationInSocialCare = 'Yes';
+      component.worker.socialCareQualification = { qualificationId: 4, title: 'Level 3' };
+
+      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
+      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
+      component.worker.careCertificate = 'No';
+
+      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
+      component.worker.otherQualification = 'Yes';
+
+      component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
+      component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
+      component.worker.wdf.highestQualification.updatedSinceEffectiveDate = false;
+
+      component.canEditWorker = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
+      expect(queryByText('Yes, it is')).toBeFalsy();
+      expect(queryByText('No, change it')).toBeFalsy();
+    });
+  });
 });

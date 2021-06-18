@@ -12,6 +12,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.careCertificate.isEligible === 'Yes' &&
@@ -54,6 +55,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
@@ -96,6 +98,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
@@ -138,6 +141,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.otherQualification.isEligible === 'Yes' &&
@@ -171,6 +175,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.highestQualification.isEligible === 'Yes' &&
