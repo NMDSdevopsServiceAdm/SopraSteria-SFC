@@ -9,7 +9,6 @@ enum Path {
   PRIVACY_NOTICE = '/privacy-notice',
   CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
   THANK_YOU = '/thank-you',
-  ARTICLE = '/articles/:slug',
 }
 
 export const publicJourney: JourneyRoute = {
@@ -33,10 +32,6 @@ export const publicJourney: JourneyRoute = {
     {
       title: 'Thank you',
       path: Path.THANK_YOU,
-    },
-    {
-      title: 'ASC-WDS news',
-      path: Path.ARTICLE,
     },
     {
       title: 'Contact us or leave feedback',

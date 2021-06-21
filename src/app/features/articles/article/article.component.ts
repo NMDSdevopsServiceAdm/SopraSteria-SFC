@@ -17,8 +17,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private router: Router) {}
 
-  ngOnInit() {
-    this.breadcrumbService.show(JourneyType.PUBLIC);
+  ngOnInit(): void {
+    this.breadcrumbService.show(JourneyType.PAGES_ARTICLES);
     this.setArticle();
     this.addSubscriptionToUpdateBreadcrumbs();
   }
@@ -43,7 +43,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
           map(() => this.route),
         )
         .subscribe((data) => {
-          this.breadcrumbService.show(JourneyType.PUBLIC);
+          this.breadcrumbService.show(JourneyType.PAGES_ARTICLES);
         }),
     );
   }

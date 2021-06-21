@@ -2,14 +2,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Articles } from '@core/model/article.model';
 import { ArticlesService } from '@core/services/articles.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -18,20 +16,12 @@ import { of, Subject } from 'rxjs';
 import { ArticleListComponent } from './article-list.component';
 
 describe('ArticleListComponent', () => {
-  const articleList = {
-    data: [
-      { title: 'test', slug: 'test-slug' },
-      { title: 'test2', slug: 'test2-slug' },
-      { title: 'test3', slug: 'test3-slug' },
-    ],
-  } as Articles;
-  const articles = {
-    data: [{ title: 'test2', slug: 'test2-slug' }],
-  };
+  const articleList = MockArticlesService.articleListFactory();
+  const articles = MockArticlesService.articlesFactory();
 
   async function setup() {
-    const { fixture, getByText } = await render(ArticleListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+    const { fixture, getByText, queryByText } = await render(ArticleListComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -57,7 +47,7 @@ describe('ArticleListComponent', () => {
     ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
 
     const component = fixture.componentInstance;
-    return { component, fixture, getByText };
+    return { component, fixture, getByText, queryByText };
   }
 
   it('should render a ArticleListComponent', async () => {
@@ -91,11 +81,21 @@ describe('ArticleListComponent', () => {
     const firstArticleLink = getByText(articleList.data[0].title).closest('li');
     const thirdArticleLink = getByText(articleList.data[2].title).closest('li');
 
-    component.currentArticleSlug = articleList.data[1].slug;
+    component.articleList[1].slug = 'matching-slug';
+    component.currentArticleSlug = 'matching-slug';
     fixture.detectChanges();
 
     expect(secondArticleLink.classList).toContain('govuk-!-font-weight-bold');
     expect(firstArticleLink.classList).not.toContain('govuk-!-font-weight-bold');
     expect(thirdArticleLink.classList).not.toContain('govuk-!-font-weight-bold');
+  });
+
+  it('should not display anything when article list is empty', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.articleList = [];
+    fixture.detectChanges();
+
+    expect(queryByText('ASC-WDS news')).toBeFalsy();
   });
 });

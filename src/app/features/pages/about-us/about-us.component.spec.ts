@@ -1,28 +1,27 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ArticlesService } from '@core/services/articles.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
-import { of, Subject } from 'rxjs';
+import { getByText, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
-import { ArticleComponent } from './article.component';
+import { AboutUsComponent } from './about-us.component';
 
-describe('ArticleComponent', () => {
-  const articles = MockArticlesService.articlesFactory();
+describe('AboutUsComponent', () => {
+  const pages = MockPagesService.pagesFactory();
+  const articleList = MockArticlesService.articleListFactory();
 
   async function setup() {
-    const { fixture, getByText } = await render(ArticleComponent, {
+    const { fixture, getByText } = await render(AboutUsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
-        { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -32,17 +31,14 @@ describe('ArticleComponent', () => {
             url: of(['testUrl']),
             snapshot: {
               data: {
-                articles,
+                pages,
+                articleList,
               },
             },
           }),
         },
       ],
     });
-
-    const injector = getTestBed();
-    const event = new NavigationEnd(42, '/', '/');
-    ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
 
     const component = fixture.componentInstance;
     return {
@@ -52,18 +48,26 @@ describe('ArticleComponent', () => {
     };
   }
 
-  it('should render a ArticleComponent', async () => {
+  it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should display title of article', async () => {
+  it('should show an article list when there are articles', async () => {
     const { getByText } = await setup();
-    expect(getByText(articles.data[0].title)).toBeTruthy();
+
+    expect(getByText(articleList.data[0].title)).toBeTruthy();
+    expect(getByText(articleList.data[1].title)).toBeTruthy();
+    expect(getByText(articleList.data[2].title)).toBeTruthy();
   });
 
-  it('should display content of article', async () => {
+  it('should display title from the pages data', async () => {
     const { getByText } = await setup();
-    expect(getByText(articles.data[0].content)).toBeTruthy();
+    expect(getByText(pages.data[0].title)).toBeTruthy();
+  });
+
+  it('should display content from the pages data', async () => {
+    const { getByText } = await setup();
+    expect(getByText(pages.data[0].content)).toBeTruthy();
   });
 });
