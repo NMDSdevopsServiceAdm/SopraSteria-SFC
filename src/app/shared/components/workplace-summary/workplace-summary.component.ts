@@ -187,7 +187,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     return ['/workplace', this.workplace.uid, name];
   }
 
-  public confirmField(dataField) {
+  public confirmField(dataField: string): void {
     const props = { [dataField]: this.workplace[dataField] };
 
     this.subscriptions.add(
