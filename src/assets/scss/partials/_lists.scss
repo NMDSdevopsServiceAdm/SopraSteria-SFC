@@ -199,3 +199,13 @@
     float: left;
   }
 }
+
+ul {
+  @extend .govuk-list;
+  @extend .govuk-list--bullet;
+}
+
+ol {
+  @extend .govuk-list;
+  @extend .govuk-list--number;
+}
