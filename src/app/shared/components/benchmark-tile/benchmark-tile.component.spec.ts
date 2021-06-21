@@ -25,7 +25,10 @@ describe('BenchmarkTileComponent', () => {
       tileDescription: 'Test description',
       noData: {},
       type: Metric.pay,
-      journey: JourneyType.BENCHMARK_METRIC_PAY,
+      journey: {
+        dashboard: JourneyType.BENCHMARKS_PAY,
+        workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_PAY,
+      },
     };
     component.tile = {
       workplaceValue: {

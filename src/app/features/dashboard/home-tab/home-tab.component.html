@@ -84,7 +84,7 @@
       </ng-template>
     </div>
   </div>
-  <div class="govuk-grid-column-one-third">
+  <div *ngIf="workplace" class="govuk-grid-column-one-third">
     <app-article-list></app-article-list>
     <ng-container
       *ngIf="
