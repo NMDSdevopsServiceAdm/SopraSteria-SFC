@@ -97,12 +97,15 @@
         canAddWorker
       "
     >
-      <h3 class="govuk-heading-s govuk-!-margin-top-1">Related content</h3>
-      <ul *ngIf="workplace" class="govuk-list">
-        <li *ngIf="canViewWorkplaces">
+      <h3 class="govuk-heading-s govuk-!-margin-top-1">Other links</h3>
+      <ul class="govuk-list govuk-!-margin-bottom-6">
+        <li class="govuk-!-margin-bottom-3">
+          <a [routerLink]="['/about-us']">About ASC-WDS</a>
+        </li>
+        <li *ngIf="canViewWorkplaces" class="govuk-!-margin-bottom-3">
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
         </li>
-        <li *ngIf="canViewChangeDataOwner">
+        <li *ngIf="canViewChangeDataOwner" class="govuk-!-margin-bottom-3">
           <ng-container *ngIf="isOwnershipRequested; else changeDataOwner">
             <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
           </ng-container>
@@ -110,10 +113,10 @@
             <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
           </ng-template>
         </li>
-        <li *ngIf="canViewDataPermissionsLink">
+        <li *ngIf="canViewDataPermissionsLink" class="govuk-!-margin-bottom-3">
           <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
         </li>
-        <li *ngIf="canLinkToParent && !workplace.isParent">
+        <li *ngIf="canLinkToParent && !workplace.isParent" class="govuk-!-margin-bottom-3">
           <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
             <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
           </ng-container>
@@ -121,13 +124,16 @@
             <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
           </ng-template>
         </li>
-        <li *ngIf="canRemoveParentAssociation">
+        <li *ngIf="canRemoveParentAssociation" class="govuk-!-margin-bottom-3">
           <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
         </li>
-        <li *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
+        <li
+          *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent"
+          class="govuk-!-margin-bottom-3"
+        >
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
-        <li *ngIf="canAddWorker">
+        <li *ngIf="canAddWorker" class="govuk-!-margin-bottom-3">
           <a [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']">Manage mandatory training</a>
         </li>
       </ul>
