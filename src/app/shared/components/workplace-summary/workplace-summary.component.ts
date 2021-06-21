@@ -59,7 +59,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   @Input() return: URLStructure = null;
 
-  get totalStaffWarning() {
+  get totalStaffWarning(): boolean {
     if (this.wdfNewDesign) {
       return (
         this.workplace.numberOfStaff &&
@@ -73,7 +73,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     );
   }
 
-  get totalStaffWarningNonWDF() {
+  get totalStaffWarningNonWDF(): boolean {
     return (
       (this.workplace.numberOfStaff != null || this.workplace.totalWorkers !== null) &&
       this.workplace.numberOfStaff !== this.workerCount
@@ -110,7 +110,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     };
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setFeatureFlags();
 
     this.subscriptions.add(
@@ -142,14 +142,18 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  public filterAndSortOtherServices(services: Service[]) {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  public filterAndSortOtherServices(services: Service[]): Service[] {
     return sortBy(
       services.filter((service) => service.name !== this.workplace.mainService.name),
       'id',
     );
   }
 
-  public isArray(variable): boolean {
+  public isArray(variable: any): boolean {
     return Array.isArray(variable);
   }
 
@@ -161,10 +165,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public selectStaffTab(event: Event): void {
     event.preventDefault();
     this.workerService.tabChanged.next(true);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
 
   public isNumber(value: unknown): boolean {
@@ -183,7 +183,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  public getRoutePath(name: string) {
+  public getRoutePath(name: string): Array<string> {
     return ['/workplace', this.workplace.uid, name];
   }
 
