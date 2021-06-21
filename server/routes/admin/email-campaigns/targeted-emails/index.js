@@ -3,8 +3,9 @@ const { celebrate, Joi, errors, Segments } = require('celebrate');
 const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
 const sendEmail = require('../../../../services/email-campaigns/targeted-emails/sendEmail');
 const models = require('../../../../models/');
+const { limit } = require('../../../../services/email-campaigns/limit');
+
 const router = express.Router();
-const { pRateLimit } = require('p-ratelimit');
 
 const getGroup = async (type) => {
   const groups = {
@@ -12,6 +13,19 @@ const getGroup = async (type) => {
   }
   return groups[type];
 };
+
+const getHistory = (req, emailCampaign, templateId, users) => users.map((user) => {
+  return {
+    emailCampaignID: emailCampaign.id,
+    establishmentID: user.establishment.id,
+    template: templateId,
+    data: {
+      type: req.body.groupType,
+    },
+    sentToName: user.FullNameValue,
+    sentToEmail: user.get('email'),
+  };
+});
 
 const templateOptions = {
   templateStatus: true, // Boolean | Filter on the status of the template. Active = true, inactive = false
@@ -59,25 +73,8 @@ const createTargetedEmailsCampaign = async (req, res) => {
       type: type,
     });
 
-    const history = users.map((user) => {
-      return {
-        emailCampaignID: emailCampaign.id,
-        establishmentID: user.establishment.id,
-        template: templateId,
-        data: {
-          type: req.body.groupType,
-        },
-        sentToName: user.FullNameValue,
-        sentToEmail: user.email,
-      };
-    });
-
+    const history = getHistory(req, emailCampaign, templateId, users);
     await models.EmailCampaignHistory.bulkCreate(history);
-
-    const limit = pRateLimit({
-      interval: 1000,
-      rate: 5, // 5 emails per second
-    });
 
     users.map((user) => {
       return limit(() => sendEmail.sendEmail(user, templateId));

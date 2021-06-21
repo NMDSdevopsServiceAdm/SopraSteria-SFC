@@ -11,11 +11,12 @@ const user = build('User', {
   fields: {
     FullNameValue: fake((f) => f.name.findName()),
     email: fake((f) => f.internet.email()),
+    get: () => fake((f) => f.internet.email()),
     establishment: {
       id: sequence(),
       NameValue: fake((f) => f.lorem.sentence()),
       nmdsId: fake((f) => f.helpers.replaceSymbols('?#####'))
-    }
+    },
   },
 });
 
