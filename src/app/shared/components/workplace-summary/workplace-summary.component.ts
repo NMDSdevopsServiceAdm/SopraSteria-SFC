@@ -136,6 +136,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
         }
       }),
     );
+
+    if (this.wdfView && this.wdfNewDesign) {
+      this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
+    }
   }
 
   public filterAndSortOtherServices(services: Service[]) {
@@ -189,5 +193,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => console.log(data)),
     );
+  }
+
+  private updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
+    if (this.workplace.wdf?.employerType.isEligible && !this.workplace.wdf?.employerType.updatedSinceEffectiveDate) {
+      this.confirmField('employerType');
+    }
   }
 }
