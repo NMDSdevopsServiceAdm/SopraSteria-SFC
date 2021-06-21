@@ -402,6 +402,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.establishment,
           attributes: [
+            'id',
             'nmdsId',
             'NameValue',
           ],

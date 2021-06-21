@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const targetedEmailsRoutes = require('../../../../../../routes/admin/email-campaigns/targeted-emails');
 const sendInBlue = require('../../../../../../utils/email/sendInBlueEmail');
 const models = require('../../../../../../models');
-const { build, fake } = require('@jackfranklin/test-data-bot/build');
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot/build');
 const sendEmail = require('../../../../../../services/email-campaigns/targeted-emails/sendEmail');
 
 const user = build('User', {
@@ -12,6 +12,7 @@ const user = build('User', {
     FullNameValue: fake((f) => f.name.findName()),
     email: fake((f) => f.internet.email()),
     establishment: {
+      id: sequence(),
       NameValue: fake((f) => f.lorem.sentence()),
       nmdsId: fake((f) => f.helpers.replaceSymbols('?#####'))
     }
@@ -149,47 +150,16 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
   });
 
   describe('createTargetedEmailsCampaign()', () => {
-    const mockUser = [
-        {
-          email: 'test@test.com',
-          FullNameValue: 'John Smith',
-          establishment: {
-            nmdsId: 'H6765790',
-            NameValue: 'Haven Care'
-          },
-          get: () => {
-            return 'hello@gello.com';
-          }
-        },
-      ];
-
-    beforeEach(() => {
-      sinon.stub(models.user, 'allPrimaryUsers').returns(mockUser);
-      sinon.stub(sendEmail, 'sendEmail');
-    });
+    let mockUsers = [];
+    for (let i = 0; i < Math.ceil(Math.random() * 10); i++) {
+      mockUsers.push(user());
+    }
 
     afterEach(()=> {
       sinon.restore();
     });
 
-    it('should return 200', async () => {
-      const req = httpMocks.createRequest({
-        method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails',
-      });
-
-      req.role = 'Admin';
-      req.body.groupType = 'primaryUsers';
-      req.body.templateId = '1';
-
-      const res = httpMocks.createResponse();
-      await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
-
-      expect(res.statusCode).to.deep.equal(200);
-    });
-
     it('should return a 503 on error', async () => {
-      sinon.restore();
       sinon.stub(models.user, 'allPrimaryUsers').throws();
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -207,9 +177,18 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     });
 
     it('should create a targeted emails campaign', async () => {
-      sinon.restore();
+      const allPrimaryUsers = sinon.stub(models.user, 'allPrimaryUsers').returns(mockUsers);
+      const userMock = sinon.stub(models.user, 'findByUUID').returns({
+        id: 1,
+      });
+      const createEmailCampaignMock = sinon.stub(models.EmailCampaign, 'create').returns({
+        id: 1,
+        userID: 1,
+        createdAt: '2021-01-01',
+        updatedAt: '2021-01-01',
+      });
+      const createEmailCampaignHistoryMock = sinon.stub(models.EmailCampaignHistory, 'bulkCreate');
       const sendEmailMock = sinon.stub(sendEmail, 'sendEmail').returns();
-      const allPrimaryUsers = sinon.stub(models.user, 'allPrimaryUsers').returns(mockUser);
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -219,15 +198,23 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       req.role = 'Admin';
       req.body.groupType = 'primaryUsers';
       req.body.templateId = '1';
+      req.userUid = '1402bf74-bf25-46d3-a080-a633f748b441';
 
       const res = httpMocks.createResponse();
       await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
 
       const response = res._getData();
 
-      expect(response).to.deep.equal({ success: true });
       sinon.assert.called(allPrimaryUsers);
-      sinon.assert.calledWith(sendEmailMock, mockUser[0]);
+      sinon.assert.calledWith(userMock, '1402bf74-bf25-46d3-a080-a633f748b441');
+      sinon.assert.calledWith(createEmailCampaignMock, {
+        userID: 1,
+        type: 'targetedEmails',
+      });
+      sinon.assert.calledOnce(createEmailCampaignHistoryMock);
+      sinon.assert.calledWith(sendEmailMock, mockUsers[0]);
+      expect(response).to.deep.equal({ success: true });
+      expect(res.statusCode).to.deep.equal(200);
     });
   });
 });

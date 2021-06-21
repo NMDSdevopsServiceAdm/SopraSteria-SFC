@@ -6,6 +6,13 @@ const models = require('../../../../models/');
 const router = express.Router();
 const { pRateLimit } = require('p-ratelimit');
 
+const getGroup = async (type) => {
+  const groups = {
+    'primaryUsers': await models.user.allPrimaryUsers(),
+  }
+  return groups[type];
+};
+
 const templateOptions = {
   templateStatus: true, // Boolean | Filter on the status of the template. Active = true, inactive = false
   limit: 50, // Number | Number of documents returned per page
@@ -14,12 +21,8 @@ const templateOptions = {
 };
 
 const getTargetedTotalEmails = async (req, res) => {
-  const groups = {
-    'primaryUsers': await models.user.allPrimaryUsers(),
-  };
-
   try {
-    const users = groups[req.query.groupType];
+    const users = await getGroup(req.query.groupType);
     return res.status(200).send({ totalEmails: users.length });
   } catch(error) {
     console.error(error);
@@ -46,8 +49,30 @@ const getTargetedEmailTemplates = async (req, res) => {
 
 const createTargetedEmailsCampaign = async (req, res) => {
   try {
-    const users = await models.user.allPrimaryUsers();
-    const templateId = parseInt(req.body.templateId)
+    const user = await models.user.findByUUID(req.userUid);
+    const users = await getGroup(req.body.groupType);
+    const templateId = parseInt(req.body.templateId);
+
+    const type = models.EmailCampaign.types().TARGETED_EMAILS;
+    const emailCampaign = await models.EmailCampaign.create({
+      userID: user.id,
+      type: type,
+    });
+
+    const history = users.map((user) => {
+      return {
+        emailCampaignID: emailCampaign.id,
+        establishmentID: user.establishment.id,
+        template: templateId,
+        data: {
+          type: req.body.groupType,
+        },
+        sentToName: user.FullNameValue,
+        sentToEmail: user.email,
+      };
+    });
+
+    await models.EmailCampaignHistory.bulkCreate(history);
 
     const limit = pRateLimit({
       interval: 1000,
