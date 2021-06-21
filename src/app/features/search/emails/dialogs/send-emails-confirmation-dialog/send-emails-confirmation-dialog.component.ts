@@ -8,7 +8,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 })
 export class SendEmailsConfirmationDialogComponent extends DialogComponent {
   constructor(
-    @Inject(DIALOG_DATA) public data: { inactiveWorkplaces: number },
+    @Inject(DIALOG_DATA) public data: { emailCount: number },
     public dialog: Dialog<SendEmailsConfirmationDialogComponent>,
   ) {
     super(data, dialog);

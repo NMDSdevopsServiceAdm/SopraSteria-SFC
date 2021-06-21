@@ -5,11 +5,11 @@ import { EMPTY } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class EmailCampaignHistoryResolver implements Resolve<any> {
+export class EmailTemplateResolver implements Resolve<any> {
   constructor(private router: Router, private emailCampaignService: EmailCampaignService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.emailCampaignService.getInactiveWorkplacesHistory().pipe(
+    return this.emailCampaignService.getTargetedTemplates().pipe(
       catchError(() => {
         this.router.navigate(['/emails']);
         return EMPTY;
