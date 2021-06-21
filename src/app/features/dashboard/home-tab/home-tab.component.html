@@ -133,9 +133,6 @@
         >
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </li>
-        <li *ngIf="canAddWorker" class="govuk-!-margin-bottom-3">
-          <a [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']">Manage mandatory training</a>
-        </li>
       </ul>
       <div *ngIf="canRunLocalAuthorityReport && workplace">
         <h3 class="govuk-heading-s govuk-!-margin-top-1">Download reports</h3>
