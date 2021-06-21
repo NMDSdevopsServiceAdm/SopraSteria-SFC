@@ -1,5 +1,5 @@
 const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
-const { isWhitelisted } = require('../isWhitelisted');
+const isWhitelisted = require('../isWhitelisted');
 
 const getParams = (user) => {
   return {
@@ -9,7 +9,7 @@ const getParams = (user) => {
 };
 
 const sendEmail = async (user, templateId) => {
-  if (!isWhitelisted(user.get('email'))) {
+  if (!isWhitelisted.isWhitelisted(user.get('email'))) {
     return;
   }
 

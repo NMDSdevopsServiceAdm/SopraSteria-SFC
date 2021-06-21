@@ -3,6 +3,7 @@ const sinon = require('sinon');
 
 const sendEmail = require('../../../../../services/email-campaigns/targeted-emails/sendEmail');
 const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
+const isWhitelisted = require('../../../../../services/email-campaigns/isWhitelisted');
 
 describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => {
   afterEach(() => {
@@ -24,10 +25,16 @@ describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => 
       };
       const templateId = 1;
 
+      const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
+
       const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
 
       await sendEmail.sendEmail(user, templateId);
 
+      sinon.assert.calledWith(
+        isWhitelistedStub,
+        'test@test.com'
+      )
       sinon.assert.calledWith(
         sendEmailStub,
         {

@@ -4,6 +4,7 @@ const sinon = require('sinon');
 
 const sendEmail = require('../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
+const isWhitelisted = require('../../../../../services/email-campaigns/isWhitelisted');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', () => {
   afterEach(() => {
@@ -30,8 +31,14 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       };
 
       const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
+      const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
 
       await sendEmail.sendEmail(inactiveWorkplace);
+
+      sinon.assert.calledWith(
+        isWhitelistedStub,
+        'test@example.com'
+      );
 
       sinon.assert.calledWith(
         sendEmailStub,
@@ -74,8 +81,14 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       };
 
       const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
+      const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
 
       await sendEmail.sendEmail(parentWorkplace);
+
+      sinon.assert.calledWith(
+        isWhitelistedStub,
+        'test@example.com'
+      );
 
       sinon.assert.calledWith(
         sendEmailStub,

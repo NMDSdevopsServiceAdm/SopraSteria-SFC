@@ -2,7 +2,7 @@ const moment = require('moment');
 
 const config = require('../../../config/config');
 const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
-const { isWhitelisted } = require('../isWhitelisted');
+const isWhitelisted = require('../isWhitelisted');
 
 const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
 
@@ -28,7 +28,7 @@ const getParams = (workplace) => {
 };
 
 const sendEmail = async (workplace) => {
-  if (!isWhitelisted(workplace.user.email)) {
+  if (!isWhitelisted.isWhitelisted(workplace.user.email)) {
     return;
   }
 
