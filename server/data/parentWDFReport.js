@@ -1,8 +1,7 @@
 'use strict';
 
 const db = require('../utils/datastore');
-var config = require('../../server/config/config');
-const models = require('../models/index');
+
 const effectiveDate = require('../models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
 
 const getEstablishmentDataQuery =
@@ -224,8 +223,7 @@ SELECT
   "DataOwner",
   "DataPermissions",
   "Worker"."GenderValue",
-  CASE WHEN "DateOfBirthEncryptedValue" IS NULL THEN Null ELSE pgp_pub_decrypt(dearmor("DateOfBirthEncryptedValue") :: bytea, dearmor(convert_from(decode(:privateKey,'base64'), 'UTF8')),
-    :passphrase)  END AS "DateOfBirthValue",
+  to_char("DateOfBirthValue", :timeFormat) AS "DateOfBirthValue",
   "NationalityValue",
   "Nationality"."Nationality",
   "Job"."JobName" AS "MainJobRole",
@@ -280,14 +278,13 @@ WHERE
 `;
 
 exports.getWorkerData = async establishmentId =>
-  await models.sequelize.query(getWorkerDataQuery, {
-    replacements: {
-      establishmentId,
-      separator: ', ',
-      falseValue: false,
-      timeFormat: 'DD/MM/YYYY',
-      privateKey: config.get('encryption.privateKey'),
-      passphrase: config.get('encryption.passphrase'),
-    },
-    type: db.QueryTypes.SELECT
+  db.query(getWorkerDataQuery, {
+      replacements: {
+        establishmentId,
+        separator: ', ',
+        falseValue: false,
+        timeFormat: 'DD/MM/YYYY'
+      },
+      type: db.QueryTypes.SELECT
   });
+
