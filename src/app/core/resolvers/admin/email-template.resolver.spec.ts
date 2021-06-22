@@ -5,17 +5,17 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { SearchModule } from '@features/search/search.module';
 
-import { EmailCampaignHistoryResolver } from './email-campaign-history.resolver';
+import { EmailTemplateResolver } from './email-template.resolver';
 
-describe('EmailCampaignHistoryResolver', () => {
-  let resolver: EmailCampaignHistoryResolver;
+describe('EmailTemplateResolver', () => {
+  let resolver: EmailTemplateResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SearchModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [EmailCampaignHistoryResolver],
+      providers: [EmailTemplateResolver],
     });
-    resolver = TestBed.inject(EmailCampaignHistoryResolver);
+    resolver = TestBed.inject(EmailTemplateResolver);
   });
 
   it('should be created', () => {
@@ -24,10 +24,10 @@ describe('EmailCampaignHistoryResolver', () => {
 
   it('should resolve', () => {
     const emailCampaignService = TestBed.inject(EmailCampaignService);
-    spyOn(emailCampaignService, 'getInactiveWorkplacesHistory').and.callThrough();
+    spyOn(emailCampaignService, 'getTargetedTemplates').and.callThrough();
 
     resolver.resolve({} as ActivatedRouteSnapshot);
 
-    expect(emailCampaignService.getInactiveWorkplacesHistory).toHaveBeenCalled();
+    expect(emailCampaignService.getTargetedTemplates).toHaveBeenCalled();
   });
 });

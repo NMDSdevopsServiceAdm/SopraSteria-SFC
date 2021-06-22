@@ -17,17 +17,17 @@ describe('SendEmailsConfirmationDialogComponent', () => {
 
   it('should display confirmation dialog', async () => {
     const component = await setup();
-    component.fixture.componentInstance.data.inactiveWorkplaces = 10;
+    component.fixture.componentInstance.data.emailCount = 10;
     component.fixture.detectChanges(true);
     const p = component.fixture.nativeElement.querySelector('p');
-    expect(p.innerText).toContain('This will send an email to 10 workplaces.');
+    expect(p.innerText).toContain('This will send an email to 10 users.');
   });
 
   it('should pluralise the confirmation dialog', async () => {
     const component = await setup();
-    component.fixture.componentInstance.data.inactiveWorkplaces = 1;
+    component.fixture.componentInstance.data.emailCount = 1;
     component.fixture.detectChanges(true);
     const p = component.fixture.nativeElement.querySelector('p');
-    expect(p.innerText).toContain('This will send an email to 1 workplace.');
+    expect(p.innerText).toContain('This will send an email to 1 user.');
   });
 });

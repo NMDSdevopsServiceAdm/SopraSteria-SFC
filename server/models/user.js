@@ -387,5 +387,29 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  User.allPrimaryUsers = async function() {
+    return await this.findAll({
+      attributes: [
+        [sequelize.literal('DISTINCT ON ("user"."EmailValue") "user"."EmailValue"'), 'email'],
+        'id',
+        'FullNameValue',
+      ],
+      where: {
+        isPrimary: true,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: [
+            'id',
+            'nmdsId',
+            'NameValue',
+          ],
+        }
+      ],
+    })
+  }
+
   return User;
 };

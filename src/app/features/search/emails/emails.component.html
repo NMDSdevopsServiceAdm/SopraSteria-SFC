@@ -14,7 +14,7 @@
         <button
           class="govuk-button govuk-!-margin-right-9"
           [disabled]="!inactiveWorkplaces"
-          (click)="confirmSendEmails($event)"
+          (click)="confirmSendEmails($event, inactiveWorkplaces, emailType.InactiveWorkplaces)"
           type="submit"
         >
           Send emails
@@ -102,5 +102,57 @@
         </a>
       </li>
     </ul>
+  </div>
+</div>
+
+<h1 class="govuk-heading-xl govuk-!-margin-top-5">Targeted Emails</h1>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <dl class="govuk-list--definition">
+      <dt>Total number of users to be emailed</dt>
+      <dd data-testid="totalEmails">
+        {{ totalEmails | number }}
+      </dd>
+    </dl>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-form-group govuk-!-margin-top-3">
+        <div class="govuk-grid-column-one-half">
+          <label class="govuk-label" for="emailGroup"> Email group </label>
+          <select
+            [(ngModel)]="emailGroup"
+            class="govuk-select govuk-!-width-full"
+            id="emailGroup"
+            data-testid="emailGroup"
+            (change)="updateTotalEmails($event.target.value)"
+          >
+            <option value="">Select a user group</option>
+            <option value="primaryUsers">Primary users</option>
+          </select>
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <label class="govuk-label" for="selectedTemplateId"> Template ID </label>
+          <select
+            [(ngModel)]="selectedTemplateId"
+            class="govuk-select govuk-!-width-full"
+            id="selectedTemplateId"
+            data-testid="selectedTemplateId"
+          >
+            <option value="">Select a template</option>
+            <option *ngFor="let template of templates" [value]="template.id">{{ template.name }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="govuk-button"
+      [disabled]="emailGroup === '' || selectedTemplateId === ''"
+      (click)="confirmSendEmails($event, totalEmails, emailType.TargetedEmails)"
+      type="submit"
+    >
+      Send emails to selected group
+    </button>
   </div>
 </div>
