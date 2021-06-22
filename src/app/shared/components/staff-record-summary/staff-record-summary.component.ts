@@ -23,7 +23,6 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   @Input() workplace: Establishment;
-  @Input() return: URLStructure;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
 
@@ -31,7 +30,6 @@ export class StaffRecordSummaryComponent implements OnInit {
   private workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
-  public returnTo: URLStructure;
   public wdfNewDesign: boolean;
 
   constructor(
@@ -45,11 +43,13 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.workplaceUid = this.workplace.uid;
-
-    const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-    this.returnTo = this.wdfView
-      ? { url: [...staffRecordPath, ...['wdf-summary']] }
-      : { url: [...staffRecordPath, ...['check-answers']] };
+    if (this.wdfView && !this.wdfNewDesign) {
+      const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+      const returnTo= this.wdfView
+        ? { url: [...staffRecordPath, ...['wdf-summary']] }
+        : { url: [...staffRecordPath, ...['check-answers']] };
+      this.workerService.setReturnTo(returnTo);
+    }
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
 
@@ -58,25 +58,13 @@ export class StaffRecordSummaryComponent implements OnInit {
 
       if (this.wdfView && this.wdfNewDesign) {
         this.updateFieldsWhichDontRequireConfirmation();
-        this.setNewWdfReturn();
       }
     });
   }
 
   setReturn() {
-    this.workerService.setReturnTo(this.return);
   }
 
-  private setNewWdfReturn(): void {
-    if (this.route.snapshot.params.establishmentuid) {
-      this.returnTo = {
-        url: ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid],
-        fragment: 'staff-records'
-      };
-    } else {
-      this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
-    }
-  }
 
   public getRoutePath(name: string) {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];

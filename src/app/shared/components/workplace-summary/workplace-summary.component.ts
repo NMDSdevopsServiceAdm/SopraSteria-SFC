@@ -151,7 +151,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
-    this.workerService.setReturnTo(this.return);
   }
 
   public selectStaffTab(event: Event): void {

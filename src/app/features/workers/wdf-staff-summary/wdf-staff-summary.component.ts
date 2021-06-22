@@ -53,6 +53,7 @@ export class WdfStaffSummaryComponent implements OnInit {
       .getWorker(this.route.snapshot.params.establishmentuid, this.route.snapshot.params.id, true)
       .subscribe(worker => {
         this.worker = worker;
+        this.workerService.setReturnTo({ url: ['/reports', 'workplace', this.workplace.uid, 'wdf',this.worker.uid] });
         this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
         this.exitUrl = { url: ['/reports', 'workplace', this.workplace.uid, 'wdf'], fragment: 'staff-records' };
       });
