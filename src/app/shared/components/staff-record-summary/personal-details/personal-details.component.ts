@@ -12,6 +12,7 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() wdfNewDesign: boolean;
+  @Input() isAdmin: boolean;
 
   public ninoHidden = true;
   public dobHidden = true;
