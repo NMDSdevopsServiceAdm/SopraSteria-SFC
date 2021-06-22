@@ -12,7 +12,9 @@
     <a class="govuk-link" [routerLink]="changeLink" (click)="setReturn()">No, change it</a>
   </ng-container>
   <ng-template #confirmed>
-    <img class="govuk-!-margin-right-2" src="/assets/images/tick-icon.svg" alt="" />
-    <div class="govuk-!-margin-right-5">Meeting requirements</div>
+    <span class="govuk-!-margin-top-1 govuk__flex govuk__nowrap">
+      <img class="govuk-!-margin-right-2" src="/assets/images/tick-icon.svg" alt="" />
+      <div class="govuk-!-margin-right-5">Meeting requirements</div>
+    </span>
   </ng-template>
 </div>
