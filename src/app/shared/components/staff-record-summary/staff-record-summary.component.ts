@@ -43,27 +43,27 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.workplaceUid = this.workplace.uid;
-    if (this.wdfView && !this.wdfNewDesign) {
-      const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-      const returnTo= this.wdfView
-        ? { url: [...staffRecordPath, ...['wdf-summary']] }
-        : { url: [...staffRecordPath, ...['check-answers']] };
-      this.workerService.setReturnTo(returnTo);
-    }
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-
-      if (this.wdfView && this.wdfNewDesign) {
-        this.updateFieldsWhichDontRequireConfirmation();
+      if (this.wdfView ) {
+        if (this.wdfNewDesign) {
+          this.updateFieldsWhichDontRequireConfirmation();
+        }else{
+          const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+          const returnTo = this.wdfView
+            ? { url: [...staffRecordPath, ...['wdf-summary']] }
+            : { url: [...staffRecordPath, ...['check-answers']] };
+          this.workerService.setReturnTo(returnTo);
+        }
       }
+
     });
   }
 
-  setReturn() {
-  }
+  setReturn() {}
 
 
   public getRoutePath(name: string) {
