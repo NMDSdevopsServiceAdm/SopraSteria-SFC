@@ -463,26 +463,6 @@ const config = convict({
       default: 'd',
     },
   },
-  encryption: {
-    publicKey: {
-      doc: 'The public key for encryption',
-      format: String,
-      default: '',
-      env: 'ENCRYPTION_PUBLIC_KEY',
-    },
-    privateKey: {
-      doc: 'The private key for encryption',
-      format: String,
-      default: '',
-      env: 'ENCRYPTION_PRIVATE_KEY',
-    },
-    passphrase: {
-      doc: 'The passphrase used for encryption',
-      format: String,
-      default: '',
-      env: 'ENCRYPTION_PASSPHRASE',
-    },
-  },
   sendInBlue: {
     apiKey: {
       doc: 'Send in Blue API Key',
@@ -595,10 +575,6 @@ if (config.get('aws.secrets.use')) {
     // Send in Blue
     config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
     config.set('sendInBlue.whitelist', AWSSecrets.sendInBlueWhitelist());
-    // openPgp
-    config.set('encryption.privateKey', AWSSecrets.encryptionPrivateKey());
-    config.set('encryption.publicKey', AWSSecrets.encryptionPublicKey());
-    config.set('encryption.passphrase', AWSSecrets.encryptionPassphrase());
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
