@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
@@ -28,6 +28,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public canViewListOfWorkers = false;
   public wdfNewDesign: boolean;
   public confirmedFields: Array<string> = [];
+  @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
@@ -191,7 +192,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
       this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => {
         this.confirmedFields.push(dataField);
         if (this.allRequiredFieldsUpdated()) {
-          console.log('All required fields updated');
+          this.allFieldsConfirmed.emit();
         }
       }),
     );
