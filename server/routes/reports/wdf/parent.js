@@ -258,9 +258,6 @@ const getWorkersReportData = async (establishmentId) => {
 
   workersArray.forEach((value) => {
 
-    if(value.DateOfBirthValue){
-      value.DateOfBirthValue = moment(value.DateOfBirthValue).format('DD/MM/YYYY').toString();
-    }
     if (value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know") {
       value.QualificationInSocialCare = 'N/A';
     }
