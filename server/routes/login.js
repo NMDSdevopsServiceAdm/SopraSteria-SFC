@@ -314,7 +314,10 @@ router.post('/', async (req, res) => {
               loginUpdate.firstLogin = new Date();
             }
 
-            if (!establishmentUser.user.establishment.eightWeeksFromFirstLogin) {
+            if (
+              !get(establishmentUser, 'user.establishment.eightWeeksFromFirstLogin') &&
+              get(establishmentUser, 'user.establishment.id')
+            ) {
               await models.establishment.updateEstablishment(establishmentUser.user.establishment.id, {
                 eightWeeksFromFirstLogin: moment().add(8, 'w').toDate(),
               });
