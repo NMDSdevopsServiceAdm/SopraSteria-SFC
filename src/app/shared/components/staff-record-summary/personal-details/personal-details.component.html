@@ -25,13 +25,16 @@
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
         </div>
-        <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
-          <a class="govuk-link" href="#" (click)="toggleNinoHide($event)">
-            {{ ninoHidden ? 'Show' : 'Hide' }}
-          </a>
-        </div>
+        <ng-container *ngIf="!isAdmin; else showNino">
+          <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
+            <a class="govuk-link" href="#" (click)="toggleNinoHide($event)">
+              {{ ninoHidden ? 'Show' : 'Hide' }}
+            </a>
+          </div>
+        </ng-container>
       </dd>
     </ng-template>
+
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' national insurance number'"
@@ -54,11 +57,13 @@
           <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
           <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
         </div>
-        <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
-          <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
-            >{{ dobHidden ? 'Show' : 'Hide' }}
-          </a>
-        </div>
+        <ng-container *ngIf="!isAdmin">
+          <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
+            <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
+              >{{ dobHidden ? 'Show' : 'Hide' }}
+            </a>
+          </div>
+        </ng-container>
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
