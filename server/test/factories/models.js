@@ -38,6 +38,7 @@ const establishmentWithWdfBuilder = build('Establishment', {
       capacities: { isEligible: false, updatedSinceEffectiveDate: true },
       serviceUsers: { isEligible: false, updatedSinceEffectiveDate: true },
       numberOfStaff: { isEligible: false, updatedSinceEffectiveDate: true },
+      employerType: { isEligible: false, updatedSinceEffectiveDate: true },
     },
   },
 });
