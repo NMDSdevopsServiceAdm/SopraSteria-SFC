@@ -1876,6 +1876,13 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
 
           expect(csvAsArray[38]).to.equal(worker.qualifications[0].notes);
         });
+        it('should return the unescaped notes for qual 01 notes ', async () => {
+          worker.qualifications[0].notes = '%EA%E9';
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[38]).to.equal('êé');
+        });
         it('should return the correct code and year for qual 01 ', async () => {
           worker.qualifications = [];
 
