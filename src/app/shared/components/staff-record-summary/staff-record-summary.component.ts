@@ -33,7 +33,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public returnTo: URLStructure;
   public wdfNewDesign: boolean;
-  public isAdmin: boolean;
+  public canViewNinoDob: boolean;
 
   constructor(
     private location: Location,
@@ -52,7 +52,7 @@ export class StaffRecordSummaryComponent implements OnInit {
       : { url: [...staffRecordPath, ...['check-answers']] };
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
-    this.isAdmin = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
+    this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
