@@ -1,7 +1,5 @@
 'use strict';
 
-const moment = require('moment');
-
 const table = {
   tableName: 'Establishment',
   schema: 'cqc',
