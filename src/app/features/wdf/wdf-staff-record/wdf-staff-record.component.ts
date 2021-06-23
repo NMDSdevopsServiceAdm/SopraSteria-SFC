@@ -88,6 +88,10 @@ export class WdfStaffRecordComponent implements OnInit {
     );
   }
 
+  private sayHello() {
+    console.log('HELLLOOOOOO');
+  }
+
   private setExitUrl(): void {
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;

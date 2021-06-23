@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -26,6 +26,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() return: URLStructure;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
+  @Output() allFieldsConfirmedAgain = new EventEmitter();
 
   private _worker: Worker;
   private workplaceUid: string;
@@ -33,6 +34,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public returnTo: URLStructure;
   public wdfNewDesign: boolean;
+  public confirmedFields: Array<string> = [];
 
   constructor(
     private location: Location,
@@ -44,6 +46,7 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.workplaceUid = this.workplace.uid;
+    console.log(this.worker);
 
     const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
     this.returnTo = this.wdfView
@@ -67,6 +70,11 @@ export class StaffRecordSummaryComponent implements OnInit {
     this.workerService.setReturnTo(this.return);
   }
 
+  public helloWorld() {
+    console.log('HELLO WORLD');
+    this.allFieldsConfirmedAgain.emit();
+  }
+
   private setNewWdfReturn(): void {
     if (this.route.snapshot.params.establishmentuid) {
       this.returnTo = {
@@ -84,15 +92,45 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   public confirmField(dataField) {
     const props = { [dataField]: this.worker[dataField] };
+    console.log(this.confirmedFields);
+    this.confirmedFields.push(dataField);
 
     this.subscriptions.add(
-      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() =>
-        this.workerService.getWorker(this.workplaceUid, this.worker.uid, true).subscribe((worker) => {
-          this._worker = worker;
-          this.updateFieldsWhichDontRequireConfirmation();
-        }),
-      ),
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
+        this.updateFieldsWhichDontRequireConfirmation();
+        if (this.allRequiredFieldsUpdated()) {
+          console.log('being emitted');
+          this.allFieldsConfirmedAgain.emit();
+          console.log('done emitting');
+        }
+      }),
     );
+    console.log(this.confirmedFields);
+  }
+
+  public allRequiredFieldsUpdated(): boolean {
+    const requiredFields = [
+      'annualHourlyPay',
+      'contract',
+      'daysSick',
+      'highestQualification',
+      'mainJob',
+      'mainJobStartDate',
+      'otherQualification',
+      'socialCareQualification',
+      'weeklyHoursAverage',
+      'weeklyHoursContracted',
+      'zeroHoursContract',
+    ];
+
+    return requiredFields.every((field) => {
+      // console.log(this.confirmedFields);
+      return (
+        this.worker.wdf[field].updatedSinceEffectiveDate ||
+        this.worker.wdf[field].isEligible === 'Not relevant' ||
+        this.confirmedFields.includes(field)
+      );
+    });
   }
 
   public updateFieldsWhichDontRequireConfirmation(): void {
@@ -111,6 +149,7 @@ export class StaffRecordSummaryComponent implements OnInit {
       return (
         !fieldsWhichDontRequireConfirmation.includes(field) &&
         !otherFields.includes(field) &&
+        !this.confirmedFields.includes(field) &&
         (this.worker.wdf[field]?.isEligible === 'No' ||
           (this.worker.wdf[field]?.isEligible === 'Yes' && this.worker.wdf[field]?.updatedSinceEffectiveDate === false))
       );
