@@ -495,4 +495,58 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
       expect(getByText('Meeting requirements')).toBeTruthy();
     });
   });
+
+  describe('allRequiredFieldsUpdated', async () => {
+    it('should return false when any required fields not updated since effective date and not confirmed', async () => {
+      const { component, fixture } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
+      component.workplace.wdf.employerType.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.leavers.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.mainService.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.serviceUsers.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.starters.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.vacancies.updatedSinceEffectiveDate = true;
+
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdated()).toBeFalse();
+    });
+
+    it('should return false when one required field not confirmed or updated since effective date', async () => {
+      const { component, fixture } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
+      component.workplace.wdf.employerType.updatedSinceEffectiveDate = false;
+      component.workplace.wdf.leavers.updatedSinceEffectiveDate = false;
+      component.workplace.wdf.mainService.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.serviceUsers.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.starters.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.vacancies.updatedSinceEffectiveDate = true;
+      component.confirmedFields = ['employerType', 'leavers'];
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdated()).toBeFalse();
+    });
+
+    it('should return true when two fields added to confirmedFields and all other required fields updated since effective date', async () => {
+      const { component, fixture } = await setup();
+
+      component.wdfNewDesign = true;
+      component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.employerType.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.leavers.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.mainService.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.serviceUsers.updatedSinceEffectiveDate = true;
+      component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
+      component.workplace.wdf.vacancies.updatedSinceEffectiveDate = false;
+      component.confirmedFields = ['starters', 'vacancies'];
+
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdated()).toBeTrue();
+    });
+  });
 });
