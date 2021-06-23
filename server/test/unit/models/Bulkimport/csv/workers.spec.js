@@ -1796,7 +1796,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             expect(csvAsArray[35]).to.equal(scqual);
           });
         });
-        it('should not return the correct code sc qual ', async () => {
+        it('should not return the correct code sc qual', async () => {
           worker.QualificationInSocialCareValue = null;
 
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
@@ -1854,7 +1854,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             expect(csvAsArray[36]).to.equal(nonscqual);
           });
         });
-        it('should not return the correct code non sc qual ', async () => {
+        it('should not return the correct code non sc qual', async () => {
           worker.OtherQualificationsValue = null;
 
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
@@ -1862,7 +1862,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
 
           expect(csvAsArray[36]).to.equal('');
         });
-        it('should return the correct code and year for qual 01 ', async () => {
+        it('should return the correct code and year for qual 01', async () => {
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
@@ -1870,13 +1870,20 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             `${worker.qualifications[0].qualification.id};${worker.qualifications[0].year}`,
           );
         });
-        it('should return the correct notes for qual 01 notes ', async () => {
+        it('should return the correct notes for qual 01 notes', async () => {
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[38]).to.equal(worker.qualifications[0].notes);
         });
-        it('should return the correct code and year for qual 01 ', async () => {
+        it('should return the unescaped notes for qual 01 notes', async () => {
+          worker.qualifications[0].notes = '%EA%E9';
+          const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[38]).to.equal('êé');
+        });
+        it('should return the correct code and year for qual 01', async () => {
           worker.qualifications = [];
 
           const csv = WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, 3);
