@@ -1330,6 +1330,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  // DO NOT USE if property is tracked (updatedBy, audit logs etc.)
   Establishment.updateEstablishment = async function (establishmentId, updatedEstablishment) {
     return await this.update(updatedEstablishment, {
       where: {
