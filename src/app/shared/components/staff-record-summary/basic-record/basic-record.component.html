@@ -32,6 +32,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.mainJob.isEligible === 'Yes' &&
@@ -69,6 +70,7 @@
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="
+          canEditWorker &&
           wdfView &&
           wdfNewDesign &&
           worker.wdf?.contract.isEligible === 'Yes' &&

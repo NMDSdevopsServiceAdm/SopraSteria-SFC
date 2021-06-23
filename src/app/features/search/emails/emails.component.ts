@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -10,7 +11,9 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import {
+  SendEmailsConfirmationDialogComponent,
+} from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-emails',
@@ -18,10 +21,15 @@ import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-con
 })
 export class EmailsComponent implements OnDestroy {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public totalEmails = 0;
+  public emailGroup = '';
+  public selectedTemplateId = '';
+  public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   public isAdmin: boolean;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
+  public emailType = EmailType;
 
   constructor(
     public alertService: AlertService,
@@ -36,24 +44,48 @@ export class EmailsComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public confirmSendEmails(event: Event): void {
+  public updateTotalEmails(groupType: string): void {
+    if (groupType) {
+      this.subscriptions.add(
+        this.emailCampaignService
+          .getTargetedTotalEmails(groupType)
+          .subscribe((totalEmails: TotalEmailsResponse) => (this.totalEmails = totalEmails.totalEmails)),
+      );
+    } else {
+      this.totalEmails = 0;
+    }
+  }
+
+  public confirmSendEmails(event: Event, emailCount: number, type: EmailType): void {
     event.preventDefault();
 
     this.subscriptions.add(
       this.dialogService
-        .open(SendEmailsConfirmationDialogComponent, { inactiveWorkplaces: this.inactiveWorkplaces })
+        .open(SendEmailsConfirmationDialogComponent, { emailCount })
         .afterClosed.subscribe((hasConfirmed) => {
           if (hasConfirmed) {
-            this.sendEmails();
+            this.sendEmails(type);
           }
         }),
     );
   }
 
-  private sendEmails(): void {
+  private sendEmails(type: EmailType): void {
+    switch (type) {
+      case EmailType.InactiveWorkplaces:
+        this.sendInactiveEmails();
+        break;
+
+      case EmailType.TargetedEmails:
+        this.sendTargetedEmails();
+        break;
+    }
+  }
+
+  private sendInactiveEmails(): void {
     this.subscriptions.add(
       this.emailCampaignService
-        .createCampaign()
+        .createInactiveWorkplacesCampaign()
         .pipe(
           switchMap((latestCampaign) => {
             return this.emailCampaignService.getInactiveWorkplaces().pipe(
@@ -79,11 +111,27 @@ export class EmailsComponent implements OnDestroy {
     );
   }
 
+  private sendTargetedEmails(): void {
+    this.subscriptions.add(
+      this.emailCampaignService.createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId).subscribe(() => {
+        this.alertService.addAlert({
+          type: 'success',
+          message: `${this.decimalPipe.transform(this.totalEmails)} ${
+            this.totalEmails > 1 ? 'emails have' : 'email has'
+          } been scheduled to be sent.`,
+        });
+        this.emailGroup = '';
+        this.selectedTemplateId = '';
+        this.totalEmails = 0;
+      }),
+    );
+  }
+
   public downloadReport(event: Event): void {
     event.preventDefault();
 
     this.subscriptions.add(
-      this.emailCampaignService.getReport().subscribe((response) => {
+      this.emailCampaignService.getInactiveWorkplacesReport().subscribe((response) => {
         this.saveFile(response);
       }),
     );

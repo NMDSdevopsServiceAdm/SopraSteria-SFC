@@ -20,6 +20,7 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() wdfNewDesign: boolean;
+  @Input() public canEditWorker: boolean;
 
   constructor(
     location: Location,
