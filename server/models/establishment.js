@@ -1330,5 +1330,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.updateEstablishment = async function (establishmentId, updatedEstablishment) {
+    return await this.update(updatedEstablishment, {
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
   return Establishment;
 };
