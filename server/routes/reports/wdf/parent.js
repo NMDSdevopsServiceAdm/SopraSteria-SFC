@@ -257,7 +257,6 @@ const getWorkersReportData = async (establishmentId) => {
   });
 
   workersArray.forEach((value) => {
-
     if (value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know") {
       value.QualificationInSocialCare = 'N/A';
     }
