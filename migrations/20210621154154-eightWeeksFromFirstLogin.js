@@ -12,8 +12,10 @@ module.exports = {
     await queryInterface.addColumn(table, 'eightWeeksFromFirstLogin', {
       type: Sequelize.DataTypes.DATE,
       allowNull: true,
-      defaultValue: moment().subtract(8, 'w').toDate(),
+      defaultValue: null,
     });
+
+    queryInterface.sequelize.query(`UPDATE cqc."Establishment" SET "eightWeeksFromFirstLogin" = NOW();`);
   },
 
   down: (queryInterface, Sequelize) => {
