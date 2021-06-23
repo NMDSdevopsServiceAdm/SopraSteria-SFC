@@ -1,10 +1,10 @@
 <h1 id="dialogHeading" data-testid="send-emails-confirmation-header">Are you sure you want to send these emails?</h1>
 
 <p>
-  This will send an email to <strong>{{ data.inactiveWorkplaces | number }} </strong>
-  <ng-container *ngIf="data.inactiveWorkplaces" [ngPlural]="data.inactiveWorkplaces">
-    <ng-template ngPluralCase="=1">workplace.</ng-template>
-    <ng-template ngPluralCase="other">workplaces.</ng-template>
+  This will send an email to <strong>{{ data.emailCount | number }} </strong>
+  <ng-container *ngIf="data.emailCount" [ngPlural]="data.emailCount">
+    <ng-template ngPluralCase="=1">user.</ng-template>
+    <ng-template ngPluralCase="other">users.</ng-template>
   </ng-container>
 </p>
 

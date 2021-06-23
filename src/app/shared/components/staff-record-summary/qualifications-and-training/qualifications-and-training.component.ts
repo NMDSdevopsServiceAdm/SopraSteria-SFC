@@ -10,6 +10,7 @@ export class QualificationsAndTrainingComponent extends StaffRecordSummaryCompon
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() wdfNewDesign: boolean;
+  @Input() public canEditWorker: boolean;
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';

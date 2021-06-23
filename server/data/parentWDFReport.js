@@ -1,8 +1,7 @@
 'use strict';
 
 const db = require('../utils/datastore');
-var config = require('../../server/config/config');
-const models = require('../models/index');
+
 const effectiveDate = require('../models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
 
 const getEstablishmentDataQuery = `
@@ -220,7 +219,7 @@ SELECT
   "DataOwner",
   "DataPermissions",
   "Worker"."GenderValue",
-  CASE WHEN "DateOfBirthValue" IS NULL THEN Null ELSE "DateOfBirthValue" END AS "DateOfBirthValue",
+  to_char("DateOfBirthValue", :timeFormat) AS "DateOfBirthValue",
   "NationalityValue",
   "Nationality"."Nationality",
   "Job"."JobName" AS "MainJobRole",
@@ -275,7 +274,7 @@ WHERE
 `;
 
 exports.getWorkerData = async (establishmentId) =>
-  await models.sequelize.query(getWorkerDataQuery, {
+  db.query(getWorkerDataQuery, {
     replacements: {
       establishmentId,
       separator: ', ',

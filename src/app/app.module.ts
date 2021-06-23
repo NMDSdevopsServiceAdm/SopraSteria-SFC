@@ -4,10 +4,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
@@ -47,21 +44,17 @@ import { ResetPasswordConfirmationComponent } from '@features/reset-password/con
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {
-  StaffMismatchBannerComponent,
-} from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @NgModule({
   declarations: [
@@ -76,7 +69,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     LoginComponent,
     LogoutComponent,
     MigratedUserTermsConditionsComponent,
-    PageNotFoundComponent,
     ProblemWithTheServiceComponent,
     ResetPasswordComponent,
     ResetPasswordConfirmationComponent,
@@ -136,7 +128,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     LoggedInUserResolver,
     PrimaryWorkplaceResolver,
     NotificationsListResolver,
-    FeatureFlagsService
+    FeatureFlagsService,
   ],
   bootstrap: [AppComponent],
 })

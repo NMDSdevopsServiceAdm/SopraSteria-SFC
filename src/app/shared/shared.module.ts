@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
@@ -31,6 +34,7 @@ import { LinkToParentDialogComponent } from './components/link-to-parent/link-to
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
+import { PageComponent } from './components/page/page.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -154,6 +158,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfFieldConfirmationComponent,
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
+    PageNotFoundComponent,
+    ArticleListComponent,
+    PageComponent,
   ],
   exports: [
     AlertComponent,
@@ -225,7 +232,10 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BulkUploadFileTypePipePipe,
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
+    PageNotFoundComponent,
+    ArticleListComponent,
+    PageComponent,
   ],
-  providers: [DialogService, TotalStaffComponent],
+  providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })
 export class SharedModule {}
