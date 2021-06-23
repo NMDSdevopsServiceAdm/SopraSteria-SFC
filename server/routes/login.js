@@ -5,6 +5,8 @@ var router = express.Router();
 require('../utils/security/passport')(passport);
 const crypto = require('crypto');
 const bcrypt = require('bcrypt-nodejs');
+const get = require('lodash/get');
+const moment = require('moment');
 
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
@@ -14,8 +16,6 @@ const config = require('..//config/config');
 const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
-
-const get = require('lodash/get');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
@@ -90,6 +90,7 @@ router.post('/', async (req, res) => {
                       'parentUid',
                       'parentId',
                       'lastBulkUploaded',
+                      'eightWeeksFromFirstLogin',
                     ],
                     include: [
                       {
@@ -312,6 +313,16 @@ router.post('/', async (req, res) => {
             if (!establishmentUser.firstLogin) {
               loginUpdate.firstLogin = new Date();
             }
+
+            if (
+              !get(establishmentUser, 'user.establishment.eightWeeksFromFirstLogin') &&
+              get(establishmentUser, 'user.establishment.id')
+            ) {
+              await models.establishment.updateEstablishment(establishmentUser.user.establishment.id, {
+                eightWeeksFromFirstLogin: moment().add(8, 'w').toDate(),
+              });
+            }
+
             establishmentUser.update(loginUpdate, { transaction: t });
 
             // add an audit record

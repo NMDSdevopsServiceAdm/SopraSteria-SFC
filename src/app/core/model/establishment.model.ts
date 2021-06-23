@@ -134,6 +134,7 @@ export interface Establishment {
   county?: string;
   locationId?: string;
   lastBulkUploaded?: string;
+  eightWeeksFromFirstLogin?: string;
 }
 
 export interface UpdateJobsRequest {
