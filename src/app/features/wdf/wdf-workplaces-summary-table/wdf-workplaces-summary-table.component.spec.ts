@@ -93,7 +93,6 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
     component.workplaces[0].dataPermissions = DataPermissions.None;
     component.workplaces[0].isParent = true;
-
     component.workplaces[0].name = "Test Workplace";
 
     fixture.detectChanges();
@@ -101,8 +100,10 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
   });
   it('canViewWorkplace should return true if parent', async () => {
     const { component } = await setup();
+
     const workplace = component.workplaces[0];
     workplace.isParent = true;
+
     const canViewWorkplace = component.canViewWorkplace(workplace);
     expect(canViewWorkplace).toBeTruthy(true);
   });
