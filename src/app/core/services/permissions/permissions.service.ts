@@ -76,12 +76,7 @@ export class PermissionsService {
       )
       .pipe(map(() => true));
   }
-  public canViewWorkplace(workplace){
-    if (workplace.isParent === true){
-      return true;
-    }
-    return !(workplace.dataOwner === WorkplaceDataOwner.Workplace && workplace.dataPermissions === DataPermissions.None);
-  }
+
 
   private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
     if (!permissionsList) {

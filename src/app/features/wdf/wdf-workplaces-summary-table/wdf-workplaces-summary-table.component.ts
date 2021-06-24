@@ -49,9 +49,14 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
       }
     }
   }
+
   public canViewWorkplace(workplace){
-    return this.permissionsService.canViewWorkplace(workplace);
+    if (workplace.isParent === true){
+      return true;
+    }
+    return !(workplace.dataOwner === WorkplaceDataOwner.Workplace && workplace.dataPermissions === DataPermissions.None);
   }
+
   private orderWorkplaces(order: string): Array<any> {
     return orderBy(
       this.workplaces,

@@ -7,6 +7,7 @@ import { render } from '@testing-library/angular';
 import { WdfModule } from '../wdf.module.js';
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table.component';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 describe('WdfWorkplacesSummaryTableComponent', () => {
   const workplaces = [
@@ -68,7 +69,7 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
   });
   it('should not display a link for workplaces without rights', async () => {
     const { component, fixture, getAllByText } = await setup();
-
+    component.workplaces[0].isParent = false;
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
     component.workplaces[0].dataPermissions = DataPermissions.None;
     component.workplaces[0].name = "Test Workplace"
@@ -86,7 +87,25 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     fixture.detectChanges();
     expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('</a>');
   });
+  it('should display a link for workplaces if parent', async () => {
+    const { component, fixture, getAllByText } = await setup();
 
+    component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
+    component.workplaces[0].dataPermissions = DataPermissions.None;
+    component.workplaces[0].isParent = true;
+
+    component.workplaces[0].name = "Test Workplace";
+
+    fixture.detectChanges();
+    expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('</a>');
+  });
+  it('canViewWorkplace should return true if parent', async () => {
+    const { component } = await setup();
+    const workplace = component.workplaces[0];
+    workplace.isParent = true;
+    const canViewWorkplace = component.canViewWorkplace(workplace);
+    expect(canViewWorkplace).toBeTruthy(true);
+  });
 
   describe('sortByColumn', async () => {
     it('should put workplaces not meeting WDF at top of table when sorting by WDF requirements (not meeting)', async () => {
