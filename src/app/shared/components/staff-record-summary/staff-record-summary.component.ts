@@ -46,7 +46,6 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.workplaceUid = this.workplace.uid;
-    console.log(this.worker);
 
     const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
     this.returnTo = this.wdfView
@@ -92,23 +91,17 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   public confirmField(dataField) {
     const props = { [dataField]: this.worker[dataField] };
-    console.log(this.confirmedFields);
-    this.confirmedFields.push(dataField);
-
     this.subscriptions.add(
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
-        this.updateFieldsWhichDontRequireConfirmation();
-        if (this.allRequiredFieldsUpdated()) {
-          console.log('being emitted');
-          this.allFieldsConfirmedAgain.emit();
-          console.log('done emitting');
+        this.confirmedFields.push(dataField);
+        if (this.allRequiredFieldsUpdatedAndEligible()) {
+          this.updateFieldsWhichDontRequireConfirmation();
         }
       }),
     );
-    console.log(this.confirmedFields);
   }
 
-  public allRequiredFieldsUpdated(): boolean {
+  public allRequiredFieldsUpdatedAndEligible(): boolean {
     const requiredFields = [
       'annualHourlyPay',
       'contract',
@@ -124,9 +117,8 @@ export class StaffRecordSummaryComponent implements OnInit {
     ];
 
     return requiredFields.every((field) => {
-      // console.log(this.confirmedFields);
       return (
-        this.worker.wdf[field].updatedSinceEffectiveDate ||
+        (this.worker.wdf[field].isEligible && this.worker.wdf[field].updatedSinceEffectiveDate) ||
         this.worker.wdf[field].isEligible === 'Not relevant' ||
         this.confirmedFields.includes(field)
       );
@@ -142,18 +134,8 @@ export class StaffRecordSummaryComponent implements OnInit {
       'careCertificate',
       'qualificationInSocialCare',
     ];
-    const otherFields = ['currentEligibility', 'effectiveFrom', 'isEligible', 'lastEligibility'];
-    const allFields = Object.keys(this.worker.wdf);
 
-    const allEligible = !allFields.some((field) => {
-      return (
-        !fieldsWhichDontRequireConfirmation.includes(field) &&
-        !otherFields.includes(field) &&
-        !this.confirmedFields.includes(field) &&
-        (this.worker.wdf[field]?.isEligible === 'No' ||
-          (this.worker.wdf[field]?.isEligible === 'Yes' && this.worker.wdf[field]?.updatedSinceEffectiveDate === false))
-      );
-    });
+    const allEligible = this.allRequiredFieldsUpdatedAndEligible();
 
     if (!allEligible) {
       return;
@@ -172,8 +154,14 @@ export class StaffRecordSummaryComponent implements OnInit {
         ) {
           continue;
         }
-        this.confirmField(fieldCheck);
+        const props = { [fieldCheck]: this.worker[fieldCheck] };
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
+            console.log(fieldCheck);
+          }),
+        );
       }
     }
+    this.allFieldsConfirmedAgain.emit();
   }
 }
