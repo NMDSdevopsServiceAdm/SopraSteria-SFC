@@ -19,7 +19,7 @@ const addWorksheet = (workbook) => {
   worksheet.columns = [
     { header: 'Workplace name', key: 'workplace' },
     { header: 'Workplace ID', key: 'workplaceId' },
-    { header: 'Date last updated', key: 'lastUpdated' },
+    { header: 'Date last updated', key: 'lastUpdated', style: { numFmt: 'dd/mm/yyyy' } },
     { header: 'Email template', key: 'emailTemplate' },
     { header: 'Data owner', key: 'dataOwner' },
     { header: 'Name of user', key: 'nameOfUser' },

@@ -10,7 +10,6 @@
         [explanationText]="' basic record details'"
         [link]="getRoutePath('staff-details')"
         [hasData]="true"
-        (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
   </div>
@@ -40,7 +39,6 @@
         "
         [changeLink]="getRoutePath('staff-details')"
         (fieldConfirmation)="this.confirmField('mainJob')"
-        (setReturnClicked)="this.setReturn()"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -53,7 +51,6 @@
         [explanationText]="' basic record details'"
         [link]="getRoutePath('staff-details')"
         [hasData]="true"
-        (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
   </div>
@@ -78,7 +75,6 @@
         "
         [changeLink]="getRoutePath('staff-details')"
         (fieldConfirmation)="this.confirmField('contract')"
-        (setReturnClicked)="this.setReturn()"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -91,7 +87,6 @@
         [explanationText]="' basic record details'"
         [link]="getRoutePath('staff-details')"
         [hasData]="true"
-        (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
   </div>

@@ -27,6 +27,7 @@
       [return]="returnUrl"
       [wdfView]="true"
       [overallWdfEligibility]="wdfEligibilityStatus.overall"
+      (allFieldsConfirmed)="getWdfReport()"
     ></app-workplace-summary>
   </app-tab>
   <app-tab

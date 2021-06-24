@@ -1,12 +1,12 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorReport, NumberOfErrorsAndWarnings } from '@core/model/bulk-upload.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 @Component({
   selector: 'app-error-page',

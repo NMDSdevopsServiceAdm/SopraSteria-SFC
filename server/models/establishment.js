@@ -698,6 +698,11 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'LaReportLockHeld',
       },
+      eightWeeksFromFirstLogin: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'eightWeeksFromFirstLogin',
+      },
     },
     {
       defaultScope: {
@@ -1322,6 +1327,15 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+    });
+  };
+
+  // DO NOT USE if property is tracked (updatedBy, audit logs etc.)
+  Establishment.updateEstablishment = async function (establishmentId, updatedEstablishment) {
+    return await this.update(updatedEstablishment, {
+      where: {
+        id: establishmentId,
+      },
     });
   };
 

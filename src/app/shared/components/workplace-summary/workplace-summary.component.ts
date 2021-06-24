@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
@@ -27,6 +27,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public requestedServiceOtherName: string;
   public canViewListOfWorkers = false;
   public wdfNewDesign: boolean;
+  public confirmedFields: Array<string> = [];
+  @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
@@ -59,7 +61,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   @Input() return: URLStructure = null;
 
-  get totalStaffWarning() {
+  get totalStaffWarning(): boolean {
     if (this.wdfNewDesign) {
       return (
         this.workplace.numberOfStaff &&
@@ -73,7 +75,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     );
   }
 
-  get totalStaffWarningNonWDF() {
+  get totalStaffWarningNonWDF(): boolean {
     return (
       (this.workplace.numberOfStaff != null || this.workplace.totalWorkers !== null) &&
       this.workplace.numberOfStaff !== this.workerCount
@@ -110,8 +112,14 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     };
   }
 
-  ngOnInit() {
-    this.setFeatureFlags();
+  ngOnInit(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
+      this.wdfNewDesign = value;
+
+      if (this.wdfView && this.wdfNewDesign) {
+        this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
+      }
+    });
 
     this.subscriptions.add(
       this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
@@ -138,29 +146,28 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     );
   }
 
-  public filterAndSortOtherServices(services: Service[]) {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  public filterAndSortOtherServices(services: Service[]): Service[] {
     return sortBy(
       services.filter((service) => service.name !== this.workplace.mainService.name),
       'id',
     );
   }
 
-  public isArray(variable): boolean {
+  public isArray(variable: any): boolean {
     return Array.isArray(variable);
   }
 
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
-    this.workerService.setReturnTo(this.return);
   }
 
   public selectStaffTab(event: Event): void {
     event.preventDefault();
     this.workerService.tabChanged.next(true);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
 
   public isNumber(value: unknown): boolean {
@@ -173,21 +180,42 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
     );
   }
 
-  private setFeatureFlags(): void {
-    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
-      this.wdfNewDesign = value;
-    });
-  }
-
-  public getRoutePath(name: string) {
+  public getRoutePath(name: string): Array<string> {
     return ['/workplace', this.workplace.uid, name];
   }
 
-  public confirmField(dataField) {
+  public confirmField(dataField: string): void {
     const props = { [dataField]: this.workplace[dataField] };
 
     this.subscriptions.add(
-      this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => console.log(data)),
+      this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => {
+        this.confirmedFields.push(dataField);
+        if (this.allRequiredFieldsUpdated()) {
+          this.allFieldsConfirmed.emit();
+        }
+      }),
+    );
+  }
+
+  private updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
+    if (this.workplace.wdf?.employerType.isEligible && !this.workplace.wdf?.employerType.updatedSinceEffectiveDate) {
+      this.confirmField('employerType');
+    }
+  }
+
+  public allRequiredFieldsUpdated(): boolean {
+    const requiredFields = [
+      'employerType',
+      'leavers',
+      'mainService',
+      'numberOfStaff',
+      'serviceUsers',
+      'starters',
+      'vacancies',
+    ];
+
+    return requiredFields.every(
+      (field) => this.workplace.wdf[field].updatedSinceEffectiveDate || this.confirmedFields.includes(field),
     );
   }
 }

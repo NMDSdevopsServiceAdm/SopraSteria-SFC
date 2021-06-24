@@ -20,7 +20,7 @@ const addWorksheet = (workbook) => {
     { header: 'Parent Workplace ID', key: 'parentWorkplaceId' },
     { header: 'Workplace name', key: 'workplace' },
     { header: 'Workplace ID', key: 'workplaceId' },
-    { header: 'Date last updated', key: 'lastUpdated' },
+    { header: 'Date last updated', key: 'lastUpdated', style: { numFmt: 'dd/mm/yyyy' } },
     { header: 'Data owner', key: 'dataOwner' },
   ];
 

@@ -2,7 +2,6 @@ import { Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -23,7 +22,6 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
 
   @Input() workplace: Establishment;
-  @Input() return: URLStructure;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
 
@@ -31,7 +29,6 @@ export class StaffRecordSummaryComponent implements OnInit {
   private workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
-  public returnTo: URLStructure;
   public wdfNewDesign: boolean;
   public canViewNinoDob: boolean;
 
@@ -46,38 +43,27 @@ export class StaffRecordSummaryComponent implements OnInit {
   ngOnInit() {
     this.workplaceUid = this.workplace.uid;
 
-    const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-    this.returnTo = this.wdfView
-      ? { url: [...staffRecordPath, ...['wdf-summary']] }
-      : { url: [...staffRecordPath, ...['check-answers']] };
-
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-
-      if (this.wdfView && this.wdfNewDesign) {
-        this.updateFieldsWhichDontRequireConfirmation();
-        this.setNewWdfReturn();
+      if (this.wdfView ) {
+        if (this.wdfNewDesign) {
+          this.updateFieldsWhichDontRequireConfirmation();
+        }else{
+          const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+          const returnTo = this.wdfView
+            ? { url: [...staffRecordPath, ...['wdf-summary']] }
+            : { url: [...staffRecordPath, ...['check-answers']] };
+          this.workerService.setReturnTo(returnTo);
+        }
       }
+
     });
   }
 
-  setReturn() {
-    this.workerService.setReturnTo(this.return);
-  }
-
-  private setNewWdfReturn(): void {
-    if (this.route.snapshot.params.establishmentuid) {
-      this.returnTo = {
-        url: ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid],
-        fragment: 'staff-records',
-      };
-    } else {
-      this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
-    }
-  }
+  setReturn() {}
 
   public getRoutePath(name: string) {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
