@@ -6,6 +6,7 @@ import { Roles } from '@core/model/roles.enum';
 import { UserService } from '@core/services/user.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 
 @Injectable({
   providedIn: 'root',
@@ -74,6 +75,12 @@ export class PermissionsService {
         })
       )
       .pipe(map(() => true));
+  }
+  public canViewWorkplace(workplace){
+    if (workplace.isParent === true){
+      return true;
+    }
+    return !(workplace.dataOwner === WorkplaceDataOwner.Workplace && workplace.dataPermissions === DataPermissions.None);
   }
 
   private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
