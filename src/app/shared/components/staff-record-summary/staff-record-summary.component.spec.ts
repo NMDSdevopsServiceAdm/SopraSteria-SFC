@@ -13,19 +13,19 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { queryByText, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, queryByText } = await render(StaffRecordSummaryComponent, {
+    const { fixture, getByText, queryByText, getAllByText } = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
         {
@@ -51,23 +51,20 @@ describe('StaffRecordSummaryComponent', () => {
     const injector = getTestBed();
     const workerService = injector.inject(WorkerService) as WorkerService;
 
-    return { component, fixture, getByText, queryByText,workerService };
+    return { component, fixture, getByText, queryByText, getAllByText, workerService };
   };
-  const eligibleObject =
-  {
+  const eligibleObject = {
     isEligible: Eligibility.YES,
-    updatedSinceEffectiveDate: true
+    updatedSinceEffectiveDate: true,
   };
-  const eligibleButNotUpdatedObject =
-    {
-      isEligible: Eligibility.YES,
-      updatedSinceEffectiveDate: false
-    };
-  const notEligible=
-    {
-      isEligible: Eligibility.NO,
-      updatedSinceEffectiveDate: false
-    };
+  const eligibleButNotUpdatedObject = {
+    isEligible: Eligibility.YES,
+    updatedSinceEffectiveDate: false,
+  };
+  const notEligible = {
+    isEligible: Eligibility.NO,
+    updatedSinceEffectiveDate: false,
+  };
 
   it('should render a StaffRecordSummaryComponent', async () => {
     const { component } = await setup();
@@ -78,7 +75,7 @@ describe('StaffRecordSummaryComponent', () => {
   it('should only auto run confirmField if all other fields confirmed and auto fields have not', async () => {
     const { component, fixture, workerService } = await setup();
 
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
     component.wdfNewDesign = true;
     component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
@@ -91,63 +88,73 @@ describe('StaffRecordSummaryComponent', () => {
 
   it('should NOT auto run confirmField after all confirmed', async () => {
     const { component, fixture, workerService } = await setup();
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
     component.wdfNewDesign = true;
     component.worker.wdf.dateOfBirth = eligibleObject;
 
     fixture.detectChanges();
     component.updateFieldsWhichDontRequireConfirmation();
     component.confirmField('daysSick');
-    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid,component.worker.uid,{dateOfBirth:component.worker.dateOfBirth});
+    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      dateOfBirth: component.worker.dateOfBirth,
+    });
   });
   it('should run auto run confirmField for careCertificate if its Yes, completed and not updated ', async () => {
     const { component, fixture, workerService } = await setup();
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
     component.wdfNewDesign = true;
     component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
-    component.worker.careCertificate = "Yes, completed";
+    component.worker.careCertificate = 'Yes, completed';
     fixture.detectChanges();
     component.updateFieldsWhichDontRequireConfirmation();
     component.confirmField('daysSick');
-    expect(workerService.updateWorker).toHaveBeenCalledWith(component.workplace.uid,component.worker.uid,{careCertificate: component.worker.careCertificate});
+    expect(workerService.updateWorker).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      careCertificate: component.worker.careCertificate,
+    });
   });
   it('should NOT run auto run confirmField for careCertificate if its No and not updated ', async () => {
     const { component, fixture, workerService } = await setup();
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
     component.wdfNewDesign = true;
     component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
-    component.worker.careCertificate = "No";
+    component.worker.careCertificate = 'No';
     fixture.detectChanges();
     component.updateFieldsWhichDontRequireConfirmation();
     component.confirmField('daysSick');
-    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid,component.worker.uid,{careCertificate: component.worker.careCertificate});
+    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      careCertificate: component.worker.careCertificate,
+    });
   });
   it('should run auto run confirmField for qualificationInSocialCare if its Yes and not updated ', async () => {
     const { component, fixture, workerService } = await setup();
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
     component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-    component.worker.qualificationInSocialCare = "Yes";
+    component.worker.qualificationInSocialCare = 'Yes';
     fixture.detectChanges();
     component.updateFieldsWhichDontRequireConfirmation();
     component.confirmField('daysSick');
-    expect(workerService.updateWorker).toHaveBeenCalledWith(component.workplace.uid,component.worker.uid,{qualificationInSocialCare: component.worker.qualificationInSocialCare});
+    expect(workerService.updateWorker).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      qualificationInSocialCare: component.worker.qualificationInSocialCare,
+    });
   });
   it('should NOT run auto run confirmField for qualificationInSocialCare if its NO and not updated ', async () => {
     const { component, fixture, workerService } = await setup();
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
     component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-    component.worker.qualificationInSocialCare = "NO";
+    component.worker.qualificationInSocialCare = 'NO';
     fixture.detectChanges();
     component.updateFieldsWhichDontRequireConfirmation();
     component.confirmField('daysSick');
-    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid,component.worker.uid,{qualificationInSocialCare: component.worker.qualificationInSocialCare});
+    expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      qualificationInSocialCare: component.worker.qualificationInSocialCare,
+    });
   });
   it('should NOT auto run confirmField if NOT all other fields confirmed', async () => {
     const { component, fixture, workerService } = await setup();
 
-    spyOn(workerService, 'updateWorker').and.returnValue(of({uid:"123"} as WorkerEditResponse));
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
     component.wdfNewDesign = true;
     component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
@@ -857,6 +864,30 @@ describe('StaffRecordSummaryComponent', () => {
       expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
       expect(queryByText('Yes, it is')).toBeFalsy();
       expect(queryByText('No, change it')).toBeFalsy();
+    });
+  });
+
+  describe('Show and Hide for NINO and DOB', () => {
+    it('when a user is not admin then they should see the show and hide links for NINO and DOB', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.canViewNinoDob = false;
+      component.worker.dateOfBirth = '01/01/1970';
+      component.worker.nationalInsuranceNumber = 'JH127453A';
+      fixture.detectChanges();
+
+      expect(getAllByText('Show').length).toBe(2);
+    });
+
+    it('when a user is an admin then they should not see the show and hide links for NINO and DOB', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.canViewNinoDob = true;
+      component.worker.dateOfBirth = '01/01/1970';
+      component.worker.nationalInsuranceNumber = 'JH127453A';
+      fixture.detectChanges();
+
+      expect(queryByText('Show')).toBeFalsy;
     });
   });
 });

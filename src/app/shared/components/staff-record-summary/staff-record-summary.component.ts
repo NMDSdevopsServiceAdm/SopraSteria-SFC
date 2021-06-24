@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-staff-record-summary',
-  templateUrl: './staff-record-summary.component.html'
+  templateUrl: './staff-record-summary.component.html',
 })
 export class StaffRecordSummaryComponent implements OnInit {
   @Input() set worker(value: Worker) {
@@ -30,20 +30,21 @@ export class StaffRecordSummaryComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public wdfNewDesign: boolean;
+  public canViewNinoDob: boolean;
 
   constructor(
     private location: Location,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     public workerService: WorkerService,
-    private featureFlagsService: FeatureFlagsService
-  ) {
-  }
+    private featureFlagsService: FeatureFlagsService,
+  ) {}
 
   ngOnInit() {
     this.workplaceUid = this.workplace.uid;
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
+    this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
@@ -64,7 +65,6 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   setReturn() {}
 
-
   public getRoutePath(name: string) {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
   }
@@ -73,14 +73,12 @@ export class StaffRecordSummaryComponent implements OnInit {
     const props = { [dataField]: this.worker[dataField] };
 
     this.subscriptions.add(
-      this.workerService
-        .updateWorker(this.workplace.uid, this.worker.uid, props)
-        .subscribe(() =>
-          this.workerService.getWorker(this.workplaceUid, this.worker.uid, true).subscribe((worker => {
-            this._worker = worker;
-            this.updateFieldsWhichDontRequireConfirmation();
-          }))
-        )
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() =>
+        this.workerService.getWorker(this.workplaceUid, this.worker.uid, true).subscribe((worker) => {
+          this._worker = worker;
+          this.updateFieldsWhichDontRequireConfirmation();
+        }),
+      ),
     );
   }
 
@@ -91,23 +89,18 @@ export class StaffRecordSummaryComponent implements OnInit {
       'nationality',
       'recruitedFrom',
       'careCertificate',
-      'qualificationInSocialCare'
+      'qualificationInSocialCare',
     ];
-    const otherFields = [
-      'currentEligibility',
-      'effectiveFrom',
-      'isEligible',
-      'lastEligibility'
-    ];
+    const otherFields = ['currentEligibility', 'effectiveFrom', 'isEligible', 'lastEligibility'];
     const allFields = Object.keys(this.worker.wdf);
 
     let allEligible = true;
-    allFields.forEach(field => {
-      if (!fieldsWhichDontRequireConfirmation.includes(field) &&
+    allFields.forEach((field) => {
+      if (
+        !fieldsWhichDontRequireConfirmation.includes(field) &&
         !otherFields.includes(field) &&
         (this.worker.wdf[field]?.isEligible === 'No' ||
-          (this.worker.wdf[field]?.isEligible === 'Yes' && this.worker.wdf[field]?.updatedSinceEffectiveDate === false)
-        )
+          (this.worker.wdf[field]?.isEligible === 'Yes' && this.worker.wdf[field]?.updatedSinceEffectiveDate === false))
       ) {
         allEligible = false;
       }
@@ -120,9 +113,14 @@ export class StaffRecordSummaryComponent implements OnInit {
       if (!this.worker.wdf?.[fieldCheck]?.isEligible) {
         continue;
       }
-      if (this.worker.wdf?.[fieldCheck].isEligible === 'Yes' && !this.worker.wdf?.[fieldCheck].updatedSinceEffectiveDate) {
-        if ((fieldCheck === 'careCertificate' && this.worker.careCertificate !== 'Yes, completed') ||
-        (fieldCheck === 'qualificationInSocialCare' && this.worker.qualificationInSocialCare !== 'Yes') ){
+      if (
+        this.worker.wdf?.[fieldCheck].isEligible === 'Yes' &&
+        !this.worker.wdf?.[fieldCheck].updatedSinceEffectiveDate
+      ) {
+        if (
+          (fieldCheck === 'careCertificate' && this.worker.careCertificate !== 'Yes, completed') ||
+          (fieldCheck === 'qualificationInSocialCare' && this.worker.qualificationInSocialCare !== 'Yes')
+        ) {
           continue;
         }
         this.confirmField(fieldCheck);
