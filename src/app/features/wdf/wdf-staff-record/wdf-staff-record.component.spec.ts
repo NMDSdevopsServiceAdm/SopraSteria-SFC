@@ -14,7 +14,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
 
-import { workerBuilder } from '../../../../../server/test/factories/models';
+import { workerBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module.js';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
@@ -88,5 +88,30 @@ describe('WdfStaffRecordComponent', () => {
 
     expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
     expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
+  });
+
+  it('should not display the "not meeting requirements" or "update staff record" message when worker eligible', async () => {
+    const { component, fixture, queryByText } = await setup();
+    const redCrossStatusMessage = 'This record does not meet the WDF 2021 to 2022 requirements';
+    const redCrossVisuallyHiddenMessage = 'Red cross';
+
+    const orangeFlagStatusMessage = 'Update this staff record to save yourself time next year';
+    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+
+    component.worker = workerBuilderWithWdf();
+    component.updatedWorker = workerBuilderWithWdf();
+
+    component.exitUrl = { url: [] };
+    component.overallWdfEligibility = true;
+    component.wdfStartDate = '2021-01-01';
+    component.wdfEndDate = '2022-01-01';
+    component.workerList = ['1', '2', '3', '4'];
+    fixture.detectChanges();
+
+    expect(queryByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeFalsy();
+    expect(queryByText(redCrossStatusMessage, { exact: false })).toBeFalsy();
+
+    expect(queryByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeFalsy();
+    expect(queryByText(orangeFlagStatusMessage, { exact: false })).toBeFalsy();
   });
 });
