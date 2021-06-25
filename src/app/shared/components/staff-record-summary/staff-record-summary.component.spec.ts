@@ -10,6 +10,7 @@ import { Eligibility } from '@core/model/wdf.model';
 import { WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -39,6 +40,7 @@ describe('StaffRecordSummaryComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerService,
         },
+        WdfConfirmFieldsService,
       ],
       componentProperties: {
         wdfView: true,

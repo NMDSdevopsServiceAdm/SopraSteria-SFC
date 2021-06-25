@@ -5,6 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
@@ -34,7 +35,6 @@ export class StaffRecordSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public returnTo: URLStructure;
   public wdfNewDesign: boolean;
-  public confirmedFields: Array<string> = [];
 
   constructor(
     private location: Location,
@@ -42,6 +42,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     private route: ActivatedRoute,
     public workerService: WorkerService,
     private featureFlagsService: FeatureFlagsService,
+    private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 
   ngOnInit() {
@@ -93,7 +94,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     const props = { [dataField]: this.worker[dataField] };
     this.subscriptions.add(
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
-        this.confirmedFields.push(dataField);
+        this.wdfConfirmFieldsService.addToConfirmedFields(dataField);
         if (this.allRequiredFieldsUpdatedAndEligible()) {
           this.updateFieldsWhichDontRequireConfirmation();
         }
@@ -120,7 +121,7 @@ export class StaffRecordSummaryComponent implements OnInit {
       return (
         (this.worker.wdf[field].isEligible && this.worker.wdf[field].updatedSinceEffectiveDate) ||
         this.worker.wdf[field].isEligible === 'Not relevant' ||
-        this.confirmedFields.includes(field)
+        this.wdfConfirmFieldsService.getConfirmedFields().includes(field)
       );
     });
   }
