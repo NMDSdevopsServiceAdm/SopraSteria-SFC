@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-staff-record-summary',
   templateUrl: './staff-record-summary.component.html',
 })
-export class StaffRecordSummaryComponent implements OnInit {
+export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   @Input() set worker(value: Worker) {
     this._worker = value;
   }
@@ -27,7 +27,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() return: URLStructure;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
-  @Output() allFieldsConfirmedAgain = new EventEmitter();
+  @Output() allFieldsConfirmed = new EventEmitter();
 
   private _worker: Worker;
   private workplaceUid: string;
@@ -53,8 +53,7 @@ export class StaffRecordSummaryComponent implements OnInit {
       ? { url: [...staffRecordPath, ...['wdf-summary']] }
       : { url: [...staffRecordPath, ...['check-answers']] };
 
-    // this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
-    this.canEditWorker = true;
+    this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
@@ -68,12 +67,16 @@ export class StaffRecordSummaryComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
   setReturn(): void {
     this.workerService.setReturnTo(this.return);
   }
 
-  public emitterHelper(): void {
-    this.allFieldsConfirmedAgain.emit();
+  public emitAllFieldsConfirmed(): void {
+    this.allFieldsConfirmed.emit();
   }
 
   private setNewWdfReturn(): void {
@@ -153,12 +156,11 @@ export class StaffRecordSummaryComponent implements OnInit {
         }
         const props = { [fieldCheck]: this.worker[fieldCheck] };
         this.subscriptions.add(
-          this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
-            console.log(fieldCheck);
-          }),
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {}),
         );
       }
     }
-    this.allFieldsConfirmedAgain.emit();
+    this.allFieldsConfirmed.emit();
   }
 }

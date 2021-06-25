@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import { filter, map } from 'rxjs/operators';
   selector: 'app-wdf-staff-record',
   templateUrl: './wdf-staff-record.component.html',
 })
-export class WdfStaffRecordComponent implements OnInit {
+export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public worker: Worker;
   public updatedWorker: Worker;
   public workplace: Establishment;
@@ -39,7 +39,7 @@ export class WdfStaffRecordComponent implements OnInit {
     protected router: Router,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.setExitUrl();
 
@@ -54,11 +54,11 @@ export class WdfStaffRecordComponent implements OnInit {
     this.subscriptions.unsubscribe();
   }
 
-  public getListOfWorkers() {
+  public getListOfWorkers(): void {
     this.workerList = JSON.parse(localStorage.getItem('ListOfWorkers'));
   }
 
-  public getEstablishment() {
+  public getEstablishment(): void {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
@@ -69,7 +69,7 @@ export class WdfStaffRecordComponent implements OnInit {
     );
   }
 
-  public getWorker(data) {
+  public getWorker(data): void {
     this.subscriptions.add(
       this.workerService.getWorker(this.workplaceUid, data.id, true).subscribe((worker) => {
         this.worker = worker;
@@ -78,7 +78,7 @@ export class WdfStaffRecordComponent implements OnInit {
     );
   }
 
-  public getOverallWdfEligibility() {
+  public getOverallWdfEligibility(): void {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.overallWdfEligibility = report.wdf.overall;
