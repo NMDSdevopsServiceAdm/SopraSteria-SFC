@@ -18,10 +18,10 @@ import { filter, map } from 'rxjs/operators';
 })
 export class WdfStaffRecordComponent implements OnInit {
   public worker: Worker;
+  public updatedWorker: Worker;
   public workplace: Establishment;
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
-  public isEligible: boolean;
   public exitUrl: URLStructure;
   public overallWdfEligibility: boolean;
   public wdfStartDate: string;
@@ -73,7 +73,7 @@ export class WdfStaffRecordComponent implements OnInit {
     this.subscriptions.add(
       this.workerService.getWorker(this.workplaceUid, data.id, true).subscribe((worker) => {
         this.worker = worker;
-        this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
+        this.updatedWorker = worker;
       }),
     );
   }
@@ -86,10 +86,6 @@ export class WdfStaffRecordComponent implements OnInit {
         this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
       }),
     );
-  }
-
-  private sayHello() {
-    console.log('HELLLOOOOOO');
   }
 
   private setExitUrl(): void {
@@ -135,5 +131,14 @@ export class WdfStaffRecordComponent implements OnInit {
           this.breadcrumbService.show(JourneyType.WDF);
         }),
     );
+  }
+
+  public refreshUpdatedWorkerAndWdfEligibility(): void {
+    this.subscriptions.add(
+      this.workerService.getWorker(this.workplaceUid, this.route.snapshot.params.id, true).subscribe((worker) => {
+        this.updatedWorker = worker;
+      }),
+    );
+    this.getOverallWdfEligibility();
   }
 }

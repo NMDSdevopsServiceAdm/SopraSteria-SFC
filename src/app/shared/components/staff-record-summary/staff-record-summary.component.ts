@@ -60,18 +60,19 @@ export class StaffRecordSummaryComponent implements OnInit {
       this.wdfNewDesign = value;
 
       if (this.wdfView && this.wdfNewDesign) {
-        this.updateFieldsWhichDontRequireConfirmation();
         this.setNewWdfReturn();
+        if (this.allRequiredFieldsUpdatedAndEligible()) {
+          this.updateFieldsWhichDontRequireConfirmation();
+        }
       }
     });
   }
 
-  setReturn() {
+  setReturn(): void {
     this.workerService.setReturnTo(this.return);
   }
 
-  public helloWorld() {
-    console.log('HELLO WORLD');
+  public emitterHelper(): void {
     this.allFieldsConfirmedAgain.emit();
   }
 
