@@ -45,7 +45,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplaceUid = this.workplace.uid;
 
     const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
@@ -90,7 +90,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
   }
 
-  public confirmField(dataField) {
+  public confirmField(dataField: string): void {
     const props = { [dataField]: this.worker[dataField] };
     this.subscriptions.add(
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
@@ -136,11 +136,6 @@ export class StaffRecordSummaryComponent implements OnInit {
       'qualificationInSocialCare',
     ];
 
-    const allEligible = this.allRequiredFieldsUpdatedAndEligible();
-
-    if (!allEligible) {
-      return;
-    }
     for (const fieldCheck of fieldsWhichDontRequireConfirmation) {
       if (!this.worker.wdf?.[fieldCheck]?.isEligible) {
         continue;
