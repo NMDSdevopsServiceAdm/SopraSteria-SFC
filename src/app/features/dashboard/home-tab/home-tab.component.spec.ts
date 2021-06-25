@@ -13,9 +13,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import {
-  StaffMismatchBannerComponent,
-} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -210,5 +208,20 @@ describe('HomeTabComponent', () => {
     const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
     // Assert
     expect(childDebugElement).toBeFalsy();
+  });
+
+  it('should not show the Local authority progress link when not a local authority', async () => {
+    const { component } = await setup();
+
+    expect(component.queryByText('Local authority progress')).toBeFalsy;
+  });
+
+  it('should show the Local authority progress link when it is a local authority', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.canRunLocalAuthorityReport = true;
+    component.fixture.detectChanges();
+
+    expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
 });
