@@ -59,6 +59,7 @@ describe('WdfStaffRecordComponent', () => {
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
     component.worker = workerBuilder();
+    component.updatedWorker = workerBuilder();
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;
     component.workerList = ['1', '2', '3', '4'];
@@ -75,6 +76,8 @@ describe('WdfStaffRecordComponent', () => {
     const redCrossVisuallyHiddenMessage = 'Red cross';
 
     component.worker = workerBuilder();
+    component.updatedWorker = workerBuilder();
+
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = false;
     component.wdfStartDate = '2021-01-01';
