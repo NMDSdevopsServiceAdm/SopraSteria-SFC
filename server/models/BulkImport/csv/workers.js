@@ -4059,7 +4059,7 @@ class Worker {
 
       if (mappedQualification) {
         columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
-        columns.push(csvQuote(thisQual.notes ? decodeURI(thisQual.notes) : ''));
+        columns.push(csvQuote(thisQual.notes ? unescape(thisQual.notes) : ''));
       } else {
         columns.push('');
         columns.push('');

@@ -1,11 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
-const config = require('../../server/config/config');
 
-const { encrypt } = require('../utils/db/openpgp/encrypt');
-
-const currentDate = moment().toISOString();
-const expiresSoon = moment().add(90, 'days').toISOString();
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -215,7 +210,7 @@ module.exports = function (sequelize, DataTypes) {
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberEncryptedValue"',
+        field: '"NationalInsuranceNumberValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -238,9 +233,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.TEXT,
+        type: DataTypes.DATE,
         allowNull: true,
-        field: '"DateOfBirthEncryptedValue"',
+        field: '"DateOfBirthValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -1062,60 +1057,6 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      hooks: {
-        beforeBulkUpdate: async (workerUpdate) => {
-          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
-            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
-          }
-
-          if (workerUpdate.attributes.DateOfBirthValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
-            workerUpdate.attributes.DateOfBirthValue = encrypted;
-          }
-        },
-        beforeSave:async (workerUpdate) => {
-          if (workerUpdate.NationalInsuranceNumberValue) {
-            const encrypted = await encrypt(workerUpdate.NationalInsuranceNumberValue);
-            workerUpdate.NationalInsuranceNumberValue = encrypted;
-          }
-          if (workerUpdate.DateOfBirthValue) {
-            const encrypted = await encrypt(workerUpdate.DateOfBirthValue);
-            workerUpdate.DateOfBirthValue = encrypted;
-          }
-          },
-        afterFind:async (worker) => {
-          if (worker && worker.dataValues) {
-            if (worker.dataValues.NationalInsuranceNumberValue) {
-              const encryptedValue = worker.dataValues.NationalInsuranceNumberValue;
-              const decrypted = await sequelize.query(`SELECT pgp_pub_decrypt(dearmor(:value) :: bytea, dearmor(convert_from(decode(:privateKey,'base64'), 'UTF8')),:passphrase) AS "decryptedValue"`,
-                {
-                  plain: true,
-                  replacements: {
-                    value: encryptedValue,
-                    privateKey: config.get('encryption.privateKey'),
-                    passphrase: config.get('encryption.passphrase'),
-                  }
-                });
-              worker.dataValues.NationalInsuranceNumberValue = decrypted.decryptedValue;
-            }
-
-            if (worker.dataValues.DateOfBirthValue){
-              const encryptedValue = worker.dataValues.DateOfBirthValue;
-              const decrypted = await sequelize.query(`SELECT pgp_pub_decrypt(dearmor(:value) :: bytea, dearmor(convert_from(decode(:privateKey,'base64'), 'UTF8')),:passphrase) AS "decryptedValue"`,
-                {
-                  plain: true,
-                  replacements: {
-                    value: encryptedValue,
-                    privateKey: config.get('encryption.privateKey'),
-                    passphrase: config.get('encryption.passphrase'),
-                  }
-                });
-            worker.dataValues.DateOfBirthValue = decrypted.decryptedValue;
-            }
-          }
-        },
-      },
       scopes: {
         active: {
           where: {
@@ -1306,6 +1247,9 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.workersAndTraining = async function (establishmentId) {
+    const currentDate = moment().toISOString();
+    const expiresSoon = moment().add(90, 'days').toISOString();
+
     return this.findAll({
       attributes: [
         'id',

@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { isNumber } from 'lodash';
@@ -28,8 +29,9 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     route: ActivatedRoute,
     workerService: WorkerService,
     featureFlagsService: FeatureFlagsService,
+    wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {
-    super(location, permissionsService, route, workerService, featureFlagsService);
+    super(location, permissionsService, route, workerService, featureFlagsService, wdfConfirmFieldsService);
   }
 
   isNumber(number: number) {

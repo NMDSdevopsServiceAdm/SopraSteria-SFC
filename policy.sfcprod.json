@@ -15,7 +15,7 @@
       "breach_duration_secs": 60,
       "threshold": 50,
       "operator": ">=",
-      "cool_down_secs": 30,
+      "cool_down_secs": 60,
       "adjustment": "+1"
     },
     {
