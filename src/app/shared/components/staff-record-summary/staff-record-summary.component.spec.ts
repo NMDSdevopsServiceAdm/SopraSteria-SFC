@@ -18,7 +18,7 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { queryByText, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
@@ -26,7 +26,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, queryByText } = await render(StaffRecordSummaryComponent, {
+    const { fixture, getByText, queryByText, getAllByText } = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
         {
@@ -54,7 +54,7 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = injector.inject(WorkerService) as WorkerService;
     const wdfConfirmFieldsService = injector.inject(WdfConfirmFieldsService) as WdfConfirmFieldsService;
 
-    return { component, fixture, getByText, queryByText, workerService, wdfConfirmFieldsService };
+    return { component, fixture, getByText, queryByText, workerService, wdfConfirmFieldsService, getAllByText };
   };
   const eligibleObject = {
     isEligible: Eligibility.YES,
@@ -921,6 +921,30 @@ describe('StaffRecordSummaryComponent', () => {
       expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
       expect(queryByText('Yes, it is')).toBeFalsy();
       expect(queryByText('No, change it')).toBeFalsy();
+    });
+  });
+
+  describe('Show and Hide for NINO and DOB', () => {
+    it('when a user is not admin then they should see the show and hide links for NINO and DOB', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.canViewNinoDob = false;
+      component.worker.dateOfBirth = '01/01/1970';
+      component.worker.nationalInsuranceNumber = 'JH127453A';
+      fixture.detectChanges();
+
+      expect(getAllByText('Show').length).toBe(2);
+    });
+
+    it('when a user is an admin then they should not see the show and hide links for NINO and DOB', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.canViewNinoDob = true;
+      component.worker.dateOfBirth = '01/01/1970';
+      component.worker.nationalInsuranceNumber = 'JH127453A';
+      fixture.detectChanges();
+
+      expect(queryByText('Show')).toBeFalsy;
     });
   });
 });

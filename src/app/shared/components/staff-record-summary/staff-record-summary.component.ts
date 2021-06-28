@@ -2,7 +2,6 @@ import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
@@ -24,7 +23,6 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   }
 
   @Input() workplace: Establishment;
-  @Input() return: URLStructure;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Output() allFieldsConfirmed = new EventEmitter();
@@ -33,8 +31,8 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   private workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
-  public returnTo: URLStructure;
   public wdfNewDesign: boolean;
+  public canViewNinoDob: boolean;
 
   constructor(
     private location: Location,
@@ -48,20 +46,20 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workplaceUid = this.workplace.uid;
 
-    const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-    this.returnTo = this.wdfView
-      ? { url: [...staffRecordPath, ...['wdf-summary']] }
-      : { url: [...staffRecordPath, ...['check-answers']] };
-
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
+    this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-
-      if (this.wdfView && this.wdfNewDesign) {
-        this.setNewWdfReturn();
-        if (this.allRequiredFieldsUpdatedAndEligible()) {
+      if (this.wdfView) {
+        if (this.wdfNewDesign && this.allRequiredFieldsUpdatedAndEligible()) {
           this.updateFieldsWhichDontRequireConfirmation();
+        } else {
+          const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+          const returnTo = this.wdfView
+            ? { url: [...staffRecordPath, ...['wdf-summary']] }
+            : { url: [...staffRecordPath, ...['check-answers']] };
+          this.workerService.setReturnTo(returnTo);
         }
       }
     });
@@ -71,26 +69,14 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  setReturn(): void {
-    this.workerService.setReturnTo(this.return);
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setReturn(): void {}
 
   public emitAllFieldsConfirmed(): void {
     this.allFieldsConfirmed.emit();
   }
 
-  private setNewWdfReturn(): void {
-    if (this.route.snapshot.params.establishmentuid) {
-      this.returnTo = {
-        url: ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid],
-        fragment: 'staff-records',
-      };
-    } else {
-      this.returnTo = { url: ['/wdf', 'staff-record', this.worker.uid] };
-    }
-  }
-
-  public getRoutePath(name: string) {
+  public getRoutePath(name: string): Array<string> {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
   }
 
