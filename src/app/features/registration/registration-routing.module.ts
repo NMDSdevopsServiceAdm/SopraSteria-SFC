@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -28,6 +29,7 @@ import {
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
+import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { StartComponent } from './start/start.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
@@ -36,6 +38,13 @@ const routes: Routes = [
     path: 'start',
     component: StartComponent,
     data: { title: 'Register' },
+  },
+  {
+    path: 'about-us',
+    component: AboutUsRegistrationComponent,
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'regulated-by-cqc',
