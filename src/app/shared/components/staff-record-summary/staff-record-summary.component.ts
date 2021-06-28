@@ -51,16 +51,16 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-      if (this.wdfView) {
-        if (this.wdfNewDesign && this.allRequiredFieldsUpdatedAndEligible()) {
+      if (this.wdfNewDesign && this.wdfView) {
+        if (this.allRequiredFieldsUpdatedAndEligible()) {
           this.updateFieldsWhichDontRequireConfirmation();
-        } else {
-          const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-          const returnTo = this.wdfView
-            ? { url: [...staffRecordPath, ...['wdf-summary']] }
-            : { url: [...staffRecordPath, ...['check-answers']] };
-          this.workerService.setReturnTo(returnTo);
         }
+      } else {
+        const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+        const returnTo = this.wdfView
+          ? { url: [...staffRecordPath, ...['wdf-summary']] }
+          : { url: [...staffRecordPath, ...['check-answers']] };
+        this.workerService.setReturnTo(returnTo);
       }
     });
   }

@@ -4,6 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
@@ -11,7 +12,6 @@ import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-wdf-staff-record',
@@ -39,7 +39,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private reportService: ReportService,
     protected router: Router,
-    protected backService:BackService
+    protected backService: BackService,
   ) {}
 
   ngOnInit(): void {
@@ -116,23 +116,31 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       ? this.breadcrumbService.show(JourneyType.WDF)
       : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
+
   private setNewWdfReturn(): void {
     if (this.route.snapshot.params.establishmentuid) {
       this.returnTo = {
-        url: ['/wdf', 'workplaces', this.route.snapshot.params.establishmentuid, 'staff-record', this.route.snapshot.params.id]
+        url: [
+          '/wdf',
+          'workplaces',
+          this.route.snapshot.params.establishmentuid,
+          'staff-record',
+          this.route.snapshot.params.id,
+        ],
       };
     } else {
-      this.returnTo = { url: ['/wdf', 'staff-record',this.route.snapshot.params.id] };
+      this.returnTo = { url: ['/wdf', 'staff-record', this.route.snapshot.params.id] };
     }
     this.workerService.setReturnTo(this.returnTo);
   }
+
   private refreshSubscription() {
     this.route.params.subscribe((data) => {
       this.getEstablishment();
       this.getWorker(data);
       this.getOverallWdfEligibility();
       this.getListOfWorkers();
-      this.setNewWdfReturn()
+      this.setNewWdfReturn();
     });
     this.subscriptions.add(
       this.router.events
