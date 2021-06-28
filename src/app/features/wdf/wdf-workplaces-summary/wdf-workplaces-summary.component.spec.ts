@@ -55,7 +55,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
     const getReport = spyOn(reportService, 'getParentWDFReport').and.callFake(() => of(null));
     const saveAs = spyOn(fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-    fireEvent.click(getByText('Download your WDF report PDF', { exact: false }));
+    fireEvent.click(getByText('Download your WDF report (Excel)', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
