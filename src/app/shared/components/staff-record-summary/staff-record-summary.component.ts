@@ -1,9 +1,10 @@
 import { Location } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-staff-record-summary',
   templateUrl: './staff-record-summary.component.html',
 })
-export class StaffRecordSummaryComponent implements OnInit {
+export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   @Input() set worker(value: Worker) {
     this._worker = value;
   }
@@ -24,6 +25,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
+  @Output() allFieldsConfirmed = new EventEmitter();
 
   private _worker: Worker;
   private workplaceUid: string;
@@ -38,9 +40,10 @@ export class StaffRecordSummaryComponent implements OnInit {
     private route: ActivatedRoute,
     public workerService: WorkerService,
     private featureFlagsService: FeatureFlagsService,
+    private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplaceUid = this.workplace.uid;
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
@@ -48,38 +51,69 @@ export class StaffRecordSummaryComponent implements OnInit {
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-      if (this.wdfView ) {
-        if (this.wdfNewDesign) {
+      if (this.wdfNewDesign && this.wdfView) {
+        if (this.allRequiredFieldsUpdatedAndEligible()) {
           this.updateFieldsWhichDontRequireConfirmation();
-        }else{
-          const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-          const returnTo = this.wdfView
-            ? { url: [...staffRecordPath, ...['wdf-summary']] }
-            : { url: [...staffRecordPath, ...['check-answers']] };
-          this.workerService.setReturnTo(returnTo);
         }
+      } else {
+        const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+        const returnTo = this.wdfView
+          ? { url: [...staffRecordPath, ...['wdf-summary']] }
+          : { url: [...staffRecordPath, ...['check-answers']] };
+        this.workerService.setReturnTo(returnTo);
       }
-
     });
   }
 
-  setReturn() {}
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
-  public getRoutePath(name: string) {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setReturn(): void {}
+
+  public emitAllFieldsConfirmed(): void {
+    this.allFieldsConfirmed.emit();
+  }
+
+  public getRoutePath(name: string): Array<string> {
     return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
   }
 
-  public confirmField(dataField) {
+  public confirmField(dataField: string): void {
     const props = { [dataField]: this.worker[dataField] };
-
     this.subscriptions.add(
-      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() =>
-        this.workerService.getWorker(this.workplaceUid, this.worker.uid, true).subscribe((worker) => {
-          this._worker = worker;
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {
+        this.wdfConfirmFieldsService.addToConfirmedFields(dataField);
+        if (this.allRequiredFieldsUpdatedAndEligible()) {
           this.updateFieldsWhichDontRequireConfirmation();
-        }),
-      ),
+        }
+      }),
     );
+  }
+
+  public allRequiredFieldsUpdatedAndEligible(): boolean {
+    const requiredFields = [
+      'annualHourlyPay',
+      'contract',
+      'daysSick',
+      'highestQualification',
+      'mainJob',
+      'mainJobStartDate',
+      'otherQualification',
+      'socialCareQualification',
+      'weeklyHoursAverage',
+      'weeklyHoursContracted',
+      'zeroHoursContract',
+    ];
+
+    return requiredFields.every((field) => {
+      return (
+        (this.worker.wdf[field].isEligible && this.worker.wdf[field].updatedSinceEffectiveDate) ||
+        this.worker.wdf[field].isEligible === 'Not relevant' ||
+        this.wdfConfirmFieldsService.getConfirmedFields().includes(field)
+      );
+    });
   }
 
   public updateFieldsWhichDontRequireConfirmation(): void {
@@ -91,24 +125,7 @@ export class StaffRecordSummaryComponent implements OnInit {
       'careCertificate',
       'qualificationInSocialCare',
     ];
-    const otherFields = ['currentEligibility', 'effectiveFrom', 'isEligible', 'lastEligibility'];
-    const allFields = Object.keys(this.worker.wdf);
 
-    let allEligible = true;
-    allFields.forEach((field) => {
-      if (
-        !fieldsWhichDontRequireConfirmation.includes(field) &&
-        !otherFields.includes(field) &&
-        (this.worker.wdf[field]?.isEligible === 'No' ||
-          (this.worker.wdf[field]?.isEligible === 'Yes' && this.worker.wdf[field]?.updatedSinceEffectiveDate === false))
-      ) {
-        allEligible = false;
-      }
-    });
-
-    if (!allEligible) {
-      return;
-    }
     for (const fieldCheck of fieldsWhichDontRequireConfirmation) {
       if (!this.worker.wdf?.[fieldCheck]?.isEligible) {
         continue;
@@ -123,8 +140,13 @@ export class StaffRecordSummaryComponent implements OnInit {
         ) {
           continue;
         }
-        this.confirmField(fieldCheck);
+        const props = { [fieldCheck]: this.worker[fieldCheck] };
+        this.subscriptions.add(
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {}),
+        );
       }
     }
+    this.allFieldsConfirmed.emit();
   }
 }

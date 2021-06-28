@@ -107,7 +107,7 @@ const workerBuilder = build('Worker', {
   },
 });
 
-const workerBuilderWithWdf = build('Worker', {
+const workerBuilderWithWdf = build('WorkerWdf', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
@@ -123,8 +123,9 @@ const workerBuilderWithWdf = build('Worker', {
         return trainingBuilder();
       }),
     ],
-    wdfEligible: false,
+    wdfEligible: true,
     wdf: {
+      isEligible: true,
       mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: true },
       daysSick: { isEligible: true, updatedSinceEffectiveDate: true },
       zeroHoursContract: { isEligible: true, updatedSinceEffectiveDate: true },
