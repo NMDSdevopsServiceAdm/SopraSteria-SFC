@@ -19,14 +19,12 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
 
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
-import { StartComponent } from './start/start.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
   {
     path: 'start',
-    component: StartComponent,
-    data: { title: 'Register' },
+    redirectTo: 'create-account',
   },
   {
     path: 'create-account',
