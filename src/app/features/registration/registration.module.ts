@@ -19,10 +19,9 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
 import { SharedModule } from '@shared/shared.module';
 
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
-import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
-import { StartComponent } from './start/start.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
+import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule, PagesModule],
@@ -41,7 +40,6 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     YourDetailsComponent,
-    StartComponent,
     WorkplaceNotFoundComponent,
     AboutUsRegistrationComponent,
     CreateAccountComponent,
