@@ -3,8 +3,8 @@
   class="govuk-summary-list"
   [ngClass]="{
     'govuk-summary-list--contains-warnings':
-      (!wdfNewDesign || !wdfView) && (totalStaffWarning || staffMismatchWarning()),
-    'asc-summary-list--wide-value': wdfView && wdfNewDesign && totalStaffWarning
+      (!wdfNewDesign || !wdfView) && (showTotalStaffWarning || staffMismatchWarning()),
+    'asc-summary-list--wide-value': wdfView && wdfNewDesign && showTotalStaffWarning
   }"
 >
   <div class="govuk-summary-list__row">
@@ -327,7 +327,7 @@
         (setReturnClicked)="this.setReturn()"
       ></app-wdf-field-confirmation>
       <app-wdf-staff-mismatch-message
-        *ngIf="wdfView && wdfNewDesign && totalStaffWarning"
+        *ngIf="wdfView && wdfNewDesign && this.showTotalStaffWarning"
         [workplace]="workplace"
         [workerCount]="workerCount"
         [overallWdfEligibility]="overallWdfEligibility"
@@ -374,7 +374,7 @@
   </ng-container>
 
   <ng-container *ngIf="wdfView && !wdfNewDesign">
-    <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
+    <div *ngIf="this.showTotalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
       </dt>

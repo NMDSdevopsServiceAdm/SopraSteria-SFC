@@ -49,18 +49,29 @@ describe('WdfStaffMismatchMessageComponent', () => {
     component.setMessage();
     fixture.detectChanges();
 
-    const expectedStaffMismatchMessage = "You've more staff than staff records.";
+    const expectedStaffMismatchMessage = "You've 1 more staff than staff records.";
     expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
   });
 
   it('should show staff mismatch message if you have more staff records than staff', async () => {
     const { component, fixture } = await setup();
-    component.workerCount = 10;
-    component.workplace.numberOfStaff = 9;
+    component.workerCount = 5;
+    component.workplace.numberOfStaff = 4;
     component.setMessage();
     fixture.detectChanges();
 
-    const expectedStaffMismatchMessage = "You've more staff records than staff.";
+    const expectedStaffMismatchMessage = "You've 1 more staff record than staff.";
+    expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
+  });
+
+  it('should show staff mismatch message pluralized if you have more staff records than staff', async () => {
+    const { component, fixture } = await setup();
+    component.workerCount = 10;
+    component.workplace.numberOfStaff = 4;
+    component.setMessage();
+    fixture.detectChanges();
+
+    const expectedStaffMismatchMessage = "You've 6 more staff records than staff.";
     expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
   });
 
