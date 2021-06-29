@@ -71,6 +71,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
 
   private pluralizeRecords() {
     return this.staffRecordsDifference > 1 ? 'records' : 'record';
+  }
 
   public setStaffRecordsUrl(): void {
     if (this.route.snapshot.params.establishmentuid && this.primaryWorkplaceUid !== this.workplace.uid) {
