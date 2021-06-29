@@ -38,13 +38,15 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   public lastUpdatedCheck(): void {
-    this.workers.forEach((worker: Worker) => {
-      if (worker.trainingCount > 0) {
-        if (this.lastUpdated === undefined || new Date(this.lastUpdated) < new Date(worker.trainingLastUpdated)) {
-          this.lastUpdated = worker.trainingLastUpdated;
+    if(this.workers) {
+      this.workers.forEach((worker: Worker) => {
+        if (worker.trainingCount > 0) {
+          if (this.lastUpdated === undefined || new Date(this.lastUpdated) < new Date(worker.trainingLastUpdated)) {
+            this.lastUpdated = worker.trainingLastUpdated;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   //Download Training Report
