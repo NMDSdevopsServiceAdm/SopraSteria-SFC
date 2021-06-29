@@ -13,4 +13,8 @@ export class WdfConfirmFieldsService {
   public addToConfirmedFields(field: string): void {
     this.confirmedFields.push(field);
   }
+
+  public clearConfirmFields(): void {
+    this.confirmedFields = [];
+  }
 }

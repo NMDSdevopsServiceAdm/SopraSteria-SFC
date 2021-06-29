@@ -87,7 +87,7 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
 
       fixture.detectChanges();
-      component.updateFieldsWhichDontRequireConfirmation();
+      await component.updateFieldsWhichDontRequireConfirmation();
 
       expect(workerService.updateWorker).toHaveBeenCalled();
     });
@@ -99,7 +99,7 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.wdf.dateOfBirth = eligibleObject;
       fixture.detectChanges();
 
-      component.updateFieldsWhichDontRequireConfirmation();
+      await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
 
       expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
@@ -115,8 +115,7 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.careCertificate = 'Yes, completed';
       fixture.detectChanges();
 
-      component.updateFieldsWhichDontRequireConfirmation();
-      component.confirmField('daysSick');
+      await component.updateFieldsWhichDontRequireConfirmation();
 
       expect(workerService.updateWorker).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         careCertificate: component.worker.careCertificate,
@@ -131,7 +130,7 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.careCertificate = 'No';
       fixture.detectChanges();
 
-      component.updateFieldsWhichDontRequireConfirmation();
+      await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
 
       expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
@@ -147,7 +146,7 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.qualificationInSocialCare = 'Yes';
       fixture.detectChanges();
 
-      component.updateFieldsWhichDontRequireConfirmation();
+      await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
 
       expect(workerService.updateWorker).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
@@ -163,7 +162,7 @@ describe('StaffRecordSummaryComponent', () => {
       component.worker.qualificationInSocialCare = 'NO';
       fixture.detectChanges();
 
-      component.updateFieldsWhichDontRequireConfirmation();
+      await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
 
       expect(workerService.updateWorker).not.toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
