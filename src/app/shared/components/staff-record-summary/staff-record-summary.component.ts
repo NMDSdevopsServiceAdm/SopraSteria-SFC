@@ -116,7 +116,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  public updateFieldsWhichDontRequireConfirmation(): void {
+  public async updateFieldsWhichDontRequireConfirmation(): Promise<void> {
     const fieldsWhichDontRequireConfirmation = [
       'dateOfBirth',
       'gender',
@@ -126,27 +126,23 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
       'qualificationInSocialCare',
     ];
 
-    for (const fieldCheck of fieldsWhichDontRequireConfirmation) {
-      if (!this.worker.wdf?.[fieldCheck]?.isEligible) {
-        continue;
-      }
-      if (
-        this.worker.wdf?.[fieldCheck].isEligible === 'Yes' &&
-        !this.worker.wdf?.[fieldCheck].updatedSinceEffectiveDate
-      ) {
+    const props = {};
+
+    await Promise.all(
+      fieldsWhichDontRequireConfirmation.map(async (fieldCheck) => {
         if (
-          (fieldCheck === 'careCertificate' && this.worker.careCertificate !== 'Yes, completed') ||
-          (fieldCheck === 'qualificationInSocialCare' && this.worker.qualificationInSocialCare !== 'Yes')
+          this.worker.wdf?.[fieldCheck]?.isEligible &&
+          this.worker.wdf?.[fieldCheck].isEligible === 'Yes' &&
+          !this.worker.wdf?.[fieldCheck].updatedSinceEffectiveDate &&
+          !(fieldCheck === 'careCertificate' && this.worker.careCertificate !== 'Yes, completed') &&
+          !(fieldCheck === 'qualificationInSocialCare' && this.worker.qualificationInSocialCare !== 'Yes')
         ) {
-          continue;
+          return (props[fieldCheck] = this.worker[fieldCheck]);
         }
-        const props = { [fieldCheck]: this.worker[fieldCheck] };
-        this.subscriptions.add(
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(() => {}),
-        );
-      }
-    }
+      }),
+    );
+
+    await this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).toPromise();
     this.allFieldsConfirmed.emit();
   }
 }
