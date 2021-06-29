@@ -293,6 +293,14 @@ let ALL_PERMISSIONS = [
     subOwnedByParentAccessBySub: ['Workplace and Staff', 'Workplace', 'None'],
     isAdmin: false,
   },
+  {
+    code: 'canViewNinoDob',
+    description: 'Can view NINO and DOB as admin',
+    role: ['Edit', 'Read'],
+    subOwnedByWorkplaceAccessByParent: [],
+    subOwnedByParentAccessBySub: [],
+    isAdmin: true,
+  },
 ];
 
 class PermissionCache {
@@ -415,6 +423,9 @@ class PermissionCache {
       }
       if (permission.code === 'canChangeDataOwner' && thisEstablishment.dataOwnershipRequested !== null) {
         return { [permission.code]: false };
+      }
+      if (permission.code === 'canViewNinoDob') {
+        return { [permission.code]: req.isAdmin };
       }
       return { [permission.code]: true };
     });

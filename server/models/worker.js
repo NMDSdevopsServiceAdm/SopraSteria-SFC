@@ -1,8 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
 
-const currentDate = moment().toISOString();
-const expiresSoon = moment().add(90, 'days').toISOString();
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -1249,6 +1247,9 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.workersAndTraining = async function (establishmentId) {
+    const currentDate = moment().toISOString();
+    const expiresSoon = moment().add(90, 'days').toISOString();
+
     return this.findAll({
       attributes: [
         'id',
