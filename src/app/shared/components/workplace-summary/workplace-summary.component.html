@@ -3,8 +3,8 @@
   class="govuk-summary-list"
   [ngClass]="{
     'govuk-summary-list--contains-warnings':
-      (!wdfNewDesign || !wdfView) && (this.showTotalStaffWarning || staffMismatchWarning()),
-    'asc-summary-list--wide-value': wdfView && wdfNewDesign && this.showTotalStaffWarning
+      (!wdfNewDesign || !wdfView) && (showTotalStaffWarning || staffMismatchWarning()),
+    'asc-summary-list--wide-value': wdfView && wdfNewDesign && showTotalStaffWarning
   }"
 >
   <div class="govuk-summary-list__row">
