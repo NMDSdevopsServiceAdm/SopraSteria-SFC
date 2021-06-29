@@ -67,6 +67,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.wdfConfirmFieldsService.clearConfirmFields();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

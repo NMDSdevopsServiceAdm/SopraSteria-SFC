@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
@@ -40,6 +41,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     protected router: Router,
     protected backService: BackService,
+    private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 
   ngOnInit(): void {
@@ -141,6 +143,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       this.getOverallWdfEligibility();
       this.getListOfWorkers();
       this.setNewWdfReturn();
+      this.wdfConfirmFieldsService.clearConfirmFields();
     });
     this.subscriptions.add(
       this.router.events
