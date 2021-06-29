@@ -219,7 +219,7 @@ jobs:
               echo "Please, set the feature flag environment variables. Will stop now."
               exit 1
             fi
-            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=true
+            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=false
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
@@ -425,7 +425,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             branches:
               only:
@@ -448,7 +447,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             branches:
               only:
@@ -471,7 +469,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
@@ -509,7 +506,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
