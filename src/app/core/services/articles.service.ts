@@ -27,9 +27,13 @@ export class ArticlesService {
   public getThreeLatestArticles(): Observable<Articles> {
     let params = new HttpParams();
 
+    const statusFilter = {
+      status: { _eq: 'published' },
+    };
     params = params.set('sort', '-publish_date');
     params = params.set('limit', '3');
-    params = params.set('fields', 'title,slug');
+    params = params.set('fields', 'title,slug,status');
+    params = params.set('filter', JSON.stringify(statusFilter));
 
     return this.http.get<Articles>(`${environment.cmsUri}${this.path}`, { params });
   }
