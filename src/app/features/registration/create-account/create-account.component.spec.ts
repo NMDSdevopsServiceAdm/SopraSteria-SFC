@@ -1,24 +1,28 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { RegistrationService } from '@core/services/registration.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { CreateAccountComponent } from './create-account.component';
 
 describe('CreateAccountComponent', () => {
-  let component: CreateAccountComponent;
-  let fixture: ComponentFixture<CreateAccountComponent>;
+  async function setup() {
+    const { fixture } = await render(CreateAccountComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [RegistrationService],
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [CreateAccountComponent],
-    }).compileComponents();
-  });
+    const component = fixture.componentInstance;
+    return {
+      component,
+      fixture,
+    };
+  }
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateAccountComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });
