@@ -425,7 +425,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             branches:
               only:
@@ -448,7 +447,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             branches:
               only:
@@ -471,7 +469,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
@@ -509,7 +506,6 @@ workflows:
             - test_frontend
             - test_backend
             - performance
-            - feature_flag
           filters:
             # ignore any commit on any branch by default
             branches:
