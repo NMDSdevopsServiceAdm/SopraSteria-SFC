@@ -14,6 +14,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   @Input() public overallWdfEligibility: boolean;
   public staffMismatchMessage: string;
   public icon: string;
+  public staffRecordsDifference: number;
   public staffRecordsUrl: URLStructure;
   public primaryWorkplaceUid: string;
 
@@ -32,12 +33,15 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   }
 
   public setMessage(): void {
+    this.calculateStaffRecordsDifference();
     if (this.workplace.numberOfStaff > this.workerCount) {
-      this.staffMismatchMessage = "You've more staff than staff records.";
+      this.staffMismatchMessage = `You've ${this.staffRecordsDifference} more staff than staff records.`;
       return;
     }
     if (this.workplace.numberOfStaff < this.workerCount) {
-      this.staffMismatchMessage = "You've more staff records than staff.";
+      this.staffMismatchMessage = `You've ${
+        this.staffRecordsDifference
+      } more staff ${this.pluralizeRecords()} than staff.`;
       return;
     }
   }
@@ -51,6 +55,21 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
       this.icon = 'cross-icon';
       return;
     }
+  }
+
+  private calculateStaffRecordsDifference(): void {
+    if (this.workplace.numberOfStaff > this.workerCount) {
+      this.staffRecordsDifference = this.workplace.numberOfStaff - this.workerCount;
+      return;
+    }
+    if (this.workplace.numberOfStaff < this.workerCount) {
+      this.staffRecordsDifference = this.workerCount - this.workplace.numberOfStaff;
+      return;
+    }
+  }
+
+  private pluralizeRecords() {
+    return this.staffRecordsDifference > 1 ? 'records' : 'record';
   }
 
   public setStaffRecordsUrl(): void {
