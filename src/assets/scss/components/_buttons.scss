@@ -62,3 +62,196 @@ $button-shadow-size: $govuk-border-width-form-element;
     text-decoration: underline;
   }
 }
+
+
+  // Size of chevron (excluding border)
+  $chevron-size: 9px;
+
+  // Size of chevron border
+  $chevron-border-width: 2px;
+
+  // Colour of chevron
+  $chevron-border-colour: $govuk-link-colour;
+
+  .asc-chevron-before {
+    display: inline-block;
+    position: relative;
+    @include govuk-font($size: 19);
+
+    // Allow space for the arrow
+    padding-left: 14px;
+    text-decoration: underline;
+
+    // When the back link is focused, hide the bottom link border as the
+    // focus styles has a bottom border.
+    &:focus {
+      text-decoration: none;
+
+      &:before {
+        border-color: $govuk-text-colour;
+      }
+    }
+
+    // Prepend left pointing chevron
+    &:before {
+      content: "";
+      display: block;
+
+      // Vertically align with the parent element
+      position: absolute;
+
+      @if $govuk-use-legacy-font {
+        // Begin adjustments for font baseline offset
+        // These should be removed when legacy font support is dropped
+        top: -1px;
+        bottom: 1px;
+      } @else {
+        top: 0;
+        bottom: 0;
+      }
+
+      left: 0;
+
+      width: $chevron-size;
+      height: $chevron-size;
+
+      margin: auto 0;
+
+      -webkit-transform: rotate(225deg);
+
+      -ms-transform: rotate(225deg);
+
+      transform: rotate(225deg);
+
+      border: solid;
+      border-width: $chevron-border-width $chevron-border-width 0 0;
+      border-color: $chevron-border-colour;
+
+      // Fall back to a less than sign for IE8
+      @include govuk-if-ie8 {
+        content: "\003c"; // Less than sign (<)
+        width: auto;
+        height: auto;
+        border: 0;
+        color: $chevron-border-colour;
+
+        // IE8 doesn't seem to like rendering pseudo-elements using @font-faces,
+        // so fall back to using another sans-serif font to render the chevron.
+        font-family: Arial, sans-serif;
+      }
+    }
+  }
+
+.asc-chevron-before:visited {
+  &:before {
+    border-color: $govuk-link-visited-colour;
+  }
+}
+
+.asc-chevron-before:after {
+  content: "";
+  position: absolute;
+  top: -14px;
+  right: 0;
+  bottom: -14px;
+  left: 0;
+}
+
+@if $govuk-use-legacy-font {
+  // Begin adjustments for font baseline offset
+  // These should be removed when legacy font support is dropped
+  .asc-chevron-before:before {
+    $offset: 1px;
+    top: $offset * -1;
+    bottom: $offset;
+  }
+}
+
+
+.asc-chevron-after {
+  display: inline-block;
+  position: relative;
+  @include govuk-font($size: 19);
+
+  // Allow space for the arrow
+  padding-right: 14px;
+  text-decoration: underline;
+
+  // When the back link is focused, hide the bottom link border as the
+  // focus styles has a bottom border.
+  &:focus {
+    text-decoration: none;
+
+    &:after {
+      border-color: $govuk-text-colour;
+    }
+  }
+
+  // Prepend left pointing chevron
+  &:after {
+    content: "";
+    display: block;
+
+    // Vertically align with the parent element
+    position: absolute;
+
+    @if $govuk-use-legacy-font {
+      // Begin adjustments for font baseline offset
+      // These should be removed when legacy font support is dropped
+      top: -1px;
+      bottom: 1px;
+    } @else {
+      top: 0;
+      bottom: 0;
+    }
+
+    right: 0;
+
+    width: $chevron-size;
+    height: $chevron-size;
+
+    margin: auto 0;
+
+    -webkit-transform: rotate(45deg);
+
+    -ms-transform: rotate(45deg);
+
+    transform: rotate(45deg);
+
+    border: solid;
+    border-width: $chevron-border-width $chevron-border-width 0 0;
+    border-color: $chevron-border-colour;
+
+    // Fall back to a less than sign for IE8
+    @include govuk-if-ie8 {
+      content: "\003c"; // Less than sign (<)
+      width: auto;
+      height: auto;
+      border: 0;
+      color: $chevron-border-colour;
+
+      // IE8 doesn't seem to like rendering pseudo-elements using @font-faces,
+      // so fall back to using another sans-serif font to render the chevron.
+      font-family: Arial, sans-serif;
+    }
+  }
+}
+
+.asc-chevron-after:visited {
+  &:after {
+    border-color: $govuk-link-visited-colour;
+  }
+}
+
+@if $govuk-use-legacy-font {
+  // Begin adjustments for font baseline offset
+  // These should be removed when legacy font support is dropped
+  .asc-chevron-after:after {
+    $offset: 1px;
+
+    top: $offset * -1;
+    bottom: $offset;
+  }
+}
+
+

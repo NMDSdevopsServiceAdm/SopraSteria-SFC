@@ -53,6 +53,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
           url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
           fragment: 'staff-record',
         };
+        this.workerService.setReturnTo(this.returnToRecord);
       })
     );
 

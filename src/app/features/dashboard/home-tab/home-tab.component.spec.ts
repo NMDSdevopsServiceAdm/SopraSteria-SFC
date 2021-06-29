@@ -118,9 +118,10 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workerCount = 10;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
     component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.detectChanges();
 
@@ -132,8 +133,9 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
 
@@ -147,8 +149,9 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = false;
@@ -163,8 +166,42 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 0;
+    component.fixture.componentInstance.workerCount = 0;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeFalsy();
+  });
+
+  it('should show the staff mismatch banner if the eight weeks date is in the past', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workerCount = 12;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeTruthy();
+  });
+  it('should not show the staff mismatch banner if the eight weeks date is in the future', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workerCount = 12;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('2999-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = true;

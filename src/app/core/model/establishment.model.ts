@@ -134,6 +134,7 @@ export interface Establishment {
   county?: string;
   locationId?: string;
   lastBulkUploaded?: string;
+  eightWeeksFromFirstLogin?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -221,6 +222,13 @@ export enum WdfSortStaffOptions {
   '1_dsc' = 'Job role (Z to A)',
   '2_meeting' = 'WDF requirements (meeting)',
   '2_not_meeting' = 'WDF requirements (not meeting)',
+}
+
+export enum WdfParentSortWorkplacesOptions {
+  '1_not_meeting' = 'WDF requirements (not meeting)',
+  '2_meeting' = 'WDF requirements (meeting)',
+  '3_asc' = 'Workplace name (A to Z)',
+  '4_dsc' = 'Workplace name (Z to A)',
 }
 
 export enum SortTrainingAndQualsOptionsWorker {

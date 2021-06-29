@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { orderBy } from 'lodash';
@@ -14,14 +16,21 @@ import { Subscription } from 'rxjs';
 export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
+  @Input() canEditWorker: boolean;
+  public workplaceUid: string;
+  public primaryWorkplaceUid: string;
   public canViewWorker: boolean;
-  public canEditWorker: boolean;
   public sortStaffOptions;
-  public workersOrderBy: Array<Worker>;
+  public sortBy: string;
   public overallWdfEligibility: boolean;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private permissionsService: PermissionsService, private reportService: ReportService) {}
+  constructor(
+    private permissionsService: PermissionsService,
+    private reportService: ReportService,
+    private route: ActivatedRoute,
+    private establishmentService: EstablishmentService,
+  ) {}
 
   public lastUpdated(timestamp: string): string {
     const lastUpdated: moment.Moment = moment(timestamp);
@@ -30,14 +39,20 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   }
 
   public getWorkerRecordPath(worker: Worker) {
-    return ['/wdf', 'staff-record', worker.uid];
+    if (this.route.snapshot.params.establishmentuid) {
+      this.workplaceUid = this.route.snapshot.params.establishmentuid;
+      return ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', worker.uid];
+    } else {
+      this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+      return ['/wdf', 'staff-record', worker.uid];
+    }
   }
 
   ngOnInit() {
-    this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = WdfSortStaffOptions;
     this.getOverallWdfEligibility();
+    this.restoreSortBy();
+    this.saveWorkerList();
   }
 
   ngOnChanges() {
@@ -46,9 +61,24 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
       return worker;
     });
     this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
+    this.restoreSortBy();
+    this.saveWorkerList();
+  }
+
+  public saveWorkerList() {
+    const listOfWorkerUids = this.workers.map((worker) => worker.uid);
+    localStorage.setItem('ListOfWorkers', JSON.stringify(listOfWorkerUids));
+  }
+
+  public restoreSortBy() {
+    this.sortBy = localStorage.getItem('SortBy');
+    if (this.sortBy) {
+      this.sortByColumn(this.sortBy);
+    }
   }
 
   public sortByColumn(selectedColumn: any) {
+    localStorage.setItem('SortBy', selectedColumn);
     switch (selectedColumn) {
       case '0_asc': {
         this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
@@ -79,6 +109,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
         break;
       }
     }
+    this.saveWorkerList();
   }
 
   private getOverallWdfEligibility() {

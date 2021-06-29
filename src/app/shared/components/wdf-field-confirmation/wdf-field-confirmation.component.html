@@ -1,0 +1,18 @@
+<div class="govuk-button-group govuk-!-margin-top-1 govuk-!-margin-bottom-0">
+  <ng-container *ngIf="!confirmButtonClicked; else confirmed">
+    <img class="govuk-!-margin-right-1 asc-icon-align" src="/assets/images/cross-icon.svg" alt="" />
+    <div class="govuk-!-margin-right-5">Is this still correct?</div>
+    <button
+      class="govuk-button govuk-button--secondary govuk-!-margin-right-5"
+      data-module="govuk-button"
+      (click)="confirmField()"
+    >
+      Yes, it is
+    </button>
+    <a class="govuk-link" [routerLink]="changeLink" (click)="setReturn()">No, change it</a>
+  </ng-container>
+  <ng-template #confirmed>
+    <img class="govuk-!-margin-top-1 govuk-!-margin-right-1 asc-icon-align" src="/assets/images/tick-icon.svg" alt="" />
+    <div class="govuk-!-margin-right-5">Meeting requirements</div>
+  </ng-template>
+</div>

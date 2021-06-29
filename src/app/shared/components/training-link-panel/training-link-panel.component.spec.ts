@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -35,6 +36,12 @@ describe('TrainingLinkPanelComponent', () => {
       ],
       componentProperties: {
         workplace: MockEstablishment as Establishment,
+        workers: [
+          {
+            trainingCount: 1,
+            trainingLastUpdated: new Date('2020-01-01').toISOString(),
+          },
+        ] as Worker[],
       },
     });
 

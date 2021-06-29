@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -10,6 +11,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -34,6 +36,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
   public showCQCDetailsBanner = false;
+  public workers: Worker[];
+  public workerCount: number;
+  public wdfNewDesign: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -45,6 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private router: Router,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit() {
@@ -66,11 +72,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }),
       );
 
+      this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
+        this.wdfNewDesign = value;
+      });
+
       if (this.workplace && this.workplace.locationId) {
         this.subscriptions.add(
-          this.establishmentService.getCQCRegistrationStatus(this.workplace.locationId).subscribe((response) => {
-            this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-          }),
+          this.establishmentService
+            .getCQCRegistrationStatus(this.workplace.locationId, {
+              postcode: this.workplace.postcode,
+              mainService: this.workplace.mainService.name,
+            })
+            .subscribe((response) => {
+              this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
+            }),
         );
       }
 
@@ -96,6 +111,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.getAllWorkers(this.workplace.uid).subscribe(
             (workers) => {
+              this.workers = workers;
+              this.workerCount = workers.length;
               this.workerService.setWorkers(workers);
               if (workers.length > 0) {
                 this.trainingAlert = workers[0].trainingAlert;

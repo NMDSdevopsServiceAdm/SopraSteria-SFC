@@ -57,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
   EmailCampaign.types = () => {
     return {
       INACTIVE_WORKPLACES: 'inactiveWorkplaces',
+      TARGETED_EMAILS: 'targetedEmails'
     }
   }
 

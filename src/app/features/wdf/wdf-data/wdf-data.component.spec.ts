@@ -11,16 +11,16 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WdfModule } from '../wdf.module.js';
 import { WdfDataComponent } from './wdf-data.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfDataComponent', () => {
   const setup = async () => {
@@ -190,13 +190,23 @@ describe('WdfDataComponent', () => {
 
       expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
     });
+
+    it('should return false when there are no workers', async () => {
+      const { component, fixture } = await setup();
+
+      component.workers = [];
+      fixture.detectChanges();
+
+      expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
+    });
   });
 
-  describe('WdfStatusMessageComponent', async () => {
+  describe('WdfDataStatusMessageComponent', async () => {
     it('should display the correct message and timeframe if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
       const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
 
+      component.isStandalone = true;
       component.wdfEligibilityStatus.overall = true;
       component.wdfEligibilityStatus.currentWorkplace = true;
       component.wdfEligibilityStatus.currentStaff = true;
@@ -209,6 +219,7 @@ describe('WdfDataComponent', () => {
       const { component, fixture, getByText } = await setup();
       const keepUpToDateMessage = 'Keeping your data up to date will save you time next year';
 
+      component.isStandalone = true;
       component.wdfEligibilityStatus.overall = true;
       component.wdfEligibilityStatus.currentWorkplace = true;
       component.wdfEligibilityStatus.currentStaff = false;
@@ -221,6 +232,45 @@ describe('WdfDataComponent', () => {
       const { component, fixture, getByText } = await setup();
       const notMeetingMessage = 'Your data does not meet the WDF 2021 to 2022 requirements';
 
+      component.isStandalone = true;
+      component.wdfEligibilityStatus.overall = false;
+      fixture.detectChanges();
+
+      expect(getByText(notMeetingMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the correct message and timeframe for parents if meeting WDF requirements', async () => {
+      const { component, fixture, getByText } = await setup();
+      const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
+
+      component.isStandalone = false;
+      component.wdfEligibilityStatus.overall = true;
+      component.wdfEligibilityStatus.currentWorkplace = true;
+      component.wdfEligibilityStatus.currentStaff = true;
+      fixture.detectChanges();
+
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the "keeping data up to date" message for parents if meeting WDF requirements with data changes', async () => {
+      const { component, fixture, getByText } = await setup();
+      const keepUpToDateMessage =
+        'Your workplace met the WDF 2021 to 2022 requirements, but keeping your data up to date will save you time next year';
+
+      component.isStandalone = false;
+      component.wdfEligibilityStatus.overall = true;
+      component.wdfEligibilityStatus.currentWorkplace = false;
+      component.wdfEligibilityStatus.currentStaff = false;
+      fixture.detectChanges();
+
+      expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the not meeting message for parents if not meeting WDF requirements overall', async () => {
+      const { component, fixture, getByText } = await setup();
+      const notMeetingMessage = 'Your data does not meet the WDF 2021 to 2022 requirements';
+
+      component.isStandalone = false;
       component.wdfEligibilityStatus.overall = false;
       fixture.detectChanges();
 

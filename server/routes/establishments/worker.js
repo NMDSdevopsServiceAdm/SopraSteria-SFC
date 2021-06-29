@@ -271,7 +271,7 @@ const viewAllWorkers = async (req, res) => {
               updated: worker.updated,
               updatedBy: worker.updatedBy,
               effectiveFrom: effectiveFromIso,
-              wdfEligible: moment(worker.lastWdfEligibility).isAfter(effectiveFromIso),
+              wdfEligible: worker.wdfEligible && moment(worker.lastWdfEligibility).isAfter(effectiveFromIso),
               wdfEligibilityLastUpdated: worker.lastWdfEligibility
                 ? worker.lastWdfEligibility.toISOString()
                 : undefined,
