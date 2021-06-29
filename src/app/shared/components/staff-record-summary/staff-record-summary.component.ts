@@ -47,8 +47,7 @@ export class StaffRecordSummaryComponent implements OnInit {
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-      if (this.wdfView ) {
-        if (this.wdfNewDesign) {
+        if (this.wdfNewDesign && this.wdfView) {
           this.updateFieldsWhichDontRequireConfirmation();
         }else{
           const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
@@ -57,8 +56,6 @@ export class StaffRecordSummaryComponent implements OnInit {
             : { url: [...staffRecordPath, ...['check-answers']] };
           this.workerService.setReturnTo(returnTo);
         }
-      }
-
     });
   }
 
