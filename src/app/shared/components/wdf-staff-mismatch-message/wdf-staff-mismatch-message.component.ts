@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
   selector: 'app-wdf-staff-mismatch-message',
   templateUrl: './wdf-staff-mismatch-message.component.html',
 })
-export class WdfStaffMismatchMessageComponent implements OnInit {
+export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   @Input() public workplace: Establishment;
   @Input() public workerCount: number;
   @Input() public overallWdfEligibility: boolean;
@@ -21,7 +21,6 @@ export class WdfStaffMismatchMessageComponent implements OnInit {
 
   ngOnInit() {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
-
     this.setStaffRecordsUrl();
     this.setMessage();
     this.setIcon();
