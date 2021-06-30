@@ -9,6 +9,6 @@ export class AboutUsRegistrationComponent implements OnInit {
   constructor(private backService: BackService) {}
 
   ngOnInit(): void {
-    this.backService.setBackLink({ url: ['registration', 'start'] });
+    this.backService.setBackLink({ url: ['registration', 'create-account'] });
   }
 }

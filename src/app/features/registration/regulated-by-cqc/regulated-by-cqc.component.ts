@@ -36,7 +36,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective implements 
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'start'] });
+    this.backService.setBackLink({ url: [this.flow, 'create-account'] });
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
