@@ -7,11 +7,24 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: './create-account.component.html',
 })
 export class CreateAccountComponent implements OnInit {
+  public createAccountNewDesign: boolean;
+
   constructor(private registrationService: RegistrationService, private featureFlagsService: FeatureFlagsService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.featureFlagsService.configCatClient.forceRefreshAsync();
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
     this.resetRegistration();
+    this.setStartLink();
+  }
+
+  public setStartLink(): Array<string> {
+    return this.createAccountNewDesign
+      ? ['/registration', 'new-regulated-by-cqc']
+      : ['/registration', 'regulated-by-cqc'];
   }
 
   private resetRegistration(): void {
