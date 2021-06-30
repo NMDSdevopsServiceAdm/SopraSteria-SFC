@@ -220,7 +220,7 @@ jobs:
               echo "Please, set the feature flag environment variables. Will stop now."
               exit 1
             fi
-            output=$((configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=false) 2> &1)
+           echo 'export FEATURE_FLAG=$(configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=false)' >> $BASH_ENV
       - slack/notify:
           custom: |
             {
@@ -230,7 +230,7 @@ jobs:
                 "fields": [
                 {
                   "type": "plain_text",
-                  "text": "*This is a text notification*",
+                  "text": "${FEATURE_FLAG}",
                   "emoji": true
                 }
                 ]
