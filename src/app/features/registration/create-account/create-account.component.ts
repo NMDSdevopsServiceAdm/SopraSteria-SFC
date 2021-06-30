@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { RegistrationService } from '@core/services/registration.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-create-account',
   templateUrl: './create-account.component.html',
 })
 export class CreateAccountComponent implements OnInit {
-  constructor(private registrationService: RegistrationService) {}
+  constructor(private registrationService: RegistrationService, private featureFlagsService: FeatureFlagsService) {}
 
   ngOnInit(): void {
+    this.featureFlagsService.configCatClient.forceRefreshAsync();
     this.resetRegistration();
   }
 
