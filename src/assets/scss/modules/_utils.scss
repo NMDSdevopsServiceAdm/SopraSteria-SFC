@@ -97,3 +97,8 @@
 .asc-font-19 {
   @include govuk-font($size: 19);
 }
+
+.asc-icon-align {
+  position: relative;
+  top: 4px;
+}
