@@ -36,7 +36,7 @@ describe('CreateAccountComponent', () => {
   it('should navigate to About ASC-WDS page when view our about ASC-WDS link is clicked', async () => {
     const { getByText } = await setup();
     const startNowButton = getByText("view our 'about ASC-WDS'");
-    expect(startNowButton.getAttribute('href')).toBe('/registration/about-us');
+    expect(startNowButton.getAttribute('href')).toBe('/registration/about-ascwds');
   });
 
   it('should open Skills for Care website when Read about benefits link is clicked', async () => {
