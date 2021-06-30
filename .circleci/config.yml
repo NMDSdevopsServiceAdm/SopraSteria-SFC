@@ -227,16 +227,18 @@ jobs:
               "blocks": [
               {
                 "type": "section",
-                "text": {
+                "fields": [
+                {
                   "type": "plain_text",
-                  "text": $output,
+                  "text": "*This is a text notification*",
                   "emoji": true
                 }
+                ]
               }
               ]
             }
           mentions: '@devs'
-
+          event: always
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
