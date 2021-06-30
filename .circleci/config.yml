@@ -229,9 +229,8 @@ jobs:
                 "type": "section",
                 "fields": [
                 {
-                  "type": "plain_text",
-                  "text": "${FEATURE_FLAG}",
-                  "emoji": true
+                  "type": "mrkdwn",
+                  "text": ${FEATURE_FLAG}
                 }
                 ]
               }
