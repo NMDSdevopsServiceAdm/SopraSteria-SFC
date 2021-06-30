@@ -2,10 +2,9 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const models = require('../../../models/index');
-const locationsRoute = require('../../../routes/locations');
-const { establishmentBuilder } = require('../../factories/models');
-const pCodeCheck = require('../../../utils/postcodeSanitizer');
+const models = require('../../../../../models');
+const locationsRoute = require('../../../../../routes/locations/locationId');
+const { establishmentBuilder } = require('../../../../factories/models');
 
 const location = {
   dataValues: {
@@ -27,7 +26,7 @@ const establishment = [
   },
 ];
 
-describe.only('locations route', () => {
+describe('locations route', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -209,127 +208,6 @@ describe.only('locations route', () => {
 
       expect(success).to.deep.equal(0), expect(message).to.deep.equal('No location found');
       expect(locationdata).to.deep.equal(undefined);
-    });
-  });
-
-  describe('getLocationsByPostcode()', () => {
-    it('should return locations without matching existing establishments', async () => {
-      sinon.stub(models.location, 'findOne').callsFake(async (args) => {
-        return location;
-      });
-
-      sinon.stub(models.location, 'findAll').callsFake(async (args) => {
-        return [location];
-      });
-
-      const updateStatus = (status) => {
-        expect(status).to.deep.equal(200);
-      };
-      const updateJson = (json) => {
-        expect(typeof json).to.deep.equal('object');
-        expect(json.success).to.deep.equal(1);
-        expect(Array.isArray(json.locationdata)).to.deep.equal(true);
-        expect(json.locationdata.length).to.deep.equal(1);
-        expect(json.searchmethod).to.deep.equal('postcode');
-        expect(json.locationdata[0].locationId).to.deep.equal(location.dataValues.locationid);
-        expect(json.locationdata[0].locationName).to.deep.equal(location.dataValues.locationname);
-        expect(json.locationdata[0].addressLine1).to.deep.equal(location.dataValues.addressline1);
-        expect(json.locationdata[0].addressLine2).to.deep.equal(location.dataValues.addressline2);
-        expect(json.locationdata[0].addressLine3).to.deep.equal(location.dataValues.addressline3);
-        expect(json.locationdata[0].townCity).to.deep.equal(location.dataValues.towncity);
-        expect(json.locationdata[0].county).to.deep.equal(location.dataValues.county);
-        expect(json.locationdata[0].mainService).to.deep.equal(location.dataValues.mainservice);
-      };
-      await locationsRoute.getLocationsByPostcode(
-        {
-          params: {
-            postcode: location.dataValues.postalcode,
-          },
-        },
-        { status: updateStatus, json: updateJson, send: updateJson },
-        false,
-        location.dataValues.postalcode,
-      );
-    });
-    it('should not return locations with matching existing establishments', async () => {
-      sinon.stub(models.establishment, 'findAll').callsFake(async (args) => {
-        return establishment;
-      });
-
-      sinon.stub(models.location, 'findOne').callsFake(async (args) => {
-        return location;
-      });
-
-      sinon.stub(models.location, 'findAll').callsFake(async (args) => {
-        return [location];
-      });
-
-      const updateStatus = (status) => {
-        expect(status).to.deep.equal(404);
-      };
-      const updateJson = (json) => {
-        expect(typeof json).to.deep.equal('object');
-        expect(json.success).to.deep.equal(0);
-      };
-      await locationsRoute.getLocationsByPostcode(
-        {
-          params: {
-            postcode: location.dataValues.postalcode,
-          },
-        },
-        { status: updateStatus, json: updateJson, send: updateJson },
-        true,
-        location.dataValues.postalcode,
-      );
-    });
-  });
-
-  describe('getLocationsByPostcodeOrLocationID()', () => {
-    it('should call location endpoint if searching by locationID', async () => {
-      const postcodeOrLocationID = '1-2111759818';
-
-      const getLocationsByPostcode = sinon.stub(locationsRoute, 'getLocationsByPostcode').returns();
-      const getLocations = sinon.stub(locationsRoute, 'getLocations').returns();
-      const sanitisePostcodeSpy = sinon.spy(pCodeCheck, 'sanitisePostcode');
-
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: `/api/locations/pcorlid/${postcodeOrLocationID}`,
-        params: {
-          postcodeOrLocationID,
-        },
-      });
-
-      const res = httpMocks.createResponse();
-
-      await locationsRoute.getLocationsByPostcodeOrLocationID(req, res, true);
-
-      sinon.assert.notCalled(getLocationsByPostcode);
-      sinon.assert.calledWith(sanitisePostcodeSpy, postcodeOrLocationID);
-      sinon.assert.calledOnce(getLocations);
-    });
-    it('should call postcode endpoint if searching by postcode', async () => {
-      const postcodeOrLocationID = 'LS1 1AA';
-
-      const getLocationsByPostcode = sinon.stub(locationsRoute, 'getLocationsByPostcode').returns();
-      const getLocations = sinon.stub(locationsRoute, 'getLocations').returns();
-      const sanitisePostcodeSpy = sinon.spy(pCodeCheck, 'sanitisePostcode');
-
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: `/api/locations/pcorlid/${postcodeOrLocationID}`,
-        params: {
-          postcodeOrLocationID,
-        },
-      });
-
-      const res = httpMocks.createResponse();
-
-      await locationsRoute.getLocationsByPostcodeOrLocationID(req, res, true);
-
-      sinon.assert.notCalled(getLocations);
-      sinon.assert.calledWith(sanitisePostcodeSpy, postcodeOrLocationID);
-      sinon.assert.calledOnce(getLocationsByPostcode);
     });
   });
 });
