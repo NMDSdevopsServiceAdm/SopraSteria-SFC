@@ -50,7 +50,9 @@ describe('WdfStaffMismatchMessageComponent', () => {
     fixture.detectChanges();
 
     const expectedStaffMismatchMessage = "You've 1 more staff than staff records.";
+    const addRecordsMessage = 'add more records';
     expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
+    expect(component.addOrDeleteRecordsMessage).toEqual(addRecordsMessage);
   });
 
   it('should show staff mismatch message if you have more staff records than staff', async () => {
@@ -61,7 +63,9 @@ describe('WdfStaffMismatchMessageComponent', () => {
     fixture.detectChanges();
 
     const expectedStaffMismatchMessage = "You've 1 more staff record than staff.";
+    const deleteRecordsMessage = 'delete some records';
     expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
+    expect(component.addOrDeleteRecordsMessage).toEqual(deleteRecordsMessage);
   });
 
   it('should show staff mismatch message pluralized if you have more staff records than staff', async () => {
@@ -72,7 +76,22 @@ describe('WdfStaffMismatchMessageComponent', () => {
     fixture.detectChanges();
 
     const expectedStaffMismatchMessage = "You've 6 more staff records than staff.";
+    const deleteRecordsMessage = 'delete some records';
     expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
+    expect(component.addOrDeleteRecordsMessage).toEqual(deleteRecordsMessage);
+  });
+
+  it('should not show a "Either change the total" message when total staff is zero', async () => {
+    const { component, fixture, queryByText } = await setup();
+    component.workerCount = 4;
+    component.workplace.numberOfStaff = 0;
+    component.setMessage();
+    fixture.detectChanges();
+
+    const expectedStaffMismatchMessage = "You've 4 more staff records than staff.";
+    expect(component.staffMismatchMessage).toEqual(expectedStaffMismatchMessage);
+
+    expect(queryByText('Either change the total', { exact: false })).toBeFalsy();
   });
 
   it('should show an orange flag if the user is meeting WDF overall but has made changes', async () => {
