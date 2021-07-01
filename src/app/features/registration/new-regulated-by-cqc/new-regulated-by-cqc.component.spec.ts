@@ -9,8 +9,8 @@ import { fireEvent, render } from '@testing-library/angular';
 import { RegistrationModule } from '../registration.module';
 import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc.component';
 
-fdescribe('NewRegulatedByCqcComponent', () => {
-  async function setup() {
+describe('NewRegulatedByCqcComponent', () => {
+  async function setup(flow) {
     return render(NewRegulatedByCqcComponent, {
       imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -26,7 +26,7 @@ fdescribe('NewRegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: flow,
                   },
                 ],
               },
@@ -38,38 +38,43 @@ fdescribe('NewRegulatedByCqcComponent', () => {
   }
 
   it('should create', async () => {
-    const component = await setup();
+    const component = await setup('registration');
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to next question when selecting yes', async () => {
-    const component = await setup();
-    console.log(component);
+  it('should navigate to the find workplace page when selecting yes', async () => {
+    const component = await setup('registration');
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
+
     const continueButton = component.getByText('Continue');
-    console.log('*********************');
     fireEvent.click(continueButton);
 
     const nextPage = component.fixture.componentInstance.nextPage;
-    console.log(nextPage);
-    expect(true).toBe(true);
-    expect(nextPage.url).toEqual(['registration/find-workplace']);
+    expect(nextPage.url).toEqual(['registration', 'find-workplace']);
   });
 
-  // it('should navigate to dashboard when selecting no', async () => {
-  //   const component = await setup();
-  //   const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="No"]`);
-  //   fireEvent.click(noRadioButton);
+  it('should navigate to the workplace name page when selecting no', async () => {
+    const component = await setup('registration');
+    const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+    fireEvent.click(noRadioButton);
 
-  //   const nextPage = component.fixture.componentInstance.nextPage;
-  //   expect(nextPage.url).toEqual(['/dashboard']);
-  // });
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
 
-  // it('should navigate to dashboard when not selecting anything', async () => {
-  //   const component = await setup();
+    const nextPage = component.fixture.componentInstance.nextPage;
+    expect(nextPage.url).toEqual(['registration', 'workplace-name']);
+  });
 
-  //   const nextPage = component.fixture.componentInstance.nextPage;
-  //   expect(nextPage.url).toEqual(['/dashboard']);
-  // });
+  it('should display an error message when not selecting anything', async () => {
+    const component = await setup('registration');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    const errorMessage = component.getByTestId('errorMessage');
+    expect(errorMessage.innerText).toContain(
+      'Select yes if the main service you provide is regulated by the Care Quality Commission',
+    );
+  });
 });
