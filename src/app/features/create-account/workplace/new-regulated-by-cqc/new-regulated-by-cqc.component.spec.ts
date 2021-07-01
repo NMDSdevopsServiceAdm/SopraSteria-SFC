@@ -52,7 +52,8 @@ describe('NewRegulatedByCqcComponent', () => {
       fireEvent.click(continueButton);
 
       const nextPage = component.fixture.componentInstance.nextPage;
-      expect(nextPage.url).toEqual(['registration', 'find-workplace']);
+      console.log(nextPage);
+      expect(nextPage.url).toEqual(['/registration', 'find-workplace']);
     });
 
     it('should navigate to the workplace name page when selecting no', async () => {
@@ -64,7 +65,7 @@ describe('NewRegulatedByCqcComponent', () => {
       fireEvent.click(continueButton);
 
       const nextPage = component.fixture.componentInstance.nextPage;
-      expect(nextPage.url).toEqual(['registration', 'workplace-name']);
+      expect(nextPage.url).toEqual(['/registration', 'workplace-name']);
     });
 
     it('should display an error message when not selecting anything', async () => {
@@ -90,7 +91,7 @@ describe('NewRegulatedByCqcComponent', () => {
       fireEvent.click(continueButton);
 
       const nextPage = component.fixture.componentInstance.nextPage;
-      expect(nextPage.url).toEqual(['add-workplace', 'find-workplace']);
+      expect(nextPage.url).toEqual(['/add-workplace', 'find-workplace']);
     });
 
     it('should navigate to the workplace name page when selecting no', async () => {
@@ -102,7 +103,7 @@ describe('NewRegulatedByCqcComponent', () => {
       fireEvent.click(continueButton);
 
       const nextPage = component.fixture.componentInstance.nextPage;
-      expect(nextPage.url).toEqual(['add-workplace', 'workplace-name']);
+      expect(nextPage.url).toEqual(['/add-workplace', 'workplace-name']);
     });
 
     it('should display an error message when not selecting anything', async () => {
@@ -115,6 +116,32 @@ describe('NewRegulatedByCqcComponent', () => {
       expect(errorMessage.innerText).toContain(
         'Select yes if the main service you provide is regulated by the Care Quality Commission',
       );
+    });
+  });
+
+  describe('setBackLinks()', () => {
+    it('should set the correct back link when in the registration flow', async () => {
+      const component = await setup('registration');
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.setBackLinks();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'create-account'],
+      });
+    });
+
+    it('should set the correct back link when in the parent flow', async () => {
+      const component = await setup('add-workplace');
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.setBackLinks();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'start'],
+      });
     });
   });
 });
