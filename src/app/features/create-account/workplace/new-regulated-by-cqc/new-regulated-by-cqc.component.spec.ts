@@ -56,7 +56,7 @@ describe('NewRegulatedByCqcComponent', () => {
       expect(nextPage.url).toEqual(['registration', 'find-workplace']);
     });
 
-    fit('should navigate to the workplace name page when selecting no', async () => {
+    it('should navigate to the workplace name page when selecting no', async () => {
       const component = await setup('registration');
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
