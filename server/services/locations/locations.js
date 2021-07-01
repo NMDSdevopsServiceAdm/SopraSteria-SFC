@@ -13,4 +13,24 @@ const createLocationDetailsObject = (data) => {
   };
 };
 
+const sendLocationsResponse = (res, locationData, searchmethod) => {
+  if (locationData.length === 0) {
+    res.status(404);
+    return res.json({
+      success: 0,
+      message: 'No location found',
+      searchmethod,
+    });
+  } else {
+    res.status(200);
+    return res.json({
+      success: 1,
+      message: 'Location Found',
+      locationdata: locationData,
+      searchmethod,
+    });
+  }
+};
+
 module.exports.createLocationDetailsObject = createLocationDetailsObject;
+module.exports.sendLocationsResponse = sendLocationsResponse;

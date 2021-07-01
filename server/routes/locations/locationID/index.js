@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Authorization = require('../../../utils/security/isAuthenticated');
 const models = require('../../../models/index');
-const { createLocationDetailsObject } = require('../createLocationDetailsObject');
+const { createLocationDetailsObject, sendLocationsResponse } = require('../../../services/locations/locations');
 
 const adminGetCurrentEstablishment = async (req, locationID) => {
   const establishment = await models.establishment.findByPk(req.establishment.id, {
@@ -56,36 +56,19 @@ const getLocations = async (req, res, matching, locationID) => {
     }
   }
 
-  if (locationData.length === 0) {
-    res.status(404);
-    return res.json({
-      success: 0,
-      message: 'No location found',
-      searchmethod: 'locationID',
-    });
-  } else {
-    res.status(200);
-    return res.json({
-      success: 1,
-      message: 'Location Found',
-      locationdata: locationData,
-      searchmethod: 'locationID',
-    });
-  }
+  sendLocationsResponse(res, locationData, 'locationId');
 };
 
 router.route('/:locationId');
 
 router.route('/:locationId').get(async function (req, res) {
-  const locationID = req.params.locationId;
-  await getLocations(req, res, false, locationID);
+  await getLocations(req, res, false, req.params.locationId);
 });
 
 router.get('/matching/:locationId', Authorization.isAuthorised);
 // GET Location API by locationId
 router.route('/matching/:locationId').get(async function (req, res) {
-  const locationID = req.params.locationId;
-  await getLocations(req, res, true, locationID);
+  await getLocations(req, res, true, req.params.locationId);
 });
 
 module.exports = router;

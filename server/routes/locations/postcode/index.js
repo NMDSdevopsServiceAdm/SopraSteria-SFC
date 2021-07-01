@@ -3,7 +3,7 @@ const router = express.Router();
 const Authorization = require('../../../utils/security/isAuthenticated');
 const models = require('../../../models/index');
 const pCodeCheck = require('../../../utils/postcodeSanitizer');
-const { createLocationDetailsObject } = require('../createLocationDetailsObject');
+const { createLocationDetailsObject, sendLocationsResponse } = require('../../../services/locations/locations');
 
 const getLocationsByPostcode = async (req, res, matching, postcode) => {
   let locationData = [];
@@ -53,35 +53,18 @@ const getLocationsByPostcode = async (req, res, matching, postcode) => {
     });
   }
 
-  if (locationData.length === 0) {
-    res.status(404);
-    return res.send({
-      success: 0,
-      message: 'No location found',
-      searchmethod: 'postcode',
-    });
-  } else {
-    res.status(200);
-    return res.json({
-      success: 1,
-      message: 'Location(s) Found',
-      locationdata: locationData,
-      searchmethod: 'postcode',
-    });
-  }
+  sendLocationsResponse(res, locationData, 'postcode');
 };
 
 // // GET Location API by postalCode
 router.route('/:postcode').get(async function (req, res) {
-  const postcode = req.params.postcode;
-  await getLocationsByPostcode(req, res, false, postcode);
+  await getLocationsByPostcode(req, res, false, req.params.postcode);
 });
 
 router.get('/matching/:postcode', Authorization.isAuthorised);
 // // GET Location API by postalCode
 router.route('/matching/:postcode').get(async function (req, res) {
-  const postcode = req.params.postcode;
-  await getLocationsByPostcode(req, res, true, postcode);
+  await getLocationsByPostcode(req, res, true, req.params.postcode);
 });
 
 module.exports = router;
