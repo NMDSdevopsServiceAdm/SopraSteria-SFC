@@ -62,5 +62,14 @@ module.exports = function (sequelize, DataTypes) {
       },
     });
   };
+
+  Location.findByPostcode = async function (postcode) {
+    return await this.findAll({
+      where: {
+        postalcode: postcode,
+      },
+    });
+  };
+
   return Location;
 };

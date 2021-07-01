@@ -5,7 +5,21 @@ const models = require('../../../models/index');
 const pCodeCheck = require('../../../utils/postcodeSanitizer');
 const { createLocationDetailsObject, sendLocationsResponse } = require('../../../services/locations/locations');
 
-const getLocationsByPostcode = async (req, res, matching, postcode) => {
+const removeMatchingLocations = async (locationIds, locationData) => {
+  const currentEstablishments = await models.establishment.findEstablishmentsByLocationID(locationIds);
+
+  if (currentEstablishments.length > 0) {
+    locationData.map((location, index) => {
+      currentEstablishments.map((establishment) => {
+        if (location.locationId === establishment.locationId) {
+          locationData.splice(index, 1);
+        }
+      });
+    });
+  }
+};
+
+const getLocationsByPostcode = async (_req, res, matching, postcode) => {
   let locationData = [];
 
   let locationIds = [];
@@ -14,11 +28,7 @@ const getLocationsByPostcode = async (req, res, matching, postcode) => {
 
   if (cleanPostcode != null) {
     //Find matching postcode data
-    let results = await models.location.findAll({
-      where: {
-        postalcode: cleanPostcode,
-      },
-    });
+    let results = await models.location.findByPostcode(cleanPostcode);
 
     for (let i = 0, len = results.length; i < len; i++) {
       let data = results[i].dataValues;
@@ -26,23 +36,7 @@ const getLocationsByPostcode = async (req, res, matching, postcode) => {
       locationIds.push(data.locationid);
     }
     if (matching) {
-      let currentEstablishments = await models.establishment.findAll({
-        where: {
-          locationId: {
-            [models.Sequelize.Op.or]: locationIds,
-          },
-        },
-        attributes: ['locationId'],
-      });
-      if (currentEstablishments.length > 0) {
-        locationData.map((location, index) => {
-          currentEstablishments.map((establishment) => {
-            if (location.locationId === establishment.locationId) {
-              locationData.splice(index, 1);
-            }
-          });
-        });
-      }
+      removeMatchingLocations(locationIds, locationData);
     }
   } else {
     res.status(400);
