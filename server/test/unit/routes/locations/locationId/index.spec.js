@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
 const models = require('../../../../../models');
-const locationsRoute = require('../../../../../routes/locations/locationId');
+const locationsRoute = require('../../../../../routes/locations/locationID');
 const { establishmentBuilder } = require('../../../../factories/models');
 
 const location = {
@@ -37,10 +37,6 @@ describe('locations route', () => {
 
       sinon.stub(models.location, 'findByLocationID').callsFake(async (args) => {
         return location;
-      });
-
-      sinon.stub(models.location, 'findAll').callsFake(async (args) => {
-        return [location];
       });
 
       const updateStatus = (status) => {
@@ -79,10 +75,6 @@ describe('locations route', () => {
 
       sinon.stub(models.location, 'findByLocationID').callsFake(async (args) => {
         return location;
-      });
-
-      sinon.stub(models.location, 'findAll').callsFake(async (args) => {
-        return [location];
       });
 
       const updateStatus = (status) => {

@@ -24,18 +24,14 @@ const establishment = [
   },
 ];
 
-describe('locations route', () => {
+describe.only('locations route', () => {
   afterEach(() => {
     sinon.restore();
   });
 
   describe('getLocationsByPostcode()', () => {
     it('should return locations without matching existing establishments', async () => {
-      sinon.stub(models.location, 'findOne').callsFake(async (args) => {
-        return location;
-      });
-
-      sinon.stub(models.location, 'findAll').callsFake(async (args) => {
+      sinon.stub(models.location, 'findByPostcode').callsFake(async (args) => {
         return [location];
       });
 
@@ -69,15 +65,11 @@ describe('locations route', () => {
       );
     });
     it('should not return locations with matching existing establishments', async () => {
-      sinon.stub(models.establishment, 'findAll').callsFake(async (args) => {
+      sinon.stub(models.establishment, 'findEstablishmentsByLocationID').callsFake(async (args) => {
         return establishment;
       });
 
-      sinon.stub(models.location, 'findOne').callsFake(async (args) => {
-        return location;
-      });
-
-      sinon.stub(models.location, 'findAll').callsFake(async (args) => {
+      sinon.stub(models.location, 'findByPostcode').callsFake(async (args) => {
         return [location];
       });
 

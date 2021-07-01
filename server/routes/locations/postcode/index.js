@@ -36,7 +36,7 @@ const getLocationsByPostcode = async (_req, res, matching, postcode) => {
       locationIds.push(data.locationid);
     }
     if (matching) {
-      removeMatchingLocations(locationIds, locationData);
+      await removeMatchingLocations(locationIds, locationData);
     }
   } else {
     res.status(400);
