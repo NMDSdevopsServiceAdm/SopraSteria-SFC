@@ -13,6 +13,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   @Input() public workerCount: number;
   @Input() public overallWdfEligibility: boolean;
   public staffMismatchMessage: string;
+  public addOrDeleteRecordsMessage: string;
   public icon: string;
   public staffRecordsDifference: number;
   public staffRecordsUrl: URLStructure;
@@ -36,12 +37,14 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
     this.calculateStaffRecordsDifference();
     if (this.workplace.numberOfStaff > this.workerCount) {
       this.staffMismatchMessage = `You've ${this.staffRecordsDifference} more staff than staff records.`;
+      this.addOrDeleteRecordsMessage = 'add more records';
       return;
     }
     if (this.workplace.numberOfStaff < this.workerCount) {
       this.staffMismatchMessage = `You've ${
         this.staffRecordsDifference
       } more staff ${this.pluralizeRecords()} than staff.`;
+      this.addOrDeleteRecordsMessage = 'delete some records';
       return;
     }
   }

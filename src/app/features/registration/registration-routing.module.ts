@@ -45,7 +45,7 @@ const routes: Routes = [
     data: { title: 'Create Account' },
   },
   {
-    path: 'about-us',
+    path: 'about-ascwds',
     component: AboutUsRegistrationComponent,
     resolve: {
       pages: PageResolver,
