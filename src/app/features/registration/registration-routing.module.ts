@@ -133,6 +133,18 @@ const routes: Routes = [
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
   },
+  {
+    path: 'find-workplace',
+    component: NewRegulatedByCqcComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Find your workplace' },
+  },
+  {
+    path: 'workplace-name',
+    component: NewRegulatedByCqcComponent,
+    canActivate: [RegisterGuard],
+    data: { title: `What's the name of your workplace?` },
+  },
 ];
 
 @NgModule({
