@@ -33,9 +33,9 @@ describe('locations route', () => {
 
   describe('getLocations()', () => {
     it('should return locations without matching existing establishments', async () => {
-      sinon.stub(models.establishment, 'findAll').returns([establishment]);
+      sinon.stub(models.establishment, 'findByLocationID').returns([establishment]);
 
-      sinon.stub(models.location, 'findOne').callsFake(async (args) => {
+      sinon.stub(models.location, 'findByLocationID').callsFake(async (args) => {
         return location;
       });
 
@@ -73,11 +73,11 @@ describe('locations route', () => {
       );
     });
     it('should not return locations with matching existing establishments', async () => {
-      sinon.stub(models.establishment, 'findAll').callsFake(async (args) => {
+      sinon.stub(models.establishment, 'findByLocationID').callsFake(async (args) => {
         return establishment;
       });
 
-      sinon.stub(models.location, 'findOne').callsFake(async (args) => {
+      sinon.stub(models.location, 'findByLocationID').callsFake(async (args) => {
         return location;
       });
 
@@ -109,8 +109,8 @@ describe('locations route', () => {
         const establishment = establishmentBuilder();
         const locationId = 456;
 
-        sinon.stub(models.establishment, 'findAll').returns([]);
-        sinon.stub(models.location, 'findOne').returns(null);
+        sinon.stub(models.establishment, 'findByLocationID').returns([]);
+        sinon.stub(models.location, 'findByLocationID').returns(null);
         sinon.stub(models.establishment, 'findByPk').returns(establishment);
 
         const req = httpMocks.createRequest({
@@ -152,8 +152,8 @@ describe('locations route', () => {
         const establishment = establishmentBuilder();
         const locationId = 456;
 
-        sinon.stub(models.establishment, 'findAll').returns([establishment]);
-        sinon.stub(models.location, 'findOne').returns(null);
+        sinon.stub(models.establishment, 'findByLocationID').returns([establishment]);
+        sinon.stub(models.location, 'findByLocationID').returns(null);
         sinon.stub(models.establishment, 'findByPk').returns(establishment);
 
         const req = httpMocks.createRequest({
@@ -184,8 +184,8 @@ describe('locations route', () => {
       const establishment = establishmentBuilder();
       const locationId = 456;
 
-      sinon.stub(models.establishment, 'findAll').returns(establishment);
-      sinon.stub(models.location, 'findOne').returns(null);
+      sinon.stub(models.establishment, 'findByLocationID').returns(establishment);
+      sinon.stub(models.location, 'findByLocationID').returns(null);
       sinon.stub(models.establishment, 'findByPk').returns(establishment);
 
       const req = httpMocks.createRequest({
