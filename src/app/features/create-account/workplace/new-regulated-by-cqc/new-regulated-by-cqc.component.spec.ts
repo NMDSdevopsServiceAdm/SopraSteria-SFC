@@ -52,7 +52,6 @@ describe('NewRegulatedByCqcComponent', () => {
       fireEvent.click(continueButton);
 
       const nextPage = component.fixture.componentInstance.nextPage;
-      console.log(nextPage);
       expect(nextPage.url).toEqual(['/registration', 'find-workplace']);
     });
 
