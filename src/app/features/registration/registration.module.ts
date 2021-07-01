@@ -18,11 +18,11 @@ import { SelectWorkplaceComponent } from '@features/registration/select-workplac
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';
 
+import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc/new-regulated-by-cqc.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule, PagesModule],

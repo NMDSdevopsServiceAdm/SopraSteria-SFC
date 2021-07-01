@@ -31,7 +31,7 @@ export class NewRegulatedByCqcComponent implements OnInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.backService.setBackLink({ url: [this.flow, 'create-account'] });
+    this.setBackLinks();
   }
 
   private setupForm(): void {
@@ -69,13 +69,20 @@ export class NewRegulatedByCqcComponent implements OnInit {
 
     if (this.form.valid) {
       if (regulatedByCQC.value === 'yes') {
+        console.log('inside yes');
         this.nextPage = { url: [this.flow, 'find-workplace'] };
       } else {
+        console.log('inside no');
         this.nextPage = { url: [this.flow, 'workplace-name'] };
       }
       this.router.navigate(this.nextPage.url);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private setBackLinks(): void {
+    const urlPage = this.flow === 'registration' ? 'create-account' : 'start';
+    this.backService.setBackLink({ url: [this.flow, urlPage] });
   }
 }

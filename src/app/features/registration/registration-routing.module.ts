@@ -17,9 +17,9 @@ import { SelectWorkplaceAddressComponent } from '@features/registration/select-w
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
+import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
-import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
@@ -47,7 +47,7 @@ const routes: Routes = [
   {
     path: 'new-regulated-by-cqc',
     component: NewRegulatedByCqcComponent,
-    data: { title: 'Regulated by CQC' },
+    data: { title: 'Service regulated by CQC?' },
   },
   {
     path: 'workplace-not-found',
