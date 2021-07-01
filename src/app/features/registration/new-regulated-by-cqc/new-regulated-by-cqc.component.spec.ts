@@ -54,7 +54,7 @@ fdescribe('NewRegulatedByCqcComponent', () => {
     const nextPage = component.fixture.componentInstance.nextPage;
     console.log(nextPage);
     expect(true).toBe(true);
-    // expect(nextPage).toEqual(['registration/find-workplace']);
+    expect(nextPage.url).toEqual(['registration/find-workplace']);
   });
 
   // it('should navigate to dashboard when selecting no', async () => {
