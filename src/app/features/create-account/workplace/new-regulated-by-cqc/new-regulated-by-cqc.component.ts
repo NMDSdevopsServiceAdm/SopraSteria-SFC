@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -15,7 +14,6 @@ export class NewRegulatedByCqcComponent implements OnInit {
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
-  public nextPage: URLStructure;
   private flow: string;
 
   constructor(
@@ -31,7 +29,7 @@ export class NewRegulatedByCqcComponent implements OnInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setBackLinks();
+    this.setBackLink();
   }
 
   private setupForm(): void {
@@ -69,17 +67,16 @@ export class NewRegulatedByCqcComponent implements OnInit {
 
     if (this.form.valid) {
       if (regulatedByCQC.value === 'yes') {
-        this.nextPage = { url: [`/${this.flow}`, 'find-workplace'] };
+        this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
-        this.nextPage = { url: [`/${this.flow}`, 'workplace-name'] };
+        this.router.navigate([`/${this.flow}`, 'workplace-name']);
       }
-      this.router.navigate(this.nextPage.url);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  public setBackLinks(): void {
+  public setBackLink(): void {
     const urlPage = this.flow === 'registration' ? 'create-account' : 'start';
     this.backService.setBackLink({ url: [`/${this.flow}`, urlPage] });
   }
