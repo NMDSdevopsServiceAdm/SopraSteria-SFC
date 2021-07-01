@@ -22,7 +22,7 @@ export class NewRegulatedByCqcComponent implements OnInit {
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private registrationService: RegistrationService,
-    private backService: BackService,
+    public backService: BackService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -69,11 +69,9 @@ export class NewRegulatedByCqcComponent implements OnInit {
 
     if (this.form.valid) {
       if (regulatedByCQC.value === 'yes') {
-        console.log('inside yes');
-        this.nextPage = { url: [this.flow, 'find-workplace'] };
+        this.nextPage = { url: [`/${this.flow}`, 'find-workplace'] };
       } else {
-        console.log('inside no');
-        this.nextPage = { url: [this.flow, 'workplace-name'] };
+        this.nextPage = { url: [`/${this.flow}`, 'workplace-name'] };
       }
       this.router.navigate(this.nextPage.url);
     } else {
@@ -81,8 +79,8 @@ export class NewRegulatedByCqcComponent implements OnInit {
     }
   }
 
-  private setBackLinks(): void {
+  public setBackLinks(): void {
     const urlPage = this.flow === 'registration' ? 'create-account' : 'start';
-    this.backService.setBackLink({ url: [this.flow, urlPage] });
+    this.backService.setBackLink({ url: [`/${this.flow}`, urlPage] });
   }
 }
