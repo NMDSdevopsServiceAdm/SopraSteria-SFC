@@ -13,7 +13,7 @@ import { throwError } from 'rxjs';
 
 import { FindYourWorkplaceComponent } from './find-your-workplace.component';
 
-fdescribe('FindYourWorkplaceComponent', () => {
+describe('FindYourWorkplaceComponent', () => {
   async function setup() {
     const component = await render(FindYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
