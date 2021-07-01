@@ -56,7 +56,7 @@ const getLocations = async (req, res, matching, locationID) => {
     }
   }
 
-  sendLocationsResponse(res, locationData, 'locationID');
+  return sendLocationsResponse(res, locationData, 'locationID');
 };
 
 router.route('/:locationId');

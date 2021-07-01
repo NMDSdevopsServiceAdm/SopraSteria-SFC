@@ -47,7 +47,7 @@ const getLocationsByPostcode = async (_req, res, matching, postcode) => {
     });
   }
 
-  sendLocationsResponse(res, locationData, 'postcode');
+  return sendLocationsResponse(res, locationData, 'postcode');
 };
 
 // // GET Location API by postalCode
