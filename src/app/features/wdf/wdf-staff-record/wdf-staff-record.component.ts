@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
@@ -16,13 +18,14 @@ import { filter, map } from 'rxjs/operators';
   selector: 'app-wdf-staff-record',
   templateUrl: './wdf-staff-record.component.html',
 })
-export class WdfStaffRecordComponent implements OnInit {
+export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public worker: Worker;
+  public updatedWorker: Worker;
   public workplace: Establishment;
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
-  public isEligible: boolean;
   public exitUrl: URLStructure;
+  public returnTo: URLStructure;
   public overallWdfEligibility: boolean;
   public wdfStartDate: string;
   public wdfEndDate: string;
@@ -37,28 +40,30 @@ export class WdfStaffRecordComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private reportService: ReportService,
     protected router: Router,
+    protected backService: BackService,
+    private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.setExitUrl();
-
     this.refreshSubscription();
     this.getEstablishment();
     this.getWorker(this.route.snapshot.params);
     this.getOverallWdfEligibility();
     this.getListOfWorkers();
+    this.setNewWdfReturn();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  public getListOfWorkers() {
+  public getListOfWorkers(): void {
     this.workerList = JSON.parse(localStorage.getItem('ListOfWorkers'));
   }
 
-  public getEstablishment() {
+  public getEstablishment(): void {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
@@ -69,16 +74,16 @@ export class WdfStaffRecordComponent implements OnInit {
     );
   }
 
-  public getWorker(data) {
+  public getWorker(data): void {
     this.subscriptions.add(
       this.workerService.getWorker(this.workplaceUid, data.id, true).subscribe((worker) => {
         this.worker = worker;
-        this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
+        this.updatedWorker = worker;
       }),
     );
   }
 
-  public getOverallWdfEligibility() {
+  public getOverallWdfEligibility(): void {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.overallWdfEligibility = report.wdf.overall;
@@ -114,12 +119,31 @@ export class WdfStaffRecordComponent implements OnInit {
       : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
 
+  private setNewWdfReturn(): void {
+    if (this.route.snapshot.params.establishmentuid) {
+      this.returnTo = {
+        url: [
+          '/wdf',
+          'workplaces',
+          this.route.snapshot.params.establishmentuid,
+          'staff-record',
+          this.route.snapshot.params.id,
+        ],
+      };
+    } else {
+      this.returnTo = { url: ['/wdf', 'staff-record', this.route.snapshot.params.id] };
+    }
+    this.workerService.setReturnTo(this.returnTo);
+  }
+
   private refreshSubscription() {
     this.route.params.subscribe((data) => {
       this.getEstablishment();
       this.getWorker(data);
       this.getOverallWdfEligibility();
       this.getListOfWorkers();
+      this.setNewWdfReturn();
+      this.wdfConfirmFieldsService.clearConfirmFields();
     });
     this.subscriptions.add(
       this.router.events
@@ -131,5 +155,14 @@ export class WdfStaffRecordComponent implements OnInit {
           this.breadcrumbService.show(JourneyType.WDF);
         }),
     );
+  }
+
+  public refreshUpdatedWorkerAndWdfEligibility(): void {
+    this.subscriptions.add(
+      this.workerService.getWorker(this.workplaceUid, this.route.snapshot.params.id, true).subscribe((worker) => {
+        this.updatedWorker = worker;
+      }),
+    );
+    this.getOverallWdfEligibility();
   }
 }

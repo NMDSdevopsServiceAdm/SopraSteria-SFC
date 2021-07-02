@@ -22,7 +22,15 @@
         </div>
       </app-inset-text>
     </ng-container>
-    <ng-container *ngIf="workplace && canAddWorker && workerCount !== workplace.numberOfStaff && workerCount > 0">
+    <ng-container
+      *ngIf="
+        workplace &&
+        canAddWorker &&
+        workerCount !== workplace.numberOfStaff &&
+        workerCount > 0 &&
+        convertToDate(workplace.eightWeeksFromFirstLogin) < now
+      "
+    >
       <app-staff-mismatch-banner
         (selectStaffTab)="selectStaffTab($event)"
         (selectTotalStaff)="selectTotalStaff($event)"
@@ -100,7 +108,7 @@
       <h3 class="govuk-heading-s govuk-!-margin-top-1">Other links</h3>
       <ul class="govuk-list govuk-!-margin-bottom-6">
         <li class="govuk-!-margin-bottom-3">
-          <a [routerLink]="['/about-us']">About ASC-WDS</a>
+          <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>
         </li>
         <li *ngIf="canViewWorkplaces" class="govuk-!-margin-bottom-3">
           <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>

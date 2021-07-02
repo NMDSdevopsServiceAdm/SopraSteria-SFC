@@ -57,6 +57,12 @@
   }
 }
 
+.asc-summary-list--wide-value {
+  .govuk-summary-list__value {
+    width: 70%;
+  }
+}
+
 .govuk-summary-list--contains-warnings {
   .govuk-summary-list__key {
     width: 30%;

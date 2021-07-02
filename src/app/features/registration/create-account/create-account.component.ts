@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
-  selector: 'app-start',
-  templateUrl: './start.component.html',
+  selector: 'app-create-account',
+  templateUrl: './create-account.component.html',
 })
-export class StartComponent implements OnInit {
-  constructor(private backService: BackService, private registrationService: RegistrationService) {}
+export class CreateAccountComponent implements OnInit {
+  constructor(private registrationService: RegistrationService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.resetRegistration();
-    this.backService.setBackLink({ url: ['/login'] });
   }
 
   private resetRegistration(): void {

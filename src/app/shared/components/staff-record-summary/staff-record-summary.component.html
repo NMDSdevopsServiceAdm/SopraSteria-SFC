@@ -1,35 +1,35 @@
 <app-basic-record
   [workplace]="workplace"
   [worker]="worker"
-  [return]="returnTo"
   [wdfView]="wdfView"
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
   [canEditWorker]="canEditWorker"
+  (allFieldsConfirmed)="emitAllFieldsConfirmed()"
 ></app-basic-record>
 <app-personal-details
   [workplace]="workplace"
   [worker]="worker"
-  [return]="returnTo"
   [wdfView]="wdfView"
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
+  [canViewNinoDob]="canViewNinoDob"
 ></app-personal-details>
 <app-employment
   [workplace]="workplace"
   [worker]="worker"
-  [return]="returnTo"
   [wdfView]="wdfView"
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
   [canEditWorker]="canEditWorker"
+  (allFieldsConfirmed)="emitAllFieldsConfirmed()"
 ></app-employment>
 <app-qualifications-and-training
   [workplace]="workplace"
   [worker]="worker"
-  [return]="returnTo"
   [wdfView]="wdfView"
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
   [canEditWorker]="canEditWorker"
+  (allFieldsConfirmed)="emitAllFieldsConfirmed()"
 ></app-qualifications-and-training>

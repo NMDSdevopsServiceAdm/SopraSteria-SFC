@@ -122,7 +122,15 @@ describe('WorkplaceSummaryComponent', () => {
     const moreRecords = within(document.body).queryByTestId('morerecords');
     expect(moreRecords.innerHTML).toContain("You've more staff than staff records");
   });
-
+  it('should show banner if you have more staff records and 0 staff', async () => {
+    component.workerCount = 10;
+    component.workplace.numberOfStaff = 0;
+    component.wdfView = false;
+    component.canViewListOfWorkers = true;
+    fixture.detectChanges();
+    const moreRecords = within(document.body).queryByTestId('morerecords');
+    expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
+  });
   it("should not show banner if you don't have permission to list workers", async () => {
     component.workerCount = 10;
     component.workplace.numberOfStaff = 9;

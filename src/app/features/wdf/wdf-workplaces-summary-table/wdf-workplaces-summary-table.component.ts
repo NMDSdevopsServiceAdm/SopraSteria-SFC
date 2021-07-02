@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { WdfParentSortWorkplacesOptions } from '@core/model/establishment.model';
 import { orderBy } from 'lodash';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-wdf-workplaces-summary-table',
@@ -11,6 +12,10 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
   @Input() public workplaces = [];
   public sortWorkplacesOptions;
   public sortBy: string;
+  constructor(
+    private permissionsService: PermissionsService,
+  ) {
+  }
 
   ngOnInit(): void {
     this.sortWorkplacesOptions = WdfParentSortWorkplacesOptions;
@@ -44,9 +49,14 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
       }
     }
   }
+
   public canViewWorkplace(workplace){
+    if (workplace.isParent === true){
+      return true;
+    }
     return !(workplace.dataOwner === WorkplaceDataOwner.Workplace && workplace.dataPermissions === DataPermissions.None);
   }
+
   private orderWorkplaces(order: string): Array<any> {
     return orderBy(
       this.workplaces,

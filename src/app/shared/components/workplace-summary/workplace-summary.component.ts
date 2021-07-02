@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './workplace-summary.component.html',
   providers: [I18nPluralPipe],
 })
-export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
+export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges  {
   private _workplace: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
@@ -28,6 +28,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   public canViewListOfWorkers = false;
   public wdfNewDesign: boolean;
   public confirmedFields: Array<string> = [];
+  public showTotalStaffWarning: boolean;
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() wdfView = false;
@@ -60,20 +61,18 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   @Input() return: URLStructure = null;
-
-  get totalStaffWarning(): boolean {
-    if (this.wdfNewDesign) {
-      return (
-        this.workplace.numberOfStaff &&
-        (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
-        this.workplace.numberOfStaff !== this.workerCount
-      );
+  ngOnChanges(changes: SimpleChanges) {
+    for(const propName in changes){
+      if(changes.hasOwnProperty(propName)){
+        if (propName === 'workerCount' || '_workplace') {
+          {
+           this.setTotalStaffWarning();
+          }
+        }
+      }
     }
-    return (
-      (this.workplace.numberOfStaff > 0 || this.workplace.totalWorkers > 0) &&
-      this.workplace.numberOfStaff !== this.workplace.totalWorkers
-    );
   }
+
 
   get totalStaffWarningNonWDF(): boolean {
     return (
@@ -115,7 +114,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-
+      this.setTotalStaffWarning();
       if (this.wdfView && this.wdfNewDesign) {
         this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
       }
@@ -149,6 +148,22 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+  public setTotalStaffWarning(): boolean {
+
+    if (this.wdfNewDesign) {
+      if( this.workplace.workerCount === null && this.workerCount === null) {
+        return this.showTotalStaffWarning = false;
+      }
+
+      return this.showTotalStaffWarning = ( this.workplace.numberOfStaff !== undefined &&
+        (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
+        this.workplace.numberOfStaff !== this.workerCount)
+
+    }
+    this.showTotalStaffWarning =
+      ((this.workplace.numberOfStaff >= 0 || this.workplace.totalWorkers > 0) &&
+      this.workplace.numberOfStaff !== this.workplace.totalWorkers);
+  }
 
   public filterAndSortOtherServices(services: Service[]): Service[] {
     return sortBy(
@@ -163,7 +178,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
-    this.workerService.setReturnTo(this.return);
   }
 
   public selectStaffTab(event: Event): void {
