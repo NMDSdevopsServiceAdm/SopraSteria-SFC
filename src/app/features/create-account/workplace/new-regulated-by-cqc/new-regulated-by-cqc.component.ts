@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -10,7 +10,8 @@ import { RegistrationService } from '@core/services/registration.service';
   selector: 'app-new-regulated-by-cqc',
   templateUrl: './new-regulated-by-cqc.component.html',
 })
-export class NewRegulatedByCqcComponent implements OnInit {
+export class NewRegulatedByCqcComponent implements OnInit, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -32,6 +33,10 @@ export class NewRegulatedByCqcComponent implements OnInit {
     this.setBackLink();
   }
 
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       regulatedByCQC: [null, Validators.required],
@@ -45,7 +50,7 @@ export class NewRegulatedByCqcComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: `Select yes if the main service you provide is regulated by the Care Quality Commission.`,
+            message: `Select yes if the main service you provide is regulated by the Care Quality Commission`,
           },
         ],
       },

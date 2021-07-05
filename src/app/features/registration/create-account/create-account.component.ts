@@ -12,11 +12,12 @@ export class CreateAccountComponent implements OnInit {
   constructor(private registrationService: RegistrationService, private featureFlagsService: FeatureFlagsService) {}
 
   async ngOnInit(): Promise<void> {
-    this.featureFlagsService.configCatClient.forceRefreshAsync();
+    await this.featureFlagsService.configCatClient.forceRefreshAsync();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
       false,
     );
+
     this.resetRegistration();
     this.setStartLink();
   }
