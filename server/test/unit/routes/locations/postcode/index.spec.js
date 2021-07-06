@@ -24,7 +24,7 @@ const establishment = [
   },
 ];
 
-describe.only('locations route', () => {
+describe('locations route', () => {
   afterEach(() => {
     sinon.restore();
   });
