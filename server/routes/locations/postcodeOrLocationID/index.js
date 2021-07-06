@@ -6,11 +6,11 @@ const getLocationsRoute = require('../locationID');
 const getLocationsPCRoute = require('../postcode');
 
 const getLocationsByPostcodeOrLocationID = async (req, res, matching) => {
-  // this sinitises the postcode but also checks it's a postcode
-  let postcodeOrLocationID = pCodeCheck.sanitisePostcode(req.params.postcodeOrLocationID);
+  // this sanitises the postcode but also checks it's a postcode
+  let sanitisedPostcode = pCodeCheck.sanitisePostcode(req.params.postcodeOrLocationID);
 
-  if (postcodeOrLocationID !== null) {
-    return await getLocationsPCRoute.getLocationsByPostcode(req, res, matching, postcodeOrLocationID);
+  if (sanitisedPostcode !== null) {
+    return await getLocationsPCRoute.getLocationsByPostcode(req, res, matching, sanitisedPostcode);
   } else {
     return await getLocationsRoute.getLocations(req, res, matching, req.params.postcodeOrLocationID);
   }
