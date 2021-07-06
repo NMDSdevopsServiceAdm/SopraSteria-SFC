@@ -55,7 +55,6 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { IsThisYourWorkplaceComponent } from './features/create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +76,6 @@ import { IsThisYourWorkplaceComponent } from './features/create-account/workplac
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
-    IsThisYourWorkplaceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

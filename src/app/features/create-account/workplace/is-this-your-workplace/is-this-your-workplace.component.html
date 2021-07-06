@@ -1,1 +1,65 @@
-<p>is-this-your-workplace works!</p>
+<app-errror-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+></app-errror-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">Is this your workplace?</h1>
+        </legend>
+        <p>CQC location ID entered <strong>1-6777534179</strong></p>
+        <p>
+          Brighter Living Care Ltd<br />
+          Reading Road<br />
+          Reading RG6 1PT
+        </p>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+          <span *ngIf="submitted" id="regulated-error" class="govuk-error-messsage">
+            <span *ngIf="this.form.get('yourWorkplace').errors" data-testid="errorMessage" id="yourWorkplace-error">
+              {{ getErrorMessage('yourWorkplace') }}
+            </span>
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="yourWorkplace-conditional-1"
+                class="govuk-radios__input"
+                id="yourWorkplace-1"
+                name="yourWorkplace"
+                type="radio"
+                value="yes"
+                [formControlName]="'yourWorkplace'"
+              />
+              <label for="yourWorkplace-1" class="govuk-label govuk-radios__label">Yes</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="yourWorkplace-conditional-2"
+                class="govuk-radios__input"
+                id="yourWorkplace-2"
+                name="yourWorkplace"
+                type="radio"
+                value="no"
+                [formControlName]="'yourWorkplace'"
+              />
+              <label for="yourWorkplace-2" class="govuk-label govuk-radios__label">No</label>
+            </div>
+          </div>
+        </div>
+        <div class="govuk-!-margin-top-8">
+          <app-details [title]="'Spotted a mistake in your workplace details?'">
+            <p>
+              Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
+              <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+            </p>
+          </app-details>
+        </div>
+      </fieldset>
+      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+    </form>
+  </div>
+</div>
