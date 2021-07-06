@@ -11,11 +11,13 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">Is this your workplace?</h1>
         </legend>
-        <p>CQC location ID entered <strong>1-6777534179</strong></p>
         <p>
-          Brighter Living Care Ltd<br />
-          Reading Road<br />
-          Reading RG6 1PT
+          CQC location ID entered <strong>{{ locationData.locationId }}</strong>
+        </p>
+        <p>
+          {{ locationData.locationName }}<br />
+          {{ locationData.addressLine1 }}<br />
+          {{ locationData.townCity }} {{ locationData.postalCode }}
         </p>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span *ngIf="submitted" id="regulated-error" class="govuk-error-messsage">

@@ -103,7 +103,6 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
-    console.log(data);
     this.registrationService.locationAddresses$.next(data.locationdata);
     this.navigateToNextRoute(data);
   }
@@ -121,7 +120,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   private navigateToNextRoute(data: LocationSearchResponse): void {
     if (data.locationdata.length === 1) {
       console.log('your-workplace');
-      this.router.navigate([this.flow, 'your-workplace']);
+      this.router.navigate([this.flow, 'your-workplace', data.locationdata[0].locationId]);
     } else {
       console.log('select-workplace');
       this.router.navigate([this.flow, 'select-workplace']);

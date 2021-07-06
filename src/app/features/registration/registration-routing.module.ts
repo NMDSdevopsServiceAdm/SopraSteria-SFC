@@ -51,7 +51,7 @@ const routes: Routes = [
     data: { title: 'Find your workplace' },
   },
   {
-    path: 'your-workplace',
+    path: 'your-workplace/:id',
     component: IsThisYourWorkplaceComponent,
     data: { title: 'Is this your workplace?' },
   },
