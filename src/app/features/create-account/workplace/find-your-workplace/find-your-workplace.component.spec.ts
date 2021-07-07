@@ -127,7 +127,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'your-workplace']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'your-workplace', '1-2123313123']);
   });
 
   it("should submit and go to select-workplace if there's more than one address", async () => {
