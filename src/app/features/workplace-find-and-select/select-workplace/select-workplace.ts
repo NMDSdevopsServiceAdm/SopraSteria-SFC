@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -23,7 +23,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {
@@ -47,7 +47,13 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      workplace: ['', Validators.required],
+      workplace: [
+        null,
+        {
+          validators: [Validators.required],
+          updateOn: 'submit',
+        },
+      ],
     });
   }
 
@@ -58,7 +64,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please select an address.',
+            message: "Select your workplace if it's displayed",
           },
         ],
       },
