@@ -11,8 +11,9 @@
           <p>
             CQC location ID entered <strong>{{ locationData.locationId }}</strong>
           </p>
-          <address *ngIf="locationData.addressLine1 || locationData.addressLine2" class="govuk-util__font-style-normal">
+          <address class="govuk-util__font-style-normal">
             <p>
+              <span *ngIf="locationData.locationName">{{ locationData.locationName }}<br /></span>
               <span *ngIf="locationData.addressLine1">{{ locationData.addressLine1 }}<br /></span>
               <span *ngIf="locationData.addressLine2">{{ locationData.addressLine2 }}<br /></span>
               <span *ngIf="locationData.townCity">{{ locationData.townCity }}<br /></span>

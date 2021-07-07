@@ -44,12 +44,12 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
     if (this.registrationService.locationAddresses$.value) {
       this.locationData = this.registrationService.locationAddresses$.value[0];
     } else {
-      this.subscriptions.add(
-        this.locationService.getLocationByPostcodeOrLocationID(this.route.snapshot.params.id).subscribe(
-          (data: LocationSearchResponse) => this.onSuccess(data),
-          (error: HttpErrorResponse) => this.onError(error),
-        ),
-      );
+      // this.subscriptions.add(
+      //   this.locationService.getLocationByPostcodeOrLocationID(this.route.snapshot.params.id).subscribe(
+      //     (data: LocationSearchResponse) => this.onSuccess(data),
+      //     (error: HttpErrorResponse) => this.onError(error),
+      //   ),
+      // );
     }
   }
 
@@ -132,8 +132,10 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
         console.log('You clicked Yes');
+        this.router.navigate([this.flow, 'select-main-service']);
       } else {
         console.log('You clicked No');
+        this.router.navigate([this.flow, 'find-workplace']);
       }
     } else {
       console.log('Please select yes or no');
