@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
@@ -17,9 +19,11 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
+    protected registrationService: RegistrationService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
   }
 
   protected init(): void {
@@ -30,8 +34,8 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.workplaceService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses)
-      )
+        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
+      ),
     );
   }
 
