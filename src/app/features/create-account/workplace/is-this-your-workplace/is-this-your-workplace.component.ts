@@ -116,7 +116,6 @@ export class IsThisYourWorkplaceComponent implements OnInit {
 
   onSubmit(): void {
     const yourWorkplace = this.form.get('yourWorkplace');
-
     this.submitted = true;
 
     if (this.form.valid) {

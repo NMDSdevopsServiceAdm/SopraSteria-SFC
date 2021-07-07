@@ -1,8 +1,4 @@
-<app-errror-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-></app-errror-summary>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -11,14 +7,20 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">Is this your workplace?</h1>
         </legend>
-        <p>
-          CQC location ID entered <strong>{{ locationData.locationId }}</strong>
-        </p>
-        <p>
-          {{ locationData.locationName }}<br />
-          {{ locationData.addressLine1 }}<br />
-          {{ locationData.townCity }} {{ locationData.postalCode }}
-        </p>
+        <div *ngIf="locationData">
+          <p>
+            CQC location ID entered <strong>{{ locationData.locationId }}</strong>
+          </p>
+          <address *ngIf="locationData.addressLine1 || locationData.addressLine2" class="govuk-util__font-style-normal">
+            <p>
+              <span *ngIf="locationData.addressLine1">{{ locationData.addressLine1 }}<br /></span>
+              <span *ngIf="locationData.addressLine2">{{ locationData.addressLine2 }}<br /></span>
+              <span *ngIf="locationData.townCity">{{ locationData.townCity }}<br /></span>
+              <span *ngIf="locationData.county">{{ locationData.county }}<br /></span>
+              <span *ngIf="locationData.postalCode">{{ locationData.postalCode }}</span>
+            </p>
+          </address>
+        </div>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span *ngIf="submitted" id="regulated-error" class="govuk-error-messsage">
             <span *ngIf="this.form.get('yourWorkplace').errors" data-testid="errorMessage" id="yourWorkplace-error">
