@@ -3,6 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -19,6 +21,7 @@ describe('SelectWorkplaceComponent', () => {
           useClass: RegistrationService,
           deps: [HttpClient],
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {

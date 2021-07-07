@@ -14,14 +14,14 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class SelectWorkplaceComponent extends SelectWorkplace {
   constructor(
-    private registrationService: RegistrationService,
+    protected registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, featureFlagsService);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
   }
 
   protected init(): void {

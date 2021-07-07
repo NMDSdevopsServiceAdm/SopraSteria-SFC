@@ -6,6 +6,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -24,8 +25,9 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
     protected router: Router,
     private establishmentService: EstablishmentService,
     protected featureFlagsService: FeatureFlagsService,
+    protected registrationService: RegistrationService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, featureFlagsService);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
   }
 
   protected init() {

@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -20,6 +21,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   public isCQCLocationUpdate: boolean;
   protected subscriptions: Subscription = new Subscription();
   protected createAccountNewDesign: boolean;
+  public enteredPostcode: string;
 
   constructor(
     protected backService: BackService,
@@ -27,9 +29,11 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    protected registrationService: RegistrationService,
   ) {}
 
   ngOnInit(): void {
+    this.enteredPostcode = this.registrationService.locationAddresses$.value[0].postalCode;
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
@@ -39,7 +43,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -104,7 +108,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }

@@ -8,6 +8,12 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">Select your workplace</h1>
           </legend>
+          <div class="govuk-!-margin-bottom-5">
+            <p>
+              Postcode entered: <strong>{{ enteredPostcode }}</strong>
+              <a [routerLink]="['/registration', 'find-workplace']" class="govuk-!-margin-left-9">Change</a>
+            </p>
+          </div>
 
           <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
