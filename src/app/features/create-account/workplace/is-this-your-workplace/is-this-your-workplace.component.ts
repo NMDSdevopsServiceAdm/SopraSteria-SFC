@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-is-this-your-workplace',
@@ -22,6 +23,7 @@ export class IsThisYourWorkplaceComponent implements OnInit {
   private flow: string;
   public locationData: LocationAddress;
   public serverError: string;
+  protected subscriptions: Subscription = new Subscription();
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -32,7 +34,7 @@ export class IsThisYourWorkplaceComponent implements OnInit {
     private locationService: LocationService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setupFormErrorsMap();
@@ -41,9 +43,11 @@ export class IsThisYourWorkplaceComponent implements OnInit {
     if (this.registrationService.locationAddresses$.value) {
       this.locationData = this.registrationService.locationAddresses$.value[0];
     } else {
-      await this.locationService.getLocationByPostcodeOrLocationID(this.route.snapshot.params.id).subscribe(
-        (data: LocationSearchResponse) => this.onSuccess(data),
-        (error: HttpErrorResponse) => this.onError(error),
+      this.subscriptions.add(
+        this.locationService.getLocationByPostcodeOrLocationID(this.route.snapshot.params.id).subscribe(
+          (data: LocationSearchResponse) => this.onSuccess(data),
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
       );
     }
   }
