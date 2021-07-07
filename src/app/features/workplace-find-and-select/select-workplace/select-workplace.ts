@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -18,19 +19,24 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
   public isCQCLocationUpdate: boolean;
   protected subscriptions: Subscription = new Subscription();
+  protected createAccountNewDesign: boolean;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
-    this.setBackLink();
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.setBackLink();
+    });
   }
 
   ngAfterViewInit() {
@@ -42,7 +48,8 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   protected save(): void {}
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
+    const backLink = this.createAccountNewDesign ? 'find-workplace' : 'regulated-by-cqc';
+    this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
   }
 
   protected setupForm(): void {
@@ -64,7 +71,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: "Select your workplace if it's displayed",
+            message: `Select your workplace if it's displayed`,
           },
         ],
       },

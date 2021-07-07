@@ -8,6 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
@@ -21,9 +22,10 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService);
   }
 
   protected init() {
@@ -45,8 +47,8 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.workplaceService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses)
-      )
+        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
+      ),
     );
   }
 
@@ -54,13 +56,13 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
     const selectedLocation = this.getSelectedLocation();
     this.subscriptions.add(
-      this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe(data => {
+      this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
         this.router.navigate(this.establishmentService.returnTo.url, {
           fragment: this.establishmentService.returnTo.fragment,
         });
         this.establishmentService.setReturnTo(null);
-      })
+      }),
     );
   }
 
