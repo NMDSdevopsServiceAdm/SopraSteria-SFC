@@ -48,7 +48,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      postcodeOrLocationID: [null, Validators.required],
+      postcodeOrLocationID: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
   }
 

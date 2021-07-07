@@ -22,10 +22,13 @@
           </address>
         </div>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-          <span *ngIf="submitted" id="regulated-error" class="govuk-error-messsage">
-            <span *ngIf="this.form.get('yourWorkplace').errors" data-testid="errorMessage" id="yourWorkplace-error">
-              {{ getErrorMessage('yourWorkplace') }}
-            </span>
+          <span
+            *ngIf="submitted && this.form.get('yourWorkplace').errors"
+            id="yourWorkplace-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getErrorMessage('yourWorkplace') }}
           </span>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">

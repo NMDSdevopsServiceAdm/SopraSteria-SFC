@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress, LocationSearchResponse } from '@core/model/location.model';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-is-this-your-workplace',
   templateUrl: './is-this-your-workplace.component.html',
 })
-export class IsThisYourWorkplaceComponent implements OnInit {
+export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -32,6 +32,7 @@ export class IsThisYourWorkplaceComponent implements OnInit {
     private router: Router,
     private registrationService: RegistrationService,
     private locationService: LocationService,
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +53,10 @@ export class IsThisYourWorkplaceComponent implements OnInit {
     }
   }
 
+  public ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
       console.log('workplace-not-found');
@@ -69,8 +74,14 @@ export class IsThisYourWorkplaceComponent implements OnInit {
   }
 
   private setupForm(): void {
-    this.form = new FormGroup({
-      yourWorkplace: new FormControl(null, Validators.required),
+    this.form = this.formBuilder.group({
+      yourWorkplace: [
+        null,
+        {
+          validators: [Validators.required],
+          updateOn: 'submit',
+        },
+      ],
     });
   }
 
@@ -128,5 +139,9 @@ export class IsThisYourWorkplaceComponent implements OnInit {
       console.log('Please select yes or no');
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
