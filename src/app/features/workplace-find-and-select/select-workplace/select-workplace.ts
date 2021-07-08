@@ -20,7 +20,7 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
   public isCQCLocationUpdate: boolean;
   protected subscriptions: Subscription = new Subscription();
-  protected createAccountNewDesign: boolean;
+  public createAccountNewDesign: boolean;
   public enteredPostcode: string;
 
   constructor(
