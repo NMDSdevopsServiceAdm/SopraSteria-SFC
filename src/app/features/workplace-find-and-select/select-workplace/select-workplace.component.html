@@ -4,9 +4,27 @@
   <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Select your workplace</h1>
-        </legend>
+        <ng-container *ngIf="isCQCLocationUpdate; else CQCLocationAddHeading">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">Select your workplace</h1>
+          </legend>
+        </ng-container>
+        <ng-template #CQCLocationAddHeading>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">Select the workplace you want to add</h1>
+          </legend>
+          <div class="govuk-!-margin-bottom-5">
+            <p>
+              Postcode entered: <strong>{{ enteredPostcode }}</strong>
+              <a
+                *ngIf="createAccountNewDesign"
+                [routerLink]="['/registration', 'workplace-name-address']"
+                class="govuk-!-margin-left-9"
+                >Change</a
+              >
+            </p>
+          </div>
+        </ng-template>
 
         <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
@@ -44,7 +62,7 @@
       </button>
     </ng-container>
     <ng-template #CQCLocationAdd>
-      <p>
+      <p class="govuk-!-margin-bottom-7">
         <a [routerLink]="[flow, 'find-workplace-address']" role="button" draggable="false">
           Workplace is not displayed or is not correct
         </a>

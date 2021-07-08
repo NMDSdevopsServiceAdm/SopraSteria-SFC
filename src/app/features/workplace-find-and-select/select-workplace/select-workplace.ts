@@ -33,10 +33,10 @@ export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.enteredPostcode = this.registrationService.locationAddresses$.value[0].postalCode;
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.enteredPostcode = this.locationAddresses[0].postalCode;
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
