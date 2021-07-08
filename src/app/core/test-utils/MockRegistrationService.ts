@@ -13,5 +13,12 @@ export class MockRegistrationService extends RegistrationService {
       locationName: 'Name',
       townCity: 'Manchester',
     },
+    {
+      postalCode: 'ABC 123',
+      addressLine1: '2 Street',
+      county: 'Greater Manchester',
+      locationName: 'Test Care Home',
+      townCity: 'Manchester',
+    },
   ]);
 }
