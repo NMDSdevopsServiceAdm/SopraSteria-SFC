@@ -121,7 +121,7 @@ describe('HomeTabComponent', () => {
     component.fixture.componentInstance.workerCount = 10;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
     component.fixture.componentInstance.canViewListOfWorkers = true;
-    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+    //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.detectChanges();
 
@@ -135,7 +135,7 @@ describe('HomeTabComponent', () => {
     // Act
     component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+   // component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
 
@@ -151,7 +151,7 @@ describe('HomeTabComponent', () => {
     // Act
     component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  //  component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = false;
@@ -168,7 +168,7 @@ describe('HomeTabComponent', () => {
     // Act
     component.fixture.componentInstance.workerCount = 0;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+    //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = true;
@@ -185,7 +185,7 @@ describe('HomeTabComponent', () => {
     // Act
     component.fixture.componentInstance.workerCount = 12;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+    //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = true;
@@ -201,7 +201,7 @@ describe('HomeTabComponent', () => {
     // Act
     component.fixture.componentInstance.workerCount = 12;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('2999-01-01').toString();
+   // component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('2999-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = true;

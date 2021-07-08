@@ -698,11 +698,11 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'LaReportLockHeld',
       },
-      eightWeeksFromFirstLogin: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: 'eightWeeksFromFirstLogin',
-      },
+      // eightWeeksFromFirstLogin: {
+      //   type: DataTypes.DATE,
+      //   allowNull: true,
+      //   field: 'eightWeeksFromFirstLogin',
+      // },
     },
     {
       defaultScope: {
