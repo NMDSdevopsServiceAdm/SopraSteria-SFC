@@ -114,101 +114,101 @@ describe('HomeTabComponent', () => {
     expect(link.innerHTML).toContain('Add staff records');
   });
 
-  it('should not show the more staff records banner if there are equal staff records', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workerCount = 10;
-    component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    component.fixture.componentInstance.canViewListOfWorkers = true;
-    //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  // it('should not show the more staff records banner if there are equal staff records', async () => {
+  //   // Arrange
+  //   const { component } = await setup();
+  //   // Act
+  //   component.fixture.componentInstance.workerCount = 10;
+  //   component.fixture.componentInstance.workplace.numberOfStaff = 10;
+  //   component.fixture.componentInstance.canViewListOfWorkers = true;
+  //   //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  //
+  //   component.fixture.detectChanges();
+  //
+  //   const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+  //   // Assert
+  //   expect(childDebugElement).toBeFalsy();
+  // });
+  // it('should  show the more staff records banner if the user does  have permissions to viewListOfWorkers', async () => {
+  //   // Arrange
+  //   const { component } = await setup();
+  //   // Act
+  //   component.fixture.componentInstance.workerCount = 11;
+  //   component.fixture.componentInstance.workplace.numberOfStaff = 10;
+  //  // component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  //
+  //   component.fixture.componentInstance.canViewListOfWorkers = true;
+  //
+  //   component.fixture.detectChanges();
+  //   const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+  //   // Assert
+  //   expect(childDebugElement).toBeTruthy();
+  // });
+  //
+  // it('should not show the more staff records banner if the user doesnt  have permissions to addWorker', async () => {
+  //   // Arrange
+  //   const { component } = await setup();
+  //   // Act
+  //   component.fixture.componentInstance.workerCount = 11;
+  //   component.fixture.componentInstance.workplace.numberOfStaff = 10;
+  // //  component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  //
+  //   component.fixture.componentInstance.canViewListOfWorkers = true;
+  //   component.fixture.componentInstance.canAddWorker = false;
+  //
+  //   component.fixture.detectChanges();
+  //   const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+  //   // Assert
+  //   expect(childDebugElement).toBeFalsy();
+  // });
 
-    component.fixture.detectChanges();
-
-    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
-    // Assert
-    expect(childDebugElement).toBeFalsy();
-  });
-  it('should  show the more staff records banner if the user does  have permissions to viewListOfWorkers', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workerCount = 11;
-    component.fixture.componentInstance.workplace.numberOfStaff = 10;
-   // component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
-
-    component.fixture.componentInstance.canViewListOfWorkers = true;
-
-    component.fixture.detectChanges();
-    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
-    // Assert
-    expect(childDebugElement).toBeTruthy();
-  });
-
-  it('should not show the more staff records banner if the user doesnt  have permissions to addWorker', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workerCount = 11;
-    component.fixture.componentInstance.workplace.numberOfStaff = 10;
-  //  component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
-
-    component.fixture.componentInstance.canViewListOfWorkers = true;
-    component.fixture.componentInstance.canAddWorker = false;
-
-    component.fixture.detectChanges();
-    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
-    // Assert
-    expect(childDebugElement).toBeFalsy();
-  });
-
-  it('should not show the staff mismatch banner if no workers have been added', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workerCount = 0;
-    component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
-
-    component.fixture.componentInstance.canViewListOfWorkers = true;
-    component.fixture.componentInstance.canAddWorker = true;
-
-    component.fixture.detectChanges();
-    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
-    // Assert
-    expect(childDebugElement).toBeFalsy();
-  });
-
-  it('should show the staff mismatch banner if the eight weeks date is in the past', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workerCount = 12;
-    component.fixture.componentInstance.workplace.numberOfStaff = 10;
-    //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
-
-    component.fixture.componentInstance.canViewListOfWorkers = true;
-    component.fixture.componentInstance.canAddWorker = true;
-
-    component.fixture.detectChanges();
-    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
-    // Assert
-    expect(childDebugElement).toBeTruthy();
-  });
-  it('should not show the staff mismatch banner if the eight weeks date is in the future', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.workerCount = 12;
-    component.fixture.componentInstance.workplace.numberOfStaff = 10;
-   // component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('2999-01-01').toString();
-
-    component.fixture.componentInstance.canViewListOfWorkers = true;
-    component.fixture.componentInstance.canAddWorker = true;
-
-    component.fixture.detectChanges();
-    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
-    // Assert
-    expect(childDebugElement).toBeFalsy();
-  });
+  // it('should not show the staff mismatch banner if no workers have been added', async () => {
+  //   // Arrange
+  //   const { component } = await setup();
+  //   // Act
+  //   component.fixture.componentInstance.workerCount = 0;
+  //   component.fixture.componentInstance.workplace.numberOfStaff = 10;
+  //   //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  //
+  //   component.fixture.componentInstance.canViewListOfWorkers = true;
+  //   component.fixture.componentInstance.canAddWorker = true;
+  //
+  //   component.fixture.detectChanges();
+  //   const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+  //   // Assert
+  //   expect(childDebugElement).toBeFalsy();
+  // });
+  // //
+  // // it('should show the staff mismatch banner if the eight weeks date is in the past', async () => {
+  // //   // Arrange
+  // //   const { component } = await setup();
+  // //   // Act
+  // //   component.fixture.componentInstance.workerCount = 12;
+  // //   component.fixture.componentInstance.workplace.numberOfStaff = 10;
+  // //   //component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+  // //
+  // //   component.fixture.componentInstance.canViewListOfWorkers = true;
+  // //   component.fixture.componentInstance.canAddWorker = true;
+  // //
+  // //   component.fixture.detectChanges();
+  // //   const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+  // //   // Assert
+  // //   expect(childDebugElement).toBeTruthy();
+  // // });
+  // it('should not show the staff mismatch banner if the eight weeks date is in the future', async () => {
+  //   // Arrange
+  //   const { component } = await setup();
+  //   // Act
+  //   component.fixture.componentInstance.workerCount = 12;
+  //   component.fixture.componentInstance.workplace.numberOfStaff = 10;
+  //  // component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('2999-01-01').toString();
+  //
+  //   component.fixture.componentInstance.canViewListOfWorkers = true;
+  //   component.fixture.componentInstance.canAddWorker = true;
+  //
+  //   component.fixture.detectChanges();
+  //   const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+  //   // Assert
+  //   expect(childDebugElement).toBeFalsy();
+  // });
 });
