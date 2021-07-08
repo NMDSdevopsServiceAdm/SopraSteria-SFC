@@ -1,15 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { RegistrationModule } from '../registration.module';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
@@ -36,13 +36,14 @@ describe('SelectWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
             },
           },
         },
+        FormBuilder,
       ],
     });
 

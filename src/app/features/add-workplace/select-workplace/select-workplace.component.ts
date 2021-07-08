@@ -33,7 +33,7 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.workplaceService.locationAddresses$.subscribe(
+      this.registrationService.locationAddresses$.subscribe(
         (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
       ),
     );
