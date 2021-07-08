@@ -1,7 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -11,7 +14,17 @@ describe('CreateAccountComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(CreateAccountComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [RegistrationService],
+      providers: [
+        {
+          provide: RegistrationService,
+          useClass: RegistrationService,
+          deps: [HttpClient],
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+      ],
     });
 
     const component = fixture.componentInstance;
@@ -35,7 +48,7 @@ describe('CreateAccountComponent', () => {
 
   it('should navigate to About ASC-WDS page when view our about ASC-WDS link is clicked', async () => {
     const { getByText } = await setup();
-    const startNowButton = getByText("view our 'about ASC-WDS'");
+    const startNowButton = getByText(`view our 'about ASC-WDS'`);
     expect(startNowButton.getAttribute('href')).toBe('/registration/about-ascwds');
   });
 

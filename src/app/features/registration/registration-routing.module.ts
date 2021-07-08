@@ -16,9 +16,9 @@ import { SelectMainServiceComponent } from '@features/registration/select-main-s
 import { SelectWorkplaceAddressComponent } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
-
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -53,8 +53,12 @@ const routes: Routes = [
   {
     path: 'your-workplace',
     component: IsThisYourWorkplaceComponent,
-    // canActivate: [RegisterGuard],
     data: { title: 'Is this your workplace?' },
+  },
+  {
+    path: 'new-regulated-by-cqc',
+    component: NewRegulatedByCqcComponent,
+    data: { title: 'Service regulated by CQC?' },
   },
   {
     path: 'workplace-not-found',
@@ -139,6 +143,18 @@ const routes: Routes = [
     component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'find-workplace',
+    component: NewRegulatedByCqcComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Find your workplace' },
+  },
+  {
+    path: 'workplace-name',
+    component: NewRegulatedByCqcComponent,
+    canActivate: [RegisterGuard],
+    data: { title: `What's the name of your workplace?` },
   },
 ];
 
