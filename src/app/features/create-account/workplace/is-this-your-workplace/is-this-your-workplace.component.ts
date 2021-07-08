@@ -26,6 +26,7 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
   protected subscriptions: Subscription = new Subscription();
   public workplace: Establishment;
   public isParent: boolean;
+  public searchMethod: string;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -43,6 +44,10 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
     this.setupFormErrorsMap();
     this.setBackLink();
     this.locationData = this.registrationService.locationAddresses$.value[0];
+    console.log(this.locationData);
+    this.searchMethod = this.registrationService.searchMethod$.value;
+    console.log('****************');
+    console.log(this.searchMethod);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
   }

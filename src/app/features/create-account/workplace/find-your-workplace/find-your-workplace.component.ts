@@ -103,7 +103,11 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
+    console.log(data);
+    console.log(data.searchmethod);
     this.registrationService.locationAddresses$.next(data.locationdata);
+    this.registrationService.searchMethod$.next(data.searchmethod);
+    console.log(this.registrationService.searchMethod$);
     this.navigateToNextRoute(data);
   }
 
