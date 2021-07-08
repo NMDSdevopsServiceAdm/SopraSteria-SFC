@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
-fdescribe('IsThisYourWorkplaceComponent', () => {
+describe('IsThisYourWorkplaceComponent', () => {
   async function setup() {
     const component = await render(IsThisYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
@@ -58,13 +58,6 @@ fdescribe('IsThisYourWorkplaceComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    // const componentInstance = component.fixture.componentInstance;
-    // const locationService = injector.inject(LocationService) as LocationService;
-    // const errorResponse = new HttpErrorResponse({
-    //   error: { code: `some code`, message: `some message.` },
-    //   status: 404,
-    //   statusText: 'Not found',
-    // });
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -72,8 +65,6 @@ fdescribe('IsThisYourWorkplaceComponent', () => {
     return {
       component,
       router,
-      // componentInstance,
-      // locationService,
       spy,
     };
   }

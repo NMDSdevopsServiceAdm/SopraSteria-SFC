@@ -109,7 +109,6 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      console.log('workplace-not-found');
       this.router.navigate([this.flow, 'workplace-not-found']);
       return;
     }
@@ -119,10 +118,8 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private navigateToNextRoute(data: LocationSearchResponse): void {
     if (data.locationdata.length === 1) {
-      console.log('your-workplace');
-      this.router.navigate([this.flow, 'your-workplace', data.locationdata[0].locationId]);
+      this.router.navigate([this.flow, 'your-workplace']);
     } else {
-      console.log('select-workplace');
       this.router.navigate([this.flow, 'select-workplace']);
     }
   }

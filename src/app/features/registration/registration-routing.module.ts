@@ -51,8 +51,9 @@ const routes: Routes = [
     data: { title: 'Find your workplace' },
   },
   {
-    path: 'your-workplace/:id',
+    path: 'your-workplace',
     component: IsThisYourWorkplaceComponent,
+    // canActivate: [RegisterGuard],
     data: { title: 'Is this your workplace?' },
   },
   {
