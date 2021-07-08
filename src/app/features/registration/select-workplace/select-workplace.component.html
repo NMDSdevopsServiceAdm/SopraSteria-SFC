@@ -10,7 +10,12 @@
         <div class="govuk-!-margin-bottom-5">
           <p>
             Postcode entered: <strong>{{ enteredPostcode }}</strong>
-            <a [routerLink]="['/registration', 'find-workplace']" class="govuk-!-margin-left-9">Change</a>
+            <a
+              *ngIf="createAccountNewDesign"
+              [routerLink]="['/registration', 'workplace-name-address']"
+              class="govuk-!-margin-left-9"
+              >Change</a
+            >
           </p>
         </div>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
