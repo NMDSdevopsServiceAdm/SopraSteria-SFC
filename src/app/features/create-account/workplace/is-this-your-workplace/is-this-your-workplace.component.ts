@@ -45,7 +45,6 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
     this.locationData = this.registrationService.locationAddresses$.value[0];
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
-    console.log(this.isParent);
   }
 
   public ngAfterViewInit(): void {
