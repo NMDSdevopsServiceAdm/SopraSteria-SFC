@@ -5,11 +5,12 @@
     <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Is this your workplace?</h1>
+          <h1 *ngIf="isParent" class="govuk-fieldset__heading">Is this the workplace you want to add?</h1>
+          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Is this your workplace?</h1>
         </legend>
         <div *ngIf="locationData">
           <p>
-            CQC location ID entered <strong>{{ locationData.locationId }}</strong>
+            CQC location ID entered: <strong>{{ locationData.locationId }}</strong>
           </p>
           <address class="govuk-util__font-style-normal">
             <p>

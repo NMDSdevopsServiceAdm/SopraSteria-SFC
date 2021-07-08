@@ -2,9 +2,11 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
 
@@ -22,10 +24,13 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
   public locationData: LocationAddress;
   public serverError: string;
   protected subscriptions: Subscription = new Subscription();
+  public workplace: Establishment;
+  public isParent: boolean;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
-    private backService: BackService,
+    private establishmentService: EstablishmentService,
+    public backService: BackService,
     private route: ActivatedRoute,
     private router: Router,
     private registrationService: RegistrationService,
@@ -38,6 +43,9 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
     this.setupFormErrorsMap();
     this.setBackLink();
     this.locationData = this.registrationService.locationAddresses$.value[0];
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    console.log(this.isParent);
   }
 
   public ngAfterViewInit(): void {
@@ -75,7 +83,7 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit, OnDe
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
     this.backService.setBackLink({ url: [`/${this.flow}`, 'find-workplace'] });
   }
 
