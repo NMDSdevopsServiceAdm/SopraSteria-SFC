@@ -1246,7 +1246,7 @@ class Establishment extends EntityValidator {
         this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
         this._linkToParentRequested = fetchResults.linkToParentRequested;
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
-        this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
+      //  this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1722,7 +1722,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
-        myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+      //  myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
       }
 
       if (this._ustatus) {
