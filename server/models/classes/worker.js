@@ -1602,11 +1602,11 @@ class Worker extends EntityValidator {
     let weeklyHoursAverageEligible;
 
     if (this._properties.get('ZeroHoursContract').property === null) {
-      // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
+      // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligible
       weeklyHoursContractedEligible = 'Not relevant';
       weeklyHoursAverageEligible = 'Not relevant';
     } else {
-      if (this._properties.get('ZeroHoursContract').property === 'No') {
+      if (this._properties.get('ZeroHoursContract').property === 'No' || this._properties.get('ZeroHoursContract').property === 'Don\'t know' ) {
         if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
           weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
             effectiveFromEpoch,
