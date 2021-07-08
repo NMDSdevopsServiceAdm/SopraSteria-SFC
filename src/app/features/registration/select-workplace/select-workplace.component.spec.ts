@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -18,8 +18,7 @@ describe('SelectWorkplaceComponent', () => {
       providers: [
         {
           provide: RegistrationService,
-          useClass: RegistrationService,
-          deps: [HttpClient],
+          useClass: MockRegistrationService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -67,5 +66,13 @@ describe('SelectWorkplaceComponent', () => {
     fixture.detectChanges();
     expect(form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
+  });
+
+  it('should display postcode retrieved from registration service at top and in each workplace address(1)', async () => {
+    const { getAllByText } = await setup();
+
+    const retrievedPostcode = 'ABC 123';
+
+    expect(getAllByText(retrievedPostcode, { exact: false }).length).toBe(2);
   });
 });
