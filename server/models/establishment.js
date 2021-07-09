@@ -1339,5 +1339,25 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.findByLocationID = async function (locationID) {
+    return await this.findAll({
+      where: {
+        locationId: locationID,
+      },
+      attributes: ['locationId'],
+    });
+  };
+
+  Establishment.findEstablishmentsByLocationID = async function (locationIDs) {
+    return await this.findAll({
+      where: {
+        locationId: {
+          [Op.or]: locationIDs,
+        },
+      },
+      attributes: ['locationId'],
+    });
+  };
+
   return Establishment;
 };
