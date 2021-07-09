@@ -16,6 +16,7 @@ import { SelectMainServiceComponent } from '@features/registration/select-main-s
 import { SelectWorkplaceAddressComponent } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
+
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
@@ -48,11 +49,13 @@ const routes: Routes = [
   {
     path: 'find-workplace',
     component: FindYourWorkplaceComponent,
+    canActivate: [RegisterGuard],
     data: { title: 'Find your workplace' },
   },
   {
     path: 'your-workplace',
     component: IsThisYourWorkplaceComponent,
+    canActivate: [RegisterGuard],
     data: { title: 'Is this your workplace?' },
   },
   {

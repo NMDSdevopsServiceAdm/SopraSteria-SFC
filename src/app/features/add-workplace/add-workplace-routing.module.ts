@@ -47,13 +47,13 @@ const routes: Routes = [
     path: 'find-workplace',
     component: FindYourWorkplaceComponent,
     data: { title: 'Find your workplace' },
-    // canActivate: [AddWorkplaceInProgressGuard]
+    canActivate: [AddWorkplaceInProgressGuard],
   },
   {
     path: 'your-workplace',
     component: IsThisYourWorkplaceComponent,
     data: { title: 'Is this your workplace?' },
-    // canActivate: [AddWorkplaceInProgressGuard]
+    canActivate: [AddWorkplaceInProgressGuard],
   },
   {
     path: 'select-workplace-address',
