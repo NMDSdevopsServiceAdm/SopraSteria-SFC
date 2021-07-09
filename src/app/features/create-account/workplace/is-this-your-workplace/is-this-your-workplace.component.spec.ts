@@ -14,7 +14,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
 describe('IsThisYourWorkplaceComponent', () => {
-  async function setup(flow) {
+  async function setup(flow, searchMethod = 'locationID') {
     let primaryWorkplace = {};
     if (flow === 'add-workplace') {
       primaryWorkplace = { isParent: true };
@@ -37,6 +37,9 @@ describe('IsThisYourWorkplaceComponent', () => {
                   townCity: 'Leeds',
                 },
               ],
+            },
+            searchMethod$: {
+              value: searchMethod,
             },
           },
         },
@@ -97,6 +100,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     it('should show the id and address when given the locationId', async () => {
       const { component } = await setup('registration');
 
+      const messageText = component.queryByText('CQC location ID entered:');
       const locationIdText = component.queryByText('1-2123313123');
       const locationName = component.queryByText('Hello Care');
       const addressLine1 = component.queryByText('123 Fake Ave');
@@ -104,12 +108,31 @@ describe('IsThisYourWorkplaceComponent', () => {
       const townCity = component.queryByText('Leeds');
       const postalCode = component.queryByText('LS1 1AA');
 
+      expect(messageText).toBeTruthy();
       expect(locationIdText).toBeTruthy();
       expect(locationName).toBeTruthy();
       expect(addressLine1).toBeTruthy();
       expect(county).toBeTruthy();
       expect(townCity).toBeTruthy();
       expect(postalCode).toBeTruthy();
+    });
+
+    it('should show the id and address when given the postcode', async () => {
+      const { component } = await setup('registration', 'postcode');
+
+      const messageText = component.queryByText('Postcode entered:');
+      const locationName = component.queryByText('Hello Care');
+      const addressLine1 = component.queryByText('123 Fake Ave');
+      const county = component.queryByText('West Yorkshire');
+      const townCity = component.queryByText('Leeds');
+      const postalCode = component.queryAllByText('LS1 1AA');
+
+      expect(messageText).toBeTruthy();
+      expect(locationName).toBeTruthy();
+      expect(addressLine1).toBeTruthy();
+      expect(county).toBeTruthy();
+      expect(townCity).toBeTruthy();
+      expect(postalCode.length).toBe(2);
     });
 
     it('should navigate to the select-main-serice url when selecting yes', async () => {
@@ -163,6 +186,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     it('should show the id and address when given the locationId', async () => {
       const { component } = await setup('add-workplace');
 
+      const messageText = component.queryByText('CQC location ID entered:');
       const locationIdText = component.queryByText('1-2123313123');
       const locationName = component.queryByText('Hello Care');
       const addressLine1 = component.queryByText('123 Fake Ave');
@@ -170,12 +194,31 @@ describe('IsThisYourWorkplaceComponent', () => {
       const townCity = component.queryByText('Leeds');
       const postalCode = component.queryByText('LS1 1AA');
 
+      expect(messageText).toBeTruthy();
       expect(locationIdText).toBeTruthy();
       expect(locationName).toBeTruthy();
       expect(addressLine1).toBeTruthy();
       expect(county).toBeTruthy();
       expect(townCity).toBeTruthy();
       expect(postalCode).toBeTruthy();
+    });
+
+    it('should show the id and address when given the postcode', async () => {
+      const { component } = await setup('registration', 'postcode');
+
+      const messageText = component.queryByText('Postcode entered:');
+      const locationName = component.queryByText('Hello Care');
+      const addressLine1 = component.queryByText('123 Fake Ave');
+      const county = component.queryByText('West Yorkshire');
+      const townCity = component.queryByText('Leeds');
+      const postalCode = component.queryAllByText('LS1 1AA');
+
+      expect(messageText).toBeTruthy();
+      expect(locationName).toBeTruthy();
+      expect(addressLine1).toBeTruthy();
+      expect(county).toBeTruthy();
+      expect(townCity).toBeTruthy();
+      expect(postalCode.length).toBe(2);
     });
 
     it('should navigate to the select-main-serice url when selecting yes', async () => {
@@ -208,7 +251,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
-      const errorMessage = 'Select yes if this is your workplace';
+      const errorMessage = 'Select yes if this is the workplace you want to add';
 
       expect(form.invalid).toBeTruthy();
       expect(component.getAllByText(errorMessage).length).toBe(2);
