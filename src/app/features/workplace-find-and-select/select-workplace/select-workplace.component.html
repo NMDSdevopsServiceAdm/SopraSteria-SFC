@@ -16,10 +16,7 @@
           <div class="govuk-!-margin-bottom-5">
             <p>
               Postcode entered: <strong>{{ enteredPostcode }}</strong>
-              <a
-                *ngIf="createAccountNewDesign"
-                [routerLink]="['/registration', 'workplace-name-address']"
-                class="govuk-!-margin-left-9"
+              <a *ngIf="createAccountNewDesign" [routerLink]="[flow, 'find-workplace']" class="govuk-!-margin-left-9"
                 >Change</a
               >
             </p>
@@ -63,7 +60,7 @@
       </ng-container>
       <ng-template #CQCLocationAdd>
         <p class="govuk-!-margin-bottom-7">
-          <a [routerLink]="[flow, 'find-workplace-address']" role="button" draggable="false">
+          <a [routerLink]="[flow, 'workplace-name-address']" role="button" draggable="false">
             Workplace is not displayed or is not correct
           </a>
         </p>
