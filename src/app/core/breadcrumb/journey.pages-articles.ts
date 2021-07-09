@@ -2,7 +2,7 @@ import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
   ARTICLE = '/articles/:slug',
-  ABOUT_US = '/about-us',
+  ABOUT_US = '/about-ascwds',
 }
 
 export const pagesArticlesJourney: JourneyRoute = {

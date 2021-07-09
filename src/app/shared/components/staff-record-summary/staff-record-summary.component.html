@@ -5,6 +5,7 @@
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
   [canEditWorker]="canEditWorker"
+  (allFieldsConfirmed)="emitAllFieldsConfirmed()"
 ></app-basic-record>
 <app-personal-details
   [workplace]="workplace"
@@ -21,6 +22,7 @@
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
   [canEditWorker]="canEditWorker"
+  (allFieldsConfirmed)="emitAllFieldsConfirmed()"
 ></app-employment>
 <app-qualifications-and-training
   [workplace]="workplace"
@@ -29,4 +31,5 @@
   [overallWdfEligibility]="overallWdfEligibility"
   [wdfNewDesign]="wdfNewDesign"
   [canEditWorker]="canEditWorker"
+  (allFieldsConfirmed)="emitAllFieldsConfirmed()"
 ></app-qualifications-and-training>

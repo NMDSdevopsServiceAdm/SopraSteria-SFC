@@ -7,7 +7,7 @@ import { AboutUsComponent } from './about-us/about-us.component';
 
 const routes: Routes = [
   {
-    path: 'about-us',
+    path: 'about-ascwds',
     component: AboutUsComponent,
     resolve: {
       articleList: ArticleListResolver,

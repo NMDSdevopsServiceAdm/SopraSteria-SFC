@@ -1601,12 +1601,16 @@ class Worker extends EntityValidator {
     let weeklyHoursContractedEligible;
     let weeklyHoursAverageEligible;
 
-    if (this._properties.get('ZeroHoursContract').property === null) {
-      // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
+    if (this._properties.get('ZeroHoursContract').property === 'Yes') {
+      // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
       weeklyHoursContractedEligible = 'Not relevant';
-      weeklyHoursAverageEligible = 'Not relevant';
+      weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
+        effectiveFromEpoch,
+        this._properties.get('WeeklyHoursAverage'),
+      )
+        ? 'Yes'
+        : 'No';
     } else {
-      if (this._properties.get('ZeroHoursContract').property === 'No') {
         if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
           weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
             effectiveFromEpoch,
@@ -1628,20 +1632,6 @@ class Worker extends EntityValidator {
         } else {
           weeklyHoursAverageEligible = 'Not relevant';
         }
-      } else if (this._properties.get('ZeroHoursContract').property === 'Yes') {
-        // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
-        weeklyHoursContractedEligible = 'Not relevant';
-        weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
-          effectiveFromEpoch,
-          this._properties.get('WeeklyHoursAverage'),
-        )
-          ? 'Yes'
-          : 'No';
-      } else {
-        // if zero hours contract is neither Yes or No, the average/contracted hour egligibility is not relevant
-        weeklyHoursContractedEligible = 'Not relevant';
-        weeklyHoursAverageEligible = 'Not relevant';
-      }
     }
 
     myWdf.weeklyHoursContracted = {
