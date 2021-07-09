@@ -5,21 +5,23 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
+import { SelectWorkplaceDirective } from '@features/workplace-find-and-select/select-workplace/select-workplace.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
   templateUrl: './select-workplace.component.html',
 })
-export class SelectWorkplaceComponent extends SelectWorkplace {
+export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   constructor(
-    private registrationService: RegistrationService,
+    protected registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
   }
 
   protected init(): void {
@@ -30,13 +32,13 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.registrationService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses)
-      )
+        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
+      ),
     );
   }
 
   protected save(): void {
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([`${this.flow}/select-main-service`]);
+    this.router.navigate([this.flow, 'select-main-service']);
   }
 }
