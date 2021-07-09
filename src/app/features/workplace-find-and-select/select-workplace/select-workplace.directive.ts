@@ -11,7 +11,7 @@ import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class SelectWorkplace implements OnInit, OnDestroy, AfterViewInit {
+export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public flow: string;
   public locationAddresses: Array<LocationAddress>;

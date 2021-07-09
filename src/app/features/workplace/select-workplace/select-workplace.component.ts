@@ -8,14 +8,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
+import { SelectWorkplaceDirective } from '@features/workplace-find-and-select/select-workplace/select-workplace.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
   templateUrl: '../../workplace-find-and-select/select-workplace/select-workplace.component.html',
 })
-export class SelectWorkplaceComponent extends SelectWorkplace {
+export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   public workplace: Establishment;
   constructor(
     private workplaceService: WorkplaceService,

@@ -5,14 +5,14 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
+import { SelectWorkplaceDirective } from '@features/workplace-find-and-select/select-workplace/select-workplace.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
   templateUrl: './select-workplace.component.html',
 })
-export class SelectWorkplaceComponent extends SelectWorkplace {
+export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   constructor(
     protected registrationService: RegistrationService,
     protected backService: BackService,
