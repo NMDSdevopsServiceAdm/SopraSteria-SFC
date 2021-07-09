@@ -12,6 +12,7 @@ export class MockRegistrationService extends RegistrationService {
       county: 'Greater Manchester',
       locationName: 'Name',
       townCity: 'Manchester',
+      locationId: '123',
     },
     {
       postalCode: 'ABC 123',
@@ -19,6 +20,7 @@ export class MockRegistrationService extends RegistrationService {
       county: 'Greater Manchester',
       locationName: 'Test Care Home',
       townCity: 'Manchester',
+      locationId: '12345',
     },
   ]);
 }

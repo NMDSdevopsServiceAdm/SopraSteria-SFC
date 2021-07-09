@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -47,11 +48,18 @@ describe('SelectWorkplaceComponent', () => {
       ],
     });
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
+
     const component = fixture.componentInstance;
 
     return {
       fixture,
       component,
+      spy,
       getAllByText,
       queryByText,
       getByText,
@@ -95,5 +103,17 @@ describe('SelectWorkplaceComponent', () => {
     fixture.detectChanges();
     expect(form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
+  });
+
+  it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
+    const { getByText, fixture, spy } = await setup();
+
+    const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
   });
 });

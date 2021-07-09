@@ -39,6 +39,6 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
 
   protected save(): void {
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([`${this.flow}/select-main-service`]);
+    this.router.navigate([this.flow, 'select-main-service']);
   }
 }
