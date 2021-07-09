@@ -10,9 +10,7 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -61,13 +59,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
-    this.getPermissions();
-
     if (this.workplace) {
       this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
         this.wdfNewDesign = value;
       });
 
+      this.getPermissions();
       this.getCanViewBenchmarks();
       this.getTotalStaffRecords();
 
@@ -158,7 +155,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
-    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser');
+    this.canAddUser = this.permissionsService.can(this.workplaceUid, 'canAddUser');
   }
 
   private getCanViewBenchmarks(): void {
