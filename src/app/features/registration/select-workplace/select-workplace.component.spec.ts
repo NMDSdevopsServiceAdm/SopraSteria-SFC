@@ -104,15 +104,35 @@ describe('SelectWorkplaceComponent', () => {
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
   });
 
-  it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
-    const { getByText, fixture, spy } = await setup();
+  describe('Navigation', () => {
+    it('should navigate to the select-main-service url in registration flow when workplace selected', async () => {
+      const { getByText, fixture, spy } = await setup();
+      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      fireEvent.click(yesRadioButton);
 
-    const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
-    fireEvent.click(yesRadioButton);
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
+      expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
+    });
 
-    expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
+    it('should navigate back to the find-workplace url in registration flow when Change clicked', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const changeButton = getByText('Change');
+      expect(changeButton.getAttribute('href')).toBe('/registration/find-workplace');
+    });
+
+    it('should navigate to workplace-name-address url in registration flow when workplace not displayed button clicked', async () => {
+      const { component, fixture, spy, getByText } = await setup();
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const notDisplayedButton = getByText('Workplace is not displayed or is not correct');
+
+      expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-name-address');
+    });
   });
 });
