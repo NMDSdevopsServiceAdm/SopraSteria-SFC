@@ -161,6 +161,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   protected navigate(action): void {
     const currentUrl = this.router.url;
+
+    if (!this.next) {
+      this.next = this.getRoutePath('check-answers');
+    }
+
     this.router.navigate(this.next).then(() => {
       if (currentUrl.endsWith('create-staff-record')) {
         this.alertService.addAlert({
