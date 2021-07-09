@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -26,13 +27,15 @@ import {
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';
-
+import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
+import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { AboutUsRegistrationComponent } from './about-us/about-us.component';
+import { CreateAccountComponent } from './create-account/create-account.component';
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
-import { StartComponent } from './start/start.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule, PagesModule],
   declarations: [
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
@@ -48,8 +51,11 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     YourDetailsComponent,
-    StartComponent,
     WorkplaceNotFoundComponent,
+    AboutUsRegistrationComponent,
+    CreateAccountComponent,
+    FindYourWorkplaceComponent,
+    NewRegulatedByCqcComponent,
   ],
 })
 export class RegistrationModule {}

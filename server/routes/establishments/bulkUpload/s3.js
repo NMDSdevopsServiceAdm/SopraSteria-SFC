@@ -96,7 +96,7 @@ const saveLastBulkUpload = async (establishmentId) => {
   const originFolder = `${establishmentId}/latest/`;
   const destinationFolder = `${establishmentId}/lastBulkUpload/`;
 
-  await moveFolders(originFolder,destinationFolder);
+  await moveFolders(originFolder, destinationFolder);
 };
 const purgeBulkUploadS3Objects = async (establishmentId) => {
   const listParams = params(establishmentId);
@@ -122,20 +122,19 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   deleteParams.Delete.Objects = deleteKeys;
 
   if (deleteKeys.length > 0) {
-
-    await s3
-      .deleteObjects(deleteParams)
-      .promise();
+    await s3.deleteObjects(deleteParams).promise();
   }
 };
 
-const moveFolders = async(folderToMove,destinationFolder) => {
+const moveFolders = async (folderToMove, destinationFolder) => {
   try {
-    const listObjectsResponse = await s3.listObjects({
-      Bucket,
-      Prefix: folderToMove,
-      Delimiter: '/',
-    }).promise();
+    const listObjectsResponse = await s3
+      .listObjects({
+        Bucket,
+        Prefix: folderToMove,
+        Delimiter: '/',
+      })
+      .promise();
 
     const folderContentInfo = listObjectsResponse.Contents;
     const folderPrefix = listObjectsResponse.Prefix;
@@ -144,29 +143,31 @@ const moveFolders = async(folderToMove,destinationFolder) => {
       folderContentInfo.map(async (fileInfo) => {
         const ignoreRoot = /.*\/$/;
         if (!ignoreRoot.test(fileInfo.Key)) {
-          await s3.copyObject({
-            Bucket,
-            CopySource: `${Bucket}/${fileInfo.Key}`,  // old file Key
-            Key: `${destinationFolder}${fileInfo.Key.replace(folderPrefix, '')}`, // new file Key
-          }).promise();
+          await s3
+            .copyObject({
+              Bucket,
+              CopySource: `${Bucket}/${fileInfo.Key}`, // old file Key
+              Key: `${destinationFolder}${fileInfo.Key.replace(folderPrefix, '')}`, // new file Key
+            })
+            .promise();
         }
-      })
+      }),
     );
   } catch (err) {
     console.error(err);
   }
 };
-const getKeysFromFolder = async (listParams) =>{
+const getKeysFromFolder = async (listParams) => {
   const results = [];
 
   const filesInFolder = await s3.listObjects(listParams).promise();
-   filesInFolder.Contents.forEach((myFile) => {
-     const ignoreRoot = /.*\/$/;
-     if (!ignoreRoot.test(myFile.Key)) {
-       results.push({
-         Key: myFile.Key,
-       });
-     }
+  filesInFolder.Contents.forEach((myFile) => {
+    const ignoreRoot = /.*\/$/;
+    if (!ignoreRoot.test(myFile.Key)) {
+      results.push({
+        Key: myFile.Key,
+      });
+    }
   });
   return results;
 };
@@ -188,7 +189,7 @@ const listMetaData = async (establishmentId, folder) => {
 
   const allMetaFiles = await Promise.all(toDownload);
 
-  return allMetaFiles.map(file => {
+  return allMetaFiles.map((file) => {
     file.data = JSON.parse(file.data);
     file.data.key = file.key.replace('.metadata.json', '');
     return file;
@@ -237,5 +238,5 @@ module.exports = {
   purgeBulkUploadS3Objects,
   deleteFilesS3,
   findFilesS3,
-  listMetaData
+  listMetaData,
 };

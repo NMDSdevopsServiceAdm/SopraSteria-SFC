@@ -23,7 +23,7 @@
       Workplace ID: {{ workplace?.nmdsId }}
     </p>
     <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16 govuk-!-margin-top-2">
-      Last signed in on {{ lastLoggedIn | date: 'd MMMM y' }}
+      Last sign in {{ lastLoggedIn | date: 'd MMMM y' }}
     </p>
   </div>
 
@@ -62,7 +62,7 @@
   <div class="govuk-grid-column-full">
     <app-tabs>
       <app-tab [title]="'Home'">
-        <app-home-tab [workplace]="workplace"></app-home-tab>
+        <app-home-tab [workplace]="workplace" [workerCount]="workerCount" [wdfNewDesign]="wdfNewDesign"></app-home-tab>
       </app-tab>
 
       <app-tab
@@ -70,11 +70,11 @@
         [title]="'Workplace'"
         [alert]="workplace?.employerType && showCQCDetailsBanner"
       >
-        <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
+        <app-workplace-tab [workplace]="workplace" [workerCount]="workerCount"></app-workplace-tab>
       </app-tab>
 
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
-        <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
+        <app-staff-records-tab [workplace]="workplace" [workers]="workers"></app-staff-records-tab>
       </app-tab>
 
       <app-tab
@@ -83,7 +83,10 @@
         [redAlert]="trainingAlert === 2"
         [title]="'Training and qualifications'"
       >
-        <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
+        <app-training-and-qualifications-tab
+          [workplace]="workplace"
+          [workers]="workers"
+        ></app-training-and-qualifications-tab>
       </app-tab>
 
       <app-tab *ngIf="workplace && canViewBenchmarks" [title]="'Benchmarks'">

@@ -202,7 +202,7 @@ describe('worker route', () => {
         updated: worker.updated,
         updatedBy: worker.updatedBy,
         effectiveFrom: effectiveFrom,
-        wdfEligible: moment(worker.lastWdfEligibility).isAfter(effectiveFrom),
+        wdfEligible: worker.wdfEligible && moment(worker.lastWdfEligibility).isAfter(effectiveFrom),
         wdfEligibilityLastUpdated: worker.lastWdfEligibility.toISOString(),
       });
       expect(res._getData().workers[0].mainJob).to.contains({

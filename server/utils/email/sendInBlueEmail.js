@@ -29,4 +29,16 @@ const sendEmail = async (to, templateId, params) => {
   }
 };
 
+const getTemplates = async (options) => {
+  try {
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+    return await apiInstance.getSmtpTemplates(options);
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
+  }
+};
+
 exports.sendEmail = sendEmail;
+exports.getTemplates = getTemplates;

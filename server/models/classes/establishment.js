@@ -85,6 +85,7 @@ class Establishment extends EntityValidator {
     this._dataOwnershipRequested = null;
     this._linkToParentRequested = null;
     this._lastBulkUploaded = null;
+    this._eightWeeksFromFirstLogin = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -332,6 +333,10 @@ class Establishment extends EntityValidator {
     return this._linkToParentRequested;
   }
 
+  get eightWeeksFromFirstLogin() {
+    return this._eightWeeksFromFirstLogin;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -428,7 +433,12 @@ class Establishment extends EntityValidator {
           allAssociatedServiceIndices.push(document.mainService.id);
           mainServiceAdded = true;
         }
-        if (document && document.otherServices && document.otherServices.services &&  Array.isArray(document.otherServices)) {
+        if (
+          document &&
+          document.otherServices &&
+          document.otherServices.services &&
+          Array.isArray(document.otherServices.services)
+        ) {
           document.otherServices.services.forEach((thisService) => {
             if (thisService.id) {
               allAssociatedServiceIndices.push(thisService.id);
@@ -440,7 +450,8 @@ class Establishment extends EntityValidator {
           });
           servicesAdded = true;
         }
-        if (document && document.services && document.services.services && Array.isArray(document.services)) {
+
+        if (document && document.services && document.services.services && Array.isArray(document.services.services)) {
           document.services.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
 
           // if no main service given in document, then use the current known main service property
@@ -1235,6 +1246,7 @@ class Establishment extends EntityValidator {
         this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
         this._linkToParentRequested = fetchResults.linkToParentRequested;
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
+        this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1710,6 +1722,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
+        myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
       }
 
       if (this._ustatus) {

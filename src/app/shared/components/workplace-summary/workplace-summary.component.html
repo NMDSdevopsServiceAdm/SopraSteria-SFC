@@ -1,7 +1,11 @@
 <dl
   *ngIf="workplace"
   class="govuk-summary-list"
-  [class.govuk-summary-list--contains-warnings]="totalStaffWarning || staffMismatchWarning()"
+  [ngClass]="{
+    'govuk-summary-list--contains-warnings':
+      (!wdfNewDesign || !wdfView) && (showTotalStaffWarning || staffMismatchWarning()),
+    'asc-summary-list--wide-value': wdfView && wdfNewDesign && showTotalStaffWarning
+  }"
 >
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -83,6 +87,19 @@
           - {{ cqcStatusRequested ? requestedServiceOtherName : workplace.mainService?.other }}
         </ng-container>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.mainService.isEligible === 'Yes' &&
+          !workplace.wdf?.mainService.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('main-service-cqc')"
+        (fieldConfirmation)="this.confirmField('mainService')"
+        (setReturnClicked)="this.setReturn()"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd
       *ngIf="canEditEstablishment"
@@ -90,22 +107,33 @@
       [ngClass]="{ 'govuk-!-padding-right-3': cqcStatusRequested }"
       data-testid="main-service-change-or-pending"
     >
-      <a
-        *ngIf="!cqcStatusRequested; else cqcPending"
-        [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']"
-        (click)="setReturn()"
+      <ng-container
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.mainService.isEligible === 'Yes' &&
+            !workplace.wdf?.mainService.updatedSinceEffectiveDate
+          )
+        "
       >
-        <ng-container *ngIf="!workplace.mainService">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.mainService"> Change </ng-container>
-        <span class="govuk-visually-hidden"> main service</span>
-      </a>
-      <ng-template #cqcPending>
-        <ng-container> Pending </ng-container>
-        <span class="govuk-visually-hidden"> main service</span>
-      </ng-template>
+        <a
+          *ngIf="!cqcStatusRequested; else cqcPending"
+          [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']"
+          (click)="setReturn()"
+        >
+          <ng-container *ngIf="!workplace.mainService">
+            Provide information
+            <span class="govuk-visually-hidden"> for</span>
+          </ng-container>
+          <ng-container *ngIf="workplace.mainService"> Change </ng-container>
+          <span class="govuk-visually-hidden"> main service</span>
+        </a>
+        <ng-template #cqcPending>
+          <ng-container> Pending </ng-container>
+          <span class="govuk-visually-hidden"> main service</span>
+        </ng-template>
+      </ng-container>
     </dd>
   </div>
 
@@ -151,9 +179,30 @@
           </ul>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.capacities.isEligible === 'Yes' &&
+          !workplace.wdf?.capacities.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('capacity-of-services')"
+        (fieldConfirmation)="this.confirmField('capacities')"
+        (setReturnClicked)="this.setReturn()"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.capacities.isEligible === 'Yes' &&
+            !workplace.wdf?.capacities.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' service capacities'"
         [link]="['/workplace', workplace.uid, 'capacity-of-services']"
         [hasData]="workplace.capacities?.length"
@@ -180,9 +229,29 @@
           </ul>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
+          !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('service-users')"
+        (fieldConfirmation)="this.confirmField('serviceUsers')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
+            !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' service users'"
         [link]="['/workplace', workplace.uid, 'service-users']"
         [hasData]="workplace.serviceUsers?.length"
@@ -198,8 +267,8 @@
         -
       </ng-container>
       <ng-template #sharing>
-        <p *ngIf="workplace.share.with.includes('CQC')">Care Quality Commission (CQC)</p>
-        <p *ngIf="workplace.share.with.includes('Local Authority')">Local authorities</p>
+        <p *ngIf="workplace.share?.with?.includes('CQC')">Care Quality Commission (CQC)</p>
+        <p *ngIf="workplace.share?.with?.includes('Local Authority')">Local authorities</p>
       </ng-template>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
@@ -212,7 +281,7 @@
     </dd>
   </div>
 
-  <div *ngIf="workplace.share.with.includes('Local Authority')" class="govuk-summary-list__row">
+  <div *ngIf="workplace.share?.with?.includes('Local Authority')" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Local authorities shared with</dt>
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="workplace.localAuthorities?.length === 0; else localAuthorities"> - </ng-container>
@@ -244,8 +313,21 @@
       >
         {{ workplace.numberOfStaff | numericAnswer }}
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
+          !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
+          workplace.numberOfStaff === workerCount
+        "
+        [changeLink]="getRoutePath('total-staff')"
+        (fieldConfirmation)="this.confirmField('numberOfStaff')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
       <app-wdf-staff-mismatch-message
-        *ngIf="wdfView && wdfNewDesign && totalStaffWarning"
+        *ngIf="wdfView && wdfNewDesign && this.showTotalStaffWarning"
         [workplace]="workplace"
         [workerCount]="workerCount"
         [overallWdfEligibility]="overallWdfEligibility"
@@ -253,6 +335,15 @@
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
+            !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
+            workplace.numberOfStaff === workerCount
+          )
+        "
         [explanationText]="' total number of staff'"
         [link]="['/workplace', workplace.uid, 'total-staff']"
         [hasData]="isNumber(workplace.numberOfStaff)"
@@ -283,7 +374,7 @@
   </ng-container>
 
   <ng-container *ngIf="wdfView && !wdfNewDesign">
-    <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
+    <div *ngIf="this.showTotalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
       </dt>
@@ -344,9 +435,30 @@
           <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.vacancies.isEligible === 'Yes' &&
+          !workplace.wdf?.vacancies.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('vacancies')"
+        (fieldConfirmation)="this.confirmField('vacancies')"
+        (setReturnClicked)="this.setReturn()"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.vacancies.isEligible === 'Yes' &&
+            !workplace.wdf?.vacancies.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' staff vacancies'"
         [link]="['/workplace', workplace.uid, 'vacancies']"
         [hasData]="workplace.vacancies?.length"
@@ -375,9 +487,31 @@
           </ng-container>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.starters.isEligible === 'Yes' &&
+          !workplace.wdf?.starters.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('starters')"
+        (fieldConfirmation)="this.confirmField('starters')"
+        (setReturnClicked)="this.setReturn()"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.starters.isEligible === 'Yes' &&
+            !workplace.wdf?.starters.updatedSinceEffectiveDate
+          )
+        "
+        [changeLink]="getRoutePath('starters')"
         [explanationText]="' new starters'"
         [link]="['/workplace', workplace.uid, 'starters']"
         [hasData]="workplace.starters?.length"
@@ -406,9 +540,30 @@
           </ng-container>
         </ng-template>
       </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          wdfNewDesign &&
+          workplace.wdf?.leavers.isEligible === 'Yes' &&
+          !workplace.wdf?.leavers.updatedSinceEffectiveDate
+        "
+        [changeLink]="getRoutePath('leavers')"
+        (fieldConfirmation)="this.confirmField('leavers')"
+        (setReturnClicked)="this.setReturn()"
+      >
+      </app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            wdfNewDesign &&
+            workplace.wdf?.leavers.isEligible === 'Yes' &&
+            !workplace.wdf?.leavers.updatedSinceEffectiveDate
+          )
+        "
         [explanationText]="' staff leavers'"
         [link]="['/workplace', workplace.uid, 'leavers']"
         [hasData]="workplace.leavers?.length"

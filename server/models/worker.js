@@ -1,11 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
 
-const { encrypt } = require('../utils/db/openpgp/encrypt');
-const { decrypt } = require('../utils/db/openpgp/decrypt');
-
-const currentDate = moment().toISOString();
-const expiresSoon = moment().add(90, 'days').toISOString();
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
     'worker',
@@ -78,6 +73,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         allowNull: true,
         field: '"LastWdfEligibility"',
+      },
+      wdfEligible: {
+        type: DataTypes.BOOLEAN,
+        field: '"WdfEligible"',
       },
       NameOrIdValue: {
         type: DataTypes.TEXT,
@@ -211,7 +210,7 @@ module.exports = function (sequelize, DataTypes) {
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberEncryptedValue"',
+        field: '"NationalInsuranceNumberValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -234,9 +233,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.TEXT,
+        type: DataTypes.DATE,
         allowNull: true,
-        field: '"DateOfBirthEncryptedValue"',
+        field: '"DateOfBirthValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -1058,32 +1057,6 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      hooks: {
-        beforeBulkUpdate: async (workerUpdate) => {
-          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
-            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
-          }
-
-          if (workerUpdate.attributes.DateOfBirthValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
-            workerUpdate.attributes.DateOfBirthValue = encrypted;
-          }
-        },
-        afterFind: async (worker) => {
-          if (worker && worker.dataValues) {
-            if (worker.dataValues.NationalInsuranceNumberValue) {
-              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
-              worker.dataValues.NationalInsuranceNumberValue = decrypted;
-            }
-
-            if (worker.dataValues.DateOfBirthValue) {
-              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
-              worker.dataValues.DateOfBirthValue = decrypted;
-            }
-          }
-        },
-      },
       scopes: {
         active: {
           where: {
@@ -1174,6 +1147,12 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'workerFk',
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
+    });
+    Worker.belongsToMany(models.workerQualifications, {
+      foreignKey: 'workerFk',
+      through: 'workerQualifications',
+      otherKey: 'ID',
+      as: 'qualifications',
     });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
@@ -1268,6 +1247,9 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.workersAndTraining = async function (establishmentId) {
+    const currentDate = moment().toISOString();
+    const expiresSoon = moment().add(90, 'days').toISOString();
+
     return this.findAll({
       attributes: [
         'id',
@@ -1280,6 +1262,7 @@ module.exports = function (sequelize, DataTypes) {
         'updated',
         'updatedBy',
         'lastWdfEligibility',
+        'wdfEligible',
         [
           sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
           'trainingCount',

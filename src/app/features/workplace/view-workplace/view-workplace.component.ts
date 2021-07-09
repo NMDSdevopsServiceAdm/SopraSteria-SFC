@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -10,7 +11,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -29,6 +32,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public trainingAlert: number;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
+  public workers: Worker[];
+  public workerCount: number;
 
   constructor(
     private alertService: AlertService,
@@ -78,6 +83,9 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.workerService.getAllWorkers(this.workplace.uid).subscribe(
           (workers) => {
+            this.workers = workers;
+            this.workerCount = workers.length;
+            this.workerService.setWorkers(workers);
             this.workerService.setWorkers(workers);
             this.trainingAlert = this.getTrainingAlertFlag(workers);
           },
