@@ -40,7 +40,6 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setBackLink();
-    console.log(this.registrationService.locationAddresses$);
     this.locationData = this.registrationService.locationAddresses$.value[0];
     this.searchMethod = this.registrationService.searchMethod$.value;
     this.workplace = this.establishmentService.primaryWorkplace;
