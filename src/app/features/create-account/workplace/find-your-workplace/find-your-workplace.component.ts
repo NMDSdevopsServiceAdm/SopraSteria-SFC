@@ -90,9 +90,10 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   public onSubmit(): void {
     this.submitted = true;
+    const postcodeOrLocationID = this.form.get('postcodeOrLocationID').value;
+    this.registrationService.postcodeOrLocationId$.next(postcodeOrLocationID);
 
     if (this.form.valid) {
-      const postcodeOrLocationID = this.form.get('postcodeOrLocationID').value;
       this.subscriptions.add(
         this.locationService.getLocationByPostcodeOrLocationID(postcodeOrLocationID).subscribe(
           (data: LocationSearchResponse) => this.onSuccess(data),
@@ -110,6 +111,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
+      this.registrationService.searchMethod$.next(error.error.searchmethod);
       this.router.navigate([this.flow, 'new-workplace-not-found']);
       return;
     }

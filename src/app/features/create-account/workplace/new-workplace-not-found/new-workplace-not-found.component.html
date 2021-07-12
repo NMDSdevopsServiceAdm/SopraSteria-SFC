@@ -8,7 +8,9 @@
           <h1 *ngIf="isParent" class="govuk-fieldset__heading">We could not find the workplace</h1>
           <h1 *ngIf="!isParent" class="govuk-fieldset__heading">We could not find your workplace</h1>
         </legend>
-        <p>CQC location ID or postcode entered: <strong>1234567</strong></p>
+        <p>
+          CQC location ID or postcode entered: <strong>{{ postcodeOrLocationId }}</strong>
+        </p>
         <h4 class="govuk-heading-s">
           Do you want to try find your workplace with a different CQC location ID or postcode?
         </h4>

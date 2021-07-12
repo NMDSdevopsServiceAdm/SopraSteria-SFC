@@ -6,6 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
   selector: 'app-new-workplace-not-found',
@@ -19,6 +20,8 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
   public submitted: boolean;
   public workplace: Establishment;
   public isParent: boolean;
+  public postcodeOrLocationId: string;
+  private searchMethod: string;
   private flow: string;
 
   constructor(
@@ -26,6 +29,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     private formBuilder: FormBuilder,
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
+    private registrationService: RegistrationService,
     private router: Router,
     private route: ActivatedRoute,
   ) {}
@@ -34,6 +38,8 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent ? true : false;
+    this.postcodeOrLocationId = this.registrationService.postcodeOrLocationId$.value;
+    this.searchMethod = this.registrationService.searchMethod$.value;
     this.setupForm();
     this.setupFormErrorsMap();
     this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
@@ -69,10 +75,10 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
   }
 
   public onSubmit() {
-    const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
     this.submitted = true;
 
     if (this.form.valid) {
+      const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
       if (useDifferentLocationIdOrPostcode.value === 'yes') {
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
