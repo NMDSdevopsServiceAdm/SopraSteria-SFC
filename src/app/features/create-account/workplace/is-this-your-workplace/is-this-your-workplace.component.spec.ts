@@ -117,7 +117,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       expect(postalCode).toBeTruthy();
     });
 
-    it('should show the id and address when given the postcode', async () => {
+    it('should show the postcode and address when given the postcode', async () => {
       const { component } = await setup('registration', 'postcode');
 
       const messageText = component.queryByText('Postcode entered:');
@@ -203,7 +203,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       expect(postalCode).toBeTruthy();
     });
 
-    it('should show the id and address when given the postcode', async () => {
+    it('should show the postcode and address when given the postcode', async () => {
       const { component } = await setup('registration', 'postcode');
 
       const messageText = component.queryByText('Postcode entered:');

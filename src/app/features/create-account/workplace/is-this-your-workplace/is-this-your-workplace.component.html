@@ -9,7 +9,7 @@
           <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Is this your workplace?</h1>
         </legend>
         <div *ngIf="locationData">
-          <p *ngIf="searchMethod === 'locationID'; else postcode">
+          <p *ngIf="searchMethod === 'locationID'">
             CQC location ID entered: <strong>{{ locationData.locationId }}</strong>
           </p>
           <p *ngIf="searchMethod === 'postcode'">
