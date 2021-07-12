@@ -163,7 +163,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'workplace-not-found']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'new-workplace-not-found']);
   });
 
   it("should show error if server 503's", async () => {
