@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import {
+  NewWorkplaceNotFoundComponent,
+} from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -27,8 +30,11 @@ import {
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';
+
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
-import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import {
+  IsThisYourWorkplaceComponent,
+} from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
@@ -58,6 +64,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     FindYourWorkplaceComponent,
     IsThisYourWorkplaceComponent,
     NewRegulatedByCqcComponent,
+    NewWorkplaceNotFoundComponent,
   ],
 })
 export class RegistrationModule {}

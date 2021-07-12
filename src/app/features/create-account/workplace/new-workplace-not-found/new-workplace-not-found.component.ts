@@ -1,0 +1,85 @@
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+
+@Component({
+  selector: 'app-new-workplace-not-found',
+  templateUrl: './new-workplace-not-found.component.html',
+})
+export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
+  public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
+  public submitted: boolean;
+  public workplace: Establishment;
+  public isParent: boolean;
+  private flow: string;
+
+  constructor(
+    private establishmentService: EstablishmentService,
+    private formBuilder: FormBuilder,
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
+
+  ngOnInit() {
+    this.flow = this.route.snapshot.parent.url[0].path;
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.isParent = this.workplace?.isParent ? true : false;
+    this.setupForm();
+    this.setupFormErrorsMap();
+    this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      useDifferentLocationIdOrPostcode: [null, { validators: Validators.required, updateOn: 'submit' }],
+    });
+  }
+
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'useDifferentLocationIdOrPostcode',
+        type: [
+          {
+            name: 'required',
+            message: `Select yes if you want to try a different location ID or postcode.`,
+          },
+        ],
+      },
+    ];
+  }
+
+  public getErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public onSubmit() {
+    const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
+    this.submitted = true;
+
+    if (this.form.valid) {
+      if (useDifferentLocationIdOrPostcode.value === 'yes') {
+        this.router.navigate([`/${this.flow}`, 'find-workplace']);
+      } else {
+        this.router.navigate([`/${this.flow}`, 'workplace-name-address']);
+      }
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
+  }
+}
