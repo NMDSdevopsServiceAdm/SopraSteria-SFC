@@ -29,6 +29,9 @@ import {
   FindYourWorkplaceComponent,
 } from '@features/create-account/workplace/find-your-workplace/find-your-workplace.component';
 import {
+  IsThisYourWorkplaceComponent,
+} from '@features/create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import {
   NewRegulatedByCqcComponent,
 } from '@features/create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 
@@ -56,6 +59,18 @@ const routes: Routes = [
     path: 'select-workplace',
     component: SelectWorkplaceComponent,
     data: { title: 'Select Workplace' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'find-workplace',
+    component: FindYourWorkplaceComponent,
+    data: { title: 'Find your workplace' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'your-workplace',
+    component: IsThisYourWorkplaceComponent,
+    data: { title: 'Is this your workplace?' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {

@@ -6,6 +6,7 @@ const getLocationsRoute = require('../locationID');
 const getLocationsPCRoute = require('../postcode');
 
 const getLocationsByPostcodeOrLocationID = async (req, res, matching) => {
+
   // this checks it's a postcode and sanitises it
   let sanitisedPostcode = pCodeCheck.sanitisePostcode(req.params.postcodeOrLocationID);
 

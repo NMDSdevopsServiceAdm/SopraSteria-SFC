@@ -48,7 +48,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      postcodeOrLocationID: [null, Validators.required],
+      postcodeOrLocationID: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
   }
 
@@ -104,12 +104,12 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   protected onSuccess(data: LocationSearchResponse): void {
     this.registrationService.locationAddresses$.next(data.locationdata);
+    this.registrationService.searchMethod$.next(data.searchmethod);
     this.navigateToNextRoute(data);
   }
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      console.log('workplace-not-found');
       this.router.navigate([this.flow, 'workplace-not-found']);
       return;
     }
@@ -119,10 +119,8 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private navigateToNextRoute(data: LocationSearchResponse): void {
     if (data.locationdata.length === 1) {
-      console.log('your-workplace');
       this.router.navigate([this.flow, 'your-workplace']);
     } else {
-      console.log('select-workplace');
       this.router.navigate([this.flow, 'select-workplace']);
     }
   }

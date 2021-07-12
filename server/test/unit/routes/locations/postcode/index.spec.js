@@ -24,6 +24,7 @@ const establishment = [
   },
 ];
 
+
 describe('locations route', () => {
   afterEach(() => {
     sinon.restore();
