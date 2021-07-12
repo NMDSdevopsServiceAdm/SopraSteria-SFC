@@ -110,7 +110,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      this.router.navigate([this.flow, 'workplace-not-found']);
+      this.router.navigate([this.flow, 'new-workplace-not-found']);
       return;
     }
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

@@ -34,6 +34,9 @@ import {
 import {
   NewRegulatedByCqcComponent,
 } from '@features/create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import {
+  NewWorkplaceNotFoundComponent,
+} from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 
 import { StartComponent } from './start/start.component';
 
@@ -53,6 +56,12 @@ const routes: Routes = [
     path: 'workplace-not-found',
     component: WorkplaceNotFoundComponent,
     data: { title: 'Workplace Not Found' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'new-workplace-not-found',
+    component: NewWorkplaceNotFoundComponent,
+    data: { title: 'Could not find your workplace' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
