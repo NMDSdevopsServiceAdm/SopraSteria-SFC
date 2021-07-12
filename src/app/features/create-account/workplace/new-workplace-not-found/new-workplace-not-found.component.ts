@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 
 @Component({
   selector: 'app-new-workplace-not-found',
@@ -38,8 +39,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent ? true : false;
-    this.postcodeOrLocationId = this.registrationService.postcodeOrLocationId$.value;
-    this.searchMethod = this.registrationService.searchMethod$.value;
+    this.sanitizePostcode();
     this.setupForm();
     this.setupFormErrorsMap();
     this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
@@ -47,6 +47,15 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  private sanitizePostcode(): void {
+    this.postcodeOrLocationId = this.registrationService.postcodeOrLocationId$.value;
+    this.searchMethod = this.registrationService.searchMethod$.value;
+
+    if (this.searchMethod === 'postcode') {
+      this.postcodeOrLocationId = SanitizePostcodeUtil.sanitizePostcode(this.postcodeOrLocationId);
+    }
   }
 
   private setupForm(): void {
