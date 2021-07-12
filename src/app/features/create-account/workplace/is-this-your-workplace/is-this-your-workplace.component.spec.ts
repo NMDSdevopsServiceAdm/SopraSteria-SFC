@@ -7,6 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
+import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -25,6 +26,7 @@ describe('IsThisYourWorkplaceComponent', () => {
         BackService,
         {
           provide: RegistrationService,
+          useClass: MockRegistrationService,
           useValue: {
             locationAddresses$: {
               value: [
