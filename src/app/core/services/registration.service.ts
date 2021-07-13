@@ -22,6 +22,7 @@ export class RegistrationService {
   public isCqcRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public returnTo$ = new BehaviorSubject<URLStructure>(null);
+  public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient) {}
 
