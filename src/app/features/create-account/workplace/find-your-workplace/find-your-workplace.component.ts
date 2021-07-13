@@ -24,10 +24,11 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
+  public useDifferentLocationIdOrPostcode: boolean;
 
   constructor(
     protected router: Router,
-    private backService: BackService,
+    public backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
@@ -37,13 +38,20 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.useDifferentLocationIdOrPostcode = this.registrationService.useDifferentLocationIdOrPostcode$.value;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.backService.setBackLink({ url: [this.flow, 'regulated-by-cqc'] });
+    this.setBackLink();
   }
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  public setBackLink(): void {
+    const backLink = this.useDifferentLocationIdOrPostcode ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
+    this.backService.setBackLink({ url: [this.flow, backLink] });
+    this.registrationService.useDifferentLocationIdOrPostcode$.next(false);
   }
 
   private setupForm(): void {
