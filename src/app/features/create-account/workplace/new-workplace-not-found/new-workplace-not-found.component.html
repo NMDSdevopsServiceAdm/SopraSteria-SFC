@@ -18,6 +18,7 @@
           <span
             *ngIf="submitted && this.form.get('useDifferentLocationIdOrPostcode').errors"
             id="useDifferentLocationIdOrPostcode-error"
+            data-testid="errorMessage"
             class="govuk-error-message"
           >
             <span class="govuk-visually-hidden">Error:</span>
