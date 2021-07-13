@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
+import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -146,6 +147,32 @@ describe('NewWorkplaceNotFoundComponent', () => {
       component.fixture.detectChanges();
 
       expect(component.getByText(expectedHeading)).toBeTruthy();
+    });
+  });
+
+  describe('sanitizePostcode', () => {
+    it('should only sanitize the postcode if the search method is postcode', async () => {
+      const { component } = await setup('registration', 'se11aa', 'postcode');
+      const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
+      component.fixture.componentInstance.sanitizePostcode();
+
+      expect(sanitizePostcodeSpy).toHaveBeenCalled();
+    });
+
+    it('should not sanitize the postcode if the search method is locationID', async () => {
+      const { component } = await setup('registration', 'se11aa', 'locationID');
+      const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
+      component.fixture.componentInstance.sanitizePostcode();
+
+      expect(sanitizePostcodeSpy).not.toHaveBeenCalled();
+    });
+
+    it('should display the sanitized postcode entered in the previous page', async () => {
+      const { component } = await setup('registration', 'se11aa', 'postcode');
+      component.fixture.componentInstance.sanitizePostcode();
+      component.fixture.detectChanges();
+
+      expect(component.getByText('SE1 1AA')).toBeTruthy();
     });
   });
 });

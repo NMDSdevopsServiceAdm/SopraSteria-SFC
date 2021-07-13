@@ -28,7 +28,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
   constructor(
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
-    private backService: BackService,
+    public backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private registrationService: RegistrationService,
     private router: Router,
@@ -42,14 +42,13 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     this.sanitizePostcode();
     this.setupForm();
     this.setupFormErrorsMap();
-    this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  private sanitizePostcode(): void {
+  public sanitizePostcode(): void {
     this.postcodeOrLocationId = this.registrationService.postcodeOrLocationId$.value;
     this.searchMethod = this.registrationService.searchMethod$.value;
 
@@ -78,6 +77,10 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     ];
   }
 
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
+  }
+
   public getErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -89,6 +92,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     if (this.form.valid) {
       const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
       if (useDifferentLocationIdOrPostcode.value === 'yes') {
+        this.registrationService.useDifferentLocationIdOrPostcode$.next(true);
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
         this.router.navigate([`/${this.flow}`, 'workplace-name-address']);
