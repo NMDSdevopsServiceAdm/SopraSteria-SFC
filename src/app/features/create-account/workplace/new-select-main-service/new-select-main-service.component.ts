@@ -17,7 +17,7 @@ export class NewSelectMainServiceComponent extends SelectMainService {
 
   constructor(
     private registrationService: RegistrationService,
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -28,7 +28,7 @@ export class NewSelectMainServiceComponent extends SelectMainService {
 
   protected init(): void {
     this.flow = '/registration';
-    //this.setBackLink()
+    this.setBackLink();
     this.isRegulated = this.registrationService.isRegulated();
   }
 
@@ -51,5 +51,7 @@ export class NewSelectMainServiceComponent extends SelectMainService {
     this.navigateToNextPage();
   }
 
-  // protected setBackLink(): void {}
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: [`${this.flow}/your-workplace`] });
+  }
 }
