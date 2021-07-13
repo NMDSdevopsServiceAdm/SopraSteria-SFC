@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainService } from '@features/workplace-find-and-select/select-main-service/select-main-service';
@@ -14,6 +16,8 @@ import { SelectMainService } from '@features/workplace-find-and-select/select-ma
 })
 export class NewSelectMainServiceComponent extends SelectMainService {
   public isRegulated: boolean;
+  public isParent: boolean;
+  public workplace: Establishment;
 
   constructor(
     private registrationService: RegistrationService,
@@ -22,6 +26,7 @@ export class NewSelectMainServiceComponent extends SelectMainService {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
+    private establishmentService: EstablishmentService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -30,6 +35,8 @@ export class NewSelectMainServiceComponent extends SelectMainService {
     this.flow = '/registration';
     this.setBackLink();
     this.isRegulated = this.registrationService.isRegulated();
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
   }
 
   protected getServiceCategories(): void {
