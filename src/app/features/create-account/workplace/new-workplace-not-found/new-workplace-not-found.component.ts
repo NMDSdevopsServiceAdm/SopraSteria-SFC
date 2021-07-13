@@ -40,6 +40,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent ? true : false;
     this.sanitizePostcode();
+    this.setBackLink();
     this.setupForm();
     this.setupFormErrorsMap();
   }
