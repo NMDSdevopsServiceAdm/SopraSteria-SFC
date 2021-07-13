@@ -2,9 +2,11 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
@@ -19,21 +21,26 @@ export class NameOfWorkplaceComponent implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public serverError: string;
+  public workplace: Establishment;
+  public isParent: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
-    private backService: BackService,
+    public backService: BackService,
     protected router: Router,
     private route: ActivatedRoute,
     private errorSummaryService: ErrorSummaryService,
     private registrationService: RegistrationService,
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
+    this.setBackLink();
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
     this.setupFormErrorsMap();
-    this.backService.setBackLink({ url: [this.flow, 'new-regulated-by-cqc'] });
   }
 
   public ngAfterViewInit(): void {
@@ -47,10 +54,14 @@ export class NameOfWorkplaceComponent implements OnInit, AfterViewInit {
   }
 
   private setupFormErrorsMap(): void {
+    let errorMessage;
+    this.isParent
+      ? (errorMessage = 'Enter the name of the workplace you would like to add')
+      : (errorMessage = 'Enter the name of your workplace');
     this.formErrorsMap = [
       {
         item: 'workplaceName',
-        type: [{ name: 'required', message: 'Enter the name of your workplace' }],
+        type: [{ name: 'required', message: errorMessage }],
       },
     ];
   }
@@ -58,6 +69,10 @@ export class NameOfWorkplaceComponent implements OnInit, AfterViewInit {
   public getErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: [`/${this.flow}`, 'new-regulated-by-cqc'] });
   }
 
   onSubmit(): void {
