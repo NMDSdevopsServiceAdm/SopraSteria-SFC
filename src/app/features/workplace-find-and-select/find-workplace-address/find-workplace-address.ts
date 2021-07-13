@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,6 +7,7 @@ import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -19,21 +20,32 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
+  public createAccountNewDesign: boolean;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
-    protected router: Router
+    protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    await this.getFeatureFlag();
     this.init();
     this.setBackLink();
+  }
+
+  async getFeatureFlag(): Promise<void> {
+    await this.featureFlagsService.configCatClient.forceRefreshAsync();
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
   }
 
   ngAfterViewInit() {
@@ -45,36 +57,25 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected init(): void {}
+  protected setupFormErrorsMap(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      postcode: ['', [Validators.required, Validators.maxLength(8)]],
+      postcode: [
+        '',
+        {
+          validators: [Validators.required, Validators.maxLength(8)],
+          updateOn: 'submit',
+        },
+      ],
     });
-  }
-
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'postcode',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter a postcode.',
-          },
-          {
-            name: 'maxlength',
-            message: 'Invalid postcode.',
-          },
-        ],
-      },
-    ];
   }
 
   protected setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'Invalid postcode.',
+        message: 'Enter a valid workplace postcode',
       },
       {
         name: 404,
@@ -93,8 +94,8 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -112,7 +113,9 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
+    let url;
+    this.createAccountNewDesign ? (url = 'workplace-name') : (url = 'select-workplace-address');
+    this.backService.setBackLink({ url: [this.flow, url] });
   }
 
   public getFirstErrorMessage(item: string): string {

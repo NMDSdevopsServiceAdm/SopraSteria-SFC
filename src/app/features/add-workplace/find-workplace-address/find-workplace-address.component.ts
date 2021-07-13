@@ -7,6 +7,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { FindWorkplaceAddress } from '@features/workplace-find-and-select/find-workplace-address/find-workplace-address';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-find-workplace-address',
@@ -19,13 +20,32 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
-    protected router: Router
+    protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, router);
+    super(backService, errorSummaryService, formBuilder, locationService, router, featureFlagsService);
   }
 
   protected init(): void {
     this.flow = '/add-workplace';
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the workplace postcode',
+          },
+          {
+            name: 'maxlength',
+            message: 'Enter a valid workplace postcode',
+          },
+        ],
+      },
+    ];
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
