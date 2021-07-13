@@ -1,0 +1,41 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 *ngIf="isParent" class="govuk-fieldset__heading">What's the name of the workplace?</h1>
+          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">What's the name of your workplace?</h1>
+        </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+          <label for="workplaceName" class="govuk-label">Workplace name</label>
+          <span
+            *ngIf="submitted && form.get('workplaceName').errors"
+            id="workplaceName-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getErrorMessage('workplaceName') }}
+          </span>
+          <input
+            type="text"
+            class="govuk-input govuk-input--width-20"
+            [formControlName]="'workplaceName'"
+            id="workplaceName"
+            name="workplaceName"
+            [class.govuk-input--error]="submitted && (form.invalid || serverError)"
+          />
+        </div>
+      </fieldset>
+      <button class="govuk-button" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

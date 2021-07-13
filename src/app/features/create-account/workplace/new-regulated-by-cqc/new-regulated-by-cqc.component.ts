@@ -39,7 +39,7 @@ export class NewRegulatedByCqcComponent implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      regulatedByCQC: [null, Validators.required],
+      regulatedByCQC: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
   }
 
