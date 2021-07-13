@@ -39,7 +39,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.backService.setBackLink({ url: [this.flow, 'regulated-by-cqc'] });
+    this.backService.setBackLink({ url: [this.flow, 'new-regulated-by-cqc'] });
   }
 
   public ngAfterViewInit(): void {
