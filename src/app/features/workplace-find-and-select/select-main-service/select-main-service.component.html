@@ -14,11 +14,20 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <h1 class="govuk-fieldset__heading">Select your main service</h1>
           </legend>
-
-          <p *ngIf="displayIntro">
-            We need some details about where you work. You need to answer these questions before we can create your
-            account.
-          </p>
+          <div *ngIf="displayIntro">
+            <ng-container *ngIf="isRegulated; else notRegulated">
+              <p>
+                Because you said the main service you provide is regulated by the Care Quality Commission (CQC), Skills
+                for Care will need to check your selection matches the CQC database.
+              </p>
+            </ng-container>
+            <ng-template #notRegulated>
+              <p>
+                We need some details about where you work. You need to answer these questions before we can create your
+                account.
+              </p>
+            </ng-template>
+          </div>
 
           <span
             *ngIf="submitted && form.get('workplaceService').errors"
