@@ -56,7 +56,7 @@ export class NameOfWorkplaceComponent implements OnInit, AfterViewInit {
   private setupFormErrorsMap(): void {
     let errorMessage;
     this.isParent
-      ? (errorMessage = 'Enter the name of the workplace you would like to add')
+      ? (errorMessage = 'Enter the name of the workplace')
       : (errorMessage = 'Enter the name of your workplace');
     this.formErrorsMap = [
       {

@@ -96,7 +96,7 @@ describe('NameOfWorkplaceComponent', () => {
     it('should render the correct heading when in the parent journey', async () => {
       const { component } = await setup('add-workplace');
 
-      const parentHeading = component.queryByText(`What's the name of the workplace you would like to add?`);
+      const parentHeading = component.queryByText(`What's the name of the workplace?`);
 
       expect(parentHeading).toBeTruthy();
     });
@@ -107,7 +107,7 @@ describe('NameOfWorkplaceComponent', () => {
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
-      const errorMessage = 'Enter the name of the workplace you would like to add';
+      const errorMessage = 'Enter the name of the workplace';
 
       expect(form.invalid).toBeTruthy();
       expect(component.getAllByText(errorMessage).length).toBe(2);
