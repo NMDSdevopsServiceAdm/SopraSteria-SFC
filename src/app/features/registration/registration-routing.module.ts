@@ -3,6 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -176,6 +179,12 @@ const routes: Routes = [
     component: NameOfWorkplaceComponent,
     canActivate: [RegisterGuard],
     data: { title: `What's the name of your workplace?` },
+  },
+  {
+    path: 'workplace-name-address',
+    component: WorkplaceNameAddressComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Workplace name and address?' },
   },
 ];
 
