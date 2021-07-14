@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
+import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { ConfirmAccountDetailsComponent } from '@features/registration/confirm-account-details/confirm-account-details.component';
@@ -21,6 +22,7 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { NewWorkplaceNotFoundComponent } from '../create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -69,6 +71,12 @@ const routes: Routes = [
     component: WorkplaceNotFoundComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Workplace Not Found' },
+  },
+  {
+    path: 'new-workplace-not-found',
+    component: NewWorkplaceNotFoundComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Could not find your workplace' },
   },
   {
     path: 'select-workplace',
@@ -162,7 +170,7 @@ const routes: Routes = [
   },
   {
     path: 'workplace-name',
-    component: NewRegulatedByCqcComponent,
+    component: NameOfWorkplaceComponent,
     canActivate: [RegisterGuard],
     data: { title: `What's the name of your workplace?` },
   },

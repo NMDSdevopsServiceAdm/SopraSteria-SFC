@@ -15,8 +15,10 @@ import { SelectWorkplaceComponent } from '@features/add-workplace/select-workpla
 import { WorkplaceNotFoundComponent } from '@features/add-workplace/workplace-not-found/workplace-not-found.component';
 import { FindYourWorkplaceComponent } from '@features/create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '@features/create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { NewRegulatedByCqcComponent } from '@features/create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
+import { NewWorkplaceNotFoundComponent } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 
 import { StartComponent } from './start/start.component';
 
@@ -36,6 +38,12 @@ const routes: Routes = [
     path: 'workplace-not-found',
     component: WorkplaceNotFoundComponent,
     data: { title: 'Workplace Not Found' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'new-workplace-not-found',
+    component: NewWorkplaceNotFoundComponent,
+    data: { title: 'Could not find your workplace' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
@@ -129,7 +137,7 @@ const routes: Routes = [
   },
   {
     path: 'workplace-name',
-    component: NewRegulatedByCqcComponent,
+    component: NameOfWorkplaceComponent,
     data: { title: `What's the name of your workplace?` },
     canActivate: [AddWorkplaceInProgressGuard],
   },
