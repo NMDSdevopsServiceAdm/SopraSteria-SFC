@@ -11,7 +11,7 @@ import { MockRegistrationService } from '@core/test-utils/MockRegistrationServic
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { queryByText, render } from '@testing-library/angular';
 
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
@@ -115,5 +115,39 @@ describe('NewSelectMainServiceComponent', () => {
     expect(backLinkSpy).toHaveBeenCalledWith({
       url: ['/registration/your-workplace'],
     });
+  });
+
+  it('should set the correct back link to the is this your workplace page', async () => {
+    const { component, fixture } = await setup();
+    const backLinkSpy = spyOn(fixture.componentInstance.backService, 'setBackLink');
+
+    component.setBackLink();
+    fixture.detectChanges();
+
+    expect(backLinkSpy).toHaveBeenCalledWith({
+      url: ['/registration/your-workplace'],
+    });
+  });
+
+  it("should see 'Select its main service' when is a parent", async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.isParent = true;
+    component.isRegulated = false;
+    component.renderForm = true;
+    fixture.detectChanges();
+
+    expect(queryByText('Select its main service')).toBeTruthy();
+  });
+
+  it("should see 'Select your main service' when is not a parent", async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = false;
+    component.renderForm = true;
+    fixture.detectChanges();
+
+    expect(queryByText('Select your main service')).toBeTruthy();
   });
 });
