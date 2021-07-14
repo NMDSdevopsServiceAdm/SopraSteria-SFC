@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { compact } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -17,6 +18,8 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
   public formErrorsMap: Array<ErrorDetails>;
   public locationAddresses: Array<LocationAddress>;
   public submitted = false;
+  public createAccountNewDesign: boolean;
+  public workplaceNotListedLink: string;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
@@ -25,6 +28,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
   get getAddress() {
@@ -35,7 +39,11 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
-    this.setBackLink();
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.setBackLink();
+      this.workplaceNotListedLink = value ? 'workplace-address' : 'enter-workplace-address';
+    });
   }
 
   ngAfterViewInit() {
@@ -45,7 +53,8 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
   protected init(): void {}
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
+    const backLink = this.createAccountNewDesign ? 'find-workplace-address' : 'regulated-by-cqc';
+    this.backService.setBackLink({ url: [this.flow, backLink] });
   }
 
   protected setupForm(): void {
