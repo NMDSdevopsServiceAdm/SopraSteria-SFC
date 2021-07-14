@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -15,10 +16,17 @@ import { throwError } from 'rxjs';
 
 import { FindWorkplaceAddressComponent } from './find-workplace-address.component';
 
-describe('FindWorkplaceAddressComponent', () => {
+describe('FindWorkplaceComponent', () => {
   async function setup() {
     const component = await render(FindWorkplaceAddressComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        RegistrationModule,
+        ReactiveFormsModule,
+      ],
       providers: [
         BackService,
         {
@@ -51,13 +59,14 @@ describe('FindWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Registration journey', () => {
+  describe('Parent journey', () => {
     it('should not lookup postcode when the form is empty', async () => {
       const { component, locationService } = await setup();
       const findAddressButton = component.getByText('Find address');
       const getAddressesByPostCode = spyOn(locationService, 'getAddressesByPostCode').and.callThrough();
 
       fireEvent.click(findAddressButton);
+      component.fixture.detectChanges();
 
       expect(getAddressesByPostCode).not.toHaveBeenCalled();
     });
@@ -68,7 +77,7 @@ describe('FindWorkplaceAddressComponent', () => {
       const form = component.fixture.componentInstance.form;
       const findAddressButton = component.getByText('Find address');
       fireEvent.click(findAddressButton);
-      const errorMessage = 'Enter your workplace postcode';
+      const errorMessage = 'Enter the workplace postcode';
 
       expect(form.invalid).toBeTruthy();
       expect(component.getAllByText(errorMessage).length).toBe(2);
@@ -113,7 +122,7 @@ describe('FindWorkplaceAddressComponent', () => {
       fireEvent.click(findAddressButton);
 
       expect(form.valid).toBeTruthy();
-      expect(spy).toHaveBeenCalledWith(['registration', 'select-workplace-address']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'select-workplace-address']);
     });
 
     it('should submit and go to workplace-address-not-found when no addresses are found', async () => {
@@ -134,7 +143,7 @@ describe('FindWorkplaceAddressComponent', () => {
       component.fixture.detectChanges();
       fireEvent.click(findAddressButton);
 
-      expect(spy).toHaveBeenCalledWith(['registration', 'workplace-address-not-found']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'workplace-address-not-found']);
     });
 
     it('should show error when server fails with a 503 error', async () => {
@@ -168,7 +177,7 @@ describe('FindWorkplaceAddressComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name'],
+        url: ['add-workplace', 'workplace-name'],
       });
     });
   });

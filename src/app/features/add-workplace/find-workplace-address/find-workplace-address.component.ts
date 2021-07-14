@@ -16,7 +16,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   constructor(
     private workplaceService: WorkplaceService,
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
@@ -27,7 +27,7 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   }
 
   protected init(): void {
-    this.flow = '/add-workplace';
+    this.flow = 'add-workplace';
   }
 
   protected setupFormErrorsMap(): void {

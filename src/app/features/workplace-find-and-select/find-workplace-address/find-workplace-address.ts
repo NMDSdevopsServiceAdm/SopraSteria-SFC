@@ -23,7 +23,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   public createAccountNewDesign: boolean;
 
   constructor(
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
@@ -35,8 +35,8 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    await this.getFeatureFlag();
     this.init();
+    await this.getFeatureFlag();
     this.setBackLink();
   }
 
@@ -81,6 +81,10 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
         name: 404,
         message: 'No results found.',
       },
+      {
+        name: 503,
+        message: 'Database error.',
+      },
     ];
   }
 
@@ -89,22 +93,27 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
       this.locationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
         (data: LocationSearchResponse) => {
           this.onSuccess(data);
-          this.router.navigate([`${this.flow}/select-workplace-address`]);
+          this.router.navigate([this.flow, 'select-workplace-address']);
         },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        },
+        (error: HttpErrorResponse) => this.onError(error),
       ),
     );
   }
 
   protected onSuccess(data: LocationSearchResponse): void {}
 
+  private onError(error: HttpErrorResponse): void {
+    if (error.status === 404) {
+      this.router.navigate([this.flow, 'workplace-address-not-found']);
+      return;
+    }
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-
     if (this.form.valid) {
       this.getAddressesByPostCode();
     } else {
@@ -112,7 +121,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
     let url;
     this.createAccountNewDesign ? (url = 'workplace-name') : (url = 'select-workplace-address');
     this.backService.setBackLink({ url: [this.flow, url] });
