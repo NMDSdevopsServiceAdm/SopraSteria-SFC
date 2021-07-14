@@ -91,9 +91,10 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeTruthy();
   });
 
-  it('should show standard text when following the not CQC regulated flow', async () => {
+  it('should show standard text when following the not CQC regulated flow and feature flag is off', async () => {
     const { component, fixture, getByText } = await setup();
 
+    component.createAccountNewDesign = false;
     component.isRegulated = false;
     component.renderForm = true;
 
@@ -103,6 +104,21 @@ describe('NewSelectMainServiceComponent', () => {
     );
 
     expect(cqcText).toBeTruthy();
+  });
+
+  it('should show no description text when following the not CQC regulated flow and feature flag is on', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.createAccountNewDesign = true;
+    component.isRegulated = false;
+    component.renderForm = true;
+
+    fixture.detectChanges();
+    const cqcText = queryByText(
+      'We need some details about where you work. You need to answer these questions before we can create your account.',
+    );
+
+    expect(cqcText).toBeNull();
   });
 
   it('should set the correct back link to the is this your workplace page', async () => {

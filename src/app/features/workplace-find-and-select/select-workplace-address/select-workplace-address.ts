@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { compact } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -19,23 +20,29 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
   public submitted = false;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
+  public createAccountNewDesign: boolean;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
   get getAddress() {
     return this.form.get('address');
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
     this.setBackLink();
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
   }
 
   ngAfterViewInit() {
@@ -85,7 +92,11 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
     if (!locationName.length) {
       this.router.navigate([`${this.flow}/enter-workplace-address`]);
     } else {
-      this.router.navigate([`${this.flow}/select-main-service`]);
+      if (this.createAccountNewDesign) {
+        this.router.navigate([`${this.flow}/new-select-main-service`]);
+      } else {
+        this.router.navigate([`${this.flow}/select-main-service`]);
+      }
     }
   }
 

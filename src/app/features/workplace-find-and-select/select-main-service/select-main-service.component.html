@@ -27,7 +27,7 @@
               </p>
             </ng-container>
             <ng-template #notRegulated>
-              <p>
+              <p *ngIf="!createAccountNewDesign">
                 We need some details about where you work. You need to answer these questions before we can create your
                 account.
               </p>

@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainService } from '@features/workplace-find-and-select/select-main-service/select-main-service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-new-select-main-service',
@@ -18,6 +19,7 @@ export class NewSelectMainServiceComponent extends SelectMainService {
   public isRegulated: boolean;
   public isParent: boolean;
   public workplace: Establishment;
+  public createAccountNewDesign: boolean;
 
   constructor(
     private registrationService: RegistrationService,
@@ -27,16 +29,21 @@ export class NewSelectMainServiceComponent extends SelectMainService {
     protected router: Router,
     protected workplaceService: WorkplaceService,
     private establishmentService: EstablishmentService,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
-  protected init(): void {
+  protected async init(): Promise<void> {
     this.flow = '/registration';
     this.setBackLink();
     this.isRegulated = this.registrationService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
   }
 
   protected getServiceCategories(): void {

@@ -8,6 +8,7 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import {
   SelectWorkplaceAddress,
 } from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -19,9 +20,10 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService);
   }
 
   protected init(): void {
@@ -34,13 +36,13 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
       this.workplaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
         this.enteredPostcode = locationAddresses[0].postalCode;
         this.locationAddresses = locationAddresses;
-      })
+      }),
     );
 
     this.subscriptions.add(
       this.workplaceService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress)
-      )
+        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress),
+      ),
     );
   }
 
