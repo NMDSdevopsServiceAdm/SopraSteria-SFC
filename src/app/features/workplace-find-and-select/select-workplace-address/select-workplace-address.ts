@@ -61,7 +61,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
         type: [
           {
             name: 'required',
-            message: 'Please select an address.',
+            message: `Select your workplace address if it's listed`,
           },
         ],
       },
