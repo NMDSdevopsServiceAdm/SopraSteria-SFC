@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
-import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
-  WorkplaceNameAddressComponent,
-} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+  EnterWorkplaceAddressComponent,
+} from '@features/create-account/workplace/enter-workplace-address/enter-workplace-address.component';
+import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -14,9 +14,6 @@ import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
-import {
-  EnterWorkplaceAddressComponent,
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import {
   FindWorkplaceAddressComponent,
 } from '@features/registration/find-workplace-address/find-workplace-address.component';
@@ -180,12 +177,12 @@ const routes: Routes = [
     canActivate: [RegisterGuard],
     data: { title: `What's the name of your workplace?` },
   },
-  {
-    path: 'workplace-name-address',
-    component: WorkplaceNameAddressComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Workplace name and address?' },
-  },
+  // {
+  //   path: 'workplace-name-address',
+  //   component: WorkplaceNameAddressComponent,
+  //   canActivate: [RegisterGuard],
+  //   data: { title: 'Workplace name and address?' },
+  // },
 ];
 
 @NgModule({

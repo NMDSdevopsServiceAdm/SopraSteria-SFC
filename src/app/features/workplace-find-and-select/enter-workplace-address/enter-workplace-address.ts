@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -8,7 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
+export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
   public isWorkPlaceUpdate: boolean;
@@ -21,7 +21,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
       width: 20,
     },
     {
-      label: 'Building and street <span class="govuk-visually-hidden">line 1 of 3</span>',
+      label: 'Building (number or name) and street <span class="govuk-visually-hidden">line 1 of 3</span>',
       name: 'address1',
       width: 20,
     },
@@ -36,7 +36,7 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
       width: 20,
     },
     {
-      label: 'Town or City',
+      label: 'Town or city',
       name: 'townOrCity',
       width: 10,
     },
@@ -53,53 +53,46 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   ];
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
-  protected addressMaxLength = 40;
   protected flow: string;
+  protected workplaceNameMaxLength = 120;
+  protected addressMaxLength = 40;
   protected postcodeMaxLength = 8;
   protected subscriptions: Subscription = new Subscription();
-  protected workplaceNameMaxLength = 120;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {}
 
-  // Get postcode
-  get getPostcode() {
-    return this.form.get('postcode');
+  get getWorkplaceName() {
+    return this.form.get('workplaceName');
   }
 
-  // Get address 1
   get getAddress1() {
     return this.form.get('address1');
   }
 
-  // Get address 2
   get getAddress2() {
     return this.form.get('address2');
   }
 
-  // Get address 3
   get getAddress3() {
     return this.form.get('address3');
   }
 
-  // Get town/city
   get getTownCity() {
     return this.form.get('townOrCity');
   }
 
-  // Get county
   get getCounty() {
     return this.form.get('county');
   }
 
-  // Get workplace name
-  get getWorkplaceName() {
-    return this.form.get('workplaceName');
+  get getPostcode() {
+    return this.form.get('postcode');
   }
 
   ngOnInit() {
@@ -117,13 +110,13 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
+      workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
       address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
       address2: ['', [Validators.maxLength(this.addressMaxLength)]],
       address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-      county: ['', [Validators.maxLength(this.addressMaxLength)]],
-      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength)]],
       townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
+      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength)]],
     });
   }
 
@@ -142,63 +135,28 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
+        item: 'workplaceName',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the name of your workplace',
+          },
+          {
+            name: 'maxlength',
+            message: `Workplace name must be ${this.workplaceNameMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
         item: 'address1',
         type: [
           {
             name: 'required',
-            message: 'Please enter your address.',
+            message: 'Enter the building (number or name) and street',
           },
           {
             name: 'maxlength',
-            message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
-          },
-        ],
-      },
-      {
-        item: 'address2',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your address.',
-          },
-          {
-            name: 'maxlength',
-            message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
-          },
-        ],
-      },
-      {
-        item: 'address3',
-        type: [
-          {
-            name: 'maxlength',
-            message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
-          },
-        ],
-      },
-      {
-        item: 'county',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your county.',
-          },
-          {
-            name: 'maxlength',
-            message: `'Your county must be no longer than ${this.addressMaxLength} characters.`,
-          },
-        ],
-      },
-      {
-        item: 'postcode',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your postcode.',
-          },
-          {
-            name: 'maxlength',
-            message: `Your postcode must be no longer than ${this.postcodeMaxLength} characters.`,
+            message: `Building and street must be ${this.addressMaxLength} characters or fewer`,
           },
         ],
       },
@@ -207,24 +165,37 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Please enter your town or city.',
+            message: 'Enter the town or city',
           },
           {
             name: 'maxlength',
-            message: `'Your town or city must be no longer than ${this.addressMaxLength} characters.`,
+            message: `Town or city must be ${this.addressMaxLength} characters or fewer`,
           },
         ],
       },
       {
-        item: 'workplaceName',
+        item: 'county',
         type: [
           {
             name: 'required',
-            message: 'Please enter your workplace name.',
+            message: 'Enter the county.',
           },
           {
             name: 'maxlength',
-            message: `Your workplace name must be no longer than ${this.workplaceNameMaxLength} characters.`,
+            message: `County must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the postcode',
+          },
+          {
+            name: 'maxlength',
+            message: `Postcode must be ${this.postcodeMaxLength} characters or fewer`,
           },
         ],
       },
@@ -261,13 +232,11 @@ export class EnterWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  // check
   protected setBackLink(): void {
     this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
   }
 
-  /**
-   * Unsubscribe hook to ensure no memory leaks
-   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

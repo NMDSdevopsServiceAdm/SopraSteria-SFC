@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import {
+  EnterWorkplaceAddressComponent,
+} from '@features/create-account/workplace/enter-workplace-address/enter-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   NewWorkplaceNotFoundComponent,
@@ -14,9 +17,6 @@ import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
-import {
-  EnterWorkplaceAddressComponent,
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import {
   RegistrationAwaitingApprovalComponent,
 } from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
@@ -37,9 +37,6 @@ import {
   IsThisYourWorkplaceComponent,
 } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
-import {
-  WorkplaceNameAddressComponent,
-} from '../create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
@@ -70,7 +67,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     NewRegulatedByCqcComponent,
     NewWorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
-    WorkplaceNameAddressComponent,
   ],
 })
 export class RegistrationModule {}

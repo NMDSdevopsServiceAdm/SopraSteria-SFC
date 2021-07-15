@@ -7,14 +7,16 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { EnterWorkplaceAddress } from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
+import {
+  EnterWorkplaceAddressDirective,
+} from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
 
 @Component({
   selector: 'app-enter-workplace-address',
   templateUrl: '../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
 })
-export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
-   public workplace: Establishment;
+export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirective {
+  public workplace: Establishment;
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,
@@ -22,7 +24,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {
     super(backService, errorSummaryService, formBuilder, route, router);
   }
@@ -32,9 +34,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
     this.setLocationAddress();
-
   }
-
 
   protected setBackLink(): void {
     this.backService.setBackLink(this.establishmentService.returnTo);
@@ -54,7 +54,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     this.workplaceService.manuallyEnteredWorkplace$.next(true);
     const selectedLocation = this.getLocationAddress();
     this.subscriptions.add(
-      this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe(data => {
+      this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         //check if address2 and address3 is not available
         if (!data.address2) {
           data.address2 = null;
@@ -67,9 +67,8 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
           fragment: this.establishmentService.returnTo.fragment,
         });
         this.establishmentService.setReturnTo(null);
-      })
+      }),
     );
-
   }
 
   protected setLocationAddress(): void {
@@ -87,8 +86,5 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
       postalCode: this.workplace.postcode,
       townCity: this.workplace.town,
     };
-
   }
-
-
 }

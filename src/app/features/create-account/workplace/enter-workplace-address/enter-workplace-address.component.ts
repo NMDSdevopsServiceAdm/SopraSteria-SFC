@@ -5,20 +5,22 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { EnterWorkplaceAddress } from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
+import {
+  EnterWorkplaceAddressDirective,
+} from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
 
 @Component({
   selector: 'app-enter-workplace-address',
   templateUrl: './enter-workplace-address.component.html',
 })
-export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
+export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirective {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {
     super(backService, errorSummaryService, formBuilder, route, router);
   }
@@ -28,13 +30,13 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
     this.setupSubscription();
   }
 
-  private setupSubscription(): void {
+  protected setupSubscription(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
         if (selectedLocation) {
           this.preFillForm(selectedLocation);
         }
-      })
+      }),
     );
   }
 

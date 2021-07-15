@@ -38,9 +38,6 @@ import {
 import {
   NewWorkplaceNotFoundComponent,
 } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
-import {
-  WorkplaceNameAddressComponent,
-} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 
 import { StartComponent } from './start/start.component';
 
@@ -158,12 +155,12 @@ const routes: Routes = [
     data: { title: `What's the name of your workplace?` },
     canActivate: [AddWorkplaceInProgressGuard],
   },
-  {
-    path: 'workplace-name-address',
-    component: WorkplaceNameAddressComponent,
-    data: { title: 'Workplace name and address?' },
-    canActivate: [AddWorkplaceInProgressGuard],
-  },
+  // {
+  //   path: 'workplace-name-address',
+  //   component: WorkplaceNameAddressComponent,
+  //   data: { title: 'Workplace name and address?' },
+  //   canActivate: [AddWorkplaceInProgressGuard],
+  // },
 ];
 
 @NgModule({
