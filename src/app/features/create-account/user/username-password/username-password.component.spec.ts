@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { UsernamePasswordComponent } from './username-password.component';
 
-fdescribe('FindYourWorkplaceComponent', () => {
+describe('FindYourWorkplaceComponent', () => {
   async function setup() {
     const component = await render(UsernamePasswordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
