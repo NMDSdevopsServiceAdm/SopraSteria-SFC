@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import {
+  SecurityQuestionComponent,
+} from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
@@ -23,7 +26,6 @@ import {
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
-import { SecurityQuestionComponent } from '@features/registration/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import {
   SelectWorkplaceAddressComponent,
