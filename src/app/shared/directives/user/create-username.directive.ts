@@ -178,7 +178,6 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   }
 
   public checkUsernameDoesntExist(): void {
-    console.log(this.form);
     this.subscriptions.add(
       this.registrationService
         .getUsernameDuplicate(this.getUsername.value)
