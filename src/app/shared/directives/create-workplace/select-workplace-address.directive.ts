@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -31,11 +31,11 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     protected featureFlagsService: FeatureFlagsService,
   ) {}
 
-  get getAddress() {
+  get getAddress(): AbstractControl {
     return this.form.get('address');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
@@ -46,7 +46,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
