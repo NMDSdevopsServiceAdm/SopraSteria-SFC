@@ -6,15 +6,15 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
-  SelectWorkplaceAddress,
-} from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
+  SelectWorkplaceAddressDirective,
+} from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace-address',
   templateUrl: './select-workplace-address.component.html',
 })
-export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
+export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirective {
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,

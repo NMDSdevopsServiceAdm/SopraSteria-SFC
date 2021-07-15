@@ -10,7 +10,7 @@ import { compact } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
+export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public flow: string;
   public enteredPostcode: string;
