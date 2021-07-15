@@ -5,6 +5,7 @@ import { PageResolver } from '@core/resolvers/page.resolver';
 import {
   FindWorkplaceAddressComponent,
 } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
+import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -13,7 +14,6 @@ import {
 import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
@@ -118,10 +118,10 @@ const routes: Routes = [
     data: { title: 'Change Your Details' },
   },
   {
-    path: 'create-username',
-    component: CreateUsernameComponent,
+    path: 'username-password',
+    component: UsernamePasswordComponent,
     canActivate: [RegisterGuard],
-    data: { title: 'Create Username' },
+    data: { title: 'Create your username and password' },
   },
   {
     path: 'security-question',

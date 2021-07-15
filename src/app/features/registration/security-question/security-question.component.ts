@@ -39,7 +39,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   }
 
   protected setBackLink(): void {
-    const route: string = this.return ? this.return.url[0] : '/registration/create-username';
+    const route: string = this.return ? this.return.url[0] : '/registration/username-password';
     this.backService.setBackLink({ url: [route] });
   }
 

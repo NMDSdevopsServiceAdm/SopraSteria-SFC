@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   NewWorkplaceNotFoundComponent,
@@ -50,7 +51,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    CreateUsernameComponent,
     EnterWorkplaceAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
@@ -69,6 +69,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     NewRegulatedByCqcComponent,
     NewWorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
+    UsernamePasswordComponent,
   ],
 })
 export class RegistrationModule {}
