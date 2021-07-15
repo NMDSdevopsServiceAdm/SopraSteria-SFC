@@ -11,7 +11,6 @@ import {
 import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
@@ -119,15 +118,9 @@ const routes: Routes = [
     data: { title: 'Change Your Details' },
   },
   {
-    path: 'create-username',
-    component: CreateUsernameComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Create Username' },
-  },
-  {
     path: 'username-password',
     component: UsernamePasswordComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Create your username and password' },
   },
   {

@@ -14,7 +14,6 @@ import {
 import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
@@ -49,7 +48,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    CreateUsernameComponent,
     EnterWorkplaceAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
