@@ -8,6 +8,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import {
   EnterWorkplaceAddressDirective,
 } from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-name-address',
@@ -17,9 +18,11 @@ import {
 export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
+  public createAccountNewDesign: boolean;
 
   constructor(
     private registrationService: RegistrationService,
+    private featureFlagsService: FeatureFlagsService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -29,16 +32,24 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     super(backService, errorSummaryService, formBuilder, route, router);
   }
 
-  protected init(): void {
+  protected async init(): Promise<void> {
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
+    await this.setFeatureFlag();
     this.setupSubscription();
     this.setBackLink();
     this.registrationService.workplaceNotFound$.next(false);
+  }
+
+  private async setFeatureFlag() {
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
   }
 
   protected setupSubscription(): void {
@@ -58,6 +69,11 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
   }
 
   public setBackLink(): void {
+    if (!this.createAccountNewDesign) {
+      this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
+      return;
+    }
+
     if (this.returnToWorkplaceNotFound) {
       this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
       return;

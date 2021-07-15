@@ -9,6 +9,7 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import {
   EnterWorkplaceAddressDirective,
 } from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-name-address',
@@ -18,8 +19,10 @@ import {
 export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
+  public createAccountNewDesign: boolean;
 
   constructor(
+    private featureFlagsService: FeatureFlagsService,
     private workplaceService: WorkplaceService,
     private registrationService: RegistrationService,
     public backService: BackService,
@@ -31,16 +34,24 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     super(backService, errorSummaryService, formBuilder, route, router);
   }
 
-  protected init(): void {
+  protected async init(): Promise<void> {
     this.flow = '/add-workplace';
     this.title = `What's the workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
+    await this.setFeatureFlag();
     this.setBackLink();
     this.setupSubscription();
     this.registrationService.workplaceNotFound$.next(false);
+  }
+
+  private async setFeatureFlag() {
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
   }
 
   private setupSubscription(): void {
@@ -60,6 +71,11 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
   }
 
   public setBackLink(): void {
+    if (!this.createAccountNewDesign) {
+      this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
+      return;
+    }
+
     if (this.returnToWorkplaceNotFound) {
       this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
       return;
