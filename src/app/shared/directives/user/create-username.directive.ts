@@ -104,7 +104,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
             createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
             confirmPasswordInput: ['', [Validators.required]],
           },
-          { validator: CustomValidators.matchInputValues, updateOn: 'submit' },
+          { validators: [CustomValidators.matchInputValues], updateOn: 'submit' },
         ),
       },
       { updateOn: 'submit' },
@@ -178,6 +178,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   }
 
   public checkUsernameDoesntExist(): void {
+    console.log(this.form);
     this.subscriptions.add(
       this.registrationService
         .getUsernameDuplicate(this.getUsername.value)
