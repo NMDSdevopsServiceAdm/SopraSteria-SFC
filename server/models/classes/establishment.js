@@ -2152,6 +2152,7 @@ class Establishment extends EntityValidator {
           'NumberOfStaffValue',
           'ustatus',
           'postcode',
+          'isParent',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
           [
             models.sequelize.fn(
@@ -2218,6 +2219,7 @@ class Establishment extends EntityValidator {
           'dataOwnershipRequested',
           'ustatus',
           'postcode',
+          'isParent',
         ],
         include: [
           {
@@ -2255,6 +2257,7 @@ class Establishment extends EntityValidator {
           dataOwnershipRequested,
           ustatus,
           postcode,
+          isParent,
         } = thisSub;
 
         return {
@@ -2270,6 +2273,7 @@ class Establishment extends EntityValidator {
           dataOwnershipRequested,
           ustatus,
           postCode: postcode,
+          isParent,
           wdf: isWDF
             ? await WdfCalculator.calculateData({
                 thisEstablishment: thisSub,
@@ -2288,7 +2292,6 @@ class Establishment extends EntityValidator {
 
     // Add a boolean flag to indicate the establishment is a parent
 
-    primary.isParent = !!mappedResults.length;
     return {
       primary,
       subsidaries: primary.isParent

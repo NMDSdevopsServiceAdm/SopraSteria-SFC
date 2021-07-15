@@ -93,7 +93,7 @@ describe('SelectWorkplaceComponent', () => {
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
     const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select your workplace if it's displayed`;
+    const errorMessage = `Select the workplace if it's displayed`;
     const form = component.form;
     const continueButton = getByText('Continue');
 
