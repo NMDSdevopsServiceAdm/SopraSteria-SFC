@@ -6,6 +6,9 @@ import {
   SecurityQuestionComponent,
 } from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import {
+  FindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -17,9 +20,6 @@ import {
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
-import {
-  FindWorkplaceAddressComponent,
-} from '@features/registration/find-workplace-address/find-workplace-address.component';
 import {
   RegistrationAwaitingApprovalComponent,
 } from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
