@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -62,7 +62,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
       address: [
         null,
         {
-          validators: [Validators.required],
+          validators: [Validators.required, this.notNoOfAddressesOption],
           updateOn: 'submit',
         },
       ],
@@ -70,6 +70,13 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   protected setupFormErrorsMap(): void {}
+
+  protected notNoOfAddressesOption(control: FormControl): { [s: string]: boolean } {
+    if (control.value === 'noOfAddresses') {
+      return { notNoOfAddressesOption: true };
+    }
+    return null;
+  }
 
   public onLocationChange(addressLine1: string): void {}
 
@@ -85,10 +92,10 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   protected navigateToNextRoute(locationName: string): void {
-    if (!locationName.length) {
-      this.router.navigate([`${this.flow}/enter-workplace-address`]);
-    } else {
+    if (this.createAccountNewDesign || locationName.length) {
       this.router.navigate([`${this.flow}/select-main-service`]);
+    } else {
+      this.router.navigate([`${this.flow}/enter-workplace-address`]);
     }
   }
 

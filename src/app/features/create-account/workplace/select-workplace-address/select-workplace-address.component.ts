@@ -38,6 +38,10 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
             name: 'required',
             message: `Select your workplace address if it's listed`,
           },
+          {
+            name: 'notNoOfAddressesOption',
+            message: `Select your workplace address if it's listed`,
+          },
         ],
       },
     ];
