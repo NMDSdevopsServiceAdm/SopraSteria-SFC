@@ -91,7 +91,7 @@ describe('FindWorkplaceComponent', () => {
 
       form.controls['postcode'].setValue('M4X P0STC0DE');
       fireEvent.click(findAddressButton);
-      const errorMessage = 'Enter a valid workplace postcode';
+      const errorMessage = 'Postcode must be 8 characters or fewer';
 
       expect(form.invalid).toBeTruthy();
       expect(component.getAllByText(errorMessage).length).toBe(2);

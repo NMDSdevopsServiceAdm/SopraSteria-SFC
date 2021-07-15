@@ -41,7 +41,7 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
           },
           {
             name: 'maxlength',
-            message: 'Enter a valid workplace postcode',
+            message: 'Postcode must be 8 characters or fewer',
           },
           {
             name: 'invalidPostcode',
