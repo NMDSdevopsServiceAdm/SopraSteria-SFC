@@ -66,6 +66,13 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should display the correct title', async () => {
+    const { getByText } = await setup();
+    const expectedTitle = `What's the workplace name and address?`;
+
+    expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+  });
+
   describe('Error messages', () => {
     it(`should display an error message when workplace name isn't filled in`, async () => {
       const { component, getByText, getAllByText } = await setup();

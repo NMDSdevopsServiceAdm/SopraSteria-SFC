@@ -1,10 +1,11 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -119,7 +120,7 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
       address3: ['', [Validators.maxLength(this.addressMaxLength)]],
       townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
       county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength)]],
+      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
     });
   }
 
@@ -200,9 +201,20 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
             name: 'maxlength',
             message: `Postcode must be ${this.postcodeMaxLength} characters or fewer`,
           },
+          {
+            name: 'invalidPostcode',
+            message: 'Enter a valid workplace postcode',
+          },
         ],
       },
     ];
+  }
+
+  protected validPostcode(control: FormControl): { [s: string]: boolean } {
+    if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
+      return { invalidPostcode: true };
+    }
+    return null;
   }
 
   public onSubmit(): void {
