@@ -10,7 +10,7 @@ import {
 } from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
 
 @Component({
-  selector: 'app-enter-workplace-address',
+  selector: 'app-workplace-name-address',
   templateUrl:
     '../../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
 })
@@ -29,6 +29,7 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
   protected init(): void {
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
+    this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.setupSubscription();
   }
 

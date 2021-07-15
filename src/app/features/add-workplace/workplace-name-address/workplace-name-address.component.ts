@@ -10,7 +10,7 @@ import {
 } from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
 
 @Component({
-  selector: 'app-enter-workplace-address',
+  selector: 'app-workplace-name-address',
   templateUrl:
     '../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
 })
@@ -29,6 +29,7 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
   protected init(): void {
     this.flow = '/add-workplace';
     this.title = `What's the workplace name and address?`;
+    this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.setupSubscription();
   }
 
@@ -46,75 +47,5 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.workplaceService.selectedLocationAddress$.next(this.getLocationAddress());
     this.workplaceService.manuallyEnteredWorkplace$.next(true);
     this.router.navigate([`${this.flow}/select-main-service`]);
-  }
-
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'workplaceName',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the name of the workplace',
-          },
-          {
-            name: 'maxlength',
-            message: `Workplace name must be ${this.workplaceNameMaxLength} characters or fewer`,
-          },
-        ],
-      },
-      {
-        item: 'address1',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the building (number or name) and street',
-          },
-          {
-            name: 'maxlength',
-            message: `Building and street must be ${this.addressMaxLength} characters or fewer`,
-          },
-        ],
-      },
-      {
-        item: 'townOrCity',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the town or city',
-          },
-          {
-            name: 'maxlength',
-            message: `Town or city must be ${this.addressMaxLength} characters or fewer`,
-          },
-        ],
-      },
-      {
-        item: 'county',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the county',
-          },
-          {
-            name: 'maxlength',
-            message: `County must be ${this.addressMaxLength} characters or fewer`,
-          },
-        ],
-      },
-      {
-        item: 'postcode',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the postcode',
-          },
-          {
-            name: 'maxlength',
-            message: `Postcode must be ${this.postcodeMaxLength} characters or fewer`,
-          },
-        ],
-      },
-    ];
   }
 }

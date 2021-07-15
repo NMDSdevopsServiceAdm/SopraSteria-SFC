@@ -54,6 +54,7 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public title: string;
+  public workplaceErrorMessage: string;
   protected flow: string;
   protected workplaceNameMaxLength = 120;
   protected addressMaxLength = 40;
@@ -97,9 +98,9 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
   }
 
   ngOnInit() {
+    this.init();
     this.setupForm();
     this.setupFormErrorsMap();
-    this.init();
     this.setBackLink();
   }
 
@@ -141,7 +142,7 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
         type: [
           {
             name: 'required',
-            message: 'Enter the name of your workplace',
+            message: this.workplaceErrorMessage,
           },
           {
             name: 'maxlength',
