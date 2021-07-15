@@ -27,6 +27,7 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
 
   protected init(): void {
     this.flow = '/add-workplace';
+    this.title = `What's the workplace name and address?`;
     this.setupSubscription();
   }
 

@@ -11,7 +11,7 @@ import {
 
 @Component({
   selector: 'app-enter-workplace-address',
-  templateUrl: './workplace-name-address.component.html',
+  templateUrl: '../../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   constructor(
@@ -27,6 +27,7 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
 
   protected init(): void {
     this.flow = '/registration';
+    this.title = `What's your workplace name and address?`;
     this.setupSubscription();
   }
 
