@@ -107,6 +107,7 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   protected setupForm(): void {
@@ -179,7 +180,7 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
         type: [
           {
             name: 'required',
-            message: 'Enter the county.',
+            message: 'Enter the county',
           },
           {
             name: 'maxlength',
@@ -226,6 +227,7 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setSelectedLocationAddress(): void {}
 
   public getFirstErrorMessage(item: string): string {

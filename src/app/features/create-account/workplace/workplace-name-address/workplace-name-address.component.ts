@@ -7,11 +7,12 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import {
   EnterWorkplaceAddressDirective,
-} from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
+} from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
 
 @Component({
   selector: 'app-enter-workplace-address',
-  templateUrl: '../../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
+  templateUrl:
+    '../../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   constructor(

@@ -9,11 +9,12 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
   EnterWorkplaceAddressDirective,
-} from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
+} from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
 
 @Component({
   selector: 'app-enter-workplace-address',
-  templateUrl: '../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
+  templateUrl:
+    '../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
 })
 export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirective {
   public workplace: Establishment;
