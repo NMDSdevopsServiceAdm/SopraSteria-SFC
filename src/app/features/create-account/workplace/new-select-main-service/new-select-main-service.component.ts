@@ -8,12 +8,12 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainService } from '@features/workplace-find-and-select/select-main-service/select-main-service';
+import { SelectMainService } from '@shared/directives/create-workplace/select-main-service/select-main-service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-new-select-main-service',
-  templateUrl: '../../../workplace-find-and-select/select-main-service/select-main-service.component.html',
+  templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
 export class NewSelectMainServiceComponent extends SelectMainService {
   public isRegulated: boolean;
