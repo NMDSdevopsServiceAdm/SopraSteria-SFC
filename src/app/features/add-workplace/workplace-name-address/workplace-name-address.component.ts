@@ -13,7 +13,7 @@ import {
   selector: 'app-enter-workplace-address',
   templateUrl: '../../workplace-find-and-select/enter-workplace-address/enter-workplace-address.component.html',
 })
-export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirective {
+export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,
