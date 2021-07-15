@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockRegistrationService extends RegistrationService {
@@ -32,4 +32,8 @@ export class MockRegistrationService extends RegistrationService {
     townCity: 'Manchester',
     locationId: '123',
   });
+
+  public getUsernameDuplicate(username: string): Observable<any> {
+    return of({ status: username === 'duplicate' ? '1' : '0' });
+  }
 }
