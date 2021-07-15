@@ -31,6 +31,20 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     this.setupSubscriptions();
   }
 
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address',
+        type: [
+          {
+            name: 'required',
+            message: `Select the workplace address if it's listed`,
+          },
+        ],
+      },
+    ];
+  }
+
   protected setupSubscriptions(): void {
     this.subscriptions.add(
       this.workplaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {

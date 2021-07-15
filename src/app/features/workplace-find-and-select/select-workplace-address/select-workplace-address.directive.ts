@@ -69,19 +69,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'address',
-        type: [
-          {
-            name: 'required',
-            message: `Select your workplace address if it's listed`,
-          },
-        ],
-      },
-    ];
-  }
+  protected setupFormErrorsMap(): void {}
 
   public onLocationChange(addressLine1: string): void {}
 

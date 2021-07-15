@@ -5,7 +5,9 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { SelectWorkplaceAddressDirective } from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address.directive';
+import {
+  SelectWorkplaceAddressDirective,
+} from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -27,6 +29,20 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   protected init(): void {
     this.flow = '/registration';
     this.setupSubscriptions();
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address',
+        type: [
+          {
+            name: 'required',
+            message: `Select your workplace address if it's listed`,
+          },
+        ],
+      },
+    ];
   }
 
   protected setupSubscriptions(): void {
