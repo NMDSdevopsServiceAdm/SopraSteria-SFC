@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
+import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -122,6 +123,12 @@ const routes: Routes = [
     component: CreateUsernameComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Create Username' },
+  },
+  {
+    path: 'username-password',
+    component: UsernamePasswordComponent,
+    // canActivate: [RegisterGuard],
+    data: { title: 'Create your username and password' },
   },
   {
     path: 'security-question',

@@ -23,6 +23,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   public serverError: string;
   public submitted = false;
   public return: URLStructure;
+  public showPassword = false;
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
@@ -114,23 +115,23 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         type: [
           {
             name: 'required',
-            message: 'Enter a username',
+            message: 'Enter your username',
           },
           {
             name: 'maxlength',
-            message: `Your username must be no longer than ${this.userNameMaxLength} characters`,
+            message: `Username must be ${this.userNameMaxLength} characters or fewer`,
           },
           {
             name: 'minlength',
-            message: `Your username must be at least ${this.userNameMinLength} characters long`,
+            message: `Username must be ${this.userNameMinLength} characters or more`,
           },
           {
             name: 'usernameExists',
-            message: 'The username you entered is unavailable',
+            message: 'Enter a different username, this one is not available',
           },
           {
             name: 'pattern',
-            message: 'Your username cannot contain special characters, for example @',
+            message: 'Username can only contain letters, numbers, underscores and hyphens',
           },
         ],
       },
@@ -214,6 +215,11 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public togglePasswordShow(event: Event): void {
+    event.preventDefault();
+    this.showPassword = !this.showPassword;
   }
 
   /**
