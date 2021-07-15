@@ -102,7 +102,6 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
     this.init();
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setBackLink();
   }
 
   ngAfterViewInit() {
@@ -246,11 +245,6 @@ export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterV
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  // check
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
   }
 
   ngOnDestroy(): void {

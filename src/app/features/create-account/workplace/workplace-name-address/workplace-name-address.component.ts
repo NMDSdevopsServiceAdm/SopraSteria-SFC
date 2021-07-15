@@ -31,6 +31,8 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.setupSubscription();
+    this.setBackLink();
+    this.registrationService.workplaceNotFound$.next(false);
   }
 
   protected setupSubscription(): void {
@@ -47,5 +49,19 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.registrationService.selectedLocationAddress$.next(this.getLocationAddress());
     this.registrationService.manuallyEnteredWorkplace$.next(true);
     this.router.navigate([`${this.flow}/select-main-service`]);
+  }
+
+  protected setBackLink(): void {
+    if (this.registrationService.workplaceNotFound$.value === true) {
+      this.backService.setBackLink({ url: [`${this.flow}/new-workplace-not-found`] });
+      return;
+    }
+
+    if (this.registrationService.isCqcRegulated$.value === true) {
+      this.backService.setBackLink({ url: [`${this.flow}/select-workplace`] });
+      return;
+    }
+
+    this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
   }
 }

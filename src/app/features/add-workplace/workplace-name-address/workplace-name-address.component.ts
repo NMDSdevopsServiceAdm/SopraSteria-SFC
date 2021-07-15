@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
   EnterWorkplaceAddressDirective,
@@ -17,6 +18,7 @@ import {
 export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   constructor(
     private workplaceService: WorkplaceService,
+    private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -31,6 +33,8 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.title = `What's the workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.setupSubscription();
+    this.setBackLink();
+    this.registrationService.workplaceNotFound$.next(false);
   }
 
   private setupSubscription(): void {
@@ -47,5 +51,19 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.workplaceService.selectedLocationAddress$.next(this.getLocationAddress());
     this.workplaceService.manuallyEnteredWorkplace$.next(true);
     this.router.navigate([`${this.flow}/select-main-service`]);
+  }
+
+  protected setBackLink(): void {
+    if (this.registrationService.workplaceNotFound$.value === true) {
+      this.backService.setBackLink({ url: [`${this.flow}/new-workplace-not-found`] });
+      return;
+    }
+
+    if (this.registrationService.isCqcRegulated$.value === true) {
+      this.backService.setBackLink({ url: [`${this.flow}/select-workplace`] });
+      return;
+    }
+
+    this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
   }
 }

@@ -35,6 +35,7 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirecti
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
+    this.setBackLink();
     this.setLocationAddress();
   }
 

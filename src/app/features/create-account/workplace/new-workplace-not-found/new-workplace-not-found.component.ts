@@ -92,8 +92,8 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
+      this.registrationService.workplaceNotFound$.next(true);
       if (useDifferentLocationIdOrPostcode.value === 'yes') {
-        this.registrationService.useDifferentLocationIdOrPostcode$.next(true);
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
         this.router.navigate([`/${this.flow}`, 'workplace-name-address']);
