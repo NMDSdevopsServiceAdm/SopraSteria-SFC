@@ -86,4 +86,50 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
     });
   });
+
+  describe('setBackLink', () => {
+    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.returnToWorkplaceNotFound = true;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'new-workplace-not-found'],
+      });
+    });
+
+    it('should set the back link to `select-workplace` when returnToWorkplaceNotFound is false and isCqcRegulated is true', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.returnToWorkplaceNotFound = false;
+      component.isCqcRegulated = true;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'select-workplace'],
+      });
+    });
+
+    it('should set the back link to `select-workplace-address` when returnToWorkplaceNotFound and isCqcRegulated are false', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.returnToWorkplaceNotFound = false;
+      component.isCqcRegulated = false;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'select-workplace-address'],
+      });
+    });
+  });
 });

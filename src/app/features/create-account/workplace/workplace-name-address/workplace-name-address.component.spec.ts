@@ -215,6 +215,52 @@ describe('WorkplaceNameAddressComponent', () => {
     });
   });
 
+  describe('setBackLink', () => {
+    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.returnToWorkplaceNotFound = true;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'new-workplace-not-found'],
+      });
+    });
+
+    it('should set the back link to `select-workplace` when returnToWorkplaceNotFound is false and isCqcRegulated is true', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.returnToWorkplaceNotFound = false;
+      component.isCqcRegulated = true;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'select-workplace'],
+      });
+    });
+
+    it('should set the back link to `select-workplace-address` when returnToWorkplaceNotFound and isCqcRegulated are false', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.returnToWorkplaceNotFound = false;
+      component.isCqcRegulated = false;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'select-workplace-address'],
+      });
+    });
+  });
+
   // describe('Navigation', () => {
   //   it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
   //     const { getByText, fixture, spy } = await setup();

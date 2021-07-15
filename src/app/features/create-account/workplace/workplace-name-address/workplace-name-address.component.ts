@@ -15,9 +15,12 @@ import {
     '../../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
+  public returnToWorkplaceNotFound: boolean;
+  public isCqcRegulated: boolean;
+
   constructor(
     private registrationService: RegistrationService,
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
@@ -30,6 +33,9 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
+    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
+    this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
+
     this.setupSubscription();
     this.setBackLink();
     this.registrationService.workplaceNotFound$.next(false);
@@ -51,17 +57,17 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.router.navigate([`${this.flow}/select-main-service`]);
   }
 
-  protected setBackLink(): void {
-    if (this.registrationService.workplaceNotFound$.value === true) {
-      this.backService.setBackLink({ url: [`${this.flow}/new-workplace-not-found`] });
+  public setBackLink(): void {
+    if (this.returnToWorkplaceNotFound) {
+      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
       return;
     }
 
-    if (this.registrationService.isCqcRegulated$.value === true) {
-      this.backService.setBackLink({ url: [`${this.flow}/select-workplace`] });
+    if (this.isCqcRegulated) {
+      this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
       return;
     }
 
-    this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
+    this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
   }
 }
