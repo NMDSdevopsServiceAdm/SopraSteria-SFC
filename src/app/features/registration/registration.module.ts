@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import {
-  EnterWorkplaceAddressComponent,
-} from '@features/create-account/workplace/enter-workplace-address/enter-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   NewWorkplaceNotFoundComponent,
 } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -49,7 +49,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
     CreateUsernameComponent,
-    EnterWorkplaceAddressComponent,
+    WorkplaceNameAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
     RegistrationAwaitingApprovalComponent,

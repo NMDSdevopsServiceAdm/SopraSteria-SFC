@@ -11,9 +11,9 @@ import {
 
 @Component({
   selector: 'app-enter-workplace-address',
-  templateUrl: './enter-workplace-address.component.html',
+  templateUrl: './workplace-name-address.component.html',
 })
-export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirective {
+export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
