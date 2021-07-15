@@ -5,9 +5,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import {
-  SelectWorkplaceAddressDirective,
-} from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address.directive';
+import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
