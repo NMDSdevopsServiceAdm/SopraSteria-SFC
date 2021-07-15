@@ -23,7 +23,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
       name: 'securityQuestion',
     },
     {
-      label: 'Answer to security question',
+      label: 'Answer',
       name: 'securityQuestionAnswer',
     },
   ];
@@ -74,10 +74,14 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
   protected setCallToActionLabel(): void {}
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      securityQuestion: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
-      securityQuestionAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
-    });
+    const questionAnswerSpec = ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]];
+    this.form = this.formBuilder.group(
+      {
+        securityQuestion: questionAnswerSpec,
+        securityQuestionAnswer: questionAnswerSpec,
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   private setupFormErrorsMap(): void {
@@ -91,7 +95,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
           },
           {
             name: 'maxlength',
-            message: `The security question must be no longer than ${this.securityDetailsMaxLength} characters.`,
+            message: `Security question must be ${this.securityDetailsMaxLength} characters or fewer.`,
           },
         ],
       },
@@ -100,11 +104,11 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
         type: [
           {
             name: 'required',
-            message: 'Enter the answer to the security question',
+            message: 'Enter your answer to the security question',
           },
           {
             name: 'maxlength',
-            message: `The security answer must be no longer than ${this.securityDetailsMaxLength} characters.`,
+            message: `Answer must be ${this.securityDetailsMaxLength} characters or fewer.`,
           },
         ],
       },
