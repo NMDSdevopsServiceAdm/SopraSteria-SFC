@@ -6,7 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { FindWorkplaceAddress } from '@features/workplace-find-and-select/find-workplace-address/find-workplace-address';
+import { FindWorkplaceAddress } from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -41,6 +41,10 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
           },
           {
             name: 'maxlength',
+            message: 'Enter a valid workplace postcode',
+          },
+          {
+            name: 'invalidPostcode',
             message: 'Enter a valid workplace postcode',
           },
         ],

@@ -1,12 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
+import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
@@ -64,7 +65,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
       postcode: [
         '',
         {
-          validators: [Validators.required, Validators.maxLength(8)],
+          validators: [Validators.required, Validators.maxLength(8), this.validPostcode],
           updateOn: 'submit',
         },
       ],
@@ -86,6 +87,13 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
         message: 'Database error.',
       },
     ];
+  }
+
+  protected validPostcode(control: FormControl): { [s: string]: boolean } {
+    if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
+      return { invalidPostcode: true };
+    }
+    return null;
   }
 
   protected getAddressesByPostCode(): void {

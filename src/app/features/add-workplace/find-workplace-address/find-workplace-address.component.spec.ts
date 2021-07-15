@@ -83,13 +83,27 @@ describe('FindWorkplaceComponent', () => {
       expect(component.getAllByText(errorMessage).length).toBe(2);
     });
 
+    it('should display an error when Find address button is clicked with a postcode that is longer than 8 characters', async () => {
+      const { component } = await setup();
+
+      const form = component.fixture.componentInstance.form;
+      const findAddressButton = component.getByText('Find address');
+
+      form.controls['postcode'].setValue('M4X P0STC0DE');
+      fireEvent.click(findAddressButton);
+      const errorMessage = 'Enter a valid workplace postcode';
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText(errorMessage).length).toBe(2);
+    });
+
     it('should display an error when Find address button is clicked with an invalid postcode', async () => {
       const { component } = await setup();
 
       const form = component.fixture.componentInstance.form;
       const findAddressButton = component.getByText('Find address');
 
-      form.controls['postcode'].setValue('invalid postcode');
+      form.controls['postcode'].setValue('A3CD');
       fireEvent.click(findAddressButton);
       const errorMessage = 'Enter a valid workplace postcode';
 
