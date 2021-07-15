@@ -47,4 +47,74 @@ export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirectiv
     this.workplaceService.manuallyEnteredWorkplace$.next(true);
     this.router.navigate([`${this.flow}/select-main-service`]);
   }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplaceName',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the name of the workplace',
+          },
+          {
+            name: 'maxlength',
+            message: `Workplace name must be ${this.workplaceNameMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'address1',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the building (number or name) and street',
+          },
+          {
+            name: 'maxlength',
+            message: `Building and street must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'townOrCity',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the town or city',
+          },
+          {
+            name: 'maxlength',
+            message: `Town or city must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'county',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the county',
+          },
+          {
+            name: 'maxlength',
+            message: `County must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the postcode',
+          },
+          {
+            name: 'maxlength',
+            message: `Postcode must be ${this.postcodeMaxLength} characters or fewer`,
+          },
+        ],
+      },
+    ];
+  }
 }
