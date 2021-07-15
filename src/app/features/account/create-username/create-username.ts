@@ -88,24 +88,27 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(this.userNameMaxLength),
-          Validators.minLength(this.userNameMinLength),
-          Validators.pattern(ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES),
+    this.form = this.formBuilder.group(
+      {
+        username: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(this.userNameMaxLength),
+            Validators.minLength(this.userNameMinLength),
+            Validators.pattern(ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES),
+          ],
         ],
-      ],
-      passwordGroup: this.formBuilder.group(
-        {
-          createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
-          confirmPasswordInput: ['', [Validators.required]],
-        },
-        { validator: CustomValidators.matchInputValues },
-      ),
-    });
+        passwordGroup: this.formBuilder.group(
+          {
+            createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
+            confirmPasswordInput: ['', [Validators.required]],
+          },
+          { validator: CustomValidators.matchInputValues, updateOn: 'submit' },
+        ),
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   private setupFormErrorsMap(): void {
