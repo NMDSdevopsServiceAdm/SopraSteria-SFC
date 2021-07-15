@@ -59,7 +59,13 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      address: ['', [Validators.required]],
+      address: [
+        null,
+        {
+          validators: [Validators.required],
+          updateOn: 'submit',
+        },
+      ],
     });
   }
 
