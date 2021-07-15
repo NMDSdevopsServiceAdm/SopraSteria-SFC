@@ -2,15 +2,15 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
+import { RegistrationModule } from '@features/registration/registration.module';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
 
 describe('SelectWorkplaceAddressComponent', () => {
@@ -27,8 +27,8 @@ describe('SelectWorkplaceAddressComponent', () => {
       providers: [
         SelectWorkplaceAddressDirective,
         {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -38,7 +38,7 @@ describe('SelectWorkplaceAddressComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -64,7 +64,7 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display postcode retrieved from registration service at top and in each workplace address in dropdown(2)', async () => {
+  it('should display postcode retrieved from workplace service at top and in each workplace address in dropdown(2)', async () => {
     const { getAllByText } = await setup();
 
     const retrievedPostcode = 'ABC 123';
@@ -82,7 +82,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
   it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
     const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select your workplace address if it's listed`;
+    const errorMessage = `Select the workplace address if it's listed`;
     const form = component.form;
     const continueButton = getByText('Continue');
 
@@ -95,17 +95,17 @@ describe('SelectWorkplaceAddressComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate back to the find-workplace-address url in registration flow when Change clicked', async () => {
+    it('should navigate back to the find-workplace-address url in add-workplace flow when Change clicked', async () => {
       const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
       fixture.detectChanges();
 
       const changeButton = getByText('Change');
 
-      expect(changeButton.getAttribute('href')).toBe('/registration/find-workplace-address');
+      expect(changeButton.getAttribute('href')).toBe('/add-workplace/find-workplace-address');
     });
 
-    it('should navigate to workplace-address url in registration flow when workplace not listed button clicked', async () => {
+    it('should navigate to workplace-address url in add-workplace flow when workplace not listed button clicked', async () => {
       const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
       component.ngOnInit();
@@ -113,7 +113,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       const notDisplayedButton = getByText('Workplace address is not listed or is not correct');
 
-      expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-address');
+      expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-address');
     });
   });
 });
