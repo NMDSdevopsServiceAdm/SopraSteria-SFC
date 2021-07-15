@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -48,11 +49,18 @@ describe('SelectWorkplaceAddressComponent', () => {
       ],
     });
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
+
     const component = fixture.componentInstance;
 
     return {
       fixture,
       component,
+      spy,
       getAllByText,
       queryByText,
       getByText,
@@ -80,18 +88,20 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(getByText(noOfAddressesMessage, { exact: false })).toBeTruthy();
   });
 
-  it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
-    const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select the workplace address if it's listed`;
-    const form = component.form;
-    const continueButton = getByText('Continue');
+  describe('Error messages', () => {
+    it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
+      const { component, fixture, getAllByText, queryByText, getByText } = await setup();
+      const errorMessage = `Select the workplace address if it's listed`;
+      const form = component.form;
+      const continueButton = getByText('Continue');
 
-    expect(queryByText(errorMessage, { exact: false })).toBeNull();
+      expect(queryByText(errorMessage, { exact: false })).toBeNull();
 
-    fireEvent.click(continueButton);
-    fixture.detectChanges();
-    expect(form.invalid).toBeTruthy();
-    expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
+    });
   });
 
   describe('Navigation', () => {
@@ -114,6 +124,21 @@ describe('SelectWorkplaceAddressComponent', () => {
       const notDisplayedButton = getByText('Workplace address is not listed or is not correct');
 
       expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-address');
+    });
+
+    it('should navigate to select-main-service url in add-workplace flow when workplace selected and Continue clicked', async () => {
+      const { component, spy, fixture, getByText } = await setup();
+      const form = component.form;
+      const continueButton = getByText('Continue');
+
+      form.controls['address'].setValue('1');
+      form.controls['address'].markAsDirty();
+      fixture.detectChanges();
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/select-main-service']);
     });
   });
 });

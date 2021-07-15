@@ -23,4 +23,13 @@ export class MockWorkplaceService extends WorkplaceService {
       locationId: '12345',
     },
   ]);
+
+  public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject({
+    postalCode: 'ABC 123',
+    addressLine1: '1 Street',
+    county: 'Greater Manchester',
+    locationName: 'Name',
+    townCity: 'Manchester',
+    locationId: '123',
+  });
 }
