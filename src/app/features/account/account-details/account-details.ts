@@ -41,6 +41,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   protected back: URLStructure;
   protected formErrorsMap: Array<ErrorDetails>;
   protected subscriptions: Subscription = new Subscription();
+  protected createAccountNewDesign: boolean;
 
   constructor(
     protected backService: BackService,
@@ -49,7 +50,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
     protected router: Router,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.form = this.fb.group({
       fullname: ['', [Validators.required, Validators.maxLength(120)]],
       jobTitle: ['', [Validators.required, Validators.maxLength(120)]],
@@ -59,8 +60,8 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    await this.init();
     this.setBackLink();
-    this.init();
   }
 
   ngAfterViewInit() {
