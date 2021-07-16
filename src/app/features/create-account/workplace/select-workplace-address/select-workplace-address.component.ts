@@ -5,16 +5,14 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import {
-  SelectWorkplaceAddress,
-} from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
+import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace-address',
   templateUrl: './select-workplace-address.component.html',
 })
-export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
+export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirective {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
@@ -29,6 +27,20 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   protected init(): void {
     this.flow = '/registration';
     this.setupSubscriptions();
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address',
+        type: [
+          {
+            name: 'required',
+            message: `Select your workplace address if it's listed`,
+          },
+        ],
+      },
+    ];
   }
 
   protected setupSubscriptions(): void {
