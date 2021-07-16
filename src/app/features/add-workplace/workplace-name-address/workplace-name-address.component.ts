@@ -44,7 +44,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     await this.setFeatureFlag();
     this.setBackLink();
     this.setupSubscription();
-    this.registrationService.workplaceNotFound$.next(false);
   }
 
   private async setFeatureFlag() {
