@@ -1,15 +1,16 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { compact } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
+export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public flow: string;
   public enteredPostcode: string;
@@ -17,6 +18,8 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
   public formErrorsMap: Array<ErrorDetails>;
   public locationAddresses: Array<LocationAddress>;
   public submitted = false;
+  public createAccountNewDesign: boolean;
+  public workplaceNotListedLink: string;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
@@ -25,48 +28,48 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
-  get getAddress() {
+  get getAddress(): AbstractControl {
     return this.form.get('address');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
-    this.setBackLink();
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.setBackLink();
+      this.workplaceNotListedLink = value ? 'workplace-address' : 'enter-workplace-address';
+    });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected init(): void {}
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
+    const backLink = this.createAccountNewDesign ? 'find-workplace-address' : 'regulated-by-cqc';
+    this.backService.setBackLink({ url: [this.flow, backLink] });
   }
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      address: ['', [Validators.required]],
+      address: [
+        '',
+        {
+          validators: [Validators.required],
+          updateOn: 'submit',
+        },
+      ],
     });
   }
 
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'address',
-        type: [
-          {
-            name: 'required',
-            message: 'Please select an address.',
-          },
-        ],
-      },
-    ];
-  }
+  protected setupFormErrorsMap(): void {}
 
   public onLocationChange(addressLine1: string): void {}
 
@@ -82,10 +85,10 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
   }
 
   protected navigateToNextRoute(locationName: string): void {
-    if (!locationName.length) {
-      this.router.navigate([`${this.flow}/enter-workplace-address`]);
-    } else {
+    if (this.createAccountNewDesign || locationName.length) {
       this.router.navigate([`${this.flow}/select-main-service`]);
+    } else {
+      this.router.navigate([`${this.flow}/enter-workplace-address`]);
     }
   }
 
