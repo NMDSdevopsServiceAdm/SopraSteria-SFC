@@ -127,7 +127,6 @@ export class EmailsComponent implements OnDestroy {
 
   public downloadReport(event: Event): void {
     event.preventDefault();
-
     this.subscriptions.add(
       this.emailCampaignService.getInactiveWorkplacesReport().subscribe((response) => {
         this.reportsService.saveFile(response);
@@ -137,42 +136,26 @@ export class EmailsComponent implements OnDestroy {
 
   public downloadRegistrationSurveyReport(event: Event): void {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportsService.getRegistrationSurveyReport().subscribe((response) => {
-        this.reportsService.saveFile(response);
-      }),
-    );
+    this.reportsService.downloadRegistrationSurveyReport();
   }
 
   public downloadSatisfactionSurveyReport(event: Event) {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportsService.getSatisfactionSurveyReport().subscribe((response) => {
-        this.reportsService.saveFile(response);
-      }),
-    );
+    this.reportsService.downloadSatisfactionSurveyReport();
   }
 
   public downloadLocalAuthorityAdminReport(event: Event) {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportsService
-        .getLocalAuthorityAdminReport()
-        .subscribe((response) => this.reportsService.saveFile(response)),
-    );
+    this.reportsService.downloadLocalAuthorityAdminReport();
   }
 
   public downloadDeleteReport(event: Event) {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportsService.getDeleteReport().subscribe((response) => this.reportsService.saveFile(response)),
-    );
+    this.reportsService.downloadDeleteReport();
   }
 
   public downloadWdfSummaryReport(event: Event) {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportsService.getWdfSummaryReport().subscribe((response) => this.reportsService.saveFile(response)),
-    );
+    this.reportsService.downloadWdfSummaryReport();
   }
 }

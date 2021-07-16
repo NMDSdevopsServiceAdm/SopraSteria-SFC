@@ -308,65 +308,55 @@ describe('EmailsComponent', () => {
       const component = await setup();
 
       const reportService = TestBed.inject(ReportService);
-      const getReport = spyOn(reportService, 'getRegistrationSurveyReport').and.callFake(() => of(null));
-      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const downloadReport = spyOn(reportService, 'downloadRegistrationSurveyReport').and.callFake(() => of(null));
 
       fireEvent.click(component.getByText('Registration survey', { exact: false }));
 
-      expect(getReport).toHaveBeenCalled();
-      expect(saveAs).toHaveBeenCalled();
+      expect(downloadReport).toHaveBeenCalled();
     });
 
     it('should download a satisfaction survey report when the "Satisfaction survey" button is clicked', async () => {
       const component = await setup();
 
       const reportService = TestBed.inject(ReportService);
-      const getReport = spyOn(reportService, 'getSatisfactionSurveyReport').and.callFake(() => of(null));
-      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const downloadReport = spyOn(reportService, 'downloadSatisfactionSurveyReport').and.callFake(() => of(null));
 
       fireEvent.click(component.getByText('Satisfaction survey', { exact: false }));
 
-      expect(getReport).toHaveBeenCalled();
-      expect(saveAs).toHaveBeenCalled();
+      expect(downloadReport).toHaveBeenCalled();
     });
 
     it('should download a delete report when the "Delete report" button is clicked', async () => {
       const component = await setup();
 
       const reportService = TestBed.inject(ReportService);
-      const getReport = spyOn(reportService, 'getDeleteReport').and.callFake(() => of(null));
-      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const downloadReport = spyOn(reportService, 'downloadDeleteReport').and.callFake(() => of(null));
 
       fireEvent.click(component.getByText('Delete report', { exact: false }));
 
-      expect(getReport).toHaveBeenCalled();
-      expect(saveAs).toHaveBeenCalled();
+      expect(downloadReport).toHaveBeenCalled();
     });
 
     it('should download a local authority progress report when the "Local admin authority progress" button is clicked', async () => {
       const component = await setup();
 
       const reportService = TestBed.inject(ReportService);
-      const getReport = spyOn(reportService, 'getLocalAuthorityAdminReport').and.callFake(() => of(null));
-      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const downloadReport = spyOn(reportService, 'downloadLocalAuthorityAdminReport').and.callFake(() => of(null));
 
       fireEvent.click(component.getByText('Local admin authority progress', { exact: false }));
 
-      expect(getReport).toHaveBeenCalled();
-      expect(saveAs).toHaveBeenCalled();
+      expect(downloadReport).toHaveBeenCalled();
     });
 
     it('should download a WDF Summary report when the "WDF Summary Report" button is clicked', async () => {
       const component = await setup();
 
       const reportService = TestBed.inject(ReportService);
-      const getReport = spyOn(reportService, 'getWdfSummaryReport').and.callFake(() => of(null));
-      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const downloadReport = spyOn(reportService, 'downloadWdfSummaryReport').and.callFake(() => of(null));
 
       fireEvent.click(component.getByText('WDF summary report', { exact: false }));
 
-      expect(getReport).toHaveBeenCalled();
-      expect(saveAs).toHaveBeenCalled();
+      expect(downloadReport).toHaveBeenCalled();
     });
   });
 });

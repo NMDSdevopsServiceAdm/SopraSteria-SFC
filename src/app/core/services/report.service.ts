@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { LockStatus } from '@core/model/reportPolling.model';
 import { WDFReport } from '@core/model/reports.model';
 import { WDFLockStatus } from '@core/model/wdf.model';
-import { from, interval, Observable } from 'rxjs';
+import { from, interval, Observable, Subscription } from 'rxjs';
 import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
@@ -12,6 +12,8 @@ import { EstablishmentService } from './establishment.service';
   providedIn: 'root',
 })
 export class ReportService {
+  protected subscriptions: Subscription = new Subscription();
+
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
   getWDFReport(establishmentId: string, updatedEffectiveFrom?: string): Observable<WDFReport> {
@@ -33,11 +35,19 @@ export class ReportService {
     });
   }
 
+  public downloadWdfSummaryReport(): void {
+    this.subscriptions.add(this.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
+  }
+
   public getDeleteReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/delete/new`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
+  }
+
+  public downloadDeleteReport(): void {
+    this.subscriptions.add(this.getDeleteReport().subscribe((response) => this.saveFile(response)));
   }
 
   public getRegistrationSurveyReport(): Observable<HttpResponse<Blob>> {
@@ -47,11 +57,27 @@ export class ReportService {
     });
   }
 
+  public downloadRegistrationSurveyReport(): void {
+    this.subscriptions.add(
+      this.getRegistrationSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
+  }
+
   public getSatisfactionSurveyReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/satisfactionSurvey/new`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
+  }
+
+  public downloadSatisfactionSurveyReport(): void {
+    this.subscriptions.add(
+      this.getSatisfactionSurveyReport().subscribe((response) => {
+        this.saveFile(response);
+      }),
+    );
   }
 
   public getLocalAuthorityReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
@@ -74,6 +100,10 @@ export class ReportService {
       null,
       'adminla',
     );
+  }
+
+  public downloadLocalAuthorityAdminReport(): void {
+    this.subscriptions.add(this.getLocalAuthorityAdminReport().subscribe((response) => this.saveFile(response)));
   }
 
   public getParentWDFReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
