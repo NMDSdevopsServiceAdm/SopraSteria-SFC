@@ -161,8 +161,9 @@ describe('EmailsComponent', () => {
       const component = await setup();
 
       const emailCampaignService = TestBed.inject(EmailCampaignService);
+      const reportService = TestBed.inject(ReportService);
       const getReport = spyOn(emailCampaignService, 'getInactiveWorkplacesReport').and.callFake(() => of(null));
-      const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
       component.fixture.componentInstance.inactiveWorkplaces = 25;
       component.fixture.detectChanges();
@@ -308,7 +309,7 @@ describe('EmailsComponent', () => {
 
       const reportService = TestBed.inject(ReportService);
       const getReport = spyOn(reportService, 'getRegistrationSurveyReport').and.callFake(() => of(null));
-      const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
       fireEvent.click(component.getByText('Registration survey', { exact: false }));
 
@@ -321,7 +322,7 @@ describe('EmailsComponent', () => {
 
       const reportService = TestBed.inject(ReportService);
       const getReport = spyOn(reportService, 'getSatisfactionSurveyReport').and.callFake(() => of(null));
-      const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
       fireEvent.click(component.getByText('Satisfaction survey', { exact: false }));
 
@@ -334,7 +335,7 @@ describe('EmailsComponent', () => {
 
       const reportService = TestBed.inject(ReportService);
       const getReport = spyOn(reportService, 'getDeleteReport').and.callFake(() => of(null));
-      const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
       fireEvent.click(component.getByText('Delete report', { exact: false }));
 
@@ -347,7 +348,7 @@ describe('EmailsComponent', () => {
 
       const reportService = TestBed.inject(ReportService);
       const getReport = spyOn(reportService, 'getLocalAuthorityAdminReport').and.callFake(() => of(null));
-      const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
       fireEvent.click(component.getByText('Local admin authority progress', { exact: false }));
 
@@ -360,7 +361,7 @@ describe('EmailsComponent', () => {
 
       const reportService = TestBed.inject(ReportService);
       const getReport = spyOn(reportService, 'getWdfSummaryReport').and.callFake(() => of(null));
-      const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+      const saveAs = spyOn(reportService, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
       fireEvent.click(component.getByText('WDF summary report', { exact: false }));
 

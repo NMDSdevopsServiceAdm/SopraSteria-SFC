@@ -183,4 +183,14 @@ export class ReportService {
         )
     );
   }
+
+  public saveFile(response: HttpResponse<Blob>) {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+
+    saveAs(blob, filename);
+  }
 }
