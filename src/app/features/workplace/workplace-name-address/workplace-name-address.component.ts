@@ -12,11 +12,11 @@ import {
 } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 
 @Component({
-  selector: 'app-enter-workplace-address',
+  selector: 'app-workplace-name-address',
   templateUrl:
     '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
-export class EnterWorkplaceAddressComponent extends WorkplaceNameAddressDirective {
+export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;
   constructor(
     private workplaceService: WorkplaceService,
