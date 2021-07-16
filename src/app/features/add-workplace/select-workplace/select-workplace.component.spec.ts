@@ -128,7 +128,7 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to workplace-name-address url in add-workplace flow when workplace not displayed button clicked', async () => {
-      const { component, fixture, spy, getByText } = await setup();
+      const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
       fixture.detectChanges();
 
