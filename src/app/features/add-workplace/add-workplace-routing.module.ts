@@ -116,6 +116,7 @@ const routes: Routes = [
     path: 'new-select-main-service',
     component: NewSelectMainServiceComponent,
     data: { title: 'Select Main Service' },
+    canActivate: [AddWorkplaceInProgressGuard],
   },
   {
     path: 'complete',
