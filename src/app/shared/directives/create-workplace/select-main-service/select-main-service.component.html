@@ -11,14 +11,36 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">Select your main service</h1>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <ng-container *ngIf="isParent; else notParent">
+              <h1 class="govuk-fieldset__heading">Select its main service</h1>
+            </ng-container>
+            <ng-template #notParent>
+              <h1 class="govuk-fieldset__heading">Select your main service</h1>
+            </ng-template>
           </legend>
-
-          <p *ngIf="displayIntro">
-            We need some details about where you work. You need to answer these questions before we can create your
-            account.
-          </p>
+          <div *ngIf="displayIntro">
+            <ng-container *ngIf="isRegulated; else notRegulated">
+              <ng-container *ngIf="isParent; else notParent">
+                <p>
+                  Because you said the main service it provides is regulated by the Care Quality Commission (CQC),
+                  Skills for Care will need to check your selection matches the CQC database.
+                </p>
+              </ng-container>
+              <ng-template #notParent>
+                <p>
+                  Because you said the main service you provide is regulated by the Care Quality Commission (CQC),
+                  Skills for Care will need to check your selection matches the CQC database.
+                </p>
+              </ng-template>
+            </ng-container>
+            <ng-template #notRegulated>
+              <p *ngIf="!createAccountNewDesign">
+                We need some details about where you work. You need to answer these questions before we can create your
+                account.
+              </p>
+            </ng-template>
+          </div>
 
           <span
             *ngIf="submitted && form.get('workplaceService').errors"

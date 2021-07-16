@@ -6,6 +6,7 @@ import { SecurityQuestionComponent } from '@features/create-account/user/create-
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { FindWorkplaceAddressComponent } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
+import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { ConfirmAccountDetailsComponent } from '@features/registration/confirm-account-details/confirm-account-details.component';
@@ -154,6 +155,18 @@ const routes: Routes = [
     component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'new-select-main-service',
+    component: NewSelectMainServiceComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'find-workplace',
+    component: NewRegulatedByCqcComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Find your workplace' },
   },
   {
     path: 'workplace-name',
