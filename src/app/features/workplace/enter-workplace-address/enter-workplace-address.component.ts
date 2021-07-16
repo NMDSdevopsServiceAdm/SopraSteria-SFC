@@ -8,15 +8,15 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
-  EnterWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
+  WorkplaceNameAddressDirective,
+} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 
 @Component({
   selector: 'app-enter-workplace-address',
   templateUrl:
-    '../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
+    '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
-export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddressDirective {
+export class EnterWorkplaceAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;
   constructor(
     private workplaceService: WorkplaceService,

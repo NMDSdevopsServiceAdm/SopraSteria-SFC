@@ -6,16 +6,16 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import {
-  EnterWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/enter-workplace-address/enter-workplace-address';
+  WorkplaceNameAddressDirective,
+} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-name-address',
   templateUrl:
-    '../../../../shared/directives/create-workplace/enter-workplace-address/enter-workplace-address.component.html',
+    '../../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
-export class WorkplaceNameAddressComponent extends EnterWorkplaceAddressDirective {
+export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;

@@ -9,7 +9,7 @@ import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class EnterWorkplaceAddressDirective implements OnInit, OnDestroy, AfterViewInit {
+export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
   public isWorkPlaceUpdate: boolean;
