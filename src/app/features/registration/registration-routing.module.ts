@@ -2,18 +2,32 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
+import {
+  SecurityQuestionComponent,
+} from '@features/create-account/user/create-security-question/create-security-question.component';
+import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import {
+  FindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
-import { ConfirmAccountDetailsComponent } from '@features/registration/confirm-account-details/confirm-account-details.component';
-import { ConfirmWorkplaceDetailsComponent } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
-import { EnterWorkplaceAddressComponent } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import { FindWorkplaceAddressComponent } from '@features/registration/find-workplace-address/find-workplace-address.component';
-import { RegistrationAwaitingApprovalComponent } from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
+import {
+  ConfirmAccountDetailsComponent,
+} from '@features/registration/confirm-account-details/confirm-account-details.component';
+import {
+  ConfirmWorkplaceDetailsComponent,
+} from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
+import {
+  EnterWorkplaceAddressComponent,
+} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
+import {
+  RegistrationAwaitingApprovalComponent,
+} from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
-import { SecurityQuestionComponent } from '@features/registration/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
@@ -103,16 +117,16 @@ const routes: Routes = [
     data: { title: 'Change Your Details' },
   },
   {
-    path: 'create-username',
-    component: CreateUsernameComponent,
+    path: 'username-password',
+    component: UsernamePasswordComponent,
     canActivate: [RegisterGuard],
-    data: { title: 'Create Username' },
+    data: { title: 'Create your username and password' },
   },
   {
-    path: 'security-question',
+    path: 'create-security-question',
     component: SecurityQuestionComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Security Question' },
+    // canActivate: [RegisterGuard],
+    data: { title: 'Create your security question' },
   },
   {
     path: 'confirm-account-details',
