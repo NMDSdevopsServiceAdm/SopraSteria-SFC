@@ -83,7 +83,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit 
 
   protected navigateToNextRoute(locationName: string): void {
     if (!locationName.length) {
-      this.router.navigate([`${this.flow}/enter-workplace-address`]);
+      this.router.navigate([`${this.flow}/workplace-name-address`]);
     } else {
       this.router.navigate([`${this.flow}/select-main-service`]);
     }
