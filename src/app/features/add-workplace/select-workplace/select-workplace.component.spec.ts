@@ -126,15 +126,5 @@ describe('SelectWorkplaceComponent', () => {
 
       expect(changeButton.getAttribute('href')).toBe('/add-workplace/find-workplace');
     });
-
-    it('should navigate to workplace-name-address url in add-workplace flow when workplace not displayed button clicked', async () => {
-      const { component, fixture, spy, getByText } = await setup();
-      component.createAccountNewDesign = true;
-      fixture.detectChanges();
-
-      const notDisplayedButton = getByText('Workplace is not displayed or is not correct');
-
-      expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
-    });
   });
 });
