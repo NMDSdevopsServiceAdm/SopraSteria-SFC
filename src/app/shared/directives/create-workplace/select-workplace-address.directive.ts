@@ -85,10 +85,14 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   protected navigateToNextRoute(locationName: string): void {
-    if (this.createAccountNewDesign || locationName.length) {
-      this.router.navigate([`${this.flow}/select-main-service`]);
+    if (this.createAccountNewDesign) {
+      this.router.navigate([`${this.flow}/new-select-main-service`]);
     } else {
-      this.router.navigate([`${this.flow}/workplace-name-address`]);
+      if (locationName.length) {
+        this.router.navigate([`${this.flow}/select-main-service`]);
+      } else {
+        this.router.navigate([`${this.flow}/enter-workplace-address`]);
+      }
     }
   }
 

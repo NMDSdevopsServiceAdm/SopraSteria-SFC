@@ -97,7 +97,7 @@ export class IsThisYourWorkplaceComponent implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
-        this.router.navigate([this.flow, 'select-main-service']);
+        this.router.navigate([this.flow, 'new-select-main-service']);
       } else {
         this.router.navigate([this.flow, 'find-workplace']);
       }

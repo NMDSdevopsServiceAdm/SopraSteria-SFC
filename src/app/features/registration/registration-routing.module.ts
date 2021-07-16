@@ -11,11 +11,10 @@ import {
 } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
-  SelectWorkplaceAddressComponent,
-} from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
-import {
   WorkplaceNameAddressComponent,
 } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
+import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -166,6 +165,18 @@ const routes: Routes = [
     component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'new-select-main-service',
+    component: NewSelectMainServiceComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'find-workplace',
+    component: NewRegulatedByCqcComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Find your workplace' },
   },
   {
     path: 'workplace-name',

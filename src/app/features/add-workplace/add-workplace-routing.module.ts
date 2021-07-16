@@ -32,12 +32,9 @@ import {
   IsThisYourWorkplaceComponent,
 } from '@features/create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
-import {
-  NewRegulatedByCqcComponent,
-} from '@features/create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
-import {
-  NewWorkplaceNotFoundComponent,
-} from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
+import { NewRegulatedByCqcComponent } from '@features/create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
+import { NewWorkplaceNotFoundComponent } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 
 import { StartComponent } from './start/start.component';
 
@@ -122,6 +119,12 @@ const routes: Routes = [
   {
     path: 'select-main-service',
     component: SelectMainServiceComponent,
+    data: { title: 'Select Main Service' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'new-select-main-service',
+    component: NewSelectMainServiceComponent,
     data: { title: 'Select Main Service' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
