@@ -133,18 +133,6 @@ describe('NewSelectMainServiceComponent', () => {
     });
   });
 
-  it('should set the correct back link to the is this your workplace page', async () => {
-    const { component, fixture } = await setup();
-    const backLinkSpy = spyOn(fixture.componentInstance.backService, 'setBackLink');
-
-    component.setBackLink();
-    fixture.detectChanges();
-
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['/registration/your-workplace'],
-    });
-  });
-
   it("should see 'Select its main service' when is a parent", async () => {
     const { component, fixture, queryByText } = await setup();
 
