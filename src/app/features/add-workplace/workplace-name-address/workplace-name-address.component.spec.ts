@@ -4,10 +4,12 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import {
   WorkplaceNameAddressComponent,
 } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -24,7 +26,10 @@ describe('WorkplaceNameAddressComponent', () => {
       ],
       providers: [
         WorkplaceService,
-        // { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -92,6 +97,7 @@ describe('WorkplaceNameAddressComponent', () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.createAccountNewDesign = true;
       component.returnToWorkplaceNotFound = true;
       fixture.detectChanges();
 
@@ -106,6 +112,7 @@ describe('WorkplaceNameAddressComponent', () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.createAccountNewDesign = true;
       component.returnToWorkplaceNotFound = false;
       component.isCqcRegulated = true;
       fixture.detectChanges();
@@ -121,6 +128,7 @@ describe('WorkplaceNameAddressComponent', () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.createAccountNewDesign = true;
       component.returnToWorkplaceNotFound = false;
       component.isCqcRegulated = false;
       fixture.detectChanges();
