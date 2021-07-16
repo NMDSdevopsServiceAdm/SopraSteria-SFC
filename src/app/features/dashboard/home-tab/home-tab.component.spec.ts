@@ -224,4 +224,28 @@ describe('HomeTabComponent', () => {
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
+
+  it('should show Parent request pending when trying to become a parent', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplace.isParent = false;
+    component.fixture.componentInstance.canBecomeAParent = false;
+    component.fixture.componentInstance.canLinkToParent = false;
+    component.fixture.detectChanges();
+
+    const expectedMessage = 'Parent request pending';
+    expect(component.queryByText(expectedMessage)).toBeTruthy();
+  });
+
+  it('should not show Parent request pending before requesting', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplace.isParent = false;
+    component.fixture.componentInstance.canBecomeAParent = true;
+    component.fixture.componentInstance.canLinkToParent = true;
+    component.fixture.detectChanges();
+
+    const expectedMessage = 'Parent request pending';
+    expect(component.queryByText(expectedMessage)).toBeFalsy();
+  });
 });
