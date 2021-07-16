@@ -5,13 +5,13 @@ import { LoginCredentials } from '@core/model/login-credentials.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { CreateUsernameDirective } from '@features/account/create-username/create-username';
+import { CreateUsernameDirective } from '@shared/directives/user/create-username.directive';
 
 @Component({
-  selector: 'app-create-username',
-  templateUrl: './create-username.component.html',
+  selector: 'app-username-password',
+  templateUrl: './username-password.component.html',
 })
-export class CreateUsernameComponent extends CreateUsernameDirective {
+export class UsernamePasswordComponent extends CreateUsernameDirective {
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -48,7 +48,7 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
   }
 
   protected setFormSubmissionLink(): string {
-    return this.return ? this.return.url[0] : '/registration/security-question';
+    return this.return ? this.return.url[0] : '/registration/create-security-question';
   }
 
   protected save(): void {

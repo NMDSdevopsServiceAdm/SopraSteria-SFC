@@ -82,7 +82,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: { url: ['/registration/create-username'] },
+        route: { url: ['/registration/username-password'] },
       },
       {
         label: 'Password',
@@ -94,7 +94,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: { url: ['/registration/security-question'] },
+        route: { url: ['/registration/create-security-question'] },
       },
       {
         label: 'Security answer',
@@ -104,7 +104,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/security-question'] });
+    this.backService.setBackLink({ url: ['/registration/create-security-question'] });
   }
 
   private generatePayload(): Array<RegistrationPayload> {
