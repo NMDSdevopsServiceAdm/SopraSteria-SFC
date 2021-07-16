@@ -106,7 +106,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
       fireEvent.click(continueButton);
 
       const errorMessage = component.getByTestId('errorMessage');
-      expect(errorMessage.innerText).toContain('Select yes if you want to try a different location ID or postcode.');
+      expect(errorMessage.innerText).toContain('Select yes if you want to try a different location ID or postcode');
     });
 
     it('should display the correct heading', async () => {

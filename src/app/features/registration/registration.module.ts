@@ -10,6 +10,9 @@ import {
   NewWorkplaceNotFoundComponent,
 } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 import {
+  SelectWorkplaceAddressComponent,
+} from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import {
   WorkplaceNameAddressComponent,
 } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { PagesModule } from '@features/pages/pages.module';
@@ -27,9 +30,6 @@ import { RegistrationCompleteComponent } from '@features/registration/registrati
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
-import {
-  SelectWorkplaceAddressComponent,
-} from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';

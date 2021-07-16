@@ -71,7 +71,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: `Select yes if you want to try a different location ID or postcode.`,
+            message: `Select yes if you want to try a different location ID or postcode`,
           },
         ],
       },
