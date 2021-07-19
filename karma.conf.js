@@ -8,8 +8,9 @@ module.exports = function (config) {
   process.env.no_proxy = 'localhost, 0.0.0.0/4201, 0.0.0.0/9876';
   config.set({
     basePath: '',
-    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    frameworks: ['parallel', 'jasmine', '@angular-devkit/build-angular'],
     plugins: [
+      require('karma-parallel'),
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
@@ -40,6 +41,6 @@ module.exports = function (config) {
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 100000,
-    captureTimeout: 140000
+    captureTimeout: 140000,
   });
 };
