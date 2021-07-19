@@ -4,28 +4,47 @@ import { RegistrationService } from '@core/services/registration.service';
 import {
   ConfirmWorkplaceDetails,
 } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-confirm-workplace-details',
   templateUrl: './confirm-workplace-details.component.html',
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
-  constructor(private registrationService: RegistrationService, protected backService: BackService) {
+  private createAccountNewDesign: boolean;
+
+  constructor(
+    private registrationService: RegistrationService,
+    protected backService: BackService,
+    private featureFlagsService: FeatureFlagsService,
+  ) {
     super(backService);
   }
 
-  protected init(): void {
+  protected async init(): Promise<void> {
     this.flow = '/registration';
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
+    );
+    console.log('Feature flag: ' + this.createAccountNewDesign);
     this.getWorkplaceData();
   }
 
   protected getWorkplaceData(): void {
-    this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress) => (this.locationAddress = locationAddress),
-      ),
-    );
-
+    if (this.createAccountNewDesign) {
+      this.subscriptions.add(
+        this.registrationService.locationAddresses$.subscribe(
+          (locationAddress) => (this.locationAddress = locationAddress[0]),
+        ),
+      );
+    } else {
+      this.subscriptions.add(
+        this.registrationService.selectedLocationAddress$.subscribe(
+          (locationAddress) => (this.locationAddress = locationAddress),
+        ),
+      );
+    }
     this.subscriptions.add(
       this.registrationService.selectedWorkplaceService$.subscribe((workplace) => (this.workplace = workplace)),
     );

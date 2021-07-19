@@ -5,9 +5,7 @@
 
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row" *ngIf="locationAddress.locationId">
-        <dt class="govuk-summary-list__key">
-          CQC Location ID
-        </dt>
+        <dt class="govuk-summary-list__key">CQC Location ID</dt>
         <dd class="govuk-summary-list__value">
           {{ locationAddress.locationId }}
         </dd>
@@ -19,18 +17,14 @@
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Workplace name
-        </dt>
+        <dt class="govuk-summary-list__key">Workplace name</dt>
         <dd class="govuk-summary-list__value">
           {{ locationAddress.locationName }}
         </dd>
         <dd class="govuk-summary-list__actions">&nbsp;</dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Address
-        </dt>
+        <dt class="govuk-summary-list__key">Address</dt>
         <dd class="govuk-summary-list__value">
           <address
             *ngIf="locationAddress.addressLine1 || locationAddress.addressLine2"
@@ -44,12 +38,11 @@
             <div *ngIf="locationAddress.postalCode">{{ locationAddress.postalCode }}</div>
           </address>
         </dd>
-        <dd class="govuk-summary-list__actions">&nbsp;</dd> <!-- TODO remove this -->
+        <dd class="govuk-summary-list__actions">&nbsp;</dd>
+        <!-- TODO remove this -->
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Main service provided
-        </dt>
+        <dt class="govuk-summary-list__key">Main service provided</dt>
         <dd class="govuk-summary-list__value">
           <ng-container *ngIf="workplace.otherName; else showName">
             {{ workplace.otherName }}
@@ -66,12 +59,11 @@
         </dd>
       </div>
     </dl>
-
-    <p class="govuk-!-margin-bottom-6">
-      <a [routerLink]="[flow, 'select-workplace-address']">
-        This is not my workplace
-      </a>
-    </p>
-    <a class="govuk-button" role="button" draggable="false" [routerLink]="[flow, 'your-details']">Continue</a>
+    <ng-container *ngIf="!createAccountNewDesign">
+      <p class="govuk-!-margin-bottom-6">
+        <a [routerLink]="[flow, 'select-workplace-address']"> This is not my workplace </a>
+      </p>
+      <a class="govuk-button" role="button" draggable="false" [routerLink]="[flow, 'your-details']">Continue</a>
+    </ng-container>
   </div>
 </div>
