@@ -24,7 +24,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
-  public useDifferentLocationIdOrPostcode: boolean;
+  public returnToWorkplaceNotFound: boolean;
 
   constructor(
     protected router: Router,
@@ -38,7 +38,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
-    this.useDifferentLocationIdOrPostcode = this.registrationService.useDifferentLocationIdOrPostcode$.value;
+    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.setupForm();
     this.setupFormErrorsMap();
     this.setBackLink();
@@ -49,9 +49,9 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   }
 
   public setBackLink(): void {
-    const backLink = this.useDifferentLocationIdOrPostcode ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
+    const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
-    this.registrationService.useDifferentLocationIdOrPostcode$.next(false);
+    this.registrationService.workplaceNotFound$.next(false);
   }
 
   private setupForm(): void {

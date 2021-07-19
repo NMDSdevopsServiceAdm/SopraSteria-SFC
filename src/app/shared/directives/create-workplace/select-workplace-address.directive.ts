@@ -42,7 +42,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
-      this.workplaceNotListedLink = value ? 'workplace-address' : 'enter-workplace-address';
+      this.workplaceNotListedLink = value ? 'workplace-address' : 'workplace-name-address';
     });
   }
 

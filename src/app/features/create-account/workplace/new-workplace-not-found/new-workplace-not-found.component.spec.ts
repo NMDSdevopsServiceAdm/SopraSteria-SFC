@@ -12,7 +12,7 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found.component';
 
 describe('NewWorkplaceNotFoundComponent', () => {
-  async function setup(flow, postcodeOrLocationId = '', searchMethod = '', useDifferentLocationIdOrPostcode = false) {
+  async function setup(flow, postcodeOrLocationId = '', searchMethod = '', workplaceNotFound = false) {
     const component = await render(NewWorkplaceNotFoundComponent, {
       imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -26,8 +26,8 @@ describe('NewWorkplaceNotFoundComponent', () => {
             searchMethod$: {
               value: searchMethod,
             },
-            useDifferentLocationIdOrPostcode$: {
-              value: useDifferentLocationIdOrPostcode,
+            workplaceNotFound$: {
+              value: workplaceNotFound,
               next: () => {
                 return true;
               },

@@ -12,6 +12,9 @@ import {
 import {
   SelectWorkplaceAddressComponent,
 } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -20,9 +23,6 @@ import {
 import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import {
-  EnterWorkplaceAddressComponent,
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import {
   RegistrationAwaitingApprovalComponent,
 } from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
@@ -52,7 +52,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    EnterWorkplaceAddressComponent,
+    WorkplaceNameAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
     RegistrationAwaitingApprovalComponent,
