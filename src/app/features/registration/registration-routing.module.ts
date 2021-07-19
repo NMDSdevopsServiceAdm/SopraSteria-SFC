@@ -11,6 +11,9 @@ import {
 } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import {  
   NewSelectMainServiceComponent,
 } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import {
@@ -27,6 +30,7 @@ import {
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
+
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
@@ -163,12 +167,6 @@ const routes: Routes = [
     data: { title: 'Select Workplace Address' },
   },
   {
-    path: 'enter-workplace-address',
-    component: EnterWorkplaceAddressComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Enter Workplace Address' },
-  },
-  {
     path: 'select-main-service',
     component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
@@ -191,6 +189,12 @@ const routes: Routes = [
     component: NameOfWorkplaceComponent,
     canActivate: [RegisterGuard],
     data: { title: `What's the name of your workplace?` },
+  },
+  {
+    path: 'workplace-name-address',
+    component: WorkplaceNameAddressComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Workplace name and address?' },
   },
 ];
 

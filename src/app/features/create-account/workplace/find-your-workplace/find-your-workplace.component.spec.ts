@@ -184,10 +184,10 @@ describe('FindYourWorkplaceComponent', () => {
   });
 
   describe('setBackLink', () => {
-    it('should set the back link to `regulated-by-cqc` when useDifferentLocationIdOrPostcode is set to false', async () => {
+    it('should set the back link to `regulated-by-cqc` when returnToWorkplaceNotFound is set to false', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-      component.fixture.componentInstance.useDifferentLocationIdOrPostcode = false;
+      component.fixture.componentInstance.returnToWorkplaceNotFound = false;
       component.fixture.detectChanges();
 
       component.fixture.componentInstance.setBackLink();
@@ -197,10 +197,10 @@ describe('FindYourWorkplaceComponent', () => {
       });
     });
 
-    it('should set the back link to `workplace-not-found` when useDifferentLocationIdOrPostcode is set to true', async () => {
+    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-      component.fixture.componentInstance.useDifferentLocationIdOrPostcode = true;
+      component.fixture.componentInstance.returnToWorkplaceNotFound = true;
       component.fixture.detectChanges();
 
       component.fixture.componentInstance.setBackLink();

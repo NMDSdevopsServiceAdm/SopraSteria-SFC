@@ -50,9 +50,9 @@ export class SelectMainServiceComponent extends SelectMainService {
     let route: string;
 
     if (this.workplaceService.manuallyEnteredWorkplace$.value) {
-      route = 'enter-workplace-address';
+      route = 'workplace-name-address';
     } else {
-      route = this.workplaceService.isRegulated() ? 'select-workplace' : 'enter-workplace-address';
+      route = this.workplaceService.isRegulated() ? 'select-workplace' : 'workplace-name-address';
     }
 
     this.backService.setBackLink({ url: [`${this.flow}/${route}`] });
