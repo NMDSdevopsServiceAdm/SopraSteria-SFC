@@ -147,7 +147,7 @@ const routes: Routes = [
   {
     path: 'thank-you',
     component: ThankYouComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Thank you' },
   },
   {
