@@ -63,7 +63,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   ngOnInit() {
-    this.setupForm();
+    this.setIsCqcRegulated();
     this.init();
     this.setFormControlsMap();
     this.setupFormErrorsMap();
@@ -76,16 +76,30 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
-  protected setupForm(): void {
-    this.form = this.formBuilder.group({
-      workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
-      address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      address2: ['', [Validators.maxLength(this.addressMaxLength)]],
-      address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-      townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
-    });
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setIsCqcRegulated(): void {}
+
+  public setupForm(): void {
+    if (this.isCqcRegulated || this.isWorkPlaceUpdate) {
+      this.form = this.formBuilder.group({
+        workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
+        address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+        address2: ['', [Validators.maxLength(this.addressMaxLength)]],
+        address3: ['', [Validators.maxLength(this.addressMaxLength)]],
+        townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+        county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+        postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
+      });
+    } else {
+      this.form = this.formBuilder.group({
+        address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+        address2: ['', [Validators.maxLength(this.addressMaxLength)]],
+        address3: ['', [Validators.maxLength(this.addressMaxLength)]],
+        townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+        county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+        postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
+      });
+    }
   }
 
   public setFormControlsMap(): void {

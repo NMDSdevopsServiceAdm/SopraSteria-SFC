@@ -36,6 +36,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
     this.setBackLink();
+    this.setupForm();
     this.setLocationAddress();
   }
 

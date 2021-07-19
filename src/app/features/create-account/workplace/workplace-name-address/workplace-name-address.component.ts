@@ -36,8 +36,8 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
-    this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
+    this.setupForm();
     await this.setFeatureFlag();
     this.setupSubscription();
     this.setBackLink();
@@ -48,6 +48,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
       'createAccountNewDesign',
       false,
     );
+  }
+
+  protected setIsCqcRegulated(): void {
+    this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
   }
 
   protected setupSubscription(): void {

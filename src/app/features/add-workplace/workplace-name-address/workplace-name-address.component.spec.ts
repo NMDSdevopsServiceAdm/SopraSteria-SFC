@@ -79,12 +79,13 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Error messages', () => {
-    it(`should display an error message when workplace name isn't filled in and isCqcRegulated is true`, async () => {
+    it(`should display an error message for when workplace name isn't filled in when isCqcRegulated is true`, async () => {
       const { component, fixture, getByText, getAllByText } = await setup();
       const form = component.form;
       const expectedErrorMessage = 'Enter the name of the workplace';
 
       component.isCqcRegulated = true;
+      component.setupForm();
       component.setFormControlsMap();
       fixture.detectChanges();
 
@@ -93,6 +94,21 @@ describe('WorkplaceNameAddressComponent', () => {
 
       expect(form.invalid).toBeTruthy();
       expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`shouldn't display any error messages for when workplace name isn't filled in when isCqcRegulated is false`, async () => {
+      const { component, fixture, getByText, queryByText } = await setup();
+      const expectedErrorMessage = 'Enter the name of your workplace';
+
+      component.isCqcRegulated = false;
+      component.setupForm();
+      component.setFormControlsMap();
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(queryByText(expectedErrorMessage)).toBeFalsy();
     });
   });
 
