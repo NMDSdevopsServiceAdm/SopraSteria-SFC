@@ -49,7 +49,7 @@ describe('StartComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
+    it('should set the correct back link', async () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
