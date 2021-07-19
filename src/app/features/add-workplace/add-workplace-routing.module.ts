@@ -142,7 +142,7 @@ const routes: Routes = [
   },
   {
     path: 'find-workplace',
-    component: FindYourWorkplaceComponent,
+    component: NewRegulatedByCqcComponent,
     data: { title: 'Find your workplace' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
