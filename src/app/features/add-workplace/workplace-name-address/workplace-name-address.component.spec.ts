@@ -79,10 +79,14 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Error messages', () => {
-    it(`should display an error message when workplace name isn't filled in`, async () => {
-      const { component, getByText, getAllByText } = await setup();
+    it(`should display an error message when workplace name isn't filled in and isCqcRegulated is true`, async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
       const form = component.form;
       const expectedErrorMessage = 'Enter the name of the workplace';
+
+      component.isCqcRegulated = true;
+      component.setFormControlsMap();
+      fixture.detectChanges();
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);

@@ -79,10 +79,14 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Error messages', () => {
-    it(`should display an error message when workplace name isn't filled in`, async () => {
-      const { component, getByText, getAllByText } = await setup();
+    it(`should display an error message when workplace name isn't filled in and isCqcRegulated is true`, async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
       const form = component.form;
       const expectedErrorMessage = 'Enter the name of your workplace';
+
+      component.isCqcRegulated = true;
+      component.setFormControlsMap();
+      fixture.detectChanges();
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
@@ -153,9 +157,13 @@ describe('WorkplaceNameAddressComponent', () => {
     });
 
     it(`should display an error message when workplace name exceeds max characters`, async () => {
-      const { component, getByText, getAllByText } = await setup();
+      const { component, fixture, getByText, getAllByText } = await setup();
       const form = component.form;
       const expectedErrorMessage = 'Workplace name must be 120 characters or fewer';
+
+      component.isCqcRegulated = true;
+      component.setFormControlsMap();
+      fixture.detectChanges();
 
       form.controls['workplaceName'].setValue(
         'Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Long Workplace Name',
@@ -266,6 +274,18 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/registration', 'select-workplace-address'],
       });
+    });
+  });
+
+  describe('Workplace address page', () => {
+    it('should not display the workplace name field when isCqcRegulated is false', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.isCqcRegulated = false;
+      component.setFormControlsMap();
+      fixture.detectChanges();
+
+      expect(queryByText('Workplace name')).toBeFalsy();
     });
   });
 });

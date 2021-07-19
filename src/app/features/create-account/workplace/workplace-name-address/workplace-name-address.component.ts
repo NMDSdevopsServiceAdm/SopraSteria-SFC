@@ -17,7 +17,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public returnToWorkplaceNotFound: boolean;
-  public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
