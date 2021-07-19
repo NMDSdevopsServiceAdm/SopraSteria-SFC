@@ -56,6 +56,7 @@ import { MigratedUserTermsConditionsComponent } from './features/migrated-user-t
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { NewSelectMainServiceComponent } from './features/create-account/workplace/new-select-main-service/new-select-main-service.component';
+import { ConfirmDetailsComponent } from './features/create-account/workplace/confirm-details/confirm-details.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { NewSelectMainServiceComponent } from './features/create-account/workpla
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
     NewSelectMainServiceComponent,
+    ConfirmDetailsComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
