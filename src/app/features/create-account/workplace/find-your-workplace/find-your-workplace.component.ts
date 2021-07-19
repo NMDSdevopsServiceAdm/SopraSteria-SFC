@@ -84,7 +84,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
         type: [
           {
             name: 'required',
-            message: `Enter your CQC location ID or your workplace postcode.`,
+            message: `Enter your CQC location ID or your workplace postcode`,
           },
         ],
       },

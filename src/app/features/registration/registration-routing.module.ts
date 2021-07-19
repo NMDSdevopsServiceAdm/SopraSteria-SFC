@@ -13,8 +13,12 @@ import { NameOfWorkplaceComponent } from '@features/create-account/workplace/nam
 import {
   WorkplaceNameAddressComponent,
 } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
-import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
-import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import {  
+  NewSelectMainServiceComponent,
+} from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
+import {
+  SelectWorkplaceAddressComponent,
+} from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -127,7 +131,7 @@ const routes: Routes = [
   {
     path: 'create-security-question',
     component: SecurityQuestionComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Create your security question' },
   },
   {
