@@ -68,11 +68,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
-    // if (!this.createAccountNewDesign) {
-    //   this.backService.setBackLink({ url: [`${this.flow}/select-workplace-address`] });
-    //   return;
-    // }
-
     if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
       this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
       return;
