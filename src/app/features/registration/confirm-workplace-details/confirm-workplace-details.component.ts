@@ -11,7 +11,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: './confirm-workplace-details.component.html',
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
-  private createAccountNewDesign: boolean;
+  public createAccountNewDesign: boolean;
 
   constructor(
     private registrationService: RegistrationService,
@@ -38,6 +38,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
           (locationAddress) => (this.locationAddress = locationAddress[0]),
         ),
       );
+      console.log(this.locationAddress);
     } else {
       this.subscriptions.add(
         this.registrationService.selectedLocationAddress$.subscribe(
