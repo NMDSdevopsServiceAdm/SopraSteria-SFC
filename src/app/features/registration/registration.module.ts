@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { NewWorkplaceNotFoundComponent } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 import { PagesModule } from '@features/pages/pages.module';
@@ -17,7 +18,6 @@ import { SecurityQuestionComponent } from '@features/registration/security-quest
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { FindWorkplaceAddressComponent } from '../create-account/workplace/find-workplace-address/find-workplace-address.component';

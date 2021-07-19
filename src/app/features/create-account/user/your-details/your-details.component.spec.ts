@@ -10,10 +10,10 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { RegistrationModule } from '../registration.module';
+import { RegistrationModule } from '../../../registration/registration.module';
 import { YourDetailsComponent } from './your-details.component';
 
-fdescribe('YourDetailsComponent', () => {
+describe('YourDetailsComponent', () => {
   async function setup() {
     const component = await render(YourDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],

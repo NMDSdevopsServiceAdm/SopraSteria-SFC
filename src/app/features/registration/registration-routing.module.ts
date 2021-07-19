@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
 import { FindWorkplaceAddressComponent } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
@@ -16,7 +17,6 @@ import { SecurityQuestionComponent } from '@features/registration/security-quest
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
@@ -152,7 +152,7 @@ const routes: Routes = [
   {
     path: 'select-main-service',
     component: SelectMainServiceComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
   },
   {
@@ -164,7 +164,7 @@ const routes: Routes = [
   {
     path: 'add-user-details',
     component: YourDetailsComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Add your user details' },
   },
 ];
