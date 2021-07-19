@@ -16,7 +16,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
 
   constructor(
     private userService: UserService,
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
@@ -25,7 +25,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
     super(backService, errorSummaryService, fb, router);
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
     let url;
     this.createAccountNewDesign ? (url = 'select-main-service') : (url = 'confirm-workplace-details');
     this.backService.setBackLink({ url: ['registration', url] });
