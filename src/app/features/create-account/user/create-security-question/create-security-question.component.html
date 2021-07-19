@@ -2,17 +2,22 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">
-            Enter your workplace address
-          </h1>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">Create and answer your security question</h1>
         </legend>
+
+        <p>
+          You will need to be able to answer this question if you forget your username or need to speak to Skills for
+          Care about your account.
+        </p>
 
         <ng-container *ngFor="let item of formControlsMap">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
-            <label class="govuk-label" for="{{ item.name }}" [innerHTML]="item.label"></label>
+            <label class="govuk-label" for="{{ item.name }}">
+              {{ item.label }}
+            </label>
             <span
               *ngIf="submitted && form.get(item.name).errors"
               id="{{ item.name }}-error"
@@ -21,7 +26,7 @@
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
             </span>
             <input
-              class="govuk-input govuk-input--width-{{ item.width }}"
+              class="govuk-input govuk-input--width-20"
               [formControlName]="item.name"
               id="{{ item.name }}"
               name="{{ item.name }}"
@@ -31,7 +36,8 @@
           </div>
         </ng-container>
       </fieldset>
-      <button class="govuk-button" type="submit">Continue</button>
+
+      <button type="submit" class="govuk-button">{{ callToActionLabel }}</button>
     </form>
   </div>
 </div>

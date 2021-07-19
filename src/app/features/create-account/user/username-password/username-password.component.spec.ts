@@ -308,6 +308,6 @@ describe('UsernamePasswordComponent', () => {
     component.fixture.detectChanges();
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['/registration/security-question']);
+    expect(spy).toHaveBeenCalledWith(['/registration/create-security-question']);
   });
 });

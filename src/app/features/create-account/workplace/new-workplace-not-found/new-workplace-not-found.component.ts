@@ -71,7 +71,7 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: `Select yes if you want to try a different location ID or postcode.`,
+            message: `Select yes if you want to try a different location ID or postcode`,
           },
         ],
       },
@@ -92,8 +92,8 @@ export class NewWorkplaceNotFoundComponent implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
+      this.registrationService.workplaceNotFound$.next(true);
       if (useDifferentLocationIdOrPostcode.value === 'yes') {
-        this.registrationService.useDifferentLocationIdOrPostcode$.next(true);
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
         this.router.navigate([`/${this.flow}`, 'workplace-name-address']);

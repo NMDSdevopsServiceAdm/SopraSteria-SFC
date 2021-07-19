@@ -48,7 +48,7 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
   }
 
   protected setFormSubmissionLink(): string {
-    return this.return ? this.return.url[0] : '/registration/security-question';
+    return this.return ? this.return.url[0] : '/registration/create-security-question';
   }
 
   protected save(): void {

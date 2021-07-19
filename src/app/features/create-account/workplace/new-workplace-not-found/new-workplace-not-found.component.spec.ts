@@ -12,7 +12,7 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found.component';
 
 describe('NewWorkplaceNotFoundComponent', () => {
-  async function setup(flow, postcodeOrLocationId = '', searchMethod = '', useDifferentLocationIdOrPostcode = false) {
+  async function setup(flow, postcodeOrLocationId = '', searchMethod = '', workplaceNotFound = false) {
     const component = await render(NewWorkplaceNotFoundComponent, {
       imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -26,8 +26,8 @@ describe('NewWorkplaceNotFoundComponent', () => {
             searchMethod$: {
               value: searchMethod,
             },
-            useDifferentLocationIdOrPostcode$: {
-              value: useDifferentLocationIdOrPostcode,
+            workplaceNotFound$: {
+              value: workplaceNotFound,
               next: () => {
                 return true;
               },
@@ -106,7 +106,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
       fireEvent.click(continueButton);
 
       const errorMessage = component.getByTestId('errorMessage');
-      expect(errorMessage.innerText).toContain('Select yes if you want to try a different location ID or postcode.');
+      expect(errorMessage.innerText).toContain('Select yes if you want to try a different location ID or postcode');
     });
 
     it('should display the correct heading', async () => {
