@@ -16,6 +16,7 @@ import {
 import {
   SelectWorkplaceAddressComponent,
 } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -26,9 +27,6 @@ import {
 import {
   EnterWorkplaceAddressComponent,
 } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
-import {
-  RegistrationAwaitingApprovalComponent,
-} from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
@@ -147,10 +145,10 @@ const routes: Routes = [
     data: { title: 'Complete' },
   },
   {
-    path: 'awaiting-approval',
-    component: RegistrationAwaitingApprovalComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Awaiting Approval' },
+    path: 'thank-you',
+    component: ThankYouComponent,
+    // canActivate: [RegisterGuard],
+    data: { title: 'Thank you' },
   },
   {
     path: 'find-workplace-address',
