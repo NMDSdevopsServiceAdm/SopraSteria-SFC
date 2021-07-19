@@ -13,19 +13,21 @@ import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffDetailsComponent } from './staff-details.component';
 
-const { build, fake, sequence, } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
-describe('StaffDetailsComponent', () => {
+fdescribe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
@@ -37,77 +39,78 @@ describe('StaffDetailsComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
     const establishment = establishmentBuilder() as Establishment;
     const component = await render(StaffDetailsComponent, {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-        ],
-        declarations: [],
-        schemas: [ NO_ERRORS_SCHEMA ],
-        providers: [
-          FormBuilder,
-          {
-            provide: WindowRef,
-            useValue: WindowRef
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        FormBuilder,
+        {
+          provide: WindowRef,
+          useValue: WindowRef,
+        },
+        {
+          provide: Contracts,
+          useValue: Contracts,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useValue: MockEstablishmentService,
+        },
+        {
+          provide: JobService,
+          useClass: MockJobService,
+        },
+        {
+          provide: AuthService,
+          useValue: MockAuthService,
+        },
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              url: [{ path: 1 }, { path: 2 }],
+            },
+            parent: {
+              snapshot: {
+                url: [{ path: 'staff-record' }],
+                data: {
+                  establishment,
+                  primaryWorkplace: establishment,
+                },
+              },
+            },
           },
-          {
-            provide: Contracts,
-            useValue: Contracts
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
-            deps: [HttpClient, Router, UserService]
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(subsidiaries, isAdmin),
-            deps: [HttpClient]
-          },
-          {
-            provide: EstablishmentService,
-            useValue: MockEstablishmentService
-          },
-          {
-            provide: JobService,
-            useClass: MockJobService
-          },
-          {
-            provide: AuthService,
-            useValue: MockAuthService
-          },
-          {
-            provide: ActivatedRoute,
-            useValue:
-              {
-                snapshot:
-                  {
-                    url: [{ path: 1 }, { path: 2 }]
-                  },
-                parent: {
-                  snapshot: {
-                    url: [{ path: 'staff-record' }],
-                    data: {
-                      establishment,
-                      primaryWorkplace: establishment
-                    }
-                  }
-
-                }
-              }
-          }
-        ]
-      })
-    ;
+        },
+      ],
+    });
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
 
     return {
       component,
       establishmentService,
-      router
+      router,
+      spy,
+      establishment,
+      workerService,
     };
   }
 
@@ -170,5 +173,27 @@ describe('StaffDetailsComponent', () => {
     expect(component.fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
   });
 
-});
+  it('should go to check-answers url when editing existing ataff record', async () => {
+    // const worker = true;
+    const { component, spy, workerService, establishmentService, establishment, router } = await setup();
+    const form = component.fixture.componentInstance.form;
+    form.controls.nameOrId.setValue('Jeff');
+    form.controls.mainJob.setValue('2');
+    form.controls.contract.setValue('Permanent');
 
+    // console.log(establishment);
+    console.log('@@@@@@@@@@@@2');
+    const workplaceId = establishment.uid;
+    // console.log(workplaceId);
+    const workerId = workerService.worker$;
+    // console.log(workerId);
+    console.log(router.url);
+    const saveButton = component.getByText('Save and return');
+
+    fireEvent.click(saveButton);
+    component.fixture.detectChanges();
+    expect(true).toBe(true);
+
+    // expect(spy).toHaveBeenCalledWith(['workplace', workplaceId, 'staff-record', workerId, 'check-answers']);
+  });
+});
