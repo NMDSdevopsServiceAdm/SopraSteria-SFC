@@ -6,7 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { CreateUsernameDirective } from '@features/account/create-username/create-username';
+import { CreateUsernameDirective } from '@shared/directives/user/create-username.directive';
 
 @Component({
   selector: 'app-create-username',

@@ -31,6 +31,20 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.setupSubscription();
   }
 
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplace',
+        type: [
+          {
+            name: 'required',
+            message: `Select the workplace if it's displayed`,
+          },
+        ],
+      },
+    ];
+  }
+
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.registrationService.locationAddresses$.subscribe(

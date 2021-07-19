@@ -146,7 +146,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'new-select-main-service']);
     });
 
     it('should navigate back to find-workplace url when selecting no', async () => {
@@ -232,7 +232,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
     });
 
     it('should navigate back to find-workplace url when selecting no', async () => {

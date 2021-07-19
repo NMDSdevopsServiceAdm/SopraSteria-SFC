@@ -74,7 +74,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  public setupFormErrorsMap(): void {
+  protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'workplace',

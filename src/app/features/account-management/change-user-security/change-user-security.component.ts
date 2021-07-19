@@ -11,7 +11,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { SecurityQuestionDirective } from '@features/account/security-question/security-question';
+import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
   selector: 'app-change-user-security',

@@ -55,6 +55,7 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { NewSelectMainServiceComponent } from './features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
+    NewSelectMainServiceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

@@ -93,7 +93,7 @@ describe('SelectWorkplaceComponent', () => {
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
     const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select your workplace if it's displayed`;
+    const errorMessage = `Select the workplace if it's displayed`;
     const form = component.form;
     const continueButton = getByText('Continue');
 
@@ -125,6 +125,16 @@ describe('SelectWorkplaceComponent', () => {
       const changeButton = getByText('Change');
 
       expect(changeButton.getAttribute('href')).toBe('/add-workplace/find-workplace');
+    });
+
+    it('should navigate to workplace-name-address url in add-workplace flow when workplace not displayed button clicked', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const notDisplayedButton = getByText('Workplace is not displayed or is not correct');
+
+      expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
   });
 });

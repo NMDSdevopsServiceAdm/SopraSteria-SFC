@@ -24,10 +24,11 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
+  public returnToWorkplaceNotFound: boolean;
 
   constructor(
     protected router: Router,
-    private backService: BackService,
+    public backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
@@ -37,13 +38,20 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.backService.setBackLink({ url: [this.flow, 'new-regulated-by-cqc'] });
+    this.setBackLink();
   }
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  public setBackLink(): void {
+    const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
+    this.backService.setBackLink({ url: [this.flow, backLink] });
+    this.registrationService.workplaceNotFound$.next(false);
   }
 
   private setupForm(): void {
@@ -76,7 +84,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
         type: [
           {
             name: 'required',
-            message: `Enter your CQC location ID or your workplace postcode.`,
+            message: `Enter your CQC location ID or your workplace postcode`,
           },
         ],
       },
@@ -90,9 +98,10 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   public onSubmit(): void {
     this.submitted = true;
+    const postcodeOrLocationID = this.form.get('postcodeOrLocationID').value;
+    this.registrationService.postcodeOrLocationId$.next(postcodeOrLocationID);
 
     if (this.form.valid) {
-      const postcodeOrLocationID = this.form.get('postcodeOrLocationID').value;
       this.subscriptions.add(
         this.locationService.getLocationByPostcodeOrLocationID(postcodeOrLocationID).subscribe(
           (data: LocationSearchResponse) => this.onSuccess(data),
@@ -110,7 +119,8 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      this.router.navigate([this.flow, 'workplace-not-found']);
+      this.registrationService.searchMethod$.next(error.error.searchmethod);
+      this.router.navigate([this.flow, 'new-workplace-not-found']);
       return;
     }
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

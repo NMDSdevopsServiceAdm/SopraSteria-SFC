@@ -27,6 +27,6 @@ export class YourDetailsComponent extends AccountDetailsDirective {
 
   protected save() {
     this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['/registration/create-username']);
+    this.router.navigate(['/registration/username-password']);
   }
 }
