@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
@@ -19,6 +20,7 @@ describe('StartComponent', () => {
           useClass: MockWorkplaceService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        BackService,
       ],
     });
 
@@ -44,5 +46,19 @@ describe('StartComponent', () => {
     const continueButton = getByText('Continue');
 
     expect(continueButton.getAttribute('href')).toBe('/add-workplace/new-regulated-by-cqc');
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the correct back link when in the registration flow', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', 'view-all-workplaces'],
+      });
+    });
   });
 });
