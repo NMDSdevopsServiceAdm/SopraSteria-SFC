@@ -138,7 +138,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       expect(form.valid).toBeTruthy();
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace/select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/new-select-main-service']);
     });
   });
 });
