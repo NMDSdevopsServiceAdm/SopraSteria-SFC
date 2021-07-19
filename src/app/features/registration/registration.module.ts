@@ -5,6 +5,7 @@ import {
   SecurityQuestionComponent,
 } from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import { ConfirmDetailsComponent } from '@features/create-account/workplace/confirm-details/confirm-details.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   NewWorkplaceNotFoundComponent,
@@ -71,6 +72,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     NewWorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
     UsernamePasswordComponent,
+    ConfirmDetailsComponent,
   ],
 })
 export class RegistrationModule {}

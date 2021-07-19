@@ -22,12 +22,12 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   protected getWorkplaceData(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe(
-        locationAddress => (this.locationAddress = locationAddress)
-      )
+        (locationAddress) => (this.locationAddress = locationAddress),
+      ),
     );
 
     this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe(workplace => (this.workplace = workplace))
+      this.registrationService.selectedWorkplaceService$.subscribe((workplace) => (this.workplace = workplace)),
     );
   }
 }
