@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
-  selector: 'app-registration-awaiting-approval',
-  templateUrl: './registration-awaiting-approval.component.html',
+  selector: 'app-thank-you',
+  templateUrl: './thank-you.component.html',
 })
-export class RegistrationAwaitingApprovalComponent implements OnInit {
+export class ThankYouComponent implements OnInit {
   constructor(private registrationService: RegistrationService) {}
 
   ngOnInit(): void {
