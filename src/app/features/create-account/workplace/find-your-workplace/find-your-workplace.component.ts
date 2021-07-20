@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +26,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public returnToWorkplaceNotFound: boolean;
+  public currentFlowService: RegistrationService | WorkplaceService;
 
   constructor(
     protected router: Router,
@@ -34,10 +36,12 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
     private formBuilder: FormBuilder,
     private registrationService: RegistrationService,
     private locationService: LocationService,
+    private workplaceService: WorkplaceService,
   ) {}
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.currentFlowService = this.flow == 'registration' ? this.registrationService : this.workplaceService;
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.setupForm();
     this.setupFormErrorsMap();
@@ -99,7 +103,7 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   public onSubmit(): void {
     this.submitted = true;
     const postcodeOrLocationID = this.form.get('postcodeOrLocationID').value;
-    this.registrationService.postcodeOrLocationId$.next(postcodeOrLocationID);
+    this.currentFlowService.postcodeOrLocationId$.next(postcodeOrLocationID);
 
     if (this.form.valid) {
       this.subscriptions.add(
@@ -112,14 +116,14 @@ export class FindYourWorkplaceComponent implements OnInit, AfterViewInit, OnDest
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
-    this.registrationService.locationAddresses$.next(data.locationdata);
-    this.registrationService.searchMethod$.next(data.searchmethod);
+    this.currentFlowService.locationAddresses$.next(data.locationdata);
+    this.currentFlowService.searchMethod$.next(data.searchmethod);
     this.navigateToNextRoute(data);
   }
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      this.registrationService.searchMethod$.next(error.error.searchmethod);
+      this.currentFlowService.searchMethod$.next(error.error.searchmethod);
       this.router.navigate([this.flow, 'new-workplace-not-found']);
       return;
     }
