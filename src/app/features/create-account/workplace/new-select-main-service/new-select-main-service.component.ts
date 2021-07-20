@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -8,14 +8,16 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainService } from '@shared/directives/create-workplace/select-main-service/select-main-service';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-new-select-main-service',
   templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
-export class NewSelectMainServiceComponent extends SelectMainService {
+export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
   public isParent: boolean;
   public workplace: Establishment;
@@ -30,12 +32,13 @@ export class NewSelectMainServiceComponent extends SelectMainService {
     protected workplaceService: WorkplaceService,
     private establishmentService: EstablishmentService,
     private featureFlagsService: FeatureFlagsService,
+    private route: ActivatedRoute,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
   protected async init(): Promise<void> {
-    this.flow = '/registration';
+    this.flow = this.route.snapshot.parent.url[0].path;
     this.setBackLink();
     this.isRegulated = this.registrationService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
@@ -47,7 +50,7 @@ export class NewSelectMainServiceComponent extends SelectMainService {
   }
 
   protected getServiceCategories(): void {
-    this.subscriptions.add(this.getServicesByCategory(this.registrationService.isRegulated()));
+    this.subscriptions.add(this.getServicesByCategory(this.isRegulated));
   }
 
   protected setSelectedWorkplaceService(): void {
@@ -63,6 +66,12 @@ export class NewSelectMainServiceComponent extends SelectMainService {
   protected onSuccess(): void {
     this.registrationService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
     this.navigateToNextPage();
+  }
+
+  protected navigateToNextPage(): void {
+    let url;
+    this.isParent ? (url = 'confirm-workplace-details') : (url = 'add-user-details');
+    this.router.navigate([this.flow, url]);
   }
 
   public setBackLink(): void {

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { ServiceGroup } from '@core/model/services.model';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockWorkplaceService extends WorkplaceService {
@@ -32,4 +33,19 @@ export class MockWorkplaceService extends WorkplaceService {
     townCity: 'Manchester',
     locationId: '123',
   });
+
+  public getServicesByCategory(isRegulated: boolean): Observable<Array<ServiceGroup>> {
+    return of([
+      {
+        category: 'Category 1',
+        services: [
+          {
+            id: 1,
+            isCQC: true,
+            name: 'Name',
+          },
+        ],
+      },
+    ]);
+  }
 }

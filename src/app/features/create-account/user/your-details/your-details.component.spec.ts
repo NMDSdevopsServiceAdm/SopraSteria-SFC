@@ -281,7 +281,7 @@ describe('YourDetailsComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'select-main-service'],
+        url: ['registration', 'new-select-main-service'],
       });
     });
   });

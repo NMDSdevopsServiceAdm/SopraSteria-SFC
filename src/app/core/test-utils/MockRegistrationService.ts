@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { Service } from '@core/model/services.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockRegistrationService extends RegistrationService {
+  public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject([
     {
       postalCode: 'ABC 123',

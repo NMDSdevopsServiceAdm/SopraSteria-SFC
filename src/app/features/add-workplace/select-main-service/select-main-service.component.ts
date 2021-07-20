@@ -5,13 +5,15 @@ import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainService } from '@shared/directives/create-workplace/select-main-service/select-main-service';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
   selector: 'app-select-main-service',
   templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
-export class SelectMainServiceComponent extends SelectMainService {
+export class SelectMainServiceComponent extends SelectMainServiceDirective {
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -44,6 +46,10 @@ export class SelectMainServiceComponent extends SelectMainService {
   protected onSuccess(): void {
     this.workplaceService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
     this.navigateToNextPage();
+  }
+
+  protected navigateToNextPage(): void {
+    this.router.navigate([this.flow, 'confirm-workplace-details']);
   }
 
   protected setBackLink(): void {

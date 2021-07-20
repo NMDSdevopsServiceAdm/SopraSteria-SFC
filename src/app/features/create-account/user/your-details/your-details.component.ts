@@ -27,7 +27,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
 
   public setBackLink(): void {
     let url;
-    this.createAccountNewDesign ? (url = 'select-main-service') : (url = 'confirm-workplace-details');
+    this.createAccountNewDesign ? (url = 'new-select-main-service') : (url = 'confirm-workplace-details');
     this.backService.setBackLink({ url: ['registration', url] });
   }
 
