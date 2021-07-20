@@ -110,7 +110,6 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
    * Also update formErrorsMap in order to add maxlength validation
    */
   protected updateForm(): void {
-    // console.log('***** Update Form ********');
     this.allServices.forEach((service: Service) => {
       if (service.other) {
         this.form.addControl(
@@ -139,9 +138,6 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
    */
   protected preFillForm(): void {
     if (this.selectedMainService && this.allServices.findIndex((s) => s.id === this.selectedMainService.id) > -1) {
-      // console.log('Inside preFillForm');
-      // console.log(this.selectedMainService);
-
       this.form.get('workplaceService').patchValue(this.selectedMainService.id);
 
       if (this.selectedMainService.other && this.form.get(`otherWorkplaceService${this.selectedMainService.id}`)) {
@@ -166,8 +162,6 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-    // console.log('**** OnSubmit ****');
-    // console.log(this.form.valid);
     if (this.form.valid) {
       this.onSuccess();
     } else {
