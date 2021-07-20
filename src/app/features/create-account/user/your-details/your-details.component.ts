@@ -26,8 +26,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   }
 
   public setBackLink(): void {
-    let url;
-    this.createAccountNewDesign ? (url = 'new-select-main-service') : (url = 'confirm-workplace-details');
+    const url = this.createAccountNewDesign ? 'new-select-main-service' : 'confirm-workplace-details';
     this.backService.setBackLink({ url: ['registration', url] });
   }
 
@@ -40,8 +39,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   }
 
   protected save(): void {
-    let url;
-    this.createAccountNewDesign ? (url = 'create-username-password') : (url = 'username-password');
+    const url = this.createAccountNewDesign ? 'create-username-password' : 'username-password';
     this.userService.updateState(this.setUserDetails());
     this.router.navigate(['registration', url]);
   }

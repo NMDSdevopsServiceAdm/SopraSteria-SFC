@@ -8,9 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  SelectMainServiceDirective,
-} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -69,8 +67,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    let url;
-    this.isParent ? (url = 'confirm-workplace-details') : (url = 'add-user-details');
+    const url = this.isParent ? 'confirm-workplace-details' : 'add-user-details';
     this.router.navigate([this.flow, url]);
   }
 
