@@ -60,6 +60,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
   }
 
+  protected getWorkplaceNameIfNotCqcRegulated(): string {
+    return this.registrationService.selectedLocationAddress$.value.locationName;
+  }
+
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {

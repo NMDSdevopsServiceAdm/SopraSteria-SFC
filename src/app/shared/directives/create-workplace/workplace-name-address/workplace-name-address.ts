@@ -79,6 +79,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setIsCqcRegulated(): void {}
 
+  protected getWorkplaceNameIfNotCqcRegulated(): void {}
+
   public setupForm(): void {
     if (this.isCqcRegulated || this.isWorkPlaceUpdate) {
       this.form = this.formBuilder.group({
@@ -251,14 +253,18 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   protected getLocationAddress(): LocationAddress {
-    return {
+    const locationAddress = {
       addressLine1: this.getAddress1.value,
       addressLine2: this.getAddress2.value,
       addressLine3: this.getAddress3.value,
       county: this.getCounty.value,
-      locationName: this.getWorkplaceName.value,
       postalCode: this.getPostcode.value,
       townCity: this.getTownCity.value,
+    };
+
+    return {
+      locationName: this.isCqcRegulated ? this.getWorkplaceName.value : this.getWorkplaceNameIfNotCqcRegulated(),
+      ...locationAddress,
     };
   }
 
