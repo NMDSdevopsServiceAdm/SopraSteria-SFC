@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,6 +13,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -20,8 +22,6 @@ import { StartComponent } from '../../workplace/start/start.component';
 import { WorkplaceRoutingModule } from '../../workplace/workplace-routing.module';
 import { WorkplaceModule } from '../../workplace/workplace.module';
 import { HomeTabComponent } from './home-tab.component';
-import { By } from '@angular/platform-browser';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 
 const MockWindow = {
   dataLayer: {
@@ -44,7 +44,7 @@ describe('HomeTabComponent', () => {
         WorkplaceRoutingModule,
         HttpClientTestingModule,
       ],
-      declarations: [HomeTabComponent,StaffMismatchBannerComponent],
+      declarations: [HomeTabComponent, StaffMismatchBannerComponent],
       providers: [
         {
           provide: WorkerService,
@@ -116,9 +116,10 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 10;
+    component.fixture.componentInstance.workerCount = 10;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
     component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.detectChanges();
 
@@ -130,8 +131,9 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
 
@@ -145,8 +147,9 @@ describe('HomeTabComponent', () => {
     // Arrange
     const { component } = await setup();
     // Act
-    component.fixture.componentInstance.workersCount = 11;
+    component.fixture.componentInstance.workerCount = 11;
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
     component.fixture.componentInstance.canViewListOfWorkers = true;
     component.fixture.componentInstance.canAddWorker = false;
@@ -157,4 +160,68 @@ describe('HomeTabComponent', () => {
     expect(childDebugElement).toBeFalsy();
   });
 
+  it('should not show the staff mismatch banner if no workers have been added', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workerCount = 0;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeFalsy();
+  });
+
+  it('should show the staff mismatch banner if the eight weeks date is in the past', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workerCount = 12;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeTruthy();
+  });
+  it('should not show the staff mismatch banner if the eight weeks date is in the future', async () => {
+    // Arrange
+    const { component } = await setup();
+    // Act
+    component.fixture.componentInstance.workerCount = 12;
+    component.fixture.componentInstance.workplace.numberOfStaff = 10;
+    component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('2999-01-01').toString();
+
+    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
+
+    component.fixture.detectChanges();
+    const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
+    // Assert
+    expect(childDebugElement).toBeFalsy();
+  });
+
+  it('should not show the Local authority progress link when not a local authority', async () => {
+    const { component } = await setup();
+
+    expect(component.queryByText('Local authority progress')).toBeFalsy;
+  });
+
+  it('should show the Local authority progress link when it is a local authority', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.canRunLocalAuthorityReport = true;
+    component.fixture.detectChanges();
+
+    expect(component.queryAllByText('Local authority progress').length).toBe(1);
+  });
 });

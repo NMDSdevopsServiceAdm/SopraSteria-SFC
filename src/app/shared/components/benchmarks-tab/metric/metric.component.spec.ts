@@ -9,8 +9,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/metric/metric.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
@@ -47,6 +49,7 @@ const getBenchmarksMetricComponent = async () => {
         provide: EstablishmentService,
         useClass: MockEstablishmentService,
       },
+      { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       {
         provide: BreadcrumbService,
         useClass: MockBreadcrumbService,
@@ -152,5 +155,31 @@ describe('BenchmarksMetricComponent', () => {
     expect(lowestRank.length).toEqual(1);
     expect(highestRank.length).toEqual(1);
     expect(currentRank.length).toEqual(1);
+  });
+
+  describe('calculateJourneyType', () => {
+    it('should calculate the correct journey type when the workplace is the primary workplace', async () => {
+      const { fixture } = await getBenchmarksMetricComponent();
+      setup(noPayTileData, payRankingData);
+
+      fixture.componentInstance.establishmentUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+      fixture.componentInstance.primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+      fixture.componentInstance.calculateJourneyType();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.journeyType).toEqual('dashboard');
+    });
+
+    it('should calculate the correct journey type when the workplace is a subsidiary', async () => {
+      const { fixture } = await getBenchmarksMetricComponent();
+      setup(noPayTileData, payRankingData);
+
+      fixture.componentInstance.establishmentUid = '1234';
+      fixture.componentInstance.primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+      fixture.componentInstance.calculateJourneyType();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.journeyType).toEqual('workplace');
+    });
   });
 });

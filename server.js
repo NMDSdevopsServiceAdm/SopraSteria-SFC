@@ -38,7 +38,7 @@ var refCacheMiddleware = require('./server/utils/middleware/refCache');
 var helmet = require('helmet');
 var xssClean = require('xss-clean');
 var sanitizer = require('express-sanitizer');
-var locations = require('./server/routes/locations');
+var locations = require('./server/routes/locations/index');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
@@ -63,6 +63,8 @@ var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
+var registrationSurvey = require('./server/routes/registrationSurvey');
+var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -247,6 +249,8 @@ app.use('/api/test', [cacheMiddleware.nocache, testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);
+app.use('/api/registrationSurvey', [cacheMiddleware.nocache, registrationSurvey]);
+app.use('/api/cqcStatusCheck', [cacheMiddleware.nocache], cqcStatusCheck);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);

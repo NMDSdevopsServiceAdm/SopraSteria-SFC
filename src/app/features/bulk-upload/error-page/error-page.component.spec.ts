@@ -13,6 +13,8 @@ import { render } from '@testing-library/angular';
 
 import { BulkUploadModule } from '../bulk-upload.module';
 import { ErrorPageComponent } from './error-page.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('ErrorPageComponent', () => {
   const getErrorPageComponent = async () => {
@@ -23,7 +25,7 @@ describe('ErrorPageComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
         {
           provide: ActivatedRoute,
           useValue: {

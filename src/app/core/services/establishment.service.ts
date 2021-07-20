@@ -73,10 +73,13 @@ interface CQCLocationChangeRequest {
 export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
+  private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+  private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
-  private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   public mainServiceCQC: boolean = null;
+
   constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;
@@ -112,6 +115,7 @@ export class EstablishmentService {
     this._establishment$.next(establishment);
     if (this.primaryWorkplace && establishment.uid === this.primaryWorkplace.uid) {
       this.setPrimaryWorkplace(this.establishment);
+      this.setCheckCQCDetailsBanner(false);
     }
   }
 
@@ -119,6 +123,7 @@ export class EstablishmentService {
     this._establishmentId = null;
     this._establishment$.next(null);
     this.setPrimaryWorkplace(null);
+    this.setCheckCQCDetailsBanner(false);
   }
 
   public get establishmentId() {
@@ -147,6 +152,18 @@ export class EstablishmentService {
 
   public setReturnTo(returnTo: URLStructure) {
     this.returnTo$.next(returnTo);
+  }
+
+  public get checkCQCDetailsBanner$(): Observable<boolean> {
+    return this._checkCQCDetailsBanner$.asObservable();
+  }
+
+  public get checkCQCDetailsBanner(): boolean {
+    return this._checkCQCDetailsBanner$.value;
+  }
+
+  public setCheckCQCDetailsBanner(data: boolean) {
+    this._checkCQCDetailsBanner$.next(data);
   }
 
   getEstablishment(id: string, wdf: boolean = false) {
@@ -284,5 +301,14 @@ export class EstablishmentService {
   //Move workplace as an admin
   public adminMoveWorkplace(data: adminMoveWorkplace): Observable<any> {
     return this.http.post<any>(`/api/admin/move-workplace`, data);
+  }
+
+  public getCQCRegistrationStatus(locationID, requestParams): Observable<any> {
+    let params = new HttpParams();
+
+    params = params.set('postcode', `${requestParams.postcode}`);
+    params = params.set('mainService', `${requestParams.mainService}`);
+
+    return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
   }
 }

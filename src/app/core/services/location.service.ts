@@ -26,4 +26,12 @@ export class LocationService {
   public getUnassignedLocationByLocationId(id: string): Observable<LocationSearchResponse> {
     return this.http.get<LocationSearchResponse>(`/api/locations/lid/matching/${id}`);
   }
+
+  public getLocationByPostcodeOrLocationID(postcodeOrLocationID: string): Observable<LocationSearchResponse> {
+    return this.http.get<LocationSearchResponse>(`/api/locations/pcorlid/${postcodeOrLocationID}`);
+  }
+
+  public getUnassignedLocationByPostcodeOrLocationID(postcodeOrLocationID: string): Observable<LocationSearchResponse> {
+    return this.http.get<LocationSearchResponse>(`/api/locations/pcorlid/matching/${postcodeOrLocationID}`);
+  }
 }

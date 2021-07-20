@@ -10,6 +10,8 @@ import { of } from 'rxjs';
 
 import { ParentRequestComponent } from '../parent-request/parent-request.component';
 import { ParentRequestsComponent } from './parent-requests.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('ParentRequestsComponent', () => {
   let component: RenderResult<ParentRequestsComponent>;
@@ -48,6 +50,9 @@ describe('ParentRequestsComponent', () => {
             provide: ParentRequestsService,
             useClass: parentRequestsService,
           },
+          { provide: FeatureFlagsService,
+            useClass: MockFeatureFlagsService
+          },
         ],
       });
 
@@ -83,6 +88,10 @@ describe('ParentRequestsComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
+        { provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService
+        },
+
       ],
       componentProperties: {
         parentRequests,

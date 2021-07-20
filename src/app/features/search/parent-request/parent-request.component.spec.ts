@@ -9,6 +9,8 @@ import { WindowRef } from '@core/services/window.ref';
 
 import { ParentRequestComponent } from './parent-request.component';
 import { HttpResponse } from '@angular/common/http';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const testParentRequestId = 9999;
 const testParentRequestUuid = '360c62a1-2e20-410d-a72b-9d4100a11f4e';
@@ -75,6 +77,7 @@ describe('ParentRequestComponent', () => {
           provide: WindowRef,
           useClass: WindowRef
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService }
       ],
       componentProperties: {
         index: 0,

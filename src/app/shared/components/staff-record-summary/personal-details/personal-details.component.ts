@@ -10,6 +10,12 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 })
 export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
+  @Input() overallWdfEligibility: boolean;
+  @Input() wdfNewDesign: boolean;
+  @Input() canViewNinoDob: boolean;
+
+  public ninoHidden = true;
+  public dobHidden = true;
 
   get displayBritishCitizenship() {
     return !(this.worker.nationality && this.worker.nationality.value === 'British');
@@ -17,5 +23,15 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
 
   get dob() {
     return moment(this.worker.dateOfBirth).format(DATE_DISPLAY_DEFAULT);
+  }
+
+  public toggleNinoHide(event) {
+    event.preventDefault();
+    this.ninoHidden = !this.ninoHidden;
+  }
+
+  public toggleDobHide(event) {
+    event.preventDefault();
+    this.dobHidden = !this.dobHidden;
   }
 }

@@ -8,6 +8,7 @@ import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private idleService: IdleService,
     private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
@@ -41,6 +43,7 @@ export class AppComponent implements OnInit {
     });
 
     this.angulartics2GoogleTagManager.startTracking();
+    this.featureFlagsService.start();
   }
 
   ngOnInit() {

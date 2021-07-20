@@ -106,7 +106,7 @@ export interface Establishment {
   otherServices: {
     value: string;
     services: any[];
-  }
+  };
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
   share: Share;
@@ -134,6 +134,7 @@ export interface Establishment {
   county?: string;
   locationId?: string;
   lastBulkUploaded?: string;
+  eightWeeksFromFirstLogin?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -208,10 +209,26 @@ export interface adminMoveWorkplace {
 }
 
 export enum SortStaffOptions {
-  '0_asc' = 'Staff name ascending',
-  '0_dsc' = 'Staff name descending',
-  '1_asc' = 'Job role ascending',
-  '1_dsc' = 'Job role descending',
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
+}
+
+export enum WdfSortStaffOptions {
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
+  '2_meeting' = 'WDF requirements (meeting)',
+  '2_not_meeting' = 'WDF requirements (not meeting)',
+}
+
+export enum WdfParentSortWorkplacesOptions {
+  '1_not_meeting' = 'WDF requirements (not meeting)',
+  '2_meeting' = 'WDF requirements (meeting)',
+  '3_asc' = 'Workplace name (A to Z)',
+  '4_dsc' = 'Workplace name (Z to A)',
 }
 
 export enum SortTrainingAndQualsOptionsWorker {

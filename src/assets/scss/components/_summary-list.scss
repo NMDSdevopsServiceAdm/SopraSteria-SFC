@@ -57,6 +57,12 @@
   }
 }
 
+.asc-summary-list--wide-value {
+  .govuk-summary-list__value {
+    width: 70%;
+  }
+}
+
 .govuk-summary-list--contains-warnings {
   .govuk-summary-list__key {
     width: 30%;
@@ -74,7 +80,7 @@
   .govuk-summary-list__row--warning {
     dt,
     dd {
-      background: rgba(govuk-colour('orange'), 0.15);
+      background: rgba(govuk-colour('orange'), 0.12);
     }
     @include govuk-media-query($from: desktop) {
       .govuk-summary-list__value {
@@ -106,7 +112,7 @@
 }
 
 .asc-warning-banner {
-  background-color: rgba(govuk-colour('orange'), 0.25);
+  background-color: rgba(govuk-colour('orange'), 0.12);
 
   @include govuk-media-query($from: desktop) {
     .govuk-summary-list__value {

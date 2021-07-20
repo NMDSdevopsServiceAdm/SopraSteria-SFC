@@ -11,6 +11,7 @@ import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,7 @@ export class AuthService {
     private establishmentService: EstablishmentService,
     private userService: UserService,
     private permissionsService: PermissionsService,
+    private featureFlagsService: FeatureFlagsService
   ) {}
 
   public get isAutheticated$(): Observable<boolean> {
@@ -85,6 +87,7 @@ export class AuthService {
   }
 
   public authenticate(username: string, password: string) {
+    this.featureFlagsService.configCatClient.forceRefreshAsync();
     return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
       tap(
         (response) => {

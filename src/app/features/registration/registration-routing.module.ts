@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
+import { PageResolver } from '@core/resolvers/page.resolver';
+import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
@@ -28,19 +30,53 @@ import {
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
-import { StartComponent } from './start/start.component';
+import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
+import {
+  IsThisYourWorkplaceComponent,
+} from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { AboutUsRegistrationComponent } from './about-us/about-us.component';
+import { CreateAccountComponent } from './create-account/create-account.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
   {
     path: 'start',
-    component: StartComponent,
-    data: { title: 'Register' },
+    redirectTo: 'create-account',
+  },
+  {
+    path: 'create-account',
+    component: CreateAccountComponent,
+    data: { title: 'Create Account' },
+  },
+  {
+    path: 'about-ascwds',
+    component: AboutUsRegistrationComponent,
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'regulated-by-cqc',
     component: RegulatedByCqcComponent,
     data: { title: 'Regulated by CQC' },
+  },
+  {
+    path: 'find-workplace',
+    component: FindYourWorkplaceComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Find your workplace' },
+  },
+  {
+    path: 'your-workplace',
+    component: IsThisYourWorkplaceComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Is this your workplace?' },
+  },
+  {
+    path: 'new-regulated-by-cqc',
+    component: NewRegulatedByCqcComponent,
+    data: { title: 'Service regulated by CQC?' },
   },
   {
     path: 'workplace-not-found',
@@ -125,6 +161,12 @@ const routes: Routes = [
     component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'workplace-name',
+    component: NameOfWorkplaceComponent,
+    canActivate: [RegisterGuard],
+    data: { title: `What's the name of your workplace?` },
   },
 ];
 

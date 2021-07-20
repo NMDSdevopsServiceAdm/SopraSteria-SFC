@@ -5,6 +5,8 @@ var router = express.Router();
 require('../utils/security/passport')(passport);
 const crypto = require('crypto');
 const bcrypt = require('bcrypt-nodejs');
+const get = require('lodash/get');
+const moment = require('moment');
 
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
@@ -14,8 +16,6 @@ const config = require('..//config/config');
 const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
-
-const get = require('lodash/get');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
@@ -74,6 +74,7 @@ router.post('/', async (req, res) => {
                   'isPrimary',
                   'establishmentId',
                   'UserRoleValue',
+                  'registrationSurveyCompleted',
                   'tribalId',
                 ],
                 include: [
@@ -89,6 +90,7 @@ router.post('/', async (req, res) => {
                       'parentUid',
                       'parentId',
                       'lastBulkUploaded',
+                      'eightWeeksFromFirstLogin',
                     ],
                     include: [
                       {
@@ -182,7 +184,7 @@ router.post('/', async (req, res) => {
           };
 
           if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
-            console.log(`Found admin user and establishment`);
+            console.log('Found admin user and establishment');
           } else {
             req.sqreen.auth_track(false, establishmentInfo);
 
@@ -197,7 +199,7 @@ router.post('/', async (req, res) => {
       } else {
         req.sqreen.auth_track(false, establishmentInfo);
 
-        console.error(`Failed to find user account`);
+        console.error('Failed to find user account');
         return res.status(401).send({
           message: 'Authentication failed.',
         });
@@ -208,13 +210,13 @@ router.post('/', async (req, res) => {
       //check weather posted user is locked or pending
       if (!establishmentUser.isActive && establishmentUser.status === 'Locked') {
         //check for locked status, if locked then return with 409 error
-        console.error(`POST .../login failed: User status is locked`);
+        console.error('POST .../login failed: User status is locked');
         return res.status(409).send({
           message: 'Authentication failed.',
         });
       } else if (!establishmentUser.isActive && establishmentUser.status === 'PENDING') {
         //check for Pending status, if Pending then return with 403 error
-        console.error(`POST .../login failed: User status is pending`);
+        console.error('POST .../login failed: User status is pending');
         return res.status(405).send({
           message: 'Authentication failed.',
         });
@@ -291,6 +293,7 @@ router.post('/', async (req, res) => {
               migratedUserFirstLogon,
               migratedUser,
             },
+            establishmentUser.user.registrationSurveyCompleted,
           );
 
           await models.sequelize.transaction(async (t) => {
@@ -310,6 +313,16 @@ router.post('/', async (req, res) => {
             if (!establishmentUser.firstLogin) {
               loginUpdate.firstLogin = new Date();
             }
+
+            if (
+              !get(establishmentUser, 'user.establishment.eightWeeksFromFirstLogin') &&
+              get(establishmentUser, 'user.establishment.id')
+            ) {
+              await models.establishment.updateEstablishment(establishmentUser.user.establishment.id, {
+                eightWeeksFromFirstLogin: moment().add(8, 'w').toDate(),
+              });
+            }
+
             establishmentUser.update(loginUpdate, { transaction: t });
 
             // add an audit record

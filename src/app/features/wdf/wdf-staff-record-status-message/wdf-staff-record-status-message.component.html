@@ -1,0 +1,16 @@
+<span class="govuk-!-margin-bottom-6 govuk__flex govuk__nowrap">
+  <ng-container *ngIf="overallWdfEligibility && !worker.wdfEligible">
+    <h4 class="govuk-heading-s">
+      <img class="govuk-!-margin-right-1 govuk-util__vertical-align-top" src="/assets/images/flag-orange.svg" alt="" />
+      <span class="govuk-visually-hidden">Orange warning flag</span>Update this staff record to save yourself time next
+      year
+    </h4>
+  </ng-container>
+  <ng-container *ngIf="!overallWdfEligibility && !worker.wdfEligible">
+    <h4 class="govuk-heading-s">
+      <img class="govuk-!-margin-right-1 govuk-util__vertical-align-top" src="/assets/images/cross-icon.svg" alt="" />
+      <span class="govuk-visually-hidden">Red cross</span>This record does not meet the WDF
+      {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }} requirements
+    </h4>
+  </ng-container>
+</span>

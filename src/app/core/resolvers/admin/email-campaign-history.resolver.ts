@@ -9,7 +9,7 @@ export class EmailCampaignHistoryResolver implements Resolve<any> {
   constructor(private router: Router, private emailCampaignService: EmailCampaignService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.emailCampaignService.getHistory().pipe(
+    return this.emailCampaignService.getInactiveWorkplacesHistory().pipe(
       catchError(() => {
         this.router.navigate(['/emails']);
         return EMPTY;
