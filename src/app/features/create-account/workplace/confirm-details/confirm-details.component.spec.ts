@@ -11,7 +11,7 @@ import { MockRegistrationService } from '@core/test-utils/MockRegistrationServic
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { queryByText, render } from '@testing-library/angular';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
 
@@ -30,23 +30,23 @@ describe('ConfirmDetailsComponent', () => {
         {
           provide: RegistrationService,
           useClass: MockRegistrationService,
-          useValue: {
-            locationAddresses$: {
-              value: [
-                {
-                  locationName: 'Hello Care',
-                  locationId: '1-2123313123',
-                  addressLine1: '123 Fake Ave',
-                  county: 'West Yorkshire',
-                  postalCode: 'LS1 1AA',
-                  townCity: 'Leeds',
-                },
-              ],
-            },
-            searchMethod$: {
-              value: 'locationId',
-            },
-          },
+          // useValue: {
+          //   locationAddresses$: {
+          //     value: [
+          //       {
+          //         locationName: 'Hello Care',
+          //         locationId: '1-2123313123',
+          //         addressLine1: '123 Fake Ave',
+          //         county: 'West Yorkshire',
+          //         postalCode: 'LS1 1AA',
+          //         townCity: 'Leeds',
+          //       },
+          //     ],
+          //   },
+          //   searchMethod$: {
+          //     value: 'locationId',
+          //   },
+          // },
         },
         {
           provide: EstablishmentService,
@@ -89,8 +89,36 @@ describe('ConfirmDetailsComponent', () => {
     };
   }
 
-  it('should create', async () => {
+  it('should create ConfirmDetailsComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should have the title Confirm your details before you submit them', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    fixture.detectChanges();
+    const expectedTitle = 'Confirm your details before you submit them';
+    expect(queryByText(expectedTitle)).toBeTruthy();
+  });
+
+  it('should show details of workplace for when is CQC regulated', async () => {
+    const { component, fixture, queryByText, getByText } = await setup();
+
+    const expectedLocationName = 'Name';
+    const expectedAddressLine1 = '1 Street';
+    const expectedTownCity = 'Manchester';
+    const expectedPostalCode = 'ABC 123';
+    const expectedCounty = 'Greater Manchester';
+    const expectedLocationId = '123';
+
+    fixture.detectChanges();
+
+    expect(getByText(expectedLocationName)).toBeTruthy();
+    expect(getByText(expectedAddressLine1)).toBeTruthy();
+    expect(getByText(expectedTownCity)).toBeTruthy();
+    expect(getByText(expectedPostalCode)).toBeTruthy();
+    expect(getByText(expectedCounty)).toBeTruthy();
+    expect(getByText(expectedLocationId)).toBeTruthy();
   });
 });
