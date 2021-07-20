@@ -52,10 +52,16 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
 
   async ngOnInit(): Promise<void> {
     this.form = this.fb.group({
-      fullname: ['', [Validators.required, Validators.maxLength(120)]],
-      jobTitle: ['', [Validators.required, Validators.maxLength(120)]],
-      email: ['', [Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)]],
-      phone: ['', [Validators.required, Validators.pattern(PHONE_PATTERN)]],
+      fullname: ['', { validators: [Validators.required, Validators.maxLength(120)], updateOn: 'submit' }],
+      jobTitle: ['', { validators: [Validators.required, Validators.maxLength(120)], updateOn: 'submit' }],
+      email: [
+        '',
+        {
+          validators: [Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)],
+          updateOn: 'submit',
+        },
+      ],
+      phone: ['', { validators: [Validators.required, Validators.pattern(PHONE_PATTERN)], updateOn: 'submit' }],
     });
 
     this.setupFormErrorsMap();
