@@ -6,6 +6,7 @@ import {
   SecurityQuestionComponent,
 } from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
 import {
   FindWorkplaceAddressComponent,
 } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
@@ -31,7 +32,6 @@ import { RegistrationCompleteComponent } from '@features/registration/registrati
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import {
@@ -185,6 +185,12 @@ const routes: Routes = [
     component: NameOfWorkplaceComponent,
     canActivate: [RegisterGuard],
     data: { title: `What's the name of your workplace?` },
+  },
+  {
+    path: 'add-user-details',
+    component: YourDetailsComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Add your user details' },
   },
   {
     path: 'workplace-name-address',
