@@ -5,9 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import {
-  WorkplaceNameAddressComponent,
-} from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -71,11 +69,28 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the correct title', async () => {
-    const { getByText } = await setup();
-    const expectedTitle = `What's the workplace name and address?`;
+  describe('Titles', () => {
+    it('should display the correct title if isCqcRegulated is true and in parent flow', async () => {
+      const { component, fixture, getByText } = await setup();
+      const expectedTitle = `What's the workplace name and address?`;
 
-    expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+      component.isCqcRegulated = true;
+      component.setTitle();
+      fixture.detectChanges();
+
+      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the correct title if isCqcRegulated is false and in parent flow', async () => {
+      const { component, fixture, getByText } = await setup();
+      const expectedTitle = `What's the workplace address?`;
+
+      component.isCqcRegulated = false;
+      component.setTitle();
+      fixture.detectChanges();
+
+      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+    });
   });
 
   describe('Error messages', () => {

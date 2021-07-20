@@ -5,9 +5,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import {
-  WorkplaceNameAddressDirective,
-} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -33,10 +31,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   protected async init(): Promise<void> {
     this.flow = '/registration';
-    this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
 
+    this.setTitle();
     this.setupForm();
     await this.setFeatureFlag();
     this.setupSubscription();
@@ -48,6 +46,14 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
       'createAccountNewDesign',
       false,
     );
+  }
+
+  public setTitle(): void {
+    if (this.isCqcRegulated) {
+      this.title = `What's your workplace name and address?`;
+      return;
+    }
+    this.title = `What's your workplace address?`;
   }
 
   protected setIsCqcRegulated(): void {

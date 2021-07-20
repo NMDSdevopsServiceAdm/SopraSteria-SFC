@@ -6,9 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  WorkplaceNameAddressDirective,
-} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -18,7 +16,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public returnToWorkplaceNotFound: boolean;
-  public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
@@ -36,10 +33,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   protected async init(): Promise<void> {
     this.flow = '/add-workplace';
-    this.title = `What's the workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
 
+    this.setTitle();
     this.setupForm();
     await this.setFeatureFlag();
     this.setBackLink();
@@ -51,6 +48,14 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
       'createAccountNewDesign',
       false,
     );
+  }
+
+  public setTitle(): void {
+    if (this.isCqcRegulated) {
+      this.title = `What's the workplace name and address?`;
+      return;
+    }
+    this.title = `What's the workplace address?`;
   }
 
   protected setIsCqcRegulated(): void {

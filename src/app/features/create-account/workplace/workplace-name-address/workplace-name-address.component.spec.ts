@@ -5,9 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import {
-  WorkplaceNameAddressComponent,
-} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -71,15 +69,32 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the correct title', async () => {
-    const { getByText } = await setup();
-    const expectedTitle = `What's your workplace name and address?`;
+  describe('Titles', () => {
+    it('should display the correct title if isCqcRegulated is true and in registration flow', async () => {
+      const { component, fixture, getByText } = await setup();
+      const expectedTitle = `What's your workplace name and address?`;
 
-    expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+      component.isCqcRegulated = true;
+      component.setTitle();
+      fixture.detectChanges();
+
+      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the correct title if isCqcRegulated is false and in registration flow', async () => {
+      const { component, fixture, getByText } = await setup();
+      const expectedTitle = `What's your workplace address?`;
+
+      component.isCqcRegulated = false;
+      component.setTitle();
+      fixture.detectChanges();
+
+      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+    });
   });
 
   describe('Error messages', () => {
-    it(`should display an error message for when workplace name isn't filled in when isCqcRegulated is true`, async () => {
+    it(`should display an error message if workplace name isn't filled in when isCqcRegulated is true`, async () => {
       const { component, fixture, getByText, getAllByText } = await setup();
       const form = component.form;
       const expectedErrorMessage = 'Enter the name of your workplace';
@@ -96,7 +111,7 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
     });
 
-    it(`shouldn't display any error messages for when workplace name isn't filled in when isCqcRegulated is false`, async () => {
+    it(`shouldn't display any error messages if workplace name isn't filled in when isCqcRegulated is false`, async () => {
       const { component, fixture, getByText, queryByText } = await setup();
       const expectedErrorMessage = 'Enter the name of your workplace';
 
