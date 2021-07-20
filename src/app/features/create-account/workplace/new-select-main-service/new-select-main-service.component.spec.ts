@@ -17,7 +17,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
-fdescribe('NewSelectMainServiceComponent', () => {
+describe('NewSelectMainServiceComponent', () => {
   async function setup(flow) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
       NewSelectMainServiceComponent,
