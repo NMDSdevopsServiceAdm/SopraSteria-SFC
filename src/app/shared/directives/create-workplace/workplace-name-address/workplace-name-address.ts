@@ -169,7 +169,6 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     this.form.setValue({
       ...selectedLocationData,
     });
-    }
   }
 
   protected setupFormErrorsMap(): void {
