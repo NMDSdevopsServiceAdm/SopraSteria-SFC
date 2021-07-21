@@ -5,7 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -94,7 +96,7 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Error messages', () => {
-    it(`should display an error message for when workplace name isn't filled in when isCqcRegulated is true`, async () => {
+    it(`should display an error message if workplace name isn't filled in when isCqcRegulated is true`, async () => {
       const { component, fixture, getByText, getAllByText } = await setup();
       const form = component.form;
       const expectedErrorMessage = 'Enter the name of the workplace';
@@ -111,7 +113,7 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
     });
 
-    it(`shouldn't display any error messages for when workplace name isn't filled in when isCqcRegulated is false`, async () => {
+    it(`shouldn't display any error messages if workplace name isn't filled in when isCqcRegulated is false`, async () => {
       const { component, fixture, getByText, queryByText } = await setup();
       const expectedErrorMessage = 'Enter the name of your workplace';
 
@@ -124,6 +126,139 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(queryByText(expectedErrorMessage)).toBeFalsy();
+    });
+
+    it(`should display an error message when building and street isn't filled in`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Enter the building (number or name) and street';
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when town or city isn't filled in`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Enter the town or city';
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when county isn't filled in`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Enter the county';
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when postcode isn't filled in`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Enter the postcode';
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it('should display an error message when an invalid postcode is entered', async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Enter a valid workplace postcode';
+
+      form.controls['postcode'].setValue('M1');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when workplace name exceeds max characters and isCqcRegulated is true`, async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+      const expectedErrorMessage = 'Workplace name must be 120 characters or fewer';
+
+      component.isCqcRegulated = true;
+      component.setupForm();
+      component.setFormControlsMap();
+      fixture.detectChanges();
+
+      const form = component.form;
+      form.controls['workplaceName'].setValue(
+        'Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Long Workplace Name',
+      );
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when address 1 exceeds max characters`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Building and street must be 40 characters or fewer';
+
+      form.controls['address1'].setValue('Long Workplace Building Name Or Number And Street');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when town or city exceeds max characters`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Town or city must be 40 characters or fewer';
+
+      form.controls['townOrCity'].setValue('Very Very Very Very Long Town Or City Name');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when county exceeds max characters`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'County must be 40 characters or fewer';
+
+      form.controls['county'].setValue('Very Very Very Very Very Long County Name');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when postcode exceeds max characters`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'Postcode must be 8 characters or fewer';
+
+      form.controls['postcode'].setValue('AB12 34CD');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
     });
   });
 
@@ -173,6 +308,18 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/add-workplace', 'select-workplace-address'],
       });
+    });
+  });
+
+  describe('Workplace address page', () => {
+    it('should not display the workplace name field when isCqcRegulated is false', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.isCqcRegulated = false;
+      component.setFormControlsMap();
+      fixture.detectChanges();
+
+      expect(queryByText('Workplace name')).toBeFalsy();
     });
   });
 });
