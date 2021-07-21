@@ -149,15 +149,25 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   protected preFillForm(selectedLocation: LocationAddress): void {
-    this.form.setValue({
+    const selectedLocationData = {
       address1: selectedLocation.addressLine1,
       address2: selectedLocation.addressLine2,
       address3: selectedLocation.addressLine3,
       county: selectedLocation.county,
       postcode: selectedLocation.postalCode,
       townOrCity: selectedLocation.townCity,
-      workplaceName: selectedLocation.locationName,
-    });
+    };
+
+    if (this.isCqcRegulated) {
+      this.form.setValue({
+        workplaceName: selectedLocation.locationName,
+        ...selectedLocationData,
+      });
+    } else {
+      this.form.setValue({
+        ...selectedLocationData,
+      });
+    }
   }
 
   protected setupFormErrorsMap(): void {
