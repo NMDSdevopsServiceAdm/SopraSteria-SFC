@@ -269,7 +269,7 @@ describe('YourDetailsComponent', () => {
     fireEvent.click(continueButton);
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['registration', 'create-username-password']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'username-password']);
   });
 
   describe('setBackLink()', () => {
