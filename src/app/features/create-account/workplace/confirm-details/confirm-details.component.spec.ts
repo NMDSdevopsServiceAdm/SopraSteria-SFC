@@ -95,7 +95,7 @@ describe('ConfirmDetailsComponent', () => {
   });
 
   it('should have the title Confirm your details before you submit them', async () => {
-    const { component, fixture, queryByText } = await setup();
+    const { fixture, queryByText } = await setup();
 
     fixture.detectChanges();
     const expectedTitle = 'Confirm your details before you submit them';
@@ -103,7 +103,7 @@ describe('ConfirmDetailsComponent', () => {
   });
 
   it('should show details of workplace for when is CQC regulated', async () => {
-    const { component, fixture, queryByText, getByText } = await setup();
+    const { fixture, getByText } = await setup();
 
     const expectedLocationName = 'Name';
     const expectedAddressLine1 = '1 Street';
@@ -120,5 +120,13 @@ describe('ConfirmDetailsComponent', () => {
     expect(getByText(expectedPostalCode)).toBeTruthy();
     expect(getByText(expectedCounty)).toBeTruthy();
     expect(getByText(expectedLocationId)).toBeTruthy();
+  });
+
+  it('should show CQC Location ID field when is CQC regulated', async () => {
+    const { fixture, queryByText } = await setup();
+    const expectedField = 'CQC Location ID';
+
+    fixture.detectChanges();
+    expect(queryByText(expectedField)).toBeTruthy();
   });
 });
