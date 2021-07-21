@@ -113,13 +113,31 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
-      address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      address2: ['', [Validators.maxLength(this.addressMaxLength)]],
-      address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-      townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
+      workplaceName: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)], updateOn: 'submit' },
+      ],
+      address1: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' },
+      ],
+      address2: ['', { validators: [Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' }],
+      address3: ['', { validators: [Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' }],
+      townOrCity: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' },
+      ],
+      county: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' },
+      ],
+      postcode: [
+        '',
+        {
+          validators: [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode],
+          updateOn: 'submit',
+        },
+      ],
     });
   }
 
