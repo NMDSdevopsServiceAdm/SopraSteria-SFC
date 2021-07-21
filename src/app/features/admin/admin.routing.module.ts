@@ -5,6 +5,10 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'local-authorities-return',
+  },
+  {
     path: 'local-authorities-return',
     component: LocalAuthoritiesReturnComponent,
     data: {
