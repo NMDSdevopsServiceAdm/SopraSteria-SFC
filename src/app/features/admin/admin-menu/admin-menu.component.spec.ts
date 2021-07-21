@@ -21,4 +21,11 @@ describe('AdminMenuComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+
+  it('should contain a local authorit return link that links to admin/local-authorities-return url', async () => {
+    const { component } = await setup();
+
+    const laCompletionsLink = component.getByText('Local authority returns');
+    expect(laCompletionsLink.getAttribute('href')).toBe('/admin/local-authorities-return');
+  });
 });

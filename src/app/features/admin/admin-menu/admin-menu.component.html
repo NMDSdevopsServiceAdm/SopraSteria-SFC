@@ -1,3 +1,29 @@
-<div *ngFor="let field of menuComponents" class="row">
-  {{ field }}
-</div>
+<ul class="govuk-list">
+  <li routerLinkActive="active">
+    <a routerLink="/admin/search" class="govuk-link">Search</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/registrations" class="govuk-link">Registration requests</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/parent-requests" class="govuk-link">Parent requests</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/cqc-status-changes" class="govuk-link">CQC status changes</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/emails" class="govuk-link">Emails</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/admin-reports" class="govuk-link">Admin reports</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/local-authorities-return" class="govuk-link">Local authority returns</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/users" class="govuk-link">Admin users</a>
+  </li>
+  <li routerLinkActive="active">
+    <a routerLink="/admin/external-links" class="govuk-link">External links</a>
+  </li>
+</ul>
