@@ -35,6 +35,9 @@ import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
+import {
+  NewSelectMainServiceComponent,
+} from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
@@ -53,9 +56,6 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {
-  NewSelectMainServiceComponent,
-} from './features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import {
   StaffMismatchBannerComponent,
 } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';

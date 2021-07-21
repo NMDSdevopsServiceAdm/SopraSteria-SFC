@@ -14,9 +14,7 @@
           <h1 class="govuk-fieldset__heading">Find your workplace address</h1>
         </legend>
 
-        <p *ngIf="createAccountNewDesign">
-          <span>We'll use your workplace postcode to find the address.</span>
-        </p>
+        <p>We'll use your workplace postcode to find the address.</p>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <label class="govuk-label" for="postcode"> Postcode </label>

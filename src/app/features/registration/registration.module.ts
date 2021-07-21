@@ -5,6 +5,7 @@ import {
   SecurityQuestionComponent,
 } from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
 import { ConfirmDetailsComponent } from '@features/create-account/workplace/confirm-details/confirm-details.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
@@ -13,6 +14,10 @@ import {
 import {
   SelectWorkplaceAddressComponent,
 } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
@@ -21,18 +26,11 @@ import {
 import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import {
-  EnterWorkplaceAddressComponent,
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
-import {
-  RegistrationAwaitingApprovalComponent,
-} from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { SharedModule } from '@shared/shared.module';
 
 import {
@@ -53,10 +51,10 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    EnterWorkplaceAddressComponent,
+    WorkplaceNameAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
-    RegistrationAwaitingApprovalComponent,
+    ThankYouComponent,
     RegulatedByCqcComponent,
     SecurityQuestionComponent,
     SelectMainServiceComponent,

@@ -11,7 +11,7 @@ import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
+export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   protected allServices: Array<Service> = [];
   protected flow: string;
@@ -34,7 +34,7 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
     protected workplaceService: WorkplaceService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.init();
     this.setupForm();
     this.setupFormErrorsMap();
@@ -44,13 +44,13 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
     this.init();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      workplaceService: ['', Validators.required],
+      workplaceService: ['', { validators: Validators.required, updateOn: 'submit' }],
     });
   }
 
@@ -92,7 +92,9 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
       this.workplaceService.getServicesByCategory(isRegulated).subscribe(
         (categories: Array<ServiceGroup>) => {
           this.categories = categories;
-          this.categories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
+          this.categories.forEach((data: ServiceGroup) => {
+            this.allServices.push(...data.services);
+          });
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -142,7 +144,6 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
         this.form.get(`otherWorkplaceService${this.selectedMainService.id}`).patchValue(this.selectedMainService.other);
       }
     }
-
     this.renderForm = true;
     this.errorSummaryService.formEl$.next(this.formEl);
   }
@@ -161,7 +162,6 @@ export class SelectMainService implements OnInit, OnDestroy, AfterViewInit {
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-
     if (this.form.valid) {
       this.onSuccess();
     } else {

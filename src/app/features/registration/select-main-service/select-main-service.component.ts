@@ -6,13 +6,15 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainService } from '@shared/directives/create-workplace/select-main-service/select-main-service';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
   selector: 'app-select-main-service',
   templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
-export class SelectMainServiceComponent extends SelectMainService {
+export class SelectMainServiceComponent extends SelectMainServiceDirective {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
@@ -52,9 +54,9 @@ export class SelectMainServiceComponent extends SelectMainService {
     let route: string;
 
     if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      route = 'enter-workplace-address';
+      route = 'workplace-name-address';
     } else {
-      route = this.registrationService.isRegulated() ? 'select-workplace' : 'enter-workplace-address';
+      route = this.registrationService.isRegulated() ? 'select-workplace' : 'workplace-name-address';
     }
 
     this.backService.setBackLink({ url: [`${this.flow}/${route}`] });
