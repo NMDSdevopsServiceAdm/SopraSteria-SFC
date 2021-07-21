@@ -6,7 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { AccountDetailsDirective } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { combineLatest } from 'rxjs';
 
 @Component({

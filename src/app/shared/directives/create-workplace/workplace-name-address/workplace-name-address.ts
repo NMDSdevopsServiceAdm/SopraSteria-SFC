@@ -82,18 +82,37 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected getWorkplaceNameIfNotCqcRegulated(): void {}
 
-  public setupForm(): void {
+  public setupForm(): void { 
     const form = {
-      address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      address2: ['', [Validators.maxLength(this.addressMaxLength)]],
-      address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-      townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
+      
+      address1: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' },
+      ],
+      address2: ['', { validators: [Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' }],
+      address3: ['', { validators: [Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' }],
+      townOrCity: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' },
+      ],
+      county: [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.addressMaxLength)], updateOn: 'submit' },
+      ],
+      postcode: [
+        '',
+        {
+          validators: [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode],
+          updateOn: 'submit',
+        },
+      ],
     };
 
     if (this.isCqcRegulated || this.isWorkPlaceUpdate) {
-      form['workplaceName'] = ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]];
+      form['workplaceName'] = [
+        '',
+        { validators: [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)], updateOn: 'submit' },
+      ];
     }
 
     this.form = this.formBuilder.group(form);
