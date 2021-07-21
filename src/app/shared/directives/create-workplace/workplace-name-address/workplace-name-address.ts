@@ -79,29 +79,24 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setIsCqcRegulated(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected getWorkplaceNameIfNotCqcRegulated(): void {}
 
   public setupForm(): void {
+    const form = {
+      address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      address2: ['', [Validators.maxLength(this.addressMaxLength)]],
+      address3: ['', [Validators.maxLength(this.addressMaxLength)]],
+      townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
+    };
+
     if (this.isCqcRegulated || this.isWorkPlaceUpdate) {
-      this.form = this.formBuilder.group({
-        workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
-        address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-        address2: ['', [Validators.maxLength(this.addressMaxLength)]],
-        address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-        townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-        county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-        postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
-      });
-    } else {
-      this.form = this.formBuilder.group({
-        address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-        address2: ['', [Validators.maxLength(this.addressMaxLength)]],
-        address3: ['', [Validators.maxLength(this.addressMaxLength)]],
-        townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-        county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
-        postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength), this.validPostcode]],
-      });
+      form['workplaceName'] = ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]];
     }
+
+    this.form = this.formBuilder.group(form);
   }
 
   public setFormControlsMap(): void {
@@ -158,17 +153,11 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
       townOrCity: selectedLocation.townCity,
     };
 
-    if (this.isCqcRegulated) {
-      this.form.setValue({
-        workplaceName: selectedLocation.locationName,
-        ...selectedLocationData,
-      });
-      return;
+    if (this.isCqcRegulated || this.isWorkPlaceUpdate) {
+      selectedLocationData['workplaceName'] = selectedLocation.locationName;
     }
 
-    this.form.setValue({
-      ...selectedLocationData,
-    });
+    this.form.setValue(selectedLocationData);
   }
 
   protected setupFormErrorsMap(): void {
