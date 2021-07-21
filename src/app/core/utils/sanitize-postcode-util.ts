@@ -1,5 +1,9 @@
 export class SanitizePostcodeUtil {
   public static sanitizePostcode = (postcode: string): string => {
+    if (!postcode) {
+      return null;
+    }
+
     let cleanedPostcode = postcode.replace(/[^0-9a-zA-Z]/g, '').toUpperCase();
 
     if (cleanedPostcode.length === 6) {
