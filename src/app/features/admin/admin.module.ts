@@ -9,10 +9,11 @@ import { AdminMenuComponent } from './admin-menu/admin-menu.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, AdminRoutingModule, RouterModule],
-  declarations: [AdminMenuComponent, LocalAuthoritiesReturnComponent, AdminComponent],
+  declarations: [AdminMenuComponent, LocalAuthoritiesReturnComponent, AdminComponent, SearchComponent],
   providers: [],
   bootstrap: [AdminComponent],
 })
