@@ -156,7 +156,6 @@ describe('ConfirmDetailsComponent', () => {
     const { fixture, getByText } = await setup();
 
     const expectedUserName = 'testUser';
-
     fixture.detectChanges();
 
     expect(getByText(expectedUserName)).toBeTruthy();
@@ -166,9 +165,20 @@ describe('ConfirmDetailsComponent', () => {
     const { fixture, getByText } = await setup();
 
     const expectedHiddenPassword = '******';
-
     fixture.detectChanges();
 
     expect(getByText(expectedHiddenPassword)).toBeTruthy();
   });
+
+  // it('should hide the password before clicking show', async () => {
+  //   const { fixture, getByText } = await setup();
+
+  //   const expectedHiddenPassword = '******';
+  //   const showPasswordButton = getByText('Show password');
+
+  //   fireEvent.click
+  //   fixture.detectChanges();
+
+  //   expect(getByText(expectedHiddenPassword)).toBeTruthy();
+  // });
 });
