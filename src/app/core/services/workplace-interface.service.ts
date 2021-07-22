@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export abstract class CreationService {
+export abstract class WorkplaceInterfaceService {
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public isRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public isCqcRegulated$: BehaviorSubject<boolean> = new BehaviorSubject(null);

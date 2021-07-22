@@ -6,12 +6,12 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { CreationService } from './creation.service';
+import { WorkplaceInterfaceService } from './workplace-interface.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RegistrationService extends CreationService {
+export class RegistrationService extends WorkplaceInterfaceService {
   public registrationInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);

@@ -6,12 +6,12 @@ import { Service, ServiceGroup } from '@core/model/services.model';
 import { AddWorkplaceRequest, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { CreationService } from './creation.service';
+import { WorkplaceInterfaceService } from './workplace-interface.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class WorkplaceService extends CreationService {
+export class WorkplaceService extends WorkplaceInterfaceService {
   constructor(private http: HttpClient) {
     super();
   }

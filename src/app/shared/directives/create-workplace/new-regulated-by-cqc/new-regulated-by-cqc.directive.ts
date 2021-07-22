@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
-import { CreationService } from '@core/services/creation.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 
 @Directive()
 export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
@@ -17,7 +17,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   constructor(
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected creationService: CreationService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
@@ -63,8 +63,8 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     const regulatedByCQC = this.form.get('regulatedByCQC');
 
     this.submitted = true;
-    this.creationService.isRegulated$.next(regulatedByCQC.value === 'yes');
-    this.creationService.isCqcRegulated$.next(regulatedByCQC.value === 'yes');
+    this.workplaceInterfaceService.isRegulated$.next(regulatedByCQC.value === 'yes');
+    this.workplaceInterfaceService.isCqcRegulated$.next(regulatedByCQC.value === 'yes');
     this.setFlowToInProgress();
 
     if (this.form.valid) {
