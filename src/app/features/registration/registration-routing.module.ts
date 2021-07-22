@@ -198,6 +198,12 @@ const routes: Routes = [
     canActivate: [RegisterGuard],
     data: { title: 'Workplace name and address?' },
   },
+  {
+    path: 'workplace-address',
+    component: WorkplaceNameAddressComponent,
+    canActivate: [RegisterGuard],
+    data: { title: `What's your workplace address?` },
+  },
 ];
 
 @NgModule({
