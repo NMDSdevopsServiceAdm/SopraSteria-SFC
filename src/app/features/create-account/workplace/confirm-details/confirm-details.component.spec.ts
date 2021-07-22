@@ -5,9 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -51,6 +53,10 @@ describe('ConfirmDetailsComponent', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: UserService,
+          useClass: MockUserService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -99,7 +105,7 @@ describe('ConfirmDetailsComponent', () => {
 
     fixture.detectChanges();
     const expectedTitle = 'Confirm your details before you submit them';
-    expect(queryByText(expectedTitle)).toBeTruthy();
+    expect(queryByText(expectedTitle, { exact: false })).toBeTruthy();
   });
 
   it('should show details of workplace for when is CQC regulated', async () => {

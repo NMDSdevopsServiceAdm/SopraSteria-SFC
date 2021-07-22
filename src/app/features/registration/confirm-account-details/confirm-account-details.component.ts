@@ -8,6 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { combineLatest } from 'rxjs';
 
 @Component({
@@ -16,7 +17,7 @@ import { combineLatest } from 'rxjs';
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   protected actionType = 'Registration';
-
+  public createAccountNewDesign: boolean;
   constructor(
     private backService: BackService,
     private registrationService: RegistrationService,
@@ -24,17 +25,23 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     private userService: UserService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     super(errorSummaryService, formBuilder);
   }
 
-  protected init() {
+  protected async init() {
     this.setupSubscriptions();
     this.setBackLink();
     this.subscriptions.add(
       this.registrationService.isCqcRegulated$.subscribe((value) => {
         this.slectedCqcValue = value;
       }),
+    );
+
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
     );
   }
 

@@ -8,9 +8,13 @@
 
 <div class="govuk-grid-row" id="server-error">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <span class="govuk-caption-l govuk-!-margin-bottom-2">User account</span>
-    <h1 class="govuk-heading-l">Confirm your account details</h1>
-
+    <ng-container *ngIf="createAccountNewDesign; else oldDesign">
+      <h1 class="govuk-heading-l">User Account</h1>
+    </ng-container>
+    <ng-template #oldDesign>
+      <span class="govuk-caption-l govuk-!-margin-bottom-2">User account</span>
+      <h1 class="govuk-heading-l">Confirm your account details</h1>
+    </ng-template>
     <app-summary-list [topBorder]="true" [summaryList]="userInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo" (setReturn)="onSetReturn()"></app-summary-list>
@@ -19,9 +23,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">
-              Are these details correct?
-            </h2>
+            <h2 class="govuk-fieldset__heading">Are these details correct?</h2>
           </legend>
           <span id="termsAndConditions-hint" class="govuk-hint">
             Check the box to confirm you agree to the
@@ -53,9 +55,7 @@
       </div>
 
       <div class="govuk-button-group">
-        <button type="submit" class="govuk-button">
-          Submit
-        </button>
+        <button type="submit" class="govuk-button">Submit</button>
       </div>
     </form>
   </div>

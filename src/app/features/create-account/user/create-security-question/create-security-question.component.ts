@@ -44,7 +44,8 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   }
 
   protected save(): void {
-    this.router.navigate(['/registration/confirm-account-details']).then(() => {
+    // this.router.navigate(['/registration/confirm-account-details']).then(() => {
+    this.router.navigate(['/registration/confirm-details']).then(() => {
       this.registrationService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityQuestionAnswer: this.getSecurityQuestionAnswer.value,

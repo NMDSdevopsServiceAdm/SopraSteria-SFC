@@ -1,11 +1,22 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { LoginCredentials } from '@core/model/login-credentials.model';
+import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockRegistrationService extends RegistrationService {
+  public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject({
+    username: 'testUser',
+    password: '',
+  });
+  public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject({
+    securityQuestion: 'a',
+    securityQuestionAnswer: 'a',
+  });
+
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject([
     {

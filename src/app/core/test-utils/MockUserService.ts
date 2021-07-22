@@ -80,6 +80,13 @@ const subsid2 = subsid2Builder();
 export class MockUserService extends UserService {
   private subsidiaries = 2;
   private isAdmin = false;
+  public userDetails$ = of({
+    uid: 'mocked-uid',
+    email: '',
+    fullname: '',
+    jobTitle: '',
+    phone: '',
+  });
 
   private;
 
