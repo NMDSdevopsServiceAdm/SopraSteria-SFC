@@ -11,8 +11,13 @@ export class SummaryListComponent {
   @Input() public wrapBorder?: boolean;
   @Input() public canNavigate?: boolean;
   @Output() public setReturn = new EventEmitter();
+  @Output() public togglePassword = new EventEmitter();
 
   public emitSetReturn(): void {
     this.setReturn.emit();
+  }
+
+  public emitTogglePassword(): void {
+    this.togglePassword.emit();
   }
 }

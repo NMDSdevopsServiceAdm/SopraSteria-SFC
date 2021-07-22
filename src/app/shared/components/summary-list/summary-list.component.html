@@ -9,11 +9,19 @@
     <dt class="govuk-summary-list__key">
       {{ item.label }}
     </dt>
-    <dd class="govuk-summary-list__value">
-      {{ item.data }}
-    </dd>
+    <ng-container *ngIf="item.label === 'Password'; else nonPassword">
+      <dd class="govuk-summary-list__value">
+        {{ item.data }}
+        <a (click)="emitTogglePassword()">Show password</a>
+      </dd>
+    </ng-container>
+    <ng-template #nonPassword>
+      <dd class="govuk-summary-list__value">
+        {{ item.data }}
+      </dd>
+    </ng-template>
     <ng-container *ngIf="item.route">
-      <dd *ngIf="canNavigate === undefined ? true: canNavigate" class="govuk-summary-list__actions">
+      <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
         <a [routerLink]="item.route.url" (click)="emitSetReturn()">
           Change
           <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
