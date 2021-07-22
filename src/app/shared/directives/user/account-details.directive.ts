@@ -92,7 +92,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Enter full name',
+            message: 'Enter your full name',
           },
           {
             name: 'maxlength',
@@ -105,7 +105,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
         type: [
           {
             name: 'required',
-            message: 'Enter a job title',
+            message: 'Enter your job title',
           },
           {
             name: 'maxlength',
