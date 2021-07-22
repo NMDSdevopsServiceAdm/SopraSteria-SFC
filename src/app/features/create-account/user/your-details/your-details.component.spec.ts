@@ -53,8 +53,8 @@ describe('YourDetailsComponent', () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
-    const nameErrorMessage = 'Enter full name';
-    const jobErrorMessage = 'Enter a job title';
+    const nameErrorMessage = 'Enter your full name';
+    const jobErrorMessage = 'Enter your job title';
     const emailErrorMessage = 'Enter an email address';
     const phoneErrorMessage = 'Enter a phone number';
 
@@ -72,7 +72,7 @@ describe('YourDetailsComponent', () => {
       const { component } = await setup();
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
-      const errorMessage = 'Enter full name';
+      const errorMessage = 'Enter your full name';
 
       form.controls['jobTitle'].setValue('job');
       form.controls['email'].setValue('name@email.com');
@@ -109,7 +109,7 @@ describe('YourDetailsComponent', () => {
       const { component } = await setup();
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
-      const errorMessage = 'Enter a job title';
+      const errorMessage = 'Enter your job title';
 
       form.controls['fullname'].setValue('name');
       form.controls['email'].setValue('name@email.com');
