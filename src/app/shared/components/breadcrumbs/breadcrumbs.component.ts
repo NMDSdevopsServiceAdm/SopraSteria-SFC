@@ -16,7 +16,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.add(
       this.breadcrumbService.routes$.subscribe((routes) => {
-        this.breadcrumbs = routes ? this.getBreadcrumbs(routes, true) : null;
+        this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
       }),
     );
   }
@@ -25,7 +25,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private getBreadcrumbs(routes: JourneyRoute[], admin: boolean = false) {
+  private getBreadcrumbs(routes: JourneyRoute[]) {
     const currentPath = routes[routes.length - 1];
 
     routes = [
