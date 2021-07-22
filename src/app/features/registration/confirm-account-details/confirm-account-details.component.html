@@ -66,10 +66,11 @@
           </div>
         </fieldset>
       </div>
-
-      <div class="govuk-button-group">
-        <button type="submit" class="govuk-button">Submit</button>
-      </div>
+      <ng-container *ngIf="!createAccountNewDesign; else oldDesign">
+        <div class="govuk-button-group">
+          <button type="submit" class="govuk-button">Submit</button>
+        </div>
+      </ng-container>
     </form>
   </div>
 </div>
