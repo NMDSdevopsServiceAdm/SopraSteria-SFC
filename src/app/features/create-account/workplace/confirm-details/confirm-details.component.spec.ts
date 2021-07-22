@@ -135,4 +135,40 @@ describe('ConfirmDetailsComponent', () => {
     fixture.detectChanges();
     expect(queryByText(expectedField)).toBeTruthy();
   });
+
+  it('should show details of user', async () => {
+    const { fixture, getByText } = await setup();
+
+    const expectedFullName = 'John Appleseed';
+    const expectedJobTitle = 'Software Engineer';
+    const expectedEmailAddress = 'john@test.com';
+    const expectedPhoneNumber = '01234 345634';
+
+    fixture.detectChanges();
+
+    expect(getByText(expectedFullName)).toBeTruthy();
+    expect(getByText(expectedJobTitle)).toBeTruthy();
+    expect(getByText(expectedEmailAddress)).toBeTruthy();
+    expect(getByText(expectedPhoneNumber)).toBeTruthy();
+  });
+
+  it('should show the username', async () => {
+    const { fixture, getByText } = await setup();
+
+    const expectedUserName = 'testUser';
+
+    fixture.detectChanges();
+
+    expect(getByText(expectedUserName)).toBeTruthy();
+  });
+
+  it('should hide the password before clicking show', async () => {
+    const { fixture, getByText } = await setup();
+
+    const expectedHiddenPassword = '******';
+
+    fixture.detectChanges();
+
+    expect(getByText(expectedHiddenPassword)).toBeTruthy();
+  });
 });

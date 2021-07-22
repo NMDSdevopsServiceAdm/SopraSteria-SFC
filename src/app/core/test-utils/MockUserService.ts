@@ -82,10 +82,10 @@ export class MockUserService extends UserService {
   private isAdmin = false;
   public userDetails$ = of({
     uid: 'mocked-uid',
-    email: '',
-    fullname: '',
-    jobTitle: '',
-    phone: '',
+    email: 'john@test.com',
+    fullname: 'John Appleseed',
+    jobTitle: 'Software Engineer',
+    phone: '01234 345634',
   });
 
   private;
