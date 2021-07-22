@@ -140,7 +140,7 @@ const routes: Routes = [
         data: { title: 'Bulk Upload' },
       },
       {
-        path: 'admin',
+        path: 'sfcadmin',
         loadChildren: () => import('@features/admin/admin.module').then((m) => m.AdminModule),
         canActivate: [RoleGuard],
         data: {
