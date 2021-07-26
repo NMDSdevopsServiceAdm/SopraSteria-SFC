@@ -13,7 +13,7 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found.component';
 
 describe('NewWorkplaceNotFoundComponent', () => {
-  async function setup(flow, postcodeOrLocationId = '', searchMethod = '', workplaceNotFound = false) {
+  async function setup(postcodeOrLocationId = '', searchMethod = '', workplaceNotFound = false) {
     const component = await render(NewWorkplaceNotFoundComponent, {
       imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -43,7 +43,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
               parent: {
                 url: [
                   {
-                    path: flow,
+                    path: 'registration',
                   },
                 ],
               },
@@ -66,20 +66,20 @@ describe('NewWorkplaceNotFoundComponent', () => {
   }
 
   it('should create', async () => {
-    const { component } = await setup('registration');
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should display the CQC location id or postcode entered in the previous page', async () => {
     const inputtedPostcode = 'SE1 1AA';
-    const { component } = await setup('registration', inputtedPostcode);
+    const { component } = await setup(inputtedPostcode);
 
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
   });
 
   describe('Registration journey', () => {
     it('should navigate to the find workplace page when selecting yes', async () => {
-      const { component, spy } = await setup('registration');
+      const { component, spy } = await setup();
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
       fireEvent.click(yesRadioButton);
 
@@ -90,7 +90,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
     });
 
     it('should navigate to the workplace name and address page when selecting no', async () => {
-      const { component, spy } = await setup('registration');
+      const { component, spy } = await setup();
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
 
@@ -101,7 +101,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
     });
 
     it('should display an error message when not selecting anything', async () => {
-      const { component } = await setup('registration');
+      const { component } = await setup();
 
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
@@ -111,41 +111,8 @@ describe('NewWorkplaceNotFoundComponent', () => {
     });
 
     it('should display the correct heading', async () => {
-      const { component } = await setup('registration');
+      const { component } = await setup();
       const expectedHeading = 'We could not find your workplace';
-
-      expect(component.getByText(expectedHeading)).toBeTruthy();
-    });
-  });
-
-  describe('Parent journey', () => {
-    it('should navigate to the find workplace page when selecting yes', async () => {
-      const { component, spy } = await setup('add-workplace');
-      const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
-      fireEvent.click(yesRadioButton);
-
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
-    });
-
-    it('should navigate to the workplace name page when selecting no', async () => {
-      const { component, spy } = await setup('add-workplace');
-      const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
-      fireEvent.click(noRadioButton);
-
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name-address']);
-    });
-
-    it('should display the correct heading', async () => {
-      const { component } = await setup('add-workplace');
-      const expectedHeading = 'We could not find the workplace';
-      component.fixture.componentInstance.isParent = true;
-      component.fixture.detectChanges();
 
       expect(component.getByText(expectedHeading)).toBeTruthy();
     });
@@ -153,7 +120,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
 
   describe('sanitizePostcode', () => {
     it('should only sanitize the postcode if the search method is postcode', async () => {
-      const { component } = await setup('registration', 'se11aa', 'postcode');
+      const { component } = await setup('se11aa', 'postcode');
       const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
       component.fixture.componentInstance.sanitizePostcode();
 
@@ -161,7 +128,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
     });
 
     it('should not sanitize the postcode if the search method is locationID', async () => {
-      const { component } = await setup('registration', 'se11aa', 'locationID');
+      const { component } = await setup('se11aa', 'locationID');
       const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
       component.fixture.componentInstance.sanitizePostcode();
 
@@ -169,7 +136,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
     });
 
     it('should display the sanitized postcode entered in the previous page', async () => {
-      const { component } = await setup('registration', 'se11aa', 'postcode');
+      const { component } = await setup('se11aa', 'postcode');
       component.fixture.componentInstance.sanitizePostcode();
       component.fixture.detectChanges();
 
