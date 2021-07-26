@@ -1,3 +1,11 @@
+<app-error-summary
+  *ngIf="(form.invalid || serverError) && submitted"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
 <app-confirm-workplace-details></app-confirm-workplace-details>
 <app-confirm-account-details></app-confirm-account-details>
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
@@ -15,6 +23,7 @@
             id="termsAndConditions"
             name="termsAndConditions"
             type="checkbox"
+            data-testid="checkbox"
             [formControlName]="'termsAndConditions'"
           />
           <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">

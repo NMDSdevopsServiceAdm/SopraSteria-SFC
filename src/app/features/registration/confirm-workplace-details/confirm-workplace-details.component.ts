@@ -27,7 +27,6 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
       'createAccountNewDesign',
       false,
     );
-    console.log('Feature flag: ' + this.createAccountNewDesign);
     this.getWorkplaceData();
   }
 
@@ -38,7 +37,6 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
           (locationAddress) => (this.locationAddress = locationAddress[0]),
         ),
       );
-      console.log(this.locationAddress);
     } else {
       this.subscriptions.add(
         this.registrationService.selectedLocationAddress$.subscribe(

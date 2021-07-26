@@ -11,13 +11,13 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { queryByText, render } from '@testing-library/angular';
+import { fireEvent, getByTestId, queryByText, render } from '@testing-library/angular';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
 
 describe('ConfirmDetailsComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(ConfirmDetailsComponent, {
+    const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(ConfirmDetailsComponent, {
       imports: [
         SharedModule,
         RegistrationModule,
@@ -54,6 +54,7 @@ describe('ConfirmDetailsComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
     };
   }
 
@@ -78,5 +79,29 @@ describe('ConfirmDetailsComponent', () => {
 
     expect(getAllByText(expectedText, { exact: false })).toBeTruthy();
     expect(getAllByText(termsAndConditionsLink, { exact: false })).toBeTruthy();
+  });
+
+  it('should show an error message when pressing submit without agreeing to terms and conditions', async () => {
+    const { fixture, getByText, getAllByText } = await setup();
+    const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
+    const submitButton = getByText('Submit details');
+
+    fireEvent.click(submitButton);
+
+    expect(fixture.componentInstance.form.invalid).toBeTruthy();
+    expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+  });
+
+  it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
+    const { component, fixture, getByText, getByTestId, getAllByText } = await setup();
+    const termsAndConditionsCheckbox = getByTestId('checkbox');
+    const submitButton = getByText('Submit details');
+    const saveSpy = spyOn(component, 'save').and.returnValue(null);
+
+    fireEvent.click(termsAndConditionsCheckbox);
+    fireEvent.click(submitButton);
+
+    expect(fixture.componentInstance.form.invalid).toBeFalsy();
+    expect(saveSpy).toHaveBeenCalled();
   });
 });
