@@ -24,4 +24,18 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
   ) {
     super(errorSummaryService, establishmentService, backService, route, router, registrationService, formBuilder);
   }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'yourWorkplace',
+        type: [
+          {
+            name: 'required',
+            message: 'Select yes if this is your workplace',
+          },
+        ],
+      },
+    ];
+  }
 }

@@ -60,24 +60,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     });
   }
 
-  protected setupFormErrorsMap(): void {
-    let errorMessage;
-    this.isParent
-      ? (errorMessage = 'Select yes if this is the workplace you want to add')
-      : (errorMessage = 'Select yes if this is your workplace');
-
-    this.formErrorsMap = [
-      {
-        item: 'yourWorkplace',
-        type: [
-          {
-            name: 'required',
-            message: errorMessage,
-          },
-        ],
-      },
-    ];
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setupFormErrorsMap(): void {}
 
   public getErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
