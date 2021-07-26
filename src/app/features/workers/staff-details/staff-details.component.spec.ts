@@ -100,7 +100,7 @@ fdescribe('StaffDetailsComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
-    const workerService = injector.inject(WorkerService) as WorkerService;
+
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
@@ -109,8 +109,6 @@ fdescribe('StaffDetailsComponent', () => {
       establishmentService,
       router,
       spy,
-      establishment,
-      workerService,
     };
   }
 
@@ -173,27 +171,41 @@ fdescribe('StaffDetailsComponent', () => {
     expect(component.fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
   });
 
-  it('should go to check-answers url when editing existing ataff record', async () => {
-    // const worker = true;
-    const { component, spy, workerService, establishmentService, establishment, router } = await setup();
+  it('should go to check-answers url when editing existing a staff record', async () => {
+    const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
     form.controls.nameOrId.setValue('Jeff');
     form.controls.mainJob.setValue('2');
     form.controls.contract.setValue('Permanent');
 
-    // console.log(establishment);
-    console.log('@@@@@@@@@@@@2');
-    const workplaceId = establishment.uid;
-    // console.log(workplaceId);
-    const workerId = workerService.worker$;
-    // console.log(workerId);
-    console.log(router.url);
+    const workerId = component.fixture.componentInstance.worker.uid;
+    const workplaceId = component.fixture.componentInstance.workplace.uid;
+
     const saveButton = component.getByText('Save and return');
 
     fireEvent.click(saveButton);
     component.fixture.detectChanges();
     expect(true).toBe(true);
 
-    // expect(spy).toHaveBeenCalledWith(['workplace', workplaceId, 'staff-record', workerId, 'check-answers']);
+    expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'check-answers']);
+  });
+
+  it('should go to mandatory-details url when adding a new staff record', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+    form.controls.nameOrId.setValue('Jeff');
+    form.controls.mainJob.setValue('2');
+    form.controls.contract.setValue('Permanent');
+
+    const workerId = component.fixture.componentInstance.worker.uid;
+    const workplaceId = component.fixture.componentInstance.workplace.uid;
+
+    const saveButton = component.getByText('Save and return');
+
+    fireEvent.click(saveButton);
+    component.fixture.detectChanges();
+    expect(true).toBe(true);
+
+    expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'mandatory-details']);
   });
 });

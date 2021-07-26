@@ -82,6 +82,7 @@ export class MockWorkerService extends WorkerService {
   }
 
   public worker$ = of(worker as Worker);
+
   public workers$ = of([
     {
       nameOrId: worker.nameOrId,

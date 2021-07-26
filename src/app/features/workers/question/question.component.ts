@@ -44,11 +44,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
-
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
-        // console.log('***** Inside ngOnInit Question *****');
-        // console.log(worker);
         this.worker = worker;
 
         if (!this.initiated) {
@@ -94,7 +91,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected onSuccess() {}
 
   protected navigate(action): void {
-    // console.log('QUESTION-navigate ******');
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);
@@ -145,7 +141,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (!this.worker) {
-      // console.log('!this.worker');
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(
           (data) => this._onSuccess(data, payload.action),
@@ -153,7 +148,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         ),
       );
     } else {
-      // console.log('this.worker');
       this.subscriptions.add(
         this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
           (data) => this._onSuccess(data, payload.action),
