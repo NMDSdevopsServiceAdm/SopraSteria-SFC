@@ -7,7 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { ConfirmAccountDetailsDirective } from '@features/account/confirm-account-details/confirm-account-details';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { combineLatest } from 'rxjs';
 
@@ -15,7 +15,7 @@ import { combineLatest } from 'rxjs';
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
 })
-export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
+export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
   protected actionType = 'Registration';
   public createAccountNewDesign: boolean;
   constructor(

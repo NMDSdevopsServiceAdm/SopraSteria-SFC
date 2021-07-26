@@ -10,7 +10,7 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { ConfirmAccountDetailsDirective } from '@features/account/confirm-account-details/confirm-account-details';
 import { combineLatest } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -18,7 +18,7 @@ import { take } from 'rxjs/operators';
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
 })
-export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
+export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
   protected actionType = 'Account creation';
   protected flow = '/add-workplace';
 
