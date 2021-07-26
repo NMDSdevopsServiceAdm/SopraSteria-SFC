@@ -1,6 +1,4 @@
 'use strict';
-const { Op } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
   const AdminSettings = sequelize.define(
     'AdminSettings',
@@ -14,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      Value: {
+      Data: {
         type: DataTypes.JSONB,
         allowNull: false,
       },
@@ -26,15 +24,27 @@ module.exports = (sequelize, DataTypes) => {
     },
   );
 
-  AdminSettings.getLADates = getLADates;
+  AdminSettings.getValue = getValue;
+  AdminSettings.setValue = setValue;
 
   return AdminSettings;
 };
 
-const getLADates = async function () {
-  return this.findAll({
+const getValue = async function (Name) {
+  return await this.findOne({
     where: {
-      Name: ['laReturnStartDate', 'laReturnEndDate'],
+      Name,
     },
   });
+};
+
+const setValue = async function (Name, value) {
+  return await this.update(
+    { Data: value },
+    {
+      where: {
+        Name,
+      },
+    },
+  );
 };
