@@ -7,7 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { ConfirmAccountDetailsDirective } from '@features/account/confirm-account-details/confirm-account-details';
+import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { combineLatest } from 'rxjs';
 

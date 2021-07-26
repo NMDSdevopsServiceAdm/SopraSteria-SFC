@@ -10,7 +10,7 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { ConfirmAccountDetailsDirective } from '@features/account/confirm-account-details/confirm-account-details';
+import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
 import { combineLatest } from 'rxjs';
 import { take } from 'rxjs/operators';
 

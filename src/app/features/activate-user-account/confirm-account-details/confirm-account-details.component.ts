@@ -6,7 +6,7 @@ import { ActivateAccountRequest } from '@core/model/account.model';
 import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { ConfirmAccountDetailsDirective } from '@features/account/confirm-account-details/confirm-account-details';
+import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
 import { combineLatest } from 'rxjs';
 
 @Component({
