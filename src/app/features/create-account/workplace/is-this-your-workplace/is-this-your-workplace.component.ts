@@ -9,7 +9,8 @@ import { IsThisYourWorkplaceDirective } from '@shared/directives/create-workplac
 
 @Component({
   selector: 'app-is-this-your-workplace',
-  templateUrl: './is-this-your-workplace.component.html',
+  templateUrl:
+    '../../../../shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.component.html',
 })
 export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
   constructor(
