@@ -19,10 +19,10 @@
     <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo" (setReturn)="onSetReturn()"></app-summary-list>
 
-    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
-          <ng-container *ngIf="!createAccountNewDesign">
+    <ng-container *ngIf="!createAccountNewDesign">
+      <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+          <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading">Are these details correct?</h2>
             </legend>
@@ -33,22 +33,20 @@
               </a>
               . You must agree to them before you can submit your application.
             </span>
-          </ng-container>
-          <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            {{ getFirstErrorMessage('termsAndConditions') }}
-          </span>
-          <div class="govuk-checkboxes">
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                [class.govuk-input--error]="submitted && form.errors"
-                id="termsAndConditions"
-                name="termsAndConditions"
-                type="checkbox"
-                [formControlName]="'termsAndConditions'"
-              />
-              <ng-container *ngIf="createAccountNewDesign; else oldDesign">
+            <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage('termsAndConditions') }}
+            </span>
+            <div class="govuk-checkboxes">
+              <div class="govuk-checkboxes__item">
+                <input
+                  class="govuk-checkboxes__input"
+                  [class.govuk-input--error]="submitted && form.errors"
+                  id="termsAndConditions"
+                  name="termsAndConditions"
+                  type="checkbox"
+                  [formControlName]="'termsAndConditions'"
+                />
                 <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">
                   I agree to the
                   <a [routerLink]="['/terms-and-conditions']" target="_blank"
@@ -56,21 +54,14 @@
                   >
                   of this service
                 </label>
-              </ng-container>
-              <ng-template #oldDesign>
-                <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">
-                  I agree to the terms and conditions of this service
-                </label>
-              </ng-template>
+              </div>
             </div>
-          </div>
-        </fieldset>
-      </div>
-      <ng-container *ngIf="!createAccountNewDesign">
+          </fieldset>
+        </div>
         <div class="govuk-button-group">
           <button type="submit" class="govuk-button">Submit</button>
         </div>
-      </ng-container>
-    </form>
+      </form>
+    </ng-container>
   </div>
 </div>

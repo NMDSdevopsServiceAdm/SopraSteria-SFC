@@ -69,4 +69,14 @@ describe('ConfirmDetailsComponent', () => {
     const expectedTitle = 'Confirm your details before you submit them';
     expect(queryByText(expectedTitle, { exact: false })).toBeTruthy();
   });
+
+  it('should display the text to agree to terms and conditions', async () => {
+    const { getAllByText } = await setup();
+
+    const expectedText = 'I agree to the ';
+    const termsAndConditionsLink = 'terms and conditions';
+
+    expect(getAllByText(expectedText, { exact: false })).toBeTruthy();
+    expect(getAllByText(termsAndConditionsLink, { exact: false })).toBeTruthy();
+  });
 });
