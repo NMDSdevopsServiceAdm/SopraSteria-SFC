@@ -15,11 +15,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
 describe('IsThisYourWorkplaceComponent', () => {
-  async function setup(flow, searchMethod = 'locationID') {
-    let primaryWorkplace = {};
-    if (flow === 'add-workplace') {
-      primaryWorkplace = { isParent: true };
-    }
+  async function setup(searchMethod = 'locationID') {
     const component = await render(IsThisYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -47,7 +43,7 @@ describe('IsThisYourWorkplaceComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useValue: { primaryWorkplace },
+          useValue: {},
         },
         {
           provide: LocationService,
@@ -60,7 +56,7 @@ describe('IsThisYourWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: flow,
+                    path: 'registration',
                   },
                 ],
               },
@@ -84,13 +80,13 @@ describe('IsThisYourWorkplaceComponent', () => {
   }
 
   it('should render a IsThisYourWorkplaceComponent', async () => {
-    const { component } = await setup('registration');
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   describe('Registration journey', () => {
     it('should render the correct heading when in the registration journey', async () => {
-      const { component } = await setup('registration');
+      const { component } = await setup();
 
       const registrationHeading = component.queryByText('Is this your workplace?');
       const parentHeading = component.queryByText('Is this your workplace you want to add?');
@@ -100,7 +96,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     });
 
     it('should show the id and address when given the locationId', async () => {
-      const { component } = await setup('registration');
+      const { component } = await setup();
 
       const messageText = component.queryByText('CQC location ID entered:');
       const locationIdText = component.queryByText('1-2123313123');
@@ -120,7 +116,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     });
 
     it('should show the postcode and address when given the postcode', async () => {
-      const { component } = await setup('registration', 'postcode');
+      const { component } = await setup('postcode');
 
       const messageText = component.queryByText('Postcode entered:');
       const locationName = component.queryByText('Hello Care');
@@ -138,7 +134,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     });
 
     it('should navigate to the select-main-serice url when selecting yes', async () => {
-      const { component, spy } = await setup('registration');
+      const { component, spy } = await setup();
 
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
       fireEvent.click(yesRadioButton);
@@ -150,7 +146,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     });
 
     it('should navigate back to find-workplace url when selecting no', async () => {
-      const { component, spy } = await setup('registration');
+      const { component, spy } = await setup();
 
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
@@ -162,7 +158,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     });
 
     it('should display an error when continue is clicked without selecting anything', async () => {
-      const { component } = await setup('registration');
+      const { component } = await setup();
 
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
@@ -174,95 +170,9 @@ describe('IsThisYourWorkplaceComponent', () => {
     });
   });
 
-  describe('Parent journey', () => {
-    it('should render the correct heading when in the parent journey', async () => {
-      const { component } = await setup('add-workplace');
-
-      const parentHeading = component.queryByText('Is this the workplace you want to add?');
-      const registrationHeading = component.queryByText('Is this your workplace?');
-
-      expect(parentHeading).toBeTruthy();
-      expect(registrationHeading).toBeFalsy();
-    });
-
-    it('should show the id and address when given the locationId', async () => {
-      const { component } = await setup('add-workplace');
-
-      const messageText = component.queryByText('CQC location ID entered:');
-      const locationIdText = component.queryByText('1-2123313123');
-      const locationName = component.queryByText('Hello Care');
-      const addressLine1 = component.queryByText('123 Fake Ave');
-      const county = component.queryByText('West Yorkshire');
-      const townCity = component.queryByText('Leeds');
-      const postalCode = component.queryByText('LS1 1AA');
-
-      expect(messageText).toBeTruthy();
-      expect(locationIdText).toBeTruthy();
-      expect(locationName).toBeTruthy();
-      expect(addressLine1).toBeTruthy();
-      expect(county).toBeTruthy();
-      expect(townCity).toBeTruthy();
-      expect(postalCode).toBeTruthy();
-    });
-
-    it('should show the postcode and address when given the postcode', async () => {
-      const { component } = await setup('registration', 'postcode');
-
-      const messageText = component.queryByText('Postcode entered:');
-      const locationName = component.queryByText('Hello Care');
-      const addressLine1 = component.queryByText('123 Fake Ave');
-      const county = component.queryByText('West Yorkshire');
-      const townCity = component.queryByText('Leeds');
-      const postalCode = component.queryAllByText('LS1 1AA');
-
-      expect(messageText).toBeTruthy();
-      expect(locationName).toBeTruthy();
-      expect(addressLine1).toBeTruthy();
-      expect(county).toBeTruthy();
-      expect(townCity).toBeTruthy();
-      expect(postalCode.length).toBe(2);
-    });
-
-    it('should navigate to the select-main-serice url when selecting yes', async () => {
-      const { component, spy } = await setup('add-workplace');
-
-      const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
-      fireEvent.click(yesRadioButton);
-
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
-    });
-
-    it('should navigate back to find-workplace url when selecting no', async () => {
-      const { component, spy } = await setup('add-workplace');
-
-      const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
-      fireEvent.click(noRadioButton);
-
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'find-workplace']);
-    });
-
-    it('should display an error when continue is clicked without selecting anything', async () => {
-      const { component } = await setup('add-workplace');
-
-      const form = component.fixture.componentInstance.form;
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-      const errorMessage = 'Select yes if this is the workplace you want to add';
-
-      expect(form.invalid).toBeTruthy();
-      expect(component.getAllByText(errorMessage).length).toBe(2);
-    });
-  });
-
   describe('setBackLink()', () => {
     it('should set the correct back link when in the registration flow', async () => {
-      const { component } = await setup('registration');
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.setBackLink();
@@ -270,18 +180,6 @@ describe('IsThisYourWorkplaceComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/registration', 'find-workplace'],
-      });
-    });
-
-    it('should set the correct back link when in the parent flow', async () => {
-      const { component } = await setup('add-workplace');
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'find-workplace'],
       });
     });
   });
