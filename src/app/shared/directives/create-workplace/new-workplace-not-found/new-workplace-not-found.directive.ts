@@ -6,7 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 
 @Directive()
@@ -27,7 +27,7 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
     protected formBuilder: FormBuilder,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected registrationService: RegistrationService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected router: Router,
     protected route: ActivatedRoute,
   ) {}
@@ -47,8 +47,8 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   }
 
   public sanitizePostcode(): void {
-    this.postcodeOrLocationId = this.registrationService.postcodeOrLocationId$.value;
-    this.searchMethod = this.registrationService.searchMethod$.value;
+    this.postcodeOrLocationId = this.workplaceInterfaceService.postcodeOrLocationId$.value;
+    this.searchMethod = this.workplaceInterfaceService.searchMethod$.value;
 
     if (this.searchMethod === 'postcode') {
       this.postcodeOrLocationId = SanitizePostcodeUtil.sanitizePostcode(this.postcodeOrLocationId);
@@ -89,7 +89,7 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
-      this.registrationService.workplaceNotFound$.next(true);
+      this.workplaceInterfaceService.workplaceNotFound$.next(true);
       if (useDifferentLocationIdOrPostcode.value === 'yes') {
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {

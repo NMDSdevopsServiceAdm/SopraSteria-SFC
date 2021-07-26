@@ -17,9 +17,9 @@ import { WorkplaceNotFoundComponent } from '@features/add-workplace/workplace-no
 import { FindYourWorkplaceComponent } from '@features/create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '@features/create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
-import { NewWorkplaceNotFoundComponent } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
+import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
 import { StartComponent } from './start/start.component';
 
 const routes: Routes = [
