@@ -9,7 +9,8 @@ import { NewWorkplaceNotFoundDirective } from '@shared/directives/create-workpla
 
 @Component({
   selector: 'app-new-workplace-not-found',
-  templateUrl: './new-workplace-not-found.component.html',
+  templateUrl:
+    '../../../../shared/directives/create-workplace/new-workplace-not-found/new-workplace-not-found.component.html',
 })
 export class NewWorkplaceNotFoundComponent extends NewWorkplaceNotFoundDirective {
   constructor(
