@@ -22,19 +22,19 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: 'AdminSettings',
       schema: 'cqc',
+      timestamps: false,
     },
   );
 
-  AdminSettings.getLADates = async function () {
-    return this.findAll({
-      where: {
-        Name: ['laReturnStartDate', 'laReturnEndDate'],
-        // Name: {
-        //   [Op.in]: ['laReturnStartDate', 'laReturnEndDate'],
-        // },
-      },
-    });
-  };
+  AdminSettings.getLADates = getLADates;
 
   return AdminSettings;
+};
+
+const getLADates = async function () {
+  return this.findAll({
+    where: {
+      Name: ['laReturnStartDate', 'laReturnEndDate'],
+    },
+  });
 };
