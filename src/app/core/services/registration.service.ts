@@ -16,9 +16,6 @@ export class RegistrationService extends WorkplaceInterfaceService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public returnTo$ = new BehaviorSubject<URLStructure>(null);
-  public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private http: HttpClient) {
     super();
