@@ -12,6 +12,7 @@ import { ConfirmAccountDetailsComponent } from './confirm-account-details/confir
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUserAccountComponent } from './create-user-account/create-user-account.component';
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
+import { IsThisYourWorkplaceComponent } from './is-this-your-workplace/is-this-your-workplace.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
@@ -40,6 +41,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     WorkplaceNameAddressComponent,
     NameOfWorkplaceComponent,
     NewWorkplaceNotFoundComponent,
+    IsThisYourWorkplaceComponent,
   ],
 })
 export class AddWorkplaceModule {}

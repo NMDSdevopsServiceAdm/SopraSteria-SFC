@@ -7,7 +7,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 
 @Directive()
 export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
@@ -29,7 +29,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected registrationService: RegistrationService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected formBuilder: FormBuilder,
   ) {}
 
@@ -37,8 +37,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setBackLink();
-    this.locationData = this.registrationService.locationAddresses$.value[0];
-    this.searchMethod = this.registrationService.searchMethod$.value;
+    this.locationData = this.workplaceInterfaceService.locationAddresses$.value[0];
+    this.searchMethod = this.workplaceInterfaceService.searchMethod$.value;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
     this.setupFormErrorsMap();
