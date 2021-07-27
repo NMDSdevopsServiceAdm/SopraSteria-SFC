@@ -9,7 +9,7 @@ import { FindYourWorkplaceDirective } from '@shared/directives/create-workplace/
 
 @Component({
   selector: 'app-find-your-workplace',
-  templateUrl: './find-your-workplace.component.html',
+  templateUrl: '../../../../shared/directives/create-workplace/find-your-workplace/find-your-workplace.component.html',
 })
 export class FindYourWorkplaceComponent extends FindYourWorkplaceDirective {
   constructor(
