@@ -39,12 +39,20 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected getWorkplaceData(): void {
     this.locationAddress = this.registrationService.selectedLocationAddress$.value;
+    // this.subscriptions.add(
+    //   this.registrationService.selectedWorkplaceService$.subscribe((workplace) => {
+    //     this.workplace = workplace;
+    //   }),
+    // );
     this.workplace = this.registrationService.selectedWorkplaceService$.value;
   }
 
-  private setWorkplaceDetails(): void {
+  public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {
       this.setCqcLocationIdWorkplaceDetails();
+    }
+    if (this.workplace.isCQC && !this.locationAddress.locationId) {
+      this.setCqcWorkplaceDetails();
     }
     // this.workplaceAddress = [
     //   {
@@ -65,17 +73,13 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     //     data: this.locationAddress.phone,
     //   },
     // ];
-    // this.mainService = [
-    //   {
-    //     label: 'Security question',
-    //     data: this.securityDetails.securityQuestion,
-    //     route: { url: ['/registration/create-security-question'] },
-    //   },
-    //   {
-    //     label: 'Security answer',
-    //     data: this.securityDetails.securityQuestionAnswer,
-    //   },
-    // ];
+    this.mainService = [
+      {
+        label: 'Main service',
+        data: this.workplace.name,
+        route: { url: ['/'] },
+      },
+    ];
   }
 
   private setCqcLocationIdWorkplaceDetails(): void {
@@ -89,6 +93,20 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
         label: 'Name and address',
         data: `${this.locationAddress.locationName}
         ${this.address}`,
+      },
+    ];
+  }
+
+  private setCqcWorkplaceDetails(): void {
+    this.workplaceAddress = [
+      {
+        label: 'Name',
+        data: this.locationAddress.locationId,
+        route: { url: ['/'] },
+      },
+      {
+        label: 'Address',
+        data: this.address,
       },
     ];
   }

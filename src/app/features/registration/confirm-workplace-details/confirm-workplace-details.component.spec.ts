@@ -7,7 +7,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -30,7 +30,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       providers: [
         {
           provide: RegistrationService,
-          useClass: MockRegistrationService,
+          useClass: MockRegistrationServiceWithMainService,
         },
         {
           provide: EstablishmentService,
@@ -82,37 +82,50 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should show workplace details when it is CQC regulated but has no workplace location ID', async () => {
-  //   const { component, fixture, getByText } = await setup();
+  it('should show "CQC location ID" field and "Name and address" field when it is CQC regulated with a location ID', async () => {
+    const { component, fixture, getByText } = await setup();
+    const locationIdField = 'CQC location ID';
+    const nameAndAddressField = 'Name and address';
 
-  //   const expectedLocationName = 'Name';
-  //   const expectedAddressLine1 = '1 Street';
-  //   const expectedTownCity = 'Manchester';
-  //   const expectedPostalCode = 'ABC 123';
-  //   const expectedCounty = 'Greater Manchester';
+    component.createAccountNewDesign = true;
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
 
-  //   component.createAccountNewDesign = true;
-  //   fixture.detectChanges();
+    expect(getByText(locationIdField)).toBeTruthy();
+    expect(getByText(nameAndAddressField)).toBeTruthy();
+  });
 
-  //   expect(getByText(expectedLocationName)).toBeTruthy();
-  //   expect(getByText(expectedAddressLine1)).toBeTruthy();
-  //   expect(getByText(expectedTownCity)).toBeTruthy();
-  //   expect(getByText(expectedPostalCode)).toBeTruthy();
-  //   expect(getByText(expectedCounty)).toBeTruthy();
-  // });
+  it('should show "Name" field and "Address" field when it is CQC regulated without a location ID', async () => {
+    const { component, fixture, getByText } = await setup();
+    const nameField = 'Name';
+    const addressField = 'Address';
 
-  // it('should show "CQC location ID" field and "Name and address" field when it is CQC regulated', async () => {
-  //   const { component, fixture, getByText } = await setup();
-  //   const expectedField = 'CQC location ID';
+    component.locationAddress.locationId = null;
+    component.createAccountNewDesign = true;
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
 
-  //   component.workplace = {
-  //     id: 1,
-  //     isCQC: true,
-  //     name: 'Main service',
-  //   };
-  //   component.createAccountNewDesign = true;
-  //   fixture.detectChanges();
+    expect(getByText(nameField)).toBeTruthy();
+    expect(getByText(addressField)).toBeTruthy();
+  });
 
-  //   expect(getByText(expectedField)).toBeTruthy();
-  // });
+  it('should show workplace details', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const expectedLocationName = 'Workplace Name';
+    const expectedAddressLine1 = '1 Street';
+    const expectedTownCity = 'Manchester';
+    const expectedPostalCode = 'ABC 123';
+    const expectedCounty = 'Greater Manchester';
+
+    component.createAccountNewDesign = true;
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedLocationName, { exact: false })).toBeTruthy();
+    expect(getByText(expectedAddressLine1, { exact: false })).toBeTruthy();
+    expect(getByText(expectedTownCity, { exact: false })).toBeTruthy();
+    expect(getByText(expectedPostalCode, { exact: false })).toBeTruthy();
+    expect(getByText(expectedCounty, { exact: false })).toBeTruthy();
+  });
 });

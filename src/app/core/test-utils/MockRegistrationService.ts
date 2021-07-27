@@ -41,7 +41,7 @@ export class MockRegistrationService extends RegistrationService {
     postalCode: 'ABC 123',
     addressLine1: '1 Street',
     county: 'Greater Manchester',
-    locationName: 'Name',
+    locationName: 'Workplace Name',
     townCity: 'Manchester',
     locationId: '123',
   });
@@ -49,4 +49,13 @@ export class MockRegistrationService extends RegistrationService {
   public getUsernameDuplicate(username: string): Observable<any> {
     return of({ status: username === 'duplicate' ? '1' : '0' });
   }
+}
+
+@Injectable()
+export class MockRegistrationServiceWithMainService extends MockRegistrationService {
+  public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject({
+    id: 1,
+    isCQC: true,
+    name: 'Main service',
+  });
 }

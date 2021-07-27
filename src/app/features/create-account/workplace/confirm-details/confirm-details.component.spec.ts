@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -29,7 +29,7 @@ describe('ConfirmDetailsComponent', () => {
       providers: [
         {
           provide: RegistrationService,
-          useClass: MockRegistrationService,
+          useClass: MockRegistrationServiceWithMainService,
         },
         {
           provide: UserService,
