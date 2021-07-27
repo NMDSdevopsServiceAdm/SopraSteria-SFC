@@ -114,6 +114,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     const expectedLocationName = 'Workplace Name';
     const expectedAddressLine1 = '1 Street';
+    const expectedAddressLine2 = 'Second Line';
+    const expectedAddressLine3 = 'Third Line';
     const expectedTownCity = 'Manchester';
     const expectedPostalCode = 'ABC 123';
     const expectedCounty = 'Greater Manchester';
@@ -124,8 +126,22 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     expect(getByText(expectedLocationName, { exact: false })).toBeTruthy();
     expect(getByText(expectedAddressLine1, { exact: false })).toBeTruthy();
+    expect(getByText(expectedAddressLine2, { exact: false })).toBeTruthy();
+    expect(getByText(expectedAddressLine3, { exact: false })).toBeTruthy();
     expect(getByText(expectedTownCity, { exact: false })).toBeTruthy();
     expect(getByText(expectedPostalCode, { exact: false })).toBeTruthy();
     expect(getByText(expectedCounty, { exact: false })).toBeTruthy();
+  });
+
+  it('should show main service details', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const expectedMainService = 'Name of service';
+
+    component.createAccountNewDesign = true;
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedMainService, { exact: false })).toBeTruthy();
   });
 });

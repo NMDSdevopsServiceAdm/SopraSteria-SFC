@@ -40,6 +40,8 @@ export class MockRegistrationService extends RegistrationService {
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject({
     postalCode: 'ABC 123',
     addressLine1: '1 Street',
+    addressLine2: 'Second Line',
+    addressLine3: 'Third Line',
     county: 'Greater Manchester',
     locationName: 'Workplace Name',
     townCity: 'Manchester',
@@ -56,6 +58,6 @@ export class MockRegistrationServiceWithMainService extends MockRegistrationServ
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject({
     id: 1,
     isCQC: true,
-    name: 'Main service',
+    name: 'Name of service',
   });
 }
