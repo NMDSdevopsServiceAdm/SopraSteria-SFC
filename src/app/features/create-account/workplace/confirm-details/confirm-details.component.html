@@ -6,6 +6,14 @@
 >
 </app-error-summary>
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">Confirm your details before you submit them</h1>
+    <p class="govuk-heading-m">Workplace</p>
+    <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-4" />
+  </div>
+</div>
+
 <app-confirm-workplace-details></app-confirm-workplace-details>
 <app-confirm-account-details></app-confirm-account-details>
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
@@ -37,5 +45,5 @@
       </div>
     </fieldset>
   </div>
-  <button type="submit" class="govuk-button">Submit details</button>
+  <button type="submit" class="govuk-button govuk-!-margin-top-2">Submit details</button>
 </form>
