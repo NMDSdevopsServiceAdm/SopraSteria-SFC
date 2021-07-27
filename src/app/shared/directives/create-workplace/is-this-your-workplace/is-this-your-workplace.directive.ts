@@ -72,12 +72,13 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     this.backService.setBackLink({ url: [`/${this.flow}`, 'find-workplace'] });
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     const yourWorkplace = this.form.get('yourWorkplace');
     this.submitted = true;
 
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
+        this.setCurrentLocationToSelectedAddress();
         this.router.navigate([this.flow, 'new-select-main-service']);
       } else {
         this.router.navigate([this.flow, 'find-workplace']);
@@ -85,5 +86,9 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private setCurrentLocationToSelectedAddress(): void {
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.locationData);
   }
 }

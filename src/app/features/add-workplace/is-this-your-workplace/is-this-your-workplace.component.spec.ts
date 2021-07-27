@@ -12,6 +12,7 @@ import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
@@ -48,6 +49,7 @@ describe('IsThisYourWorkplaceComponent', () => {
             searchMethod$: {
               value: searchMethod,
             },
+            selectedLocationAddress$: new BehaviorSubject(null),
           },
         },
         {
