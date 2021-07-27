@@ -13,6 +13,7 @@ import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details/co
 import { CreateUserAccountComponent } from './create-user-account/create-user-account.component';
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
 import { FindYourWorkplaceComponent } from './find-your-workplace/find-your-workplace.component';
+import { IsThisYourWorkplaceComponent } from './is-this-your-workplace/is-this-your-workplace.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
@@ -41,6 +42,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     WorkplaceNameAddressComponent,
     NameOfWorkplaceComponent,
     NewWorkplaceNotFoundComponent,
+    IsThisYourWorkplaceComponent,
     FindYourWorkplaceComponent,
   ],
 })
