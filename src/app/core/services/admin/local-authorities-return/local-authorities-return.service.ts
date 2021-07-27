@@ -8,10 +8,10 @@ export class LocalAuthoritiesReturnService {
   constructor(private http: HttpClient) {}
 
   public getDates(): Observable<SetDates> {
-    return this.http.get<SetDates>('/api/admin/local-authorities-returns/dates');
+    return this.http.get<SetDates>('/api/admin/local-authority-return/dates');
   }
 
   public setDates(dates: SetDates): Observable<SetDates> {
-    return this.http.post<SetDates>('/api/admin/local-authorities-returns/dates', dates);
+    return this.http.post<SetDates>('/api/admin/local-authority-return/dates', dates);
   }
 }

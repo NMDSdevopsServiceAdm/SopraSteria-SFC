@@ -1,0 +1,52 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+      <fieldset class="govuk-fieldset" aria-describedby="laReturnStartDate-hint" role="group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Set start and end dates</h1>
+        </legend>
+        <div class="govuk-grid-column-one-half-from-desktop">
+          <span id="laReturnStartDate-hint" class="govuk-hint"> Start date </span>
+          <span
+            *ngIf="submitted && form.get('laReturnStartDate').errors"
+            id="laReturnStartDate-error"
+            class="govuk-error-message"
+          >
+            <ng-container *ngIf="form.get('laReturnStartDate').hasError('dateValid')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('laReturnStartDate', 'dateValid') }}
+            </ng-container>
+          </span>
+          <app-date-picker
+            [formGroup]="form"
+            [formGroupName]="'laReturnStartDate'"
+            [submitted]="submitted"
+          ></app-date-picker>
+        </div>
+        <div class="govuk-grid-column-one-half-from-desktop">
+          <span id="laReturnEndDate-hint" class="govuk-hint"> End date </span>
+          <span
+            *ngIf="submitted && form.get('laReturnEndDate').errors"
+            id="laReturnEndDate-error"
+            class="govuk-error-message"
+          >
+            <ng-container *ngIf="form.get('laReturnEndDate').hasError('dateValid')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('laReturnEndDate', 'dateValid') }}
+            </ng-container>
+          </span>
+          <app-date-picker
+            [formGroup]="form"
+            [formGroupName]="'laReturnEndDate'"
+            [submitted]="submitted"
+          ></app-date-picker>
+        </div>
+      </fieldset>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <button type="submit" class="govuk-button">Save and return</button>
+    </div>
+  </div>
+</form>

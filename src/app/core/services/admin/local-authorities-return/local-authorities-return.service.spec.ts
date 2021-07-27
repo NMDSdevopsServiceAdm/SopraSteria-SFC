@@ -26,7 +26,7 @@ describe('LocalAuthoriesReturnService', () => {
     service.getDates().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authorities-returns/dates');
+    const req = http.expectOne('/api/admin/local-authority-return/dates');
 
     expect(req.request.method).toBe('GET');
   });
@@ -41,7 +41,7 @@ describe('LocalAuthoriesReturnService', () => {
     service.setDates(data).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authorities-returns/dates');
+    const req = http.expectOne('/api/admin/local-authority-return/dates');
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body.laReturnStartDate).toEqual(laReturnStartDate);
