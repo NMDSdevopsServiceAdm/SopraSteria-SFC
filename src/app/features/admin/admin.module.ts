@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
 
@@ -22,7 +23,7 @@ import { SetDatesComponent } from './set-dates/set-dates.component';
     SearchComponent,
     SetDatesComponent,
   ],
-  providers: [LocalAuthoritiesReturnService],
+  providers: [LocalAuthoritiesReturnService, GetDatesResolver],
   bootstrap: [AdminComponent],
 })
 export class AdminModule {}

@@ -1,12 +1,22 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 export const adminJourney: JourneyRoute = {
-  path: 'admin',
-  title: 'Admin',
   children: [
     {
-      path: 'local-authorities-return',
-      title: 'Local authorities return',
+      path: '/sfcadmin',
+      title: 'Admin',
+      children: [
+        {
+          path: '/sfcadmin/local-authorities-return',
+          title: 'Local authorities return',
+          children: [
+            {
+              path: '/sfcadmin/local-authorities-return/set-dates',
+              title: 'Set start and end date',
+            },
+          ],
+        },
+      ],
     },
   ],
 };

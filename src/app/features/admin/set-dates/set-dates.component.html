@@ -2,18 +2,25 @@
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+    <div class="govuk-form-group">
       <fieldset class="govuk-fieldset" aria-describedby="laReturnStartDate-hint" role="group">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
           <h1 class="govuk-fieldset__heading">Set start and end dates</h1>
         </legend>
-        <div class="govuk-grid-column-one-half-from-desktop">
+        <div
+          class="govuk-grid-column-one-half-from-desktop"
+          [class.govuk-form-group--error]="submitted && (form.invalid || serverError)"
+        >
           <span id="laReturnStartDate-hint" class="govuk-hint"> Start date </span>
           <span
             *ngIf="submitted && form.get('laReturnStartDate').errors"
             id="laReturnStartDate-error"
             class="govuk-error-message"
           >
+            <ng-container *ngIf="form.get('laReturnStartDate').hasError('required')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('laReturnStartDate', 'required') }}
+            </ng-container>
             <ng-container *ngIf="form.get('laReturnStartDate').hasError('dateValid')">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFormErrorMessage('laReturnStartDate', 'dateValid') }}
@@ -32,9 +39,17 @@
             id="laReturnEndDate-error"
             class="govuk-error-message"
           >
+            <ng-container *ngIf="form.get('laReturnEndDate').hasError('required')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('laReturnEndDate', 'required') }}
+            </ng-container>
             <ng-container *ngIf="form.get('laReturnEndDate').hasError('dateValid')">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFormErrorMessage('laReturnEndDate', 'dateValid') }}
+            </ng-container>
+            <ng-container *ngIf="form.get('laReturnEndDate').hasError('beforeStartDate')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('laReturnEndDate', 'beforeStartDate') }}
             </ng-container>
           </span>
           <app-date-picker

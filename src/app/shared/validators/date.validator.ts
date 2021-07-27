@@ -1,7 +1,6 @@
 import { FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import * as moment from 'moment';
-
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import * as moment from 'moment';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
@@ -26,13 +25,29 @@ export abstract class DateValidator {
         return null;
       }
 
-      if ([day.value, month.value, year.value].some(v => !v)) {
+      if ([day.value, month.value, year.value].some((v) => !v)) {
         return { dateValid: true };
       }
 
       return moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT).isValid()
         ? null
         : { dateValid: true };
+    };
+  }
+
+  static beforeStartDate(startDate: Date): ValidatorFn {
+    return (formGroup: FormGroup): { [key: string]: any } | null => {
+      const { day, month, year } = formGroup.controls;
+
+      if (day.value && month.value && year.value) {
+        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+
+        if (date.isValid()) {
+          return date.isAfter(startDate) ? null : { beforeStartDate: true };
+        }
+      }
+
+      return null;
     };
   }
 
