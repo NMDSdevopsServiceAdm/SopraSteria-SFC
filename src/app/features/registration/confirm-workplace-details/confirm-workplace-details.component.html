@@ -1,9 +1,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <ng-container *ngIf="!createAccountNewDesign">
+    <ng-container *ngIf="createAccountNewDesign; else oldDesign">
+      <p class="govuk-heading-m">Workplace</p>
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-4" />
+    </ng-container>
+    <ng-template #oldDesign>
       <h1 class="govuk-heading-l">Confirm your workplace details</h1>
       <p class="govuk-heading-m">Are these details correct?</p>
-    </ng-container>
+    </ng-template>
+
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row" *ngIf="locationAddress?.locationId">
         <dt class="govuk-summary-list__key">CQC Location ID</dt>
