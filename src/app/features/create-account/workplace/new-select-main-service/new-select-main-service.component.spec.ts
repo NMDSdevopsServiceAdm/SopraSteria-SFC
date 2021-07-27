@@ -18,7 +18,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
 describe('NewSelectMainServiceComponent', () => {
-  async function setup(flow) {
+  async function setup() {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
       NewSelectMainServiceComponent,
       {
@@ -51,7 +51,7 @@ describe('NewSelectMainServiceComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: flow,
+                      path: 'registration',
                     },
                   ],
                 },
@@ -85,13 +85,13 @@ describe('NewSelectMainServiceComponent', () => {
   }
 
   it('should show NewSelectMainServiceComponent component', async () => {
-    const { component } = await setup('registration');
+    const { component } = await setup();
 
     expect(component).toBeTruthy();
   });
 
   it('should show CQC text when following the CQC regulated flow', async () => {
-    const { component, fixture, getByText } = await setup('registration');
+    const { component, fixture, getByText } = await setup();
 
     component.isRegulated = true;
     component.renderForm = true;
@@ -104,7 +104,7 @@ describe('NewSelectMainServiceComponent', () => {
   });
 
   it('should show standard text when following the not CQC regulated flow and feature flag is off', async () => {
-    const { component, fixture, getByText } = await setup('registration');
+    const { component, fixture, getByText } = await setup();
 
     component.createAccountNewDesign = false;
     component.isRegulated = false;
@@ -119,7 +119,7 @@ describe('NewSelectMainServiceComponent', () => {
   });
 
   it('should show no description text when following the not CQC regulated flow and feature flag is on', async () => {
-    const { component, fixture, queryByText } = await setup('registration');
+    const { component, fixture, queryByText } = await setup();
 
     component.createAccountNewDesign = true;
     component.isRegulated = false;
@@ -134,7 +134,7 @@ describe('NewSelectMainServiceComponent', () => {
   });
 
   it('should set the correct back link to the is this your workplace page in regstration flow', async () => {
-    const { component, fixture } = await setup('registration');
+    const { component, fixture } = await setup();
     const backLinkSpy = spyOn(fixture.componentInstance.backService, 'setBackLink');
 
     component.setBackLink();
@@ -145,31 +145,8 @@ describe('NewSelectMainServiceComponent', () => {
     });
   });
 
-  it('should set the correct back link to the is this your workplace page in add-workplace flow', async () => {
-    const { component, fixture } = await setup('add-workplace');
-    const backLinkSpy = spyOn(fixture.componentInstance.backService, 'setBackLink');
-
-    component.setBackLink();
-    fixture.detectChanges();
-
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['add-workplace/your-workplace'],
-    });
-  });
-
-  it("should see 'Select its main service' when is a parent", async () => {
-    const { component, fixture, queryByText } = await setup('add-workplace');
-
-    component.isParent = true;
-    component.isRegulated = false;
-    component.renderForm = true;
-    fixture.detectChanges();
-
-    expect(queryByText('Select its main service')).toBeTruthy();
-  });
-
   it("should see 'Select your main service' when is not a parent", async () => {
-    const { component, fixture, queryByText } = await setup('registration');
+    const { component, fixture, queryByText } = await setup();
 
     component.isParent = false;
     component.isRegulated = false;
@@ -180,7 +157,7 @@ describe('NewSelectMainServiceComponent', () => {
   });
 
   it('should error when nothing has been selected', async () => {
-    const { component, fixture, getByText, getAllByText } = await setup('registration');
+    const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
     component.renderForm = true;
     const form = component.form;
@@ -197,7 +174,7 @@ describe('NewSelectMainServiceComponent', () => {
   });
 
   it('should submit and go to the registration/add-user-details url when option selected and is not parent', async () => {
-    const { component, fixture, getByText, getByLabelText, spy } = await setup('registration');
+    const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
     component.isParent = false;
     component.isRegulated = true;
@@ -211,22 +188,5 @@ describe('NewSelectMainServiceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
-  });
-
-  it('should submit and go to the add-workplace/add-user-details url when option selected and is a parent', async () => {
-    const { component, fixture, getByText, getByLabelText, spy } = await setup('add-workplace');
-
-    component.isParent = true;
-    component.isRegulated = true;
-    component.renderForm = true;
-    fixture.detectChanges();
-
-    const radioButton = getByLabelText('Name');
-    fireEvent.click(radioButton);
-
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
-
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
   });
 });
