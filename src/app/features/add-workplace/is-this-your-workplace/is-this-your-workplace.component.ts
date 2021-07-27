@@ -4,13 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { IsThisYourWorkplaceDirective } from '@shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.directive';
 
 @Component({
   selector: 'app-is-this-your-workplace',
   templateUrl:
-    '../../../../shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.component.html',
+    '../../../shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.component.html',
 })
 export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
   constructor(
@@ -19,10 +19,10 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected registrationService: RegistrationService,
+    protected workplaceService: WorkplaceService,
     protected formBuilder: FormBuilder,
   ) {
-    super(errorSummaryService, establishmentService, backService, route, router, registrationService, formBuilder);
+    super(errorSummaryService, establishmentService, backService, route, router, workplaceService, formBuilder);
   }
 
   protected setupFormErrorsMap(): void {
@@ -32,7 +32,7 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
         type: [
           {
             name: 'required',
-            message: 'Select yes if this is your workplace',
+            message: 'Select yes if this is the workplace you want to add',
           },
         ],
       },

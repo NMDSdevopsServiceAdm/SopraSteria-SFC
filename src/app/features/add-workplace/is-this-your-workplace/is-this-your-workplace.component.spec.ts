@@ -1,13 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -17,13 +18,21 @@ import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component
 
 describe('IsThisYourWorkplaceComponent', () => {
   async function setup(searchMethod = 'locationID') {
+    const primaryWorkplace = { isParent: true };
     const component = await render(IsThisYourWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        RegistrationModule,
+        ReactiveFormsModule,
+      ],
       providers: [
         BackService,
         {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
           useValue: {
             locationAddresses$: {
               value: [
@@ -45,7 +54,7 @@ describe('IsThisYourWorkplaceComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useValue: {},
+          useValue: { primaryWorkplace },
         },
         {
           provide: LocationService,
@@ -58,7 +67,7 @@ describe('IsThisYourWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -86,14 +95,14 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the correct heading when in the registration journey', async () => {
+  it('should render the correct heading when in the parent journey', async () => {
     const { component } = await setup();
 
+    const parentHeading = component.queryByText('Is this the workplace you want to add?');
     const registrationHeading = component.queryByText('Is this your workplace?');
-    const parentHeading = component.queryByText('Is this your workplace you want to add?');
 
-    expect(registrationHeading).toBeTruthy();
-    expect(parentHeading).toBeFalsy();
+    expect(parentHeading).toBeTruthy();
+    expect(registrationHeading).toBeFalsy();
   });
 
   it('should show the id and address when given the locationId', async () => {
@@ -143,7 +152,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'new-select-main-service']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
   });
 
   it('should navigate back to find-workplace url when selecting no', async () => {
@@ -155,7 +164,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'find-workplace']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'find-workplace']);
   });
 
   it('should display an error when continue is clicked without selecting anything', async () => {
@@ -164,14 +173,14 @@ describe('IsThisYourWorkplaceComponent', () => {
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
-    const errorMessage = 'Select yes if this is your workplace';
+    const errorMessage = 'Select yes if this is the workplace you want to add';
 
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText(errorMessage).length).toBe(2);
   });
 
   describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
+    it('should set the correct back link when in the parent flow', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -179,7 +188,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'find-workplace'],
+        url: ['/add-workplace', 'find-workplace'],
       });
     });
   });

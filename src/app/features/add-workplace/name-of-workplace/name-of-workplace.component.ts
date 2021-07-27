@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { NameOfWorkplaceDirective } from '@shared/directives/create-workplace/name-of-workplace/name-of-workplace.directive';
 
 @Component({
   selector: 'app-name-of-workplace',
-  templateUrl: '../../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
+  templateUrl: '../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
 })
 export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
   constructor(
@@ -18,17 +18,17 @@ export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
     protected router: Router,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
-    protected registrationService: RegistrationService,
+    protected workplaceService: WorkplaceService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, backService, router, route, errorSummaryService, registrationService, establishmentService);
+    super(formBuilder, backService, router, route, errorSummaryService, workplaceService, establishmentService);
   }
 
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'workplaceName',
-        type: [{ name: 'required', message: 'Enter the name of your workplace' }],
+        type: [{ name: 'required', message: 'Enter the name of the workplace' }],
       },
     ];
   }
