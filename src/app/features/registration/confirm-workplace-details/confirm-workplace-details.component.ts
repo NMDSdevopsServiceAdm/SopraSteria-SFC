@@ -54,25 +54,9 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     if (this.workplace.isCQC && !this.locationAddress.locationId) {
       this.setCqcWorkplaceDetails();
     }
-    // this.workplaceAddress = [
-    //   {
-    //     label: 'Full name',
-    //     data: this.locationAddress.fullname,
-    //     route: { url: ['/registration/change-your-details'] },
-    //   },
-    //   {
-    //     label: 'Job title',
-    //     data: this.locationAddress.jobTitle,
-    //   },
-    //   {
-    //     label: 'Email address',
-    //     data: this.locationAddress.email,
-    //   },
-    //   {
-    //     label: 'Phone number',
-    //     data: this.locationAddress.phone,
-    //   },
-    // ];
+    if (!this.workplace.isCQC) {
+      this.setNonCqcWorkplaceDetails();
+    }
     this.mainService = [
       {
         label: 'Main service',
@@ -104,6 +88,22 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
         data: this.locationAddress.locationId,
         route: { url: ['/'] },
       },
+      {
+        label: 'Address',
+        data: this.address,
+      },
+    ];
+  }
+
+  private setNonCqcWorkplaceDetails(): void {
+    this.workplaceName = [
+      {
+        label: 'Name',
+        data: this.locationAddress.locationId,
+        route: { url: ['/'] },
+      },
+    ];
+    this.workplaceAddress = [
       {
         label: 'Address',
         data: this.address,

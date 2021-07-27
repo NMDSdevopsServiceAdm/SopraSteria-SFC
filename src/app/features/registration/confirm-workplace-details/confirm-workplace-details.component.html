@@ -8,6 +8,11 @@
 
         <app-summary-list
           [topBorder]="true"
+          [summaryList]="workplaceName"
+          (setReturn)="onSetReturn()"
+        ></app-summary-list>
+        <app-summary-list
+          [topBorder]="true"
           [summaryList]="workplaceAddress"
           (setReturn)="onSetReturn()"
         ></app-summary-list>
