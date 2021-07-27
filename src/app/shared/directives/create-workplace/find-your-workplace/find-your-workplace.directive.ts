@@ -7,7 +7,7 @@ import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -29,13 +29,13 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected locationService: LocationService,
   ) {}
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
-    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
+    this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
     this.setupForm();
     this.setupFormErrorsMap();
     this.setBackLink();
@@ -48,7 +48,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public setBackLink(): void {
     const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
-    this.registrationService.workplaceNotFound$.next(false);
+    this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
 
   private setupForm(): void {
@@ -96,7 +96,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public onSubmit(): void {
     this.submitted = true;
     const postcodeOrLocationID = this.form.get('postcodeOrLocationID').value;
-    this.registrationService.postcodeOrLocationId$.next(postcodeOrLocationID);
+    this.workplaceInterfaceService.postcodeOrLocationId$.next(postcodeOrLocationID);
 
     if (this.form.valid) {
       this.subscriptions.add(
@@ -109,14 +109,14 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
-    this.registrationService.locationAddresses$.next(data.locationdata);
-    this.registrationService.searchMethod$.next(data.searchmethod);
+    this.workplaceInterfaceService.locationAddresses$.next(data.locationdata);
+    this.workplaceInterfaceService.searchMethod$.next(data.searchmethod);
     this.navigateToNextRoute(data);
   }
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      this.registrationService.searchMethod$.next(error.error.searchmethod);
+      this.workplaceInterfaceService.searchMethod$.next(error.error.searchmethod);
       this.router.navigate([this.flow, 'new-workplace-not-found']);
       return;
     }
