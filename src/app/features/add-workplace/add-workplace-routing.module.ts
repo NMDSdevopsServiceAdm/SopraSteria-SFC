@@ -10,13 +10,13 @@ import { FindWorkplaceAddressComponent } from '@features/add-workplace/find-work
 import { FindYourWorkplaceComponent } from '@features/add-workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '@features/add-workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewRegulatedByCqcComponent } from '@features/add-workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { NewSelectMainServiceComponent } from '@features/add-workplace/new-select-main-service/new-select-main-service.component';
 import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/add-workplace/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/add-workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/add-workplace/select-workplace/select-workplace.component';
 import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/add-workplace/workplace-not-found/workplace-not-found.component';
-import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
