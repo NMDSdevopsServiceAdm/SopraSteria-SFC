@@ -3,9 +3,9 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -26,8 +26,8 @@ describe('SelectWorkplaceComponent', () => {
       ],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
