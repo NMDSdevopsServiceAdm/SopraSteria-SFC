@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 import {
@@ -12,6 +13,10 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   public createAccountNewDesign: boolean;
+  public workplaceName: SummaryList[];
+  public workplaceAddress: SummaryList[];
+  public mainService: SummaryList[];
+  private address: string;
 
   constructor(
     private registrationService: RegistrationService,
@@ -28,24 +33,72 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
       false,
     );
     this.getWorkplaceData();
+    this.setAddress();
+    this.setWorkplaceDetails();
   }
 
   protected getWorkplaceData(): void {
-    if (this.createAccountNewDesign) {
-      this.subscriptions.add(
-        this.registrationService.locationAddresses$.subscribe(
-          (locationAddress) => (this.locationAddress = locationAddress[0]),
-        ),
-      );
-    } else {
-      this.subscriptions.add(
-        this.registrationService.selectedLocationAddress$.subscribe(
-          (locationAddress) => (this.locationAddress = locationAddress),
-        ),
-      );
+    this.locationAddress = this.registrationService.selectedLocationAddress$.value;
+    this.workplace = this.registrationService.selectedWorkplaceService$.value;
+  }
+
+  private setWorkplaceDetails(): void {
+    if (this.workplace.isCQC && this.locationAddress.locationId) {
+      this.setCqcLocationIdWorkplaceDetails();
     }
-    this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe((workplace) => (this.workplace = workplace)),
-    );
+    // this.workplaceAddress = [
+    //   {
+    //     label: 'Full name',
+    //     data: this.locationAddress.fullname,
+    //     route: { url: ['/registration/change-your-details'] },
+    //   },
+    //   {
+    //     label: 'Job title',
+    //     data: this.locationAddress.jobTitle,
+    //   },
+    //   {
+    //     label: 'Email address',
+    //     data: this.locationAddress.email,
+    //   },
+    //   {
+    //     label: 'Phone number',
+    //     data: this.locationAddress.phone,
+    //   },
+    // ];
+    // this.mainService = [
+    //   {
+    //     label: 'Security question',
+    //     data: this.securityDetails.securityQuestion,
+    //     route: { url: ['/registration/create-security-question'] },
+    //   },
+    //   {
+    //     label: 'Security answer',
+    //     data: this.securityDetails.securityQuestionAnswer,
+    //   },
+    // ];
+  }
+
+  private setCqcLocationIdWorkplaceDetails(): void {
+    this.workplaceAddress = [
+      {
+        label: 'CQC location ID',
+        data: this.locationAddress.locationId,
+        route: { url: ['/'] },
+      },
+      {
+        label: 'Name and address',
+        data: `${this.locationAddress.locationName}
+        ${this.address}`,
+      },
+    ];
+  }
+
+  private setAddress(): void {
+    this.address = `
+    ${this.locationAddress.addressLine1}
+    ${this.locationAddress.addressLine2}
+    ${this.locationAddress.addressLine3}
+    ${this.locationAddress.townCity}
+    ${this.locationAddress.county} ${this.locationAddress.postalCode}`;
   }
 }

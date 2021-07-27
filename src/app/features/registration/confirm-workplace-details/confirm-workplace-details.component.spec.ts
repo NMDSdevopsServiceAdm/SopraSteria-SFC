@@ -82,29 +82,37 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show workplace details when it is CQC regulated but has no workplace location ID', async () => {
-    const { fixture, getByText } = await setup();
+  // it('should show workplace details when it is CQC regulated but has no workplace location ID', async () => {
+  //   const { component, fixture, getByText } = await setup();
 
-    const expectedLocationName = 'Name';
-    const expectedAddressLine1 = '1 Street';
-    const expectedTownCity = 'Manchester';
-    const expectedPostalCode = 'ABC 123';
-    const expectedCounty = 'Greater Manchester';
+  //   const expectedLocationName = 'Name';
+  //   const expectedAddressLine1 = '1 Street';
+  //   const expectedTownCity = 'Manchester';
+  //   const expectedPostalCode = 'ABC 123';
+  //   const expectedCounty = 'Greater Manchester';
 
-    fixture.detectChanges();
+  //   component.createAccountNewDesign = true;
+  //   fixture.detectChanges();
 
-    expect(getByText(expectedLocationName)).toBeTruthy();
-    expect(getByText(expectedAddressLine1)).toBeTruthy();
-    expect(getByText(expectedTownCity)).toBeTruthy();
-    expect(getByText(expectedPostalCode)).toBeTruthy();
-    expect(getByText(expectedCounty)).toBeTruthy();
-  });
+  //   expect(getByText(expectedLocationName)).toBeTruthy();
+  //   expect(getByText(expectedAddressLine1)).toBeTruthy();
+  //   expect(getByText(expectedTownCity)).toBeTruthy();
+  //   expect(getByText(expectedPostalCode)).toBeTruthy();
+  //   expect(getByText(expectedCounty)).toBeTruthy();
+  // });
 
-  it('should show CQC Location ID field when is CQC regulated', async () => {
-    const { fixture, queryByText } = await setup();
-    const expectedField = 'CQC Location ID';
+  // it('should show "CQC location ID" field and "Name and address" field when it is CQC regulated', async () => {
+  //   const { component, fixture, getByText } = await setup();
+  //   const expectedField = 'CQC location ID';
 
-    fixture.detectChanges();
-    expect(queryByText(expectedField)).toBeTruthy();
-  });
+  //   component.workplace = {
+  //     id: 1,
+  //     isCQC: true,
+  //     name: 'Main service',
+  //   };
+  //   component.createAccountNewDesign = true;
+  //   fixture.detectChanges();
+
+  //   expect(getByText(expectedField)).toBeTruthy();
+  // });
 });
