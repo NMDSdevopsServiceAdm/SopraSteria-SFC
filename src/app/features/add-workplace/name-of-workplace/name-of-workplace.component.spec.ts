@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -12,13 +13,21 @@ import { NameOfWorkplaceComponent } from './name-of-workplace.component';
 
 describe('NameOfWorkplaceComponent', () => {
   async function setup() {
+    const primaryWorkplace = { isParent: true };
     const component = await render(NameOfWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        RegistrationModule,
+        ReactiveFormsModule,
+      ],
       providers: [
         BackService,
         {
           provide: EstablishmentService,
-          useValue: {},
+          useValue: { primaryWorkplace },
         },
         {
           provide: ActivatedRoute,
@@ -27,7 +36,7 @@ describe('NameOfWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -54,13 +63,13 @@ describe('NameOfWorkplaceComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Registration journey', () => {
-    it('should render the correct heading when in the registration journey', async () => {
+  describe('Parent journey', () => {
+    it('should render the correct heading when in the parent journey', async () => {
       const { component } = await setup();
 
-      const registrationHeading = component.queryByText(`What's the name of your workplace?`);
+      const parentHeading = component.getByText(`What's the name of the workplace?`);
 
-      expect(registrationHeading).toBeTruthy();
+      expect(parentHeading).toBeTruthy();
     });
 
     it('should display an error when continue is clicked without adding a workplace name', async () => {
@@ -69,7 +78,7 @@ describe('NameOfWorkplaceComponent', () => {
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
-      const errorMessage = 'Enter the name of your workplace';
+      const errorMessage = 'Enter the name of the workplace';
 
       expect(form.invalid).toBeTruthy();
       expect(component.getAllByText(errorMessage).length).toBe(2);
@@ -84,12 +93,12 @@ describe('NameOfWorkplaceComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-      expect(spy).toHaveBeenCalledWith(['registration', 'find-workplace-address']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'find-workplace-address']);
     });
   });
 
   describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
+    it('should set the correct back link when in the parent flow', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -97,7 +106,7 @@ describe('NameOfWorkplaceComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'new-regulated-by-cqc'],
+        url: ['/add-workplace', 'new-regulated-by-cqc'],
       });
     });
   });

@@ -7,13 +7,13 @@ import { RegistrationService } from '@core/services/registration.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { RegistrationModule } from '../../../registration/registration.module';
+import { AddWorkplaceModule } from '../add-workplace.module';
 import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc.component';
 
 describe('NewRegulatedByCqcComponent', () => {
   async function setup() {
     const component = await render(NewRegulatedByCqcComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: RegistrationService,
@@ -27,7 +27,7 @@ describe('NewRegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -54,7 +54,7 @@ describe('NewRegulatedByCqcComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Registration journey', () => {
+  describe('Parent journey', () => {
     it('should navigate to the find workplace page when selecting yes', async () => {
       const { component, spy } = await setup();
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -63,7 +63,7 @@ describe('NewRegulatedByCqcComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
     });
 
     it('should navigate to the workplace name page when selecting no', async () => {
@@ -74,7 +74,7 @@ describe('NewRegulatedByCqcComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'workplace-name']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name']);
     });
 
     it('should display an error message when not selecting anything', async () => {
@@ -91,7 +91,7 @@ describe('NewRegulatedByCqcComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
+    it('should set the correct back link when in the parent flow', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -99,7 +99,7 @@ describe('NewRegulatedByCqcComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'create-account'],
+        url: ['/add-workplace', 'start'],
       });
     });
   });

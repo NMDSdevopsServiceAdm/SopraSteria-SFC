@@ -4,22 +4,22 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { RegistrationModule } from '../../../registration/registration.module';
+import { AddWorkplaceModule } from '../add-workplace.module';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found.component';
 
 describe('NewWorkplaceNotFoundComponent', () => {
   async function setup(postcodeOrLocationId = '', searchMethod = '', workplaceNotFound = false) {
     const component = await render(NewWorkplaceNotFoundComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: RegistrationService,
+          provide: WorkplaceService,
+          useClass: WorkplaceService,
           useValue: {
             postcodeOrLocationId$: {
               value: postcodeOrLocationId,
@@ -43,7 +43,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -77,7 +77,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
   });
 
-  describe('Registration journey', () => {
+  describe('Parent journey', () => {
     it('should navigate to the find workplace page when selecting yes', async () => {
       const { component, spy } = await setup();
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -86,10 +86,10 @@ describe('NewWorkplaceNotFoundComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
     });
 
-    it('should navigate to the workplace name and address page when selecting no', async () => {
+    it('should navigate to the workplace name page when selecting no', async () => {
       const { component, spy } = await setup();
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
@@ -97,22 +97,14 @@ describe('NewWorkplaceNotFoundComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'workplace-name-address']);
-    });
-
-    it('should display an error message when not selecting anything', async () => {
-      const { component } = await setup();
-
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-
-      const errorMessage = component.getByTestId('errorMessage');
-      expect(errorMessage.innerText).toContain('Select yes if you want to try a different location ID or postcode');
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name-address']);
     });
 
     it('should display the correct heading', async () => {
       const { component } = await setup();
-      const expectedHeading = 'We could not find your workplace';
+      const expectedHeading = 'We could not find the workplace';
+      component.fixture.componentInstance.isParent = true;
+      component.fixture.detectChanges();
 
       expect(component.getByText(expectedHeading)).toBeTruthy();
     });

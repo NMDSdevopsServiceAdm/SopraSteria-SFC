@@ -39,8 +39,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   }
 
   protected save(): void {
-    const url = this.createAccountNewDesign ? 'create-username-password' : 'username-password';
     this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['registration', url]);
+    this.router.navigate(['registration', 'username-password']);
   }
 }

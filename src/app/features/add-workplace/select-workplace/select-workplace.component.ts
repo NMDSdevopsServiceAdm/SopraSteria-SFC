@@ -47,7 +47,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.locationAddresses$.subscribe(
+      this.workplaceService.locationAddresses$.subscribe(
         (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
       ),
     );

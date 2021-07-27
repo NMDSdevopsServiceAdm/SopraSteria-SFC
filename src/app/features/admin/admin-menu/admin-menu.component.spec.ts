@@ -26,6 +26,6 @@ describe('AdminMenuComponent', () => {
     const { component } = await setup();
 
     const laCompletionsLink = component.getByText('Local authority returns');
-    expect(laCompletionsLink.getAttribute('href')).toBe('/admin/local-authorities-return');
+    expect(laCompletionsLink.getAttribute('href')).toBe('/sfcadmin/local-authorities-return');
   });
 });
