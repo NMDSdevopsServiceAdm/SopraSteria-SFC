@@ -160,5 +160,31 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       expect(component.registrationService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
     });
+
+    it('should update selectedLocationAddress$ in registration service to have currently selected address and not change the existing locationName each time the function is run', async () => {
+      const { component } = await setup();
+
+      const originalLocationNameInRegistrationService = 'Name';
+      const firstLocationAddressLine1 = '1 Street';
+      const secondLocationAddressLine1 = '2 Street';
+
+      component.onLocationChange(0);
+
+      expect(component.registrationService.selectedLocationAddress$.value.locationName).toEqual(
+        originalLocationNameInRegistrationService,
+      );
+      expect(component.registrationService.selectedLocationAddress$.value.addressLine1).toEqual(
+        firstLocationAddressLine1,
+      );
+
+      component.onLocationChange(1);
+
+      expect(component.registrationService.selectedLocationAddress$.value.locationName).toEqual(
+        originalLocationNameInRegistrationService,
+      );
+      expect(component.registrationService.selectedLocationAddress$.value.addressLine1).toEqual(
+        secondLocationAddressLine1,
+      );
+    });
   });
 });
