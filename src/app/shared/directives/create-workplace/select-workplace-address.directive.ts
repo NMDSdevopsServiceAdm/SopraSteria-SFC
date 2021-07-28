@@ -20,6 +20,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public submitted = false;
   public createAccountNewDesign: boolean;
   public workplaceNotListedLink: string;
+  protected enteredLocationName: string;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
@@ -39,6 +40,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.setEnteredLocationName();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
@@ -68,6 +70,8 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
       ],
     });
   }
+
+  protected setEnteredLocationName(): void {}
 
   protected setupFormErrorsMap(): void {}
 

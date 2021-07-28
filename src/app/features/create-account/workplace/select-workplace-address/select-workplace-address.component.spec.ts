@@ -141,4 +141,24 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/registration/new-select-main-service']);
     });
   });
+
+  describe('onLocationChange()', () => {
+    it('should update selectedLocationAddress$ in registration service to have currently selected address and not change the existing locationName', async () => {
+      const { component } = await setup();
+
+      // address in first index of locationAddresses with location name changed to current name in selectedLocationAddress (from MockRegistration service)
+      const expectedSelectedLocationAddress = {
+        postalCode: 'ABC 123',
+        addressLine1: '2 Street',
+        county: 'Greater Manchester',
+        locationName: 'Name',
+        townCity: 'Manchester',
+        locationId: '12345',
+      };
+
+      component.onLocationChange(1);
+
+      expect(component.registrationService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
+    });
+  });
 });
