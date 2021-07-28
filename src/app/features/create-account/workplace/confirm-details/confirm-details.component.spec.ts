@@ -93,7 +93,7 @@ describe('ConfirmDetailsComponent', () => {
   });
 
   it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
-    const { component, fixture, getByText, getByTestId, getAllByText } = await setup();
+    const { component, fixture, getByText, getByTestId } = await setup();
     const termsAndConditionsCheckbox = getByTestId('checkbox');
     const submitButton = getByText('Submit details');
     const saveSpy = spyOn(component, 'save').and.returnValue(null);

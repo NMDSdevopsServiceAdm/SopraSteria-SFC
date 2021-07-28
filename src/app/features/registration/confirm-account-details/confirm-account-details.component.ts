@@ -16,8 +16,8 @@ import { combineLatest } from 'rxjs';
   templateUrl: './confirm-account-details.component.html',
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
-  protected actionType = 'Registration';
   public createAccountNewDesign: boolean;
+
   constructor(
     private backService: BackService,
     private registrationService: RegistrationService,
@@ -93,7 +93,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       },
       {
         label: 'Password',
-        data: '******',
+        data: this.loginCredentials.password,
       },
     ];
 

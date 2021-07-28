@@ -19,6 +19,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected service: Service;
+  protected actionType: string;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
@@ -28,7 +29,6 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   public serverError: string;
   public submitted = false;
   public userDetails: UserDetails;
-  protected actionType: string;
   public slectedCqcValue: boolean;
 
   constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}

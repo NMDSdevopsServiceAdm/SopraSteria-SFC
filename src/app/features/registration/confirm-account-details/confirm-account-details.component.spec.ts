@@ -6,12 +6,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { queryByText, render } from '@testing-library/angular';
+import { fireEvent, queryByText, render } from '@testing-library/angular';
 
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
 
@@ -29,7 +29,7 @@ describe('ConfirmAccountDetailsComponent', () => {
       providers: [
         {
           provide: RegistrationService,
-          useClass: MockRegistrationService,
+          useClass: MockRegistrationServiceWithMainService,
         },
         {
           provide: UserService,
@@ -77,10 +77,10 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show details of user', async () => {
+  it('should show the user details', async () => {
     const { fixture, getByText } = await setup();
 
-    const expectedFullName = 'John Appleseed';
+    const expectedFullName = 'John Doe';
     const expectedJobTitle = 'Software Engineer';
     const expectedEmailAddress = 'john@test.com';
     const expectedPhoneNumber = '01234 345634';
@@ -102,27 +102,6 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(getByText(expectedUserName)).toBeTruthy();
   });
 
-  it('should hide the password before clicking show', async () => {
-    const { fixture, getByText } = await setup();
-
-    const expectedHiddenPassword = '******';
-    fixture.detectChanges();
-
-    expect(getByText(expectedHiddenPassword)).toBeTruthy();
-  });
-
-  // it('should hide the password before clicking show', async () => {
-  //   const { fixture, getByText } = await setup();
-
-  //   const expectedHiddenPassword = '******';
-  //   const showPasswordButton = getByText('Show password');
-
-  //   fireEvent.click
-  //   fixture.detectChanges();
-
-  //   expect(getByText(expectedHiddenPassword)).toBeTruthy();
-  // });
-
   it('should show the security question and answer', async () => {
     const { fixture, getByText } = await setup();
 
@@ -132,5 +111,33 @@ describe('ConfirmAccountDetailsComponent', () => {
 
     expect(getByText(expectedSecurityQuestion)).toBeTruthy();
     expect(getByText(expectedSecurityAnswer)).toBeTruthy();
+  });
+
+  describe('Show password button', () => {
+    it('should hide the password before clicking show', async () => {
+      const { fixture, getByText } = await setup();
+
+      const expectedHiddenPassword = '******';
+      fixture.detectChanges();
+
+      expect(getByText(expectedHiddenPassword)).toBeTruthy();
+    });
+
+    it('should display the password after clicking show', async () => {
+      const { fixture, getByText, queryByText } = await setup();
+
+      const expectedHiddenPassword = '******';
+      const expectedShownPassword = 'Passw0rd';
+
+      expect(queryByText(expectedHiddenPassword)).toBeTruthy();
+      expect(queryByText(expectedShownPassword)).toBeFalsy();
+
+      const showPasswordButton = getByText('Show password');
+      fireEvent.click(showPasswordButton);
+      fixture.detectChanges();
+
+      expect(queryByText(expectedHiddenPassword)).toBeFalsy();
+      expect(queryByText(expectedShownPassword)).toBeTruthy();
+    });
   });
 });

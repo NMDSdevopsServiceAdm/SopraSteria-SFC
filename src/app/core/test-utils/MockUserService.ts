@@ -83,7 +83,7 @@ export class MockUserService extends UserService {
   public userDetails$ = of({
     uid: 'mocked-uid',
     email: 'john@test.com',
-    fullname: 'John Appleseed',
+    fullname: 'John Doe',
     jobTitle: 'Software Engineer',
     phone: '01234 345634',
   });

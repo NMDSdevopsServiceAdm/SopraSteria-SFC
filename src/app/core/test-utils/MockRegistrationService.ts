@@ -55,6 +55,11 @@ export class MockRegistrationService extends RegistrationService {
 
 @Injectable()
 export class MockRegistrationServiceWithMainService extends MockRegistrationService {
+  public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject({
+    username: 'testUser',
+    password: 'Passw0rd',
+  });
+
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject({
     id: 1,
     isCQC: true,
