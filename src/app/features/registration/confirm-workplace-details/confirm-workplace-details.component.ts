@@ -45,6 +45,8 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     //   }),
     // );
     this.workplace = this.registrationService.selectedWorkplaceService$.value;
+    console.log(this.locationAddress);
+    console.log(this.workplace);
   }
 
   public setWorkplaceDetails(): void {
@@ -85,7 +87,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     this.workplaceAddress = [
       {
         label: 'Name',
-        data: this.locationAddress.locationId,
+        data: this.locationAddress.locationName,
         route: { url: ['/'] },
       },
       {
@@ -99,7 +101,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     this.workplaceName = [
       {
         label: 'Name',
-        data: this.locationAddress.locationId,
+        data: this.locationAddress.locationName,
         route: { url: ['/'] },
       },
     ];
@@ -107,16 +109,28 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
       {
         label: 'Address',
         data: this.address,
+        route: { url: ['/'] },
       },
     ];
   }
 
   private setAddress(): void {
-    this.address = `
-    ${this.locationAddress.addressLine1}
-    ${this.locationAddress.addressLine2}
-    ${this.locationAddress.addressLine3}
-    ${this.locationAddress.townCity}
-    ${this.locationAddress.county} ${this.locationAddress.postalCode}`;
+    this.address = [
+      this.locationAddress.addressLine1,
+      this.locationAddress.addressLine2,
+      this.locationAddress.addressLine3,
+      this.locationAddress.townCity,
+      this.locationAddress.county,
+      this.locationAddress.postalCode,
+    ].join('\n');
+    console.log(this.address);
+
+    // this.address = `
+    // ${this.locationAddress.addressLine1}\n
+    // ${this.locationAddress.addressLine2}\n
+    // ${this.locationAddress.addressLine3}\n
+    // ${this.locationAddress.townCity}\n
+    // ${this.locationAddress.county}\n
+    // ${this.locationAddress.postalCode}`;
   }
 }

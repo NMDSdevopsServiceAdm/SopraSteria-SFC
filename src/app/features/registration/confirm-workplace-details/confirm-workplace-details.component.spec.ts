@@ -127,7 +127,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(component.workplaceName).toEqual([
       {
         label: 'Name',
-        data: '123',
+        data: 'Workplace Name',
         route: { url: ['/'] },
       },
     ]);
