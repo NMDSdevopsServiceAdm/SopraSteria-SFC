@@ -55,6 +55,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
 
   protected save(): void {
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([this.flow, 'select-main-service']);
+    this.router.navigate([this.flow, this.nextRoute]);
   }
 }
