@@ -184,5 +184,26 @@ describe('SelectWorkplaceAddressComponent', () => {
         secondLocationAddressLine1,
       );
     });
+
+    it('should update selectedLocationAddress$ in workplace service to have currently selected address with locationName when enteredLocationName is empty', async () => {
+      const { component, fixture } = await setup();
+
+      // address in first index of locationAddresses with same location name (from MockWorkplace service)
+      const expectedSelectedLocationAddress = {
+        postalCode: 'ABC 123',
+        addressLine1: '2 Street',
+        county: 'Greater Manchester',
+        locationName: 'Test Care Home',
+        townCity: 'Manchester',
+        locationId: '12345',
+      };
+
+      component.enteredLocationName = null;
+      fixture.detectChanges();
+
+      component.onLocationChange(1);
+
+      expect(component.workplaceService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
+    });
   });
 });

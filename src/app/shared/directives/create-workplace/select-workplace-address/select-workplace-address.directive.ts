@@ -20,7 +20,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public submitted = false;
   public createAccountNewDesign: boolean;
   public workplaceNotListedLink: string;
-  protected enteredLocationName: string;
+  public enteredLocationName: string;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 

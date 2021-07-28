@@ -60,8 +60,14 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
 
   public onLocationChange(index): void {
     const selectedAddress = this.locationAddresses[index];
-    selectedAddress.locationName = this.enteredLocationName;
-    this.registrationService.selectedLocationAddress$.next(selectedAddress);
+    // make copy of selectedAddress to avoid changing information in dropdown
+    const selectedAddressCopy = Object.assign({}, selectedAddress);
+
+    if (this.enteredLocationName) {
+      selectedAddressCopy.locationName = this.enteredLocationName;
+    }
+
+    this.registrationService.selectedLocationAddress$.next(selectedAddressCopy);
   }
 
   protected setEnteredLocationName(): void {
