@@ -13,8 +13,8 @@ export class MockRegistrationService extends RegistrationService {
     password: '',
   });
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject({
-    securityQuestion: 'a',
-    securityQuestionAnswer: 'a',
+    securityQuestion: 'What is your favourite colour?',
+    securityQuestionAnswer: 'Blue',
   });
 
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);

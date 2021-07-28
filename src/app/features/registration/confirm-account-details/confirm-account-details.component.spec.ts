@@ -122,4 +122,15 @@ describe('ConfirmAccountDetailsComponent', () => {
 
   //   expect(getByText(expectedHiddenPassword)).toBeTruthy();
   // });
+
+  it('should show the security question and answer', async () => {
+    const { fixture, getByText } = await setup();
+
+    const expectedSecurityQuestion = 'What is your favourite colour?';
+    const expectedSecurityAnswer = 'Blue';
+    fixture.detectChanges();
+
+    expect(getByText(expectedSecurityQuestion)).toBeTruthy();
+    expect(getByText(expectedSecurityAnswer)).toBeTruthy();
+  });
 });
