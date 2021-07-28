@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
@@ -25,7 +25,6 @@ export class ConfirmDetailsComponent implements OnInit {
   public submitted: boolean;
   public form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
-  private serverErrorsMap: Array<ErrorDefinition>;
   private subscriptions: Subscription = new Subscription();
 
   protected service: Service;
@@ -50,7 +49,6 @@ export class ConfirmDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setupServerErrorsMap();
     this.setupSubscriptions();
   }
 
@@ -136,26 +134,13 @@ export class ConfirmDetailsComponent implements OnInit {
     ];
   }
 
-  private setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 400,
-        message: `Registration failed.`,
-      },
-      {
-        name: 401,
-        message: 'Unauthorized.',
-      },
-    ];
-  }
-
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   protected onError(error: HttpErrorResponse): void {
-    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-    this.errorSummaryService.scrollToErrorSummary();
+    console.error(error);
+    this.router.navigate(['/problem-with-the-service']);
   }
 }
