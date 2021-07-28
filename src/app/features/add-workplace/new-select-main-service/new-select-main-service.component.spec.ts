@@ -8,7 +8,6 @@ import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -32,10 +31,6 @@ describe('NewSelectMainServiceComponent', () => {
         ],
         providers: [
           {
-            provide: RegistrationService,
-            useClass: MockRegistrationService,
-          },
-          {
             provide: WorkplaceService,
             useClass: MockWorkplaceService,
           },
@@ -51,7 +46,7 @@ describe('NewSelectMainServiceComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'registration',
+                      path: 'add-workplace',
                     },
                   ],
                 },
@@ -133,7 +128,7 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeNull();
   });
 
-  it('should set the correct back link to the is this your workplace page in regstration flow', async () => {
+  it('should set the correct back link to the is this your workplace page in add-workplace flow', async () => {
     const { component, fixture } = await setup();
     const backLinkSpy = spyOn(fixture.componentInstance.backService, 'setBackLink');
 
@@ -141,19 +136,19 @@ describe('NewSelectMainServiceComponent', () => {
     fixture.detectChanges();
 
     expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['registration/your-workplace'],
+      url: ['add-workplace/your-workplace'],
     });
   });
 
-  it("should see 'Select your main service' when is not a parent", async () => {
+  it("should see 'Select its main service' when is a parent", async () => {
     const { component, fixture, queryByText } = await setup();
 
-    component.isParent = false;
+    component.isParent = true;
     component.isRegulated = false;
     component.renderForm = true;
     fixture.detectChanges();
 
-    expect(queryByText('Select your main service')).toBeTruthy();
+    expect(queryByText('Select its main service')).toBeTruthy();
   });
 
   it('should error when nothing has been selected', async () => {
@@ -173,10 +168,10 @@ describe('NewSelectMainServiceComponent', () => {
     expect(getAllByText(errorMessage).length).toBe(3);
   });
 
-  it('should submit and go to the registration/add-user-details url when option selected and is not parent', async () => {
+  it('should submit and go to the add-workplace/add-user-details url when option selected and is a parent', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
-    component.isParent = false;
+    component.isParent = true;
     component.isRegulated = true;
     component.renderForm = true;
     fixture.detectChanges();
@@ -187,6 +182,6 @@ describe('NewSelectMainServiceComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
   });
 });

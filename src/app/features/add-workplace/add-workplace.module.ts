@@ -16,6 +16,7 @@ import { FindYourWorkplaceComponent } from './find-your-workplace/find-your-work
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace/is-this-your-workplace.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { NewSelectMainServiceComponent } from './new-select-main-service/new-select-main-service.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
@@ -44,6 +45,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     NewWorkplaceNotFoundComponent,
     IsThisYourWorkplaceComponent,
     FindYourWorkplaceComponent,
+    NewSelectMainServiceComponent,
   ],
 })
 export class AddWorkplaceModule {}
