@@ -14,7 +14,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirective {
   constructor(
-    private workplaceService: WorkplaceService,
+    public workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -59,6 +59,12 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   }
 
   public onLocationChange(index): void {
-    this.workplaceService.selectedLocationAddress$.next(this.locationAddresses[index]);
+    const selectedAddress = this.locationAddresses[index];
+    selectedAddress.locationName = this.enteredLocationName;
+    this.workplaceService.selectedLocationAddress$.next(selectedAddress);
+  }
+
+  protected setEnteredLocationName(): void {
+    this.enteredLocationName = this.workplaceService.selectedLocationAddress$.value.locationName;
   }
 }

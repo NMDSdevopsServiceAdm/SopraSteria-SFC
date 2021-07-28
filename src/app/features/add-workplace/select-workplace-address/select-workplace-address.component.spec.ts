@@ -6,12 +6,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { RegistrationModule } from '@features/registration/registration.module';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
+import { AddWorkplaceModule } from '../add-workplace.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
 
 describe('SelectWorkplaceAddressComponent', () => {
@@ -19,11 +19,11 @@ describe('SelectWorkplaceAddressComponent', () => {
     const { fixture, getByText, getAllByText, queryByText } = await render(SelectWorkplaceAddressComponent, {
       imports: [
         SharedModule,
-        RegistrationModule,
         RouterTestingModule,
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
+        AddWorkplaceModule,
       ],
       providers: [
         SelectWorkplaceAddressDirective,
@@ -139,6 +139,50 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(form.valid).toBeTruthy();
 
       expect(spy).toHaveBeenCalledWith(['/add-workplace/new-select-main-service']);
+    });
+  });
+
+  describe('onLocationChange()', () => {
+    it('should update selectedLocationAddress$ in workplace service to have currently selected address and not change the existing locationName', async () => {
+      const { component } = await setup();
+
+      // address in first index of locationAddresses with location name changed to current name in selectedLocationAddress (from MockWorkplace service)
+      const expectedSelectedLocationAddress = {
+        postalCode: 'ABC 123',
+        addressLine1: '2 Street',
+        county: 'Greater Manchester',
+        locationName: 'Name',
+        townCity: 'Manchester',
+        locationId: '12345',
+      };
+
+      component.onLocationChange(1);
+
+      expect(component.workplaceService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
+    });
+
+    it('should update selectedLocationAddress$ in workplace service to have currently selected address and not change the existing locationName each time the function is run', async () => {
+      const { component } = await setup();
+
+      const originalLocationNameInWorkplaceService = 'Name';
+      const firstLocationAddressLine1 = '1 Street';
+      const secondLocationAddressLine1 = '2 Street';
+
+      component.onLocationChange(0);
+
+      expect(component.workplaceService.selectedLocationAddress$.value.locationName).toEqual(
+        originalLocationNameInWorkplaceService,
+      );
+      expect(component.workplaceService.selectedLocationAddress$.value.addressLine1).toEqual(firstLocationAddressLine1);
+
+      component.onLocationChange(1);
+
+      expect(component.workplaceService.selectedLocationAddress$.value.locationName).toEqual(
+        originalLocationNameInWorkplaceService,
+      );
+      expect(component.workplaceService.selectedLocationAddress$.value.addressLine1).toEqual(
+        secondLocationAddressLine1,
+      );
     });
   });
 });
