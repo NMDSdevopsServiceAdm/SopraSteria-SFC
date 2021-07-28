@@ -2,11 +2,13 @@
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-form-group">
-      <fieldset class="govuk-fieldset" aria-describedby="laReturnStartDate-hint" role="group">
+    <fieldset class="govuk-fieldset" aria-describedby="laReturnStartDate-hint" role="group">
+      <div class="govuk-grid-column-two-thirds">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
           <h1 class="govuk-fieldset__heading">Set start and end dates</h1>
         </legend>
+      </div>
+      <div class="govuk-form-group">
         <div
           class="govuk-grid-column-one-half-from-desktop"
           [class.govuk-form-group--error]="submitted && (form.invalid || serverError)"
@@ -58,8 +60,8 @@
             [submitted]="submitted"
           ></app-date-picker>
         </div>
-      </fieldset>
-    </div>
+      </div>
+    </fieldset>
     <div class="govuk-grid-column-one-third">
       <button type="submit" class="govuk-button">Save and return</button>
     </div>
