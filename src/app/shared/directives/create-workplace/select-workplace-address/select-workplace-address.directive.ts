@@ -52,6 +52,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   protected setBackLink(): void {
@@ -71,10 +72,13 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setEnteredLocationName(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setupFormErrorsMap(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onLocationChange(addressLine1: string): void {}
 
   public onSubmit(): void {
