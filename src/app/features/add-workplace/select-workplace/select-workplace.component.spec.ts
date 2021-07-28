@@ -106,15 +106,19 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
-      const { getByText, fixture, spy } = await setup();
+    it('should navigate to the new-select-main-service url in add-workplace flow when workplace selected', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
       const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
     });
 
     it('should navigate back to the find-workplace url in add-workplace flow when Change clicked', async () => {

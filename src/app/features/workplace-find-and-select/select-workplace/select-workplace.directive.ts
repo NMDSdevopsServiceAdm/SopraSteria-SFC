@@ -19,10 +19,11 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public isCQCLocationUpdate: boolean;
-  protected subscriptions: Subscription = new Subscription();
   public createAccountNewDesign: boolean;
   public enteredPostcode: string;
   public workplaceNotDisplayedLink: string;
+  protected subscriptions: Subscription = new Subscription();
+  protected nextRoute: string;
 
   constructor(
     protected backService: BackService,
@@ -42,6 +43,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
       this.createAccountNewDesign = value;
       this.setBackLink();
       this.setWorkplaceNotDisplayedLink();
+      this.setNextRoute();
     });
   }
 
@@ -60,6 +62,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
   protected setWorkplaceNotDisplayedLink(): void {
     this.workplaceNotDisplayedLink = this.createAccountNewDesign ? 'workplace-name-address' : 'enter-workplace-address';
+  }
+
+  protected setNextRoute(): void {
+    this.nextRoute = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
   }
 
   protected setupForm(): void {
