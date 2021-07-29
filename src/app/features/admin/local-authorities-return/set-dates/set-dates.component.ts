@@ -51,14 +51,14 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
   }
 
   public setValidators(): void {
-    const validators = (before: boolean) => [
+    const validators = (field: string, before: boolean) => [
       DateValidator.required(),
       DateValidator.dateValid(),
-      DateValidator.beforeStartDate(this.form.get('laReturnStartDate').value, before),
+      DateValidator.beforeStartDate(this.form.get(field).value, before),
     ];
 
-    this.form.get('laReturnStartDate').setValidators(validators(false));
-    this.form.get('laReturnEndDate').setValidators(validators(true));
+    this.form.get('laReturnStartDate').setValidators(validators('laReturnEndDate', false));
+    this.form.get('laReturnEndDate').setValidators(validators('laReturnStartDate', true));
   }
 
   private setupForm(): void {
