@@ -31,10 +31,6 @@ export class BackService {
     this._back$.next(back);
   }
 
-  public get back(): URLStructure {
-    return this._back$.value;
-  }
-
   public setBackLink(back: URLStructure): void {
     this.back = back;
   }
