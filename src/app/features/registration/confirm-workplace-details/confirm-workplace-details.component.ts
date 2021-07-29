@@ -12,7 +12,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: './confirm-workplace-details.component.html',
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
-  public createAccountNewDesign: boolean;
   public workplaceName: SummaryList[];
   public workplaceAddress: SummaryList[];
   public mainService: SummaryList[];
@@ -21,17 +20,13 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
-    private featureFlagsService: FeatureFlagsService,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService);
+    super(backService, featureFlagsService);
   }
 
   protected async init(): Promise<void> {
     this.flow = '/registration';
-    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
-      'createAccountNewDesign',
-      false,
-    );
     this.getWorkplaceData();
     this.setAddress();
     this.setWorkplaceDetails();
@@ -39,14 +34,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected getWorkplaceData(): void {
     this.locationAddress = this.registrationService.selectedLocationAddress$.value;
-    // this.subscriptions.add(
-    //   this.registrationService.selectedWorkplaceService$.subscribe((workplace) => {
-    //     this.workplace = workplace;
-    //   }),
-    // );
     this.workplace = this.registrationService.selectedWorkplaceService$.value;
-    console.log(this.locationAddress);
-    console.log(this.workplace);
   }
 
   public setWorkplaceDetails(): void {

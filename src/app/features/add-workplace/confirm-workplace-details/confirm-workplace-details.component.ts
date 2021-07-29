@@ -10,6 +10,7 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import {
   ConfirmWorkplaceDetails,
 } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { combineLatest } from 'rxjs';
 
 @Component({
@@ -25,9 +26,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     private establishmentService: EstablishmentService,
     private router: Router,
     private workplaceService: WorkplaceService,
-    protected backService: BackService
+    protected backService: BackService,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService);
+    super(backService, featureFlagsService);
   }
 
   protected init(): void {
@@ -43,20 +45,20 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
       ]).subscribe(([locationAddress, workplace]) => {
         this.locationAddress = locationAddress;
         this.workplace = workplace;
-      })
+      }),
     );
   }
 
   public continue(): void {
-     this.addWorkplace();
-   }
+    this.addWorkplace();
+  }
 
   private addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace),
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {
@@ -67,8 +69,8 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
-          }
-        )
+          },
+        ),
     );
   }
 }
