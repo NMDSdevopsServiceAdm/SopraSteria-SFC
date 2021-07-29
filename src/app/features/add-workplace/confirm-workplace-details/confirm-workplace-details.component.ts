@@ -22,10 +22,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   public serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
 
   constructor(
-    private errorSummaryService: ErrorSummaryService,
-    private establishmentService: EstablishmentService,
-    private router: Router,
-    private workplaceService: WorkplaceService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    protected router: Router,
+    protected workplaceService: WorkplaceService,
     protected backService: BackService,
     protected featureFlagsService: FeatureFlagsService,
   ) {

@@ -29,6 +29,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
     this.setAddress();
     this.setWorkplaceDetails();
     this.setBackLink();
+    console.log(this.locationAddress);
   }
 
   protected init(): void {}
