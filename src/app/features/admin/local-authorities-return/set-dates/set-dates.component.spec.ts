@@ -14,7 +14,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { SetDatesComponent } from './set-dates.component';
 
-fdescribe('SetDatesComponent', () => {
+describe('SetDatesComponent', () => {
   async function setup(correctDates = false) {
     const component = await render(SetDatesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
