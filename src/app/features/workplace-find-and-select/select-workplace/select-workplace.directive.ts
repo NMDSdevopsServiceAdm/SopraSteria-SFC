@@ -21,7 +21,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public isCQCLocationUpdate: boolean;
   public createAccountNewDesign: boolean;
   public enteredPostcode: string;
-  public workplaceNotDisplayedLink: string;
   protected subscriptions: Subscription = new Subscription();
   protected nextRoute: string;
 
@@ -42,7 +41,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
-      this.setWorkplaceNotDisplayedLink();
       this.setNextRoute();
     });
   }
@@ -58,10 +56,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   protected setBackLink(): void {
     const backLink = this.createAccountNewDesign ? 'find-workplace' : 'regulated-by-cqc';
     this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
-  }
-
-  protected setWorkplaceNotDisplayedLink(): void {
-    this.workplaceNotDisplayedLink = this.createAccountNewDesign ? 'workplace-name-address' : 'enter-workplace-address';
   }
 
   protected setNextRoute(): void {

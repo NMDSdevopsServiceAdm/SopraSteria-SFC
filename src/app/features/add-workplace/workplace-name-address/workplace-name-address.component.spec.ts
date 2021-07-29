@@ -78,6 +78,46 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
   });
 
+  it('should navigate to new-select-main-service page on success if feature flag is on', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+    const form = component.form;
+
+    form.controls['workplaceName'].setValue('Workplace');
+    form.controls['address1'].setValue('1 Main Street');
+    form.controls['townOrCity'].setValue('London');
+    form.controls['county'].setValue('Greater London');
+    form.controls['postcode'].setValue('SE1 1AA');
+
+    component.createAccountNewDesign = true;
+    fixture.detectChanges();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.invalid).toBeFalsy();
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
+  });
+
+  it('should navigate to select-main-service page on success if feature flag is off', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+    const form = component.form;
+
+    form.controls['workplaceName'].setValue('Workplace');
+    form.controls['address1'].setValue('1 Main Street');
+    form.controls['townOrCity'].setValue('London');
+    form.controls['county'].setValue('Greater London');
+    form.controls['postcode'].setValue('SE1 1AA');
+
+    component.createAccountNewDesign = false;
+    fixture.detectChanges();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.invalid).toBeFalsy();
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
+  });
+
   describe('Error messages', () => {
     it(`should display an error message when workplace name isn't filled in`, async () => {
       const { component, getByText, getAllByText } = await setup();

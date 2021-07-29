@@ -64,7 +64,8 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   protected setSelectedLocationAddress(): void {
     this.registrationService.selectedLocationAddress$.next(this.getLocationAddress());
     this.registrationService.manuallyEnteredWorkplace$.next(true);
-    this.router.navigate([`${this.flow}/select-main-service`]);
+    const url = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+    this.router.navigate([this.flow, url]);
   }
 
   public setBackLink(): void {
