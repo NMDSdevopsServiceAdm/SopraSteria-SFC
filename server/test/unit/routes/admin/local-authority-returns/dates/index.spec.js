@@ -5,7 +5,7 @@ const models = require('../../../../../../models');
 
 const { getLAReturnDates, setLAReturnDates } = require('../../../../../../routes/admin/local-authority-return/dates');
 
-describe.only('server/routes/admin/local-authority-returns/dates', async () => {
+describe('server/routes/admin/local-authority-returns/dates', async () => {
   afterEach(async () => {
     sinon.restore();
   });
