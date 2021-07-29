@@ -42,39 +42,38 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  public setupFormGroup(date: Date): { day: number; month: number; year: number } {
+    return {
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
+    };
+  }
+
+  public setValidators(): void {
+    const validators = (before: boolean) => [
+      DateValidator.required(),
+      DateValidator.dateValid(),
+      DateValidator.beforeStartDate(this.form.get('laReturnStartDate').value, before),
+    ];
+
+    this.form.get('laReturnStartDate').setValidators(validators(false));
+    this.form.get('laReturnEndDate').setValidators(validators(true));
+  }
+
   private setupForm(): void {
     const startDate = new Date(this.route.snapshot.data.dates.laReturnStartDate);
     const endDate = new Date(this.route.snapshot.data.dates.laReturnEndDate);
 
     this.form = this.formBuilder.group(
       {
-        laReturnStartDate: this.formBuilder.group({
-          day: startDate.getDate(),
-          month: startDate.getMonth() + 1,
-          year: startDate.getFullYear(),
-        }),
-        laReturnEndDate: this.formBuilder.group({
-          day: endDate.getDate(),
-          month: endDate.getMonth() + 1,
-          year: endDate.getFullYear(),
-        }),
+        laReturnStartDate: this.formBuilder.group(this.setupFormGroup(startDate)),
+        laReturnEndDate: this.formBuilder.group(this.setupFormGroup(endDate)),
       },
       { updateOn: 'submit' },
     );
-    this.form
-      .get('laReturnStartDate')
-      .setValidators([
-        DateValidator.required(),
-        DateValidator.dateValid(),
-        DateValidator.afterEndDate(this.form.get('laReturnEndDate').value),
-      ]);
-    this.form
-      .get('laReturnEndDate')
-      .setValidators([
-        DateValidator.required(),
-        DateValidator.dateValid(),
-        DateValidator.beforeStartDate(this.form.get('laReturnStartDate').value),
-      ]);
+
+    this.setValidators();
   }
 
   private setupFormErrorsMap(): void {

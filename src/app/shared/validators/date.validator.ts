@@ -35,7 +35,7 @@ export abstract class DateValidator {
     };
   }
 
-  static beforeStartDate(startDate: Date): ValidatorFn {
+  static beforeStartDate(comparisonDate: Date, before = true): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
@@ -43,23 +43,10 @@ export abstract class DateValidator {
         const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
-          return date.isAfter(startDate) ? null : { beforeStartDate: true };
-        }
-      }
-
-      return null;
-    };
-  }
-
-  static afterEndDate(endDate: Date): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
-      const { day, month, year } = formGroup.controls;
-
-      if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
-
-        if (date.isValid()) {
-          return date.isBefore(endDate) ? null : { afterEndDate: true };
+          if (before) {
+            return date.isAfter(comparisonDate) ? null : { beforeStartDate: true };
+          }
+          return date.isBefore(comparisonDate) ? null : { afterEndDate: true };
         }
       }
 

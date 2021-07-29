@@ -3,15 +3,19 @@ const router = require('express').Router();
 const models = require('../../../../models');
 const { celebrate, Joi, errors } = require('celebrate');
 
+const formatResponse = (laReturnStartDate, laReturnEndDate) => {
+  return {
+    laReturnStartDate: new Date(laReturnStartDate),
+    laReturnEndDate: new Date(laReturnEndDate),
+  };
+};
+
 const getLAReturnDates = async (req, res) => {
   try {
     const laReturnStartDate = await models.AdminSettings.getValue('laReturnStartDate');
     const laReturnEndDate = await models.AdminSettings.getValue('laReturnEndDate');
 
-    return res.status(200).send({
-      laReturnStartDate: new Date(laReturnStartDate.Data.value),
-      laReturnEndDate: new Date(laReturnEndDate.Data.value),
-    });
+    return res.status(200).send(formatResponse(laReturnStartDate.Data.value, laReturnEndDate.Data.value));
   } catch (error) {
     console.error(error);
     return res.status(503).send();
@@ -33,10 +37,7 @@ const setLAReturnDates = async (req, res) => {
       throw new Error("Couldn't find columns to update");
     }
 
-    return res.status(200).send({
-      laReturnStartDate: new Date(req.body.laReturnStartDate),
-      laReturnEndDate: new Date(req.body.laReturnEndDate),
-    });
+    return res.status(200).send(formatResponse(req.body.laReturnStartDate, req.body.laReturnEndDate));
   } catch (error) {
     console.error(error);
     if (error.message === "Couldn't find columns to update") {
