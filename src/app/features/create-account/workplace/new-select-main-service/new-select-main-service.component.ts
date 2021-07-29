@@ -93,7 +93,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
           route = 'workplace-address-not-found';
         }
       } else {
-        route = 'workplace-name-address';
+        route = 'select-workplace-address';
       }
     }
 
