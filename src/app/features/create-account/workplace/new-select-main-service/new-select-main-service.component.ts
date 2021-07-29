@@ -22,7 +22,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public createAccountNewDesign: boolean;
 
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -72,6 +72,31 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/your-workplace`] });
+    let route: string;
+
+    if (this.isRegulated) {
+      if (this.registrationService.manuallyEnteredWorkplace$.value) {
+        route = 'workplace-name-address';
+      } else if (this.registrationService.locationAddresses$.value.length == 1) {
+        route = 'your-workplace';
+      } else if (this.registrationService.locationAddresses$.value.length > 1) {
+        route = 'select-workplace';
+      } else {
+        route = '';
+      }
+    }
+    if (!this.isRegulated) {
+      if (this.registrationService.manuallyEnteredWorkplace$.value) {
+        if (this.registrationService.locationAddresses$.value.length > 0) {
+          route = 'workplace-name-address';
+        } else {
+          route = 'workplace-address-not-found';
+        }
+      } else {
+        route = 'workplace-name-address';
+      }
+    }
+
+    this.backService.setBackLink({ url: [`${this.flow}/${route}`] });
   }
 }
