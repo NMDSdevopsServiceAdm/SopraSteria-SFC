@@ -201,7 +201,7 @@ fdescribe('SetDatesComponent', () => {
       expect(component.getAllByText('End date is not a valid date', { exact: false }).length).toBe(2);
     });
 
-    it('should ahow an error if the end date is before the start date', async () => {
+    it('should show an error if the end date is before the start date', async () => {
       const { component } = await setup();
 
       expect(component.queryByText('End date must be after start date', { exact: false })).toBe(null);
@@ -229,7 +229,7 @@ fdescribe('SetDatesComponent', () => {
       expect(component.getAllByText('End date must be after start date', { exact: false }).length).toBe(2);
     });
 
-    it('should ahow an error if the start date is after the end date', async () => {
+    it('should show an error if the start date is after the end date', async () => {
       const { component } = await setup();
 
       expect(component.queryByText('Start date must be before end date', { exact: false })).toBe(null);
