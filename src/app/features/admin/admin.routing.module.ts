@@ -7,10 +7,11 @@ import { SetDatesComponent } from './local-authorities-return/set-dates/set-date
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   redirectTo: 'search',
-  // },
+  {
+    path: '',
+    redirectTo: 'search',
+    pathMatch: 'full',
+  },
   {
     path: 'search',
     component: SearchComponent,
