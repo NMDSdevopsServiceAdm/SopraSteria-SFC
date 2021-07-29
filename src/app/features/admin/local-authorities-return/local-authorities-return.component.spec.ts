@@ -8,7 +8,7 @@ import { render } from '@testing-library/angular';
 
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return.component';
 
-fdescribe('LocalAuthoritiesReturnComponent', () => {
+describe('LocalAuthoritiesReturnComponent', () => {
   async function setup() {
     const component = await render(LocalAuthoritiesReturnComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
