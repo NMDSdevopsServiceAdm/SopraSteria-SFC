@@ -1,22 +1,28 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   LocalAuthoritiesReturnService,
 } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockLocalAuthoritiesReturnService } from '@core/test-utils/MockLocalAuthoritiesReturnService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { SetDatesComponent } from './set-dates.component';
 
-describe('SetDatesComponent', () => {
-  async function setup() {
+fdescribe('SetDatesComponent', () => {
+  async function setup(correctDates = false) {
     const component = await render(SetDatesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
       providers: [
-        LocalAuthoritiesReturnService,
+        {
+          provide: LocalAuthoritiesReturnService,
+          useClass: MockLocalAuthoritiesReturnService,
+        },
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
@@ -27,7 +33,7 @@ describe('SetDatesComponent', () => {
             snapshot: {
               data: {
                 dates: {
-                  laReturnStartDate: new Date('2020-01-01'),
+                  laReturnStartDate: correctDates ? new Date('2001-01-01') : new Date('2020-01-01'),
                   laReturnEndDate: new Date('2002-02-02'),
                 },
               },
@@ -37,8 +43,15 @@ describe('SetDatesComponent', () => {
       ],
     });
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
+
     return {
       component,
+      spy,
     };
   }
 
@@ -61,134 +74,217 @@ describe('SetDatesComponent', () => {
     expect(form.get('laReturnEndDate').value.year).toEqual(2002);
   });
 
-  it('should show a blank error when nothing in the start date input boxes', async () => {
-    const { component } = await setup();
-
-    expect(component.queryByText('Start date is required', { exact: false })).toBe(null);
+  it('should navigate back to the la page on success', async () => {
+    const { component, spy } = await setup(true);
 
     const form = component.fixture.componentInstance.form;
-    form.setValue({
-      laReturnStartDate: {
-        day: null,
-        month: null,
-        year: null,
-      },
-      laReturnEndDate: {
-        day: 12,
-        month: 12,
-        year: 2012,
-      },
-    });
-    component.fixture.componentInstance.onSubmit();
+
+    form.markAsDirty();
+    component.fixture.detectChanges();
+
+    const submitButton = component.getByText('Save and return');
+    fireEvent.click(submitButton);
 
     component.fixture.detectChanges();
 
-    expect(form.invalid).toBeTruthy();
-    expect(component.getAllByText('Start date is required', { exact: false }).length).toBe(2);
+    expect(spy).toHaveBeenCalledWith(['sfcadmin', 'local-authorities-return']);
   });
 
-  it('should show a an error if an invalid date', async () => {
-    const { component } = await setup();
+  describe('error messages', () => {
+    it('should show a blank error when nothing in the start date input boxes', async () => {
+      const { component } = await setup();
 
-    expect(component.queryByText('Start date is not a valid date', { exact: false })).toBe(null);
+      expect(component.queryByText('Start date is required', { exact: false })).toBe(null);
 
-    const form = component.fixture.componentInstance.form;
-    form.setValue({
-      laReturnStartDate: {
-        day: 50,
-        month: 14,
-        year: 2098,
-      },
-      laReturnEndDate: {
-        day: 12,
-        month: 12,
-        year: 2012,
-      },
+      const form = component.fixture.componentInstance.form;
+      form.setValue({
+        laReturnStartDate: {
+          day: null,
+          month: null,
+          year: null,
+        },
+        laReturnEndDate: {
+          day: 12,
+          month: 12,
+          year: 2012,
+        },
+      });
+      const submitButton = component.getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      component.fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText('Start date is required', { exact: false }).length).toBe(2);
     });
-    component.fixture.componentInstance.onSubmit();
 
-    component.fixture.detectChanges();
+    it('should show a an error if an invalid date', async () => {
+      const { component } = await setup();
 
-    expect(form.invalid).toBeTruthy();
-    expect(component.getAllByText('Start date is not a valid date', { exact: false }).length).toBe(2);
+      expect(component.queryByText('Start date is not a valid date', { exact: false })).toBe(null);
+
+      const form = component.fixture.componentInstance.form;
+      form.setValue({
+        laReturnStartDate: {
+          day: 50,
+          month: 14,
+          year: 2098,
+        },
+        laReturnEndDate: {
+          day: 12,
+          month: 12,
+          year: 2012,
+        },
+      });
+      const submitButton = component.getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      component.fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText('Start date is not a valid date', { exact: false }).length).toBe(2);
+    });
+
+    it('should show a blank error when nothing in the end date input boxes', async () => {
+      const { component } = await setup();
+
+      expect(component.queryByText('End date is required', { exact: false })).toBe(null);
+
+      const form = component.fixture.componentInstance.form;
+      form.setValue({
+        laReturnStartDate: {
+          day: 11,
+          month: 11,
+          year: 2011,
+        },
+        laReturnEndDate: {
+          day: null,
+          month: null,
+          year: null,
+        },
+      });
+
+      const submitButton = component.getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      component.fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText('End date is required', { exact: false }).length).toBe(2);
+    });
+
+    it('should show a an error if an invalid date', async () => {
+      const { component } = await setup();
+
+      expect(component.queryByText('End date is not a valid date', { exact: false })).toBe(null);
+
+      const form = component.fixture.componentInstance.form;
+      form.setValue({
+        laReturnStartDate: {
+          day: 11,
+          month: 11,
+          year: 2011,
+        },
+        laReturnEndDate: {
+          day: 50,
+          month: 89,
+          year: 2029,
+        },
+      });
+
+      const submitButton = component.getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      component.fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText('End date is not a valid date', { exact: false }).length).toBe(2);
+    });
+
+    it('should ahow an error if the end date is before the start date', async () => {
+      const { component } = await setup();
+
+      expect(component.queryByText('End date must be after start date', { exact: false })).toBe(null);
+
+      const form = component.fixture.componentInstance.form;
+      form.setValue({
+        laReturnStartDate: {
+          day: 11,
+          month: 11,
+          year: 2011,
+        },
+        laReturnEndDate: {
+          day: 10,
+          month: 10,
+          year: 2010,
+        },
+      });
+
+      const submitButton = component.getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      component.fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText('End date must be after start date', { exact: false }).length).toBe(2);
+    });
+
+    it('should ahow an error if the start date is after the end date', async () => {
+      const { component } = await setup();
+
+      expect(component.queryByText('Start date must be before end date', { exact: false })).toBe(null);
+
+      const form = component.fixture.componentInstance.form;
+      form.setValue({
+        laReturnStartDate: {
+          day: 11,
+          month: 11,
+          year: 2011,
+        },
+        laReturnEndDate: {
+          day: 10,
+          month: 10,
+          year: 2010,
+        },
+      });
+
+      const submitButton = component.getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      component.fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(component.getAllByText('Start date must be before end date', { exact: false }).length).toBe(2);
+    });
   });
 
-  it('should show a blank error when nothing in the end date input boxes', async () => {
-    const { component } = await setup();
+  describe('formatDate', () => {
+    it('should return a date', async () => {
+      const { component } = await setup();
 
-    expect(component.queryByText('End date is required', { exact: false })).toBe(null);
+      const date = component.fixture.componentInstance.formatDate({ year: 2020, month: 12, day: 2 });
 
-    const form = component.fixture.componentInstance.form;
-    form.setValue({
-      laReturnStartDate: {
-        day: 11,
-        month: 11,
-        year: 2011,
-      },
-      laReturnEndDate: {
-        day: null,
-        month: null,
-        year: null,
-      },
+      const expectDate = new Date('2020-12-02');
+
+      expect(date).toEqual(expectDate);
     });
-    component.fixture.componentInstance.onSubmit();
-
-    component.fixture.detectChanges();
-
-    expect(form.invalid).toBeTruthy();
-    expect(component.getAllByText('End date is required', { exact: false }).length).toBe(2);
   });
 
-  it('should show a an error if an invalid date', async () => {
-    const { component } = await setup();
+  describe('formatSingleDigit', () => {
+    it('should a string of number', async () => {
+      const { component } = await setup();
 
-    expect(component.queryByText('End date is not a valid date', { exact: false })).toBe(null);
+      const formatSingleDigit = component.fixture.componentInstance.formatSingleDigit(10);
 
-    const form = component.fixture.componentInstance.form;
-    form.setValue({
-      laReturnStartDate: {
-        day: 11,
-        month: 11,
-        year: 2011,
-      },
-      laReturnEndDate: {
-        day: 50,
-        month: 89,
-        year: 2029,
-      },
-    });
-    component.fixture.componentInstance.onSubmit();
-
-    component.fixture.detectChanges();
-
-    expect(form.invalid).toBeTruthy();
-    expect(component.getAllByText('End date is not a valid date', { exact: false }).length).toBe(2);
-  });
-
-  it('should ahow an error if the end date is before the start date', async () => {
-    const { component } = await setup();
-
-    expect(component.queryByText('End date must be after start date', { exact: false })).toBe(null);
-
-    const form = component.fixture.componentInstance.form;
-    form.setValue({
-      laReturnStartDate: {
-        day: 11,
-        month: 11,
-        year: 2011,
-      },
-      laReturnEndDate: {
-        day: 10,
-        month: 10,
-        year: 2010,
-      },
+      expect(formatSingleDigit).toEqual('10');
     });
 
-    component.fixture.componentInstance.onSubmit();
+    it('should a string of number prefixed with a 0', async () => {
+      const { component } = await setup();
 
-    component.fixture.detectChanges();
+      const formatSingleDigit = component.fixture.componentInstance.formatSingleDigit(9);
 
-    expect(form.invalid).toBeTruthy();
-    expect(component.getAllByText('End date must be after start date', { exact: false }).length).toBe(2);
+      expect(formatSingleDigit).toEqual('09');
+    });
   });
 });

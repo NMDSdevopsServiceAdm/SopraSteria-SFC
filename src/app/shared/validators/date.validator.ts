@@ -51,6 +51,22 @@ export abstract class DateValidator {
     };
   }
 
+  static afterEndDate(endDate: Date): ValidatorFn {
+    return (formGroup: FormGroup): { [key: string]: any } | null => {
+      const { day, month, year } = formGroup.controls;
+
+      if (day.value && month.value && year.value) {
+        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+
+        if (date.isValid()) {
+          return date.isBefore(endDate) ? null : { afterEndDate: true };
+        }
+      }
+
+      return null;
+    };
+  }
+
   static beforeToday(): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;

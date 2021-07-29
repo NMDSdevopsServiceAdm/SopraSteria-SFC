@@ -27,6 +27,10 @@
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFormErrorMessage('laReturnStartDate', 'dateValid') }}
             </ng-container>
+            <ng-container *ngIf="form.get('laReturnStartDate').hasError('afterEndDate')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('laReturnStartDate', 'afterEndDate') }}
+            </ng-container>
           </span>
           <app-date-picker
             [formGroup]="form"

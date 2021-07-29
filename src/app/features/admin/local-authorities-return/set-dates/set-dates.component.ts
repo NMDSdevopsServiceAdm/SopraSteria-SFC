@@ -61,7 +61,13 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
       },
       { updateOn: 'submit' },
     );
-    this.form.get('laReturnStartDate').setValidators([DateValidator.required(), DateValidator.dateValid()]);
+    this.form
+      .get('laReturnStartDate')
+      .setValidators([
+        DateValidator.required(),
+        DateValidator.dateValid(),
+        DateValidator.afterEndDate(this.form.get('laReturnEndDate').value),
+      ]);
     this.form
       .get('laReturnEndDate')
       .setValidators([
@@ -78,6 +84,7 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
         type: [
           { name: 'required', message: 'Start date is required' },
           { name: 'dateValid', message: 'Start date is not a valid date' },
+          { name: 'afterEndDate', message: 'Start date must be before end date' },
         ],
       },
       {
@@ -95,8 +102,14 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private formatSingleDigit(value: number): string {
+  public formatSingleDigit(value: number): string {
     return String(value < 10 ? `0${value}` : value);
+  }
+
+  public formatDate(date: { year: number; month: number; day: number }): Date {
+    return new Date(
+      `${this.formatSingleDigit(date.year)}-${this.formatSingleDigit(date.month)}-${this.formatSingleDigit(date.day)}`,
+    );
   }
 
   public onSubmit(): void {
@@ -107,18 +120,12 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
       this.errorSummaryService.scrollToErrorSummary();
       return;
     } else {
-      const { year: startYear, month: startMonth, day: startDay } = this.form.get('laReturnStartDate').value;
-      const { year: endYear, month: endMonth, day: endDay } = this.form.get('laReturnEndDate').value;
+      const startDate = this.form.get('laReturnStartDate').value;
+      const endDate = this.form.get('laReturnEndDate').value;
 
       const laReturnDates: SetDates = {
-        laReturnStartDate: new Date(
-          `${this.formatSingleDigit(startYear)}-${this.formatSingleDigit(startMonth)}-${this.formatSingleDigit(
-            startDay,
-          )}`,
-        ),
-        laReturnEndDate: new Date(
-          `${this.formatSingleDigit(endYear)}-${this.formatSingleDigit(endMonth)}-${this.formatSingleDigit(endDay)}`,
-        ),
+        laReturnStartDate: this.formatDate(startDate),
+        laReturnEndDate: this.formatDate(endDate),
       };
       this.localAuthoritiesReturnService
         .setDates(laReturnDates)
