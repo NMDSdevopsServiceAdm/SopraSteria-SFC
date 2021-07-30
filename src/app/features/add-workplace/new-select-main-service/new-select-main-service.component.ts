@@ -73,26 +73,34 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     let route: string;
 
     if (this.isRegulated) {
-      if (this.workplaceService.manuallyEnteredWorkplace$.value) {
-        route = 'workplace-name-address';
-      } else if (this.workplaceService.locationAddresses$.value.length == 1) {
-        route = 'your-workplace';
-      } else if (this.workplaceService.locationAddresses$.value.length > 1) {
-        route = 'select-workplace';
-      }
+      route = this.getCQCRegulatedBackLink();
     }
     if (!this.isRegulated) {
-      if (this.workplaceService.manuallyEnteredWorkplace$.value) {
-        if (this.workplaceService.locationAddresses$.value.length > 0) {
-          route = 'workplace-name-address';
-        } else {
-          route = 'workplace-address-not-found';
-        }
-      } else {
-        route = 'select-workplace-address';
-      }
+      route = this.getNonCQCRegulatedBackLink();
     }
 
     this.backService.setBackLink({ url: [this.flow, route] });
+  }
+
+  private getCQCRegulatedBackLink(): string {
+    if (this.workplaceService.manuallyEnteredWorkplace$.value) {
+      return 'workplace-name-address';
+    } else if (this.workplaceService.locationAddresses$.value.length == 1) {
+      return 'your-workplace';
+    } else if (this.workplaceService.locationAddresses$.value.length > 1) {
+      return 'select-workplace';
+    }
+  }
+
+  private getNonCQCRegulatedBackLink(): string {
+    if (this.workplaceService.manuallyEnteredWorkplace$.value) {
+      if (this.workplaceService.locationAddresses$.value.length > 0) {
+        return 'workplace-name-address';
+      } else {
+        return 'workplace-address-not-found';
+      }
+    } else {
+      return 'select-workplace-address';
+    }
   }
 }
