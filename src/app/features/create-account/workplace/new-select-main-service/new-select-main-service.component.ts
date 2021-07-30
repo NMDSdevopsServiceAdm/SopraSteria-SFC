@@ -81,8 +81,6 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
         route = 'your-workplace';
       } else if (this.registrationService.locationAddresses$.value.length > 1) {
         route = 'select-workplace';
-      } else {
-        route = '';
       }
     }
     if (!this.isRegulated) {

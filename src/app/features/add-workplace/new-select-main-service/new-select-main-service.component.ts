@@ -25,7 +25,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService,
+    public workplaceService: WorkplaceService,
     private establishmentService: EstablishmentService,
     private featureFlagsService: FeatureFlagsService,
     private route: ActivatedRoute,
@@ -70,6 +70,29 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/your-workplace`] });
+    let route: string;
+
+    if (this.isRegulated) {
+      if (this.workplaceService.manuallyEnteredWorkplace$.value) {
+        route = 'workplace-name-address';
+      } else if (this.workplaceService.locationAddresses$.value.length == 1) {
+        route = 'your-workplace';
+      } else if (this.workplaceService.locationAddresses$.value.length > 1) {
+        route = 'select-workplace';
+      }
+    }
+    if (!this.isRegulated) {
+      if (this.workplaceService.manuallyEnteredWorkplace$.value) {
+        if (this.workplaceService.locationAddresses$.value.length > 0) {
+          route = 'workplace-name-address';
+        } else {
+          route = 'workplace-address-not-found';
+        }
+      } else {
+        route = 'select-workplace-address';
+      }
+    }
+
+    this.backService.setBackLink({ url: [this.flow, route] });
   }
 }
