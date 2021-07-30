@@ -72,7 +72,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(getByText(nameAndAddressField)).toBeTruthy();
   });
 
-  it('should show "Name" field and "Address" field when it is CQC regulated without a location ID', async () => {
+  it('should show "Name" field and "Address" field when it does not have a location ID', async () => {
     const { component, fixture, getByText } = await setup();
     const nameField = 'Name';
     const addressField = 'Address';
@@ -86,28 +86,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     expect(getByText(nameField)).toBeTruthy();
     expect(getByText(addressField)).toBeTruthy();
-    expect(component.workplaceName).toBeFalsy();
-  });
-
-  it('should show "Name" and "Address" field separately when it is not CQC regulated', async () => {
-    const { component, fixture, getByText } = await setup();
-    const nameField = 'Name';
-    const addressField = 'Address';
-
-    component.workplace.isCQC = false;
-    component.createAccountNewDesign = true;
-    component.setWorkplaceDetails();
-    fixture.detectChanges();
-
-    expect(getByText(nameField)).toBeTruthy();
-    expect(getByText(addressField)).toBeTruthy();
-    expect(component.workplaceName).toEqual([
-      {
-        label: 'Name',
-        data: 'Workplace Name',
-        route: { url: ['/'] },
-      },
-    ]);
   });
 
   it('should show workplace details', async () => {

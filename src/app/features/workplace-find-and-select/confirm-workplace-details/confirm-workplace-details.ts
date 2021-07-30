@@ -12,8 +12,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   public locationAddress: LocationAddress;
   public workplace: Service;
   public createAccountNewDesign: boolean;
-  public workplaceName: SummaryList[];
-  public workplaceAddress: SummaryList[];
+  public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
   protected address: string;
   protected subscriptions: Subscription = new Subscription();
@@ -29,27 +28,24 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
     this.setAddress();
     this.setWorkplaceDetails();
     this.setBackLink();
-    console.log(this.locationAddress);
   }
 
   protected init(): void {}
 
   protected getWorkplaceData(): void {}
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/select-main-service`] });
+  public setBackLink(): void {
+    const backLinkUrl = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+    this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
   }
 
   public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {
       this.setCqcLocationIdWorkplaceDetails();
+    } else {
+      this.setNonLocationIdWorkplaceDetails();
     }
-    if (this.workplace.isCQC && !this.locationAddress.locationId) {
-      this.setCqcWorkplaceDetails();
-    }
-    if (!this.workplace.isCQC) {
-      this.setNonCqcWorkplaceDetails();
-    }
+
     this.mainService = [
       {
         label: 'Main service',
@@ -60,7 +56,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   }
 
   protected setCqcLocationIdWorkplaceDetails(): void {
-    this.workplaceAddress = [
+    this.workplaceNameAndAddress = [
       {
         label: 'CQC location ID',
         data: this.locationAddress.locationId,
@@ -74,8 +70,8 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
     ];
   }
 
-  protected setCqcWorkplaceDetails(): void {
-    this.workplaceAddress = [
+  protected setNonLocationIdWorkplaceDetails(): void {
+    this.workplaceNameAndAddress = [
       {
         label: 'Name',
         data: this.locationAddress.locationName,
@@ -84,23 +80,6 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
       {
         label: 'Address',
         data: this.address,
-      },
-    ];
-  }
-
-  protected setNonCqcWorkplaceDetails(): void {
-    this.workplaceName = [
-      {
-        label: 'Name',
-        data: this.locationAddress.locationName,
-        route: { url: ['/'] },
-      },
-    ];
-    this.workplaceAddress = [
-      {
-        label: 'Address',
-        data: this.address,
-        route: { url: ['/'] },
       },
     ];
   }
@@ -114,15 +93,6 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
       this.locationAddress.county,
       this.locationAddress.postalCode,
     ].join('\n');
-    console.log(this.address);
-
-    // this.address = `
-    // ${this.locationAddress.addressLine1}\n
-    // ${this.locationAddress.addressLine2}\n
-    // ${this.locationAddress.addressLine3}\n
-    // ${this.locationAddress.townCity}\n
-    // ${this.locationAddress.county}\n
-    // ${this.locationAddress.postalCode}`;
   }
 
   ngOnDestroy() {
