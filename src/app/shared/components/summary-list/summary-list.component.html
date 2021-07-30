@@ -27,7 +27,7 @@
     </ng-container>
     <ng-template #nonPassword>
       <dd class="govuk-summary-list__value">
-        {{ item.data }}
+        <span innerHtml="{{ item.data }}"></span>
       </dd>
     </ng-template>
     <ng-container *ngIf="item.route">

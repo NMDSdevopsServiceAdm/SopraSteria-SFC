@@ -64,6 +64,9 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     const locationIdField = 'CQC location ID';
     const nameAndAddressField = 'Name and address';
 
+    component.workplace.isCQC = true;
+    component.locationAddress.locationId = '123';
+
     component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
@@ -86,6 +89,32 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     expect(getByText(nameField)).toBeTruthy();
     expect(getByText(addressField)).toBeTruthy();
+  });
+
+  it('should include the workplace name in nameAndAddress if CQC regulated with a location ID', async () => {
+    const { component, fixture } = await setup();
+
+    component.workplace.isCQC = true;
+    component.locationAddress.locationId = '123';
+
+    component.createAccountNewDesign = true;
+    component.setAddress();
+    fixture.detectChanges();
+
+    expect(component.nameAndAddress).toContain('Workplace Name');
+  });
+
+  it('should not include the workplace name in nameAndAddress if CQC regulated with a location ID', async () => {
+    const { component, fixture } = await setup();
+
+    component.workplace.isCQC = false;
+    component.locationAddress.locationId = null;
+
+    component.createAccountNewDesign = true;
+    component.setAddress();
+    fixture.detectChanges();
+
+    expect(component.nameAndAddress).not.toContain('Workplace Name');
   });
 
   it('should show workplace details', async () => {

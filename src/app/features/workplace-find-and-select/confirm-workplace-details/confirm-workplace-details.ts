@@ -14,7 +14,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   public createAccountNewDesign: boolean;
   public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
-  protected address: string;
+  public nameAndAddress: string;
   protected subscriptions: Subscription = new Subscription();
 
   constructor(protected backService: BackService, protected featureFlagsService: FeatureFlagsService) {}
@@ -57,8 +57,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
       },
       {
         label: 'Name and address',
-        data: `${this.locationAddress.locationName}
-        ${this.address}`,
+        data: this.nameAndAddress,
       },
     ];
   }
@@ -72,20 +71,24 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
       },
       {
         label: 'Address',
-        data: this.address,
+        data: this.nameAndAddress,
       },
     ];
   }
 
-  protected setAddress(): void {
-    this.address = [
+  public setAddress(): void {
+    const workplaceAddress = [
       this.locationAddress.addressLine1,
       this.locationAddress.addressLine2,
       this.locationAddress.addressLine3,
       this.locationAddress.townCity,
       this.locationAddress.county,
       this.locationAddress.postalCode,
-    ].join('\n');
+    ];
+    if (this.workplace.isCQC && this.locationAddress.locationId) {
+      workplaceAddress.unshift(this.locationAddress.locationName);
+    }
+    this.nameAndAddress = workplaceAddress.filter((x) => x).join('<br>');
   }
 
   ngOnDestroy() {
