@@ -142,7 +142,7 @@ const routes: Routes = [
   {
     path: 'confirm-details',
     component: ConfirmDetailsComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Confirm Details' },
   },
   {

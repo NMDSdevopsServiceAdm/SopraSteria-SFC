@@ -176,10 +176,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected navigateToNextPage(): void {
-    // Add Feature flag here
-    this.router.navigate([`${this.flow}/confirm-details`]);
-  }
+  protected navigateToNextPage(): void {}
 
   get displayIntro() {
     return true;
