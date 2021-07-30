@@ -6,23 +6,30 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-create-security-question',
   templateUrl: './create-security-question.component.html',
 })
 export class SecurityQuestionComponent extends SecurityQuestionDirective {
+  public createAccountNewDesign: boolean;
+
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+    });
     this.return = this.registrationService.returnTo$.value;
     this.setBackLink();
     this.setupSubscription();
@@ -44,13 +51,21 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   }
 
   protected save(): void {
-    // this.router.navigate(['/registration/confirm-account-details']).then(() => {
-    this.router.navigate(['/registration/confirm-details']).then(() => {
-      this.registrationService.securityDetails$.next({
-        securityQuestion: this.getSecurityQuestion.value,
-        securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
+    if (this.createAccountNewDesign) {
+      this.router.navigate(['/registration/confirm-details']).then(() => {
+        this.registrationService.securityDetails$.next({
+          securityQuestion: this.getSecurityQuestion.value,
+          securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
+        });
       });
-    });
+    } else {
+      this.router.navigate(['/registration/confirm-account-details']).then(() => {
+        this.registrationService.securityDetails$.next({
+          securityQuestion: this.getSecurityQuestion.value,
+          securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
+        });
+      });
+    }
   }
 
   protected setCallToActionLabel(): void {
