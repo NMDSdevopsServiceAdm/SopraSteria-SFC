@@ -64,28 +64,35 @@ describe('ConfirmDetailsComponent', () => {
   });
 
   it('should have the title Confirm your details before you submit them', async () => {
-    const { fixture, queryByText } = await setup();
-
-    fixture.detectChanges();
+    const { component, fixture, queryByText } = await setup();
     const expectedTitle = 'Confirm your details before you submit them';
+
+    component.createAccountNewDesign = true;
+    fixture.detectChanges();
+
     expect(queryByText(expectedTitle, { exact: false })).toBeTruthy();
   });
 
   it('should display the text to agree to terms and conditions', async () => {
-    const { getAllByText } = await setup();
-
+    const { component, fixture, getAllByText } = await setup();
     const expectedText = 'I agree to the ';
     const termsAndConditionsLink = 'terms and conditions';
+
+    component.createAccountNewDesign = true;
+    fixture.detectChanges();
 
     expect(getAllByText(expectedText, { exact: false })).toBeTruthy();
     expect(getAllByText(termsAndConditionsLink, { exact: false })).toBeTruthy();
   });
 
   it('should show an error message when pressing submit without agreeing to terms and conditions', async () => {
-    const { fixture, getByText, getAllByText } = await setup();
+    const { component, fixture, getByText, getAllByText } = await setup();
     const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
-    const submitButton = getByText('Submit details');
 
+    component.createAccountNewDesign = true;
+    fixture.detectChanges();
+
+    const submitButton = getByText('Submit details');
     fireEvent.click(submitButton);
 
     expect(fixture.componentInstance.form.invalid).toBeTruthy();
@@ -94,6 +101,10 @@ describe('ConfirmDetailsComponent', () => {
 
   it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
     const { component, fixture, getByText, getByTestId } = await setup();
+
+    component.createAccountNewDesign = true;
+    fixture.detectChanges();
+
     const termsAndConditionsCheckbox = getByTestId('checkbox');
     const submitButton = getByText('Submit details');
     const saveSpy = spyOn(component, 'save').and.returnValue(null);
@@ -106,10 +117,12 @@ describe('ConfirmDetailsComponent', () => {
   });
 
   it('should set the back link to `create-security-question`', async () => {
-    const { component } = await setup();
+    const { component, fixture } = await setup();
     const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+    component.createAccountNewDesign = true;
     component.setBackLink();
+    fixture.detectChanges();
 
     expect(backLinkSpy).toHaveBeenCalledWith({
       url: ['registration', 'create-security-question'],

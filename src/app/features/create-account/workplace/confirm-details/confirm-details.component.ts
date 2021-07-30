@@ -14,6 +14,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
@@ -38,6 +39,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public userDetails: UserDetails;
   protected actionType: string;
   public isCqcRegulated: boolean;
+  public createAccountNewDesign: boolean;
 
   constructor(
     public registrationService: RegistrationService,
@@ -46,9 +48,13 @@ export class ConfirmDetailsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private router: Router,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+    });
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupSubscriptions();
