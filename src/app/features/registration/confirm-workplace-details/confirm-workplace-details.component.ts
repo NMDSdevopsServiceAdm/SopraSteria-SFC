@@ -28,4 +28,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     this.locationAddress = this.registrationService.selectedLocationAddress$.value;
     this.workplace = this.registrationService.selectedWorkplaceService$.value;
   }
+
+  public setBackLink(): void {
+    if (!this.createAccountNewDesign) {
+      this.backService.setBackLink({ url: [this.flow, 'select-main-service'] });
+    }
+  }
 }

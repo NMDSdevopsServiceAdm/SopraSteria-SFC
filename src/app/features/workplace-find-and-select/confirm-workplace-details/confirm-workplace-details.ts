@@ -22,6 +22,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
+      this.setBackLink();
     });
     this.init();
     this.setAddress();
@@ -31,6 +32,8 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   protected init(): void {}
 
   protected getWorkplaceData(): void {}
+
+  public setBackLink(): void {}
 
   public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {

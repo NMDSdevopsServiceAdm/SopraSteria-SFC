@@ -34,7 +34,6 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   protected init(): void {
     this.flow = '/add-workplace';
     this.getWorkplaceData();
-    this.setBackLink();
   }
 
   protected getWorkplaceData(): void {
