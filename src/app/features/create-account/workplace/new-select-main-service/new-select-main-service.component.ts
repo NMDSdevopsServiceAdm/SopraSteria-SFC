@@ -97,6 +97,6 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
       }
     }
 
-    this.backService.setBackLink({ url: [`${this.flow}/${route}`] });
+    this.backService.setBackLink({ url: [this.flow, route] });
   }
 }

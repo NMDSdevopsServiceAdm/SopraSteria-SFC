@@ -190,7 +190,7 @@ describe('NewSelectMainServiceComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/workplace-name-address'],
+        url: ['registration', 'workplace-name-address'],
       });
     });
 
@@ -214,7 +214,7 @@ describe('NewSelectMainServiceComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/your-workplace'],
+        url: ['registration', 'your-workplace'],
       });
     });
 
@@ -246,22 +246,7 @@ describe('NewSelectMainServiceComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/select-workplace'],
-      });
-    });
-
-    it('should set back link to workplace-name-address when is regulated and address entered manually', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = true;
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/workplace-name-address'],
+        url: ['registration', 'select-workplace'],
       });
     });
 
@@ -277,7 +262,7 @@ describe('NewSelectMainServiceComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/workplace-address-not-found'],
+        url: ['registration', 'workplace-address-not-found'],
       });
     });
 
@@ -302,7 +287,7 @@ describe('NewSelectMainServiceComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/workplace-name-address'],
+        url: ['registration', 'workplace-name-address'],
       });
     });
 
@@ -317,7 +302,7 @@ describe('NewSelectMainServiceComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/select-workplace-address'],
+        url: ['registration', 'select-workplace-address'],
       });
     });
   });
