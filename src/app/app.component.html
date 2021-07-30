@@ -2,7 +2,10 @@
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
   <app-header></app-header>
 
-  <div id="content" class="govuk-width-container">
+  <div
+    id="content"
+    [class]="{ 'govuk-width-container': !isAdminSection, 'asc-width-container-admin-section': isAdminSection }"
+  >
     <app-phase-banner></app-phase-banner>
     <app-back-link></app-back-link>
     <app-breadcrumbs></app-breadcrumbs>
