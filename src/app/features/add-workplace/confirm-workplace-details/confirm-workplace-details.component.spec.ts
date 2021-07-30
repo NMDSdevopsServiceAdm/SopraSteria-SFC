@@ -140,4 +140,34 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     expect(getByText(expectedMainService, { exact: false })).toBeTruthy();
   });
+
+  describe('Back link', () => {
+    it('should set the back link to `new-select-main-service` when feature flag is on', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'new-select-main-service'],
+      });
+    });
+  });
+
+  it('should set the back link to `select-main-service` when feature flag is off', async () => {
+    const { component, fixture } = await setup();
+    const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+    component.createAccountNewDesign = false;
+    fixture.detectChanges();
+
+    component.setBackLink();
+
+    expect(backLinkSpy).toHaveBeenCalledWith({
+      url: ['/add-workplace', 'select-main-service'],
+    });
+  });
 });

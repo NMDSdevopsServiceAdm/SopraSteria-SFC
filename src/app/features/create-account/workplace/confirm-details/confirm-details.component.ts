@@ -10,6 +10,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
@@ -40,6 +41,7 @@ export class ConfirmDetailsComponent implements OnInit {
 
   constructor(
     public registrationService: RegistrationService,
+    public backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
     private userService: UserService,
@@ -50,10 +52,15 @@ export class ConfirmDetailsComponent implements OnInit {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupSubscriptions();
+    this.setBackLink();
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: ['registration', 'create-security-question'] });
   }
 
   private setupSubscriptions(): void {

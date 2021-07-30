@@ -104,4 +104,15 @@ describe('ConfirmDetailsComponent', () => {
     expect(fixture.componentInstance.form.invalid).toBeFalsy();
     expect(saveSpy).toHaveBeenCalled();
   });
+
+  it('should set the back link to `create-security-question`', async () => {
+    const { component } = await setup();
+    const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+    component.setBackLink();
+
+    expect(backLinkSpy).toHaveBeenCalledWith({
+      url: ['registration', 'create-security-question'],
+    });
+  });
 });

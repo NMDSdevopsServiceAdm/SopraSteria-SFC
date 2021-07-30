@@ -26,17 +26,11 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
     this.init();
     this.setAddress();
     this.setWorkplaceDetails();
-    this.setBackLink();
   }
 
   protected init(): void {}
 
   protected getWorkplaceData(): void {}
-
-  public setBackLink(): void {
-    const backLinkUrl = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
-    this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
-  }
 
   public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {

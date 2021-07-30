@@ -34,11 +34,17 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   protected init(): void {
     this.flow = '/add-workplace';
     this.getWorkplaceData();
+    this.setBackLink();
   }
 
   protected getWorkplaceData(): void {
     this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
     this.workplace = this.workplaceService.selectedWorkplaceService$.value;
+  }
+
+  public setBackLink(): void {
+    const backLinkUrl = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+    this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
   }
 
   public continue(): void {
