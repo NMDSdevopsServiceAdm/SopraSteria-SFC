@@ -11,7 +11,6 @@ import {
   ConfirmWorkplaceDetails,
 } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-workplace-details',
@@ -26,7 +25,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     protected establishmentService: EstablishmentService,
     protected router: Router,
     protected workplaceService: WorkplaceService,
-    protected backService: BackService,
+    public backService: BackService,
     protected featureFlagsService: FeatureFlagsService,
   ) {
     super(backService, featureFlagsService);
@@ -38,15 +37,8 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   }
 
   protected getWorkplaceData(): void {
-    this.subscriptions.add(
-      combineLatest([
-        this.workplaceService.selectedLocationAddress$,
-        this.workplaceService.selectedWorkplaceService$,
-      ]).subscribe(([locationAddress, workplace]) => {
-        this.locationAddress = locationAddress;
-        this.workplace = workplace;
-      }),
-    );
+    this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
+    this.workplace = this.workplaceService.selectedWorkplaceService$.value;
   }
 
   public continue(): void {

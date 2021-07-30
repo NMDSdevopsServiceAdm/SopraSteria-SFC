@@ -19,11 +19,10 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
 
   constructor(protected backService: BackService, protected featureFlagsService: FeatureFlagsService) {}
 
-  async ngOnInit(): Promise<void> {
-    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
-      'createAccountNewDesign',
-      false,
-    );
+  ngOnInit(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+    });
     this.init();
     this.setAddress();
     this.setWorkplaceDetails();

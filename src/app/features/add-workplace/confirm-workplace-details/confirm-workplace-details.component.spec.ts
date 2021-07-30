@@ -7,20 +7,20 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { RegistrationModule } from '@features/registration/registration.module';
+import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
-xdescribe('ConfirmWorkplaceDetailsComponent', () => {
+describe('ConfirmWorkplaceDetailsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, queryByText } = await render(ConfirmWorkplaceDetailsComponent, {
       imports: [
         SharedModule,
-        RegistrationModule,
+        AddWorkplaceModule,
         RouterTestingModule,
         HttpClientTestingModule,
         FormsModule,
@@ -29,7 +29,7 @@ xdescribe('ConfirmWorkplaceDetailsComponent', () => {
       providers: [
         {
           provide: WorkplaceService,
-          useClass: MockWorkplaceService,
+          useClass: MockWorkplaceServiceWithMainService,
         },
         {
           provide: EstablishmentService,
@@ -64,6 +64,9 @@ xdescribe('ConfirmWorkplaceDetailsComponent', () => {
     const locationIdField = 'CQC location ID';
     const nameAndAddressField = 'Name and address';
 
+    component.workplace.isCQC = true;
+    component.locationAddress.locationId = '123';
+
     component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
@@ -72,7 +75,7 @@ xdescribe('ConfirmWorkplaceDetailsComponent', () => {
     expect(getByText(nameAndAddressField)).toBeTruthy();
   });
 
-  it('should show "Name" field and "Address" field when it is CQC regulated without a location ID', async () => {
+  it('should show "Name" field and "Address" field when it is not CQC regulated and does not have a location ID', async () => {
     const { component, fixture, getByText } = await setup();
     const nameField = 'Name';
     const addressField = 'Address';
@@ -86,34 +89,26 @@ xdescribe('ConfirmWorkplaceDetailsComponent', () => {
 
     expect(getByText(nameField)).toBeTruthy();
     expect(getByText(addressField)).toBeTruthy();
-    expect(component.workplaceName).toBeFalsy();
   });
 
-  it('should show "Name" and "Address" field separately when it is not CQC regulated', async () => {
+  it('should show the location ID when it is CQC regulated with a location ID', async () => {
     const { component, fixture, getByText } = await setup();
-    const nameField = 'Name';
-    const addressField = 'Address';
+    const locationId = '123';
 
-    component.workplace.isCQC = false;
+    component.workplace.isCQC = true;
+    component.locationAddress.locationId = '123';
+
     component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
-    expect(getByText(nameField)).toBeTruthy();
-    expect(getByText(addressField)).toBeTruthy();
-    expect(component.workplaceName).toEqual([
-      {
-        label: 'Name',
-        data: 'Workplace Name',
-        route: { url: ['/'] },
-      },
-    ]);
+    expect(getByText(locationId)).toBeTruthy();
   });
 
   it('should show workplace details', async () => {
     const { component, fixture, getByText } = await setup();
 
-    const expectedLocationName = 'Workplace Name';
+    const expectedLocationName = 'Test Care Home';
     const expectedAddressLine1 = '1 Street';
     const expectedAddressLine2 = 'Second Line';
     const expectedAddressLine3 = 'Third Line';
@@ -137,7 +132,7 @@ xdescribe('ConfirmWorkplaceDetailsComponent', () => {
   it('should show main service details', async () => {
     const { component, fixture, getByText } = await setup();
 
-    const expectedMainService = 'Name of service';
+    const expectedMainService = 'Shared lives';
 
     component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
