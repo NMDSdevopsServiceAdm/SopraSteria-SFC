@@ -25,6 +25,9 @@ const routes: Routes = [
     data: {
       title: 'Local Authorities Return',
     },
+    resolve: {
+      dates: GetDatesResolver,
+    },
   },
   {
     path: 'local-authorities-return/set-dates',
