@@ -305,7 +305,12 @@
         "
         [explanationText]="' average weekly working hours'"
         [link]="getRoutePath('average-weekly-hours')"
-        [hasData]="!!worker.weeklyHoursAverage"
+        [hasData]="
+          !(
+            worker.weeklyHoursAverage === null ||
+            (worker.weeklyHoursAverage?.value == null && worker.weeklyHoursAverage?.hours == null)
+          )
+        "
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
