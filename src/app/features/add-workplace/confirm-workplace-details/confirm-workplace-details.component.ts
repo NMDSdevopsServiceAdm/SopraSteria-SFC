@@ -9,7 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
   ConfirmWorkplaceDetailsDirective,
-} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details';
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({

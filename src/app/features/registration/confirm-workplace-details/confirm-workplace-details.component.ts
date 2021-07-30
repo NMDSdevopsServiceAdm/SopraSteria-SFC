@@ -3,7 +3,7 @@ import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 import {
   ConfirmWorkplaceDetailsDirective,
-} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details';
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
