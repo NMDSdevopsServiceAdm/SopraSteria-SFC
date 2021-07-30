@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 import {
-  ConfirmWorkplaceDetails,
-} from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-confirm-workplace-details',
   templateUrl: './confirm-workplace-details.component.html',
 })
-export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
+export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
   constructor(
     protected registrationService: RegistrationService,
     protected backService: BackService,

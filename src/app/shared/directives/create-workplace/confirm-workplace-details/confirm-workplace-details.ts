@@ -7,7 +7,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
+export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public flow: string;
   public locationAddress: LocationAddress;
   public workplace: Service;
@@ -29,10 +29,13 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
     this.setWorkplaceDetails();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected getWorkplaceData(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setBackLink(): void {}
 
   public setWorkplaceDetails(): void {

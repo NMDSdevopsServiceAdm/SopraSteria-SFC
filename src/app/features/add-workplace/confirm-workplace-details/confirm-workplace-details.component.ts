@@ -8,15 +8,15 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
-  ConfirmWorkplaceDetails,
-} from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-confirm-workplace-details',
   templateUrl: './confirm-workplace-details.component.html',
 })
-export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
+export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
 
