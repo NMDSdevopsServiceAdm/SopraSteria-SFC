@@ -11,18 +11,19 @@
     </dt>
     <ng-container *ngIf="item.label === 'Password'; else nonPassword">
       <dd class="govuk-summary-list__value">
-        <ng-container *ngIf="this.showPassword; else hidePassword">
-          {{ item.data }}
-        </ng-container>
-        <ng-template #hidePassword> ****** </ng-template>
-        <a
-          class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-5"
-          href="#"
-          role="button"
-          (click)="togglePassword($event)"
-          ><ng-container *ngIf="showPassword; else showText">Hide</ng-container
-          ><ng-template #showText>Show</ng-template> password</a
-        >
+        <div class="govuk-!-display-inline-block govuk-!-width-one-third">
+          {{ showPassword ? item.data : '******' }}
+        </div>
+        <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
+          <a
+            class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-5"
+            href="#"
+            role="button"
+            (click)="togglePassword($event)"
+            ><ng-container *ngIf="showPassword; else showText">Hide</ng-container
+            ><ng-template #showText>Show</ng-template> password</a
+          >
+        </div>
       </dd>
     </ng-container>
     <ng-template #nonPassword>
