@@ -11,14 +11,14 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true,
           },
-          EstablishmentIDFK: {
+          EstablishmentFK: {
             type: Sequelize.INTEGER,
             references: {
               model: {
                 tableName: 'Establishment',
                 schema: 'cqc',
               },
-              key: 'EstablishemntID',
+              key: 'EstablishmentID',
             },
           },
           LocalAuthorityName: {
