@@ -10,7 +10,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
@@ -194,6 +194,62 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     expect(backLinkSpy).toHaveBeenCalledWith({
       url: ['/add-workplace', 'select-main-service'],
+    });
+  });
+
+  describe('Change links', () => {
+    it('should always display two change links', async () => {
+      const { getAllByText } = await setup();
+
+      const changeLinks = getAllByText('Change');
+
+      expect(changeLinks.length).toEqual(2);
+    });
+
+    it('should set the change link for location ID to `find-workplace` when CQC regulated with location ID', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.workplace.isCQC = true;
+      component.locationAddress.locationId = '123';
+      component.createAccountNewDesign = true;
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const changeWorkplaceAddressLink = getAllByText('Change')[0];
+      console.log(changeWorkplaceAddressLink);
+      fireEvent.click(changeWorkplaceAddressLink);
+
+      expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+    });
+
+    it('should set the change link for workplace address to `workplace-name-address` when location ID is null', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.workplace.isCQC = false;
+      component.locationAddress.locationId = null;
+      component.createAccountNewDesign = true;
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const changeWorkplaceAddressLink = getAllByText('Change')[0];
+      console.log(changeWorkplaceAddressLink);
+      fireEvent.click(changeWorkplaceAddressLink);
+
+      expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
+    });
+
+    it('should set the change link for main service to `select-main-service`', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const changeMainServiceLink = getAllByText('Change')[1];
+      console.log(changeMainServiceLink);
+      fireEvent.click(changeMainServiceLink);
+
+      expect(changeMainServiceLink.getAttribute('href')).toEqual('/add-workplace/new-select-main-service');
     });
   });
 });

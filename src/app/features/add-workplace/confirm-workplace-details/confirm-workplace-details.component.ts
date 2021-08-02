@@ -70,4 +70,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
         ),
     );
   }
+
+  public onSetReturn(): void {
+    this.workplaceService.setReturnTo({
+      url: [`${this.flow}/confirm-details`],
+    });
+  }
 }

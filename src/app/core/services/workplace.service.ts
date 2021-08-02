@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
+import { URLStructure } from '@core/model/url.model';
 import { AddWorkplaceRequest, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -16,6 +17,7 @@ export class WorkplaceService extends WorkplaceInterfaceService {
     super();
   }
 
+  public returnTo$ = new BehaviorSubject<URLStructure>(null);
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
   public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public serverErrorsMap: ErrorDefinition[] = [
@@ -50,5 +52,9 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       postalCode: locationAddress.postalCode,
       townCity: locationAddress.townCity,
     };
+  }
+
+  public setReturnTo(returnTo: URLStructure): void {
+    this.returnTo$.next(returnTo);
   }
 }
