@@ -78,6 +78,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
+        this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
         this.setCurrentLocationToSelectedAddress();
         this.router.navigate([this.flow, 'new-select-main-service']);
       } else {

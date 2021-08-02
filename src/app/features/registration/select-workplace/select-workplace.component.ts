@@ -38,6 +38,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected save(): void {
+    this.registrationService.manuallyEnteredWorkplace$.next(false);
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
     this.router.navigate([this.flow, this.nextRoute]);
   }
