@@ -10,6 +10,7 @@ export class SummaryListComponent {
   @Input() public topBorder?: boolean;
   @Input() public wrapBorder?: boolean;
   @Input() public canNavigate?: boolean;
+  @Input() public displayShowPasswordToggle = false;
   @Output() public setReturn = new EventEmitter();
   public showPassword: boolean;
 

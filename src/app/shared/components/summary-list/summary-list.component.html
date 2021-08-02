@@ -9,7 +9,7 @@
     <dt class="govuk-summary-list__key">
       {{ item.label }}
     </dt>
-    <ng-container *ngIf="item.label === 'Password'; else nonPassword">
+    <ng-container *ngIf="item.label === 'Password' && displayShowPasswordToggle; else nonPassword">
       <dd class="govuk-summary-list__value">
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           {{ showPassword ? item.data : '******' }}

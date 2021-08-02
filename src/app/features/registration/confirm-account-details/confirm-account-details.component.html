@@ -16,7 +16,12 @@
       <h1 class="govuk-heading-l">Confirm your account details</h1>
     </ng-template>
     <app-summary-list [topBorder]="true" [summaryList]="userInfo" (setReturn)="onSetReturn()"></app-summary-list>
-    <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
+    <app-summary-list
+      [topBorder]="true"
+      [summaryList]="loginInfo"
+      [displayShowPasswordToggle]="true"
+      (setReturn)="onSetReturn()"
+    ></app-summary-list>
     <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo" (setReturn)="onSetReturn()"></app-summary-list>
 
     <ng-container *ngIf="!createAccountNewDesign">
