@@ -126,10 +126,11 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-address');
     });
 
-    it('should navigate to select-main-service url in registration flow when workplace selected and Continue clicked', async () => {
+    it('should navigate to select-main-service url in registration flow when workplace with name selected and Continue clicked', async () => {
       const { component, spy, getByText, fixture } = await setup();
       const form = component.form;
       const continueButton = getByText('Continue');
+      component.selectedLocationAddress.locationName = 'Name';
 
       form.controls['address'].setValue('1');
       form.controls['address'].markAsDirty();
@@ -139,6 +140,22 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(form.valid).toBeTruthy();
 
       expect(spy).toHaveBeenCalledWith(['/registration/new-select-main-service']);
+    });
+
+    it('should navigate to workplace-name url in registration flow when workplace without name selected and Continue clicked', async () => {
+      const { component, spy, getByText, fixture } = await setup();
+      const form = component.form;
+      const continueButton = getByText('Continue');
+      component.selectedLocationAddress.locationName = null;
+
+      form.controls['address'].setValue('1');
+      form.controls['address'].markAsDirty();
+      fixture.detectChanges();
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+
+      expect(spy).toHaveBeenCalledWith(['/registration/workplace-name']);
     });
   });
 });
