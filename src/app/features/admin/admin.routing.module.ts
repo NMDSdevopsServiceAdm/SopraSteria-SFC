@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
+import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { SearchComponent } from './search/search.component';
 
@@ -37,6 +38,13 @@ const routes: Routes = [
     },
     resolve: {
       dates: GetDatesResolver,
+    },
+  },
+  {
+    path: 'local-authorities-return/monitor',
+    component: MonitorComponent,
+    data: {
+      title: 'Monitor Returns',
     },
   },
 ];

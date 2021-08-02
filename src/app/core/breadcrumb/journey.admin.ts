@@ -14,6 +14,10 @@ export const adminJourney: JourneyRoute = {
               path: '/sfcadmin/local-authorities-return/set-dates',
               title: 'Set start and end date',
             },
+            {
+              path: '/sfcadmin/local-authorities-return/monitor',
+              title: 'Monitor returns',
+            },
           ],
         },
       ],
