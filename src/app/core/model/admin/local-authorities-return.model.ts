@@ -6,4 +6,5 @@ export interface SetDates {
 export interface Area {
   letter: string;
   name: string;
+  open: boolean;
 }
