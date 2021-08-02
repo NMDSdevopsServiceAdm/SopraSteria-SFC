@@ -28,7 +28,6 @@ module.exports = {
           LastYear: {
             type: Sequelize.INTEGER,
             allowNull: false,
-            defaultValue: 0,
           },
           ThisYear: {
             type: Sequelize.INTEGER,
