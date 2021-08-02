@@ -162,17 +162,45 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       expect(changeLinks.length).toEqual(2);
     });
 
-    it('should set the change link for workplace address to `find-your-workplace` when CQC regulated with location ID', async () => {
+    it('should set the change link for location ID to `find-workplace` when CQC regulated with location ID', async () => {
       const { component, fixture, getAllByText } = await setup();
 
+      component.workplace.isCQC = true;
       component.locationAddress.locationId = '123';
       component.createAccountNewDesign = true;
+      component.setWorkplaceDetails();
       fixture.detectChanges();
 
       const changeWorkplaceAddressLink = getAllByText('Change')[0];
       fireEvent.click(changeWorkplaceAddressLink);
 
       expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/registration/find-workplace');
+    });
+
+    it('should set the change link for workplace address to `workplace-name-address` when location ID is null', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.locationAddress.locationId = null;
+      component.createAccountNewDesign = true;
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const changeWorkplaceAddressLink = getAllByText('Change')[0];
+      fireEvent.click(changeWorkplaceAddressLink);
+
+      expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/registration/workplace-name-address');
+    });
+
+    it('should set the change link for main service to `select-main-service`', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const changeMainServiceLink = getAllByText('Change')[1];
+      fireEvent.click(changeMainServiceLink);
+
+      expect(changeMainServiceLink.getAttribute('href')).toBe('/registration/new-select-main-service');
     });
   });
 });

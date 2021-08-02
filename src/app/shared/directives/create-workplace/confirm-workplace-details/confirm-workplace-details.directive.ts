@@ -49,7 +49,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Main service',
         data: this.workplace.name,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'new-select-main-service'] },
       },
     ];
   }
@@ -73,7 +73,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'workplace-name-address'] },
       },
       {
         label: 'Address',

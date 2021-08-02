@@ -34,4 +34,10 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
       this.backService.setBackLink({ url: [this.flow, 'select-main-service'] });
     }
   }
+
+  public onSetReturn(): void {
+    this.registrationService.setReturnTo({
+      url: [`${this.flow}/confirm-details`],
+    });
+  }
 }
