@@ -10,6 +10,9 @@ import {
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
 import { ConfirmDetailsComponent } from '@features/create-account/workplace/confirm-details/confirm-details.component';
+import {
+  ConfirmWorkplaceDetailsComponent,
+} from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   NewWorkplaceNotFoundComponent,
@@ -23,12 +26,6 @@ import {
 } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
-import {
-  ConfirmAccountDetailsComponent,
-} from '@features/registration/confirm-account-details/confirm-account-details.component';
-import {
-  ConfirmWorkplaceDetailsComponent,
-} from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
