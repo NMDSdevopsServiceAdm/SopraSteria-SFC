@@ -58,7 +58,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`/${this.flow}`, 'new-regulated-by-cqc'] });
+    this.backService.setBackLink({ url: [`/${this.flow}`, 'select-workplace-address'] });
   }
 
   public onSubmit(): void {
