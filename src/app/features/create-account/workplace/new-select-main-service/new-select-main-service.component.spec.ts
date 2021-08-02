@@ -291,7 +291,7 @@ describe('NewSelectMainServiceComponent', () => {
       });
     });
 
-    it('should set back link to workplace-name-address when is not regulated and address was not entered manually', async () => {
+    it('should set back link to select-workplace-address when is not regulated and address was not entered manually', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
