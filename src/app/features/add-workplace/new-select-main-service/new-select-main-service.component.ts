@@ -77,9 +77,11 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   private getCQCRegulatedBackLink(): string {
     if (this.workplaceService.manuallyEnteredWorkplace$.value) {
       return 'workplace-name-address';
-    } else if (this.workplaceService.locationAddresses$.value.length == 1) {
+    }
+    if (this.workplaceService.locationAddresses$.value.length == 1) {
       return 'your-workplace';
-    } else if (this.workplaceService.locationAddresses$.value.length > 1) {
+    }
+    if (this.workplaceService.locationAddresses$.value.length > 1) {
       return 'select-workplace';
     }
   }
