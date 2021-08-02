@@ -67,7 +67,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       this.workplaceInterfaceService.selectedLocationAddress$.next(this.getLocationAddress());
-      this.router.navigate([this.flow, 'find-workplace-address']);
+      this.router.navigate([this.flow, 'new-select-main-service']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
