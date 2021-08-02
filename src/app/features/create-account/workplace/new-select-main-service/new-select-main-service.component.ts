@@ -22,7 +22,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public createAccountNewDesign: boolean;
 
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -37,10 +37,10 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
 
   protected async init(): Promise<void> {
     this.flow = this.route.snapshot.parent.url[0].path;
-    this.setBackLink();
     this.isRegulated = this.registrationService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.setBackLink();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
       false,
@@ -72,6 +72,31 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/your-workplace`] });
+    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
+    this.backService.setBackLink({ url: [this.flow, route] });
+  }
+
+  private getCQCRegulatedBackLink(): string {
+    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+      return 'workplace-name-address';
+    }
+    if (this.registrationService.locationAddresses$.value.length == 1) {
+      return 'your-workplace';
+    }
+    if (this.registrationService.locationAddresses$.value.length > 1) {
+      return 'select-workplace';
+    }
+  }
+
+  private getNonCQCRegulatedBackLink(): string {
+    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+      if (this.registrationService.locationAddresses$.value.length > 0) {
+        return 'workplace-name-address';
+      } else {
+        return 'workplace-address-not-found';
+      }
+    } else {
+      return 'select-workplace-address';
+    }
   }
 }

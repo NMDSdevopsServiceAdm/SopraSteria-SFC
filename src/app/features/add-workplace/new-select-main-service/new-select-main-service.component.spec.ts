@@ -4,16 +4,15 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
+import { AddWorkplaceModule } from '../add-workplace.module';
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
 describe('NewSelectMainServiceComponent', () => {
@@ -23,7 +22,7 @@ describe('NewSelectMainServiceComponent', () => {
       {
         imports: [
           SharedModule,
-          RegistrationModule,
+          AddWorkplaceModule,
           RouterTestingModule,
           HttpClientTestingModule,
           FormsModule,
@@ -60,7 +59,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const registrationService = injector.inject(RegistrationService) as RegistrationService;
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -71,7 +69,6 @@ describe('NewSelectMainServiceComponent', () => {
       fixture,
       component,
       spy,
-      registrationService,
       getAllByText,
       queryByText,
       getByText,
@@ -128,18 +125,6 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeNull();
   });
 
-  it('should set the correct back link to the is this your workplace page in add-workplace flow', async () => {
-    const { component, fixture } = await setup();
-    const backLinkSpy = spyOn(fixture.componentInstance.backService, 'setBackLink');
-
-    component.setBackLink();
-    fixture.detectChanges();
-
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['add-workplace/your-workplace'],
-    });
-  });
-
   it("should see 'Select its main service' when is a parent", async () => {
     const { component, fixture, queryByText } = await setup();
 
@@ -183,5 +168,134 @@ describe('NewSelectMainServiceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+  });
+
+  describe('setBackLink()', () => {
+    it('should set back link to workplace-name-address when is regulated and address entered manually', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.workplaceService.isRegulated$.next(true);
+      component.workplaceService.manuallyEnteredWorkplace$.next(true);
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'workplace-name-address'],
+      });
+    });
+
+    it('should set back link to your-workplace when is regulated and there is one address in locationAddresses in workplace service', async () => {
+      const { component } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.isRegulated = true;
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.locationAddresses$.next([
+        {
+          postalCode: 'ABC 123',
+          addressLine1: '1 Street',
+          county: 'Greater Manchester',
+          locationName: 'Name',
+          townCity: 'Manchester',
+          locationId: '123',
+        },
+      ]);
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'your-workplace'],
+      });
+    });
+
+    it('should set back link to select-workplace when is regulated and there is more than one address in locationAddresses in workplace service', async () => {
+      const { component } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.isRegulated = true;
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.locationAddresses$.next([
+        {
+          postalCode: 'ABC 123',
+          addressLine1: '1 Street',
+          county: 'Greater Manchester',
+          locationName: 'Name',
+          townCity: 'Manchester',
+          locationId: '123',
+        },
+        {
+          postalCode: 'ABC 123',
+          addressLine1: '2 Street',
+          county: 'Greater Manchester',
+          locationName: 'Test Care Home',
+          townCity: 'Manchester',
+          locationId: '12345',
+        },
+      ]);
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'select-workplace'],
+      });
+    });
+
+    it('should set back link to workplace-address-not-found when is not regulated, address entered manually and no addresses stored in workplace service', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.isRegulated = false;
+      component.workplaceService.manuallyEnteredWorkplace$.next(true);
+      component.workplaceService.locationAddresses$.next([]);
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'workplace-address-not-found'],
+      });
+    });
+
+    it('should set back link to workplace-name-address when is not regulated, address entered manually but there are addresses stored in workplace service', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.isRegulated = false;
+      component.workplaceService.manuallyEnteredWorkplace$.next(true);
+      component.workplaceService.locationAddresses$.next([
+        {
+          postalCode: 'ABC 123',
+          addressLine1: '1 Street',
+          county: 'Greater Manchester',
+          locationName: 'Name',
+          townCity: 'Manchester',
+          locationId: '123',
+        },
+      ]);
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'workplace-name-address'],
+      });
+    });
+
+    it('should set back link to select-workplace-address when is not regulated and address was not entered manually', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.isRegulated = false;
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'select-workplace-address'],
+      });
+    });
   });
 });

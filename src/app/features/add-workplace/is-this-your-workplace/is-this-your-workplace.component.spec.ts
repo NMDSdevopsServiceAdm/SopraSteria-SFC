@@ -50,6 +50,7 @@ describe('IsThisYourWorkplaceComponent', () => {
               value: searchMethod,
             },
             selectedLocationAddress$: new BehaviorSubject(null),
+            manuallyEnteredWorkplace$: new BehaviorSubject(null),
           },
         },
         {
