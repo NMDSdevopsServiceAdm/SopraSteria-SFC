@@ -25,7 +25,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       this.setBackLink();
     });
     this.init();
-    this.setAddress();
+    this.setNameAndAddress();
     this.setWorkplaceDetails();
   }
 
@@ -82,7 +82,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     ];
   }
 
-  public setAddress(): void {
+  public setNameAndAddress(): void {
     const workplaceAddress = [
       this.locationAddress.addressLine1,
       this.locationAddress.addressLine2,
@@ -94,7 +94,12 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     if (this.workplace.isCQC && this.locationAddress.locationId) {
       workplaceAddress.unshift(this.locationAddress.locationName);
     }
-    this.nameAndAddress = workplaceAddress.filter((x) => x).join('<br>');
+
+    this.nameAndAddress = this.convertWorkplaceAddressToString(workplaceAddress);
+  }
+
+  private convertWorkplaceAddressToString(workplaceAddress: Array<string>): string {
+    return workplaceAddress.filter((x) => x).join('<br>');
   }
 
   ngOnDestroy() {

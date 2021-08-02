@@ -112,7 +112,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.locationAddress.locationId = '123';
 
     component.createAccountNewDesign = true;
-    component.setAddress();
+    component.setNameAndAddress();
     fixture.detectChanges();
 
     expect(component.nameAndAddress).toContain('Test Care Home');
@@ -125,7 +125,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.locationAddress.locationId = null;
 
     component.createAccountNewDesign = true;
-    component.setAddress();
+    component.setNameAndAddress();
     fixture.detectChanges();
 
     expect(component.nameAndAddress).not.toContain('Test Care Home');
