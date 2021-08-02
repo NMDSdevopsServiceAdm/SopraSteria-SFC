@@ -71,7 +71,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
       if (regulatedByCQC.value === 'yes') {
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
-        this.router.navigate([`/${this.flow}`, 'workplace-name']);
+        this.router.navigate([`/${this.flow}`, 'find-workplace-address']);
       }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
