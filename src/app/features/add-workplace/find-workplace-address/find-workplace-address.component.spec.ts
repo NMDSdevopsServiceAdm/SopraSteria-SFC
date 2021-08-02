@@ -191,7 +191,7 @@ describe('FindWorkplaceComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'workplace-name'],
+        url: ['add-workplace', 'new-regulated-by-cqc'],
       });
     });
   });
