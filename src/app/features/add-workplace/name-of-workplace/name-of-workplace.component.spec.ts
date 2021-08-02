@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -28,6 +30,10 @@ describe('NameOfWorkplaceComponent', () => {
         {
           provide: EstablishmentService,
           useValue: { primaryWorkplace },
+        },
+        {
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -94,6 +100,19 @@ describe('NameOfWorkplaceComponent', () => {
 
       expect(form.valid).toBeTruthy();
       expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
+    });
+
+    it('should set locationName in workplace service when continue button is clicked and a workplace name is given', async () => {
+      const { component } = await setup();
+      const form = component.fixture.componentInstance.form;
+      const continueButton = component.getByText('Continue');
+      const registrationService = component.fixture.componentInstance.workplaceService;
+
+      form.controls['workplaceName'].setValue('Place Name');
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+      expect(registrationService.selectedLocationAddress$.value.locationName).toBe('Place Name');
     });
   });
 
