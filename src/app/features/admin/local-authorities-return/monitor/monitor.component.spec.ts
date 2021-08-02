@@ -8,7 +8,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { MonitorComponent } from './monitor.component';
 
-fdescribe('MonitorComponent', () => {
+describe('MonitorComponent', () => {
   async function setup() {
     const component = await render(MonitorComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
