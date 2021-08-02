@@ -22,30 +22,35 @@ const routes: Routes = [
   },
   {
     path: 'local-authorities-return',
-    component: LocalAuthoritiesReturnComponent,
-    data: {
-      title: 'Local Authorities Return',
-    },
-    resolve: {
-      dates: GetDatesResolver,
-    },
-  },
-  {
-    path: 'local-authorities-return/set-dates',
-    component: SetDatesComponent,
-    data: {
-      title: 'Set Start and End Dates',
-    },
-    resolve: {
-      dates: GetDatesResolver,
-    },
-  },
-  {
-    path: 'local-authorities-return/monitor',
-    component: MonitorComponent,
-    data: {
-      title: 'Monitor Returns',
-    },
+    children: [
+      {
+        path: '',
+        component: LocalAuthoritiesReturnComponent,
+        data: {
+          title: 'Local Authorities Return',
+        },
+        resolve: {
+          dates: GetDatesResolver,
+        },
+      },
+      {
+        path: 'set-dates',
+        component: SetDatesComponent,
+        data: {
+          title: 'Set Start and End Dates',
+        },
+        resolve: {
+          dates: GetDatesResolver,
+        },
+      },
+      {
+        path: 'monitor',
+        component: MonitorComponent,
+        data: {
+          title: 'Monitor Returns',
+        },
+      },
+    ],
   },
 ];
 
