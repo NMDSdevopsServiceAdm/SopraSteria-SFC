@@ -3,6 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import {
+  ConfirmAccountDetailsComponent,
+} from '@features/create-account/user/confirm-account-details/confirm-account-details.component';
+import {
   SecurityQuestionComponent,
 } from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
