@@ -59,7 +59,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'CQC location ID',
         data: this.locationAddress.locationId,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'find-workplace'] },
       },
       {
         label: 'Name and address',

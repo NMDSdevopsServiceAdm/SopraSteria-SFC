@@ -11,7 +11,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
@@ -151,5 +151,28 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     fixture.detectChanges();
 
     expect(getByText(expectedMainService, { exact: false })).toBeTruthy();
+  });
+
+  describe('Change links', () => {
+    it('should always display two change links', async () => {
+      const { getAllByText } = await setup();
+
+      const changeLinks = getAllByText('Change');
+
+      expect(changeLinks.length).toEqual(2);
+    });
+
+    it('should set the change link for workplace address to `find-your-workplace` when CQC regulated with location ID', async () => {
+      const { component, fixture, getAllByText } = await setup();
+
+      component.locationAddress.locationId = '123';
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const changeWorkplaceAddressLink = getAllByText('Change')[0];
+      fireEvent.click(changeWorkplaceAddressLink);
+
+      expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/registration/find-workplace');
+    });
   });
 });
