@@ -99,8 +99,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   ngOnInit() {
-    this.init();
     this.setupForm();
+    this.init();
     this.setupFormErrorsMap();
   }
 
