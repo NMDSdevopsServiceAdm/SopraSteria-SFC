@@ -140,4 +140,41 @@ describe('ConfirmAccountDetailsComponent', () => {
       expect(queryByText(expectedShownPassword)).toBeTruthy();
     });
   });
+
+  describe('Change links', () => {
+    it('should always display three change links', async () => {
+      const { getAllByText } = await setup();
+
+      const changeLinks = getAllByText('Change');
+
+      expect(changeLinks.length).toEqual(3);
+    });
+
+    it('should set the change link for user info to `add-user-details`', async () => {
+      const { getAllByText } = await setup();
+
+      const changeUserDetailsLink = getAllByText('Change')[0];
+      fireEvent.click(changeUserDetailsLink);
+
+      expect(changeUserDetailsLink.getAttribute('href')).toBe('/registration/add-user-details');
+    });
+
+    it('should set the change link for login info to `username-password`', async () => {
+      const { getAllByText } = await setup();
+
+      const changeUserDetailsLink = getAllByText('Change')[1];
+      fireEvent.click(changeUserDetailsLink);
+
+      expect(changeUserDetailsLink.getAttribute('href')).toBe('/registration/username-password');
+    });
+
+    it('should set the change link for security info to `username-password`', async () => {
+      const { getAllByText } = await setup();
+
+      const changeSecurityQuestionLink = getAllByText('Change')[2];
+      fireEvent.click(changeSecurityQuestionLink);
+
+      expect(changeSecurityQuestionLink.getAttribute('href')).toBe('/registration/create-security-question');
+    });
+  });
 });
