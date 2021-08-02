@@ -257,34 +257,4 @@ describe('SetDatesComponent', () => {
       expect(component.getAllByText('Start date must be before end date', { exact: false }).length).toBe(2);
     });
   });
-
-  describe('formatDate', () => {
-    it('should return a date', async () => {
-      const { component } = await setup();
-
-      const date = component.fixture.componentInstance.formatDate({ year: 2020, month: 12, day: 2 });
-
-      const expectDate = new Date('2020-12-02');
-
-      expect(date).toEqual(expectDate);
-    });
-  });
-
-  describe('formatSingleDigit', () => {
-    it('should a string of number', async () => {
-      const { component } = await setup();
-
-      const formatSingleDigit = component.fixture.componentInstance.formatSingleDigit(10);
-
-      expect(formatSingleDigit).toEqual('10');
-    });
-
-    it('should a string of number prefixed with a 0', async () => {
-      const { component } = await setup();
-
-      const formatSingleDigit = component.fixture.componentInstance.formatSingleDigit(9);
-
-      expect(formatSingleDigit).toEqual('09');
-    });
-  });
 });

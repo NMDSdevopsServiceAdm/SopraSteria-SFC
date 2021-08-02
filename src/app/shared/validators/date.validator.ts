@@ -1,5 +1,6 @@
 import { FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { FormatUtil } from '@core/utils/format-util';
 import * as moment from 'moment';
 
 function isEmptyInputValue(value: any): boolean {
@@ -35,8 +36,11 @@ export abstract class DateValidator {
     };
   }
 
-  static beforeStartDate(comparisonDate: Date, before = true): ValidatorFn {
+  static beforeStartDate(control: string, before = true): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
+      const formControlValue = formGroup.parent.get(control).value;
+      const comparisonDate = FormatUtil.formatDate(formControlValue);
+
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {

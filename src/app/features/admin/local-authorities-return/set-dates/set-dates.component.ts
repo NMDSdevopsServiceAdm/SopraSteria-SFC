@@ -9,6 +9,7 @@ import {
 } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormatUtil } from '@core/utils/format-util';
 import { DateValidator } from '@shared/validators/date.validator';
 
 @Component({
@@ -54,7 +55,7 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
     const validators = (field: string, before: boolean) => [
       DateValidator.required(),
       DateValidator.dateValid(),
-      DateValidator.beforeStartDate(this.form.get(field).value, before),
+      DateValidator.beforeStartDate(field, before),
     ];
 
     this.form.get('laReturnStartDate').setValidators(validators('laReturnEndDate', false));
@@ -101,16 +102,6 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public formatSingleDigit(value: number): string {
-    return String(value < 10 ? `0${value}` : value);
-  }
-
-  public formatDate(date: { year: number; month: number; day: number }): Date {
-    return new Date(
-      `${this.formatSingleDigit(date.year)}-${this.formatSingleDigit(date.month)}-${this.formatSingleDigit(date.day)}`,
-    );
-  }
-
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -123,8 +114,8 @@ export class SetDatesComponent implements OnInit, AfterViewInit {
       const endDate = this.form.get('laReturnEndDate').value;
 
       const laReturnDates: SetDates = {
-        laReturnStartDate: this.formatDate(startDate),
-        laReturnEndDate: this.formatDate(endDate),
+        laReturnStartDate: FormatUtil.formatDate(startDate),
+        laReturnEndDate: FormatUtil.formatDate(endDate),
       };
       this.localAuthoritiesReturnService
         .setDates(laReturnDates)
