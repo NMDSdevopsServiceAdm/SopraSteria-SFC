@@ -7,15 +7,16 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
 })
-export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
-  protected actionType = 'Registration';
+export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
+  public createAccountNewDesign: boolean;
 
   constructor(
     private backService: BackService,
@@ -24,17 +25,23 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     private userService: UserService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     super(errorSummaryService, formBuilder);
   }
 
-  protected init() {
+  protected async init() {
     this.setupSubscriptions();
     this.setBackLink();
     this.subscriptions.add(
       this.registrationService.isCqcRegulated$.subscribe((value) => {
         this.slectedCqcValue = value;
       }),
+    );
+
+    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
+      'createAccountNewDesign',
+      false,
     );
   }
 
@@ -86,7 +93,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       },
       {
         label: 'Password',
-        data: '******',
+        data: this.loginCredentials.password,
       },
     ];
 

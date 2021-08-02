@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -12,13 +12,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class ConfirmAccountDetails implements OnInit, OnDestroy, AfterViewInit {
+export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   protected formErrorsMap: Array<ErrorDetails>;
   protected locationAddress: LocationAddress;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected service: Service;
+  protected actionType: string;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
@@ -28,7 +29,6 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy, AfterViewInit {
   public serverError: string;
   public submitted = false;
   public userDetails: UserDetails;
-  protected actionType: string;
   public slectedCqcValue: boolean;
 
   constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}

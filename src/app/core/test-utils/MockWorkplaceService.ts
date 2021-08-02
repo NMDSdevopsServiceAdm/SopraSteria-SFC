@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
-import { ServiceGroup } from '@core/model/services.model';
+import { Service, ServiceGroup } from '@core/model/services.model';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
@@ -28,8 +28,10 @@ export class MockWorkplaceService extends WorkplaceService {
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject({
     postalCode: 'ABC 123',
     addressLine1: '1 Street',
+    addressLine2: 'Second Line',
+    addressLine3: 'Third Line',
     county: 'Greater Manchester',
-    locationName: 'Name',
+    locationName: 'Test Care Home',
     townCity: 'Manchester',
     locationId: '123',
   });
@@ -48,4 +50,13 @@ export class MockWorkplaceService extends WorkplaceService {
       },
     ]);
   }
+}
+
+@Injectable()
+export class MockWorkplaceServiceWithMainService extends MockWorkplaceService {
+  public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject({
+    id: 1,
+    name: 'Shared lives',
+    isCqc: true,
+  });
 }
