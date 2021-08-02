@@ -35,10 +35,10 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
 
   protected async init(): Promise<void> {
     this.flow = 'add-workplace';
-    this.setBackLink();
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.setBackLink();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
       false,
@@ -70,15 +70,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   public setBackLink(): void {
-    let route: string;
-
-    if (this.isRegulated) {
-      route = this.getCQCRegulatedBackLink();
-    }
-    if (!this.isRegulated) {
-      route = this.getNonCQCRegulatedBackLink();
-    }
-
+    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
     this.backService.setBackLink({ url: [this.flow, route] });
   }
 
