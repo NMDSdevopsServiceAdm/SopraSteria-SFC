@@ -4,13 +4,22 @@
   </div>
   <div class="govuk-grid-column-one-third govuk-util__align-right">
     <p>
-      <a role="button" draggable="false" href="openAll" (click)="toggleAll($event)"> Open all </a>
+      <a role="button" draggable="false" href="openAll" (click)="toggleAll($event)">
+        <ng-container *ngIf="!allOpen; else close">Open</ng-container>
+        <ng-template #close>Close</ng-template>
+        all
+      </a>
     </p>
   </div>
 </div>
 <div class="govuk-accordion" data-module="govuk-accordion">
-  <div class="govuk-accordion__section" *ngFor="let area of areas; let i = index">
-    <div class="govuk-accordion__section-header">
+  <div
+    class="govuk-accordion__section"
+    *ngFor="let area of areas; let i = index"
+    [class]="{ 'govuk-accordion__section--expanded': area.open }"
+    [attr.data-testid]="'accordian-' + i"
+  >
+    <div class="govuk-accordion__section-header" (click)="area.open = !area.open">
       <h2 class="govuk-accordion__section-heading">
         <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + i">
           {{ area.letter }} - {{ area.name }}
@@ -23,7 +32,29 @@
       [id]="'accordion-default-content-' + i"
       class="govuk-accordion__section-content"
       [aria-labelledby]="'accordion-default-heading-' + i"
-    ></div>
+      [attr.data-testid]="'accordian-drop-' + i"
+    >
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Local authority</th>
+            <th scope="col" class="govuk-table__header">Workers</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+            <th scope="col" class="govuk-table__header">Notes</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              <a href="#">Darlington {{ i }}</a>
+            </td>
+            <td class="govuk-table__cell">None added</td>
+            <td class="govuk-table__cell">Not updated</td>
+            <td class="govuk-table__cell">Notes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
