@@ -60,8 +60,12 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
   }
 
-  protected setNextRoute(): void {
-    this.nextRoute = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+  public setNextRoute(): void {
+    if (this.createAccountNewDesign) {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    } else {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+    }
   }
 
   protected setupForm(): void {
