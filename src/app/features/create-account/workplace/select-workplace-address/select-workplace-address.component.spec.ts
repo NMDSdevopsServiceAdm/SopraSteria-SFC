@@ -108,7 +108,6 @@ describe('SelectWorkplaceAddressComponent', () => {
     it('should update selectedLocationAddress$ in workplace service to have currently selected address', async () => {
       const { component } = await setup();
 
-      // address in first index of locationAddresses with location name changed to current name in selectedLocationAddress (from MockWorkplace service)
       const expectedSelectedLocationAddress = {
         postalCode: 'ABC 123',
         addressLine1: '2 Street',
