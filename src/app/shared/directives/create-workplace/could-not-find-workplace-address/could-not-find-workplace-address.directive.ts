@@ -80,9 +80,9 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
       const useDifferentPostcode = this.form.get('useDifferentPostcode');
       this.workplaceInterfaceService.workplaceNotFound$.next(true);
       if (useDifferentPostcode.value === 'yes') {
-        this.router.navigate([`/${this.flow}`, 'find-workplace-address']);
+        this.router.navigate([this.flow, 'find-workplace-address']);
       } else {
-        this.router.navigate([`/${this.flow}`, 'workplace-name-address']);
+        this.router.navigate([this.flow, 'workplace-name-address']);
       }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
