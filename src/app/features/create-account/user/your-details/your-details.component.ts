@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -12,10 +13,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent extends AccountDetailsDirective {
-  createAccountNewDesign: boolean;
+  public createAccountNewDesign: boolean;
 
   constructor(
     private userService: UserService,
+    private registrationService: RegistrationService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -36,10 +38,12 @@ export class YourDetailsComponent extends AccountDetailsDirective {
       'createAccountNewDesign',
       false,
     );
+    this.return = this.registrationService.returnTo$.value;
   }
 
   protected save(): void {
     this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['registration', 'username-password']);
+    const url = this.return ? 'confirm-details' : 'username-password';
+    this.router.navigate(['registration', url]);
   }
 }

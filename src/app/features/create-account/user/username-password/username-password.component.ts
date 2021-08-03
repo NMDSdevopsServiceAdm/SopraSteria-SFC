@@ -27,11 +27,6 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
     this.setBackLink();
   }
 
-  protected setCallToActionLabel(): void {
-    const label: string = this.return ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
-  }
-
   protected setBackLink(): void {
     const route: string = this.return ? this.return.url[0] : '/registration/your-details';
     this.backService.setBackLink({ url: [route] });
@@ -48,7 +43,7 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
   }
 
   protected setFormSubmissionLink(): string {
-    return this.return ? this.return.url[0] : '/registration/create-security-question';
+    return this.return ? '/registration/confirm-details' : '/registration/create-security-question';
   }
 
   protected save(): void {

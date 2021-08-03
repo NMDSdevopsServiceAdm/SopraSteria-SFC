@@ -67,9 +67,4 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
       });
     }
   }
-
-  protected setCallToActionLabel(): void {
-    const label: string = this.return ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
-  }
 }

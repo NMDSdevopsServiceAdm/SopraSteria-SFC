@@ -129,4 +129,23 @@ describe('SecurityQuestionComponent', () => {
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText('Answer must be 255 characters or fewer', { exact: false }).length).toBe(2);
   });
+
+  it('should navigate to confirm-details if form is valid', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+
+    form.controls['securityQuestion'].markAsDirty();
+    form.controls['securityQuestion'].setValue('question');
+
+    form.controls['securityQuestionAnswer'].markAsDirty();
+    form.controls['securityQuestionAnswer'].setValue('answer');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
+  });
 });

@@ -310,4 +310,24 @@ describe('UsernamePasswordComponent', () => {
     expect(form.valid).toBeTruthy();
     expect(spy).toHaveBeenCalledWith(['/registration/create-security-question']);
   });
+
+  it('should navigate to confirm-details if return URL is not null', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('username123');
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('Hello123!');
+    form.get(['passwordGroup', 'confirmPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'confirmPasswordInput']).setValue('Hello123!');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
+  });
 });

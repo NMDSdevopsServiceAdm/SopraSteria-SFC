@@ -178,7 +178,7 @@ describe('NewSelectMainServiceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
   });
 
-  it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is set to true', async () => {
+  it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is not null', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
     component.isParent = false;

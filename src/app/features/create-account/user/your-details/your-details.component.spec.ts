@@ -272,6 +272,24 @@ describe('YourDetailsComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'username-password']);
   });
 
+  it('should submit and go to confirm-details url when the form is valid and return URL is not null', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+
+    form.controls['fullname'].setValue('name');
+    form.controls['jobTitle'].setValue('job');
+    form.controls['email'].setValue('name@email.com');
+    form.controls['phone'].setValue('01234567890');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
   describe('setBackLink()', () => {
     it('should set the correct back link', async () => {
       const { component } = await setup();

@@ -31,6 +31,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   }
 
   protected async init() {
+    this.resetReturnTo();
     this.setupSubscriptions();
     this.setBackLink();
     this.subscriptions.add(
@@ -144,5 +145,9 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     this.registrationService.setReturnTo({
       url: ['/registration/confirm-details'],
     });
+  }
+
+  private resetReturnTo(): void {
+    this.registrationService.returnTo$.next(null);
   }
 }
