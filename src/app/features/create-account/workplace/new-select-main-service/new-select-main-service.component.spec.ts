@@ -178,6 +178,24 @@ describe('NewSelectMainServiceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
   });
 
+  it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is set to true', async () => {
+    const { component, fixture, getByText, getByLabelText, spy } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    component.renderForm = true;
+    component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+    fixture.detectChanges();
+
+    const radioButton = getByLabelText('Name');
+    fireEvent.click(radioButton);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
   describe('setBackLink()', () => {
     it('should set back link to workplace-name-address when is regulated and address entered manually', async () => {
       const { component, fixture } = await setup();

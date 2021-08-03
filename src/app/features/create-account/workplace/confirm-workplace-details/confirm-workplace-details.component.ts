@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
-import {
-  ConfirmWorkplaceDetailsDirective,
-} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -21,6 +19,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   protected async init(): Promise<void> {
     this.flow = '/registration';
+    this.resetReturnTo();
     this.getWorkplaceData();
   }
 
@@ -39,5 +38,9 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     this.registrationService.setReturnTo({
       url: [`${this.flow}/confirm-details`],
     });
+  }
+
+  private resetReturnTo(): void {
+    this.registrationService.returnTo$.next(null);
   }
 }

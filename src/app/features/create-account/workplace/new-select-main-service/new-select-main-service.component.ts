@@ -38,8 +38,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   protected async init(): Promise<void> {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.isRegulated = this.registrationService.isRegulated();
-    this.workplace = this.establishmentService.primaryWorkplace;
-    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.setBackLink();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
@@ -67,7 +66,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const url = this.isParent ? 'confirm-workplace-details' : 'add-user-details';
+    const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-user-details';
     this.router.navigate([this.flow, url]);
   }
 
