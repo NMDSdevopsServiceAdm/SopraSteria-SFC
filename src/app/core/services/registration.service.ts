@@ -25,6 +25,7 @@ export class RegistrationService {
   public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
   public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient) {}
 

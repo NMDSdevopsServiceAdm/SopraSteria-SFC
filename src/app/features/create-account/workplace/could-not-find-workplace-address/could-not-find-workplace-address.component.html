@@ -1,1 +1,13 @@
-<h1>We could not find your workplace address</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1>We could not find your workplace address</h1>
+    <div class="govuk-!-margin-bottom-5">
+      <p>
+        Postcode entered: <strong>{{ invalidPostcodeEntered }}</strong>
+        <a [routerLink]="['/registration', 'find-workplace-address']" class="govuk-!-margin-left-9"
+          >Change<span class="govuk-visually-hidden"> postcode</span>
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
