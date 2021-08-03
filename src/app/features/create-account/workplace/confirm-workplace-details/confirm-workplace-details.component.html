@@ -10,11 +10,13 @@
           [topBorder]="true"
           [summaryList]="workplaceNameAndAddress"
           (setReturn)="onSetReturn()"
+          data-testid="workplaceNameAddress"
         ></app-summary-list>
         <app-summary-list
           [wrapBorder]="true"
           [summaryList]="mainService"
           (setReturn)="onSetReturn()"
+          data-testid="mainService"
         ></app-summary-list>
       </div>
     </ng-template>

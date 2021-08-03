@@ -10,38 +10,41 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
 describe('ConfirmWorkplaceDetailsComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(ConfirmWorkplaceDetailsComponent, {
-      imports: [
-        SharedModule,
-        AddWorkplaceModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: WorkplaceService,
-          useClass: MockWorkplaceServiceWithMainService,
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: UserService,
-          useClass: MockUserService,
-        },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-    });
+    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
+      ConfirmWorkplaceDetailsComponent,
+      {
+        imports: [
+          SharedModule,
+          AddWorkplaceModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: WorkplaceService,
+            useClass: MockWorkplaceServiceWithMainService,
+          },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: UserService,
+            useClass: MockUserService,
+          },
+          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -51,6 +54,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
     };
   }
 
@@ -207,7 +211,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     });
 
     it('should set the change link for location ID to `find-workplace` when CQC regulated with location ID', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
       component.workplace.isCQC = true;
       component.locationAddress.locationId = '123';
@@ -215,15 +219,14 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
-      const changeWorkplaceAddressLink = getAllByText('Change')[0];
-      console.log(changeWorkplaceAddressLink);
-      fireEvent.click(changeWorkplaceAddressLink);
+      const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
+      const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
     });
 
     it('should set the change link for workplace address to `workplace-name-address` when location ID is null', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
       component.workplace.isCQC = false;
       component.locationAddress.locationId = null;
@@ -231,25 +234,23 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
-      const changeWorkplaceAddressLink = getAllByText('Change')[0];
-      console.log(changeWorkplaceAddressLink);
-      fireEvent.click(changeWorkplaceAddressLink);
+      const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
+      const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeWorkplaceAddressLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
 
     it('should set the change link for main service to `select-main-service`', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
       component.createAccountNewDesign = true;
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
-      const changeMainServiceLink = getAllByText('Change')[1];
-      console.log(changeMainServiceLink);
-      fireEvent.click(changeMainServiceLink);
+      const workplaceNameAddressSummaryList = within(getByTestId('mainService'));
+      const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeMainServiceLink.getAttribute('href')).toEqual('/add-workplace/new-select-main-service');
+      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/new-select-main-service');
     });
   });
 });
