@@ -36,8 +36,14 @@ module.exports = {
           },
           Status: {
             type: Sequelize.DataTypes.ENUM,
-            allowNull: true,
-            values: ['Updated', 'Not Updated'],
+            defaultValue: 'Not Updated',
+            values: [
+              'Not Updated',
+              'Update, Not Complete',
+              'Update, Complete',
+              'Confirmed, Not Complete',
+              'Confirmed, Complete',
+            ],
           },
           Notes: {
             type: Sequelize.TEXT,
