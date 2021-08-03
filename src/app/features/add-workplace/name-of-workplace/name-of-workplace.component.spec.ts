@@ -106,13 +106,13 @@ describe('NameOfWorkplaceComponent', () => {
       const { component } = await setup();
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
-      const registrationService = component.fixture.componentInstance.workplaceService;
+      const workplaceService = component.fixture.componentInstance.workplaceService;
 
       form.controls['workplaceName'].setValue('Place Name');
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-      expect(registrationService.selectedLocationAddress$.value.locationName).toBe('Place Name');
+      expect(workplaceService.selectedLocationAddress$.value.locationName).toBe('Place Name');
     });
   });
 
