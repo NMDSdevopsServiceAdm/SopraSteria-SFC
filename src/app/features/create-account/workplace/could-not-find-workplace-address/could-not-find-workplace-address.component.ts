@@ -9,7 +9,8 @@ import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create
 
 @Component({
   selector: 'app-could-not-find-workplace-address',
-  templateUrl: './could-not-find-workplace-address.component.html',
+  templateUrl:
+    '../../../../shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.component.html',
 })
 export class CouldNotFindWorkplaceAddressComponent extends CouldNotFindWorkplaceAddressDirective {
   constructor(
