@@ -63,6 +63,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
 
   public onSubmit(): void {
     this.submitted = true;
+    this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.next(true);
 
     if (this.form.valid) {
       this.setEnteredNameIntoFlowService();
