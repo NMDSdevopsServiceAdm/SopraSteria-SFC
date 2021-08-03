@@ -41,9 +41,16 @@ export class YourDetailsComponent extends AccountDetailsDirective {
     this.return = this.registrationService.returnTo$.value;
   }
 
+  protected setFormSubmissionLink(): string {
+    if (this.createAccountNewDesign) {
+      return this.return ? 'confirm-details' : 'username-password';
+    }
+    return this.return ? 'confirm-account-details' : 'username-password';
+  }
+
   protected save(): void {
     this.userService.updateState(this.setUserDetails());
-    const url = this.return ? 'confirm-details' : 'username-password';
+    const url = this.setFormSubmissionLink();
     this.router.navigate(['registration', url]);
   }
 }

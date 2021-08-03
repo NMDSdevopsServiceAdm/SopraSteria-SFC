@@ -256,7 +256,7 @@ describe('YourDetailsComponent', () => {
     expect(updateState).toHaveBeenCalledWith(formInputs);
   });
 
-  it('should submit and go to create-username-password url when the form is valid', async () => {
+  it('should submit and go to username-password url when the form is valid', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
@@ -276,6 +276,7 @@ describe('YourDetailsComponent', () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
 
+    component.fixture.componentInstance.createAccountNewDesign = true;
     component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
 
     form.controls['fullname'].setValue('name');

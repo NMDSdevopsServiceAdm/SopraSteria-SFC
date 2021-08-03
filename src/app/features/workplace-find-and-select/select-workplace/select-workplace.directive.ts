@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -21,6 +22,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public isCQCLocationUpdate: boolean;
   public createAccountNewDesign: boolean;
   public enteredPostcode: string;
+  public returnToConfirmDetails: URLStructure;
   protected subscriptions: Subscription = new Subscription();
   protected nextRoute: string;
 
