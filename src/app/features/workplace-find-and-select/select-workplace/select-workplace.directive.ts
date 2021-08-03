@@ -19,9 +19,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public isCQCLocationUpdate: boolean;
-  protected subscriptions: Subscription = new Subscription();
   public createAccountNewDesign: boolean;
   public enteredPostcode: string;
+  protected subscriptions: Subscription = new Subscription();
+  protected nextRoute: string;
 
   constructor(
     protected backService: BackService,
@@ -40,6 +41,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
+      this.setNextRoute();
     });
   }
 
@@ -54,6 +56,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   protected setBackLink(): void {
     const backLink = this.createAccountNewDesign ? 'find-workplace' : 'regulated-by-cqc';
     this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
+  }
+
+  protected setNextRoute(): void {
+    this.nextRoute = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
   }
 
   protected setupForm(): void {

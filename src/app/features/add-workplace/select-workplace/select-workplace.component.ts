@@ -47,14 +47,15 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.locationAddresses$.subscribe(
+      this.workplaceService.locationAddresses$.subscribe(
         (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
       ),
     );
   }
 
   protected save(): void {
+    this.workplaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([this.flow, 'select-main-service']);
+    this.router.navigate([this.flow, this.nextRoute]);
   }
 }

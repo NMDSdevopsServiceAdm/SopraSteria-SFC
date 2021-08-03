@@ -3,9 +3,9 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -26,8 +26,8 @@ describe('SelectWorkplaceComponent', () => {
       ],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -106,15 +106,19 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
-      const { getByText, fixture, spy } = await setup();
+    it('should navigate to the new-select-main-service url in add-workplace flow when workplace selected', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
       const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
     });
 
     it('should navigate back to the find-workplace url in add-workplace flow when Change clicked', async () => {
