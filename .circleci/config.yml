@@ -157,6 +157,8 @@ jobs:
               npm run build:prod
           elif [ "$CIRCLE_BRANCH" == 'live' ]; then
               npm run build:preprod
+          elif [ "$CIRCLE_BRANCH" == 'feat/benchmarks' ]; then
+              npm run build:benchmarks
           else
               npm run build:test
           fi

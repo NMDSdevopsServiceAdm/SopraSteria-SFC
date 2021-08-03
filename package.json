@@ -9,6 +9,7 @@
     "build:watch": "ng serve --proxy-config proxy.conf.json",
     "build:prod": "npm run build:clean && npm run build -- --prod",
     "build:preprod": "npm run build:clean && npm run build -- --configuration=preproduction",
+    "build:benchmarks": "npm run build:clean && npm run build -- --configuration=benchmarks",
     "build:test": "npm run build:clean && npm run build -- --configuration=test",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
