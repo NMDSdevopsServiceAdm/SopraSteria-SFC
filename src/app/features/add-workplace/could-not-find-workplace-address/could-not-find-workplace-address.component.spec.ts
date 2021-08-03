@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -19,6 +19,20 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
         {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: '/add-workplace',
+                  },
+                ],
+              },
+            },
+          },
         },
       ],
     });
@@ -43,5 +57,19 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
     const invalidPostcode = 'ABC 123';
     expect(getByText(invalidPostcode)).toBeTruthy();
     expect(getByText(postcodeEnteredMessage, { exact: false })).toBeTruthy();
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the correct back link when in the parent flow', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'find-workplace-address'],
+      });
+    });
   });
 });
