@@ -17,6 +17,7 @@ export abstract class WorkplaceInterfaceService {
   public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
   public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public isRegulated(): boolean {
     return this.isRegulated$.value;

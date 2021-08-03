@@ -66,7 +66,7 @@ describe('NewRegulatedByCqcComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
     });
 
-    it('should navigate to the workplace name page when selecting no', async () => {
+    it('should navigate to the find-workplace-address page when selecting no', async () => {
       const { component, spy } = await setup();
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
@@ -74,7 +74,7 @@ describe('NewRegulatedByCqcComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace-address']);
     });
 
     it('should display an error message when not selecting anything', async () => {

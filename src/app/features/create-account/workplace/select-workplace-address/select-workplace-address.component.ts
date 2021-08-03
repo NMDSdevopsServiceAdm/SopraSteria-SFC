@@ -14,7 +14,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirective {
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -27,6 +27,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   protected init(): void {
     this.flow = '/registration';
     this.registrationService.manuallyEnteredWorkplace$.next(false);
+    this.registrationService.manuallyEnteredWorkplaceName$.next(false);
     this.setupSubscriptions();
   }
 
@@ -60,6 +61,10 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   }
 
   public onLocationChange(index): void {
-    this.registrationService.selectedLocationAddress$.next(this.locationAddresses[index]);
+    const selectedAddress = this.locationAddresses[index];
+    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
+    const selectedAddressCopy = Object.assign({}, selectedAddress);
+
+    this.registrationService.selectedLocationAddress$.next(selectedAddressCopy);
   }
 }

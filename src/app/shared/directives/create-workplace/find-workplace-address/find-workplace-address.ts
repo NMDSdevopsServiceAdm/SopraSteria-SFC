@@ -130,8 +130,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setBackLink(): void {
-    let url;
-    this.createAccountNewDesign ? (url = 'workplace-name') : (url = 'select-workplace-address');
+    const url = this.createAccountNewDesign ? 'new-regulated-by-cqc' : 'select-workplace-address';
     this.backService.setBackLink({ url: [this.flow, url] });
   }
 
