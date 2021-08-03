@@ -90,11 +90,13 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     if (this.workplaceService.manuallyEnteredWorkplace$.value) {
       if (this.workplaceService.locationAddresses$.value.length > 0) {
         return 'workplace-name-address';
-      } else {
-        return 'workplace-address-not-found';
       }
-    } else {
-      return 'select-workplace-address';
+      return 'workplace-address-not-found';
     }
+
+    if (this.workplaceService.manuallyEnteredWorkplaceName$.value) {
+      return 'workplace-name';
+    }
+    return 'select-workplace-address';
   }
 }

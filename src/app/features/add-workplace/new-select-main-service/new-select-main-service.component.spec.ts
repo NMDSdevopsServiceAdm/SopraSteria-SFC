@@ -283,18 +283,35 @@ describe('NewSelectMainServiceComponent', () => {
       });
     });
 
-    it('should set back link to select-workplace-address when is not regulated and address was not entered manually', async () => {
+    it('should set back link to select-workplace-address when is not regulated, address was not entered manually and nameEnteredManually set to false', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
       component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.manuallyEnteredWorkplaceName$.next(false);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['add-workplace', 'select-workplace-address'],
+      });
+    });
+
+    it('should set back link to workplace-name when is not regulated, address was not entered manually and nameEnteredManually set to true', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      component.isRegulated = false;
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.manuallyEnteredWorkplaceName$.next(true);
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'workplace-name'],
       });
     });
   });
