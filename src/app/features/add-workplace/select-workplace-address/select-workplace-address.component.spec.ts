@@ -104,6 +104,26 @@ describe('SelectWorkplaceAddressComponent', () => {
     });
   });
 
+  describe('onLocationChange()', () => {
+    it('should update selectedLocationAddress$ in workplace service to have currently selected address', async () => {
+      const { component } = await setup();
+
+      // address in first index of locationAddresses with location name changed to current name in selectedLocationAddress (from MockWorkplace service)
+      const expectedSelectedLocationAddress = {
+        postalCode: 'ABC 123',
+        addressLine1: '2 Street',
+        county: 'Greater Manchester',
+        locationName: 'Test Care Home',
+        townCity: 'Manchester',
+        locationId: '12345',
+      };
+
+      component.onLocationChange(1);
+
+      expect(component.workplaceService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
+    });
+  });
+
   describe('Navigation', () => {
     it('should navigate back to the find-workplace-address url in add-workplace flow when Change clicked', async () => {
       const { component, fixture, getByText } = await setup();
