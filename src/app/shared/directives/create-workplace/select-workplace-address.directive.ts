@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -20,6 +21,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public submitted = false;
   public createAccountNewDesign: boolean;
   public workplaceNotListedLink: string;
+  public returnToConfirmDetails: URLStructure;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
@@ -78,22 +80,15 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.navigateToNextRoute(this.selectedLocationAddress.locationName);
+      this.navigateToNextRoute();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  protected navigateToNextRoute(locationName: string): void {
-    if (this.createAccountNewDesign) {
-      this.router.navigate([`${this.flow}/new-select-main-service`]);
-    } else {
-      if (locationName.length) {
-        this.router.navigate([`${this.flow}/select-main-service`]);
-      } else {
-        this.router.navigate([`${this.flow}/enter-workplace-address`]);
-      }
-    }
+  protected navigateToNextRoute(): void {
+    const url = this.getNextRoute();
+    this.router.navigate([this.flow, url]);
   }
 
   public getLocationName(location: LocationAddress): string {
@@ -117,6 +112,9 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected getNextRoute(): void {}
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

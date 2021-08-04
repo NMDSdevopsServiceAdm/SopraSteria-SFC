@@ -27,6 +27,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   protected init(): void {
     this.flow = '/registration';
     this.registrationService.manuallyEnteredWorkplace$.next(false);
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.setupSubscriptions();
   }
 
@@ -61,5 +62,12 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
 
   public onLocationChange(index): void {
     this.registrationService.selectedLocationAddress$.next(this.locationAddresses[index]);
+  }
+
+  protected getNextRoute(): string {
+    if (this.createAccountNewDesign) {
+      return this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    }
+    return this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
   }
 }
