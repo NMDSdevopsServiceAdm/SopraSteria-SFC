@@ -35,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         ],
       },
       Notes: DataTypes.TEXT,
+      LocalAuthorityUID: {
+        type: DataTypes.UUID,
+        unique: true,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+      },
     },
     {
       tableName: 'LocalAuthorities',
@@ -52,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
 
   LocalAuthorities.getAll = async function () {
     return await this.findAll({
-      attributes: ['LocalAuthorityName', 'ThisYear', 'Status', 'Notes'],
+      attributes: ['LocalAuthorityName', 'ThisYear', 'Status', 'Notes', 'LocalAuthorityUID'],
       include: [
         {
           model: sequelize.models.establishment,
