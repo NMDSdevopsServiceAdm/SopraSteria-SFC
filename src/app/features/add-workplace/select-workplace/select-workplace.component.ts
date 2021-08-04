@@ -31,20 +31,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.setupSubscription();
   }
 
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'workplace',
-        type: [
-          {
-            name: 'required',
-            message: `Select the workplace if it's displayed`,
-          },
-        ],
-      },
-    ];
-  }
-
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.workplaceService.locationAddresses$.subscribe(
@@ -54,8 +40,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected save(): void {
-    this.workplaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([this.flow, this.nextRoute]);
+    this.router.navigate([this.flow, 'select-main-service']);
   }
 }

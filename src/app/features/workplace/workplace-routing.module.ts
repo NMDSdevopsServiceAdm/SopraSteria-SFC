@@ -30,6 +30,7 @@ import {
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -46,7 +47,6 @@ import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
-import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 // eslint-disable-next-line max-len
@@ -112,7 +112,7 @@ const routes: Routes = [
       },
       {
         path: 'update-workplace-details',
-        component: WorkplaceNameAddressComponent,
+        component: EnterWorkplaceAddressComponent,
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin, Roles.Edit],

@@ -2,7 +2,7 @@ const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
 const clonedeep = require('lodash.clonedeep');
 const moment = require('moment');
-const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
+
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
 const employedContractStatusIds = [1, 2];
@@ -638,6 +638,7 @@ class Establishment {
       });
     }
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
+    const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 10;
     if (!myPostcode || myPostcode.length === 0) {
       localValidationErrors.push({
@@ -659,7 +660,7 @@ class Establishment {
         column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
-    } else if (sanitisePostcode(myPostcode) === null) {
+    } else if (!postcodeRegex.test(myPostcode)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,

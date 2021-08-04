@@ -6,20 +6,20 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { SelectMainService } from '@features/workplace-find-and-select/select-main-service/select-main-service';
 
 @Component({
   selector: 'app-select-main-service',
-  templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+  templateUrl: '../../workplace-find-and-select/select-main-service/select-main-service.component.html',
 })
-export class SelectMainServiceComponent extends SelectMainServiceDirective {
+export class SelectMainServiceComponent extends SelectMainService {
   constructor(
     private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService,
+    protected workplaceService: WorkplaceService
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -39,7 +39,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
         if (service) {
           this.selectedMainService = service;
         }
-      }),
+      })
     );
   }
 
@@ -48,17 +48,13 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.navigateToNextPage();
   }
 
-  protected navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'confirm-workplace-details']);
-  }
-
   protected setBackLink(): void {
     let route: string;
 
     if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      route = 'workplace-name-address';
+      route = 'enter-workplace-address';
     } else {
-      route = this.registrationService.isRegulated() ? 'select-workplace' : 'workplace-name-address';
+      route = this.registrationService.isRegulated() ? 'select-workplace' : 'enter-workplace-address';
     }
 
     this.backService.setBackLink({ url: [`${this.flow}/${route}`] });

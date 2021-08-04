@@ -1,5 +1,4 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -76,17 +75,9 @@ const subsid2Builder = () =>
 
 const subsid2 = subsid2Builder();
 
-@Injectable()
 export class MockUserService extends UserService {
   private subsidiaries = 2;
   private isAdmin = false;
-  public userDetails$ = of({
-    uid: 'mocked-uid',
-    email: 'john@test.com',
-    fullname: 'John Doe',
-    jobTitle: 'Software Engineer',
-    phone: '01234 345634',
-  });
 
   private;
 
@@ -125,9 +116,5 @@ export class MockUserService extends UserService {
     }
 
     return of([editUser] as UserDetails[]);
-  }
-
-  public updateState(userDetails: UserDetails) {
-    return userDetails;
   }
 }

@@ -1,0 +1,45 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<div class="govuk-grid-row">
+  <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 *ngIf="isWorkPlaceUpdate" class="govuk-fieldset__heading">
+          Workplace details
+        </h1>
+        <h1 *ngIf="!isWorkPlaceUpdate" class="govuk-fieldset__heading">
+          Enter your workplace address
+        </h1>
+      </legend>
+
+      <ng-container *ngFor="let item of formControlsMap">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
+          <label class="govuk-label" for="{{ item.name }}" [innerHTML]="item.label"></label>
+          <span *ngIf="submitted && form.get(item.name).errors" id="{{ item.name }}-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+          </span>
+          <input
+            class="govuk-input govuk-input--width-{{ item.width }}"
+            [formControlName]="item.name"
+            id="{{ item.name }}"
+            name="{{ item.name }}"
+            [class.govuk-input--error]="submitted && form.get(item.name).errors"
+            type="text"
+          />
+        </div>
+      </ng-container>
+    </fieldset>
+    <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
+      <button class="govuk-button" type="submit">Save and Return</button>
+      <a
+        href="#"
+        class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+        (click)="returnToWorkPlace($event)"
+        >Exit</a
+      >
+    </ng-container>
+    <ng-template #workplaceAdd>
+      <button class="govuk-button" type="submit">Continue</button>
+    </ng-template>
+  </form>
+</div>

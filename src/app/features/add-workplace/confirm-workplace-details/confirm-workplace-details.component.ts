@@ -8,27 +8,26 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import {
-  ConfirmWorkplaceDetailsDirective,
-} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+  ConfirmWorkplaceDetails,
+} from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-workplace-details',
   templateUrl: './confirm-workplace-details.component.html',
 })
-export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
+export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
 
   constructor(
-    protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService,
-    protected router: Router,
-    protected workplaceService: WorkplaceService,
-    public backService: BackService,
-    protected featureFlagsService: FeatureFlagsService,
+    private errorSummaryService: ErrorSummaryService,
+    private establishmentService: EstablishmentService,
+    private router: Router,
+    private workplaceService: WorkplaceService,
+    protected backService: BackService
   ) {
-    super(backService, featureFlagsService);
+    super(backService);
   }
 
   protected init(): void {
@@ -37,25 +36,27 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
   }
 
   protected getWorkplaceData(): void {
-    this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
-    this.workplace = this.workplaceService.selectedWorkplaceService$.value;
-  }
-
-  public setBackLink(): void {
-    const backLinkUrl = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
-    this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
+    this.subscriptions.add(
+      combineLatest([
+        this.workplaceService.selectedLocationAddress$,
+        this.workplaceService.selectedWorkplaceService$,
+      ]).subscribe(([locationAddress, workplace]) => {
+        this.locationAddress = locationAddress;
+        this.workplace = workplace;
+      })
+    );
   }
 
   public continue(): void {
-    this.addWorkplace();
-  }
+     this.addWorkplace();
+   }
 
   private addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace),
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {
@@ -66,8 +67,8 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
-          },
-        ),
+          }
+        )
     );
   }
 }

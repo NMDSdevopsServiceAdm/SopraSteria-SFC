@@ -4,9 +4,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
@@ -35,9 +33,6 @@ import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
-import {
-  NewSelectMainServiceComponent,
-} from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
@@ -56,12 +51,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {
-  StaffMismatchBannerComponent,
-} from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 
@@ -85,7 +76,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
-    NewSelectMainServiceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

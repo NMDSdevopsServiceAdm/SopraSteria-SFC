@@ -1,0 +1,19 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <app-panel [title]="'Application complete'">
+      Your account is <br />
+      waiting for approval
+    </app-panel>
+    <h2 class="govuk-heading-m">What happens next?</h2>
+    <p>
+      We will review your application within 24 hours and get back to you with an email, or you may hear from us by
+      phone.
+    </p>
+    <p>
+      <a [routerLink]="['/contact-us']" target="_blank">
+        Contact us<span class="govuk-visually-hidden">, (opens in a new window)</span>
+      </a>
+      if you have any questions about your application.
+    </p>
+  </div>
+</div>

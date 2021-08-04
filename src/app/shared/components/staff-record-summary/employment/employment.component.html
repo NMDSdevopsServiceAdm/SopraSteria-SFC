@@ -9,9 +9,7 @@
       <app-summary-record-change
         [explanationText]="' year arrived in UK'"
         [link]="getRoutePath('year-arrived-uk')"
-        [hasData]="
-          !(worker.yearArrived === null || (worker.yearArrived?.value === null && worker.yearArrived?.year === null))
-        "
+        [hasData]="worker.yearArrived"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
@@ -305,12 +303,7 @@
         "
         [explanationText]="' average weekly working hours'"
         [link]="getRoutePath('average-weekly-hours')"
-        [hasData]="
-          !(
-            worker.weeklyHoursAverage === null ||
-            (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null)
-          )
-        "
+        [hasData]="!!worker.weeklyHoursAverage"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
@@ -355,12 +348,7 @@
         "
         [explanationText]="' contracted weekly hours'"
         [link]="getRoutePath('weekly-contracted-hours')"
-        [hasData]="
-          !(
-            worker.weeklyHoursContracted === null ||
-            (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null)
-          )
-        "
+        [hasData]="!!worker.weeklyHoursContracted"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
