@@ -9,10 +9,11 @@ const formatLaResponse = (localAuthorities) => {
       workers: la.ThisYear,
       status: la.Status,
       notes: la.Notes ? true : false,
+      localAuthorityUID: la.LocalAuthorityUID,
     };
+
     replyObj[letter] ? replyObj[letter].push(formattedData) : (replyObj[letter] = [formattedData]);
   });
-
   return replyObj;
 };
 

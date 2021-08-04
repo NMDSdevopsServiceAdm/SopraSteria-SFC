@@ -10,6 +10,7 @@ describe('/server/services/local-authorities/local-authorities', () => {
           ThisYear: 0,
           Status: 'Not Updated',
           Notes: 'This is a comment',
+          LocalAuthorityUID: 'SomeUID1',
           establishment: {
             nmdsId: 'J103894',
           },
@@ -19,6 +20,7 @@ describe('/server/services/local-authorities/local-authorities', () => {
           ThisYear: 10,
           Status: 'Updated, Complete',
           Notes: 'This is a comment',
+          LocalAuthorityUID: 'SomeUID2',
           establishment: {
             nmdsId: 'J112583',
           },
@@ -28,6 +30,7 @@ describe('/server/services/local-authorities/local-authorities', () => {
           ThisYear: 104,
           Status: 'Not Updated',
           Notes: null,
+          LocalAuthorityUID: 'SomeUID3',
           establishment: {
             nmdsId: 'G223485',
           },
@@ -36,10 +39,10 @@ describe('/server/services/local-authorities/local-authorities', () => {
 
       const expectedResponse = {
         J: [
-          { name: 'Example 1', status: 'Not Updated', workers: 0, notes: true },
-          { name: 'Example 2', status: 'Updated, Complete', workers: 10, notes: true },
+          { name: 'Example 1', status: 'Not Updated', workers: 0, notes: true, localAuthorityUID: 'SomeUID1' },
+          { name: 'Example 2', status: 'Updated, Complete', workers: 10, notes: true, localAuthorityUID: 'SomeUID2' },
         ],
-        G: [{ name: 'Example 3', status: 'Not Updated', workers: 104, notes: false }],
+        G: [{ name: 'Example 3', status: 'Not Updated', workers: 104, notes: false, localAuthorityUID: 'SomeUID3' }],
       };
 
       const reply = formatLaResponse(las);
