@@ -15,9 +15,9 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.breadcrumbService.routes$.subscribe(routes => {
+      this.breadcrumbService.routes$.subscribe((routes) => {
         this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
-      })
+      }),
     );
   }
 
@@ -37,7 +37,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     ];
 
     if (currentPath.referrer) {
-      routes = routes.map(route => {
+      routes = routes.map((route) => {
         if (route.path === currentPath.referrer.path) {
           return {
             ...route,
