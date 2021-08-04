@@ -18,7 +18,7 @@ export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
     protected router: Router,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
-    protected registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, backService, router, route, errorSummaryService, registrationService, establishmentService);

@@ -104,6 +104,25 @@ describe('SelectWorkplaceAddressComponent', () => {
     });
   });
 
+  describe('onLocationChange()', () => {
+    it('should update selectedLocationAddress$ in workplace service to have currently selected address', async () => {
+      const { component } = await setup();
+
+      const expectedSelectedLocationAddress = {
+        postalCode: 'ABC 123',
+        addressLine1: '2 Street',
+        county: 'Greater Manchester',
+        locationName: 'Test Care Home',
+        townCity: 'Manchester',
+        locationId: '12345',
+      };
+
+      component.onLocationChange(1);
+
+      expect(component.workplaceService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
+    });
+  });
+
   describe('Navigation', () => {
     it('should navigate back to the find-workplace-address url in add-workplace flow when Change clicked', async () => {
       const { component, fixture, getByText } = await setup();
@@ -126,10 +145,11 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-address');
     });
 
-    it('should navigate to select-main-service url in add-workplace flow when workplace selected and Continue clicked', async () => {
-      const { component, spy, fixture, getByText } = await setup();
+    it('should navigate to select-main-service url in add-workplace flow when workplace with name selected and Continue clicked', async () => {
+      const { component, spy, getByText, fixture } = await setup();
       const form = component.form;
       const continueButton = getByText('Continue');
+      component.selectedLocationAddress.locationName = 'Name';
 
       form.controls['address'].setValue('1');
       form.controls['address'].markAsDirty();
@@ -138,7 +158,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       expect(form.valid).toBeTruthy();
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/new-select-main-service']);
     });
 
     it('should navigate to the confirm-workplace-details page in add-workplace flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {
@@ -155,7 +175,23 @@ describe('SelectWorkplaceAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details']);
+    });
+
+    it('should navigate to workplace-name url in add-workplace flow when workplace without name selected and Continue clicked', async () => {
+      const { component, spy, getByText, fixture } = await setup();
+      const form = component.form;
+      const continueButton = getByText('Continue');
+      component.selectedLocationAddress.locationName = null;
+
+      form.controls['address'].setValue('1');
+      form.controls['address'].markAsDirty();
+      fixture.detectChanges();
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/workplace-name']);
     });
   });
 });

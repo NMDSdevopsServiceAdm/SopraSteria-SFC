@@ -182,7 +182,7 @@ describe('FindWorkplaceAddressComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name'],
+        url: ['registration', 'new-regulated-by-cqc'],
       });
     });
   });

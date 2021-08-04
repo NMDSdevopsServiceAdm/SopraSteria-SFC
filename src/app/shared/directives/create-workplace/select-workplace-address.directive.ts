@@ -22,7 +22,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public createAccountNewDesign: boolean;
   public workplaceNotListedLink: string;
   public returnToConfirmDetails: URLStructure;
-  protected selectedLocationAddress: LocationAddress;
+  public selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -52,6 +52,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   protected setBackLink(): void {
@@ -71,8 +72,10 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setupFormErrorsMap(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onLocationChange(addressLine1: string): void {}
 
   public onSubmit(): void {
@@ -80,15 +83,31 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.navigateToNextRoute();
+      this.navigateToNextRoute(this.selectedLocationAddress.locationName);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  protected navigateToNextRoute(): void {
-    const url = this.getNextRoute();
-    this.router.navigate([this.flow, url]);
+  protected navigateToNextRoute(locationName: string): void {
+    if (this.returnToConfirmDetails) {
+      this.navigateToConfirmDetails();
+      return;
+    }
+
+    if (this.createAccountNewDesign) {
+      if (locationName?.length) {
+        this.router.navigate([`${this.flow}/new-select-main-service`]);
+      } else {
+        this.router.navigate([`${this.flow}/workplace-name`]);
+      }
+    } else {
+      if (locationName?.length) {
+        this.router.navigate([`${this.flow}/select-main-service`]);
+      } else {
+        this.router.navigate([`${this.flow}/workplace-name-address`]);
+      }
+    }
   }
 
   public getLocationName(location: LocationAddress): string {
@@ -114,7 +133,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected getNextRoute(): void {}
+  protected navigateToConfirmDetails(): void {}
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
