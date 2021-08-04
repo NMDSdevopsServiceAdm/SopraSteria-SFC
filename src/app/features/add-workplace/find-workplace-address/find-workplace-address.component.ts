@@ -6,8 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { FindWorkplaceAddress } from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { FindWorkplaceAddress } from '@features/workplace-find-and-select/find-workplace-address/find-workplace-address';
 
 @Component({
   selector: 'app-find-workplace-address',
@@ -16,40 +15,17 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   constructor(
     private workplaceService: WorkplaceService,
-    public backService: BackService,
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
-    protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
+    protected router: Router
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, router, featureFlagsService);
+    super(backService, errorSummaryService, formBuilder, locationService, router);
   }
 
   protected init(): void {
-    this.flow = 'add-workplace';
-  }
-
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'postcode',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the workplace postcode',
-          },
-          {
-            name: 'maxlength',
-            message: 'Postcode must be 8 characters or fewer',
-          },
-          {
-            name: 'invalidPostcode',
-            message: 'Enter a valid workplace postcode',
-          },
-        ],
-      },
-    ];
+    this.flow = '/add-workplace';
   }
 
   protected onSuccess(data: LocationSearchResponse): void {

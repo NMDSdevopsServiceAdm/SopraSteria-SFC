@@ -48,24 +48,4 @@ export class MockLocationService extends LocationService {
       });
     }
   }
-
-  public getAddressesByPostCode(postcode: string): Observable<LocationSearchResponse> {
-    if (postcode === 'LS1 1AA') {
-      return of({
-        success: 1,
-        locationdata: [
-          {
-            locationName: 'Hello Care',
-            locationId: '1-2123313123',
-            addressLine1: '123 Fake Ave',
-            county: 'West Yorkshire',
-            postalCode: 'LS1 1AA',
-            townCity: 'Leeds',
-          },
-        ],
-        searchmethod: 'postcode',
-        message: 'Test',
-      });
-    }
-  }
 }

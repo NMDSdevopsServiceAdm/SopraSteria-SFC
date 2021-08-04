@@ -44,6 +44,11 @@ describe('FindYourWorkplaceComponent', () => {
     const router = injector.inject(Router) as Router;
     const componentInstance = component.fixture.componentInstance;
     const locationService = injector.inject(LocationService) as LocationService;
+    const errorResponse = new HttpErrorResponse({
+      error: { code: `some code`, message: `some message.` },
+      status: 404,
+      statusText: 'Not found',
+    });
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -158,7 +163,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'new-workplace-not-found']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'workplace-not-found']);
   });
 
   it("should show error if server 503's", async () => {
@@ -181,33 +186,5 @@ describe('FindYourWorkplaceComponent', () => {
     fireEvent.click(findWorkplaceButton);
 
     expect(component.getAllByText('Server Error. code 503', { exact: false })).toBeTruthy();
-  });
-
-  describe('setBackLink', () => {
-    it('should set the back link to `regulated-by-cqc` when returnToWorkplaceNotFound is set to false', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-      component.fixture.componentInstance.returnToWorkplaceNotFound = false;
-      component.fixture.detectChanges();
-
-      component.fixture.componentInstance.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-regulated-by-cqc'],
-      });
-    });
-
-    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-      component.fixture.componentInstance.returnToWorkplaceNotFound = true;
-      component.fixture.detectChanges();
-
-      component.fixture.componentInstance.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-workplace-not-found'],
-      });
-    });
   });
 });

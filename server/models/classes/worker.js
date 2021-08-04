@@ -366,9 +366,9 @@ class Worker extends EntityValidator {
         document.britishCitizenship = null;
       }
 
-      // Remove year arrived if born in the UK or setting to Don't know
+      // Remove year arriced if born in the UK
       if (document.countryOfBirth) {
-        if (document.countryOfBirth.value === 'United Kingdom' || document.countryOfBirth.value === "Don't know") {
+        if (document.countryOfBirth.value === 'United Kingdom') {
           document.yearArrived = { value: null, year: null };
         }
       }

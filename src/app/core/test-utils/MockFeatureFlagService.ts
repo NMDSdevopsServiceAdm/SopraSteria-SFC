@@ -10,7 +10,7 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
     forceRefresh: () => {},
     forceRefreshAsync: () => {
       return new Promise((resolve) => {
-        resolve('');
+        return '';
       });
     },
     getAllKeys: () => {},
@@ -45,7 +45,7 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
     },
     getValueAsync: () => {
       return new Promise((resolve) => {
-        resolve(true);
+        return false;
       });
     },
   } as IConfigCatClient;

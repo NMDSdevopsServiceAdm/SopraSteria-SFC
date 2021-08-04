@@ -93,7 +93,7 @@ describe('SelectWorkplaceComponent', () => {
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
     const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select the workplace if it's displayed`;
+    const errorMessage = `Select your workplace if it's displayed`;
     const form = component.form;
     const continueButton = getByText('Continue');
 
@@ -106,19 +106,15 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to the new-select-main-service url in add-workplace flow when workplace selected', async () => {
-      const { component, getByText, fixture, spy } = await setup();
-
-      component.createAccountNewDesign = true;
-      fixture.detectChanges();
-
+    it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
+      const { getByText, fixture, spy } = await setup();
       const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
     });
 
     it('should navigate back to the find-workplace url in add-workplace flow when Change clicked', async () => {
@@ -129,16 +125,6 @@ describe('SelectWorkplaceComponent', () => {
       const changeButton = getByText('Change');
 
       expect(changeButton.getAttribute('href')).toBe('/add-workplace/find-workplace');
-    });
-
-    it('should navigate to workplace-name-address url in add-workplace flow when workplace not displayed button clicked', async () => {
-      const { component, fixture, getByText } = await setup();
-      component.createAccountNewDesign = true;
-      fixture.detectChanges();
-
-      const notDisplayedButton = getByText('Workplace is not displayed or is not correct');
-
-      expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
   });
 });
