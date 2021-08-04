@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
+import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
@@ -48,6 +49,9 @@ const routes: Routes = [
         component: MonitorComponent,
         data: {
           title: 'Monitor Returns',
+        },
+        resolve: {
+          dates: GetLasResolver,
         },
       },
     ],

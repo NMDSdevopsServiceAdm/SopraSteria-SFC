@@ -8,3 +8,21 @@ export interface Area {
   name: string;
   open: boolean;
 }
+
+export interface LA {
+  name: string;
+  workers: number;
+  notes: boolean;
+  status: string;
+}
+export interface LAs {
+  B?: LA[];
+  C?: LA[];
+  D?: LA[];
+  E?: LA[];
+  F?: LA[];
+  G?: LA[];
+  H?: LA[];
+  I?: LA[];
+  J?: LA[];
+}
