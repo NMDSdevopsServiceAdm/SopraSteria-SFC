@@ -6,9 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  WorkplaceNameAddressDirective,
-} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -19,6 +17,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
+  public returnToCouldNotFindWorkplaceAddress: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
@@ -38,8 +37,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.flow = '/add-workplace';
     this.title = `What's the workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of the workplace';
-    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
+    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
+    this.returnToCouldNotFindWorkplaceAddress =
+      this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
 
     await this.setFeatureFlag();
     this.setBackLink();
@@ -71,9 +72,15 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
-    if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
-      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-      return;
+    if (this.createAccountNewDesign) {
+      if (this.returnToWorkplaceNotFound) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        return;
+      }
+      if (this.returnToCouldNotFindWorkplaceAddress) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        return;
+      }
     }
 
     if (this.isCqcRegulated) {

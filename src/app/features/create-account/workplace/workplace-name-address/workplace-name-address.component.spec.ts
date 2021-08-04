@@ -5,9 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import {
-  WorkplaceNameAddressComponent,
-} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -273,6 +271,22 @@ describe('WorkplaceNameAddressComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/registration', 'new-workplace-not-found'],
+      });
+    });
+
+    it('should set the back link to `workplace-address-not-found` when returnToWorkplaceNotFound is false and returnToCouldNotFindWorkplaceAddress is true', async () => {
+      const { component, fixture } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      component.returnToWorkplaceNotFound = false;
+      component.returnToCouldNotFindWorkplaceAddress = true;
+      fixture.detectChanges();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'workplace-address-not-found'],
       });
     });
 
