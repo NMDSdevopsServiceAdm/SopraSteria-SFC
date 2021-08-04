@@ -53,8 +53,4 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       townCity: locationAddress.townCity,
     };
   }
-
-  public setReturnTo(returnTo: URLStructure): void {
-    this.returnTo$.next(returnTo);
-  }
 }
