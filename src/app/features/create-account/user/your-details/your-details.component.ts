@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -44,6 +45,17 @@ export class YourDetailsComponent extends AccountDetailsDirective {
       false,
     );
     this.return = this.registrationService.returnTo$.value;
+    this.prefillFormIfUserDetailsExist();
+  }
+
+  protected prefillFormIfUserDetailsExist(): void {
+    this.subscriptions.add(
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
+        if (userDetails) {
+          this.prefillForm(userDetails);
+        }
+      }),
+    );
   }
 
   protected setFormSubmissionLink(): string {
