@@ -250,38 +250,12 @@ describe('NewSelectMainServiceComponent', () => {
       });
     });
 
-    it('should set back link to workplace-address-not-found when is not regulated, address entered manually and no addresses stored in registration service', async () => {
+    it('should set back link to workplace-name-address when is not regulated and address entered manually', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
       component.registrationService.manuallyEnteredWorkplace$.next(true);
-      component.registrationService.locationAddresses$.next([]);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-address-not-found'],
-      });
-    });
-
-    it('should set back link to workplace-name-address when is not regulated, address entered manually but there are addresses stored in registration service', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
-      component.registrationService.locationAddresses$.next([
-        {
-          postalCode: 'ABC 123',
-          addressLine1: '1 Street',
-          county: 'Greater Manchester',
-          locationName: 'Name',
-          townCity: 'Manchester',
-          locationId: '123',
-        },
-      ]);
 
       component.setBackLink();
       fixture.detectChanges();
