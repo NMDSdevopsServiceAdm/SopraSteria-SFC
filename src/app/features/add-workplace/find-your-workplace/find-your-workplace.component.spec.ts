@@ -6,7 +6,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { throwError } from 'rxjs';
@@ -30,6 +32,10 @@ describe('FindYourWorkplaceComponent', () => {
         {
           provide: LocationService,
           useClass: MockLocationService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
         },
         {
           provide: ActivatedRoute,
@@ -215,6 +221,21 @@ describe('FindYourWorkplaceComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['add-workplace', 'new-workplace-not-found'],
+      });
+    });
+
+    it('should set the back link to `confirm-workplace-details` when returnToConfirmDetails is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.createAccountNewDesign = true;
+      component.fixture.componentInstance.returnToConfirmDetails = {
+        url: ['add-workplace', 'confirm-workplace-details'],
+      };
+      component.fixture.componentInstance.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'confirm-workplace-details'],
       });
     });
   });

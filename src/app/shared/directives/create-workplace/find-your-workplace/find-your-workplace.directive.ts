@@ -4,10 +4,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -22,6 +24,8 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public returnToWorkplaceNotFound: boolean;
+  public returnToConfirmDetails: URLStructure;
+  public createAccountNewDesign: boolean;
 
   constructor(
     protected router: Router,
@@ -31,14 +35,23 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     protected formBuilder: FormBuilder,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected locationService: LocationService,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setBackLink();
+    this.setFeatureFlag();
+  }
+
+  protected setFeatureFlag(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.setBackLink();
+    });
   }
 
   public ngAfterViewInit(): void {
@@ -46,10 +59,18 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.navigateToConfirmDetails();
+      return;
+    }
+
     const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected navigateToConfirmDetails(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
