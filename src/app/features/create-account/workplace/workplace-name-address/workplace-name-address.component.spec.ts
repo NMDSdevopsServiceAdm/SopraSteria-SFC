@@ -328,18 +328,5 @@ describe('WorkplaceNameAddressComponent', () => {
         url: ['/registration', 'select-workplace-address'],
       });
     });
-
-    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null and feature flag is on', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.createAccountNewDesign = true;
-      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'confirm-details'],
-      });
-    });
   });
 });

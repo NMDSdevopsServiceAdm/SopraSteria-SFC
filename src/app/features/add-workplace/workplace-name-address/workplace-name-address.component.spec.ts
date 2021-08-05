@@ -200,17 +200,5 @@ describe('WorkplaceNameAddressComponent', () => {
         url: ['/add-workplace', 'select-workplace-address'],
       });
     });
-
-    it('should set the back link to `confirm-workplace-details` when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'confirm-workplace-details'],
-      });
-    });
   });
 });
