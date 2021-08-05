@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './workplace-summary.component.html',
   providers: [I18nPluralPipe],
 })
-export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges  {
+export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
@@ -62,17 +62,16 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges  
 
   @Input() return: URLStructure = null;
   ngOnChanges(changes: SimpleChanges) {
-    for(const propName in changes){
-      if(changes.hasOwnProperty(propName)){
+    for (const propName in changes) {
+      if (changes.hasOwnProperty(propName)) {
         if (propName === 'workerCount' || '_workplace') {
           {
-           this.setTotalStaffWarning();
+            this.setTotalStaffWarning();
           }
         }
       }
     }
   }
-
 
   get totalStaffWarningNonWDF(): boolean {
     return (
@@ -112,20 +111,20 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges  
   }
 
   ngOnInit(): void {
-    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
-      this.wdfNewDesign = value;
-      this.setTotalStaffWarning();
-      if (this.wdfView && this.wdfNewDesign) {
-        this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
-      }
-    });
-
     this.subscriptions.add(
       this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
         this.canViewListOfWorkers = permission.permissions.canViewListOfWorkers;
         this.canEditEstablishment = permission.permissions.canEditEstablishment;
       }),
     );
+
+    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
+      this.wdfNewDesign = value;
+      this.setTotalStaffWarning();
+      if (this.canEditEstablishment && this.wdfView && this.wdfNewDesign) {
+        this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
+      }
+    });
 
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
@@ -149,20 +148,19 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges  
     this.subscriptions.unsubscribe();
   }
   public setTotalStaffWarning(): boolean {
-
     if (this.wdfNewDesign) {
-      if( this.workplace.workerCount === null && this.workerCount === null) {
-        return this.showTotalStaffWarning = false;
+      if (this.workplace.workerCount === null && this.workerCount === null) {
+        return (this.showTotalStaffWarning = false);
       }
 
-      return this.showTotalStaffWarning = ( this.workplace.numberOfStaff !== undefined &&
+      return (this.showTotalStaffWarning =
+        this.workplace.numberOfStaff !== undefined &&
         (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
-        this.workplace.numberOfStaff !== this.workerCount)
-
+        this.workplace.numberOfStaff !== this.workerCount);
     }
     this.showTotalStaffWarning =
-      ((this.workplace.numberOfStaff >= 0 || this.workplace.totalWorkers > 0) &&
-      this.workplace.numberOfStaff !== this.workplace.totalWorkers);
+      (this.workplace.numberOfStaff >= 0 || this.workplace.totalWorkers > 0) &&
+      this.workplace.numberOfStaff !== this.workplace.totalWorkers;
   }
 
   public filterAndSortOtherServices(services: Service[]): Service[] {
