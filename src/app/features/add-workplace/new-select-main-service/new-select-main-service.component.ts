@@ -7,7 +7,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -70,6 +72,11 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      return;
+    }
+
     const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
     this.backService.setBackLink({ url: [this.flow, route] });
   }

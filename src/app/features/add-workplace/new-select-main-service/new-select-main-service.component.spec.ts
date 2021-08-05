@@ -314,5 +314,19 @@ describe('NewSelectMainServiceComponent', () => {
         url: ['add-workplace', 'workplace-name'],
       });
     });
+
+    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null and feature flag is on', async () => {
+      const { component } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'confirm-workplace-details'],
+      });
+    });
   });
 });

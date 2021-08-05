@@ -340,5 +340,21 @@ describe('NewSelectMainServiceComponent', () => {
         url: ['registration', 'workplace-name'],
       });
     });
+
+    it('should set back link to confirm-details when returnToConfirmDetails is not null and feature flag is on', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
+      });
+    });
   });
 });
