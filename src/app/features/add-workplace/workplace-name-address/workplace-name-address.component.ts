@@ -66,6 +66,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.setBackLinkToConfirmDetails();
+      return;
+    }
+
     if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
       this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
       return;
@@ -84,5 +89,9 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
       return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
     }
     return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+  }
+
+  protected setBackLinkToConfirmDetails(): void {
+    this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
   }
 }
