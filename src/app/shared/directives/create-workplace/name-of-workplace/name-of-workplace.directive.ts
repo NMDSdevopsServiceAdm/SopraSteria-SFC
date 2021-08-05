@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -27,7 +26,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
     protected router: Router,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
-    protected workplaceInterfaceService: WorkplaceInterfaceService,
+    public workplaceInterfaceService: WorkplaceInterfaceService,
     protected establishmentService: EstablishmentService,
   ) {}
 
@@ -59,29 +58,23 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`/${this.flow}`, 'new-regulated-by-cqc'] });
+    this.backService.setBackLink({ url: [`/${this.flow}`, 'select-workplace-address'] });
   }
 
   public onSubmit(): void {
     this.submitted = true;
+    this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.next(true);
 
     if (this.form.valid) {
-      this.workplaceInterfaceService.selectedLocationAddress$.next(this.getLocationAddress());
-      this.router.navigate([this.flow, 'find-workplace-address']);
+      this.setEnteredNameIntoFlowService();
+      this.router.navigate([this.flow, 'new-select-main-service']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  private getLocationAddress(): LocationAddress {
-    return {
-      addressLine1: null,
-      addressLine2: null,
-      addressLine3: null,
-      county: null,
-      locationName: this.form.get('workplaceName').value,
-      postalCode: null,
-      townCity: null,
-    };
+  private setEnteredNameIntoFlowService(): void {
+    const enteredWorkplaceName = this.form.get('workplaceName').value;
+    this.workplaceInterfaceService.selectedLocationAddress$.value.locationName = enteredWorkplaceName;
   }
 }

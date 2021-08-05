@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -28,6 +30,10 @@ describe('NameOfWorkplaceComponent', () => {
         {
           provide: EstablishmentService,
           useValue: { primaryWorkplace },
+        },
+        {
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -84,7 +90,7 @@ describe('NameOfWorkplaceComponent', () => {
       expect(component.getAllByText(errorMessage).length).toBe(2);
     });
 
-    it('should navigate to find-workplace-address url when continue button is clicked and a workplace name is given', async () => {
+    it('should navigate to new-select-main-service url when continue button is clicked and a workplace name is given', async () => {
       const { component, spy } = await setup();
       const form = component.fixture.componentInstance.form;
       const continueButton = component.getByText('Continue');
@@ -93,7 +99,20 @@ describe('NameOfWorkplaceComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'find-workplace-address']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
+    });
+
+    it('should set locationName in workplace service when continue button is clicked and a workplace name is given', async () => {
+      const { component } = await setup();
+      const form = component.fixture.componentInstance.form;
+      const continueButton = component.getByText('Continue');
+      const workplaceService = component.fixture.componentInstance.workplaceService;
+
+      form.controls['workplaceName'].setValue('Place Name');
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+      expect(workplaceService.selectedLocationAddress$.value.locationName).toBe('Place Name');
     });
   });
 
@@ -106,7 +125,7 @@ describe('NameOfWorkplaceComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'new-regulated-by-cqc'],
+        url: ['/add-workplace', 'select-workplace-address'],
       });
     });
   });

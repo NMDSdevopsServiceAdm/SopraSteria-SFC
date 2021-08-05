@@ -20,7 +20,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public submitted = false;
   public createAccountNewDesign: boolean;
   public workplaceNotListedLink: string;
-  protected selectedLocationAddress: LocationAddress;
+  public selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -50,6 +50,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   protected setBackLink(): void {
@@ -69,8 +70,10 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setupFormErrorsMap(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onLocationChange(addressLine1: string): void {}
 
   public onSubmit(): void {
@@ -86,12 +89,16 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   protected navigateToNextRoute(locationName: string): void {
     if (this.createAccountNewDesign) {
-      this.router.navigate([`${this.flow}/new-select-main-service`]);
+      if (locationName?.length) {
+        this.router.navigate([`${this.flow}/new-select-main-service`]);
+      } else {
+        this.router.navigate([`${this.flow}/workplace-name`]);
+      }
     } else {
-      if (locationName.length) {
+      if (locationName?.length) {
         this.router.navigate([`${this.flow}/select-main-service`]);
       } else {
-        this.router.navigate([`${this.flow}/enter-workplace-address`]);
+        this.router.navigate([`${this.flow}/workplace-name-address`]);
       }
     }
   }

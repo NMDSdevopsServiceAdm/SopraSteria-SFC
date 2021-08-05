@@ -7,7 +7,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -89,6 +91,9 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   private getNonCQCRegulatedBackLink(): string {
     if (this.workplaceService.manuallyEnteredWorkplace$.value) {
       return 'workplace-name-address';
+    }
+    if (this.workplaceService.manuallyEnteredWorkplaceName$.value) {
+      return 'workplace-name';
     }
     return 'select-workplace-address';
   }
