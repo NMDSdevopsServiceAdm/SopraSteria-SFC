@@ -292,7 +292,7 @@ describe('YourDetailsComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the correct back link', async () => {
+    it('should set the back link to new-select-main-service if the feature flag is on and return url is null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -301,6 +301,19 @@ describe('YourDetailsComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'new-select-main-service'],
+      });
+    });
+
+    it('should set the back link to new-select-main-service if the feature flag is on and return url is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
       });
     });
   });

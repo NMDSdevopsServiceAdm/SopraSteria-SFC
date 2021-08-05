@@ -28,7 +28,12 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   }
 
   public setBackLink(): void {
-    const url = this.createAccountNewDesign ? 'new-select-main-service' : 'confirm-workplace-details';
+    let url: string;
+    if (this.createAccountNewDesign) {
+      url = this.return ? 'confirm-details' : 'new-select-main-service';
+    } else {
+      url = this.return ? 'confirm-account-details' : 'confirm-workplace-details';
+    }
     this.backService.setBackLink({ url: ['registration', url] });
   }
 

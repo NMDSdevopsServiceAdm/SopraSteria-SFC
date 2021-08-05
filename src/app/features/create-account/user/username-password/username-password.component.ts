@@ -16,7 +16,7 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
   public createAccountNewDesign: boolean;
 
   constructor(
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
@@ -34,9 +34,13 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
     });
   }
 
-  protected setBackLink(): void {
-    const route: string = this.return ? this.return.url[0] : '/registration/your-details';
-    this.backService.setBackLink({ url: [route] });
+  public setBackLink(): void {
+    if (this.return) {
+      const url = this.createAccountNewDesign ? 'confirm-details' : 'confirm-account-details';
+      this.backService.setBackLink({ url: ['registration', url] });
+      return;
+    }
+    this.backService.setBackLink({ url: ['registration', 'your-details'] });
   }
 
   protected setupSubscriptions(): void {
