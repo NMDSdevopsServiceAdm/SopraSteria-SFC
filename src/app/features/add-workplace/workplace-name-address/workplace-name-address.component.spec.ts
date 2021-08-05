@@ -131,13 +131,15 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('setBackLink', () => {
-    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `workplace-not-found` when isCqcRegulated and workplaceNotFound in service are true', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(true);
+      component.workplaceService.isCqcRegulated$.next(true);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = true;
-      fixture.detectChanges();
+
+      component.ngOnInit();
 
       component.setBackLink();
 
@@ -146,14 +148,15 @@ describe('WorkplaceNameAddressComponent', () => {
       });
     });
 
-    it('should set the back link to `workplace-address-not-found` when returnToWorkplaceNotFound is false and returnToCouldNotFindWorkplaceAddress is true', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `workplace-address-not-found` when isCqcRegulated is false and workplaceNotFound in service is true', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(true);
+      component.workplaceService.isCqcRegulated$.next(false);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = false;
-      component.returnToCouldNotFindWorkplaceAddress = true;
-      fixture.detectChanges();
+
+      component.ngOnInit();
 
       component.setBackLink();
 
@@ -162,14 +165,15 @@ describe('WorkplaceNameAddressComponent', () => {
       });
     });
 
-    it('should set the back link to `select-workplace` when returnToWorkplaceNotFound is false and isCqcRegulated is true', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `select-workplace` when isCqcRegulated is true and workplaceNotFound in service is false', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(false);
+      component.workplaceService.isCqcRegulated$.next(true);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = false;
-      component.isCqcRegulated = true;
-      fixture.detectChanges();
+
+      component.ngOnInit();
 
       component.setBackLink();
 
@@ -178,14 +182,15 @@ describe('WorkplaceNameAddressComponent', () => {
       });
     });
 
-    it('should set the back link to `select-workplace-address` when returnToWorkplaceNotFound and isCqcRegulated are false', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `select-workplace-address` when isCqcRegulated is false and workplaceNotFound in service is false', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(false);
+      component.workplaceService.isCqcRegulated$.next(false);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = false;
-      component.isCqcRegulated = false;
-      fixture.detectChanges();
+
+      component.ngOnInit();
 
       component.setBackLink();
 

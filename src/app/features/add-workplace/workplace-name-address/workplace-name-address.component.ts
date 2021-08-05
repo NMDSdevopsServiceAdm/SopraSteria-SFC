@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -22,8 +21,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   constructor(
     private featureFlagsService: FeatureFlagsService,
-    private workplaceService: WorkplaceService,
-    private registrationService: RegistrationService,
+    public workplaceService: WorkplaceService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -37,10 +35,9 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.flow = '/add-workplace';
     this.title = `What's the workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of the workplace';
-    this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
-    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
-    this.returnToCouldNotFindWorkplaceAddress =
-      this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
+    this.isCqcRegulated = this.workplaceService.isCqcRegulated$.value;
+    this.returnToWorkplaceNotFound = this.workplaceService.workplaceNotFound$.value && this.isCqcRegulated;
+    this.returnToCouldNotFindWorkplaceAddress = this.workplaceService.workplaceNotFound$.value && !this.isCqcRegulated;
 
     await this.setFeatureFlag();
     this.setBackLink();
