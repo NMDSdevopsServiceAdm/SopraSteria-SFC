@@ -70,11 +70,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   public setBackLink(): void {
     if (this.createAccountNewDesign) {
-      if (this.returnToWorkplaceNotFound) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
         return;
       }
-      if (this.returnToCouldNotFindWorkplaceAddress) {
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
         return;
       }
@@ -86,5 +86,13 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     }
 
     this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }

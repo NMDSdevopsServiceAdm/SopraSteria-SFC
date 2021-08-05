@@ -14,8 +14,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
-  public returnToWorkplaceNotFound: boolean;
-  public returnToCouldNotFindWorkplaceAddress: boolean;
   public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
 
@@ -36,9 +34,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
-    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
-    this.returnToCouldNotFindWorkplaceAddress =
-      this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
 
     await this.setFeatureFlag();
     this.setupSubscription();
@@ -71,11 +66,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   public setBackLink(): void {
     if (this.createAccountNewDesign) {
-      if (this.returnToWorkplaceNotFound) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
         return;
       }
-      if (this.returnToCouldNotFindWorkplaceAddress) {
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
         return;
       }
@@ -87,5 +82,13 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     }
 
     this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }
