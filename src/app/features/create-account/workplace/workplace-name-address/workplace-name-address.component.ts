@@ -20,7 +20,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   public createAccountNewDesign: boolean;
 
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     private featureFlagsService: FeatureFlagsService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
