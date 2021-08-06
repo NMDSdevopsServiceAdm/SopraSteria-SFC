@@ -14,7 +14,9 @@ export interface LA {
   workers: number;
   notes: boolean;
   status: string;
+  localAuthorityUID: string;
 }
+
 export interface LAs {
   B?: LA[];
   C?: LA[];

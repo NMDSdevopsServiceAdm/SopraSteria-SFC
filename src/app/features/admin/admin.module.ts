@@ -12,6 +12,7 @@ import { AdminMenuComponent } from './admin-menu/admin-menu.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
+import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { SearchComponent } from './search/search.component';
@@ -25,6 +26,7 @@ import { SearchComponent } from './search/search.component';
     SearchComponent,
     SetDatesComponent,
     MonitorComponent,
+    LocalAuthorityComponent,
   ],
   providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver],
   bootstrap: [AdminComponent],

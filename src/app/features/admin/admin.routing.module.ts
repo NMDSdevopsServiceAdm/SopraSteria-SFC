@@ -4,6 +4,7 @@ import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
+import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { SearchComponent } from './search/search.component';
@@ -46,13 +47,26 @@ const routes: Routes = [
       },
       {
         path: 'monitor',
-        component: MonitorComponent,
-        data: {
-          title: 'Monitor Returns',
-        },
-        resolve: {
-          localAuthorities: GetLasResolver,
-        },
+        children: [
+          {
+            path: '',
+            component: MonitorComponent,
+            data: {
+              title: 'Monitor Returns',
+            },
+            resolve: {
+              localAuthorities: GetLasResolver,
+            },
+          },
+          {
+            path: ':uid',
+            component: LocalAuthorityComponent,
+            data: {
+              title: 'Local Authority',
+            },
+            // resolve: { localAuthority: getLaResolver }
+          },
+        ],
       },
     ],
   },
