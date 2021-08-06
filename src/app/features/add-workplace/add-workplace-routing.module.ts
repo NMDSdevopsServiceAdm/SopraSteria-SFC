@@ -6,15 +6,20 @@ import { ChangeYourDetailsComponent } from '@features/add-workplace/change-your-
 import { ConfirmAccountDetailsComponent } from '@features/add-workplace/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/add-workplace/confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUserAccountComponent } from '@features/add-workplace/create-user-account/create-user-account.component';
-import { EnterWorkplaceAddressComponent } from '@features/add-workplace/enter-workplace-address/enter-workplace-address.component';
 import { FindWorkplaceAddressComponent } from '@features/add-workplace/find-workplace-address/find-workplace-address.component';
+import { FindYourWorkplaceComponent } from '@features/add-workplace/find-your-workplace/find-your-workplace.component';
+import { IsThisYourWorkplaceComponent } from '@features/add-workplace/is-this-your-workplace/is-this-your-workplace.component';
+import { NewRegulatedByCqcComponent } from '@features/add-workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
+import { NewSelectMainServiceComponent } from '@features/add-workplace/new-select-main-service/new-select-main-service.component';
 import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/add-workplace/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/add-workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/add-workplace/select-workplace/select-workplace.component';
+import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/add-workplace/workplace-not-found/workplace-not-found.component';
-import { NewRegulatedByCqcComponent } from '@features/create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 
+import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
+import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
 import { StartComponent } from './start/start.component';
 
 const routes: Routes = [
@@ -36,21 +41,33 @@ const routes: Routes = [
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
+    path: 'new-workplace-not-found',
+    component: NewWorkplaceNotFoundComponent,
+    data: { title: 'Could not find your workplace' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
     path: 'select-workplace',
     component: SelectWorkplaceComponent,
     data: { title: 'Select Workplace' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
-    path: 'select-workplace-address',
-    component: SelectWorkplaceAddressComponent,
-    data: { title: 'Select Workplace Address' },
+    path: 'find-workplace',
+    component: FindYourWorkplaceComponent,
+    data: { title: 'Find your workplace' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
-    path: 'enter-workplace-address',
-    component: EnterWorkplaceAddressComponent,
-    data: { title: 'Enter Workplace Address' },
+    path: 'your-workplace',
+    component: IsThisYourWorkplaceComponent,
+    data: { title: 'Is this your workplace?' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'select-workplace-address',
+    component: SelectWorkplaceAddressComponent,
+    data: { title: 'Select Workplace Address' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
@@ -90,6 +107,12 @@ const routes: Routes = [
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
+    path: 'new-select-main-service',
+    component: NewSelectMainServiceComponent,
+    data: { title: 'Select Main Service' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
     path: 'complete',
     component: AddWorkplaceCompleteComponent,
     data: { title: 'Complete' },
@@ -109,8 +132,14 @@ const routes: Routes = [
   },
   {
     path: 'workplace-name',
-    component: NewRegulatedByCqcComponent,
+    component: NameOfWorkplaceComponent,
     data: { title: `What's the name of your workplace?` },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'workplace-name-address',
+    component: WorkplaceNameAddressComponent,
+    data: { title: 'Workplace name and address?' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
 ];

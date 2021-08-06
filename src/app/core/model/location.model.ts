@@ -17,4 +17,5 @@ export interface LocationSearchResponse {
   message: string;
   postcodedata?: Array<LocationAddress>;
   success: number;
+  searchmethod: string;
 }

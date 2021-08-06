@@ -10,7 +10,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetailsDirective } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
   selector: 'app-change-your-details',
