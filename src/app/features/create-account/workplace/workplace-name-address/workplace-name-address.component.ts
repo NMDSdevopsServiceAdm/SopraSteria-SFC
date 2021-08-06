@@ -5,9 +5,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import {
-  WorkplaceNameAddressDirective,
-} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -16,12 +14,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
-  public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     private featureFlagsService: FeatureFlagsService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -36,7 +33,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
-    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
     await this.setFeatureFlag();
@@ -69,9 +65,15 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
-    if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
-      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-      return;
+    if (this.createAccountNewDesign) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        return;
+      }
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        return;
+      }
     }
 
     if (this.isCqcRegulated) {
@@ -80,5 +82,13 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     }
 
     this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }

@@ -36,6 +36,8 @@ export class MockWorkplaceService extends WorkplaceService {
     locationId: '123',
   });
 
+  public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject('ABC 123');
+
   public getServicesByCategory(isRegulated: boolean): Observable<Array<ServiceGroup>> {
     return of([
       {

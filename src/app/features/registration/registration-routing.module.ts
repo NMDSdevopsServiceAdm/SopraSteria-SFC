@@ -15,6 +15,9 @@ import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
 import {
+  CouldNotFindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
+import {
   FindWorkplaceAddressComponent,
 } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
@@ -96,6 +99,12 @@ const routes: Routes = [
     component: NewWorkplaceNotFoundComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Could not find your workplace' },
+  },
+  {
+    path: 'workplace-address-not-found',
+    component: CouldNotFindWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Could not find your workplace address' },
   },
   {
     path: 'select-workplace',
