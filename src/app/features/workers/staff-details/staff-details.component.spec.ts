@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
+import { WorkerEditResponse } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
@@ -22,6 +23,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { StaffDetailsComponent } from './staff-details.component';
 
@@ -176,8 +178,8 @@ describe('StaffDetailsComponent', () => {
     expect(component.fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
   });
 
-  it('should go to check-answers url when editing existing a staff record', async () => {
-    const { component, spy } = await setup();
+  it('should call the updateWorker api with correct information', async () => {
+    const { component } = await setup();
     const form = component.fixture.componentInstance.form;
     form.controls.nameOrId.setValue('Jeff');
     form.controls.mainJob.setValue('2');
@@ -186,6 +188,31 @@ describe('StaffDetailsComponent', () => {
     const workerId = component.fixture.componentInstance.worker.uid;
     const workplaceId = component.fixture.componentInstance.workplace.uid;
 
+    const saveButton = component.getByText('Save and return');
+
+    fireEvent.click(saveButton);
+    component.fixture.detectChanges();
+
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const req = httpTestingController.expectOne(`/api/establishment/${workplaceId}/worker/${workerId}`);
+
+    expect(req.request.body).toEqual({ nameOrId: 'Jeff', mainJob: { jobId: 2 }, contract: 'Permanent' });
+  });
+
+  it('should go to check-answers url when editing existing a staff record', async () => {
+    const { component, spy } = await setup();
+
+    const form = component.fixture.componentInstance.form;
+    form.controls.nameOrId.setValue('Jeff');
+    form.controls.mainJob.setValue('2');
+    form.controls.contract.setValue('Permanent');
+
+    const workerId = component.fixture.componentInstance.worker.uid;
+    const workplaceId = component.fixture.componentInstance.workplace.uid;
+
+    spyOn(component.fixture.componentInstance.workerService, 'updateWorker').and.returnValue(
+      of({ uid: workerId } as WorkerEditResponse),
+    );
     const saveButton = component.getByText('Save and return');
 
     fireEvent.click(saveButton);
@@ -205,6 +232,9 @@ describe('StaffDetailsComponent', () => {
     const workerId = component.fixture.componentInstance.worker.uid;
     const workplaceId = component.fixture.componentInstance.workplace.uid;
 
+    spyOn(component.fixture.componentInstance.workerService, 'updateWorker').and.returnValue(
+      of({ uid: workerId } as WorkerEditResponse),
+    );
     const saveButton = component.getByText('Save and return');
 
     fireEvent.click(saveButton);

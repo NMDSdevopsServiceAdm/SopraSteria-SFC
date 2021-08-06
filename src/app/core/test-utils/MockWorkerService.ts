@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { URLStructure } from '@core/model/url.model';
-import { Worker, WorkerEditResponse } from '@core/model/worker.model';
+import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
 
@@ -107,9 +107,5 @@ export class MockWorkerService extends WorkerService {
         },
       },
     ] as Worker[]);
-  }
-
-  updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
-    return of({ uid: workerId });
   }
 }

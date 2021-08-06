@@ -63,7 +63,7 @@ const getFluJabComponent = async (worker) => {
   });
 };
 
-fdescribe('FluJabComponent', () => {
+describe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -99,10 +99,8 @@ fdescribe('FluJabComponent', () => {
     fireEvent.click(submit);
 
     const httpTestingController = TestBed.inject(HttpTestingController);
-    console.log('*****');
-    console.log(httpTestingController);
     const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
-    console.log(req);
+
     expect(req.request.body).toEqual({ fluJab: newFluJab });
   });
 

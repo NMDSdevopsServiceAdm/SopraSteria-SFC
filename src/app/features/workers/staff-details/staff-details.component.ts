@@ -31,7 +31,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService,
+    public workerService: WorkerService,
     protected alertService: AlertService,
     private jobService: JobService,
   ) {
