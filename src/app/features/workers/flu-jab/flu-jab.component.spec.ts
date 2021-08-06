@@ -1,16 +1,16 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { render, fireEvent } from '@testing-library/angular';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
+
 import { WorkerService } from '../../../core/services/worker.service';
 import { MockWorkerService } from '../../../core/test-utils/MockWorkerService';
 import { FluJabComponent } from './flu-jab.component';
-
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { HttpClient } from '@angular/common/http';
-import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
 
 const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 
@@ -63,7 +63,7 @@ const getFluJabComponent = async (worker) => {
   });
 };
 
-describe('FluJabComponent', () => {
+fdescribe('FluJabComponent', () => {
   afterEach(() => {
     const httpTestingController = TestBed.inject(HttpTestingController);
     httpTestingController.verify();
@@ -99,8 +99,10 @@ describe('FluJabComponent', () => {
     fireEvent.click(submit);
 
     const httpTestingController = TestBed.inject(HttpTestingController);
+    console.log('*****');
+    console.log(httpTestingController);
     const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
-
+    console.log(req);
     expect(req.request.body).toEqual({ fluJab: newFluJab });
   });
 

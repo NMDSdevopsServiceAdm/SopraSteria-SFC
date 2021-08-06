@@ -27,7 +27,7 @@ import { StaffDetailsComponent } from './staff-details.component';
 
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
-fdescribe('StaffDetailsComponent', () => {
+describe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
@@ -125,12 +125,14 @@ fdescribe('StaffDetailsComponent', () => {
     submit.click();
     expect(component.fixture.componentInstance.onSubmit).toHaveBeenCalled();
   });
+
   it('should set submitted to true', async () => {
     const { component } = await setup();
     component.fixture.detectChanges();
     component.fixture.componentInstance.onSubmit();
     expect(component.fixture.componentInstance.submitted).toBeTruthy();
   });
+
   it('should be able to pass validation when given correct data', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
@@ -139,6 +141,7 @@ fdescribe('StaffDetailsComponent', () => {
     form.controls.contract.setValue('Permanent');
     expect(form.valid).toBeTruthy();
   });
+
   it('should be able to fail validation when given wrong data', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
@@ -147,6 +150,7 @@ fdescribe('StaffDetailsComponent', () => {
     form.controls.contract.setValue('');
     expect(form.valid).toBeFalsy();
   });
+
   it('should see other job when not chosen other job', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
@@ -159,6 +163,7 @@ fdescribe('StaffDetailsComponent', () => {
     const otherjob = component.fixture.nativeElement.querySelector('#otherJobRole-conditional');
     expect(otherjob).toBeTruthy();
   });
+
   it('should not see other job when not chosen other job type', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
@@ -185,13 +190,13 @@ fdescribe('StaffDetailsComponent', () => {
 
     fireEvent.click(saveButton);
     component.fixture.detectChanges();
-    expect(true).toBe(true);
 
     expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'check-answers']);
   });
 
   it('should go to mandatory-details url when adding a new staff record', async () => {
     const { component, spy } = await setup();
+    component.fixture.componentInstance.editFlow = false;
     const form = component.fixture.componentInstance.form;
     form.controls.nameOrId.setValue('Jeff');
     form.controls.mainJob.setValue('2');
@@ -204,7 +209,6 @@ fdescribe('StaffDetailsComponent', () => {
 
     fireEvent.click(saveButton);
     component.fixture.detectChanges();
-    expect(true).toBe(true);
 
     expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'mandatory-details']);
   });
