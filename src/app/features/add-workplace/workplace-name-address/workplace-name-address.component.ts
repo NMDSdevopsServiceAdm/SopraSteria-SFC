@@ -14,9 +14,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
-  public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
-  public returnToCouldNotFindWorkplaceAddress: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
@@ -36,8 +34,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.title = `What's the workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.isCqcRegulated = this.workplaceService.isCqcRegulated$.value;
-    this.returnToWorkplaceNotFound = this.workplaceService.workplaceNotFound$.value && this.isCqcRegulated;
-    this.returnToCouldNotFindWorkplaceAddress = this.workplaceService.workplaceNotFound$.value && !this.isCqcRegulated;
 
     await this.setFeatureFlag();
     this.setBackLink();
