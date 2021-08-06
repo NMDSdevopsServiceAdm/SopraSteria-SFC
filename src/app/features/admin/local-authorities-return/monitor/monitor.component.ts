@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Area } from '@core/model/admin/local-authorities-return.model';
+import { Area, LAs } from '@core/model/admin/local-authorities-return.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
@@ -56,10 +57,48 @@ export class MonitorComponent implements OnInit {
       open: false,
     },
   ];
-  constructor(private breadcrumbService: BreadcrumbService) {}
+  localAuthorities: LAs;
+
+  constructor(private breadcrumbService: BreadcrumbService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN);
+    this.localAuthorities = this.route.snapshot.data.localAuthorities;
+    console.log(this.localAuthorities);
+  }
+
+  // private populateAreasWithLAs(): void {
+  //   const localAuthorities = this.route.snapshot.data.localAuthorities;
+  //   for (const region in localAuthorities) {
+  //     // console.log(`${region}: ${localAuthorities[region][0].name}`);
+  //     this.areas.findIndex((area, index) => {
+  //       if (area.letter === region) {
+  //         this.areas[index].localAuthorities = localAuthorities[region];
+  //       }
+  //     });
+  //   }
+  // }
+
+  public conditionalClass(status: string): string {
+    let conditionalStyle;
+
+    switch (status) {
+      case 'Update, complete':
+        conditionalStyle = 'govuk-tag--blue';
+        break;
+      case 'Update, not complete':
+        conditionalStyle = 'govuk-tag--yellow';
+        break;
+      case 'Confirmed, complete':
+        conditionalStyle = 'govuk-tag--green';
+        break;
+      case 'Confirmed, not complete':
+        conditionalStyle = 'govuk-tag--red';
+        break;
+      default:
+        conditionalStyle = 'govuk-tag--grey';
+    }
+    return conditionalStyle;
   }
 
   toggleAll(event: Event): void {

@@ -51,7 +51,7 @@ const routes: Routes = [
           title: 'Monitor Returns',
         },
         resolve: {
-          dates: GetLasResolver,
+          localAuthorities: GetLasResolver,
         },
       },
     ],

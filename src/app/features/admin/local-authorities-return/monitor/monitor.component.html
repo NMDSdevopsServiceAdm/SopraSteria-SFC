@@ -37,20 +37,30 @@
       <table class="govuk-table">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Local authority</th>
+            <th scope="col" class="govuk-table__header govuk-!-width-one-half">Local authority</th>
             <th scope="col" class="govuk-table__header">Workers</th>
             <th scope="col" class="govuk-table__header">Status</th>
             <th scope="col" class="govuk-table__header">Notes</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
+          <tr class="govuk-table__row" *ngFor="let localAuthority of localAuthorities[area.letter]">
             <td class="govuk-table__cell">
-              <a href="#">Darlington {{ i }}</a>
+              <a href="#">{{ localAuthority.name }}</a>
             </td>
-            <td class="govuk-table__cell">None added</td>
-            <td class="govuk-table__cell">Not updated</td>
-            <td class="govuk-table__cell">Notes</td>
+            <td class="govuk-table__cell">
+              {{ localAuthority.workers === 0 ? 'None added' : localAuthority.workers }}
+            </td>
+            <td class="govuk-table__cell">
+              <strong
+                class="govuk-tag"
+                [ngClass]="conditionalClass(localAuthority.status)"
+                [attr.data-testid]="'status-' + localAuthority.name"
+              >
+                {{ localAuthority.status | uppercase }}
+              </strong>
+            </td>
+            <td class="govuk-table__cell">{{ localAuthority.notes ? 'Yes' : 'No' }}</td>
           </tr>
         </tbody>
       </table>
