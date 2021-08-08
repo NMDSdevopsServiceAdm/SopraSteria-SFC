@@ -17,6 +17,12 @@ export const adminJourney: JourneyRoute = {
             {
               path: '/sfcadmin/local-authorities-return/monitor',
               title: 'Monitor returns',
+              children: [
+                {
+                  path: '/sfcadmin/local-authorities-return/monitor/:uid',
+                  title: 'Local authority',
+                },
+              ],
             },
           ],
         },

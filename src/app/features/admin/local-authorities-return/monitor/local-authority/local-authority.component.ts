@@ -23,9 +23,9 @@ export class LocalAuthorityComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.ADMIN);
     this.setupForm();
     this.localAuthority = this.route.snapshot.data.localAuthority;
+    this.breadcrumbService.show(JourneyType.ADMIN);
     // console.log(this.localAuthority);
   }
 
