@@ -3,9 +3,12 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const models = require('../../../../../../models');
 
-const { getLocalAuthorities } = require('../../../../../../routes/admin/local-authority-return/monitor');
+const {
+  getLocalAuthorities,
+  getLocalAuthority,
+} = require('../../../../../../routes/admin/local-authority-return/monitor');
 
-describe('server/routes/admin/local-authority-returns/local-authorities', async () => {
+describe('server/routes/admin/local-authority-returns/monitor', async () => {
   afterEach(async () => {
     sinon.restore();
   });
@@ -60,7 +63,7 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
 
     const request = {
       method: 'GET',
-      url: '/api/admin/local-authority-returns/local-authorities',
+      url: '/api/admin/local-authority-returns/monitor',
     };
 
     it('should reply with a 200', async () => {
@@ -125,6 +128,66 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
       const res = httpMocks.createResponse();
 
       await getLocalAuthorities(req, res);
+
+      expect(res.statusCode).to.deep.equal(503);
+    });
+  });
+
+  describe.only('getLocalAuthority', () => {
+    beforeEach(() => {
+      sinon.stub(models.LocalAuthorities, 'findById').callsFake(async () => {
+        return {
+          LocalAuthorityName: 'Example Authority 1',
+          ThisYear: 10,
+          Status: 'Not updated',
+          Notes: 'There are some notes',
+          LocalAuthorityUID: 'someuid',
+        };
+      });
+    });
+
+    const request = {
+      method: 'GET',
+      url: 'api/admin/local-authority-return/monitor',
+      params: {
+        uid: 'someuid',
+      },
+    };
+
+    it('should reply with a 200', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getLocalAuthority(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return a local authority for a given id', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getLocalAuthority(req, res);
+
+      const expectedResponse = {
+        name: 'Example Authority 1',
+        workers: 10,
+        notes: 'There are some notes',
+        status: 'Not updated',
+      };
+
+      expect(res._getData()).to.deep.equal(expectedResponse);
+    });
+
+    it('should reply with a 503 when there is an error', async () => {
+      sinon.restore();
+
+      sinon.stub(models.LocalAuthorities, 'findById').throws();
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getLocalAuthority(req, res);
 
       expect(res.statusCode).to.deep.equal(503);
     });

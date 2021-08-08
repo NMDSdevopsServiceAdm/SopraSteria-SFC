@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
+import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
@@ -28,7 +29,7 @@ import { SearchComponent } from './search/search.component';
     MonitorComponent,
     LocalAuthorityComponent,
   ],
-  providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver],
+  providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver, GetLaResolver],
   bootstrap: [AdminComponent],
 })
 export class AdminModule {}

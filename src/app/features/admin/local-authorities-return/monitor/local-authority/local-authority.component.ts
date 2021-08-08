@@ -17,9 +17,9 @@ export class LocalAuthorityComponent implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      numberOfWorkers: [null, {}],
-      status: [null, {}],
-      notes: [null, {}],
+      numberOfWorkers: [''],
+      status: [''],
+      notes: [''],
     });
   }
 

@@ -17,4 +17,15 @@ const formatLaResponse = (localAuthorities) => {
   return replyObj;
 };
 
+const formatIndividualLaResponse = (localAuthority) => {
+  const { LocalAuthorityName, ThisYear, Status, Notes } = localAuthority;
+  return {
+    name: LocalAuthorityName,
+    workers: ThisYear,
+    status: Status,
+    notes: Notes,
+  };
+};
+
 module.exports.formatLaResponse = formatLaResponse;
+module.exports.formatIndividualLaResponse = formatIndividualLaResponse;

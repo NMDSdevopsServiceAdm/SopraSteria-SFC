@@ -28,3 +28,10 @@ export interface LAs {
   I?: LA[];
   J?: LA[];
 }
+
+export interface individualLA {
+  name: string;
+  workers: number;
+  notes: string;
+  status: string;
+}

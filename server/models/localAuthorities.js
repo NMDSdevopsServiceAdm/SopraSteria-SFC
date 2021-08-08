@@ -67,5 +67,15 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
   };
+
+  LocalAuthorities.findById = async function (uid) {
+    return await this.findOne({
+      where: {
+        LocalAuthorityUID: uid,
+      },
+      attributes: ['LocalAuthorityName', 'ThisYear', 'Status', 'Notes'],
+    });
+  };
+
   return LocalAuthorities;
 };
