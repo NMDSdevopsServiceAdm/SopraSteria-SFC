@@ -133,7 +133,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
     });
   });
 
-  describe.only('getLocalAuthority', () => {
+  describe('getLocalAuthority', () => {
     beforeEach(() => {
       sinon.stub(models.LocalAuthorities, 'findById').callsFake(async () => {
         return {

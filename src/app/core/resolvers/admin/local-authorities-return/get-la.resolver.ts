@@ -11,6 +11,7 @@ export class GetLaResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | IndividualLA> {
     const uid = route.paramMap.get('uid');
+    console.log(route);
     if (uid) {
       return this.localAuthoritiesReturnService.getLA(uid).pipe(
         catchError(() => {

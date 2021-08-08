@@ -47,4 +47,22 @@ describe('LocalAuthoriesReturnService', () => {
     expect(req.request.body.laReturnStartDate).toEqual(laReturnStartDate);
     expect(req.request.body.laReturnEndDate).toEqual(laReturnEndDate);
   });
+
+  it('should get a list of all of the local authorities', () => {
+    service.getLAs().subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/local-authority-return/monitor');
+
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should get a local authority with a given id', () => {
+    service.getLA('someuid').subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/local-authority-return/monitor/someuid');
+
+    expect(req.request.method).toBe('GET');
+  });
 });
