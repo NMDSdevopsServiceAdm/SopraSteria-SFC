@@ -65,7 +65,9 @@ const routes: Routes = [
             data: {
               title: 'Local Authority',
             },
-            resolve: { localAuthority: GetLaResolver },
+            resolve: {
+              localAuthority: GetLaResolver,
+            },
           },
         ],
       },

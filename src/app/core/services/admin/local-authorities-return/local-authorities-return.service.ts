@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { individualLA, LAs, SetDates } from '@core/model/admin/local-authorities-return.model';
+import { IndividualLA, LAs, SetDates } from '@core/model/admin/local-authorities-return.model';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class LocalAuthoritiesReturnService {
     return this.http.get<LAs>('/api/admin/local-authority-return/monitor');
   }
 
-  public getLA(localAuthorityId): Observable<individualLA> {
-    return this.http.get<individualLA>(`api/admin/local-authority-return/monitor/${localAuthorityId}`);
+  public getLA(localAuthorityId: string): Observable<IndividualLA> {
+    return this.http.get<IndividualLA>(`/api/admin/local-authority-return/monitor/${localAuthorityId}`);
   }
 }

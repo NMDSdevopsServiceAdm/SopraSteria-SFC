@@ -29,7 +29,7 @@ export interface LAs {
   J?: LA[];
 }
 
-export interface individualLA {
+export interface IndividualLA {
   name: string;
   workers: number;
   notes: string;

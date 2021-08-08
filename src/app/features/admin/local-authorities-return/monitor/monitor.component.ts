@@ -64,20 +64,7 @@ export class MonitorComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN);
     this.localAuthorities = this.route.snapshot.data.localAuthorities;
-    console.log(this.localAuthorities);
   }
-
-  // private populateAreasWithLAs(): void {
-  //   const localAuthorities = this.route.snapshot.data.localAuthorities;
-  //   for (const region in localAuthorities) {
-  //     // console.log(`${region}: ${localAuthorities[region][0].name}`);
-  //     this.areas.findIndex((area, index) => {
-  //       if (area.letter === region) {
-  //         this.areas[index].localAuthorities = localAuthorities[region];
-  //       }
-  //     });
-  //   }
-  // }
 
   public conditionalClass(status: string): string {
     let conditionalStyle;
