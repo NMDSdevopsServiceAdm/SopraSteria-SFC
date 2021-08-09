@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
       Status: {
         type: DataTypes.ENUM,
         values: [
-          'Not Updated',
-          'Update, Not Complete',
-          'Update, Complete',
-          'Confirmed, Not Complete',
-          'Confirmed, Complete',
+          'Not updated',
+          'Update, not complete',
+          'Update, complete',
+          'Confirmed, not complete',
+          'Confirmed, complete',
         ],
       },
       Notes: DataTypes.TEXT,
@@ -67,5 +67,23 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
   };
+
+  LocalAuthorities.findById = async function (uid) {
+    return await this.findOne({
+      where: {
+        LocalAuthorityUID: uid,
+      },
+      attributes: ['LocalAuthorityName', 'ThisYear', 'Status', 'Notes'],
+    });
+  };
+
+  LocalAuthorities.updateLA = async function (uid, values) {
+    return await this.update(values, {
+      where: {
+        LocalAuthorityUID: uid,
+      },
+    });
+  };
+
   return LocalAuthorities;
 };
