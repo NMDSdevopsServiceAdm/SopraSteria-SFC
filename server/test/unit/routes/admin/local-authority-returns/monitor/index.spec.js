@@ -9,7 +9,7 @@ const {
   updateLocalAuthority,
 } = require('../../../../../../routes/admin/local-authority-return/monitor');
 
-describe.only('server/routes/admin/local-authority-returns/monitor', async () => {
+describe('server/routes/admin/local-authority-returns/monitor', async () => {
   afterEach(async () => {
     sinon.restore();
   });
