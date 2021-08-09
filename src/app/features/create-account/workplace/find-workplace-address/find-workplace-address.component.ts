@@ -61,7 +61,7 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
     this.registrationService.locationAddresses$.next(data.postcodedata);
   }
 
-  public setBackLinkToConfirmDetailsPage(): void {
+  protected setBackLinkToConfirmDetailsPage(): void {
     this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
   }
 }
