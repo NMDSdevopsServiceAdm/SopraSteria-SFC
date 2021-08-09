@@ -206,11 +206,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
-    console.log(
-      this.workplace.wdf?.employerType.isEligible,
-      !this.workplace.wdf?.employerType.updatedSinceEffectiveDate,
-    );
-
     if (this.workplace.wdf?.employerType.isEligible && !this.workplace.wdf?.employerType.updatedSinceEffectiveDate) {
       this.confirmField('employerType');
     }
