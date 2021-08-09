@@ -6,9 +6,10 @@ const models = require('../../../../../../models');
 const {
   getLocalAuthorities,
   getLocalAuthority,
+  updateLocalAuthority,
 } = require('../../../../../../routes/admin/local-authority-return/monitor');
 
-describe('server/routes/admin/local-authority-returns/monitor', async () => {
+describe.only('server/routes/admin/local-authority-returns/monitor', async () => {
   afterEach(async () => {
     sinon.restore();
   });
@@ -188,6 +189,62 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       const res = httpMocks.createResponse();
 
       await getLocalAuthority(req, res);
+
+      expect(res.statusCode).to.deep.equal(503);
+    });
+  });
+
+  describe('updateLocalAuthority', () => {
+    beforeEach(() => {
+      sinon.stub(models.LocalAuthorities, 'updateLA');
+    });
+
+    const request = {
+      method: 'POST',
+      url: 'api/admin/local-authority-return/monitor',
+      params: {
+        uid: 'someuid',
+      },
+      body: {
+        workers: 123,
+        status: 'Not Updated',
+        notes: 'These are some notes!',
+      },
+    };
+
+    it('should reply with a 200', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateLocalAuthority(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return a local authority for a given id', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateLocalAuthority(req, res);
+
+      const expectedResponse = {
+        workers: 123,
+        notes: 'These are some notes!',
+        status: 'Not Updated',
+      };
+
+      expect(res._getData()).to.deep.equal(expectedResponse);
+    });
+
+    it('should reply with a 503 when there is an error', async () => {
+      sinon.restore();
+
+      sinon.stub(models.LocalAuthorities, 'updateLA').throws();
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateLocalAuthority(req, res);
 
       expect(res.statusCode).to.deep.equal(503);
     });

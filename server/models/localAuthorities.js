@@ -77,5 +77,13 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  LocalAuthorities.updateLA = async function (uid, values) {
+    return await this.update(values, {
+      where: {
+        LocalAuthorityUID: uid,
+      },
+    });
+  };
+
   return LocalAuthorities;
 };

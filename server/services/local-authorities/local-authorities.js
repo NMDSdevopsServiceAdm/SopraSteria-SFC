@@ -27,5 +27,15 @@ const formatIndividualLaResponse = (localAuthority) => {
   };
 };
 
+const formatLADatabase = (localAuthority) => {
+  const { workers, status, notes } = localAuthority;
+  return {
+    ThisYear: workers,
+    Status: status,
+    Notes: notes,
+  };
+};
+
 module.exports.formatLaResponse = formatLaResponse;
 module.exports.formatIndividualLaResponse = formatIndividualLaResponse;
+module.exports.formatLADatabase = formatLADatabase;

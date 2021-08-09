@@ -2,6 +2,7 @@ const expect = require('chai').expect;
 const {
   formatLaResponse,
   formatIndividualLaResponse,
+  formatLADatabase,
 } = require('../../../../services/local-authorities/local-authorities');
 
 describe('/server/services/local-authorities/local-authorities', () => {
@@ -74,6 +75,26 @@ describe('/server/services/local-authorities/local-authorities', () => {
       const reply = formatIndividualLaResponse(la);
 
       expect(reply).to.deep.equal(expectedResponse);
+    });
+  });
+
+  describe('formatLADatabase', () => {
+    it('should reformat returned local authority object', async () => {
+      const db = {
+        ThisYear: 10,
+        Status: 'Not updated',
+        Notes: 'This is a comment',
+      };
+
+      const la = {
+        status: 'Not updated',
+        workers: 10,
+        notes: 'This is a comment',
+      };
+
+      const reply = formatLADatabase(la);
+
+      expect(reply).to.deep.equal(db);
     });
   });
 });

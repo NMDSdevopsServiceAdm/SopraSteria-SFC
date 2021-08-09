@@ -1,9 +1,12 @@
 'use strict';
 const router = require('express').Router();
 const models = require('../../../../models');
+const { celebrate, Joi, errors } = require('celebrate');
+
 const {
   formatLaResponse,
   formatIndividualLaResponse,
+  formatLADatabase,
 } = require('../../../../services/local-authorities/local-authorities');
 
 const getLocalAuthorities = async (req, res) => {
@@ -22,18 +25,67 @@ const getLocalAuthority = async (req, res) => {
   try {
     const localAuthority = await models.LocalAuthorities.findById(req.params.uid);
     const laResponse = formatIndividualLaResponse(localAuthority);
-    res.status(200).send(laResponse);
+    return res.status(200).send(laResponse);
   } catch (error) {
     console.log(error);
-    res.sendStatus(503);
+    return res.sendStatus(503);
+  }
+};
+
+const updateLocalAuthority = async (req, res) => {
+  try {
+    const formattedLA = formatLADatabase(req.body);
+    await models.LocalAuthorities.updateLA(req.params.uid, formattedLA);
+    return res.status(200).send(req.body);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(503);
   }
 };
 
 router.get('/', getLocalAuthorities);
-router.route('/:uid').get(async function (req, res) {
-  await getLocalAuthority(req, res);
-});
+router.get(
+  '/:uid',
+  celebrate({
+    params: {
+      uid: Joi.string()
+        .uuid({
+          version: ['uuidv4'],
+        })
+        .required(),
+    },
+  }),
+  getLocalAuthority,
+);
+
+router.post(
+  '/:uid',
+  celebrate({
+    params: {
+      uid: Joi.string()
+        .uuid({
+          version: ['uuidv4'],
+        })
+        .required(),
+    },
+    body: Joi.object().keys({
+      workers: Joi.number(),
+      status: Joi.string().valid(
+        'Not Updated',
+        'Update, Not Complete',
+        'Update, Complete',
+        'Confirmed, Not Complete',
+        'Confirmed, Complete',
+      ),
+      notes: Joi.string(),
+    }),
+  }),
+  updateLocalAuthority,
+);
+
+router.use('/', errors());
 
 module.exports = router;
 module.exports.getLocalAuthorities = getLocalAuthorities;
 module.exports.getLocalAuthority = getLocalAuthority;
+module.exports.updateLocalAuthority = updateLocalAuthority;
