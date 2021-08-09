@@ -110,21 +110,16 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     };
   }
 
-  ngOnInit(): void {
-    this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
-        this.canViewListOfWorkers = permission.permissions.canViewListOfWorkers;
-        this.canEditEstablishment = permission.permissions.canEditEstablishment;
-      }),
-    );
+  async ngOnInit(): Promise<void> {
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
 
-    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
-      this.wdfNewDesign = value;
-      this.setTotalStaffWarning();
-      if (this.canEditEstablishment && this.wdfView && this.wdfNewDesign) {
-        this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
-      }
-    });
+    this.wdfNewDesign = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
+
+    this.setTotalStaffWarning();
+    if (this.canEditEstablishment && this.wdfView && this.wdfNewDesign) {
+      this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
+    }
 
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
@@ -210,7 +205,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     );
   }
 
-  private updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
+  public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
+    console.log(
+      this.workplace.wdf?.employerType.isEligible,
+      !this.workplace.wdf?.employerType.updatedSinceEffectiveDate,
+    );
+
     if (this.workplace.wdf?.employerType.isEligible && !this.workplace.wdf?.employerType.updatedSinceEffectiveDate) {
       this.confirmField('employerType');
     }

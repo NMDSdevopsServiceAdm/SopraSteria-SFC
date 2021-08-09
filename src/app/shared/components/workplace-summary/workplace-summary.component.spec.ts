@@ -557,4 +557,31 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
       expect(component.allRequiredFieldsUpdated()).toBeTrue();
     });
   });
+
+  describe('Updating employer type automatically', async () => {
+    it('should call updateEmployerType function in ngOnInit when can edit establishment and on WDF page', async () => {
+      const { component } = await setup();
+
+      const updateFunction = spyOn(component, 'updateEmployerTypeIfNotUpdatedSinceEffectiveDate');
+
+      component.wdfNewDesign = true;
+
+      await component.ngOnInit();
+
+      expect(updateFunction).toHaveBeenCalled();
+    });
+
+    it('should call confirmField from updateEmployerType function when employer type is eligible but not updated since effective date', async () => {
+      const { component } = await setup();
+
+      const confirmField = spyOn(component, 'confirmField');
+
+      component.workplace.wdf.employerType.isEligible = true;
+      component.workplace.wdf.employerType.updatedSinceEffectiveDate = false;
+
+      component.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
+
+      expect(confirmField).toHaveBeenCalledWith('employerType');
+    });
+  });
 });

@@ -45,7 +45,7 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
     },
     getValueAsync: () => {
       return new Promise((resolve) => {
-        return false;
+        return resolve(true);
       });
     },
   } as IConfigCatClient;
