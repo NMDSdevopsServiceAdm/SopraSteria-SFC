@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
       Status: {
         type: DataTypes.ENUM,
         values: [
-          'Not Updated',
-          'Update, Not Complete',
-          'Update, Complete',
-          'Confirmed, Not Complete',
-          'Confirmed, Complete',
+          'Not updated',
+          'Update, not complete',
+          'Update, complete',
+          'Confirmed, not complete',
+          'Confirmed, complete',
         ],
       },
       Notes: DataTypes.TEXT,
