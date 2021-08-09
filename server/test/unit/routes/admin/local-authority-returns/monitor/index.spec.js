@@ -221,21 +221,6 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return a local authority for a given id', async () => {
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
-
-      await updateLocalAuthority(req, res);
-
-      const expectedResponse = {
-        workers: 123,
-        notes: 'These are some notes!',
-        status: 'Not Updated',
-      };
-
-      expect(res._getData()).to.deep.equal(expectedResponse);
-    });
-
     it('should reply with a 503 when there is an error', async () => {
       sinon.restore();
 
