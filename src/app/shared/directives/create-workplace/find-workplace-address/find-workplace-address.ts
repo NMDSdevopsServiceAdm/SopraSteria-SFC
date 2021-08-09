@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
@@ -22,6 +23,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   public serverError: string;
   public submitted = false;
   public createAccountNewDesign: boolean;
+  public returnToConfirmDetails: URLStructure;
 
   constructor(
     public backService: BackService,
@@ -133,9 +135,16 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.setBackLinkToConfirmDetailsPage();
+      return;
+    }
     const url = this.createAccountNewDesign ? 'new-regulated-by-cqc' : 'select-workplace-address';
     this.backService.setBackLink({ url: [this.flow, url] });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setBackLinkToConfirmDetailsPage(): void {}
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
