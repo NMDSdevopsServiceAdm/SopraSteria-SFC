@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { IndividualLA } from '@core/model/admin/local-authorities-return.model';
-import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import {
+  LocalAuthoritiesReturnService,
+} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -11,7 +13,6 @@ export class GetLaResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | IndividualLA> {
     const uid = route.paramMap.get('uid');
-    console.log(route);
     if (uid) {
       return this.localAuthoritiesReturnService.getLA(uid).pipe(
         catchError(() => {
