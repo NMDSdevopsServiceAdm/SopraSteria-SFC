@@ -36,7 +36,7 @@ const updateLocalAuthority = async (req, res) => {
   try {
     const formattedLA = formatLADatabase(req.body);
     await models.LocalAuthorities.updateLA(req.params.uid, formattedLA);
-    return res.status(200).send(req.body);
+    return res.status(200).send();
   } catch (error) {
     console.log(error);
     return res.sendStatus(503);
