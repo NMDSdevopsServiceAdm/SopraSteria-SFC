@@ -15,14 +15,25 @@
       <span class="govuk-caption-l govuk-!-margin-bottom-2">User account</span>
       <h1 class="govuk-heading-l">Confirm your account details</h1>
     </ng-template>
-    <app-summary-list [topBorder]="true" [summaryList]="userInfo" (setReturn)="onSetReturn()"></app-summary-list>
+    <app-summary-list
+      [topBorder]="true"
+      [summaryList]="userInfo"
+      (setReturn)="onSetReturn()"
+      data-testid="userInfo"
+    ></app-summary-list>
     <app-summary-list
       [topBorder]="true"
       [summaryList]="loginInfo"
       [displayShowPasswordToggle]="true"
       (setReturn)="onSetReturn()"
+      data-testid="loginInfo"
     ></app-summary-list>
-    <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo" (setReturn)="onSetReturn()"></app-summary-list>
+    <app-summary-list
+      [wrapBorder]="true"
+      [summaryList]="securityInfo"
+      (setReturn)="onSetReturn()"
+      data-testid="securityInfo"
+    ></app-summary-list>
 
     <ng-container *ngIf="!createAccountNewDesign">
       <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">

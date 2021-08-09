@@ -49,7 +49,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Main service',
         data: this.workplace.name,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'new-select-main-service'] },
       },
     ];
   }
@@ -59,7 +59,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'CQC location ID',
         data: this.locationAddress.locationId,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'find-workplace'] },
       },
       {
         label: 'Name and address',
@@ -73,7 +73,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'find-workplace'] },
       },
       {
         label: 'Address',

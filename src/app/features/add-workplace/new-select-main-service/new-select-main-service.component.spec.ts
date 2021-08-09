@@ -125,7 +125,7 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeNull();
   });
 
-  it("should see 'Select its main service' when is a parent", async () => {
+  it('should see "Select its main service"', async () => {
     const { component, fixture, queryByText } = await setup();
 
     component.isParent = true;
@@ -153,7 +153,7 @@ describe('NewSelectMainServiceComponent', () => {
     expect(getAllByText(errorMessage).length).toBe(3);
   });
 
-  it('should submit and go to the add-workplace/add-user-details url when option selected and is a parent', async () => {
+  it('should submit and go to the add-workplace/confirm-workplace-details url when option selected', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
     component.isParent = true;
@@ -286,6 +286,20 @@ describe('NewSelectMainServiceComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['add-workplace', 'workplace-name'],
+      });
+    });
+
+    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null and feature flag is on', async () => {
+      const { component } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'confirm-workplace-details'],
       });
     });
   });

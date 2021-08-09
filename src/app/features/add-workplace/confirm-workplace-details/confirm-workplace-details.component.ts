@@ -7,9 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  ConfirmWorkplaceDetailsDirective,
-} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -33,6 +31,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   protected init(): void {
     this.flow = '/add-workplace';
+    this.resetReturnTo();
     this.getWorkplaceData();
   }
 
@@ -69,5 +68,15 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
           },
         ),
     );
+  }
+
+  public onSetReturn(): void {
+    this.workplaceService.setReturnTo({
+      url: [`${this.flow}/confirm-details`],
+    });
+  }
+
+  private resetReturnTo(): void {
+    this.workplaceService.returnTo$.next(null);
   }
 }

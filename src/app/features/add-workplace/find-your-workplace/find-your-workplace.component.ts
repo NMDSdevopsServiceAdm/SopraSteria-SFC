@@ -5,7 +5,10 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { FindYourWorkplaceDirective } from '@shared/directives/create-workplace/find-your-workplace/find-your-workplace.directive';
+import {
+  FindYourWorkplaceDirective,
+} from '@shared/directives/create-workplace/find-your-workplace/find-your-workplace.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-find-your-workplace',
@@ -20,7 +23,21 @@ export class FindYourWorkplaceComponent extends FindYourWorkplaceDirective {
     protected formBuilder: FormBuilder,
     protected workplaceService: WorkplaceService,
     protected locationService: LocationService,
+    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(router, backService, errorSummaryService, route, formBuilder, workplaceService, locationService);
+    super(
+      router,
+      backService,
+      errorSummaryService,
+      route,
+      formBuilder,
+      workplaceService,
+      locationService,
+      featureFlagsService,
+    );
+  }
+
+  protected navigateToConfirmDetails(): void {
+    this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
   }
 }

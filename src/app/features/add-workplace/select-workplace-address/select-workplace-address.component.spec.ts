@@ -161,6 +161,23 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/add-workplace/new-select-main-service']);
     });
 
+    it('should navigate to the confirm-workplace-details page in add-workplace flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {
+      const { component, spy, getByText } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+
+      const form = component.form;
+      form.controls['address'].setValue('1');
+      form.controls['address'].markAsDirty();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details']);
+    });
+
     it('should navigate to workplace-name url in add-workplace flow when workplace without name selected and Continue clicked', async () => {
       const { component, spy, getByText, fixture } = await setup();
       const form = component.form;

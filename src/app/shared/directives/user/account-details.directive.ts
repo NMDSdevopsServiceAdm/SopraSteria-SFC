@@ -176,14 +176,12 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   }
 
   protected prefillForm(userDetails: UserDetails): void {
-    if (userDetails) {
-      this.form.setValue({
-        email: userDetails.email,
-        fullname: userDetails.fullname,
-        jobTitle: userDetails.jobTitle,
-        phone: userDetails.phone,
-      });
-    }
+    this.form.setValue({
+      email: userDetails.email,
+      fullname: userDetails.fullname,
+      jobTitle: userDetails.jobTitle,
+      phone: userDetails.phone,
+    });
   }
 
   protected onError(response: HttpErrorResponse): void {

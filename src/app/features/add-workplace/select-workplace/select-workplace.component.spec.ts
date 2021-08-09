@@ -121,6 +121,23 @@ describe('SelectWorkplaceComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
     });
 
+    it('should navigate to the confirm-details page in registration flow when returnToConfirmDetails is not null', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-details'] };
+      component.setNextRoute();
+      fixture.detectChanges();
+
+      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      fireEvent.click(yesRadioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-details']);
+    });
+
     it('should navigate back to the find-workplace url in add-workplace flow when Change clicked', async () => {
       const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
