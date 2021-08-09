@@ -22,4 +22,11 @@ export class LocalAuthoritiesReturnService {
   public getLA(localAuthorityId: string): Observable<IndividualLA> {
     return this.http.get<IndividualLA>(`/api/admin/local-authority-return/monitor/${localAuthorityId}`);
   }
+
+  public updateLA(localAuthorityId: string, localAuthority: IndividualLA): Observable<IndividualLA> {
+    return this.http.post<IndividualLA>(
+      `/api/admin/local-authority-return/monitor/${localAuthorityId}`,
+      localAuthority,
+    );
+  }
 }

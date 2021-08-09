@@ -1,9 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { IndividualLA } from '@core/model/admin/local-authorities-return.model';
-import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import {
+  LocalAuthoritiesReturnService,
+} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
@@ -18,26 +20,33 @@ export class LocalAuthorityComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
+    private router: Router,
     private breadcrumbService: BreadcrumbService,
     private localAuthoritiesService: LocalAuthoritiesReturnService,
   ) {}
 
   ngOnInit(): void {
-    this.setupForm();
     this.localAuthority = this.route.snapshot.data.localAuthority;
     this.breadcrumbService.show(JourneyType.ADMIN);
-    // console.log(this.localAuthority);
+    this.setupForm();
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      numberOfWorkers: [''],
-      status: [''],
-      notes: [''],
+      workers: [this.route.snapshot.data.localAuthority.workers, ''],
+      status: [this.route.snapshot.data.localAuthority.status, ''],
+      notes: [this.route.snapshot.data.localAuthority.notes, ''],
     });
   }
 
   public onSubmit(): void {
-    console.log('submit');
+    this.localAuthoritiesService.updateLA(this.route.snapshot.paramMap.get('uid'), this.form.value).subscribe(
+      () => {
+        this.router.navigate(['/sfcadmin', 'local-authorities-return', 'monitor']);
+      },
+      (error) => {
+        console.error(error);
+      },
+    );
   }
 }

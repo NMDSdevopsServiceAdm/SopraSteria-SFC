@@ -1,20 +1,20 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-grid-row">
-    <fieldset class="govuk-fieldset" role="group">
-      <div class="govuk-grid-column">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">Local authority: {{ localAuthority.name }}</h1>
-        </legend>
-      </div>
+  <fieldset class="govuk-fieldset" role="group">
+    <div class="govuk-grid-column">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">Local authority: {{ localAuthority.name }}</h1>
+      </legend>
+    </div>
+    <div class="govuk-grid-row">
       <div class="govuk-form-group">
         <div class="govuk-grid-column-one-half-from-desktop">
-          <label for="numberOfWorkers" class="govuk-label">Number of workers</label>
+          <label for="workers" class="govuk-label">Number of workers</label>
           <input
             type="text"
             class="govuk-input govuk-input--width-5"
-            name="numberOfWorkers"
-            id="numberOfWorkers"
-            [formControlName]="'numberOfWorkers'"
+            name="workers"
+            id="workers"
+            [formControlName]="'workers'"
           />
         </div>
       </div>
@@ -37,9 +37,9 @@
           <textarea class="govuk-textarea" name="notes" id="notes" rows="4" [formControlName]="'notes'"></textarea>
         </div>
       </div>
-    </fieldset>
-    <div class="govuk-grid-column-one-third">
-      <button type="submit" class="govuk-button">Save and return</button>
+      <div class="govuk-grid-column-one-third">
+        <button type="submit" class="govuk-button">Save and return</button>
+      </div>
     </div>
-  </div>
+  </fieldset>
 </form>
