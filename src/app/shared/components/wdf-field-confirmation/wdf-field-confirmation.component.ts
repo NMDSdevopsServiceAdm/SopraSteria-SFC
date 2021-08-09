@@ -5,18 +5,32 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   templateUrl: './wdf-field-confirmation.component.html',
 })
 export class WdfFieldConfirmationComponent {
-  @Input() changeLink: any[];
+  public confirmButtonClicked = false;
+  private _workerUid: string = null;
+
   @Output() fieldConfirmation: EventEmitter<Event> = new EventEmitter();
   @Output() setReturnClicked: EventEmitter<Event> = new EventEmitter();
+  @Input() changeLink: any[];
 
-  public confirmButtonClicked = false;
+  @Input() set workerUid(uid: string) {
+    this._workerUid = uid;
+    this.resetConfirmButtonClicked();
+  }
 
-  confirmField() {
+  get workerUid(): string {
+    return this._workerUid;
+  }
+
+  public confirmField(): void {
     this.fieldConfirmation.emit();
     this.confirmButtonClicked = true;
   }
 
-  setReturn() {
+  public resetConfirmButtonClicked(): void {
+    this.confirmButtonClicked = false;
+  }
+
+  public setReturn(): void {
     this.setReturnClicked.emit();
   }
 }
