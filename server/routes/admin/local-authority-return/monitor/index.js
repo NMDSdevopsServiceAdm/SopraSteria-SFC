@@ -27,7 +27,7 @@ const getLocalAuthority = async (req, res) => {
     const laResponse = formatIndividualLaResponse(localAuthority);
     return res.status(200).send(laResponse);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.sendStatus(503);
   }
 };
@@ -38,7 +38,7 @@ const updateLocalAuthority = async (req, res) => {
     await models.LocalAuthorities.updateLA(req.params.uid, formattedLA);
     return res.status(200).send();
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.sendStatus(503);
   }
 };
