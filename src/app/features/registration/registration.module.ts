@@ -13,6 +13,9 @@ import { ConfirmDetailsComponent } from '@features/create-account/workplace/conf
 import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
+import {
+  CouldNotFindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   NewWorkplaceNotFoundComponent,
@@ -70,6 +73,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     NewWorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
     UsernamePasswordComponent,
+    CouldNotFindWorkplaceAddressComponent,
     ConfirmDetailsComponent,
   ],
 })

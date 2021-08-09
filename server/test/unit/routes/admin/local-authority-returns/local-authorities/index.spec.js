@@ -17,7 +17,7 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
           {
             LocalAuthorityName: 'Example B Authority 1',
             ThisYear: 10,
-            Status: 'Not Updated',
+            Status: 'Not updated',
             Notes: null,
             LocalAuthorityUID: 'SomeUID1',
             establishment: {
@@ -27,7 +27,7 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
           {
             LocalAuthorityName: 'Example B Authority 2',
             ThisYear: 50,
-            Status: 'Update, Not Complete',
+            Status: 'Update, not complete',
             Notes: 'This is a comment',
             LocalAuthorityUID: 'SomeUID2',
             establishment: {
@@ -37,7 +37,7 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
           {
             LocalAuthorityName: 'Example C Authority 1',
             ThisYear: 54,
-            Status: 'Update, Complete',
+            Status: 'Update, complete',
             Notes: 'Hello',
             LocalAuthorityUID: 'SomeUID3',
             establishment: {
@@ -47,7 +47,7 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
           {
             LocalAuthorityName: 'Example C Authority 2',
             ThisYear: 155,
-            Status: 'Update, Confirmed',
+            Status: 'Confirmed, complete',
             Notes: null,
             LocalAuthorityUID: 'SomeUID4',
             establishment: {
@@ -82,14 +82,14 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
         B: [
           {
             name: 'Example B Authority 1',
-            status: 'Not Updated',
+            status: 'Not updated',
             workers: 10,
             notes: false,
             localAuthorityUID: 'SomeUID1',
           },
           {
             name: 'Example B Authority 2',
-            status: 'Update, Not Complete',
+            status: 'Update, not complete',
             workers: 50,
             notes: true,
             localAuthorityUID: 'SomeUID2',
@@ -98,14 +98,14 @@ describe('server/routes/admin/local-authority-returns/local-authorities', async 
         C: [
           {
             name: 'Example C Authority 1',
-            status: 'Update, Complete',
+            status: 'Update, complete',
             workers: 54,
             notes: true,
             localAuthorityUID: 'SomeUID3',
           },
           {
             name: 'Example C Authority 2',
-            status: 'Update, Confirmed',
+            status: 'Confirmed, complete',
             workers: 155,
             notes: false,
             localAuthorityUID: 'SomeUID4',

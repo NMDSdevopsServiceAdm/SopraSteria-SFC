@@ -112,12 +112,15 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
+      this.setInvalidPostcode(this.getPostcode.value);
       this.router.navigate([this.flow, 'workplace-address-not-found']);
       return;
     }
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }
+
+  protected setInvalidPostcode(postcode: string): void {}
 
   public onSubmit(): void {
     this.submitted = true;

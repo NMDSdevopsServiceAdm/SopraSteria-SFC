@@ -16,9 +16,12 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
+  public isCqcRegulated: boolean;
+  public createAccountNewDesign: boolean;
+
   constructor(
     private featureFlagsService: FeatureFlagsService,
-    private workplaceService: WorkplaceService,
+    public workplaceService: WorkplaceService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -66,9 +69,15 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
-    if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
-      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-      return;
+    if (this.createAccountNewDesign) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        return;
+      }
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        return;
+      }
     }
 
     if (this.isCqcRegulated) {
@@ -84,5 +93,13 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
       return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
     }
     return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+  }
+
+  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }

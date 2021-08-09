@@ -18,6 +18,7 @@ import { SelectWorkplaceComponent } from '@features/add-workplace/select-workpla
 import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/add-workplace/workplace-not-found/workplace-not-found.component';
 
+import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
 import { StartComponent } from './start/start.component';
@@ -140,6 +141,12 @@ const routes: Routes = [
     path: 'workplace-name-address',
     component: WorkplaceNameAddressComponent,
     data: { title: 'Workplace name and address?' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'workplace-address-not-found',
+    component: CouldNotFindWorkplaceAddressComponent,
+    data: { title: 'Could not find your workplace address' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
 ];

@@ -52,6 +52,10 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
     ];
   }
 
+  protected setInvalidPostcode(postcode: string): void {
+    this.workplaceService.invalidPostcodeEntered$.next(postcode);
+  }
+
   protected onSuccess(data: LocationSearchResponse): void {
     this.workplaceService.locationAddresses$.next(data.postcodedata);
   }

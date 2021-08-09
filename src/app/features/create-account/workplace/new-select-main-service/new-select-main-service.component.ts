@@ -98,12 +98,8 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
 
   private getNonCQCRegulatedBackLink(): string {
     if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      if (this.registrationService.locationAddresses$.value.length > 0) {
-        return 'workplace-name-address';
-      }
-      return 'workplace-address-not-found';
+      return 'workplace-name-address';
     }
-
     if (this.registrationService.manuallyEnteredWorkplaceName$.value) {
       return 'workplace-name';
     }
