@@ -29,4 +29,8 @@ export class LocalAuthoritiesReturnService {
       localAuthority,
     );
   }
+
+  public resetLAs(): Observable<LAs> {
+    return this.http.put<LAs>(`/api/admin/local-authority-return/monitor/reset`, {});
+  }
 }
