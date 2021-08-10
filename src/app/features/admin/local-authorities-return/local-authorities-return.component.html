@@ -1,0 +1,15 @@
+<h2 class="govuk-heading-m">Local authority returns</h2>
+<ul class="govuk-list">
+  <li>
+    <a [routerLink]="['/sfcadmin', 'local-authorities-return', 'monitor']" class="govuk-link">
+      Monitor returns ({{ startDate | date: 'dd/MM/yyyy' }} to {{ endDate | date: 'dd/MM/yyyy' }})
+    </a>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+  </li>
+  <li>
+    <a [routerLink]="['/sfcadmin', 'local-authorities-return', 'set-dates']" class="govuk-link">
+      Set start and end dates
+    </a>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+  </li>
+</ul>
