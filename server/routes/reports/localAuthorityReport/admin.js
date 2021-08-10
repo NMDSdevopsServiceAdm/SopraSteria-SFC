@@ -27,14 +27,12 @@ const _csvNoNull = (toCsv) => {
     return '';
   }
 };
-const _fromDateToCsvDate = (convertThis) => {
-  if (convertThis) {
-    const datePart = convertThis.toISOString().substring(0, 10);
-    const dateParts = datePart.split('-');
 
-    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+const _escapeCSV = (term) => {
+  if (term.match && term.match(/,|"/)) {
+    return `"${term.replace('"', '""')}"`;
   } else {
-    return '';
+    return term;
   }
 };
 
@@ -45,8 +43,11 @@ const reportGet = async (req, res) => {
   const userAgent = UserAgentParser(req.headers['user-agent']);
   const windowsTest = /windows/i;
   const NEWLINE = windowsTest.test(userAgent.os.name) ? '\r\n' : '\n';
-  const fromDate = config.get('app.reports.localAuthority.fromDate');
-  const toDate = config.get('app.reports.localAuthority.toDate');
+  const laReturnStartDate = await models.AdminSettings.getValue('laReturnStartDate');
+  const laReturnEndDate = await models.AdminSettings.getValue('laReturnEndDate');
+
+  const fromDate = new Date(laReturnStartDate.Data.value);
+  const toDate = new Date(laReturnEndDate.Data.value);
 
   try {
     const date = new Date().toISOString().split('T')[0];
@@ -90,11 +91,14 @@ Contracted/Average hours,\
 Sickness,\
 Pay,\
 Qualifications,\
-Last Years confirmed numbers' +
+Last Years confirmed numbers,\
+This Years confirmed numbers,\
+Status,\
+Notes' +
       NEWLINE;
 
     const runReport = await models.sequelize.query(
-      `select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);`,
+      'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);',
       {
         replacements: {
           givenFromDate: fromDate,
@@ -203,7 +207,10 @@ ${thisPrimaryLaEstablishment.CountOfContractedAverageHours},\
 ${thisPrimaryLaEstablishment.CountOfSickness},\
 ${thisPrimaryLaEstablishment.CountOfPay},\
 ${thisPrimaryLaEstablishment.CountOfQualification},\
-${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers}` +
+${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers},\
+${thisPrimaryLaEstablishment.ThisYearsConfirmedNumbers},\
+${_escapeCSV(thisPrimaryLaEstablishment.Status)},\
+${_escapeCSV(_csvNoNull(thisPrimaryLaEstablishment.Notes))}` +
           NEWLINE;
       });
     }
