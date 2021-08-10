@@ -7,6 +7,7 @@ const {
   getLocalAuthorities,
   getLocalAuthority,
   updateLocalAuthority,
+  resetLocalAuthorities,
 } = require('../../../../../../routes/admin/local-authority-return/monitor');
 
 describe('server/routes/admin/local-authority-returns/monitor', async () => {
@@ -230,6 +231,128 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       const res = httpMocks.createResponse();
 
       await updateLocalAuthority(req, res);
+
+      expect(res.statusCode).to.deep.equal(503);
+    });
+  });
+
+  describe('resetLocalAuthorities', () => {
+    beforeEach(() => {
+      sinon.stub(models.LocalAuthorities, 'resetLocalAuthorities');
+      sinon.stub(models.LocalAuthorities, 'getAll').callsFake(async () => {
+        return [
+          {
+            LocalAuthorityName: 'Example B Authority 1',
+            ThisYear: 10,
+            Status: 'Not updated',
+            Notes: null,
+            LocalAuthorityUID: 'SomeUID1',
+            establishment: {
+              nmdsId: 'B123456',
+            },
+          },
+          {
+            LocalAuthorityName: 'Example B Authority 2',
+            ThisYear: 50,
+            Status: 'Not updated',
+            Notes: null,
+            LocalAuthorityUID: 'SomeUID2',
+            establishment: {
+              nmdsId: 'B112583',
+            },
+          },
+          {
+            LocalAuthorityName: 'Example C Authority 1',
+            ThisYear: 54,
+            Status: 'Not updated',
+            Notes: null,
+            LocalAuthorityUID: 'SomeUID3',
+            establishment: {
+              nmdsId: 'C223485',
+            },
+          },
+          {
+            LocalAuthorityName: 'Example C Authority 2',
+            ThisYear: 155,
+            Status: 'Not updated',
+            Notes: null,
+            LocalAuthorityUID: 'SomeUID4',
+            establishment: {
+              nmdsId: 'C223485',
+            },
+          },
+        ];
+      });
+    });
+
+    const request = {
+      method: 'PUT',
+      url: 'api/admin/local-authority-return/monitor/reset',
+    };
+
+    it('should reply with a 200', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await resetLocalAuthorities(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return a list of all the local authorities', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await resetLocalAuthorities(req, res);
+
+      const expectedResponse = {
+        B: [
+          {
+            name: 'Example B Authority 1',
+            status: 'Not updated',
+            workers: 10,
+            notes: false,
+            localAuthorityUID: 'SomeUID1',
+          },
+          {
+            name: 'Example B Authority 2',
+            status: 'Not updated',
+            workers: 50,
+            notes: false,
+            localAuthorityUID: 'SomeUID2',
+          },
+        ],
+        C: [
+          {
+            name: 'Example C Authority 1',
+            status: 'Not updated',
+            workers: 54,
+            notes: false,
+            localAuthorityUID: 'SomeUID3',
+          },
+          {
+            name: 'Example C Authority 2',
+            status: 'Not updated',
+            workers: 155,
+            notes: false,
+            localAuthorityUID: 'SomeUID4',
+          },
+        ],
+      };
+
+      expect(res._getData()).to.deep.equal(expectedResponse);
+    });
+
+    it('should reply with a 503 when there is an error', async () => {
+      sinon.restore();
+
+      sinon.stub(models.LocalAuthorities, 'resetLocalAuthorities').throws();
+      sinon.stub(models.LocalAuthorities, 'getAll').throws();
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await resetLocalAuthorities(req, res);
 
       expect(res.statusCode).to.deep.equal(503);
     });

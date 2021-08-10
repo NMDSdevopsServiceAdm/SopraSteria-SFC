@@ -1,4 +1,7 @@
 'use strict';
+
+const { Op } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   const LocalAuthorities = sequelize.define(
     'LocalAuthorities',
@@ -83,6 +86,24 @@ module.exports = (sequelize, DataTypes) => {
         LocalAuthorityUID: uid,
       },
     });
+  };
+
+  LocalAuthorities.resetLocalAuthorities = async function () {
+    return await this.update(
+      {
+        LastYear: sequelize.col('ThisYear'),
+        ThisYear: 0,
+        Status: 'Not updated',
+        Notes: null,
+      },
+      {
+        where: {
+          ID: {
+            [Op.not]: null,
+          },
+        },
+      },
+    );
   };
 
   return LocalAuthorities;

@@ -2,7 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Area, LAs } from '@core/model/admin/local-authorities-return.model';
+import {
+  LocalAuthoritiesReturnService,
+} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
+
+import { ResetDialogComponent } from './reset-dialog/reset-dialog.component';
 
 @Component({
   selector: 'app-monitor',
@@ -59,7 +65,12 @@ export class MonitorComponent implements OnInit {
   ];
   localAuthorities: LAs;
 
-  constructor(private breadcrumbService: BreadcrumbService, private route: ActivatedRoute) {}
+  constructor(
+    private breadcrumbService: BreadcrumbService,
+    private route: ActivatedRoute,
+    private localAuthoritiesReturnService: LocalAuthoritiesReturnService,
+    public dialogService: DialogService,
+  ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN);
@@ -92,5 +103,15 @@ export class MonitorComponent implements OnInit {
     event.preventDefault();
     this.allOpen = !this.allOpen;
     this.areas.forEach((area: Area) => (area.open = this.allOpen));
+  }
+
+  resetLAs(): void {
+    this.dialogService.open(ResetDialogComponent, {}).afterClosed.subscribe((approveConfirmed) => {
+      if (approveConfirmed) {
+        this.localAuthoritiesReturnService.resetLAs().subscribe((resetLAs) => {
+          this.localAuthorities = resetLAs;
+        });
+      }
+    });
   }
 }

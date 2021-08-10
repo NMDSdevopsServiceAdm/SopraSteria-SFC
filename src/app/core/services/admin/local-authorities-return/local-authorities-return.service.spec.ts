@@ -57,12 +57,13 @@ describe('LocalAuthoriesReturnService', () => {
     expect(req.request.method).toBe('GET');
   });
 
-  it('should get a local authority with a given id', () => {
-    service.getLA('someuid').subscribe();
+  it('should reset las', () => {
+    service.resetLAs().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authority-return/monitor/someuid');
+    const req = http.expectOne('/api/admin/local-authority-return/monitor/reset');
 
-    expect(req.request.method).toBe('GET');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({});
   });
 });
