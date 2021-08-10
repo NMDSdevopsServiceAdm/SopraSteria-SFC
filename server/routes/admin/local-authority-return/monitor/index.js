@@ -43,6 +43,19 @@ const updateLocalAuthority = async (req, res) => {
   }
 };
 
+const resetLocalAuthorities = async (req, res) => {
+  try {
+    await models.LocalAuthorities.resetLocalAuthorities();
+    const localAuthorities = await models.LocalAuthorities.getAll();
+    const laResponse = formatLaResponse(localAuthorities);
+
+    return res.status(200).send(laResponse);
+  } catch (error) {
+    console.error(error);
+    return res.sendStatus(503);
+  }
+};
+
 router.get('/', getLocalAuthorities);
 router.get(
   '/:uid',
@@ -83,9 +96,12 @@ router.post(
   updateLocalAuthority,
 );
 
+router.put('/reset', resetLocalAuthorities);
+
 router.use('/', errors());
 
 module.exports = router;
 module.exports.getLocalAuthorities = getLocalAuthorities;
 module.exports.getLocalAuthority = getLocalAuthority;
 module.exports.updateLocalAuthority = updateLocalAuthority;
+module.exports.resetLocalAuthorities = resetLocalAuthorities;
