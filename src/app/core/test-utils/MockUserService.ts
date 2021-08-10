@@ -131,3 +131,13 @@ export class MockUserService extends UserService {
     return userDetails;
   }
 }
+
+export class MockUserServiceWithNoUserDetails extends MockUserService {
+  public userDetails$ = of({
+    uid: '',
+    email: '',
+    fullname: '',
+    jobTitle: '',
+    phone: '',
+  });
+}

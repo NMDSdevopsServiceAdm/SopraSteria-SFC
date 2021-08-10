@@ -185,5 +185,20 @@ describe('FindWorkplaceAddressComponent', () => {
         url: ['registration', 'new-regulated-by-cqc'],
       });
     });
+
+    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.createAccountNewDesign = true;
+      component.fixture.componentInstance.returnToConfirmDetails = {
+        url: ['registration', 'confirm-details'],
+      };
+      component.fixture.componentInstance.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
+      });
+    });
   });
 });

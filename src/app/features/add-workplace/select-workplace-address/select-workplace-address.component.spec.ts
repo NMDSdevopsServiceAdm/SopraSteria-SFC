@@ -134,7 +134,7 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(changeButton.getAttribute('href')).toBe('/add-workplace/find-workplace-address');
     });
 
-    it('should navigate to workplace-address url in add-workplace flow when workplace not listed button clicked', async () => {
+    it('should navigate to workplace-name-address url in add-workplace flow when workplace not listed button clicked', async () => {
       const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
       component.ngOnInit();
@@ -142,7 +142,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       const notDisplayedButton = getByText('Workplace address is not listed or is not correct');
 
-      expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-address');
+      expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
 
     it('should navigate to select-main-service url in add-workplace flow when workplace with name selected and Continue clicked', async () => {
@@ -159,6 +159,23 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(form.valid).toBeTruthy();
 
       expect(spy).toHaveBeenCalledWith(['/add-workplace/new-select-main-service']);
+    });
+
+    it('should navigate to the confirm-workplace-details page in add-workplace flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {
+      const { component, spy, getByText } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+
+      const form = component.form;
+      form.controls['address'].setValue('1');
+      form.controls['address'].markAsDirty();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details']);
     });
 
     it('should navigate to workplace-name url in add-workplace flow when workplace without name selected and Continue clicked', async () => {

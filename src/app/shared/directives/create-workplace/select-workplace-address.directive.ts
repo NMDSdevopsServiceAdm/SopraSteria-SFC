@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -19,7 +20,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public locationAddresses: Array<LocationAddress>;
   public submitted = false;
   public createAccountNewDesign: boolean;
-  public workplaceNotListedLink: string;
+  public returnToConfirmDetails: URLStructure;
   public selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
 
@@ -42,7 +43,6 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
-      this.workplaceNotListedLink = value ? 'workplace-address' : 'workplace-name-address';
     });
   }
 
@@ -88,6 +88,11 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   protected navigateToNextRoute(locationName: string): void {
+    if (this.returnToConfirmDetails) {
+      this.navigateToConfirmDetails();
+      return;
+    }
+
     if (this.createAccountNewDesign) {
       if (locationName?.length) {
         this.router.navigate([`${this.flow}/new-select-main-service`]);
@@ -124,6 +129,9 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected navigateToConfirmDetails(): void {}
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

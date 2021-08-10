@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -25,6 +26,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public renderForm = false;
   public serverError: string;
   public submitted = false;
+  public returnToConfirmDetails: URLStructure;
 
   constructor(
     protected backService: BackService,

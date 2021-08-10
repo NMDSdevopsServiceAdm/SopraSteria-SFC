@@ -5,9 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import {
-  WorkplaceNameAddressComponent,
-} from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -118,6 +116,27 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
   });
 
+  it('should navigate to confirm-workplace-details page on success if returnToConfirmDetails is not null', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+    const form = component.form;
+
+    form.controls['workplaceName'].setValue('Workplace');
+    form.controls['address1'].setValue('1 Main Street');
+    form.controls['townOrCity'].setValue('London');
+    form.controls['county'].setValue('Greater London');
+    form.controls['postcode'].setValue('SE1 1AA');
+
+    component.createAccountNewDesign = true;
+    component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+    fixture.detectChanges();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.invalid).toBeFalsy();
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
+  });
+
   describe('Error messages', () => {
     it(`should display an error message when workplace name isn't filled in`, async () => {
       const { component, getByText, getAllByText } = await setup();
@@ -133,13 +152,15 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('setBackLink', () => {
-    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `workplace-not-found` when isCqcRegulated and workplaceNotFound in service are true', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(true);
+      component.workplaceService.isCqcRegulated$.next(true);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = true;
-      fixture.detectChanges();
+
+      component.ngOnInit();
 
       component.setBackLink();
 
@@ -148,14 +169,32 @@ describe('WorkplaceNameAddressComponent', () => {
       });
     });
 
-    it('should set the back link to `select-workplace` when returnToWorkplaceNotFound is false and isCqcRegulated is true', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `workplace-address-not-found` when isCqcRegulated is false and workplaceNotFound in service is true', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(true);
+      component.workplaceService.isCqcRegulated$.next(false);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = false;
-      component.isCqcRegulated = true;
-      fixture.detectChanges();
+
+      component.ngOnInit();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/add-workplace', 'workplace-address-not-found'],
+      });
+    });
+
+    it('should set the back link to `select-workplace` when isCqcRegulated is true and workplaceNotFound in service is false', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.workplaceService.workplaceNotFound$.next(false);
+      component.workplaceService.isCqcRegulated$.next(true);
+      component.createAccountNewDesign = true;
+
+      component.ngOnInit();
 
       component.setBackLink();
 
@@ -164,14 +203,15 @@ describe('WorkplaceNameAddressComponent', () => {
       });
     });
 
-    it('should set the back link to `select-workplace-address` when returnToWorkplaceNotFound and isCqcRegulated are false', async () => {
-      const { component, fixture } = await setup();
+    it('should set the back link to `select-workplace-address` when isCqcRegulated is false and workplaceNotFound in service is false', async () => {
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
+      component.workplaceService.workplaceNotFound$.next(false);
+      component.workplaceService.isCqcRegulated$.next(false);
       component.createAccountNewDesign = true;
-      component.returnToWorkplaceNotFound = false;
-      component.isCqcRegulated = false;
-      fixture.detectChanges();
+
+      component.ngOnInit();
 
       component.setBackLink();
 

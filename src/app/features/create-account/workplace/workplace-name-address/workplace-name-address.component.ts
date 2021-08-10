@@ -16,12 +16,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
-  public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     private featureFlagsService: FeatureFlagsService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -36,6 +35,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
@@ -64,14 +64,20 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   protected setSelectedLocationAddress(): void {
     this.registrationService.selectedLocationAddress$.next(this.getLocationAddress());
     this.registrationService.manuallyEnteredWorkplace$.next(true);
-    const url = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+    const url = this.getNextRoute();
     this.router.navigate([this.flow, url]);
   }
 
   public setBackLink(): void {
-    if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
-      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-      return;
+    if (this.createAccountNewDesign) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        return;
+      }
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        return;
+      }
     }
 
     if (this.isCqcRegulated) {
@@ -80,5 +86,20 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     }
 
     this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  protected getNextRoute(): string {
+    if (this.createAccountNewDesign) {
+      return this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    }
+    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+  }
+
+  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }

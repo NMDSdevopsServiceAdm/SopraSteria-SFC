@@ -194,5 +194,20 @@ describe('FindWorkplaceComponent', () => {
         url: ['add-workplace', 'new-regulated-by-cqc'],
       });
     });
+
+    it('should set the back link to `confirm-workplace-details` when returnToConfirmDetails is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.createAccountNewDesign = true;
+      component.fixture.componentInstance.returnToConfirmDetails = {
+        url: ['add-workplace', 'confirm-workplace-details'],
+      };
+      component.fixture.componentInstance.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'confirm-workplace-details'],
+      });
+    });
   });
 });

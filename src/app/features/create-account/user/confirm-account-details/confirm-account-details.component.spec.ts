@@ -11,48 +11,51 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, queryByText, render } from '@testing-library/angular';
+import { fireEvent, queryByText, render, within } from '@testing-library/angular';
 
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
 
 describe('ConfirmAccountDetailsComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(ConfirmAccountDetailsComponent, {
-      imports: [
-        SharedModule,
-        RegistrationModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: RegistrationService,
-          useClass: MockRegistrationServiceWithMainService,
-        },
-        {
-          provide: UserService,
-          useClass: MockUserService,
-        },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'registration',
-                  },
-                ],
+    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
+      ConfirmAccountDetailsComponent,
+      {
+        imports: [
+          SharedModule,
+          RegistrationModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: RegistrationService,
+            useClass: MockRegistrationServiceWithMainService,
+          },
+          {
+            provide: UserService,
+            useClass: MockUserService,
+          },
+          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: 'registration',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-        FormBuilder,
-      ],
-    });
+          FormBuilder,
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -69,6 +72,7 @@ describe('ConfirmAccountDetailsComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
     };
   }
 
@@ -138,6 +142,43 @@ describe('ConfirmAccountDetailsComponent', () => {
 
       expect(queryByText(expectedHiddenPassword)).toBeFalsy();
       expect(queryByText(expectedShownPassword)).toBeTruthy();
+    });
+  });
+
+  describe('Change links', () => {
+    it('should always display three change links', async () => {
+      const { getAllByText } = await setup();
+
+      const changeLinks = getAllByText('Change');
+
+      expect(changeLinks.length).toEqual(3);
+    });
+
+    it('should set the change link for user info to `add-user-details`', async () => {
+      const { getByTestId } = await setup();
+
+      const userInfoSummaryList = within(getByTestId('userInfo'));
+      const changeLink = userInfoSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/registration/add-user-details');
+    });
+
+    it('should set the change link for login info to `username-password`', async () => {
+      const { getByTestId } = await setup();
+
+      const loginInfoSummaryList = within(getByTestId('loginInfo'));
+      const changeLink = loginInfoSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/registration/username-password');
+    });
+
+    it('should set the change link for security info to `username-password`', async () => {
+      const { getByTestId } = await setup();
+
+      const securityInfoSummaryList = within(getByTestId('securityInfo'));
+      const changeLink = securityInfoSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/registration/create-security-question');
     });
   });
 });

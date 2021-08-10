@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
@@ -56,6 +57,10 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   public submitted = false;
   public title: string;
   public workplaceErrorMessage: string;
+  public returnToConfirmDetails: URLStructure;
+  public returnToWorkplaceNotFound: boolean;
+  public isCqcRegulated: boolean;
+  public createAccountNewDesign: boolean;
   protected flow: string;
   protected workplaceNameMaxLength = 120;
   protected addressMaxLength = 40;

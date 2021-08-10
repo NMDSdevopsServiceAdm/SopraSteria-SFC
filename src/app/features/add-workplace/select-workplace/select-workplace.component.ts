@@ -28,6 +28,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
 
   protected init(): void {
     this.flow = '/add-workplace';
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.setupSubscription();
   }
 
