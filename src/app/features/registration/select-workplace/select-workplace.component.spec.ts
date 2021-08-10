@@ -120,6 +120,23 @@ describe('SelectWorkplaceComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/registration', 'new-select-main-service']);
     });
 
+    it('should navigate to the confirm-details page in registration flow when returnToConfirmDetails is not null', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+      component.setNextRoute();
+      fixture.detectChanges();
+
+      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      fireEvent.click(yesRadioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['/registration', 'confirm-details']);
+    });
+
     it('should navigate back to the find-workplace url in registration flow when Change clicked', async () => {
       const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
@@ -127,6 +144,15 @@ describe('SelectWorkplaceComponent', () => {
 
       const changeButton = getByText('Change');
       expect(changeButton.getAttribute('href')).toBe('/registration/find-workplace');
+    });
+
+    it('should navigate to workplace-name-address url in registration flow when workplace not displayed button clicked', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const notDisplayedButton = getByText('Workplace is not displayed or is not correct');
+      expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-name-address');
     });
   });
 });

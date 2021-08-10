@@ -40,13 +40,12 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   protected async init(): Promise<void> {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.isRegulated = this.registrationService.isRegulated();
-    this.workplace = this.establishmentService.primaryWorkplace;
-    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
-    this.setBackLink();
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
       false,
     );
+    this.setBackLink();
   }
 
   protected getServiceCategories(): void {
@@ -69,12 +68,19 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const url = this.isParent ? 'confirm-workplace-details' : 'add-user-details';
+    const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-user-details';
     this.router.navigate([this.flow, url]);
   }
 
   public setBackLink(): void {
-    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
+    let route: string;
+    if (this.returnToConfirmDetails) {
+      route = this.createAccountNewDesign ? 'confirm-details' : 'confirm-workplace-details';
+      this.backService.setBackLink({ url: [this.flow, route] });
+      return;
+    }
+
+    route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
     this.backService.setBackLink({ url: [this.flow, route] });
   }
 

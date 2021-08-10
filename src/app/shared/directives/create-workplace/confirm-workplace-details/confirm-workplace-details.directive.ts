@@ -40,26 +40,30 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
 
   public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {
-      this.setCqcLocationIdWorkplaceDetails();
-    } else {
-      this.setNonLocationIdWorkplaceDetails();
+      this.setCqcRegulatedWithLocationIdWorkplaceDetails();
+    }
+    if (this.workplace.isCQC && !this.locationAddress.locationId) {
+      this.setCqcRegulatedWithoutLocationIdWorkplaceDetails();
+    }
+    if (!this.workplace.isCQC) {
+      this.setNonCqcRegulatedWorkplaceDetails();
     }
 
     this.mainService = [
       {
         label: 'Main service',
         data: this.workplace.name,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'new-select-main-service'] },
       },
     ];
   }
 
-  protected setCqcLocationIdWorkplaceDetails(): void {
+  protected setCqcRegulatedWithLocationIdWorkplaceDetails(): void {
     this.workplaceNameAndAddress = [
       {
         label: 'CQC location ID',
         data: this.locationAddress.locationId,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'find-workplace'] },
       },
       {
         label: 'Name and address',
@@ -68,12 +72,26 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     ];
   }
 
-  protected setNonLocationIdWorkplaceDetails(): void {
+  protected setCqcRegulatedWithoutLocationIdWorkplaceDetails(): void {
     this.workplaceNameAndAddress = [
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: ['/'] },
+        route: { url: [this.flow, 'find-workplace'] },
+      },
+      {
+        label: 'Address',
+        data: this.nameAndAddress,
+      },
+    ];
+  }
+
+  protected setNonCqcRegulatedWorkplaceDetails(): void {
+    this.workplaceNameAndAddress = [
+      {
+        label: 'Name',
+        data: this.locationAddress.locationName,
+        route: { url: [this.flow, 'find-workplace-address'] },
       },
       {
         label: 'Address',

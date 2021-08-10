@@ -26,6 +26,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
 
   protected init(): void {
     this.flow = '/add-workplace';
+    this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.workplaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceService.manuallyEnteredWorkplaceName$.next(false);
     this.setupSubscriptions();
@@ -66,5 +67,9 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     const selectedAddressCopy = Object.assign({}, selectedAddress);
 
     this.workplaceService.selectedLocationAddress$.next(selectedAddressCopy);
+  }
+
+  protected navigateToConfirmDetails(): void {
+    this.router.navigate([`${this.flow}/confirm-workplace-details`]);
   }
 }

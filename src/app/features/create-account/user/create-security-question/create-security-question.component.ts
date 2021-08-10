@@ -17,7 +17,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
 
   constructor(
     private registrationService: RegistrationService,
-    protected backService: BackService,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -29,9 +29,9 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   protected init(): void {
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
+      this.setBackLink();
     });
     this.return = this.registrationService.returnTo$.value;
-    this.setBackLink();
     this.setupSubscription();
   }
 
@@ -45,9 +45,13 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     );
   }
 
-  protected setBackLink(): void {
-    const route: string = this.return ? this.return.url[0] : '/registration/username-password';
-    this.backService.setBackLink({ url: [route] });
+  public setBackLink(): void {
+    if (this.return) {
+      const url = this.createAccountNewDesign ? 'confirm-details' : 'confirm-account-details';
+      this.backService.setBackLink({ url: ['registration', url] });
+      return;
+    }
+    this.backService.setBackLink({ url: ['registration', 'username-password'] });
   }
 
   protected save(): void {
@@ -66,10 +70,5 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
         });
       });
     }
-  }
-
-  protected setCallToActionLabel(): void {
-    const label: string = this.return ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
   }
 }

@@ -51,6 +51,7 @@ describe('IsThisYourWorkplaceComponent', () => {
             },
             selectedLocationAddress$: new BehaviorSubject(null),
             manuallyEnteredWorkplace$: new BehaviorSubject(null),
+            returnTo$: new BehaviorSubject(null),
           },
         },
         {
@@ -154,6 +155,22 @@ describe('IsThisYourWorkplaceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
+  });
+
+  it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null', async () => {
+    const { component, spy } = await setup();
+
+    component.fixture.componentInstance.returnToConfirmDetails = {
+      url: ['add-workplace', 'confirm-workplace-details'],
+    };
+
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
   });
 
   it('should navigate back to find-workplace url when selecting no', async () => {

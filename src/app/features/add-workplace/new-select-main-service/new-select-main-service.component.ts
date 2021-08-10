@@ -40,6 +40,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.setBackLink();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
@@ -67,11 +68,15 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const url = this.isParent ? 'confirm-workplace-details' : 'add-user-details';
-    this.router.navigate([this.flow, url]);
+    this.router.navigate([this.flow, 'confirm-workplace-details']);
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      return;
+    }
+
     const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
     this.backService.setBackLink({ url: [this.flow, route] });
   }

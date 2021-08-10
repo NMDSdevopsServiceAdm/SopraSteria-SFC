@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
+import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -17,10 +18,15 @@ export abstract class WorkplaceInterfaceService {
   public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
   public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject(null);
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public isRegulated(): boolean {
     return this.isRegulated$.value;
+  }
+
+  public setReturnTo(returnTo: URLStructure): void {
+    this.returnTo$.next(returnTo);
   }
 }

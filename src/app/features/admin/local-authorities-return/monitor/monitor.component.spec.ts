@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
@@ -12,7 +12,32 @@ describe('MonitorComponent', () => {
   async function setup() {
     const component = await render(MonitorComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                localAuthorities: {
+                  B: [{ name: 'B LA1', notes: true, status: 'Not updated', workers: 0 }],
+                  C: [{ name: 'C LA1', notes: false, status: 'Update, complete', workers: 10 }],
+                  D: [{ name: 'D LA1', notes: true, status: 'Not updated', workers: 10 }],
+                  E: [{ name: 'E LA1', notes: false, status: 'Update, not complete', workers: 0 }],
+                  F: [
+                    { name: 'F LA1', notes: true, status: 'Confirmed, complete', workers: 10 },
+                    { name: 'F LA2', notes: false, status: 'Not updated', workers: 0 },
+                  ],
+                  G: [{ name: 'G LA1', notes: true, status: 'Not updated', workers: 10 }],
+                  H: [{ name: 'H LA1', notes: false, status: 'Confirmed, not complete', workers: 0 }],
+                  I: [{ name: 'I LA1', notes: true, status: 'Not updated', workers: 10 }],
+                  J: [{ name: 'J LA1', notes: false, status: 'Not updated', workers: 0 }],
+                },
+              },
+            },
+          },
+        },
+      ],
     });
 
     return {
@@ -186,6 +211,46 @@ describe('MonitorComponent', () => {
       component.fixture.componentInstance.areas.map((area) => {
         expect(area.open).toEqual(true);
       });
+    });
+  });
+
+  describe('Local authorities', () => {
+    it('should show the local authorities for an area when drop down when clicking on the heading', async () => {
+      const { component } = await setup();
+
+      const nWestDrop = component.getByText('F - North West');
+      fireEvent.click(nWestDrop);
+
+      const droppedDiv = component.getByTestId('accordian-drop-4');
+
+      expect(component.getByTestId('accordian-4').getAttribute('class')).toContain(
+        'govuk-accordion__section--expanded',
+      );
+
+      expect(droppedDiv.innerText).toContain('F LA1');
+      expect(droppedDiv.innerText).toContain('10');
+      expect(droppedDiv.innerText).toContain('CONFIRMED, COMPLETE');
+      expect(droppedDiv.innerText).toContain('Yes');
+      expect(droppedDiv.innerText).toContain('F LA2');
+      expect(droppedDiv.innerText).toContain('None added');
+      expect(droppedDiv.innerText).toContain('NOT UPDATED');
+      expect(droppedDiv.innerText).toContain('No');
+    });
+
+    it('should give status a conditional class depending on the value', async () => {
+      const { component } = await setup();
+
+      const notUpdatedStatus = component.getByTestId('status-B LA1');
+      const updateCompleteStatus = component.getByTestId('status-C LA1');
+      const updateNotCompleteStatus = component.getByTestId('status-E LA1');
+      const confirmedCompleteStatus = component.getByTestId('status-F LA1');
+      const confirmedNotCompleteStatus = component.getByTestId('status-H LA1');
+
+      expect(notUpdatedStatus.getAttribute('class')).toContain('govuk-tag--grey');
+      expect(updateCompleteStatus.getAttribute('class')).toContain('govuk-tag--blue');
+      expect(updateNotCompleteStatus.getAttribute('class')).toContain('govuk-tag--yellow');
+      expect(confirmedCompleteStatus.getAttribute('class')).toContain('govuk-tag--green');
+      expect(confirmedNotCompleteStatus.getAttribute('class')).toContain('govuk-tag--red');
     });
   });
 });

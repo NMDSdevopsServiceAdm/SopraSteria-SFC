@@ -116,6 +116,27 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
   });
 
+  it('should navigate to confirm-workplace-details page on success if returnToConfirmDetails is not null', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+    const form = component.form;
+
+    form.controls['workplaceName'].setValue('Workplace');
+    form.controls['address1'].setValue('1 Main Street');
+    form.controls['townOrCity'].setValue('London');
+    form.controls['county'].setValue('Greater London');
+    form.controls['postcode'].setValue('SE1 1AA');
+
+    component.createAccountNewDesign = true;
+    component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+    fixture.detectChanges();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.invalid).toBeFalsy();
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
+  });
+
   describe('Error messages', () => {
     it(`should display an error message when workplace name isn't filled in`, async () => {
       const { component, getByText, getAllByText } = await setup();
