@@ -92,6 +92,10 @@ describe('SelectWorkplaceComponent', () => {
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
     const { component, fixture, getAllByText, queryByText, getByText } = await setup();
+
+    component.registrationService.selectedLocationAddress$.value.locationId = null;
+    component.ngOnInit();
+
     const errorMessage = `Select your workplace if it's displayed`;
     const form = component.form;
     const continueButton = getByText('Continue');
@@ -113,6 +117,19 @@ describe('SelectWorkplaceComponent', () => {
 
       const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(yesRadioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['/registration', 'new-select-main-service']);
+    });
+
+    it('should prefill the form with selected workplace if it exists and navigate to the new-select-main-service page when continue clicked', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.registrationService.selectedLocationAddress$.value.locationId = '123';
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
