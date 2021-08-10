@@ -10,7 +10,7 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
     forceRefresh: () => {},
     forceRefreshAsync: () => {
       return new Promise((resolve) => {
-        return '';
+        resolve('');
       });
     },
     getAllKeys: () => {},

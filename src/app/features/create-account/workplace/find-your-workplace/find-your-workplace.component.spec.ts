@@ -5,8 +5,10 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { RegistrationModule } from '@features/registration/registration.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { throwError } from 'rxjs';
@@ -22,6 +24,10 @@ describe('FindYourWorkplaceComponent', () => {
         {
           provide: LocationService,
           useClass: MockLocationService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
         },
         {
           provide: ActivatedRoute,
@@ -44,11 +50,6 @@ describe('FindYourWorkplaceComponent', () => {
     const router = injector.inject(Router) as Router;
     const componentInstance = component.fixture.componentInstance;
     const locationService = injector.inject(LocationService) as LocationService;
-    const errorResponse = new HttpErrorResponse({
-      error: { code: `some code`, message: `some message.` },
-      status: 404,
-      statusText: 'Not found',
-    });
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -163,7 +164,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'workplace-not-found']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'new-workplace-not-found']);
   });
 
   it("should show error if server 503's", async () => {
@@ -186,5 +187,46 @@ describe('FindYourWorkplaceComponent', () => {
     fireEvent.click(findWorkplaceButton);
 
     expect(component.getAllByText('Server Error. code 503', { exact: false })).toBeTruthy();
+  });
+
+  describe('setBackLink', () => {
+    it('should set the back link to `regulated-by-cqc` when returnToWorkplaceNotFound is set to false', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+      component.fixture.componentInstance.returnToWorkplaceNotFound = false;
+      component.fixture.detectChanges();
+
+      component.fixture.componentInstance.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'new-regulated-by-cqc'],
+      });
+    });
+
+    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+      component.fixture.componentInstance.returnToWorkplaceNotFound = true;
+      component.fixture.detectChanges();
+
+      component.fixture.componentInstance.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'new-workplace-not-found'],
+      });
+    });
+
+    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null and feature flag is on', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.createAccountNewDesign = true;
+      component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+      component.fixture.componentInstance.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
+      });
+    });
   });
 });

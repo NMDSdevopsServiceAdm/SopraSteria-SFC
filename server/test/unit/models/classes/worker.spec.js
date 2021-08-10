@@ -244,6 +244,45 @@ describe('Worker Class', () => {
       expect(qual.highestQualification.title).to.deep.equal('Level 7');
       expect(qualWorker).to.deep.equal(true);
     });
+
+    describe('Resetting yearArrived', () => {
+      it('should remove year of entry when country of birth is set to Don\'t know', async () => {
+        const countryOfBirth = {
+          countryOfBirth: { value: `Don't know` },
+        };
+
+        const countryOfBirthWorker = await worker.load(countryOfBirth);
+
+        expect(countryOfBirth.countryOfBirth.value).to.deep.equal(`Don't know`);
+        expect(countryOfBirth.yearArrived).to.deep.equal({ value: null, year: null });
+        expect(countryOfBirthWorker).to.deep.equal(true);
+      });
+
+      it('should remove year of entry when country of birth is set to United Kingdom', async () => {
+        const countryOfBirth = {
+          countryOfBirth: { value: 'United Kingdom' },
+        };
+
+        const countryOfBirthWorker = await worker.load(countryOfBirth);
+
+        expect(countryOfBirth.countryOfBirth.value).to.deep.equal('United Kingdom');
+        expect(countryOfBirth.yearArrived).to.deep.equal({ value: null, year: null });
+        expect(countryOfBirthWorker).to.deep.equal(true);
+      });
+
+      it('should not change the year of entry when country of birth is set to Other', async () => {
+        const countryOfBirth = {
+          countryOfBirth: { value: 'Other', other: { country: 'Uganda' }}
+        };
+
+        const countryOfBirthWorker = await worker.load(countryOfBirth);
+
+        expect(countryOfBirth.countryOfBirth.value).to.deep.equal('Other');
+        expect(countryOfBirth.countryOfBirth.other).to.deep.equal({ country: 'Uganda' });
+        expect(countryOfBirth.yearArrived).to.deep.equal(undefined);
+        expect(countryOfBirthWorker).to.deep.equal(true);
+      });
+    });
   });
 
   describe('setWdfProperties()', async () => {

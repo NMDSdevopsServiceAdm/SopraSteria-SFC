@@ -26,6 +26,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
 
   protected init(): void {
     this.flow = '/registration';
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.setupSubscription();
   }
 
@@ -38,7 +39,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected save(): void {
+    this.registrationService.manuallyEnteredWorkplace$.next(false);
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([this.flow, 'select-main-service']);
+    this.router.navigate([this.flow, this.nextRoute]);
   }
 }

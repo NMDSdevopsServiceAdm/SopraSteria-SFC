@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -19,10 +20,11 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public isCQCLocationUpdate: boolean;
-  protected subscriptions: Subscription = new Subscription();
   public createAccountNewDesign: boolean;
   public enteredPostcode: string;
-  public workplaceNotDisplayedLink: string;
+  public returnToConfirmDetails: URLStructure;
+  protected subscriptions: Subscription = new Subscription();
+  protected nextRoute: string;
 
   constructor(
     protected backService: BackService,
@@ -41,7 +43,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
-      this.setWorkplaceNotDisplayedLink();
+      this.setNextRoute();
     });
   }
 
@@ -58,8 +60,12 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
   }
 
-  protected setWorkplaceNotDisplayedLink(): void {
-    this.workplaceNotDisplayedLink = this.createAccountNewDesign ? 'workplace-name-address' : 'enter-workplace-address';
+  public setNextRoute(): void {
+    if (this.createAccountNewDesign) {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    } else {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+    }
   }
 
   protected setupForm(): void {
@@ -74,7 +80,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  public setupFormErrorsMap(): void {
+  protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'workplace',
