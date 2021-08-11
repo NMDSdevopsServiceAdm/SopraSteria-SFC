@@ -95,7 +95,7 @@ describe('FindYourWorkplaceComponent', () => {
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
   });
 
-  it('should show error the form if the input is empty', async () => {
+  it('should show registration version of error message if the input is empty on submit', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
     const findWorkplaceButton = component.getByText('Find workplace');

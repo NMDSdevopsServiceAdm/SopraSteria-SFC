@@ -96,13 +96,14 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   }
 
   private setupFormErrorsMap(): void {
+    const yourOrIts = this.flow === 'registration' ? 'your' : 'its';
     this.formErrorsMap = [
       {
         item: 'postcodeOrLocationID',
         type: [
           {
             name: 'required',
-            message: `Enter your CQC location ID or your workplace postcode`,
+            message: `Enter ${yourOrIts} CQC location ID or ${yourOrIts} workplace postcode`,
           },
         ],
       },
