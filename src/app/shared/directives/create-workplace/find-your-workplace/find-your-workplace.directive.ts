@@ -26,6 +26,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public returnToWorkplaceNotFound: boolean;
   public returnToConfirmDetails: URLStructure;
   public createAccountNewDesign: boolean;
+  public postcodeOrLocationId: string;
 
   constructor(
     protected router: Router,
@@ -42,8 +43,10 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     this.flow = this.route.snapshot.parent.url[0].path;
     this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
     this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
+    this.postcodeOrLocationId = this.workplaceInterfaceService.postcodeOrLocationId$.value;
     this.setupForm();
     this.setupFormErrorsMap();
+    this.prefillForm();
     this.setFeatureFlag();
   }
 
@@ -107,6 +110,14 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
         ],
       },
     ];
+  }
+
+  protected prefillForm(): void {
+    if (this.postcodeOrLocationId) {
+      this.form.setValue({
+        postcodeOrLocationID: this.postcodeOrLocationId,
+      });
+    }
   }
 
   public getErrorMessage(item: string): string {
