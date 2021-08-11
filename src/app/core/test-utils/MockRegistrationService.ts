@@ -22,8 +22,10 @@ export class MockRegistrationService extends RegistrationService {
     {
       postalCode: 'ABC 123',
       addressLine1: '1 Street',
+      addressLine2: 'Second Line',
+      addressLine3: 'Third Line',
       county: 'Greater Manchester',
-      locationName: 'Name',
+      locationName: 'Workplace Name',
       townCity: 'Manchester',
       locationId: '123',
     },

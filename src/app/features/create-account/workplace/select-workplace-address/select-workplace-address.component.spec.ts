@@ -88,18 +88,33 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(getByText(noOfAddressesMessage, { exact: false })).toBeTruthy();
   });
 
+  it('should prefill form with selected location address if it exists', async () => {
+    const { component, getByText } = await setup();
+    const form = component.form;
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.invalid).toBeFalsy();
+  });
+
   describe('Error messages', () => {
     it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
       const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-      const errorMessage = `Select your workplace address if it's listed`;
-      const form = component.form;
-      const continueButton = getByText('Continue');
 
+      spyOn(component.registrationService.selectedLocationAddress$, 'subscribe').and.returnValue(null);
+      component.selectedLocationAddress = null;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const errorMessage = `Select your workplace address if it's listed`;
       expect(queryByText(errorMessage, { exact: false })).toBeNull();
 
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
-      fixture.detectChanges();
-      expect(form.invalid).toBeTruthy();
+
+      const form = component.form;
+      expect(form.valid).toBeFalsy();
       expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
     });
   });
