@@ -92,8 +92,6 @@ Sickness,\
 Pay,\
 Qualifications,\
 Last Years confirmed numbers,\
-This Years confirmed numbers,\
-Status,\
 Notes' +
       NEWLINE;
 
@@ -157,8 +155,8 @@ ${thisPrimaryLaEstablishment.WorkplaceID},\
 1,\
 ${_csvQuote(thisPrimaryLaEstablishment.WorkplaceName)},\
 ${thisPrimaryLaEstablishment.LatestUpdate},\
-,\
-,\
+${_escapeCSV(thisPrimaryLaEstablishment.Status)},\
+${thisPrimaryLaEstablishment.ThisYearsConfirmedNumbers},\
 ${thisPrimaryLaEstablishment.WorkplacesCompleted},\
 ${thisPrimaryLaEstablishment.StaffCompleted},\
 ${thisPrimaryLaEstablishment.NumberOfWorkplaces},\
@@ -208,8 +206,6 @@ ${thisPrimaryLaEstablishment.CountOfSickness},\
 ${thisPrimaryLaEstablishment.CountOfPay},\
 ${thisPrimaryLaEstablishment.CountOfQualification},\
 ${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers},\
-${thisPrimaryLaEstablishment.ThisYearsConfirmedNumbers},\
-${_escapeCSV(thisPrimaryLaEstablishment.Status)},\
 ${_escapeCSV(_csvNoNull(thisPrimaryLaEstablishment.Notes))}` +
           NEWLINE;
       });
@@ -231,3 +227,5 @@ router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la', true))
 router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la', true));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
 module.exports = router;
+module.exports.reportGet = reportGet;
+module.exports._csvQuote = _csvQuote;
