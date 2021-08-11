@@ -7,9 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  SelectMainServiceDirective,
-} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -18,7 +16,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
-  public isParent: boolean;
   public workplace: Establishment;
   public createAccountNewDesign: boolean;
 
@@ -39,7 +36,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     this.flow = 'add-workplace';
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.isParent = this.workplace?.isParent;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.setBackLink();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(

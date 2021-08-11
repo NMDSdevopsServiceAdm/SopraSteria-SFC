@@ -27,6 +27,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public serverError: string;
   public submitted = false;
   public returnToConfirmDetails: URLStructure;
+  public isParent: boolean;
 
   constructor(
     protected backService: BackService,
@@ -43,7 +44,6 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     this.setupServerErrorsMap();
     this.setSelectedWorkplaceService();
     this.getServiceCategories();
-    this.init();
   }
 
   ngAfterViewInit(): void {

@@ -8,9 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  SelectMainServiceDirective,
-} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -19,7 +17,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
-  public isParent: boolean;
   public workplace: Establishment;
   public createAccountNewDesign: boolean;
 
@@ -40,6 +37,8 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   protected async init(): Promise<void> {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.isRegulated = this.registrationService.isRegulated();
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.isParent = this.workplace?.isParent;
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
