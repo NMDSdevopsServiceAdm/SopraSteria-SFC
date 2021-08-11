@@ -49,7 +49,7 @@ export const mockConfigCatClient = {
     }
     if (flagName === 'createAccountNewDesign') {
       return new Promise((resolve) => {
-        return resolve(true);
+        return resolve(false);
       });
     }
     return new Promise((resolve) => {
