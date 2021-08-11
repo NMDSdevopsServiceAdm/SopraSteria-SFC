@@ -9,7 +9,7 @@ const { _csvQuote, _csvNoNull, adminReportGet } = require('../../../../../routes
 const models = require('../../../../../models');
 const reportLock = require('../../../../../utils/fileLock');
 
-describe.only('/server/routes/reports/localAuthorityReport/admin', () => {
+describe('/server/routes/reports/localAuthorityReport/admin', () => {
   describe('reportGet()', () => {
     let getValue, query, saveResponse, saveResponseOutput, queryOutput;
     const startDate = '2021-08-11T00:00:00.000ZZ';
