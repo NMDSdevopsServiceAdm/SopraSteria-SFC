@@ -76,6 +76,12 @@ describe('FindYourWorkplaceComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show add-workplace flow title', async () => {
+    const { component } = await setup();
+    const title = 'Find the workplace';
+    expect(component.getByText(title)).toBeTruthy();
+  });
+
   it('should not lookup workplaces the form if the input is empty', async () => {
     const { component, locationService } = await setup();
     const findWorkplaceButton = component.getByText('Find workplace');

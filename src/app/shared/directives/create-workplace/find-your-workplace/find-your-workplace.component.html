@@ -11,7 +11,9 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Find your workplace</h1>
+          <h1 class="govuk-fieldset__heading">
+            Find {{ flow === 'registration' ? 'your workplace' : 'the workplace' }}
+          </h1>
         </legend>
 
         <p>
