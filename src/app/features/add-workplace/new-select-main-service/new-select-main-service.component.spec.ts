@@ -86,7 +86,6 @@ describe('NewSelectMainServiceComponent', () => {
     const { component, fixture, getByText } = await setup();
 
     component.isRegulated = true;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -100,7 +99,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = false;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -115,7 +113,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = true;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = queryByText(
@@ -130,7 +127,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = true;
     component.isRegulated = false;
-    component.renderForm = true;
     fixture.detectChanges();
 
     expect(queryByText('Select its main service')).toBeTruthy();
@@ -139,7 +135,6 @@ describe('NewSelectMainServiceComponent', () => {
   it('should error when nothing has been selected', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
-    component.renderForm = true;
     const form = component.form;
 
     fixture.detectChanges();
@@ -158,7 +153,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = true;
     component.isRegulated = true;
-    component.renderForm = true;
     fixture.detectChanges();
 
     const radioButton = getByLabelText('Name');
