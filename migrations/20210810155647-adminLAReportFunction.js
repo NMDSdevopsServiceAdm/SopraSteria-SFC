@@ -159,8 +159,8 @@ SELECT
     sum(LAWorkers."CountOfQualification") :: BIGINT AS "CountOfQualification"
 FROM
     cqc."LocalAuthorities" AS MyLocalAuthorities
-    INNER JOIN cqc."LocalAuthorityReportEstablishment" LAEstablishments on LAEstablishments."EstablishmentFK" = MyLocalAuthorities."EstablishmentFK"
-    INNER JOIN cqc."LocalAuthorityReportEstablishment" LAEstablishments2 on LAEstablishments2."EstablishmentFK" = LAEstablishments."EstablishmentFK"
+INNER JOIN cqc."LocalAuthorityReportEstablishment" LAEstablishments on LAEstablishments."WorkplaceFK" = MyLocalAuthorities."EstablishmentFK"
+INNER JOIN cqc."LocalAuthorityReportEstablishment" LAEstablishments2 on LAEstablishments2."EstablishmentFK" = LAEstablishments."EstablishmentFK"
     LEFT JOIN (
         SELECT
             "WorkplaceFK",
