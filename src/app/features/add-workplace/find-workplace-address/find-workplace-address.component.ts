@@ -15,15 +15,23 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   constructor(
-    private workplaceService: WorkplaceService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    public workplaceService: WorkplaceService,
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, router, featureFlagsService);
+    super(
+      backService,
+      errorSummaryService,
+      formBuilder,
+      locationService,
+      router,
+      featureFlagsService,
+      workplaceService,
+    );
   }
 
   protected init(): void {

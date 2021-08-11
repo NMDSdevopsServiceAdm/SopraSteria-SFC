@@ -7,6 +7,7 @@ import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     protected locationService: LocationService,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -37,6 +39,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.init();
+    this.prefillForm();
     await this.getFeatureFlag();
     this.setBackLink();
   }
@@ -87,6 +90,15 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
         message: 'Database error.',
       },
     ];
+  }
+
+  protected prefillForm(): void {
+    const locationAddresses = this.workplaceInterfaceService.locationAddresses$.value;
+    if (locationAddresses) {
+      this.form.setValue({
+        postcode: locationAddresses[0].postalCode,
+      });
+    }
   }
 
   protected validPostcode(control: FormControl): { [s: string]: boolean } {
