@@ -13,6 +13,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   protected flow: string;
+  protected isCqcRegulated: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -25,8 +26,10 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
     this.setupForm();
     this.setupFormErrorsMap();
+    this.prefillForm();
     this.setBackLink();
   }
 
@@ -52,6 +55,15 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
         ],
       },
     ];
+  }
+
+  protected prefillForm(): void {
+    if (this.isCqcRegulated !== null) {
+      const selectedRadioButton = this.isCqcRegulated ? 'yes' : 'no';
+      this.form.patchValue({
+        regulatedByCQC: selectedRadioButton,
+      });
+    }
   }
 
   public getErrorMessage(item: string): string {
