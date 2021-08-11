@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
 
-  protected flow: string;
+  public flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public submitted = false;

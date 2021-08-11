@@ -82,6 +82,12 @@ describe('FindYourWorkplaceComponent', () => {
     expect(component.getByText(title)).toBeTruthy();
   });
 
+  it('should show add-workplace flow hint message', async () => {
+    const { component } = await setup();
+    const hint = `We'll use its CQC location ID or workplace postcode to find the workplace in the Care Quality Commision database.`;
+    expect(component.getByText(hint)).toBeTruthy();
+  });
+
   it('should not lookup workplaces the form if the input is empty', async () => {
     const { component, locationService } = await setup();
     const findWorkplaceButton = component.getByText('Find workplace');
