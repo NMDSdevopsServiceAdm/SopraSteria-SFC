@@ -10,6 +10,7 @@ import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
@@ -92,17 +93,46 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
-    const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select the workplace if it's displayed`;
-    const form = component.form;
-    const continueButton = getByText('Continue');
+    const { component, getAllByText, queryByText, getByText } = await setup();
 
+    component.workplaceService.selectedLocationAddress$ = new BehaviorSubject(null);
+    component.ngOnInit();
+
+    const errorMessage = `Select the workplace if it's displayed`;
     expect(queryByText(errorMessage, { exact: false })).toBeNull();
 
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
-    fixture.detectChanges();
+
+    const form = component.form;
     expect(form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
+  });
+
+  describe('prefillForm()', () => {
+    it('should prefill the form with selected workplace if it exists', async () => {
+      const { component, fixture } = await setup();
+
+      component.workplaceService.selectedLocationAddress$.value.locationId = '123';
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.workplace).toBe('123');
+    });
+
+    it('should not prefill the form with selected workplace if it does not exists', async () => {
+      const { component } = await setup();
+
+      component.workplaceService.selectedLocationAddress$ = new BehaviorSubject(null);
+      component.createAccountNewDesign = true;
+      component.ngOnInit();
+
+      const form = component.form;
+      expect(form.valid).toBeFalsy();
+      expect(form.value.workplace).toBe(null);
+    });
   });
 
   describe('Navigation', () => {
