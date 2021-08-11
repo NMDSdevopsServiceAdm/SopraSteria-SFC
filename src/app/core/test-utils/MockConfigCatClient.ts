@@ -40,9 +40,20 @@ export const mockConfigCatClient = {
       return new SettingKeyValue();
     });
   },
-  getValueAsync: () => {
+
+  getValueAsync: (flagName, defaultSetting) => {
+    if (flagName === 'wdfNewDesign') {
+      return new Promise((resolve) => {
+        return resolve(true);
+      });
+    }
+    if (flagName === 'createAccountNewDesign') {
+      return new Promise((resolve) => {
+        return resolve(true);
+      });
+    }
     return new Promise((resolve) => {
-      resolve(true);
+      return resolve(defaultSetting);
     });
   },
 } as IConfigCatClient;
