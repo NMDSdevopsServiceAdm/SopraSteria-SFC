@@ -7,7 +7,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { isEqual } from 'lodash';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -31,7 +30,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     this.registrationService.manuallyEnteredWorkplace$.next(false);
     this.registrationService.manuallyEnteredWorkplaceName$.next(false);
     this.setupSubscriptions();
-    this.prefillForm();
   }
 
   protected setupFormErrorsMap(): void {
@@ -73,19 +71,5 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
 
   protected navigateToConfirmDetails(): void {
     this.router.navigate([`${this.flow}/confirm-details`]);
-  }
-
-  protected prefillForm(): void {
-    if (this.indexOfSelectedLocationAddress() >= 0) {
-      this.form.patchValue({
-        address: this.indexOfSelectedLocationAddress(),
-      });
-    }
-  }
-
-  protected indexOfSelectedLocationAddress(): number {
-    return this.locationAddresses.findIndex((address) => {
-      return isEqual(address, this.selectedLocationAddress);
-    });
   }
 }

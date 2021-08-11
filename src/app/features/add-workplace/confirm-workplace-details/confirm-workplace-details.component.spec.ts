@@ -119,7 +119,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.setNameAndAddress();
     fixture.detectChanges();
 
-    expect(component.nameAndAddress).toContain('Test Care Home');
+    expect(component.nameAndAddress).toContain('Workplace Name');
   });
 
   it('should not include the workplace name in nameAndAddress if CQC regulated with a location ID', async () => {
@@ -132,13 +132,13 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.setNameAndAddress();
     fixture.detectChanges();
 
-    expect(component.nameAndAddress).not.toContain('Test Care Home');
+    expect(component.nameAndAddress).not.toContain('Workplace Name');
   });
 
   it('should show workplace details', async () => {
     const { component, fixture, getByText } = await setup();
 
-    const expectedLocationName = 'Test Care Home';
+    const expectedLocationName = 'Workplace Name';
     const expectedAddressLine1 = '1 Street';
     const expectedAddressLine2 = 'Second Line';
     const expectedAddressLine3 = 'Third Line';

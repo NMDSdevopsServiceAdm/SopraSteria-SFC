@@ -114,7 +114,7 @@ describe('SelectWorkplaceAddressComponent', () => {
       fireEvent.click(continueButton);
 
       const form = component.form;
-      expect(form.valid).toBeFalsy();
+      expect(form.invalid).toBeTruthy();
       expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
     });
   });
