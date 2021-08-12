@@ -59,6 +59,20 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     );
   }
 
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplaceService',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the main service it provides',
+          },
+        ],
+      },
+    ];
+  }
+
   protected onSuccess(): void {
     this.workplaceService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
     this.navigateToNextPage();

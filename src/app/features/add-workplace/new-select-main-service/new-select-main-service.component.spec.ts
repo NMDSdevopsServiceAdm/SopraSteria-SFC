@@ -132,20 +132,20 @@ describe('NewSelectMainServiceComponent', () => {
     expect(queryByText('Select its main service')).toBeTruthy();
   });
 
-  it('should error when nothing has been selected', async () => {
+  it('should show add-workplace error message when nothing has been selected', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
     const form = component.form;
 
     fixture.detectChanges();
 
-    const errorMessage = 'Select your main service';
+    const errorMessage = 'Select the main service it provides';
 
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(form.invalid).toBeTruthy();
-    expect(getAllByText(errorMessage).length).toBe(3);
+    expect(getAllByText(errorMessage).length).toBe(2);
   });
 
   it('should submit and go to the add-workplace/confirm-workplace-details url when option selected', async () => {

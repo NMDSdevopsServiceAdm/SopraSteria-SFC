@@ -140,7 +140,7 @@ describe('NewSelectMainServiceComponent', () => {
     expect(queryByText('Select your main service')).toBeTruthy();
   });
 
-  it('should error when nothing has been selected', async () => {
+  it('should show registration error message when nothing has been selected(plus title with same wording)', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
     const form = component.form;
