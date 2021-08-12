@@ -95,10 +95,10 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected prefillForm(): void {
-    const locationAddresses = this.workplaceInterfaceService.locationAddresses$.value;
-    if (locationAddresses) {
+    const postcodeOrLocationId = this.workplaceInterfaceService.postcodeOrLocationId$.value;
+    if (postcodeOrLocationId) {
       this.form.setValue({
-        postcode: locationAddresses[0].postalCode,
+        postcode: postcodeOrLocationId,
       });
     }
   }
@@ -138,6 +138,9 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit(): void {
     this.submitted = true;
+    const postcode = this.form.get('postcode').value;
+    this.workplaceInterfaceService.postcodeOrLocationId$.next(postcode);
+
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
       this.getAddressesByPostCode();
