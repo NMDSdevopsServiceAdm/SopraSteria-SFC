@@ -63,8 +63,10 @@ export class MockRegistrationServiceWithMainService extends MockRegistrationServ
   });
 
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject({
-    id: 1,
+    id: 123,
     isCQC: true,
     name: 'Name of service',
+    other: true,
+    otherName: 'Hello!',
   });
 }

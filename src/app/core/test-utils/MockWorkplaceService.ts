@@ -48,6 +48,7 @@ export class MockWorkplaceService extends WorkplaceService {
             isCQC: true,
             name: 'Name',
           },
+          { id: 123, name: 'Other Mock Service', other: true },
         ],
       },
     ]);
@@ -60,5 +61,7 @@ export class MockWorkplaceServiceWithMainService extends MockWorkplaceService {
     id: 1,
     name: 'Shared lives',
     isCqc: true,
+    other: true,
+    otherName: 'Hello!',
   });
 }
