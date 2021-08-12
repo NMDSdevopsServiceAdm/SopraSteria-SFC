@@ -14,6 +14,7 @@ export class RegistrationService extends WorkplaceInterfaceService {
   public registrationInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
+  public termsAndConditionsCheckbox$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private http: HttpClient) {
     super();

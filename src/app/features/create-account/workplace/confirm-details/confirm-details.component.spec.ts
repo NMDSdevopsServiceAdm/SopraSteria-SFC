@@ -12,6 +12,7 @@ import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByTestId, queryByText, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
 
@@ -88,6 +89,39 @@ describe('ConfirmDetailsComponent', () => {
 
     expect(fixture.componentInstance.form.invalid).toBeTruthy();
     expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+  });
+
+  it('should preselect the terms and conditions checkbox if it is set to true in the service', async () => {
+    const { component } = await setup();
+
+    component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(true);
+    component.ngOnInit();
+
+    expect(component.form.valid).toBeTruthy();
+  });
+
+  it('should not preselect the terms and conditions checkbox if it is set to false in the service', async () => {
+    const { component } = await setup();
+
+    component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(false);
+    component.ngOnInit();
+
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should update the value of termsAndConditionsCheckbox$ in the service when the checkbox is clicked', async () => {
+    const { component, getByTestId } = await setup();
+
+    const spy = spyOn(component, 'setTermsAndConditionsCheckbox').and.callThrough();
+
+    component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(false);
+    component.ngOnInit();
+
+    const termsAndConditionsCheckbox = getByTestId('checkbox');
+    fireEvent.click(termsAndConditionsCheckbox);
+
+    expect(spy).toHaveBeenCalled();
+    expect(component.registrationService.termsAndConditionsCheckbox$.value).toBe(true);
   });
 
   it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
