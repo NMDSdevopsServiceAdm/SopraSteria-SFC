@@ -192,7 +192,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     this.subscriptions.unsubscribe();
   }
 
-  serviceSelected(id: string): boolean {
+  serviceNotSelected(id: string): boolean {
     return !(<HTMLInputElement>document.getElementById(id)).checked;
   }
 }

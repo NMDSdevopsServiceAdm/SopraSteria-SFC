@@ -82,7 +82,7 @@
                 <div
                   *ngIf="service.other"
                   class="govuk-radios__conditional"
-                  [class.govuk-radios__conditional--hidden]="serviceSelected('workplaceService-' + service.id)"
+                  [class.govuk-radios__conditional--hidden]="serviceNotSelected('workplaceService-' + service.id)"
                   id="workplaceService-conditional-{{ i }}"
                   [attr.data-testid]="'workplaceServiceOther-' + service.id"
                 >
