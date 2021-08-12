@@ -196,7 +196,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = true;
-    component.renderForm = true;
     fixture.detectChanges();
     const otherDrop = getByTestId('workplaceServiceOther-123');
 
@@ -213,7 +212,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = true;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const form = component.form;
