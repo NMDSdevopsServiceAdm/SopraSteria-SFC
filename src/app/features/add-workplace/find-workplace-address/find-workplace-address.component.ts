@@ -36,6 +36,7 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
 
   protected init(): void {
     this.flow = 'add-workplace';
+    this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
   }
 
   protected setupFormErrorsMap(): void {
@@ -66,5 +67,9 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
 
   protected onSuccess(data: LocationSearchResponse): void {
     this.workplaceService.locationAddresses$.next(data.postcodedata);
+  }
+
+  protected setBackLinkToConfirmDetailsPage(): void {
+    this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
   }
 }
