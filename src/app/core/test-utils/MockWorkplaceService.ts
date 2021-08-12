@@ -61,5 +61,7 @@ export class MockWorkplaceServiceWithMainService extends MockWorkplaceService {
     id: 1,
     name: 'Shared lives',
     isCqc: true,
+    other: true,
+    otherName: 'Hello!',
   });
 }

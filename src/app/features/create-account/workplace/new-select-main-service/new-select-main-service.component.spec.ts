@@ -8,7 +8,10 @@ import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import {
+  MockRegistrationService,
+  MockRegistrationServiceWithMainService,
+} from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -18,7 +21,7 @@ import { fireEvent, getByText, render } from '@testing-library/angular';
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
 describe('NewSelectMainServiceComponent', () => {
-  async function setup() {
+  async function setup(mainServicePrefilled = false) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
       NewSelectMainServiceComponent,
       {
@@ -33,7 +36,7 @@ describe('NewSelectMainServiceComponent', () => {
         providers: [
           {
             provide: RegistrationService,
-            useClass: MockRegistrationService,
+            useClass: mainServicePrefilled ? MockRegistrationServiceWithMainService : MockRegistrationService,
           },
           {
             provide: WorkplaceService,
@@ -65,7 +68,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const registrationService = injector.inject(RegistrationService) as RegistrationService;
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -76,7 +78,6 @@ describe('NewSelectMainServiceComponent', () => {
       fixture,
       component,
       spy,
-      registrationService,
       getAllByText,
       queryByText,
       getByText,
@@ -214,24 +215,17 @@ describe('NewSelectMainServiceComponent', () => {
     expect(otherDrop.getAttribute('class')).not.toContain('govuk-radios__conditional--hidden');
   });
 
-  fit('should prefill the other input box with the correct value', async () => {
-    const { component, fixture, getByTestId } = await setup();
+  it('should prefill the other input box with the correct value', async () => {
+    const { component, fixture } = await setup(true);
 
     component.isParent = false;
     component.isRegulated = true;
     component.renderForm = true;
+
     fixture.detectChanges();
     const form = component.form;
-    const otherOption = getByTestId('workplaceService-123');
-    fireEvent.click(otherOption);
 
-    form.get('otherWorkplaceService123').setValue('A main service you have never heard of');
-
-    component.ngOnInit();
-
-    fixture.detectChanges();
-
-    expect(form.get('otherWorkplaceService123').value).toEqual('A main service you have never heard of');
+    expect(form.get('otherWorkplaceService123').value).toEqual('Hello!');
   });
 
   describe('setBackLink()', () => {
