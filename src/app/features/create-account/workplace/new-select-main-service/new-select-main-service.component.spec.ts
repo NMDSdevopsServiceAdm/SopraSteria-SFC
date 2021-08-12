@@ -13,7 +13,7 @@ import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByText, render } from '@testing-library/angular';
 
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
@@ -212,6 +212,26 @@ describe('NewSelectMainServiceComponent', () => {
     fireEvent.click(otherOption);
 
     expect(otherDrop.getAttribute('class')).not.toContain('govuk-radios__conditional--hidden');
+  });
+
+  fit('should prefill the other input box with the correct value', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    component.renderForm = true;
+    fixture.detectChanges();
+    const form = component.form;
+    const otherOption = getByTestId('workplaceService-123');
+    fireEvent.click(otherOption);
+
+    form.get('otherWorkplaceService123').setValue('A main service you have never heard of');
+
+    component.ngOnInit();
+
+    fixture.detectChanges();
+
+    expect(form.get('otherWorkplaceService123').value).toEqual('A main service you have never heard of');
   });
 
   describe('setBackLink()', () => {
