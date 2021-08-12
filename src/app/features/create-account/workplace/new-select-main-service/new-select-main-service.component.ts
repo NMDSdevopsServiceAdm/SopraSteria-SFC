@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
@@ -17,7 +15,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
-  public workplace: Establishment;
   public createAccountNewDesign: boolean;
 
   constructor(
@@ -27,7 +24,6 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
-    private establishmentService: EstablishmentService,
     private featureFlagsService: FeatureFlagsService,
     private route: ActivatedRoute,
   ) {
@@ -37,8 +33,7 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   protected async init(): Promise<void> {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.isRegulated = this.registrationService.isRegulated();
-    this.workplace = this.establishmentService.primaryWorkplace;
-    this.isParent = this.workplace?.isParent;
+    this.isParent = false;
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
