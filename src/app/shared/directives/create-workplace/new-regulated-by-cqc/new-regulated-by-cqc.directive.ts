@@ -43,14 +43,15 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     });
   }
 
-  private setupFormErrorsMap(): void {
+  protected setupFormErrorsMap(): void {
+    const flowWording = this.flow === 'registration' ? 'you provide' : 'it provides';
     this.formErrorsMap = [
       {
         item: 'regulatedByCQC',
         type: [
           {
             name: 'required',
-            message: `Select yes if the main service you provide is regulated by the Care Quality Commission`,
+            message: `Select yes if the main service ${flowWording} is regulated by the Care Quality Commission`,
           },
         ],
       },

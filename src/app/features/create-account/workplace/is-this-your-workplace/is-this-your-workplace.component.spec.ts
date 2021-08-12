@@ -97,10 +97,18 @@ describe('IsThisYourWorkplaceComponent', () => {
     const { component } = await setup();
 
     const registrationHeading = component.queryByText('Is this your workplace?');
-    const parentHeading = component.queryByText('Is this your workplace you want to add?');
+    const parentHeading = component.queryByText('Is this the workplace you want to add?');
 
     expect(registrationHeading).toBeTruthy();
     expect(parentHeading).toBeFalsy();
+  });
+
+  it('should render the correct reveal title when in the registration journey', async () => {
+    const { component } = await setup();
+
+    const revealTitle = 'Spotted a mistake in your workplace details?';
+
+    expect(component.queryByText(revealTitle)).toBeTruthy();
   });
 
   it('should show the id and address when given the locationId', async () => {

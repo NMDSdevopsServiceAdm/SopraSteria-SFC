@@ -23,6 +23,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public isParent: boolean;
   public searchMethod: string;
+  public revealTitle: string;
   public returnToConfirmDetails: URLStructure;
 
   constructor(
@@ -43,7 +44,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     this.locationData = this.workplaceInterfaceService.locationAddresses$.value[0];
     this.searchMethod = this.workplaceInterfaceService.searchMethod$.value;
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.isParent = this.workplace?.isParent;
+    this.revealTitle = `Spotted a mistake in ${this.isParent ? 'the' : 'your'} workplace details?`;
     this.prefillForm();
     this.setupFormErrorsMap();
   }

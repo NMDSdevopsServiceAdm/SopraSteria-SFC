@@ -85,6 +85,18 @@ describe('FindYourWorkplaceComponent', () => {
     expect(form.valid).toBeTruthy();
   });
 
+  it('should show registration flow title', async () => {
+    const { component } = await setup();
+    const title = 'Find your workplace';
+    expect(component.getByText(title)).toBeTruthy();
+  });
+
+  it('should show registration flow hint message', async () => {
+    const { component } = await setup();
+    const hint = `We'll use your CQC location ID or workplace postcode to find your workplace in the Care Quality Commision database.`;
+    expect(component.getByText(hint)).toBeTruthy();
+  });
+
   it('should not lookup workplaces the form if the input is empty', async () => {
     const { component, locationService } = await setup();
     const getLocationByPostcodeOrLocationID = spyOn(
@@ -98,7 +110,7 @@ describe('FindYourWorkplaceComponent', () => {
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
   });
 
-  it('should show error the form if the input is empty', async () => {
+  it('should show registration version of error message if the input is empty on submit', async () => {
     const { component } = await setup();
 
     const findWorkplaceButton = component.getByText('Find workplace');

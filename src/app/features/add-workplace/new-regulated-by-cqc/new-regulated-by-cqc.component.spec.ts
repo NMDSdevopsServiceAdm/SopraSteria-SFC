@@ -85,7 +85,7 @@ describe('NewRegulatedByCqcComponent', () => {
 
     const errorMessage = component.getByTestId('errorMessage');
     expect(errorMessage.innerText).toContain(
-      'Select yes if the main service you provide is regulated by the Care Quality Commission',
+      'Select yes if the main service it provides is regulated by the Care Quality Commission',
     );
   });
 

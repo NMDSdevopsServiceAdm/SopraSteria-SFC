@@ -93,6 +93,18 @@ describe('FindYourWorkplaceComponent', () => {
     expect(form.valid).toBeTruthy();
   });
 
+  it('should show add-workplace flow title', async () => {
+    const { component } = await setup();
+    const title = 'Find the workplace';
+    expect(component.getByText(title)).toBeTruthy();
+  });
+
+  it('should show add-workplace flow hint message', async () => {
+    const { component } = await setup();
+    const hint = `We'll use its CQC location ID or workplace postcode to find the workplace in the Care Quality Commision database.`;
+    expect(component.getByText(hint)).toBeTruthy();
+  });
+
   it('should not lookup workplaces the form if the input is empty', async () => {
     const { component, locationService } = await setup();
     const findWorkplaceButton = component.getByText('Find workplace');
@@ -108,7 +120,7 @@ describe('FindYourWorkplaceComponent', () => {
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
   });
 
-  it('should show error the form if the input is empty', async () => {
+  it('should show add-workplace version of error message if the input is empty on submit', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
     const findWorkplaceButton = component.getByText('Find workplace');
@@ -118,9 +130,9 @@ describe('FindYourWorkplaceComponent', () => {
     component.fixture.detectChanges();
 
     expect(form.invalid).toBeTruthy();
-    expect(
-      component.getAllByText('Enter your CQC location ID or your workplace postcode', { exact: false }).length,
-    ).toBe(2);
+    expect(component.getAllByText('Enter its CQC location ID or its workplace postcode', { exact: false }).length).toBe(
+      2,
+    );
   });
 
   it('should submit the value if value is inputted', async () => {

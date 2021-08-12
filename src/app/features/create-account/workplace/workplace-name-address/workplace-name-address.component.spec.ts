@@ -286,7 +286,7 @@ describe('WorkplaceNameAddressComponent', () => {
     it(`should display an error message when address 1 exceeds max characters`, async () => {
       const { component, getByText, getAllByText } = await setup();
       const form = component.form;
-      const expectedErrorMessage = 'Building and street must be 40 characters or fewer';
+      const expectedErrorMessage = 'Building (number or name) and street must be 40 characters or fewer';
 
       form.controls['address1'].setValue('Long Workplace Building Name Or Number And Street');
       const continueButton = getByText('Continue');
@@ -328,6 +328,32 @@ describe('WorkplaceNameAddressComponent', () => {
       const expectedErrorMessage = 'Postcode must be 8 characters or fewer';
 
       form.controls['postcode'].setValue('AB12 34CD');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when address 2 exceeds max characters`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'This line must be 40 characters or fewer';
+
+      form.controls['address2'].setValue('Long Workplace Building Name Or Number And Street');
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it(`should display an error message when address 3 exceeds max characters`, async () => {
+      const { component, getByText, getAllByText } = await setup();
+      const form = component.form;
+      const expectedErrorMessage = 'This line must be 40 characters or fewer';
+
+      form.controls['address3'].setValue('Long Workplace Building Name Or Number And Street');
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
