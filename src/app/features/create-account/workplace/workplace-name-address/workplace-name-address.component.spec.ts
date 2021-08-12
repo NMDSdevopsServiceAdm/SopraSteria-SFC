@@ -337,6 +337,22 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('setBackLink', () => {
+    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.registrationService.returnTo$.next({ url: ['registration', 'confirm-details'] });
+      component.createAccountNewDesign = true;
+
+      component.ngOnInit();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'confirm-details'],
+      });
+    });
+
     it('should set the back link to `workplace-not-found` when isCqcRegulated and workplaceNotFound in service are true', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
