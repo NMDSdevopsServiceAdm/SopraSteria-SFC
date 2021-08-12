@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -23,10 +24,10 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public categories: Array<ServiceGroup>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
-  public renderForm = false;
   public serverError: string;
   public submitted = false;
   public returnToConfirmDetails: URLStructure;
+  public isParent: boolean;
 
   constructor(
     protected backService: BackService,
@@ -43,7 +44,6 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     this.setupServerErrorsMap();
     this.setSelectedWorkplaceService();
     this.getServiceCategories();
-    this.init();
   }
 
   ngAfterViewInit(): void {
@@ -148,7 +148,6 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
           .patchValue(this.selectedMainService.otherName);
       }
     }
-    this.renderForm = true;
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 

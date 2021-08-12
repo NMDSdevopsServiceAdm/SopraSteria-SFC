@@ -96,7 +96,6 @@ describe('NewSelectMainServiceComponent', () => {
     const { component, fixture, getByText } = await setup();
 
     component.isRegulated = true;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -110,7 +109,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = false;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -125,7 +123,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = true;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = queryByText(
@@ -140,16 +137,14 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = false;
-    component.renderForm = true;
     fixture.detectChanges();
 
     expect(queryByText('Select your main service')).toBeTruthy();
   });
 
-  it('should error when nothing has been selected', async () => {
+  it('should show registration error message when nothing has been selected(plus title with same wording)', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
-    component.renderForm = true;
     const form = component.form;
 
     fixture.detectChanges();
@@ -168,7 +163,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = true;
-    component.renderForm = true;
     fixture.detectChanges();
 
     const radioButton = getByLabelText('Name');
@@ -185,7 +179,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = true;
-    component.renderForm = true;
     component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
     fixture.detectChanges();
 
