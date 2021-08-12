@@ -19,7 +19,7 @@ import { NewSelectMainServiceComponent } from './new-select-main-service.compone
 
 describe('NewSelectMainServiceComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
       NewSelectMainServiceComponent,
       {
         imports: [
@@ -81,6 +81,7 @@ describe('NewSelectMainServiceComponent', () => {
       queryByText,
       getByText,
       getByLabelText,
+      getByTestId,
     };
   }
 
@@ -194,6 +195,23 @@ describe('NewSelectMainServiceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
+  it('should show the other input box when an other option is selected', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    component.renderForm = true;
+    fixture.detectChanges();
+    const otherDrop = getByTestId('workplaceServiceOther-123');
+
+    expect(otherDrop.getAttribute('class')).toContain('govuk-radios__conditional--hidden');
+
+    const otherOption = getByTestId('workplaceService-123');
+    fireEvent.click(otherOption);
+
+    expect(otherDrop.getAttribute('class')).not.toContain('govuk-radios__conditional--hidden');
   });
 
   describe('setBackLink()', () => {
