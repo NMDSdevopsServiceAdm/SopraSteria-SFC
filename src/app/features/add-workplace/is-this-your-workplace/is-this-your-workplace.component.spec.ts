@@ -107,6 +107,14 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(registrationHeading).toBeFalsy();
   });
 
+  it('should render the correct reveal title when in the parent journey', async () => {
+    const { component } = await setup();
+
+    const revealTitle = 'Spotted a mistake in the workplace details?';
+
+    expect(component.queryByText(revealTitle)).toBeTruthy();
+  });
+
   it('should show the id and address when given the locationId', async () => {
     const { component } = await setup();
 
