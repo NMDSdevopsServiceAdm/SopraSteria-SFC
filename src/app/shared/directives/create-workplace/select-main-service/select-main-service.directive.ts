@@ -143,7 +143,9 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
       this.form.get('workplaceService').patchValue(this.selectedMainService.id);
 
       if (this.selectedMainService.other && this.form.get(`otherWorkplaceService${this.selectedMainService.id}`)) {
-        this.form.get(`otherWorkplaceService${this.selectedMainService.id}`).patchValue(this.selectedMainService.other);
+        this.form
+          .get(`otherWorkplaceService${this.selectedMainService.id}`)
+          .patchValue(this.selectedMainService.otherName);
       }
     }
     this.renderForm = true;
