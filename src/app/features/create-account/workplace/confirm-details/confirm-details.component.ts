@@ -152,8 +152,7 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   public setTermsAndConditionsCheckbox() {
-    this.termsAndConditionsCheckbox = !this.termsAndConditionsCheckbox;
-    this.registrationService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
+    this.registrationService.termsAndConditionsCheckbox$.next(!this.termsAndConditionsCheckbox);
   }
 
   public getFirstErrorMessage(item: string): string {

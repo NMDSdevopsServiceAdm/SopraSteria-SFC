@@ -80,14 +80,11 @@ describe('NameOfWorkplaceComponent', () => {
   it('should prefill the workplace name if it exists', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
-    const continueButton = component.getByText('Continue');
 
-    component.fixture.componentInstance.workplaceService.selectedLocationAddress$.value.locationName = 'Workplace name';
+    component.fixture.componentInstance.workplaceService.selectedLocationAddress$.value.locationName = 'Workplace Name';
     component.fixture.componentInstance.ngOnInit();
 
-    fireEvent.click(continueButton);
-
-    expect(form.valid).toBeTruthy();
+    expect(form.value.workplaceName).toEqual('Workplace Name');
   });
 
   it('should display an error when continue is clicked without adding a workplace name', async () => {

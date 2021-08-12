@@ -88,10 +88,8 @@ describe('FindYourWorkplaceComponent', () => {
     component.fixture.componentInstance.workplaceService.postcodeOrLocationId$ = new BehaviorSubject('AB1 2CD');
     component.fixture.componentInstance.ngOnInit();
 
-    const findWorkplaceButton = component.getByText('Find workplace');
-    fireEvent.click(findWorkplaceButton);
-
     const form = component.fixture.componentInstance.form;
+    expect(form.value.postcodeOrLocationID).toEqual('AB1 2CD');
     expect(form.valid).toBeTruthy();
   });
 

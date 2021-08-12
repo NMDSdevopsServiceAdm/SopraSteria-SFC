@@ -88,13 +88,11 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(getByText(noOfAddressesMessage, { exact: false })).toBeTruthy();
   });
 
-  it('should prefill form with selected location address if it exists', async () => {
-    const { component, getByText } = await setup();
+  it('should prefill form with selected location address if it exists by using its index in locationAddresses', async () => {
+    const { component } = await setup();
     const form = component.form;
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
-
+    expect(form.value.address).toBe(0);
     expect(form.invalid).toBeFalsy();
   });
 

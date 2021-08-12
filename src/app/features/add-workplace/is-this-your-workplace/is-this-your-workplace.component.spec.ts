@@ -150,11 +150,16 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(postalCode.length).toBe(2);
   });
 
-  it('should preselect the "yes" radio button if selected workplace location ID exists', async () => {
+  it('should preselect the "Yes" radio button if selectedLocationAddress is the same as location data', async () => {
     const { component } = await setup();
-    const yesRadioButton = component.fixture.nativeElement.querySelector('input[ng-reflect-value="yes"]:checked');
 
-    expect(yesRadioButton).toBeTruthy();
+    component.fixture.componentInstance.workplaceService.selectedLocationAddress$.value.locationId = '123';
+    component.fixture.componentInstance.locationData.locationId = '123';
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    expect(form.valid).toBeTruthy();
+    expect(form.value.yourWorkplace).toBe('yes');
   });
 
   it('should navigate to the select-main-serice url when selecting yes', async () => {

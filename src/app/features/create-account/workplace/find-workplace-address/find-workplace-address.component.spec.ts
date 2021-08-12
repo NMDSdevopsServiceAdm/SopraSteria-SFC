@@ -181,7 +181,7 @@ describe('FindWorkplaceAddressComponent', () => {
   });
 
   describe('prefillForm', () => {
-    it('should prefill the form with postcode if locationAddresses has been set in the service', async () => {
+    it('should prefill the form with postcode if postcode$ has been set in the service', async () => {
       const { component } = await setup();
 
       component.fixture.componentInstance.registrationService.postcode$ = new BehaviorSubject('A1 2BC');
@@ -192,7 +192,7 @@ describe('FindWorkplaceAddressComponent', () => {
       expect(form.value.postcode).toBe('A1 2BC');
     });
 
-    it('should not prefill the form with postcode if locationAddresses has not been set in the service', async () => {
+    it('should not prefill the form with postcode if postcode$ has not been set in the service', async () => {
       const { component } = await setup();
 
       component.fixture.componentInstance.registrationService.postcode$ = new BehaviorSubject(null);
