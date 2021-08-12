@@ -240,7 +240,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
     });
 
-    it('should set the change link for workplace address to `find-workplace-address` when workplace is not CQC regulated', async () => {
+    it('should set the change link for workplace address to `workplace-name-address` when workplace is not CQC regulated', async () => {
       const { component, fixture, getByTestId } = await setup();
 
       component.workplace.isCQC = false;
@@ -252,7 +252,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace-address');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
 
     it('should set the change link for main service to `select-main-service`', async () => {
