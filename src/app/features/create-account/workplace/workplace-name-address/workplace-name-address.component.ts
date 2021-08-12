@@ -53,7 +53,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   private setupPreFillForm(): void {
     const selectedLocation = this.registrationService.selectedLocationAddress$.value;
-    if (this.manuallyEnteredWorkplace) {
+    if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
       this.preFillForm(selectedLocation);
     }
   }

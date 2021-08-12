@@ -106,6 +106,29 @@ describe('WorkplaceNameAddressComponent', () => {
         postcode: 'ABC 123',
       });
     });
+
+    it('should prefill the workplace name and address if returnToConfirmDetails is true', async () => {
+      const { component, getByText } = await setup();
+
+      const spy = spyOn(component, 'preFillForm').and.callThrough();
+
+      component.registrationService.returnTo$ = new BehaviorSubject({ url: ['registration', 'confirm-details'] });
+      component.ngOnInit();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
+      });
+    });
   });
 
   describe('Navigation', () => {
