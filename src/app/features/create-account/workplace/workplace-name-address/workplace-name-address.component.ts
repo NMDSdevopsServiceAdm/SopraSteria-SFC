@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -37,10 +36,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
+    this.manuallyEnteredWorkplace = this.registrationService.manuallyEnteredWorkplace$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
+    this.setupPreFillForm();
     await this.setFeatureFlag();
-    this.setupSubscription();
     this.setBackLink();
   }
 
@@ -51,14 +51,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  protected setupSubscription(): void {
-    this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
-        if (selectedLocation) {
-          this.preFillForm(selectedLocation);
-        }
-      }),
-    );
+  private setupPreFillForm(): void {
+    const selectedLocation = this.registrationService.selectedLocationAddress$.value;
+    if (this.manuallyEnteredWorkplace) {
+      this.preFillForm(selectedLocation);
+    }
   }
 
   protected setSelectedLocationAddress(): void {
