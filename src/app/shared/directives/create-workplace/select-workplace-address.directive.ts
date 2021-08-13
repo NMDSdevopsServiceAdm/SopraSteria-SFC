@@ -24,6 +24,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public returnToConfirmDetails: URLStructure;
   public selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
+  protected errorMessage: string;
 
   constructor(
     protected backService: BackService,
@@ -39,6 +40,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   ngOnInit(): void {
+    this.setErrorMessage();
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
@@ -75,8 +77,21 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setupFormErrorsMap(): void {}
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address',
+        type: [
+          {
+            name: 'required',
+            message: this.errorMessage,
+          },
+        ],
+      },
+    ];
+  }
+
+  protected setErrorMessage(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onLocationChange(addressLine1: string): void {}

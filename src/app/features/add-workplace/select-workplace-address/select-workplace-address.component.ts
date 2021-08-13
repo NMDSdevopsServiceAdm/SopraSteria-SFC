@@ -30,18 +30,8 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     this.workplaceService.manuallyEnteredWorkplaceName$.next(false);
   }
 
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'address',
-        type: [
-          {
-            name: 'required',
-            message: `Select the workplace address if it's listed`,
-          },
-        ],
-      },
-    ];
+  protected setErrorMessage(): void {
+    this.errorMessage = `Select the workplace address if it's listed`;
   }
 
   public onLocationChange(index): void {
