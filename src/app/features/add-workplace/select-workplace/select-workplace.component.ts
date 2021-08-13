@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplaceDirective } from '@features/workplace-find-and-select/select-workplace/select-workplace.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -15,20 +13,19 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   constructor(
-    public workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
-    protected registrationService: RegistrationService,
+    public workplaceService: WorkplaceService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, workplaceService);
   }
 
   protected init(): void {
     this.flow = '/add-workplace';
-    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
+    this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.setupSubscription();
     this.prefillForm();
   }
@@ -45,14 +42,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
         ],
       },
     ];
-  }
-
-  protected setupSubscription(): void {
-    this.subscriptions.add(
-      this.workplaceService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
-      ),
-    );
   }
 
   protected save(): void {

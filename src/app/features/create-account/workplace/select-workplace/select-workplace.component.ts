@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -14,12 +13,12 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   constructor(
-    public registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    public registrationService: RegistrationService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
   }
@@ -29,14 +28,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.setupSubscription();
     this.prefillForm();
-  }
-
-  protected setupSubscription(): void {
-    this.subscriptions.add(
-      this.registrationService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
-      ),
-    );
   }
 
   protected save(): void {

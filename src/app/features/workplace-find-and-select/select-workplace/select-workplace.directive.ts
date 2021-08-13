@@ -6,7 +6,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -32,7 +32,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
-    protected registrationService: RegistrationService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   ngOnInit(): void {
@@ -92,6 +92,14 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
         ],
       },
     ];
+  }
+
+  protected setupSubscription(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.locationAddresses$.subscribe(
+        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
+      ),
+    );
   }
 
   protected getSelectedLocation(): LocationAddress {
