@@ -6,12 +6,12 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectWorkplaceDirective } from '@features/workplace-find-and-select/select-workplace/select-workplace.directive';
+import { SelectWorkplaceDirective } from '@shared/directives/create-workplace/select-workplace/select-workplace.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
-  templateUrl: '../../workplace-find-and-select/select-workplace/select-workplace.component.html',
+  templateUrl: '../../../shared/directives/create-workplace/select-workplace/select-workplace.component.html',
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   public workplace: Establishment;
