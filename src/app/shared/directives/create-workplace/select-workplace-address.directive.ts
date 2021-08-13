@@ -91,7 +91,11 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   protected setSelectedLocationAddress(): void {
-    this.selectedLocationAddress = this.workplaceInterfaceService.selectedLocationAddress$.value;
+    this.subscriptions.add(
+      this.workplaceInterfaceService.selectedLocationAddress$.subscribe(
+        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress),
+      ),
+    );
   }
 
   protected prefillForm(): void {
