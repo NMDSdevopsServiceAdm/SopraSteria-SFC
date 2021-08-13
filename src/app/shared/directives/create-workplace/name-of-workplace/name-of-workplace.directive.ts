@@ -33,6 +33,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
+    this.prefillForm();
     this.setBackLink();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
@@ -76,5 +77,13 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   private setEnteredNameIntoFlowService(): void {
     const enteredWorkplaceName = this.form.get('workplaceName').value;
     this.workplaceInterfaceService.selectedLocationAddress$.value.locationName = enteredWorkplaceName;
+  }
+
+  protected prefillForm(): void {
+    if (this.workplaceInterfaceService.selectedLocationAddress$.value.locationName) {
+      this.form.setValue({
+        workplaceName: this.workplaceInterfaceService.selectedLocationAddress$.value.locationName,
+      });
+    }
   }
 }

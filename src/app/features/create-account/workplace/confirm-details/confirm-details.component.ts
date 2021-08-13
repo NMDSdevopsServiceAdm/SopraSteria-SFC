@@ -27,7 +27,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
-
+  protected termsAndConditionsCheckbox: boolean;
   protected service: Service;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
@@ -51,6 +51,7 @@ export class ConfirmDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.setupForm();
     this.setupFormErrorsMap();
+    this.prefillForm();
     this.setupSubscriptions();
     this.setBackLink();
   }
@@ -139,6 +140,19 @@ export class ConfirmDetailsComponent implements OnInit {
         ],
       },
     ];
+  }
+
+  protected prefillForm(): void {
+    this.termsAndConditionsCheckbox = this.registrationService.termsAndConditionsCheckbox$.value;
+    if (this.termsAndConditionsCheckbox) {
+      this.form.patchValue({
+        termsAndConditions: 'check',
+      });
+    }
+  }
+
+  public setTermsAndConditionsCheckbox() {
+    this.registrationService.termsAndConditionsCheckbox$.next(!this.termsAndConditionsCheckbox);
   }
 
   public getFirstErrorMessage(item: string): string {

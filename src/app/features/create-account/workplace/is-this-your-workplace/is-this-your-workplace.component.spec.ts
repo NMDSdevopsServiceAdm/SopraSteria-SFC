@@ -7,7 +7,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -16,14 +15,13 @@ import { BehaviorSubject } from 'rxjs';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
 describe('IsThisYourWorkplaceComponent', () => {
-  async function setup(searchMethod = 'locationID') {
+  async function setup(searchMethod = 'locationID', locationId = '1-2123313123') {
     const component = await render(IsThisYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
         BackService,
         {
           provide: RegistrationService,
-          useClass: MockRegistrationService,
           useValue: {
             locationAddresses$: {
               value: [
@@ -40,7 +38,14 @@ describe('IsThisYourWorkplaceComponent', () => {
             searchMethod$: {
               value: searchMethod,
             },
-            selectedLocationAddress$: new BehaviorSubject(null),
+            selectedLocationAddress$: {
+              value: {
+                locationId: locationId,
+              },
+              next: () => {
+                return true;
+              },
+            },
             manuallyEnteredWorkplace$: new BehaviorSubject(null),
             returnTo$: new BehaviorSubject(null),
           },
@@ -144,7 +149,19 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(postalCode.length).toBe(2);
   });
 
-  it('should navigate to the select-main-serice url when selecting yes', async () => {
+  it('should preselect the "Yes" radio button if selectedLocationAddress is the same as the location data', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.registrationService.selectedLocationAddress$.value.locationId = '123';
+    component.fixture.componentInstance.locationData.locationId = '123';
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    expect(form.valid).toBeTruthy();
+    expect(form.value.yourWorkplace).toBe('yes');
+  });
+
+  it('should navigate to the select-main-service url when selecting yes', async () => {
     const { component, spy } = await setup();
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -183,7 +200,7 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should display an error when continue is clicked without selecting anything', async () => {
-    const { component } = await setup();
+    const { component } = await setup('locationID', null);
 
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');

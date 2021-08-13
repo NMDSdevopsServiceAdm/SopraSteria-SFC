@@ -119,7 +119,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.setNameAndAddress();
     fixture.detectChanges();
 
-    expect(component.nameAndAddress).toContain('Test Care Home');
+    expect(component.nameAndAddress).toContain('Workplace Name');
   });
 
   it('should not include the workplace name in nameAndAddress if CQC regulated with a location ID', async () => {
@@ -132,13 +132,13 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.setNameAndAddress();
     fixture.detectChanges();
 
-    expect(component.nameAndAddress).not.toContain('Test Care Home');
+    expect(component.nameAndAddress).not.toContain('Workplace Name');
   });
 
   it('should show workplace details', async () => {
     const { component, fixture, getByText } = await setup();
 
-    const expectedLocationName = 'Test Care Home';
+    const expectedLocationName = 'Workplace Name';
     const expectedAddressLine1 = '1 Street';
     const expectedAddressLine2 = 'Second Line';
     const expectedAddressLine3 = 'Third Line';
@@ -240,7 +240,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
     });
 
-    it('should set the change link for workplace address to `find-workplace-address` when workplace is not CQC regulated', async () => {
+    it('should set the change link for workplace address to `workplace-name-address` when workplace is not CQC regulated', async () => {
       const { component, fixture, getByTestId } = await setup();
 
       component.workplace.isCQC = false;
@@ -252,7 +252,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace-address');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
 
     it('should set the change link for main service to `select-main-service`', async () => {

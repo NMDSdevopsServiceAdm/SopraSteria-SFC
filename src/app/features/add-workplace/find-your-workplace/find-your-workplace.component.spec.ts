@@ -6,12 +6,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { FindYourWorkplaceComponent } from './find-your-workplace.component';
@@ -32,6 +34,10 @@ describe('FindYourWorkplaceComponent', () => {
         {
           provide: LocationService,
           useClass: MockLocationService,
+        },
+        {
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: FeatureFlagsService,
@@ -74,6 +80,17 @@ describe('FindYourWorkplaceComponent', () => {
   it('should render a FindYourWorkplaceComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should prefill the form if postcodeOrLocationId is already set in the service', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplaceService.postcodeOrLocationId$ = new BehaviorSubject('AB1 2CD');
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    expect(form.value.postcodeOrLocationID).toEqual('AB1 2CD');
+    expect(form.valid).toBeTruthy();
   });
 
   it('should show add-workplace flow title', async () => {

@@ -22,8 +22,10 @@ export class MockRegistrationService extends RegistrationService {
     {
       postalCode: 'ABC 123',
       addressLine1: '1 Street',
+      addressLine2: 'Second Line',
+      addressLine3: 'Third Line',
       county: 'Greater Manchester',
-      locationName: 'Name',
+      locationName: 'Workplace Name',
       townCity: 'Manchester',
       locationId: '123',
     },
@@ -49,6 +51,7 @@ export class MockRegistrationService extends RegistrationService {
   });
 
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject('ABC 123');
+  public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   public getUsernameDuplicate(username: string): Observable<any> {
     return of({ status: username === 'duplicate' ? '1' : '0' });

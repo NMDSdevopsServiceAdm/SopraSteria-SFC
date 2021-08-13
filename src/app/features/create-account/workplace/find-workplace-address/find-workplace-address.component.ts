@@ -15,20 +15,27 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   constructor(
-    private registrationService: RegistrationService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    public registrationService: RegistrationService,
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, router, featureFlagsService);
+    super(
+      backService,
+      errorSummaryService,
+      formBuilder,
+      locationService,
+      router,
+      featureFlagsService,
+      registrationService,
+    );
   }
 
   protected init(): void {
     this.flow = 'registration';
-    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
   }
 
   protected setupFormErrorsMap(): void {
@@ -59,9 +66,5 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
 
   protected onSuccess(data: LocationSearchResponse): void {
     this.registrationService.locationAddresses$.next(data.postcodedata);
-  }
-
-  protected setBackLinkToConfirmDetailsPage(): void {
-    this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
   }
 }
