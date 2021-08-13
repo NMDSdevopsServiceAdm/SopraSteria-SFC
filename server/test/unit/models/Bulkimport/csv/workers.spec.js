@@ -1002,7 +1002,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         expect(validator._validationErrors.length).to.equal(0);
       });
     });
-    describe.only('otherJobs', () => {
+    describe('otherJobs', () => {
       it('should allow correct other jobs', async () => {
         const validator = new WorkerCsvValidator(
           buildWorkerCsv({
