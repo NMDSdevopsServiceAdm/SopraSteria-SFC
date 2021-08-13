@@ -136,11 +136,11 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit(): void {
     this.submitted = true;
-    const postcode = this.form.get('postcode').value;
-    this.workplaceInterfaceService.postcode$.next(postcode);
 
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
+      const postcode = this.form.get('postcode').value;
+      this.workplaceInterfaceService.postcode$.next(postcode);
       this.getAddressesByPostCode();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
