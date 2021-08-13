@@ -37,7 +37,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   ) {}
 
   ngOnInit(): void {
-    this.errorMessage = `Select your workplace if it's displayed`;
+    this.setErrorMessage();
     this.setupForm();
     this.init();
     this.setupFormErrorsMap();
@@ -65,6 +65,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   protected setBackLink(): void {
     const backLink = this.createAccountNewDesign ? 'find-workplace' : 'regulated-by-cqc';
     this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
+  }
+
+  protected setErrorMessage(): void {
+    this.errorMessage = `Select your workplace if it's displayed`;
   }
 
   public setNextRoute(): void {
