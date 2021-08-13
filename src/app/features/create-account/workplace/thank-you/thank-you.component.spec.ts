@@ -68,4 +68,31 @@ describe('ThankYouComponent', () => {
 
     expect(contactUs.getAttribute('href')).toBe('/contact-us');
   });
+
+  it('should reset registration service', async () => {
+    const { component } = await setup();
+
+    const registrationService = component.fixture.componentInstance.registrationService;
+
+    expect(registrationService.registrationInProgress$.value).toBeFalse();
+    expect(registrationService.loginCredentials$.value).toBeNull();
+    expect(registrationService.securityDetails$.value).toBeNull();
+    expect(registrationService.termsAndConditionsCheckbox$.value).toBeFalse();
+
+    expect(registrationService.isRegulated$.value).toBeNull();
+    expect(registrationService.locationAddresses$.value).toBeNull();
+    expect(registrationService.isRegulated$.value).toBeNull();
+    expect(registrationService.isCqcRegulated$.value).toBeNull();
+    expect(registrationService.newWorkplaceUid).toBeNull();
+    expect(registrationService.selectedLocationAddress$.value).toBeNull();
+    expect(registrationService.selectedWorkplaceService$.value).toBeNull();
+    expect(registrationService.manuallyEnteredWorkplace$.value).toBeNull();
+    expect(registrationService.searchMethod$.value).toBeNull();
+    expect(registrationService.postcodeOrLocationId$.value).toBeNull();
+    expect(registrationService.postcode$.value).toBeNull();
+    expect(registrationService.workplaceNotFound$.value).toBeFalse();
+    expect(registrationService.returnTo$.value).toBeNull();
+    expect(registrationService.invalidPostcodeEntered$.value).toBeNull();
+    expect(registrationService.manuallyEnteredWorkplaceName$.value).toBeFalse();
+  });
 });
