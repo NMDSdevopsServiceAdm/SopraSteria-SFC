@@ -53,6 +53,14 @@ export class MockWorkplaceService extends WorkplaceService {
       },
     ]);
   }
+
+  public generateAddWorkplaceRequest(): any {
+    return { establishmentUid: 'abc123' };
+  }
+
+  public addWorkplace(): any {
+    return of('abc123');
+  }
 }
 
 @Injectable()
