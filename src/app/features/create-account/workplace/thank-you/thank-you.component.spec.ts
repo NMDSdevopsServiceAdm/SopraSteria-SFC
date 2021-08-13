@@ -81,7 +81,6 @@ describe('ThankYouComponent', () => {
 
     expect(registrationService.isRegulated$.value).toBeNull();
     expect(registrationService.locationAddresses$.value).toBeNull();
-    expect(registrationService.isRegulated$.value).toBeNull();
     expect(registrationService.isCqcRegulated$.value).toBeNull();
     expect(registrationService.newWorkplaceUid).toBeNull();
     expect(registrationService.selectedLocationAddress$.value).toBeNull();

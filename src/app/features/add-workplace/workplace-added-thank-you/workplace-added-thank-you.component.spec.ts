@@ -55,7 +55,6 @@ describe('WorkplaceAddedThankYouComponent', () => {
 
     expect(workplaceService.isRegulated$.value).toBeNull();
     expect(workplaceService.locationAddresses$.value).toBeNull();
-    expect(workplaceService.isRegulated$.value).toBeNull();
     expect(workplaceService.isCqcRegulated$.value).toBeNull();
     expect(workplaceService.newWorkplaceUid).toBeNull();
     expect(workplaceService.selectedLocationAddress$.value).toBeNull();
