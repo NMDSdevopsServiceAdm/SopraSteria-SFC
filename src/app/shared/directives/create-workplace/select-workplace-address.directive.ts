@@ -6,6 +6,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { compact, isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   get getAddress(): AbstractControl {

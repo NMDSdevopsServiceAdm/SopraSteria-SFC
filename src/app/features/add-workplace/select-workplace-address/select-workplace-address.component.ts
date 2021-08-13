@@ -21,7 +21,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, featureFlagsService);
+    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, workplaceService);
   }
 
   protected init(): void {
