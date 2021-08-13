@@ -52,9 +52,13 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected init(): void {}
+  protected init(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  protected save(): void {}
+  protected save(): void {
+    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.getSelectedLocation());
+    this.router.navigate([this.flow, this.nextRoute]);
+  }
 
   protected setBackLink(): void {
     const backLink = this.createAccountNewDesign ? 'find-workplace' : 'regulated-by-cqc';

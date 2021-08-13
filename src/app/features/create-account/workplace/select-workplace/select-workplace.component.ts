@@ -28,10 +28,4 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.prefillForm();
   }
-
-  protected save(): void {
-    this.registrationService.manuallyEnteredWorkplace$.next(false);
-    this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([this.flow, this.nextRoute]);
-  }
 }

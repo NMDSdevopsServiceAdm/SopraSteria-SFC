@@ -31,7 +31,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
     this.isCQCLocationUpdate = true;
-    this.setBackLink();
   }
 
   protected setBackLink(): void {
