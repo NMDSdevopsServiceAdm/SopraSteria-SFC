@@ -42,8 +42,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected save(): void {
-    this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
     const selectedLocation = this.getSelectedLocation();
+    this.workplaceService.selectedLocationAddress$.next(selectedLocation);
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });

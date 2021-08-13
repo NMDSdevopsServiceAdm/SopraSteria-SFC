@@ -25,6 +25,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public returnToConfirmDetails: URLStructure;
   protected subscriptions: Subscription = new Subscription();
   protected nextRoute: string;
+  protected errorMessage: string;
 
   constructor(
     protected backService: BackService,
@@ -36,9 +37,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   ) {}
 
   ngOnInit(): void {
+    this.errorMessage = `Select your workplace if it's displayed`;
     this.setupForm();
-    this.setupFormErrorsMap();
     this.init();
+    this.setupFormErrorsMap();
     this.setupSubscription();
     this.enteredPostcode = this.locationAddresses[0].postalCode;
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
@@ -92,7 +94,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
         type: [
           {
             name: 'required',
-            message: `Select your workplace if it's displayed`,
+            message: this.errorMessage,
           },
         ],
       },

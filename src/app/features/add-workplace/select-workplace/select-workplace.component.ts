@@ -26,20 +26,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   protected init(): void {
     this.flow = '/add-workplace';
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
+    this.errorMessage = `Select the workplace if it's displayed`;
     this.prefillForm();
-  }
-
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'workplace',
-        type: [
-          {
-            name: 'required',
-            message: `Select the workplace if it's displayed`,
-          },
-        ],
-      },
-    ];
   }
 }
