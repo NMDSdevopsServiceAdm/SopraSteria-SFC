@@ -32,7 +32,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.workplace = this.establishmentService.establishment;
     this.isCQCLocationUpdate = true;
     this.setBackLink();
-    this.setupSubscription();
   }
 
   protected setBackLink(): void {

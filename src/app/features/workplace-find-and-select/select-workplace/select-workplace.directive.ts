@@ -39,6 +39,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.setupSubscription();
     this.enteredPostcode = this.locationAddresses[0].postalCode;
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
@@ -100,6 +101,14 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
         (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
       ),
     );
+  }
+
+  public prefillForm() {
+    if (this.workplaceInterfaceService.selectedLocationAddress$.value) {
+      this.form.patchValue({
+        workplace: this.workplaceInterfaceService.selectedLocationAddress$.value.locationId,
+      });
+    }
   }
 
   protected getSelectedLocation(): LocationAddress {

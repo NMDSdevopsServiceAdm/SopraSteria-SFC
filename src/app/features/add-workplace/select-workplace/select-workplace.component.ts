@@ -26,7 +26,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   protected init(): void {
     this.flow = '/add-workplace';
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
-    this.setupSubscription();
     this.prefillForm();
   }
 
@@ -48,13 +47,5 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.workplaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
     this.router.navigate([this.flow, this.nextRoute]);
-  }
-
-  public prefillForm() {
-    if (this.workplaceService.selectedLocationAddress$.value) {
-      this.form.patchValue({
-        workplace: this.workplaceService.selectedLocationAddress$.value.locationId,
-      });
-    }
   }
 }
