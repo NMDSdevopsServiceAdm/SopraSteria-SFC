@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -29,7 +28,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.workplaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceService.manuallyEnteredWorkplaceName$.next(false);
-    this.setupSubscriptions();
   }
 
   protected setupFormErrorsMap(): void {
@@ -44,21 +42,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
         ],
       },
     ];
-  }
-
-  protected setupSubscriptions(): void {
-    this.subscriptions.add(
-      this.workplaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
-        this.enteredPostcode = locationAddresses[0].postalCode;
-        this.locationAddresses = locationAddresses;
-      }),
-    );
-
-    this.subscriptions.add(
-      this.workplaceService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress),
-      ),
-    );
   }
 
   public onLocationChange(index): void {

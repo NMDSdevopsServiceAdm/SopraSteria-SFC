@@ -42,6 +42,8 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.setLocationAddresses();
+    this.setSelectedLocationAddress();
     this.prefillForm();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
@@ -78,6 +80,19 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onLocationChange(addressLine1: string): void {}
+
+  protected setLocationAddresses(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
+        this.enteredPostcode = locationAddresses[0].postalCode;
+        this.locationAddresses = locationAddresses;
+      }),
+    );
+  }
+
+  protected setSelectedLocationAddress(): void {
+    this.selectedLocationAddress = this.workplaceInterfaceService.selectedLocationAddress$.value;
+  }
 
   protected prefillForm(): void {
     if (this.indexOfSelectedLocationAddress() >= 0) {

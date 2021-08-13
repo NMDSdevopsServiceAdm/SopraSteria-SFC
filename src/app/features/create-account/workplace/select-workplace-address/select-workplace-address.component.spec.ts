@@ -10,6 +10,7 @@ import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workp
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
@@ -100,8 +101,7 @@ describe('SelectWorkplaceAddressComponent', () => {
     it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
       const { component, fixture, getAllByText, queryByText, getByText } = await setup();
 
-      spyOn(component.registrationService.selectedLocationAddress$, 'subscribe').and.returnValue(null);
-      component.selectedLocationAddress = null;
+      component.registrationService.selectedLocationAddress$ = new BehaviorSubject(null);
       component.ngOnInit();
       fixture.detectChanges();
 
