@@ -23,6 +23,7 @@ import {
 import {
   SelectWorkplaceAddressComponent,
 } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
 import {
   WorkplaceNameAddressComponent,
@@ -33,7 +34,6 @@ import { RegistrationCompleteComponent } from '@features/registration/registrati
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
-import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { SharedModule } from '@shared/shared.module';
 
 import {
