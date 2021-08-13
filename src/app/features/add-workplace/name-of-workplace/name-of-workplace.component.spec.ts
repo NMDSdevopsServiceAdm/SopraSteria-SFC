@@ -69,51 +69,63 @@ describe('NameOfWorkplaceComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Parent journey', () => {
-    it('should render the correct heading when in the parent journey', async () => {
-      const { component } = await setup();
+  it('should render the correct heading when in the parent journey', async () => {
+    const { component } = await setup();
 
-      const parentHeading = component.getByText(`What's the name of the workplace?`);
+    const parentHeading = component.getByText(`What's the name of the workplace?`);
 
-      expect(parentHeading).toBeTruthy();
-    });
+    expect(parentHeading).toBeTruthy();
+  });
 
-    it('should display an error when continue is clicked without adding a workplace name', async () => {
-      const { component } = await setup();
+  it('should prefill the workplace name if it exists', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
 
-      const form = component.fixture.componentInstance.form;
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-      const errorMessage = 'Enter the name of the workplace';
+    component.fixture.componentInstance.workplaceService.selectedLocationAddress$.value.locationName = 'Workplace Name';
+    component.fixture.componentInstance.ngOnInit();
 
-      expect(form.invalid).toBeTruthy();
-      expect(component.getAllByText(errorMessage).length).toBe(2);
-    });
+    expect(form.value.workplaceName).toEqual('Workplace Name');
+  });
 
-    it('should navigate to new-select-main-service url when continue button is clicked and a workplace name is given', async () => {
-      const { component, spy } = await setup();
-      const form = component.fixture.componentInstance.form;
-      const continueButton = component.getByText('Continue');
+  it('should display an error when continue is clicked without adding a workplace name', async () => {
+    const { component } = await setup();
 
-      form.controls['workplaceName'].setValue('Place Name');
-      fireEvent.click(continueButton);
+    component.fixture.componentInstance.workplaceService.selectedLocationAddress$.value.locationName = null;
+    component.fixture.componentInstance.ngOnInit();
 
-      expect(form.valid).toBeTruthy();
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
-    });
+    const form = component.fixture.componentInstance.form;
+    const errorMessage = 'Enter the name of the workplace';
 
-    it('should set locationName in workplace service when continue button is clicked and a workplace name is given', async () => {
-      const { component } = await setup();
-      const form = component.fixture.componentInstance.form;
-      const continueButton = component.getByText('Continue');
-      const workplaceService = component.fixture.componentInstance.workplaceService;
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
 
-      form.controls['workplaceName'].setValue('Place Name');
-      fireEvent.click(continueButton);
+    expect(form.invalid).toBeTruthy();
+    expect(component.getAllByText(errorMessage).length).toBe(2);
+  });
 
-      expect(form.valid).toBeTruthy();
-      expect(workplaceService.selectedLocationAddress$.value.locationName).toBe('Place Name');
-    });
+  it('should navigate to new-select-main-service url when continue button is clicked and a workplace name is given', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+    const continueButton = component.getByText('Continue');
+
+    form.controls['workplaceName'].setValue('Place Name');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
+  });
+
+  it('should set locationName in workplace service when continue button is clicked and a workplace name is given', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+    const continueButton = component.getByText('Continue');
+    const workplaceService = component.fixture.componentInstance.workplaceService;
+
+    form.controls['workplaceName'].setValue('Place Name');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(workplaceService.selectedLocationAddress$.value.locationName).toBe('Place Name');
   });
 
   describe('setBackLink()', () => {

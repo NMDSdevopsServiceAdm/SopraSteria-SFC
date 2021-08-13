@@ -14,7 +14,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   constructor(
-    protected registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -28,6 +28,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.flow = '/registration';
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.setupSubscription();
+    this.prefillForm();
   }
 
   protected setupSubscription(): void {
@@ -42,5 +43,13 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.registrationService.manuallyEnteredWorkplace$.next(false);
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
     this.router.navigate([this.flow, this.nextRoute]);
+  }
+
+  public prefillForm() {
+    if (this.registrationService.selectedLocationAddress$.value) {
+      this.form.patchValue({
+        workplace: this.registrationService.selectedLocationAddress$.value.locationId,
+      });
+    }
   }
 }

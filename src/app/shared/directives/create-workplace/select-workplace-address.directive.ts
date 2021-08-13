@@ -7,7 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { compact } from 'lodash';
+import { compact, isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -40,6 +40,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.prefillForm();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
@@ -75,6 +76,20 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public onLocationChange(addressLine1: string): void {}
+
+  protected prefillForm(): void {
+    if (this.indexOfSelectedLocationAddress() >= 0) {
+      this.form.patchValue({
+        address: this.indexOfSelectedLocationAddress(),
+      });
+    }
+  }
+
+  protected indexOfSelectedLocationAddress(): number {
+    return this.locationAddresses.findIndex((address) => {
+      return isEqual(address, this.selectedLocationAddress);
+    });
+  }
 
   public onSubmit(): void {
     this.submitted = true;

@@ -21,7 +21,7 @@ export class FindYourWorkplaceComponent extends FindYourWorkplaceDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     protected locationService: LocationService,
     protected featureFlagsService: FeatureFlagsService,
   ) {

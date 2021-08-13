@@ -5,11 +5,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 describe('WorkplaceNameAddressComponent', () => {
   async function setup() {
@@ -23,7 +27,10 @@ describe('WorkplaceNameAddressComponent', () => {
         ReactiveFormsModule,
       ],
       providers: [
-        RegistrationService,
+        {
+          provide: RegistrationService,
+          useClass: MockRegistrationService,
+        },
         {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
@@ -76,65 +83,115 @@ describe('WorkplaceNameAddressComponent', () => {
     expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
   });
 
-  it('should navigate to new-select-main-service page on success if feature flag is on', async () => {
-    const { component, fixture, getByText, spy } = await setup();
-    const form = component.form;
+  describe('preFillForm()', () => {
+    it('should prefill the workplace name and address if manuallyEnteredWorkplace is true', async () => {
+      const { component, getByText } = await setup();
 
-    form.controls['workplaceName'].setValue('Workplace');
-    form.controls['address1'].setValue('1 Main Street');
-    form.controls['townOrCity'].setValue('London');
-    form.controls['county'].setValue('Greater London');
-    form.controls['postcode'].setValue('SE1 1AA');
+      const spy = spyOn(component, 'preFillForm').and.callThrough();
 
-    component.createAccountNewDesign = true;
-    fixture.detectChanges();
+      component.registrationService.manuallyEnteredWorkplace$ = new BehaviorSubject(true);
+      component.ngOnInit();
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
 
-    expect(form.invalid).toBeFalsy();
-    expect(spy).toHaveBeenCalledWith(['/registration', 'new-select-main-service']);
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
+      });
+    });
+
+    it('should prefill the workplace name and address if returnToConfirmDetails is true', async () => {
+      const { component, getByText } = await setup();
+
+      const spy = spyOn(component, 'preFillForm').and.callThrough();
+
+      component.registrationService.returnTo$ = new BehaviorSubject({ url: ['registration', 'confirm-details'] });
+      component.ngOnInit();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
+      });
+    });
   });
 
-  it('should navigate to select-main-service page on success if feature flag is off', async () => {
-    const { component, fixture, getByText, spy } = await setup();
-    const form = component.form;
+  describe('Navigation', () => {
+    it('should navigate to new-select-main-service page on success if feature flag is on', async () => {
+      const { component, fixture, getByText, spy } = await setup();
+      const form = component.form;
 
-    form.controls['workplaceName'].setValue('Workplace');
-    form.controls['address1'].setValue('1 Main Street');
-    form.controls['townOrCity'].setValue('London');
-    form.controls['county'].setValue('Greater London');
-    form.controls['postcode'].setValue('SE1 1AA');
+      form.controls['workplaceName'].setValue('Workplace');
+      form.controls['address1'].setValue('1 Main Street');
+      form.controls['townOrCity'].setValue('London');
+      form.controls['county'].setValue('Greater London');
+      form.controls['postcode'].setValue('SE1 1AA');
 
-    component.createAccountNewDesign = false;
-    fixture.detectChanges();
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
 
-    expect(form.invalid).toBeFalsy();
-    expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
-  });
+      expect(form.invalid).toBeFalsy();
+      expect(spy).toHaveBeenCalledWith(['/registration', 'new-select-main-service']);
+    });
 
-  it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
-    const { component, fixture, getByText, spy } = await setup();
-    const form = component.form;
+    it('should navigate to select-main-service page on success if feature flag is off', async () => {
+      const { component, fixture, getByText, spy } = await setup();
+      const form = component.form;
 
-    form.controls['workplaceName'].setValue('Workplace');
-    form.controls['address1'].setValue('1 Main Street');
-    form.controls['townOrCity'].setValue('London');
-    form.controls['county'].setValue('Greater London');
-    form.controls['postcode'].setValue('SE1 1AA');
+      form.controls['workplaceName'].setValue('Workplace');
+      form.controls['address1'].setValue('1 Main Street');
+      form.controls['townOrCity'].setValue('London');
+      form.controls['county'].setValue('Greater London');
+      form.controls['postcode'].setValue('SE1 1AA');
 
-    component.createAccountNewDesign = true;
-    component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
-    fixture.detectChanges();
+      component.createAccountNewDesign = false;
+      fixture.detectChanges();
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
 
-    expect(form.invalid).toBeFalsy();
-    expect(spy).toHaveBeenCalledWith(['/registration', 'confirm-details']);
+      expect(form.invalid).toBeFalsy();
+      expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
+    });
+
+    it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
+      const { component, fixture, getByText, spy } = await setup();
+      const form = component.form;
+
+      form.controls['workplaceName'].setValue('Workplace');
+      form.controls['address1'].setValue('1 Main Street');
+      form.controls['townOrCity'].setValue('London');
+      form.controls['county'].setValue('Greater London');
+      form.controls['postcode'].setValue('SE1 1AA');
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.invalid).toBeFalsy();
+      expect(spy).toHaveBeenCalledWith(['/registration', 'confirm-details']);
+    });
   });
 
   describe('Error messages', () => {
@@ -306,6 +363,22 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('setBackLink', () => {
+    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.registrationService.returnTo$.next({ url: ['registration', 'confirm-details'] });
+      component.createAccountNewDesign = true;
+
+      component.ngOnInit();
+
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/registration', 'confirm-details'],
+      });
+    });
+
     it('should set the back link to `workplace-not-found` when isCqcRegulated and workplaceNotFound in service are true', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');

@@ -46,6 +46,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
     this.revealTitle = `Spotted a mistake in ${this.isParent ? 'the' : 'your'} workplace details?`;
+    this.prefillForm();
     this.setupFormErrorsMap();
   }
 
@@ -63,6 +64,14 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
         },
       ],
     });
+  }
+
+  protected prefillForm(): void {
+    if (this.workplaceInterfaceService.selectedLocationAddress$.value.locationId === this.locationData.locationId) {
+      this.form.patchValue({
+        yourWorkplace: 'yes',
+      });
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
