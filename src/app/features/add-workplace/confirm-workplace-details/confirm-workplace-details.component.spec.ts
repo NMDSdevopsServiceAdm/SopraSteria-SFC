@@ -1,5 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -10,7 +12,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
@@ -46,6 +48,12 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       },
     );
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
+
     const component = fixture.componentInstance;
 
     return {
@@ -55,6 +63,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       queryByText,
       getByText,
       getByTestId,
+      spy,
     };
   }
 
@@ -169,6 +178,18 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     fixture.detectChanges();
 
     expect(getByText(expectedMainService, { exact: false })).toBeTruthy();
+  });
+
+  it('should navigate to thank-you page when you click Submit details', async () => {
+    const { component, fixture, spy, getByText } = await setup();
+
+    component.createAccountNewDesign = true;
+    fixture.detectChanges();
+
+    const submitButton = getByText('Submit details');
+    fireEvent.click(submitButton);
+
+    expect(spy).toHaveBeenCalledWith(['/add-workplace/thank-you']);
   });
 
   describe('Back link', () => {

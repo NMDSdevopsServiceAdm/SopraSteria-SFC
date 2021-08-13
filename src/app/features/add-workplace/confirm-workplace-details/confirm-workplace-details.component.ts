@@ -60,7 +60,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
           (response: AddWorkplaceResponse) => {
             this.workplaceService.newWorkplaceUid = response.establishmentUid;
             this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.NON_CQC);
-            this.router.navigate([`${this.flow}/complete`]);
+            this.router.navigate([`${this.flow}/thank-you`]);
           },
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);

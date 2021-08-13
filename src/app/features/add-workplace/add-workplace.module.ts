@@ -22,6 +22,7 @@ import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-wor
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
+import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you/workplace-added-thank-you.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
@@ -48,6 +49,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     FindYourWorkplaceComponent,
     NewSelectMainServiceComponent,
     CouldNotFindWorkplaceAddressComponent,
+    WorkplaceAddedThankYouComponent,
   ],
 })
 export class AddWorkplaceModule {}
