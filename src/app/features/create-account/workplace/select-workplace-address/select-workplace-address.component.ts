@@ -34,14 +34,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     this.errorMessage = `Select your workplace address if it's listed`;
   }
 
-  public onLocationChange(index): void {
-    const selectedAddress = this.locationAddresses[index];
-    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
-    const selectedAddressCopy = Object.assign({}, selectedAddress);
-
-    this.registrationService.selectedLocationAddress$.next(selectedAddressCopy);
-  }
-
   protected navigateToConfirmDetails(): void {
     this.router.navigate([`${this.flow}/confirm-details`]);
   }
