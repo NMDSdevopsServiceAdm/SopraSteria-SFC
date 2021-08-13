@@ -32,4 +32,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   protected setErrorMessage(): void {
     this.errorMessage = `Select the workplace if it's displayed`;
   }
+
+  protected setTitle(): void {
+    this.title = 'Select the workplace you want to add';
+  }
 }

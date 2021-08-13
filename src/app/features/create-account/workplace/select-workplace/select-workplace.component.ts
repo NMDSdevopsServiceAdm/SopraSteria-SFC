@@ -9,7 +9,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
-  templateUrl: './select-workplace.component.html',
+  templateUrl: '../../../workplace-find-and-select/select-workplace/select-workplace.component.html',
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   constructor(

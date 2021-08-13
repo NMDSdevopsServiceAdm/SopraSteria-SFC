@@ -4,15 +4,10 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
-        <ng-container *ngIf="isCQCLocationUpdate; else CQCLocationAddHeading">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">Select your workplace</h1>
-          </legend>
-        </ng-container>
-        <ng-template #CQCLocationAddHeading>
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">Select the workplace you want to add</h1>
-          </legend>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">{{ title }}</h1>
+        </legend>
+        <ng-container *ngIf="!isCQCLocationUpdate">
           <div class="govuk-!-margin-bottom-5">
             <p>
               Postcode entered: <strong>{{ enteredPostcode }}</strong>
@@ -21,7 +16,7 @@
               >
             </p>
           </div>
-        </ng-template>
+        </ng-container>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}

@@ -23,6 +23,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public createAccountNewDesign: boolean;
   public enteredPostcode: string;
   public returnToConfirmDetails: URLStructure;
+  public title: string;
   protected subscriptions: Subscription = new Subscription();
   protected nextRoute: string;
   protected errorMessage: string;
@@ -42,6 +43,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.init();
     this.setupFormErrorsMap();
     this.setupSubscription();
+    this.setTitle();
     this.enteredPostcode = this.locationAddresses[0].postalCode;
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
@@ -69,6 +71,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
   protected setErrorMessage(): void {
     this.errorMessage = `Select your workplace if it's displayed`;
+  }
+
+  protected setTitle(): void {
+    this.title = 'Select your workplace';
   }
 
   public setNextRoute(): void {
