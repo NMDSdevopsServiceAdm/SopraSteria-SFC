@@ -44,4 +44,28 @@ describe('WorkplaceAddedThankYouComponent', () => {
 
     expect(returnToHome.getAttribute('href')).toBe('/dashboard');
   });
+
+  it('should reset workplace service', async () => {
+    const { component } = await setup();
+
+    const workplaceService = component.fixture.componentInstance.workplaceService;
+
+    expect(workplaceService.addWorkplaceFlow$.value).toBeNull();
+    expect(workplaceService.addWorkplaceInProgress$.value).toBeFalse();
+
+    expect(workplaceService.isRegulated$.value).toBeNull();
+    expect(workplaceService.locationAddresses$.value).toBeNull();
+    expect(workplaceService.isCqcRegulated$.value).toBeNull();
+    expect(workplaceService.newWorkplaceUid).toBeNull();
+    expect(workplaceService.selectedLocationAddress$.value).toBeNull();
+    expect(workplaceService.selectedWorkplaceService$.value).toBeNull();
+    expect(workplaceService.manuallyEnteredWorkplace$.value).toBeNull();
+    expect(workplaceService.searchMethod$.value).toBeNull();
+    expect(workplaceService.postcodeOrLocationId$.value).toBeNull();
+    expect(workplaceService.postcode$.value).toBeNull();
+    expect(workplaceService.workplaceNotFound$.value).toBeFalse();
+    expect(workplaceService.returnTo$.value).toBeNull();
+    expect(workplaceService.invalidPostcodeEntered$.value).toBeNull();
+    expect(workplaceService.manuallyEnteredWorkplaceName$.value).toBeFalse();
+  });
 });

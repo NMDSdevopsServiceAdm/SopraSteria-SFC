@@ -37,6 +37,13 @@ export class WorkplaceService extends WorkplaceInterfaceService {
     return this.http.post<AddWorkplaceResponse>(`/api/establishment/${establishmentuid}`, request);
   }
 
+  public resetService(): void {
+    super.resetService();
+
+    this.addWorkplaceFlow$.next(null);
+    this.addWorkplaceInProgress$.next(false);
+  }
+
   public generateAddWorkplaceRequest(locationAddress: LocationAddress, service: Service): AddWorkplaceRequest {
     return {
       addressLine1: locationAddress.addressLine1,

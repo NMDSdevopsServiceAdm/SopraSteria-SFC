@@ -6,7 +6,8 @@ import { RegistrationService } from '@core/services/registration.service';
   templateUrl: './thank-you.component.html',
 })
 export class ThankYouComponent {
-  constructor(private registrationService: RegistrationService) {
+  constructor(public registrationService: RegistrationService) {
     this.registrationService.registrationInProgress$.next(false);
+    this.registrationService.resetService();
   }
 }
