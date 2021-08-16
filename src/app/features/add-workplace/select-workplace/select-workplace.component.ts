@@ -36,4 +36,12 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   protected setTitle(): void {
     this.title = 'Select the workplace you want to add';
   }
+
+  public setNextRoute(): void {
+    if (this.createAccountNewDesign) {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
+    } else {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+    }
+  }
 }
