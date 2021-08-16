@@ -151,11 +151,11 @@ describe('SelectWorkplaceComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
     });
 
-    it('should navigate to the confirm-details page in registration flow when returnToConfirmDetails is not null', async () => {
+    it('should navigate to the confirm-workplace-details page when returnToConfirmDetails is not null', async () => {
       const { component, getByText, fixture, spy } = await setup();
 
       component.createAccountNewDesign = true;
-      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-details'] };
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       component.setNextRoute();
       fixture.detectChanges();
 
@@ -165,7 +165,7 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-details']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
     });
 
     it('should navigate back to the find-workplace url in add-workplace flow when Change clicked', async () => {

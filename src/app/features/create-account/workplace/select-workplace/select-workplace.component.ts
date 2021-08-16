@@ -28,4 +28,12 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.prefillForm();
   }
+
+  public setNextRoute(): void {
+    if (this.createAccountNewDesign) {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    } else {
+      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+    }
+  }
 }
