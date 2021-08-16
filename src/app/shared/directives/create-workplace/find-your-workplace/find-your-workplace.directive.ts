@@ -77,7 +77,10 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      postcodeOrLocationID: [null, { validators: Validators.required, updateOn: 'submit' }],
+      postcodeOrLocationID: [
+        null,
+        { validators: [Validators.required, Validators.pattern(`^[a-zA-Z0-9 -]{1,}$`)], updateOn: 'submit' },
+      ],
     });
   }
 
@@ -107,6 +110,10 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
           {
             name: 'required',
             message: `Enter ${yourOrIts} CQC location ID or ${yourOrIts} workplace postcode`,
+          },
+          {
+            name: 'pattern',
+            message: `Enter a valid CQC location ID or workplace postcode`,
           },
         ],
       },
