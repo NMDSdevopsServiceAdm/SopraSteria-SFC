@@ -67,7 +67,10 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
   }
 
   protected prefillForm(): void {
-    if (this.workplaceInterfaceService.selectedLocationAddress$.value.locationId === this.locationData.locationId) {
+    if (
+      this.workplaceInterfaceService.selectedLocationAddress$.value &&
+      this.workplaceInterfaceService.selectedLocationAddress$.value.locationId === this.locationData.locationId
+    ) {
       this.form.patchValue({
         yourWorkplace: 'yes',
       });
