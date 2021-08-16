@@ -2009,7 +2009,7 @@ class Worker {
           source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
           column: 'OTHERJOBROLE/OTHERJRDESC',
         });
-      } else if (listOfOtherJobs.includes('0') && listOfJobsWithoutNo.length !== 0) {
+      } else if (listOfOtherJobs.includes('0') && listOfOtherJobs.length > 1) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.OTHER_JOB_ROLE_ERROR,
