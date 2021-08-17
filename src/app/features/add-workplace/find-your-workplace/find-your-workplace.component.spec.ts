@@ -6,12 +6,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { throwError } from 'rxjs';
+import { BehaviorSubject, throwError } from 'rxjs';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { FindYourWorkplaceComponent } from './find-your-workplace.component';
@@ -32,6 +34,10 @@ describe('FindYourWorkplaceComponent', () => {
         {
           provide: LocationService,
           useClass: MockLocationService,
+        },
+        {
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: FeatureFlagsService,
@@ -76,6 +82,29 @@ describe('FindYourWorkplaceComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should prefill the form if postcodeOrLocationId is already set in the service', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplaceService.postcodeOrLocationId$ = new BehaviorSubject('AB1 2CD');
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    expect(form.value.postcodeOrLocationID).toEqual('AB1 2CD');
+    expect(form.valid).toBeTruthy();
+  });
+
+  it('should show add-workplace flow title', async () => {
+    const { component } = await setup();
+    const title = 'Find the workplace';
+    expect(component.getByText(title)).toBeTruthy();
+  });
+
+  it('should show add-workplace flow hint message', async () => {
+    const { component } = await setup();
+    const hint = `We'll use its CQC location ID or workplace postcode to find the workplace in the Care Quality Commision database.`;
+    expect(component.getByText(hint)).toBeTruthy();
+  });
+
   it('should not lookup workplaces the form if the input is empty', async () => {
     const { component, locationService } = await setup();
     const findWorkplaceButton = component.getByText('Find workplace');
@@ -91,7 +120,7 @@ describe('FindYourWorkplaceComponent', () => {
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
   });
 
-  it('should show error the form if the input is empty', async () => {
+  it('should show add-workplace version of error message if the input is empty on submit', async () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
     const findWorkplaceButton = component.getByText('Find workplace');
@@ -101,9 +130,9 @@ describe('FindYourWorkplaceComponent', () => {
     component.fixture.detectChanges();
 
     expect(form.invalid).toBeTruthy();
-    expect(
-      component.getAllByText('Enter your CQC location ID or your workplace postcode', { exact: false }).length,
-    ).toBe(2);
+    expect(component.getAllByText('Enter its CQC location ID or its workplace postcode', { exact: false }).length).toBe(
+      2,
+    );
   });
 
   it('should submit the value if value is inputted', async () => {

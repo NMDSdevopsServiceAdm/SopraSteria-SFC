@@ -61,6 +61,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
+  public manuallyEnteredWorkplace: boolean;
   protected flow: string;
   protected workplaceNameMaxLength = 120;
   protected addressMaxLength = 40;
@@ -146,7 +147,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     });
   }
 
-  protected preFillForm(selectedLocation: LocationAddress): void {
+  public preFillForm(selectedLocation: LocationAddress): void {
     this.form.setValue({
       address1: selectedLocation.addressLine1,
       address2: selectedLocation.addressLine2,
@@ -182,7 +183,25 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
           },
           {
             name: 'maxlength',
-            message: `Building and street must be ${this.addressMaxLength} characters or fewer`,
+            message: `Building (number or name) and street must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'address2',
+        type: [
+          {
+            name: 'maxlength',
+            message: `This line must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'address3',
+        type: [
+          {
+            name: 'maxlength',
+            message: `This line must be ${this.addressMaxLength} characters or fewer`,
           },
         ],
       },

@@ -35,7 +35,7 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.isParent = this.workplace?.isParent ? true : false;
+    this.isParent = this.workplace?.isParent;
     this.sanitizePostcode();
     this.setBackLink();
     this.setupForm();

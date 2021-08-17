@@ -21,7 +21,7 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     protected formBuilder: FormBuilder,
   ) {
     super(errorSummaryService, establishmentService, backService, route, router, registrationService, formBuilder);

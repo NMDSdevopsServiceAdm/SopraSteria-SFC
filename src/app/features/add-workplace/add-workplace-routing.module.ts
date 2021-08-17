@@ -22,6 +22,7 @@ import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplac
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
 import { StartComponent } from './start/start.component';
+import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you/workplace-added-thank-you.component';
 
 const routes: Routes = [
   {
@@ -117,6 +118,12 @@ const routes: Routes = [
     path: 'complete',
     component: AddWorkplaceCompleteComponent,
     data: { title: 'Complete' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'thank-you',
+    component: WorkplaceAddedThankYouComponent,
+    data: { title: 'Thank you' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
