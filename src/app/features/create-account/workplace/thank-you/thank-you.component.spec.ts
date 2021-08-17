@@ -93,5 +93,6 @@ describe('ThankYouComponent', () => {
     expect(registrationService.returnTo$.value).toBeNull();
     expect(registrationService.invalidPostcodeEntered$.value).toBeNull();
     expect(registrationService.manuallyEnteredWorkplaceName$.value).toBeFalse();
+    expect(registrationService.useDifferentLocationIdOrPostcode$.value).toBeNull();
   });
 });
