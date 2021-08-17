@@ -37,7 +37,9 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
     this.setBackLink();
     this.setupForm();
     this.setupFormErrorsMap();
+    this.prefillForm();
     this.invalidPostcodeEntered = this.workplaceInterfaceService.invalidPostcodeEntered$.value;
+    this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(null);
   }
 
   ngAfterViewInit(): void {
@@ -68,6 +70,16 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
     ];
   }
 
+  protected prefillForm(): void {
+    const useDifferentPostcode = this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.value;
+    if (useDifferentPostcode !== null) {
+      const radioButton = useDifferentPostcode ? 'yes' : 'no';
+      this.form.patchValue({
+        useDifferentPostcode: radioButton,
+      });
+    }
+  }
+
   public getErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -77,12 +89,14 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
     this.submitted = true;
 
     if (this.form.valid) {
-      const useDifferentPostcode = this.form.get('useDifferentPostcode');
+      const radioButton = this.form.get('useDifferentPostcode');
       this.workplaceInterfaceService.workplaceNotFound$.next(true);
-      if (useDifferentPostcode.value === 'yes') {
+      if (radioButton.value === 'yes') {
         this.router.navigate([this.flow, 'find-workplace-address']);
+        this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(true);
       } else {
         this.router.navigate([this.flow, 'workplace-name-address']);
+        this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(false);
       }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
