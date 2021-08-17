@@ -40,6 +40,8 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
     this.setBackLink();
     this.setupForm();
     this.setupFormErrorsMap();
+    this.prefillForm();
+    this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(null);
   }
 
   ngAfterViewInit(): void {
@@ -75,6 +77,16 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
     ];
   }
 
+  protected prefillForm(): void {
+    const useDifferentLocationIdOrPostcode = this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.value;
+    if (useDifferentLocationIdOrPostcode !== null) {
+      const radioButton = useDifferentLocationIdOrPostcode ? 'yes' : 'no';
+      this.form.patchValue({
+        useDifferentLocationIdOrPostcode: radioButton,
+      });
+    }
+  }
+
   public setBackLink(): void {
     this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
   }
@@ -88,12 +100,14 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
     this.submitted = true;
 
     if (this.form.valid) {
-      const useDifferentLocationIdOrPostcode = this.form.get('useDifferentLocationIdOrPostcode');
+      const radioButton = this.form.get('useDifferentLocationIdOrPostcode');
       this.workplaceInterfaceService.workplaceNotFound$.next(true);
-      if (useDifferentLocationIdOrPostcode.value === 'yes') {
+      if (radioButton.value === 'yes') {
         this.router.navigate([`/${this.flow}`, 'find-workplace']);
+        this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(true);
       } else {
         this.router.navigate([`/${this.flow}`, 'workplace-name-address']);
+        this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(false);
       }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
