@@ -324,11 +324,13 @@ router
         Address: concatenateAddress(
           req.body[0].addressLine1,
           req.body[0].addressLine2,
+          req.body[0].addressLine3,
           req.body[0].townCity,
           req.body[0].county,
         ),
         Address1: req.body[0].addressLine1,
         Address2: req.body[0].addressLine2,
+        Address3: req.body[0].addressLine3,
         Town: req.body[0].townCity,
         County: req.body[0].county,
         LocationID: req.body[0].locationId,
@@ -462,7 +464,7 @@ router
           newEstablishment.initialise(
             Estblistmentdata.Address1,
             Estblistmentdata.Address2,
-            null,
+            Estblistmentdata.Address3,
             Estblistmentdata.Town,
             Estblistmentdata.County,
             Estblistmentdata.LocationID,
