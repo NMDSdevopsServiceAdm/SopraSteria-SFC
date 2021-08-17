@@ -14,6 +14,7 @@ export class RegistrationService extends WorkplaceInterfaceService {
   public registrationInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
+  public termsAndConditionsCheckbox$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private http: HttpClient) {
     super();
@@ -26,5 +27,14 @@ export class RegistrationService extends WorkplaceInterfaceService {
   /* TODO: Give proper return */
   public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
+  }
+
+  public resetService(): void {
+    super.resetService();
+
+    this.registrationInProgress$.next(false);
+    this.loginCredentials$.next(null);
+    this.securityDetails$.next(null);
+    this.termsAndConditionsCheckbox$.next(false);
   }
 }

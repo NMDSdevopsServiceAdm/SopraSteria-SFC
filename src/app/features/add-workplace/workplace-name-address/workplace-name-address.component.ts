@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -37,11 +36,12 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.returnToWorkplaceNotFound = this.workplaceService.workplaceNotFound$.value;
+    this.manuallyEnteredWorkplace = this.workplaceService.manuallyEnteredWorkplace$.value;
     this.isCqcRegulated = this.workplaceService.isCqcRegulated$.value;
 
+    this.setupPreFillForm();
     await this.setFeatureFlag();
     this.setBackLink();
-    this.setupSubscription();
   }
 
   private async setFeatureFlag() {
@@ -51,14 +51,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  private setupSubscription(): void {
-    this.subscriptions.add(
-      this.workplaceService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
-        if (selectedLocation) {
-          this.preFillForm(selectedLocation);
-        }
-      }),
-    );
+  private setupPreFillForm(): void {
+    const selectedLocation = this.workplaceService.selectedLocationAddress$.value;
+    if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
+      this.preFillForm(selectedLocation);
+    }
   }
 
   protected setSelectedLocationAddress(): void {
@@ -69,6 +66,11 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      return;
+    }
+
     if (this.createAccountNewDesign) {
       if (this.isCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });

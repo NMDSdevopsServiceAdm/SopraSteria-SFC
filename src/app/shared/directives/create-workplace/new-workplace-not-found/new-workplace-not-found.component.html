@@ -5,14 +5,14 @@
     <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 *ngIf="isParent" class="govuk-fieldset__heading">We could not find the workplace</h1>
-          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">We could not find your workplace</h1>
+          <h1 class="govuk-fieldset__heading">We could not find {{ isParent ? 'the' : 'your' }} workplace</h1>
         </legend>
         <p>
           CQC location ID or postcode entered: <strong>{{ postcodeOrLocationId }}</strong>
         </p>
         <h4 class="govuk-heading-s">
-          Do you want to try find your workplace with a different CQC location ID or postcode?
+          Do you want to try find {{ isParent ? 'the' : 'your' }} workplace with a different CQC location ID or
+          postcode?
         </h4>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span
@@ -48,7 +48,7 @@
                 [formControlName]="'useDifferentLocationIdOrPostcode'"
               />
               <label for="useDifferentLocationIdOrPostcode-2" class="govuk-label govuk-radios__label"
-                >No, I'll enter our workplace details myself</label
+                >No, I'll enter {{ isParent ? 'the' : 'our' }} workplace details myself</label
               >
             </div>
           </div>

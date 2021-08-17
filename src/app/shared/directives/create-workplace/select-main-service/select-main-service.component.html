@@ -6,18 +6,13 @@
 >
 </app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error" *ngIf="renderForm">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <ng-container *ngIf="isParent; else notParent">
-              <h1 class="govuk-fieldset__heading">Select its main service</h1>
-            </ng-container>
-            <ng-template #notParent>
-              <h1 class="govuk-fieldset__heading">Select your main service</h1>
-            </ng-template>
+            <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'its' : 'your' }} main service</h1>
           </legend>
           <div *ngIf="displayIntro">
             <ng-container *ngIf="isRegulated; else notRegulated">
@@ -72,6 +67,7 @@
                     type="radio"
                     [formControlName]="'workplaceService'"
                     [class.govuk-input--error]="submitted && form.get('workplaceService').errors"
+                    [attr.data-testid]="'workplaceService-' + service.id"
                   />
                   <label class="govuk-label govuk-radios__label" for="workplaceService-{{ service.id }}">
                     {{ service.name }}
@@ -81,8 +77,9 @@
                 <div
                   *ngIf="service.other"
                   class="govuk-radios__conditional"
-                  [class.govuk-radios__conditional--hidden]="form.get('workplaceService').value !== service.id"
+                  [class.govuk-radios__conditional--hidden]="serviceNotSelected('workplaceService-' + service.id)"
                   id="workplaceService-conditional-{{ i }}"
+                  [attr.data-testid]="'workplaceServiceOther-' + service.id"
                 >
                   <div class="govuk-form-group govuk-!-margin-bottom-2">
                     <label class="govuk-label" for="otherWorkplaceService-{{ service.id }}">
@@ -115,6 +112,6 @@
     </div>
   </div>
   <div class="govuk-grid-row">
-    <app-submit-exit-buttons [cta]="callToActionLabel" [return]="return"></app-submit-exit-buttons>
+    <app-submit-exit-buttons [cta]="callToActionLabel"></app-submit-exit-buttons>
   </div>
 </form>

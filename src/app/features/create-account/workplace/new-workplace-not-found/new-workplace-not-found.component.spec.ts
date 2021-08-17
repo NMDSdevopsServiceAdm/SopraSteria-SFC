@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { SharedModule } from '@shared/shared.module';
@@ -35,6 +36,14 @@ describe('NewWorkplaceNotFoundComponent', () => {
             },
           },
           deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useValue: {
+            primaryWorkplace: {
+              isParent: false,
+            },
+          },
         },
         {
           provide: ActivatedRoute,
@@ -75,6 +84,29 @@ describe('NewWorkplaceNotFoundComponent', () => {
     const { component } = await setup(inputtedPostcode);
 
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
+  });
+
+  describe('Registration messages', () => {
+    it('should display registration version of heading', async () => {
+      const { component } = await setup();
+      const expectedHeading = 'We could not find your workplace';
+
+      expect(component.getByText(expectedHeading)).toBeTruthy();
+    });
+
+    it('should display registration version of question', async () => {
+      const { component } = await setup();
+      const expectedQuestion = 'Do you want to try find your workplace with a different CQC location ID or postcode?';
+
+      expect(component.getByText(expectedQuestion)).toBeTruthy();
+    });
+
+    it('should display registration version of No answer', async () => {
+      const { component } = await setup();
+      const expectedNoAnswer = "No, I'll enter our workplace details myself";
+
+      expect(component.getByText(expectedNoAnswer)).toBeTruthy();
+    });
   });
 
   describe('Registration journey', () => {

@@ -4,10 +4,10 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
-import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
@@ -23,7 +23,6 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   public serverError: string;
   public submitted = false;
   public createAccountNewDesign: boolean;
-  public returnToConfirmDetails: URLStructure;
 
   constructor(
     public backService: BackService,
@@ -32,6 +31,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     protected locationService: LocationService,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -39,6 +39,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.init();
+    this.prefillForm();
     await this.getFeatureFlag();
     this.setBackLink();
   }
@@ -91,6 +92,15 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
+  protected prefillForm(): void {
+    const postcode = this.workplaceInterfaceService.postcode$.value;
+    if (postcode) {
+      this.form.setValue({
+        postcode: postcode,
+      });
+    }
+  }
+
   protected validPostcode(control: FormControl): { [s: string]: boolean } {
     if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
       return { invalidPostcode: true };
@@ -126,8 +136,11 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit(): void {
     this.submitted = true;
+
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
+      const postcode = this.form.get('postcode').value;
+      this.workplaceInterfaceService.postcode$.next(postcode);
       this.getAddressesByPostCode();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -135,16 +148,9 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.setBackLinkToConfirmDetailsPage();
-      return;
-    }
     const url = this.createAccountNewDesign ? 'new-regulated-by-cqc' : 'select-workplace-address';
     this.backService.setBackLink({ url: [this.flow, url] });
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setBackLinkToConfirmDetailsPage(): void {}
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];

@@ -20,6 +20,7 @@ export class StartComponent implements OnInit {
       'createAccountNewDesign',
       false,
     );
+    this.workplaceService.resetService();
     this.workplaceService.addWorkplaceInProgress$.next(true);
     this.setStartLink();
     this.setBackLink();

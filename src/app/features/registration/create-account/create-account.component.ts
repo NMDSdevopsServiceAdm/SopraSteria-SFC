@@ -18,7 +18,7 @@ export class CreateAccountComponent implements OnInit {
       false,
     );
 
-    this.resetRegistration();
+    this.registrationService.resetService();
     this.setStartLink();
   }
 
@@ -26,16 +26,5 @@ export class CreateAccountComponent implements OnInit {
     return this.createAccountNewDesign
       ? ['/registration', 'new-regulated-by-cqc']
       : ['/registration', 'regulated-by-cqc'];
-  }
-
-  private resetRegistration(): void {
-    this.registrationService.registrationInProgress$.next(false);
-    this.registrationService.locationAddresses$.next(null);
-    this.registrationService.selectedLocationAddress$.next(null);
-    this.registrationService.selectedWorkplaceService$.next(null);
-    this.registrationService.loginCredentials$.next(null);
-    this.registrationService.securityDetails$.next(null);
-    this.registrationService.isRegulated$.next(null);
-    this.registrationService.returnTo$.next(null);
   }
 }
