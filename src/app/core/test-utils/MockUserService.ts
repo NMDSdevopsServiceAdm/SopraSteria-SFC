@@ -109,6 +109,9 @@ export class MockUserService extends UserService {
       role: this.isAdmin ? ('Admin' as Roles) : undefined,
     };
   }
+  public get loggedInUser$(): Observable<UserDetails> {
+    return of(this.loggedInUser);
+  }
 
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     return of({
