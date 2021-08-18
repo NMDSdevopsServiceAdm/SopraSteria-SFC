@@ -22,6 +22,7 @@ export abstract class WorkplaceInterfaceService {
   public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject(null);
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public useDifferentLocationIdOrPostcode$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
   public isRegulated(): boolean {
     return this.isRegulated$.value;
@@ -46,5 +47,6 @@ export abstract class WorkplaceInterfaceService {
     this.returnTo$.next(null);
     this.invalidPostcodeEntered$.next(null);
     this.manuallyEnteredWorkplaceName$.next(false);
+    this.useDifferentLocationIdOrPostcode$.next(null);
   }
 }

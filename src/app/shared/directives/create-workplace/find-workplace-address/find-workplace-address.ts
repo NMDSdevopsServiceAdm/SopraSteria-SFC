@@ -148,8 +148,16 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setBackLink(): void {
-    const url = this.createAccountNewDesign ? 'new-regulated-by-cqc' : 'select-workplace-address';
-    this.backService.setBackLink({ url: [this.flow, url] });
+    const returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
+
+    let backLink: string;
+    if (this.createAccountNewDesign) {
+      backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'new-regulated-by-cqc';
+    } else {
+      backLink = 'select-workplace-address';
+    }
+    this.backService.setBackLink({ url: [this.flow, backLink] });
+    this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
 
   public getFirstErrorMessage(item: string): string {

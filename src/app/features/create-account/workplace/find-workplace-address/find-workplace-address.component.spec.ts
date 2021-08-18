@@ -205,15 +205,33 @@ describe('FindWorkplaceAddressComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
+    it('should set the back link to `new-regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.registrationService.workplaceNotFound$ = new BehaviorSubject(false);
+      component.fixture.componentInstance.ngOnInit();
 
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'new-regulated-by-cqc'],
+      });
+    });
+
+    it('should set the back link to `workplace-address-not-found` if returnToWorkplaceNotFound is true', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.registrationService.workplaceNotFound$ = new BehaviorSubject(true);
+      component.fixture.componentInstance.ngOnInit();
+
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'workplace-address-not-found'],
       });
     });
   });

@@ -74,10 +74,12 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     if (this.createAccountNewDesign) {
       if (this.isCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        this.workplaceService.workplaceNotFound$.next(false);
         return;
       }
       if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        this.workplaceService.workplaceNotFound$.next(false);
         return;
       }
     }
