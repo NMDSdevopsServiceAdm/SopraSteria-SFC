@@ -15,6 +15,7 @@ export const EditUser = build('EditUser', {
     jobTitle: fake((f) => f.lorem.sentence()),
     phone: '01222222222',
     role: Roles.Edit,
+    isPrimary: null,
   },
 });
 
@@ -22,6 +23,11 @@ const readUser = EditUser();
 readUser.role = Roles.Read;
 
 const editUser = EditUser();
+editUser.isPrimary = true;
+export const primaryEditUser = editUser;
+
+editUser.isPrimary = false;
+export const nonPrimaryEditUser = editUser;
 
 const workplaceBuilder = build('Workplace', {
   fields: {
@@ -125,6 +131,9 @@ export class MockUserService extends UserService {
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     if (workplaceUid === 'overLimit') {
       return of([readUser, readUser, readUser, editUser, editUser, editUser] as UserDetails[]);
+    }
+    if (workplaceUid === 'activeEditUsers') {
+      return of([editUser, editUser] as UserDetails[]);
     }
 
     return of([editUser] as UserDetails[]);

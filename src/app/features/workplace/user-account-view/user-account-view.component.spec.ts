@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -12,15 +11,15 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { EditUser, MockUserService } from '@core/test-utils/MockUserService';
+import { MockUserService, nonPrimaryEditUser, primaryEditUser } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { UserAccountViewComponent } from './user-account-view.component';
 
 describe('UserAccountViewComponent', () => {
-  async function setup(isAdmin = true, subsidiaries = 0) {
-    const component = await render(UserAccountViewComponent, {
+  async function setup(isPrimary = true) {
+    const { fixture, getByText, getByTestId } = await render(UserAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -28,12 +27,12 @@ describe('UserAccountViewComponent', () => {
         WindowRef,
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(['canEditUser']),
           deps: [HttpClient, Router, UserService],
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(0, false),
           deps: [HttpClient],
         },
         {
@@ -49,7 +48,7 @@ describe('UserAccountViewComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                user: EditUser,
+                user: isPrimary ? primaryEditUser : nonPrimaryEditUser,
               },
             },
             parent: {
@@ -58,7 +57,7 @@ describe('UserAccountViewComponent', () => {
                 data: {
                   establishment: {
                     id: 'abc123',
-                    uid: 'abc123',
+                    uid: 'activeEditUsers',
                     name: 'abc123',
                   },
                 },
@@ -69,19 +68,30 @@ describe('UserAccountViewComponent', () => {
       ],
     });
 
-    const injector = getTestBed();
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const router = injector.inject(Router) as Router;
+    const component = fixture.componentInstance;
 
     return {
       component,
-      establishmentService,
-      router,
+      fixture,
+      getByText,
+      getByTestId,
     };
   }
 
   it('should render a UserAccountViewComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should display Change link when logged in user can edit user and user is not primary', async () => {
+    const { component, fixture, getByTestId } = await setup(false);
+
+    expect(getByTestId('permissionsChangeLink')).toBeTruthy();
+  });
+
+  it('should display Change link when logged in user can edit user and there is more than one active edit user linked to the establishment', async () => {
+    const { component, fixture, getByTestId } = await setup(true);
+
+    expect(getByTestId('permissionsChangeLink')).toBeTruthy();
   });
 });
