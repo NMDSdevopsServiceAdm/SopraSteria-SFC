@@ -39,8 +39,8 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.manuallyEnteredWorkplace = this.registrationService.manuallyEnteredWorkplace$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
-    await this.setFeatureFlag();
     this.setupPreFillForm();
+    await this.setFeatureFlag();
     this.setBackLink();
   }
 
@@ -51,14 +51,9 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  public setupPreFillForm(): void {
+  private setupPreFillForm(): void {
     const selectedLocation = this.registrationService.selectedLocationAddress$.value;
-    if (this.createAccountNewDesign) {
-      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
-        this.preFillForm(selectedLocation);
-      }
-    }
-    if (!this.createAccountNewDesign && selectedLocation) {
+    if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
       this.preFillForm(selectedLocation);
     }
   }

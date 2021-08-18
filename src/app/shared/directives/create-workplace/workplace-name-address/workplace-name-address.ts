@@ -150,8 +150,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   public preFillForm(selectedLocation: LocationAddress): void {
     this.form.setValue({
       address1: selectedLocation.addressLine1,
-      address2: selectedLocation.addressLine2 ? selectedLocation.addressLine2 : null,
-      address3: selectedLocation.addressLine3 ? selectedLocation.addressLine3 : null,
+      address2: selectedLocation.addressLine2,
+      address3: selectedLocation.addressLine3,
       county: selectedLocation.county,
       postcode: selectedLocation.postalCode,
       townOrCity: selectedLocation.townCity,
