@@ -39,8 +39,8 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.manuallyEnteredWorkplace = this.registrationService.manuallyEnteredWorkplace$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
-    this.setupPreFillForm();
     await this.setFeatureFlag();
+    this.setupPreFillForm();
     this.setBackLink();
   }
 
@@ -51,9 +51,14 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  private setupPreFillForm(): void {
+  public setupPreFillForm(): void {
     const selectedLocation = this.registrationService.selectedLocationAddress$.value;
-    if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
+    if (this.createAccountNewDesign) {
+      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
+        this.preFillForm(selectedLocation);
+      }
+    }
+    if (!this.createAccountNewDesign && selectedLocation) {
       this.preFillForm(selectedLocation);
     }
   }
@@ -74,10 +79,12 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     if (this.createAccountNewDesign) {
       if (this.isCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        this.registrationService.workplaceNotFound$.next(false);
         return;
       }
       if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        this.registrationService.workplaceNotFound$.next(false);
         return;
       }
     }

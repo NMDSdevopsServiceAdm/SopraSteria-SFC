@@ -1002,6 +1002,90 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
         expect(validator._validationErrors.length).to.equal(0);
       });
     });
+    describe('otherJobs', () => {
+      it('should allow correct other jobs', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              OTHERJOBROLE: '25;17;26;11;34',
+              OTHERJRDESC: ';;;;',
+            },
+          }),
+          2,
+          [],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await validator.validate();
+
+        // call the method
+        await validator.transform();
+
+        // assert a error was returned
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should allow 0 as an option to say No', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              OTHERJOBROLE: '0',
+              OTHERJRDESC: '',
+            },
+          }),
+          2,
+          [],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await validator.validate();
+
+        // call the method
+        await validator.transform();
+
+        // assert a error was returned
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should not allow 0 as an option to say No and other roles', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              OTHERJOBROLE: '0;14',
+              OTHERJRDESC: ';',
+            },
+          }),
+          2,
+          [],
+        );
+
+        // Regular validation has to run first for the establishment to populate the internal properties correctly
+        await validator.validate();
+
+        // call the method
+        await validator.transform();
+
+        // assert a error was returned
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            column: 'OTHERJOBROLE',
+            errCode: 1320,
+            errType: 'OTHER_JOB_ROLE_ERROR',
+            error: 'OTHERJOBROLE is 0 (none) but contains other job roles',
+            lineNumber: 2,
+            name: 'MARMA',
+            source: '0;14',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
   });
   // Need to test if nationality is other and no nationality
   describe('toCSV', () => {

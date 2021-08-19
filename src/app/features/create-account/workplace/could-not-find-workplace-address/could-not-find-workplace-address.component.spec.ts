@@ -7,9 +7,12 @@ import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
+import {
+  CouldNotFindWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
@@ -99,6 +102,42 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       const expectedNoAnswer = "No, I'll enter our workplace details myself";
 
       expect(getByText(expectedNoAnswer)).toBeTruthy();
+    });
+  });
+
+  describe('prefillForm()', () => {
+    it('should preselect the "Yes" radio button if useDifferentLocationIdOrPostcode has been set to true in the service', async () => {
+      const { component } = await setup();
+
+      component.registrationService.useDifferentLocationIdOrPostcode$ = new BehaviorSubject(true);
+      component.ngOnInit();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.useDifferentPostcode).toBe('yes');
+    });
+
+    it('should preselect the "No" radio button if useDifferentLocationIdOrPostcode has been set to false in the service', async () => {
+      const { component } = await setup();
+
+      component.registrationService.useDifferentLocationIdOrPostcode$ = new BehaviorSubject(false);
+      component.ngOnInit();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.useDifferentPostcode).toBe('no');
+    });
+
+    it('should not preselect any radio buttons if useDifferentLocationIdOrPostcode has not been set in the service', async () => {
+      const { component } = await setup();
+
+      component.registrationService.useDifferentLocationIdOrPostcode$ = new BehaviorSubject(null);
+      component.ngOnInit();
+
+      const form = component.form;
+      expect(form.invalid).toBeTruthy();
+      expect(form.value.useDifferentPostcode).not.toBe('yes');
+      expect(form.value.useDifferentPostcode).not.toBe('no');
     });
   });
 

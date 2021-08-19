@@ -6,7 +6,8 @@ import { WorkplaceService } from '@core/services/workplace.service';
   templateUrl: './workplace-added-thank-you.component.html',
 })
 export class WorkplaceAddedThankYouComponent {
-  constructor(private workplaceService: WorkplaceService) {
+  constructor(public workplaceService: WorkplaceService) {
     this.workplaceService.addWorkplaceInProgress$.next(false);
+    this.workplaceService.resetService();
   }
 }

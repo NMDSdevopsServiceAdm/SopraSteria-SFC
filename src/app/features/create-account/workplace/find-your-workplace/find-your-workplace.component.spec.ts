@@ -110,6 +110,26 @@ describe('FindYourWorkplaceComponent', () => {
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
   });
 
+  it('should show an error if it has special characters other than a hyphen', async () => {
+    const { component, locationService } = await setup();
+    const getLocationByPostcodeOrLocationID = spyOn(
+      locationService,
+      'getLocationByPostcodeOrLocationID',
+    ).and.callThrough();
+
+    const form = component.fixture.componentInstance.form;
+    form.controls['postcodeOrLocationID'].setValue('http://localhost');
+
+    const findWorkplaceButton = component.getByText('Find workplace');
+    fireEvent.click(findWorkplaceButton);
+
+    expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
+    expect(form.invalid).toBeTruthy();
+    expect(component.getAllByText('Enter a valid CQC location ID or workplace postcode', { exact: false }).length).toBe(
+      2,
+    );
+  });
+
   it('should show registration version of error message if the input is empty on submit', async () => {
     const { component } = await setup();
 
@@ -123,7 +143,7 @@ describe('FindYourWorkplaceComponent', () => {
     ).toBe(2);
   });
 
-  it('should submit the value if value is inputted', async () => {
+  it('should submit the value if a postcode is inputted', async () => {
     const { component, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
     const findWorkplaceButton = component.getByText('Find workplace');
@@ -140,6 +160,25 @@ describe('FindYourWorkplaceComponent', () => {
 
     expect(form.valid).toBeTruthy();
     expect(getLocationByPostcodeOrLocationID).toHaveBeenCalledWith('LS1 1AA');
+  });
+
+  it('should submit the value if a locationID is inputted', async () => {
+    const { component, locationService } = await setup();
+    const form = component.fixture.componentInstance.form;
+    const findWorkplaceButton = component.getByText('Find workplace');
+    const getLocationByPostcodeOrLocationID = spyOn(
+      locationService,
+      'getLocationByPostcodeOrLocationID',
+    ).and.callThrough();
+
+    form.controls['postcodeOrLocationID'].setValue('1-123456789');
+
+    fireEvent.click(findWorkplaceButton);
+
+    component.fixture.detectChanges();
+
+    expect(form.valid).toBeTruthy();
+    expect(getLocationByPostcodeOrLocationID).toHaveBeenCalledWith('1-123456789');
   });
 
   it("should submit and go to your-workplace if there's only one address", async () => {

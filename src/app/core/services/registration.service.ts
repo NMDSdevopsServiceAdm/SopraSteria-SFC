@@ -28,4 +28,13 @@ export class RegistrationService extends WorkplaceInterfaceService {
   public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
   }
+
+  public resetService(): void {
+    super.resetService();
+
+    this.registrationInProgress$.next(false);
+    this.loginCredentials$.next(null);
+    this.securityDetails$.next(null);
+    this.termsAndConditionsCheckbox$.next(false);
+  }
 }

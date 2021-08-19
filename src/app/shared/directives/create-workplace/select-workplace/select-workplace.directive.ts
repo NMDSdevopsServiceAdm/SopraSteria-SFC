@@ -77,13 +77,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.title = 'Select your workplace';
   }
 
-  public setNextRoute(): void {
-    if (this.createAccountNewDesign) {
-      this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
-    } else {
-      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
-    }
-  }
+  public setNextRoute(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
