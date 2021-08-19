@@ -12,7 +12,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { UserAccountDeleteDialogComponent } from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
+import {
+  UserAccountDeleteDialogComponent,
+} from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
