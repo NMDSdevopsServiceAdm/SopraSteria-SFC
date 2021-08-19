@@ -23,7 +23,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     super(backService, errorSummaryService, formBuilder, router, featureFlagsService, workplaceService);
   }
 
-  protected init(): void {
+  protected setFlow(): void {
     this.flow = '/add-workplace';
   }
 

@@ -43,7 +43,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setErrorMessage();
     this.setupForm();
     this.setupFormErrorsMap();
-    this.init();
+    this.setFlow();
     this.setReturnToConfirmDetails();
     this.setLocationAddresses();
     this.setSelectedLocationAddress();
@@ -59,8 +59,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected init(): void {}
+  protected setFlow(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected setBackLink(): void {
     const backLink = this.createAccountNewDesign ? 'find-workplace-address' : 'regulated-by-cqc';
