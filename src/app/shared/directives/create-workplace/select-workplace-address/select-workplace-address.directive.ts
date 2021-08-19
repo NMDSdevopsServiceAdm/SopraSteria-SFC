@@ -23,6 +23,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public createAccountNewDesign: boolean;
   public returnToConfirmDetails: URLStructure;
   public selectedLocationAddress: LocationAddress;
+  public title: string;
   protected subscriptions: Subscription = new Subscription();
   protected errorMessage: string;
 
@@ -44,6 +45,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setupForm();
     this.setupFormErrorsMap();
     this.setFlow();
+    this.setTitle();
     this.setReturnToConfirmDetails();
     this.setLocationAddresses();
     this.setSelectedLocationAddress();
@@ -93,6 +95,8 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   protected setErrorMessage(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+
+  protected setTitle(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   public onLocationChange(index): void {
     const selectedAddress = this.locationAddresses[index];

@@ -11,7 +11,8 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace-address',
-  templateUrl: './select-workplace-address.component.html',
+  templateUrl:
+    '../../../shared/directives/create-workplace/select-workplace-address//select-workplace-address.component.html',
 })
 export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirective {
   constructor(
@@ -27,6 +28,10 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
 
   protected setFlow(): void {
     this.flow = '/add-workplace';
+  }
+
+  protected setTitle(): void {
+    this.title = 'Select the workplace address';
   }
 
   protected setErrorMessage(): void {

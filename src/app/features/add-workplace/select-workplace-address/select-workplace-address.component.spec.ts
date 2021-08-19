@@ -75,6 +75,14 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should display the correct title', async () => {
+    const { getAllByText } = await setup();
+
+    const title = 'Select the workplace address';
+
+    expect(getAllByText(title)).toBeTruthy();
+  });
+
   it('should display postcode retrieved from workplace service at top and in each workplace address in dropdown(2)', async () => {
     const { getAllByText } = await setup();
 
