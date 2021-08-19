@@ -44,6 +44,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.setReturnToConfirmDetails();
     this.setLocationAddresses();
     this.setSelectedLocationAddress();
     this.prefillForm();
@@ -184,6 +185,10 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   protected resetManuallyEnteredWorkplaceAndName(): void {
     this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.next(false);
+  }
+
+  protected setReturnToConfirmDetails(): void {
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
