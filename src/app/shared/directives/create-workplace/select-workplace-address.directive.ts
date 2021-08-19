@@ -51,6 +51,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
       this.createAccountNewDesign = value;
       this.setBackLink();
     });
+    this.resetManuallyEnteredWorkplaceAndName();
   }
 
   ngAfterViewInit(): void {
@@ -176,14 +177,13 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     return compact(address).join(', ');
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected resetManuallyEnteredWorkplaceAndName(): void {
+    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
+    this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.next(false);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

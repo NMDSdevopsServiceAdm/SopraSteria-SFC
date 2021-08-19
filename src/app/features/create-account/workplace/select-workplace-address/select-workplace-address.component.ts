@@ -26,8 +26,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   protected init(): void {
     this.flow = '/registration';
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
-    this.registrationService.manuallyEnteredWorkplace$.next(false);
-    this.registrationService.manuallyEnteredWorkplaceName$.next(false);
   }
 
   protected setErrorMessage(): void {
