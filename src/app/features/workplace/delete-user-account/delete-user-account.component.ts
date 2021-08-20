@@ -23,14 +23,14 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
   constructor(
     public backService: BackService,
     private route: ActivatedRoute,
-    private userService: UserService,
+    public userService: UserService,
     private router: Router,
     private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
-    const { pathname } = location;
-    this.flow = pathname.substr(0, pathname.lastIndexOf('/'));
+    const { url } = this.router;
+    this.flow = url.substr(0, url.lastIndexOf('/'));
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
     this.setBackLink();
@@ -49,7 +49,6 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
-          console.log('Successfully deleted');
           this.router.navigate(this.return.url, { fragment: 'users' });
           this.alertService.addAlert({
             type: 'success',
@@ -57,7 +56,6 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
           });
         },
         () => {
-          console.log('Error with deletion');
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error deleting the user.',
