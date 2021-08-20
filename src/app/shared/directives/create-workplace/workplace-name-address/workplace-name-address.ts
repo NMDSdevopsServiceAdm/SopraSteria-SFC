@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -75,6 +76,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
@@ -108,9 +110,12 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   ngOnInit() {
     this.setupForm();
-    this.init();
-    this.setBackLink();
-    this.setupFormErrorsMap();
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.init();
+      this.setBackLink();
+      this.setupFormErrorsMap();
+    });
   }
 
   ngAfterViewInit() {

@@ -20,17 +20,17 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   constructor(
     public registrationService: RegistrationService,
-    private featureFlagsService: FeatureFlagsService,
+    protected featureFlagsService: FeatureFlagsService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router, registrationService);
+    super(backService, errorSummaryService, formBuilder, route, router, featureFlagsService, registrationService);
   }
 
-  protected async init(): Promise<void> {
+  protected init(): void {
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
@@ -39,15 +39,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.manuallyEnteredWorkplace = this.registrationService.manuallyEnteredWorkplace$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
-    await this.setFeatureFlag();
     this.setupPreFillForm();
-  }
-
-  private async setFeatureFlag() {
-    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
-      'createAccountNewDesign',
-      false,
-    );
   }
 
   protected setConfirmDetailsBackLink(): void {
