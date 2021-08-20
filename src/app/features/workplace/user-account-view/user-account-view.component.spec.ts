@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -18,8 +19,8 @@ import { render } from '@testing-library/angular';
 import { UserAccountViewComponent } from './user-account-view.component';
 
 describe('UserAccountViewComponent', () => {
-  async function setup(isPrimary = true) {
-    const { fixture, getByText, getByTestId } = await render(UserAccountViewComponent, {
+  async function setup(isPrimary = true, uidWithUsers = 'activeEditUsers') {
+    const { fixture, getByText, getByTestId, queryByText } = await render(UserAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -57,7 +58,7 @@ describe('UserAccountViewComponent', () => {
                 data: {
                   establishment: {
                     id: 'abc123',
-                    uid: 'activeEditUsers',
+                    uid: uidWithUsers,
                     name: 'abc123',
                   },
                 },
@@ -68,13 +69,18 @@ describe('UserAccountViewComponent', () => {
       ],
     });
 
+    const injector = getTestBed();
+    const permissionsService = injector.inject(PermissionsService) as PermissionsService;
+
     const component = fixture.componentInstance;
 
     return {
       component,
       fixture,
+      permissionsService,
       getByText,
       getByTestId,
+      queryByText,
     };
   }
 
@@ -84,14 +90,32 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should display Change link when logged in user can edit user and user is not primary', async () => {
-    const { component, fixture, getByTestId } = await setup(false);
+    const { getByText } = await setup(false);
 
-    expect(getByTestId('permissionsChangeLink')).toBeTruthy();
+    expect(getByText('Change')).toBeTruthy();
   });
 
-  it('should display Change link when logged in user can edit user and there is more than one active edit user linked to the establishment', async () => {
-    const { component, fixture, getByTestId } = await setup(true);
+  it('should display Change link when logged in user can edit user, user is primary but there is more than one active edit user linked to the establishment', async () => {
+    const { getByText } = await setup(true);
 
-    expect(getByTestId('permissionsChangeLink')).toBeTruthy();
+    expect(getByText('Change')).toBeTruthy();
+  });
+
+  it('should not display Change link when user is primary and only active edit user linked to the establishment', async () => {
+    const { queryByText } = await setup(true, 'singleEditUser');
+
+    expect(queryByText('Change')).toBeFalsy();
+  });
+
+  it('should not display Change link when logged in user does not have edit permissions for the user', async () => {
+    const { component, fixture, permissionsService, queryByText } = await setup(true);
+
+    const spy = spyOn(permissionsService, 'can');
+    spy.and.returnValue(false);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(queryByText('Change')).toBeFalsy();
   });
 });

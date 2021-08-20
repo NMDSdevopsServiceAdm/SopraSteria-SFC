@@ -15,6 +15,7 @@ export const EditUser = build('EditUser', {
     jobTitle: fake((f) => f.lorem.sentence()),
     phone: '01222222222',
     role: Roles.Edit,
+    status: 'Active',
     isPrimary: null,
   },
 });
@@ -23,11 +24,14 @@ const readUser = EditUser();
 readUser.role = Roles.Read;
 
 const editUser = EditUser();
-editUser.isPrimary = true;
-export const primaryEditUser = editUser;
 
-editUser.isPrimary = false;
-export const nonPrimaryEditUser = editUser;
+const primaryUser = EditUser();
+primaryUser.isPrimary = true;
+export const primaryEditUser = primaryUser;
+
+const nonPrimary = EditUser();
+nonPrimary.isPrimary = false;
+export const nonPrimaryEditUser = nonPrimary;
 
 const workplaceBuilder = build('Workplace', {
   fields: {
