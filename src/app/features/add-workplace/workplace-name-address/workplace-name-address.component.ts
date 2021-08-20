@@ -51,25 +51,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  public setupPreFillForm(): void {
-    const selectedLocation = this.workplaceService.selectedLocationAddress$.value;
-    if (this.createAccountNewDesign) {
-      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
-        this.preFillForm(selectedLocation);
-      }
-    }
-    if (!this.createAccountNewDesign && selectedLocation) {
-      this.preFillForm(selectedLocation);
-    }
-  }
-
-  protected setSelectedLocationAddress(): void {
-    this.workplaceService.selectedLocationAddress$.next(this.getLocationAddress());
-    this.workplaceService.manuallyEnteredWorkplace$.next(true);
-    const url = this.getNextRoute();
-    this.router.navigate([this.flow, url]);
-  }
-
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
       this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
@@ -102,13 +83,5 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
       return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
     }
     return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
-  }
-
-  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
-    return this.workplaceService.workplaceNotFound$.value && this.isCqcRegulated;
-  }
-
-  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
-    return this.workplaceService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }

@@ -149,6 +149,18 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     });
   }
 
+  public setupPreFillForm(): void {
+    const selectedLocation = this.workplaceInterfaceService.selectedLocationAddress$.value;
+    if (this.createAccountNewDesign) {
+      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
+        this.preFillForm(selectedLocation);
+      }
+    }
+    if (!this.createAccountNewDesign && selectedLocation) {
+      this.preFillForm(selectedLocation);
+    }
+  }
+
   public preFillForm(selectedLocation: LocationAddress): void {
     this.form.setValue({
       address1: selectedLocation.addressLine1,
@@ -283,8 +295,22 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setSelectedLocationAddress(): void {}
+  protected setSelectedLocationAddress(): void {
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.getLocationAddress());
+    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(true);
+    const url = this.getNextRoute();
+    this.router.navigate([this.flow, url]);
+  }
+
+  protected getNextRoute(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+
+  protected isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceInterfaceService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  protected isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceInterfaceService.workplaceNotFound$.value && !this.isCqcRegulated;
+  }
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
