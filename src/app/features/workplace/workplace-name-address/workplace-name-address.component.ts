@@ -35,11 +35,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
-    this.setBackLink();
     this.setLocationAddress();
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
     this.backService.setBackLink(this.establishmentService.returnTo);
   }
 

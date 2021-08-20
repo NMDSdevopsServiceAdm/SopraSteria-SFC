@@ -41,7 +41,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
     await this.setFeatureFlag();
     this.setupPreFillForm();
-    this.setBackLink();
   }
 
   private async setFeatureFlag() {
@@ -51,31 +50,8 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
-      return;
-    }
-
-    if (this.createAccountNewDesign) {
-      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
-        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-        this.registrationService.workplaceNotFound$.next(false);
-        return;
-      }
-      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
-        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
-        this.registrationService.workplaceNotFound$.next(false);
-        return;
-      }
-    }
-
-    if (this.isCqcRegulated) {
-      this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
-      return;
-    }
-
-    this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  protected setConfirmDetailsBackLink(): void {
+    this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
   }
 
   protected getNextRoute(): string {

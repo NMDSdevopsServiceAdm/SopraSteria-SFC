@@ -109,6 +109,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   ngOnInit() {
     this.setupForm();
     this.init();
+    this.setBackLink();
     this.setupFormErrorsMap();
   }
 
@@ -303,6 +304,35 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   protected getNextRoute(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.setConfirmDetailsBackLink();
+      return;
+    }
+
+    if (this.createAccountNewDesign) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        this.workplaceInterfaceService.workplaceNotFound$.next(false);
+        return;
+      }
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        this.workplaceInterfaceService.workplaceNotFound$.next(false);
+        return;
+      }
+    }
+
+    if (this.isCqcRegulated) {
+      this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
+      return;
+    }
+
+    this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  protected setConfirmDetailsBackLink(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected isCqcRegulatedAndWorkplaceNotFound(): boolean {
     return this.workplaceInterfaceService.workplaceNotFound$.value && this.isCqcRegulated;
