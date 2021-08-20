@@ -6,6 +6,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { Subscription } from 'rxjs';
 
@@ -74,6 +75,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   get getWorkplaceName() {

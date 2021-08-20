@@ -27,7 +27,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     protected router: Router,
     private establishmentService: EstablishmentService,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router);
+    super(backService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {
