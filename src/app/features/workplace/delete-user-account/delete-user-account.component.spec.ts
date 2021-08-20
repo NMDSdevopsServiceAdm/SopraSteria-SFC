@@ -74,6 +74,7 @@ fdescribe('DeleteUserAccountComponent', () => {
 
     const deleteButton = component.getByText('Delete this user');
     fireEvent.click(deleteButton);
+    component.fixture.detectChanges();
 
     expect(deleteUserSpy).toHaveBeenCalledWith('12345asdfg', 'asdfg12345');
   });
