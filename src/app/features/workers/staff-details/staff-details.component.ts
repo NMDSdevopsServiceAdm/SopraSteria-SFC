@@ -163,7 +163,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     const currentUrl = this.router.url;
 
     if (!this.next) {
-      this.next = this.getRoutePath('check-answers');
+      this.next = this.getRoutePath('');
     }
 
     this.router.navigate(this.next).then(() => {
@@ -177,8 +177,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   onSuccess() {
-    let path;
-    this.editFlow ? (path = 'check-answers') : (path = 'mandatory-details');
+    const path = this.editFlow ? '' : 'mandatory-details';
     this.next = this.getRoutePath(path);
   }
 }

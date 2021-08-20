@@ -91,6 +91,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected onSuccess() {}
 
   protected navigate(action): void {
+    console.log('Question Component navigate:', action);
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);
@@ -113,7 +114,11 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public getRoutePath(name: string) {
-    return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
+    if (name) {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
+    } else {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    }
   }
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {

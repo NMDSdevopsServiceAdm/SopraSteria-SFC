@@ -29,7 +29,7 @@ import { StaffDetailsComponent } from './staff-details.component';
 
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
-describe('StaffDetailsComponent', () => {
+fdescribe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
@@ -199,7 +199,7 @@ describe('StaffDetailsComponent', () => {
     expect(req.request.body).toEqual({ nameOrId: 'Jeff', mainJob: { jobId: 2 }, contract: 'Permanent' });
   });
 
-  it('should go to check-answers url when editing existing a staff record', async () => {
+  it('should go to back to staff record page when editing existing a staff record', async () => {
     const { component, spy } = await setup();
 
     const form = component.fixture.componentInstance.form;
@@ -218,7 +218,7 @@ describe('StaffDetailsComponent', () => {
     fireEvent.click(saveButton);
     component.fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'check-answers']);
+    expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId]);
   });
 
   it('should go to mandatory-details url when adding a new staff record', async () => {
