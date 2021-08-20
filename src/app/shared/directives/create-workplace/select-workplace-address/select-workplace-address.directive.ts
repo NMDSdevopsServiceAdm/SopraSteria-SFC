@@ -54,7 +54,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
       this.createAccountNewDesign = value;
       this.setBackLink();
     });
-    this.resetManuallyEnteredWorkplaceAndName();
+    this.resetServiceVariables();
   }
 
   ngAfterViewInit(): void {
@@ -185,7 +185,8 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected resetManuallyEnteredWorkplaceAndName(): void {
+  protected resetServiceVariables(): void {
+    this.workplaceInterfaceService.workplaceNotFound$.next(false);
     this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.next(false);
   }
