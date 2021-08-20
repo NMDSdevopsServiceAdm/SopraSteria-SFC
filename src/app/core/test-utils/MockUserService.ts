@@ -130,12 +130,6 @@ export class MockUserService extends UserService {
   public updateState(userDetails: UserDetails) {
     return userDetails;
   }
-
-  public deleteUser(workplaceUid: string, userUid: string): any {
-    console.log('*****************************');
-    console.log('Delete User in mock service');
-    return { workplaceUid, userUid };
-  }
 }
 
 export class MockUserServiceWithNoUserDetails extends MockUserService {

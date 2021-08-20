@@ -1,17 +1,18 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of, throwError } from 'rxjs';
 
 import { DeleteUserAccountComponent } from './delete-user-account.component';
 
-fdescribe('DeleteUserAccountComponent', () => {
+describe('DeleteUserAccountComponent', () => {
   async function setup() {
     const component = await render(DeleteUserAccountComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -33,16 +34,14 @@ fdescribe('DeleteUserAccountComponent', () => {
             },
             snapshot: {
               data: {
-                user: { uid: 'asdfg12345' },
+                user: { fullname: 'John Doe', uid: 'asdfg12345' },
               },
             },
           },
         },
         {
-          provide: AlertService,
-          useValue: {
-            addAlert: {},
-          },
+          provide: WindowRef,
+          useClass: WindowRef,
         },
       ],
     });
@@ -68,15 +67,59 @@ fdescribe('DeleteUserAccountComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call deleteUser with the establishment uid and user uid', async () => {
+  it('should call deleteUser api with the establishment uid and user uid', async () => {
     const { component, componentInstance } = await setup();
-    const deleteUserSpy = spyOn(componentInstance.userService, 'deleteUser');
+
+    const workplaceUid = componentInstance.establishment.uid;
+    const userUid = componentInstance.user.uid;
 
     const deleteButton = component.getByText('Delete this user');
+
     fireEvent.click(deleteButton);
     component.fixture.detectChanges();
 
-    expect(deleteUserSpy).toHaveBeenCalledWith('12345asdfg', 'asdfg12345');
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const req = httpTestingController.expectOne(`/api/user/establishment/${workplaceUid}/${userUid}`);
+    expect(req.request.body).toBeNull();
+  });
+
+  it('should navigate back to previous page when delete is successful', async () => {
+    const { component, componentInstance, spy } = await setup();
+
+    spyOn(componentInstance.userService, 'deleteUser').and.returnValue(of({}));
+
+    const deleteButton = component.getByText('Delete this user');
+
+    fireEvent.click(deleteButton);
+    component.fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'users' });
+  });
+
+  it('should have a success alert when delete is successful', async () => {
+    const { component, componentInstance } = await setup();
+    spyOn(componentInstance.userService, 'deleteUser').and.returnValue(of({}));
+    const alertSpy = spyOn(componentInstance.alertService, 'addAlert').and.callThrough();
+
+    const deleteButton = component.getByText('Delete this user');
+
+    fireEvent.click(deleteButton);
+    component.fixture.detectChanges();
+
+    expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'John Doe has been deleted as a user' });
+  });
+
+  it('should have an error alert when delete is unsuccessful', async () => {
+    const { component, componentInstance } = await setup();
+    spyOn(componentInstance.userService, 'deleteUser').and.returnValue(throwError('error'));
+    const alertSpy = spyOn(componentInstance.alertService, 'addAlert').and.callThrough();
+
+    const deleteButton = component.getByText('Delete this user');
+
+    fireEvent.click(deleteButton);
+    component.fixture.detectChanges();
+
+    expect(alertSpy).toHaveBeenCalledWith({ type: 'warning', message: 'There was an error deleting the user' });
   });
 
   it('should have the correct url rendered on the cancel button to return the previous page', async () => {

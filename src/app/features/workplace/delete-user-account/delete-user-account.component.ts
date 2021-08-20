@@ -25,7 +25,7 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public userService: UserService,
     private router: Router,
-    private alertService: AlertService,
+    public alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -58,7 +58,7 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
         () => {
           this.alertService.addAlert({
             type: 'warning',
-            message: 'There was an error deleting the user.',
+            message: 'There was an error deleting the user',
           });
         },
       ),
