@@ -43,7 +43,7 @@
           {{ user.isPrimary ? 'Primary edit' : user.role === 'Read' ? 'Read only' : user.role }}
         </dd>
         <dd *ngIf="canEditUser" class="govuk-summary-list__actions">
-          <a [routerLink]="['permissions']" data-testid="permissionsChangeLink">
+          <a [routerLink]="['permissions']">
             Change
             <span class="govuk-visually-hidden"> user permissions</span>
           </a>

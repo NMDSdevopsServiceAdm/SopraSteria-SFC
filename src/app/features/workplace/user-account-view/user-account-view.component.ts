@@ -75,7 +75,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public resendActivationLink(evet: Event) {
+  public resendActivationLink(event: Event): void {
     event.preventDefault();
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
@@ -96,7 +96,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     );
   }
 
-  public onDeleteUser(event: Event) {
+  public onDeleteUser(event: Event): void {
     event.preventDefault();
     const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
     dialog.afterClosed.subscribe((deleteConfirmed) => {
@@ -106,7 +106,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private deleteUser() {
+  private deleteUser(): void {
     if (this.user.isPrimary) {
       this.subscriptions.add(
         this.userService

@@ -19,7 +19,7 @@ import { render } from '@testing-library/angular';
 import { UserAccountViewComponent } from './user-account-view.component';
 
 describe('UserAccountViewComponent', () => {
-  async function setup(isPrimary = true, uidWithUsers = 'activeEditUsers') {
+  async function setup(isPrimary = true, uidLinkedToMockUsers = 'activeEditUsers') {
     const { fixture, getByText, getByTestId, queryByText } = await render(UserAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -58,7 +58,7 @@ describe('UserAccountViewComponent', () => {
                 data: {
                   establishment: {
                     id: 'abc123',
-                    uid: uidWithUsers,
+                    uid: uidLinkedToMockUsers,
                     name: 'abc123',
                   },
                 },

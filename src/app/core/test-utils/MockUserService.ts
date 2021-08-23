@@ -25,13 +25,13 @@ readUser.role = Roles.Read;
 
 const editUser = EditUser();
 
-const primaryUser = EditUser();
-primaryUser.isPrimary = true;
-export const primaryEditUser = primaryUser;
+const primaryEditUser = EditUser();
+primaryEditUser.isPrimary = true;
 
-const nonPrimary = EditUser();
-nonPrimary.isPrimary = false;
-export const nonPrimaryEditUser = nonPrimary;
+const nonPrimaryEditUser = EditUser();
+nonPrimaryEditUser.isPrimary = false;
+
+export { primaryEditUser, nonPrimaryEditUser };
 
 const workplaceBuilder = build('Workplace', {
   fields: {
@@ -98,8 +98,6 @@ export class MockUserService extends UserService {
     phone: '01234 345634',
   });
 
-  private;
-
   public static factory(subsidiaries = 0, isAdmin = false) {
     return (httpClient: HttpClient) => {
       const service = new MockUserService(httpClient);
@@ -119,6 +117,7 @@ export class MockUserService extends UserService {
       role: this.isAdmin ? ('Admin' as Roles) : undefined,
     };
   }
+
   public get loggedInUser$(): Observable<UserDetails> {
     return of(this.loggedInUser);
   }
