@@ -67,5 +67,6 @@ describe('WorkplaceAddedThankYouComponent', () => {
     expect(workplaceService.returnTo$.value).toBeNull();
     expect(workplaceService.invalidPostcodeEntered$.value).toBeNull();
     expect(workplaceService.manuallyEnteredWorkplaceName$.value).toBeFalse();
+    expect(workplaceService.useDifferentLocationIdOrPostcode$.value).toBeNull();
   });
 });

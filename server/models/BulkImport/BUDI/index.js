@@ -1069,6 +1069,7 @@ class BUDI {
       { BUDI: 312, ASC: 131 },
       { BUDI: 313, ASC: 132 },
       { BUDI: 311, ASC: 133 },
+      { BUDI: 144, ASC: 136 },
     ];
 
     if (direction === BUDI.TO_ASC) {

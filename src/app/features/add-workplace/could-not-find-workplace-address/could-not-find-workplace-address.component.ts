@@ -5,7 +5,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
+import {
+  CouldNotFindWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
 
 @Component({
   selector: 'app-could-not-find-workplace-address',
@@ -14,7 +16,7 @@ import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create
 })
 export class CouldNotFindWorkplaceAddressComponent extends CouldNotFindWorkplaceAddressDirective {
   constructor(
-    protected workplaceService: WorkplaceService,
+    public workplaceService: WorkplaceService,
     public backService: BackService,
     protected establishmentService: EstablishmentService,
     protected formBuilder: FormBuilder,

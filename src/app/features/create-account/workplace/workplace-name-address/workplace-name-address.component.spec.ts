@@ -91,6 +91,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.registrationService.manuallyEnteredWorkplace$ = new BehaviorSubject(true);
       component.ngOnInit();
+      component.setupPreFillForm();
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
@@ -114,6 +115,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.registrationService.returnTo$ = new BehaviorSubject({ url: ['registration', 'confirm-details'] });
       component.ngOnInit();
+      component.setupPreFillForm();
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);

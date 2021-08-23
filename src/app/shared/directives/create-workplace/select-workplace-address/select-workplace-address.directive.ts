@@ -6,6 +6,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { compact, isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -22,7 +23,9 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public createAccountNewDesign: boolean;
   public returnToConfirmDetails: URLStructure;
   public selectedLocationAddress: LocationAddress;
+  public title: string;
   protected subscriptions: Subscription = new Subscription();
+  protected errorMessage: string;
 
   constructor(
     protected backService: BackService,
@@ -30,6 +33,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   get getAddress(): AbstractControl {
@@ -37,22 +41,27 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   }
 
   ngOnInit(): void {
+    this.setErrorMessage();
     this.setupForm();
     this.setupFormErrorsMap();
-    this.init();
+    this.setFlow();
+    this.setTitle();
+    this.setReturnToConfirmDetails();
+    this.setLocationAddresses();
+    this.setSelectedLocationAddress();
     this.prefillForm();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.setBackLink();
     });
+    this.resetServiceVariables();
   }
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected init(): void {}
+  protected setFlow(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected setBackLink(): void {
     const backLink = this.createAccountNewDesign ? 'find-workplace-address' : 'regulated-by-cqc';
@@ -71,11 +80,48 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setupFormErrorsMap(): void {}
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address',
+        type: [
+          {
+            name: 'required',
+            message: this.errorMessage,
+          },
+        ],
+      },
+    ];
+  }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public onLocationChange(addressLine1: string): void {}
+  protected setErrorMessage(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+
+  protected setTitle(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+
+  public onLocationChange(index): void {
+    const selectedAddress = this.locationAddresses[index];
+    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
+    const selectedAddressCopy = Object.assign({}, selectedAddress);
+
+    this.workplaceInterfaceService.selectedLocationAddress$.next(selectedAddressCopy);
+  }
+
+  protected setLocationAddresses(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
+        this.enteredPostcode = locationAddresses[0].postalCode;
+        this.locationAddresses = locationAddresses;
+      }),
+    );
+  }
+
+  protected setSelectedLocationAddress(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.selectedLocationAddress$.subscribe(
+        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress),
+      ),
+    );
+  }
 
   protected prefillForm(): void {
     if (this.indexOfSelectedLocationAddress() >= 0) {
@@ -135,14 +181,18 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     return compact(address).join(', ');
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected resetServiceVariables(): void {
+    this.workplaceInterfaceService.workplaceNotFound$.next(false);
+    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
+    this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.next(false);
+  }
+
+  protected setReturnToConfirmDetails(): void {
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

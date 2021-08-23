@@ -6,10 +6,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
-import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
+import {
+  SelectWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
@@ -72,6 +75,14 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should display the correct title', async () => {
+    const { getAllByText } = await setup();
+
+    const title = 'Select your workplace address';
+
+    expect(getAllByText(title)).toBeTruthy();
+  });
+
   it('should display postcode retrieved from registration service at top and in each workplace address in dropdown(2)', async () => {
     const { getAllByText } = await setup();
 
@@ -100,8 +111,7 @@ describe('SelectWorkplaceAddressComponent', () => {
     it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
       const { component, fixture, getAllByText, queryByText, getByText } = await setup();
 
-      spyOn(component.registrationService.selectedLocationAddress$, 'subscribe').and.returnValue(null);
-      component.selectedLocationAddress = null;
+      component.registrationService.selectedLocationAddress$ = new BehaviorSubject(null);
       component.ngOnInit();
       fixture.detectChanges();
 
