@@ -114,7 +114,8 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     const updatedPrimary = role === Roles.Read ? false : primary;
 
     if (this.user.isPrimary && !updatedPrimary) {
-      this.changePrimary();
+      const changePrimaryUserLink = this.router.url.replace('permissions', 'change-primary-user');
+      this.router.navigate([changePrimaryUserLink]);
       return;
     }
 
