@@ -12,7 +12,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { UserAccountDeleteDialogComponent } from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
@@ -90,44 +89,6 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error resending the user set-up email.',
-          });
-        },
-      ),
-    );
-  }
-
-  public onDeleteUser(event: Event): void {
-    event.preventDefault();
-    const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
-    dialog.afterClosed.subscribe((deleteConfirmed) => {
-      if (deleteConfirmed) {
-        this.deleteUser();
-      }
-    });
-  }
-
-  private deleteUser(): void {
-    if (this.user.isPrimary) {
-      this.subscriptions.add(
-        this.userService
-          .updateUserDetails(this.establishment.uid, this.loggedInUser.uid, {
-            ...this.loggedInUser,
-            ...{ isPrimary: true },
-          })
-          .subscribe((data) => (this.userService.loggedInUser = data)),
-      );
-    }
-
-    this.subscriptions.add(
-      this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
-        () => {
-          this.router.navigate(this.return.url, { fragment: 'users' });
-          this.alertService.addAlert({ type: 'success', message: 'The user has been deleted.' });
-        },
-        () => {
-          this.alertService.addAlert({
-            type: 'warning',
-            message: 'There was an error deleting the user.',
           });
         },
       ),
