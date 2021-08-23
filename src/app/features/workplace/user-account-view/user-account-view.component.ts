@@ -32,6 +32,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public return: URLStructure;
   public user: UserDetails;
   public userInfo: SummaryList[];
+  public allUsers: UserDetails[];
 
   constructor(
     private alertService: AlertService,
@@ -48,7 +49,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.setAccountDetails();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
 
@@ -58,7 +59,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         .pipe(take(1), withLatestFrom(this.userService.loggedInUser$))
         .subscribe(([users, loggedInUser]) => {
           this.loggedInUser = loggedInUser;
-          this.setPermissions(users, loggedInUser);
+          this.allUsers = users;
+          this.setPermissions();
         }),
     );
 
@@ -69,11 +71,11 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  public resendActivationLink(evet: Event) {
+  public resendActivationLink(event: Event): void {
     event.preventDefault();
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
@@ -94,7 +96,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     );
   }
 
-  public onDeleteUser(event: Event) {
+  public onDeleteUser(event: Event): void {
     event.preventDefault();
     const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
     dialog.afterClosed.subscribe((deleteConfirmed) => {
@@ -104,7 +106,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private deleteUser() {
+  private deleteUser(): void {
     if (this.user.isPrimary) {
       this.subscriptions.add(
         this.userService
@@ -161,18 +163,26 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
-    const canEditUser = this.permissionsService.can(this.establishment.uid, 'canEditUser');
+  private setPermissions(): void {
+    const hasCanEditUserPermission = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
-    const editUsersList = users.filter((user) => user.role === Roles.Edit);
 
     this.canDeleteUser =
       this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&
-      users.length > 1 &&
+      this.allUsers.length > 1 &&
       !this.user.isPrimary &&
-      loggedInUser.uid !== this.user.uid;
-    this.canResendActivationLink = canEditUser && isPending;
-    this.canEditUser = canEditUser && (!this.user.isPrimary || (this.user.isPrimary && editUsersList.length > 1));
-    this.canNavigate = Roles.Admin === loggedInUser.role;
+      this.loggedInUser.uid !== this.user.uid;
+
+    this.canResendActivationLink = hasCanEditUserPermission && isPending;
+    this.canEditUser = hasCanEditUserPermission && (!this.user.isPrimary || this.moreThanOneActiveEditUser());
+    this.canNavigate = Roles.Admin === this.loggedInUser.role;
+  }
+
+  public moreThanOneActiveEditUser(): boolean {
+    return (
+      this.allUsers.filter((user) => {
+        return user.status === 'Active' && user.role === Roles.Edit;
+      }).length > 1
+    );
   }
 }
