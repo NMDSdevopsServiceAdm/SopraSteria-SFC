@@ -50,19 +50,27 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
       this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
           this.router.navigate(this.return.url, { fragment: 'users' });
-          this.alertService.addAlert({
-            type: 'success',
-            message: `${this.user.fullname} has been deleted as a user`,
-          });
+          this.successAlert();
         },
         () => {
-          this.alertService.addAlert({
-            type: 'warning',
-            message: 'There was an error deleting the user',
-          });
+          this.errorAlert();
         },
       ),
     );
+  }
+
+  private successAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `${this.user.fullname} has been deleted as a user`,
+    });
+  }
+
+  private errorAlert(): void {
+    this.alertService.addAlert({
+      type: 'warning',
+      message: 'There was an error deleting the user',
+    });
   }
 
   ngOnDestroy(): void {
