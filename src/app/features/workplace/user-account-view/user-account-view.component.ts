@@ -163,7 +163,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     ];
   }
 
-  public setPermissions(): void {
+  private setPermissions(): void {
     const hasCanEditUserPermission = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
 
