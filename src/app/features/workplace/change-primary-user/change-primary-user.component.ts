@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,7 +25,7 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
-  public currentUserUid: UserDetails;
+  public currentUserUid: string;
   public workplaceUid;
 
   constructor(
@@ -34,6 +35,8 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
+    private alertService: AlertService,
+    private router: Router,
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;
@@ -46,8 +49,6 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
-
-    console.log(this.currentUserUid, this.workplaceUid);
 
     this.subscriptions.add(
       this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
@@ -84,7 +85,8 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplaceUid, selectedUser.uid, { ...selectedUser, ...props }).subscribe(
         (data) => {
-          console.log('hello');
+          this.router.navigate(['/workplace', this.workplaceUid, 'user', this.currentUserUid]);
+          this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user.` });
         },
         (error) => this.onError(error),
       ),

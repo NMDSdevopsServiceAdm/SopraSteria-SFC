@@ -17,11 +17,17 @@ export const EditUser = build('EditUser', {
     role: Roles.Edit,
     status: 'Active',
     isPrimary: null,
+    uid: fake((f) => f.internet.userName()),
   },
 });
 
-const readUser = EditUser();
-readUser.role = Roles.Read;
+const ReadUser = () => {
+  return EditUser({
+    overrides: {
+      role: Roles.Read,
+    },
+  });
+};
 
 const editUser = EditUser();
 
@@ -133,13 +139,16 @@ export class MockUserService extends UserService {
   }
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     if (workplaceUid === 'overLimit') {
-      return of([readUser, readUser, readUser, editUser, editUser, editUser] as UserDetails[]);
+      return of([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[]);
     }
     if (workplaceUid === 'activeEditUsers') {
-      return of([editUser, editUser] as UserDetails[]);
+      return of([EditUser(), EditUser()] as UserDetails[]);
+    }
+    if (workplaceUid === 'twoEditTwoReadOnlyUsers') {
+      return of([EditUser(), EditUser(), ReadUser(), ReadUser()] as UserDetails[]);
     }
 
-    return of([editUser] as UserDetails[]);
+    return of([EditUser()] as UserDetails[]);
   }
 
   public updateState(userDetails: UserDetails) {
