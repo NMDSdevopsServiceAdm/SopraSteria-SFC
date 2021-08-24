@@ -39,5 +39,16 @@
       </div>
     </div>
   </div>
-  <app-submit-exit-buttons [cta]="'Save as primary user'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
+  <div class="govuk-grid-row govuk-!-margin-top-2">
+    <div class="govuk-grid-column-one-third">
+      <button type="submit" class="govuk-button">Save as primary user</button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <a
+        class="govuk-button govuk-button--link"
+        [routerLink]="['/workplace', workplaceUid, 'user', currentUserUid, 'permissions']"
+        >Cancel</a
+      >
+    </div>
+  </div>
 </form>

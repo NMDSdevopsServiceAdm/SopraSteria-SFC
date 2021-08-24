@@ -60,6 +60,7 @@ describe('ChangePrimaryUserComponent', () => {
               data: {
                 user: primaryEditUser,
               },
+              url: ['/workplace', uidLinkedToMockUsers, 'user', primaryEditUser.uid, 'change-primary-user'],
             },
             parent: {
               snapshot: {
@@ -165,6 +166,19 @@ describe('ChangePrimaryUserComponent', () => {
       fireEvent.click(saveAsPrimaryUserButton);
 
       expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user.` });
+    });
+  });
+
+  describe('Cancel button', async () => {
+    it('should navigate back to permissions page when Cancel is clicked', async () => {
+      const { component, getByText } = await setup();
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      const expectedUrl = `/workplace/${component.workplaceUid}/user/${component.currentUserUid}/permissions`;
+
+      expect(cancelButton.getAttribute('href')).toBe(expectedUrl);
     });
   });
 

@@ -43,8 +43,6 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;
-
-    this.return = { url: ['../permissions'] };
   }
 
   ngOnInit(): void {
