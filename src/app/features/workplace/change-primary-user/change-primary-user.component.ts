@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -26,7 +27,8 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public currentUserUid: string;
-  public workplaceUid;
+  public workplaceUid: string;
+  public return: URLStructure;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -40,6 +42,8 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;
+
+    this.return = { url: ['../permissions'] };
 
     this.form = this.formBuilder.group({
       user: [null, Validators.required],

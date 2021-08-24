@@ -16,13 +16,13 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { EditUser, MockUserService, primaryEditUser, ReadUser } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { ChangePrimaryUserComponent } from './change-primary-user.component';
 
 describe('ChangePrimaryUserComponent', () => {
   async function setup(uidLinkedToMockUsers = 'activeEditUsers') {
-    const { fixture, getByText, getByTestId, queryByText } = await render(ChangePrimaryUserComponent, {
+    const { fixture, getByText, getAllByText, queryByText } = await render(ChangePrimaryUserComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -88,7 +88,7 @@ describe('ChangePrimaryUserComponent', () => {
       fixture,
       permissionsService,
       getByText,
-      getByTestId,
+      getAllByText,
       queryByText,
     };
   }
@@ -180,6 +180,22 @@ describe('ChangePrimaryUserComponent', () => {
 
       expect(filteredUsers.length).toBe(1);
       expect(currentUsernameNotInUsersReturned).toBeTruthy();
+    });
+  });
+
+  describe('Error messages', async () => {
+    it('should show select primary user error message when nothing has been selected(plus title with same wording)', async () => {
+      const { component, getByText, getAllByText } = await setup();
+
+      const form = component.form;
+
+      const errorMessage = 'Select the new primary user';
+
+      const saveAsPrimaryUserButton = getByText('Save as primary user');
+      fireEvent.click(saveAsPrimaryUserButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(errorMessage).length).toBe(3);
     });
   });
 });
