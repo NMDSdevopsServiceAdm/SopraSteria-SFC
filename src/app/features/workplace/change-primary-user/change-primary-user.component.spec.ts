@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,7 +14,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockUserService, primaryEditUser } from '@core/test-utils/MockUserService';
+import { EditUser, MockUserService, primaryEditUser, ReadUser } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -130,5 +131,55 @@ describe('ChangePrimaryUserComponent', () => {
     const { component } = await setup('twoEditTwoReadOnlyUsers');
 
     expect(component.users.length).toBe(2);
+  });
+
+  describe('filterActiveNonPrimaryEditUsers', async () => {
+    it('should not return read only users', async () => {
+      const { component } = await setup();
+
+      const editUser = EditUser();
+      const editUserName = editUser.fullname as string;
+      const users = [ReadUser(), editUser, ReadUser()] as UserDetails[];
+
+      const filteredUsers = component.filterActiveNonPrimaryEditUsers(users);
+
+      expect(filteredUsers.length).toBe(1);
+      expect(filteredUsers[0].fullname).toBe(editUserName);
+    });
+
+    it('should not return pending users', async () => {
+      const { component } = await setup();
+
+      const pendingEditUser = EditUser();
+      pendingEditUser.status = 'Pending';
+      const pendingEditUserName = pendingEditUser.fullname as string;
+      const users = [EditUser(), EditUser(), pendingEditUser] as UserDetails[];
+
+      const filteredUsers = component.filterActiveNonPrimaryEditUsers(users);
+
+      const pendingEditUsernameNotInUsersReturned = !filteredUsers.some(
+        (user) => user.fullname === pendingEditUserName,
+      );
+
+      expect(filteredUsers.length).toBe(2);
+      expect(pendingEditUsernameNotInUsersReturned).toBeTruthy();
+    });
+
+    it('should not return user with same uid as currentUserUid', async () => {
+      const { component } = await setup();
+
+      const currentUser = EditUser();
+      component.currentUserUid = currentUser.uid as string;
+
+      const currentUserName = currentUser.fullname as string;
+      const users = [EditUser(), currentUser] as UserDetails[];
+
+      const filteredUsers = component.filterActiveNonPrimaryEditUsers(users);
+
+      const currentUsernameNotInUsersReturned = !filteredUsers.some((user) => user.fullname === currentUserName);
+
+      expect(filteredUsers.length).toBe(1);
+      expect(currentUsernameNotInUsersReturned).toBeTruthy();
+    });
   });
 });

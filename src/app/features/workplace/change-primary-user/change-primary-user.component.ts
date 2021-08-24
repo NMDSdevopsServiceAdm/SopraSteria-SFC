@@ -51,8 +51,8 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
-      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-        this.users = filter(users, (user) => user.role === Roles.Edit && user.uid !== this.currentUserUid);
+      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((allUsers) => {
+        this.users = this.filterActiveNonPrimaryEditUsers(allUsers);
       }),
     );
 
@@ -124,5 +124,12 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
         message: `You cannot make this user the Primary user.`,
       },
     ];
+  }
+
+  public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[]): UserDetails[] {
+    return filter(
+      allUsers,
+      (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== this.currentUserUid,
+    );
   }
 }

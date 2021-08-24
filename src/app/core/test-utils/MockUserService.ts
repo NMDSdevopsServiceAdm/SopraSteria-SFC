@@ -21,15 +21,13 @@ export const EditUser = build('EditUser', {
   },
 });
 
-const ReadUser = () => {
+export const ReadUser = () => {
   return EditUser({
     overrides: {
       role: Roles.Read,
     },
   });
 };
-
-const editUser = EditUser();
 
 const primaryEditUser = EditUser();
 primaryEditUser.isPrimary = true;
