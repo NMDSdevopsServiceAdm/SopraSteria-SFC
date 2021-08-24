@@ -34,7 +34,6 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import { UserAccountChangePrimaryDialogComponent } from './user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
@@ -65,7 +64,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     StartersComponent,
     SuccessComponent,
     TypeOfEmployerComponent,
-    UserAccountChangePrimaryDialogComponent,
     UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
     UserAccountSavedComponent,

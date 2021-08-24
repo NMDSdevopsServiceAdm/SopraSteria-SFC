@@ -16,8 +16,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
-import { UserAccountChangePrimaryDialogComponent } from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
-
 @Component({
   selector: 'app-user-account-edit-permissions',
   templateUrl: './user-account-edit-permissions.component.html',
@@ -88,19 +86,6 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
         message: `You cannot change this users permissions`,
       },
     ];
-  }
-
-  public changePrimary() {
-    const dialog = this.dialogService.open(UserAccountChangePrimaryDialogComponent, {
-      workplaceUid: this.workplace.uid,
-      currentUserUid: this.user.uid,
-    });
-    dialog.afterClosed.subscribe((userFullname) => {
-      if (userFullname) {
-        const { role } = this.form.value;
-        this.save(role, false, userFullname);
-      }
-    });
   }
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
