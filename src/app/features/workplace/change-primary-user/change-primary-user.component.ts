@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-change-primary-user',
   templateUrl: './change-primary-user.component.html',
 })
-export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
+export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public users: UserDetails[];
@@ -57,9 +57,12 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  public ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
   public onSubmit(): void {
     this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
