@@ -69,6 +69,10 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
       return;
     }
 
+    this.updatePrimaryUserAndNavigateToNextPage();
+  }
+
+  private updatePrimaryUserAndNavigateToNextPage(): void {
     const { user } = this.form.value;
     const selectedUser = find(this.users, ['uid', user]);
 
