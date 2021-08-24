@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
-import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -29,7 +28,6 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   public serverErrorsMap: Array<ErrorDefinition>;
   public currentUserUid: string;
   public workplaceUid: string;
-  public return: URLStructure;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,11 +46,7 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setBreadcrumbs();
 
-    this.subscriptions.add(
-      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((allUsers) => {
-        this.users = this.filterActiveNonPrimaryEditUsers(allUsers);
-      }),
-    );
+    this.getUsersWhichCanBeMadePrimary();
 
     this.setupForm();
     this.setupFormErrorsMap();
@@ -88,6 +82,14 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
         },
         (error) => this.onError(error),
       ),
+    );
+  }
+
+  private getUsersWhichCanBeMadePrimary(): void {
+    this.subscriptions.add(
+      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((allUsers) => {
+        this.users = this.filterActiveNonPrimaryEditUsers(allUsers);
+      }),
     );
   }
 
