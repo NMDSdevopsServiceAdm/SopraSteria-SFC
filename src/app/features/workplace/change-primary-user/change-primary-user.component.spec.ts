@@ -22,7 +22,7 @@ import { ChangePrimaryUserComponent } from './change-primary-user.component';
 
 describe('ChangePrimaryUserComponent', () => {
   async function setup(uidLinkedToMockUsers = 'activeEditUsers') {
-    const { fixture, getByText, getAllByText, queryByText } = await render(ChangePrimaryUserComponent, {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(ChangePrimaryUserComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -79,17 +79,21 @@ describe('ChangePrimaryUserComponent', () => {
     });
 
     const injector = getTestBed();
-    const permissionsService = injector.inject(PermissionsService) as PermissionsService;
+    const router = injector.inject(Router) as Router;
+
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
 
     const component = fixture.componentInstance;
 
     return {
       component,
       fixture,
-      permissionsService,
+      spy,
       getByText,
       getAllByText,
       queryByText,
+      getByLabelText,
     };
   }
 
@@ -131,6 +135,53 @@ describe('ChangePrimaryUserComponent', () => {
     const { component } = await setup('twoEditTwoReadOnlyUsers');
 
     expect(component.users.length).toBe(2);
+  });
+
+  describe('Submission', async () => {
+    it('should submit and go back to user details page when user selected', async () => {
+      const { component, spy, getByText, getByLabelText } = await setup();
+
+      const firstUserName = component.users[0].fullname;
+
+      const radioButton = getByLabelText(firstUserName);
+      fireEvent.click(radioButton);
+
+      const saveAsPrimaryUserButton = getByText('Save as primary user');
+      fireEvent.click(saveAsPrimaryUserButton);
+
+      expect(spy).toHaveBeenCalledWith(['/workplace', component.workplaceUid, 'user', component.currentUserUid]);
+    });
+
+    it('should set success alert when submission is successful', async () => {
+      const { component, getByText, getByLabelText } = await setup();
+
+      const alertSpy = spyOn(component.alertService, 'addAlert').and.callThrough();
+      const firstUserName = component.users[0].fullname;
+
+      const radioButton = getByLabelText(firstUserName);
+      fireEvent.click(radioButton);
+
+      const saveAsPrimaryUserButton = getByText('Save as primary user');
+      fireEvent.click(saveAsPrimaryUserButton);
+
+      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user.` });
+    });
+  });
+
+  describe('Error messages', async () => {
+    it('should show select primary user error message when nothing has been selected(plus title with same wording)', async () => {
+      const { component, getByText, getAllByText } = await setup();
+
+      const form = component.form;
+
+      const errorMessage = 'Select the new primary user';
+
+      const saveAsPrimaryUserButton = getByText('Save as primary user');
+      fireEvent.click(saveAsPrimaryUserButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(errorMessage).length).toBe(3);
+    });
   });
 
   describe('filterActiveNonPrimaryEditUsers', async () => {
@@ -180,22 +231,6 @@ describe('ChangePrimaryUserComponent', () => {
 
       expect(filteredUsers.length).toBe(1);
       expect(currentUsernameNotInUsersReturned).toBeTruthy();
-    });
-  });
-
-  describe('Error messages', async () => {
-    it('should show select primary user error message when nothing has been selected(plus title with same wording)', async () => {
-      const { component, getByText, getAllByText } = await setup();
-
-      const form = component.form;
-
-      const errorMessage = 'Select the new primary user';
-
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
-
-      expect(form.invalid).toBeTruthy();
-      expect(getAllByText(errorMessage).length).toBe(3);
     });
   });
 });

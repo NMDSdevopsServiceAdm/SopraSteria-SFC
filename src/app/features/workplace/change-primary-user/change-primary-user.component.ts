@@ -38,8 +38,8 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
-    private alertService: AlertService,
     private router: Router,
+    public alertService: AlertService,
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;

@@ -152,6 +152,10 @@ export class MockUserService extends UserService {
   public updateState(userDetails: UserDetails) {
     return userDetails;
   }
+
+  public updateUserDetails(): Observable<any> {
+    return of({});
+  }
 }
 
 export class MockUserServiceWithNoUserDetails extends MockUserService {
