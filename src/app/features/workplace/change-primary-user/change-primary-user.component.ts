@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './change-primary-user.component.html',
 })
 export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
+  @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public users: UserDetails[];
   public form: FormGroup;
@@ -44,15 +45,10 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;
 
     this.return = { url: ['../permissions'] };
-
-    this.form = this.formBuilder.group({
-      user: [null, Validators.required],
-    });
   }
 
   ngOnInit(): void {
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
+    this.setBreadcrumbs();
 
     this.subscriptions.add(
       this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((allUsers) => {
@@ -60,6 +56,7 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
       }),
     );
 
+    this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
@@ -70,7 +67,6 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
 
   public onSubmit(): void {
     this.submitted = true;
-
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
@@ -107,6 +103,18 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     this.errorSummaryService.scrollToErrorSummary();
   }
 
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      user: [
+        '',
+        {
+          validators: Validators.required,
+          updateOn: 'submit',
+        },
+      ],
+    });
+  }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -125,9 +133,14 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 406,
-        message: `You cannot make this user the Primary user.`,
+        message: `You cannot make this user the primary user.`,
       },
     ];
+  }
+
+  private setBreadcrumbs(): void {
+    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.breadcrumbService.show(journey);
   }
 
   public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[]): UserDetails[] {
