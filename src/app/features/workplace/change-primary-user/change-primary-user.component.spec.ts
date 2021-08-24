@@ -168,19 +168,6 @@ describe('ChangePrimaryUserComponent', () => {
     });
   });
 
-  describe('Cancel button', async () => {
-    it('should navigate back to permissions page when Cancel is clicked', async () => {
-      const { component, getByText } = await setup();
-
-      const cancelButton = getByText('Cancel');
-      fireEvent.click(cancelButton);
-
-      const expectedUrl = `/workplace/${component.workplaceUid}/user/${component.currentUserUid}/permissions`;
-
-      expect(cancelButton.getAttribute('href')).toBe(expectedUrl);
-    });
-  });
-
   describe('Error messages', async () => {
     it('should show select primary user error message when nothing has been selected(plus title with same wording)', async () => {
       const { component, getByText, getAllByText } = await setup();
