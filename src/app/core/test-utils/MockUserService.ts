@@ -17,7 +17,7 @@ export const EditUser = build('EditUser', {
     role: Roles.Edit,
     status: 'Active',
     isPrimary: null,
-    uid: fake((f) => f.internet.userName()),
+    uid: fake((f) => f.name.firstName()),
   },
 });
 

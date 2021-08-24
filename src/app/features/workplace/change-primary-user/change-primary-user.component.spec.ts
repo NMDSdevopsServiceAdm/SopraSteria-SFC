@@ -60,7 +60,6 @@ describe('ChangePrimaryUserComponent', () => {
               data: {
                 user: primaryEditUser,
               },
-              url: ['/workplace', uidLinkedToMockUsers, 'user', primaryEditUser.uid, 'change-primary-user'],
             },
             parent: {
               snapshot: {
