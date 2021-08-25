@@ -34,4 +34,8 @@ export class ChangePrimaryUserToDeleteComponent extends ChangePrimaryUserDirecti
       alertService,
     );
   }
+
+  public cancelNavigation(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
 }

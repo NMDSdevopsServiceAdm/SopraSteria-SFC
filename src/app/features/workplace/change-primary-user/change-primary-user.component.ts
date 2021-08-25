@@ -34,4 +34,8 @@ export class ChangePrimaryUserComponent extends ChangePrimaryUserDirective {
       alertService,
     );
   }
+
+  public cancelNavigation(): void {
+    this.router.navigate(['../permissions'], { relativeTo: this.route });
+  }
 }

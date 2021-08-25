@@ -155,4 +155,7 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
       (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== this.currentUserUid,
     );
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public cancelNavigation(): void {}
 }

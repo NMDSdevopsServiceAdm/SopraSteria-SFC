@@ -81,15 +81,15 @@ describe('ChangePrimaryUserComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     const component = fixture.componentInstance;
 
     return {
       component,
       fixture,
-      spy,
+      routerSpy,
       getByText,
       getAllByText,
       queryByText,
@@ -139,7 +139,7 @@ describe('ChangePrimaryUserComponent', () => {
 
   describe('Submission', async () => {
     it('should submit and go back to user details page when user selected', async () => {
-      const { component, spy, getByText, getByLabelText } = await setup();
+      const { component, routerSpy, getByText, getByLabelText } = await setup();
 
       const firstUserName = component.users[0].fullname;
 
@@ -149,7 +149,7 @@ describe('ChangePrimaryUserComponent', () => {
       const saveAsPrimaryUserButton = getByText('Save as primary user');
       fireEvent.click(saveAsPrimaryUserButton);
 
-      expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../']);
     });
 
     it('should set success alert when submission is successful', async () => {
@@ -165,6 +165,17 @@ describe('ChangePrimaryUserComponent', () => {
       fireEvent.click(saveAsPrimaryUserButton);
 
       expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user` });
+    });
+  });
+
+  describe('Cancel button navigation', async () => {
+    it('should return to permissions page when Cancel button clicked', async () => {
+      const { routerSpy, getByText } = await setup();
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../permissions']);
     });
   });
 
