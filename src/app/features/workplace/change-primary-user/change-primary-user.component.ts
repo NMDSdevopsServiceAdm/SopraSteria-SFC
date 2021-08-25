@@ -33,10 +33,10 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private userService: UserService,
-    private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
     private router: Router,
+    private route: ActivatedRoute,
     public alertService: AlertService,
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
@@ -84,7 +84,7 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplaceUid, selectedUser.uid, { ...selectedUser, ...props }).subscribe(
         (data) => {
-          this.router.navigate(['/workplace', this.workplaceUid, 'user', this.currentUserUid]);
+          this.router.navigate(['../'], { relativeTo: this.route });
           this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user` });
         },
         (error) => this.onError(error),

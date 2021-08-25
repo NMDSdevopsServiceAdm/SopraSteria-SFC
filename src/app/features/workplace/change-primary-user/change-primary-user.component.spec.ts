@@ -149,7 +149,7 @@ describe('ChangePrimaryUserComponent', () => {
       const saveAsPrimaryUserButton = getByText('Save as primary user');
       fireEvent.click(saveAsPrimaryUserButton);
 
-      expect(spy).toHaveBeenCalledWith(['/workplace', component.workplaceUid, 'user', component.currentUserUid]);
+      expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
     });
 
     it('should set success alert when submission is successful', async () => {
