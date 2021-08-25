@@ -1,12 +1,10 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -32,7 +30,6 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
     protected errorSummaryService: ErrorSummaryService,
     protected userService: UserService,
     protected establishmentService: EstablishmentService,
-    protected breadcrumbService: BreadcrumbService,
     protected router: Router,
     protected route: ActivatedRoute,
     public alertService: AlertService,
@@ -43,7 +40,7 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   }
 
   ngOnInit(): void {
-    this.setBreadcrumbs();
+    this.setBackButtonOrBreadcrumbs();
 
     this.getUsersWhichCanBeMadePrimary();
 
@@ -144,17 +141,15 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
     ];
   }
 
-  private setBreadcrumbs(): void {
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
-  }
-
   public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[]): UserDetails[] {
     return filter(
       allUsers,
       (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== this.currentUserUid,
     );
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setBackButtonOrBreadcrumbs(): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public cancelNavigation(): void {}

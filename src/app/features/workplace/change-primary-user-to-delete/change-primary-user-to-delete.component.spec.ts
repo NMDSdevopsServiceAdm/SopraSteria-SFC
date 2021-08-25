@@ -92,6 +92,7 @@ describe('ChangePrimaryUserToDeleteComponent', () => {
     return {
       component,
       fixture,
+      router,
       routerSpy,
       getByText,
       getAllByText,
@@ -179,6 +180,23 @@ describe('ChangePrimaryUserToDeleteComponent', () => {
       fireEvent.click(cancelButton);
 
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../']);
+    });
+  });
+
+  describe('Back link', () => {
+    it('should set the back link to user details page', async () => {
+      const { component, router } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      Object.defineProperty(router, 'url', {
+        get: () => 'workplace/123/user/abc123/change-primary-user-to-delete',
+      });
+
+      component.ngOnInit();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['workplace', '123', 'user', 'abc123'],
+      });
     });
   });
 
