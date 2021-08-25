@@ -64,7 +64,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     };
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setupServerErrorsMap();
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
@@ -75,7 +75,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
@@ -99,15 +99,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     const updatedPrimary = role === Roles.Read ? false : primary;
 
     if (this.user.isPrimary && !updatedPrimary) {
-      const changePrimaryUserLink = this.router.url.replace('permissions', 'change-primary-user');
-      this.router.navigate([changePrimaryUserLink]);
+      this.navigateToChangePrimaryUserPage();
       return;
     }
 
     this.save(role, updatedPrimary);
   }
 
-  private save(role: Roles, primary: boolean, name: string = null) {
+  private save(role: Roles, primary: boolean, name: string = null): void {
     const props = {
       role,
       isPrimary: primary,
@@ -132,7 +131,12 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private onError(error) {
+  private navigateToChangePrimaryUserPage(): void {
+    const changePrimaryUserLink = this.router.url.replace('permissions', 'change-primary-user');
+    this.router.navigate([changePrimaryUserLink]);
+  }
+
+  private onError(error): void {
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }
