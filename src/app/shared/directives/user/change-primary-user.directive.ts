@@ -80,7 +80,7 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplaceUid, selectedUser.uid, { ...selectedUser, ...props }).subscribe(
         (data) => {
-          this.router.navigate(['../'], { relativeTo: this.route });
+          this.navigateToNextPage();
           this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user` });
         },
         (error) => this.onError(error),
@@ -149,8 +149,11 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public cancelNavigation(): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setBackButtonOrBreadcrumbs(): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public cancelNavigation(): void {}
+  protected navigateToNextPage(): void {}
 }

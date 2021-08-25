@@ -35,4 +35,8 @@ export class ChangePrimaryUserComponent extends ChangePrimaryUserDirective {
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
   }
+
+  protected navigateToNextPage(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
 }

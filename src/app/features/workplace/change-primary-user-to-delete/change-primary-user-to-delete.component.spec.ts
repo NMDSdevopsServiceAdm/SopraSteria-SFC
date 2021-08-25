@@ -142,7 +142,7 @@ describe('ChangePrimaryUserToDeleteComponent', () => {
   });
 
   describe('Submission', async () => {
-    it('should submit and go back to user details page when user selected', async () => {
+    it('should submit and go on to delete user page when user selected', async () => {
       const { component, routerSpy, getByText, getByLabelText } = await setup();
 
       const firstUserName = component.users[0].fullname;
@@ -153,7 +153,7 @@ describe('ChangePrimaryUserToDeleteComponent', () => {
       const saveAndContinueButton = getByText('Save and continue');
       fireEvent.click(saveAndContinueButton);
 
-      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../']);
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../delete-user']);
     });
 
     it('should set success alert when submission is successful', async () => {

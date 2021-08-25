@@ -36,4 +36,8 @@ export class ChangePrimaryUserToDeleteComponent extends ChangePrimaryUserDirecti
 
     this.backService.setBackLink({ url: userDetailsLink });
   }
+
+  protected navigateToNextPage(): void {
+    this.router.navigate(['../delete-user'], { relativeTo: this.route });
+  }
 }
