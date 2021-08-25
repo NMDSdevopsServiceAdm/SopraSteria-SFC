@@ -18,65 +18,68 @@ import { EditUser, MockUserService, primaryEditUser, ReadUser } from '@core/test
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { ChangePrimaryUserComponent } from './change-primary-user.component';
+import { ChangePrimaryUserToDeleteComponent } from './change-primary-user-to-delete.component';
 
-describe('ChangePrimaryUserComponent', () => {
+describe('ChangePrimaryUserToDeleteComponent', () => {
   async function setup(uidLinkedToMockUsers = 'activeEditUsers') {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(ChangePrimaryUserComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      declarations: [],
-      providers: [
-        AlertService,
-        WindowRef,
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canEditUser']),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: UserService,
-          useFactory: MockUserService.factory(0, false),
-          deps: [HttpClient],
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                user: primaryEditUser,
-              },
-            },
-            parent: {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
+      ChangePrimaryUserToDeleteComponent,
+      {
+        imports: [
+          SharedModule,
+          RouterModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        declarations: [],
+        providers: [
+          AlertService,
+          WindowRef,
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(['canEditUser']),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: UserService,
+            useFactory: MockUserService.factory(0, false),
+            deps: [HttpClient],
+          },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
               snapshot: {
-                url: [{ path: 'workplace' }],
                 data: {
-                  establishment: {
-                    id: 'abc123',
-                    uid: uidLinkedToMockUsers,
-                    name: 'abc123',
+                  user: primaryEditUser,
+                },
+              },
+              parent: {
+                snapshot: {
+                  url: [{ path: 'workplace' }],
+                  data: {
+                    establishment: {
+                      id: 'abc123',
+                      uid: uidLinkedToMockUsers,
+                      name: 'abc123',
+                    },
                   },
                 },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -97,15 +100,15 @@ describe('ChangePrimaryUserComponent', () => {
     };
   }
 
-  it('should render a ChangePrimaryUserComponent', async () => {
+  it('should render a ChangePrimaryUserToDeleteComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should display title', async () => {
-    const { getByText } = await setup();
+  it('should display title with dynamic current user name', async () => {
+    const { component, getByText } = await setup();
 
-    const title = 'Select the new primary user';
+    const title = `You need to select the new primary user before you delete ${component.currentUserName}`;
     expect(getByText(title)).toBeTruthy();
   });
 
@@ -146,8 +149,8 @@ describe('ChangePrimaryUserComponent', () => {
       const radioButton = getByLabelText(firstUserName);
       fireEvent.click(radioButton);
 
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
+      const saveAndContinueButton = getByText('Save and continue');
+      fireEvent.click(saveAndContinueButton);
 
       expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
     });
@@ -161,8 +164,8 @@ describe('ChangePrimaryUserComponent', () => {
       const radioButton = getByLabelText(firstUserName);
       fireEvent.click(radioButton);
 
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
+      const saveAndContinueButton = getByText('Save and continue');
+      fireEvent.click(saveAndContinueButton);
 
       expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user` });
     });
@@ -176,8 +179,8 @@ describe('ChangePrimaryUserComponent', () => {
 
       const errorMessage = 'Select the new primary user';
 
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
+      const saveAndContinueButton = getByText('Save and continue');
+      fireEvent.click(saveAndContinueButton);
 
       expect(form.invalid).toBeTruthy();
       expect(getAllByText(errorMessage).length).toBe(3);

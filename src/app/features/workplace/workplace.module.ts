@@ -14,6 +14,7 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { SharedModule } from '@shared/shared.module';
 
+import { ChangePrimaryUserToDeleteComponent } from './change-primary-user-to-delete/change-primary-user-to-delete.component';
 import { ChangePrimaryUserComponent } from './change-primary-user/change-primary-user.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -83,6 +84,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     SelectMainServiceCqcConfirmComponent,
     DeleteUserAccountComponent,
     ChangePrimaryUserComponent,
+    ChangePrimaryUserToDeleteComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
 })

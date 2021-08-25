@@ -24,6 +24,7 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public currentUserUid: string;
+  public currentUserName: string;
   public workplaceUid: string;
 
   constructor(
@@ -37,6 +38,7 @@ export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
     public alertService: AlertService,
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
+    this.currentUserName = this.route.snapshot.data.user.fullname;
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;
   }
 

@@ -17,6 +17,7 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
+import { ChangePrimaryUserToDeleteComponent } from './change-primary-user-to-delete/change-primary-user-to-delete.component';
 import { ChangePrimaryUserComponent } from './change-primary-user/change-primary-user.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -317,6 +318,16 @@ const routes: Routes = [
           {
             path: 'change-primary-user',
             component: ChangePrimaryUserComponent,
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Change primary user',
+            },
+          },
+          {
+            path: 'change-primary-user-to-delete',
+            component: ChangePrimaryUserToDeleteComponent,
             canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
