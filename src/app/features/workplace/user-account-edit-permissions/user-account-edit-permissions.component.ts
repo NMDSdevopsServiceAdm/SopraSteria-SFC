@@ -16,8 +16,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
-import { UserAccountChangePrimaryDialogComponent } from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
-
 @Component({
   selector: 'app-user-account-edit-permissions',
   templateUrl: './user-account-edit-permissions.component.html',
@@ -66,7 +64,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     };
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setupServerErrorsMap();
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
@@ -77,7 +75,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
@@ -88,19 +86,6 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
         message: `You cannot change this users permissions`,
       },
     ];
-  }
-
-  public changePrimary() {
-    const dialog = this.dialogService.open(UserAccountChangePrimaryDialogComponent, {
-      workplaceUid: this.workplace.uid,
-      currentUserUid: this.user.uid,
-    });
-    dialog.afterClosed.subscribe((userFullname) => {
-      if (userFullname) {
-        const { role } = this.form.value;
-        this.save(role, false, userFullname);
-      }
-    });
   }
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
@@ -114,14 +99,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     const updatedPrimary = role === Roles.Read ? false : primary;
 
     if (this.user.isPrimary && !updatedPrimary) {
-      this.changePrimary();
+      this.navigateToChangePrimaryUserPage();
       return;
     }
 
     this.save(role, updatedPrimary);
   }
 
-  private save(role: Roles, primary: boolean, name: string = null) {
+  private save(role: Roles, primary: boolean, name: string = null): void {
     const props = {
       role,
       isPrimary: primary,
@@ -146,7 +131,12 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private onError(error) {
+  private navigateToChangePrimaryUserPage(): void {
+    const changePrimaryUserLink = this.router.url.replace('permissions', 'change-primary-user');
+    this.router.navigate([changePrimaryUserLink]);
+  }
+
+  private onError(error): void {
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }
