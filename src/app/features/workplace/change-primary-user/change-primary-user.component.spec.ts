@@ -164,7 +164,7 @@ describe('ChangePrimaryUserComponent', () => {
       const saveAsPrimaryUserButton = getByText('Save as primary user');
       fireEvent.click(saveAsPrimaryUserButton);
 
-      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user.` });
+      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user` });
     });
   });
 

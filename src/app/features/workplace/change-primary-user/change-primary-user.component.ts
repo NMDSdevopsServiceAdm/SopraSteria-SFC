@@ -53,12 +53,12 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
     this.setupServerErrorsMap();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  public ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   public onSubmit(): void {
@@ -85,7 +85,7 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
       this.userService.updateUserDetails(this.workplaceUid, selectedUser.uid, { ...selectedUser, ...props }).subscribe(
         (data) => {
           this.router.navigate(['/workplace', this.workplaceUid, 'user', this.currentUserUid]);
-          this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user.` });
+          this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user` });
         },
         (error) => this.onError(error),
       ),
@@ -136,11 +136,11 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
     ];
   }
 
-  public setupServerErrorsMap(): void {
+  private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 406,
-        message: `You cannot make this user the primary user.`,
+        message: `You cannot make this user the primary user`,
       },
     ];
   }
