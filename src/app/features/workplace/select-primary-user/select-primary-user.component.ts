@@ -7,13 +7,13 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { ChangePrimaryUserDirective } from '@shared/directives/user/change-primary-user.directive';
+import { SelectPrimaryUserDirective } from '@shared/directives/user/select-primary-user.directive';
 
 @Component({
-  selector: 'app-change-primary-user',
-  templateUrl: './change-primary-user.component.html',
+  selector: 'app-select-primary-user',
+  templateUrl: './select-primary-user.component.html',
 })
-export class ChangePrimaryUserComponent extends ChangePrimaryUserDirective {
+export class SelectPrimaryUserComponent extends SelectPrimaryUserDirective {
   constructor(
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,

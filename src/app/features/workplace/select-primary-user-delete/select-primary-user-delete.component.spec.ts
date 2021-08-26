@@ -18,65 +18,68 @@ import { EditUser, MockUserService, primaryEditUser, ReadUser } from '@core/test
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { ChangePrimaryUserComponent } from './change-primary-user.component';
+import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete.component';
 
-describe('ChangePrimaryUserComponent', () => {
+describe('SelectPrimaryUserDeleteComponent', () => {
   async function setup(uidLinkedToMockUsers = 'activeEditUsers') {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(ChangePrimaryUserComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      declarations: [],
-      providers: [
-        AlertService,
-        WindowRef,
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canEditUser']),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: UserService,
-          useFactory: MockUserService.factory(0, false),
-          deps: [HttpClient],
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                user: primaryEditUser,
-              },
-            },
-            parent: {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
+      SelectPrimaryUserDeleteComponent,
+      {
+        imports: [
+          SharedModule,
+          RouterModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        declarations: [],
+        providers: [
+          AlertService,
+          WindowRef,
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(['canEditUser']),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: UserService,
+            useFactory: MockUserService.factory(0, false),
+            deps: [HttpClient],
+          },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
               snapshot: {
-                url: [{ path: 'workplace' }],
                 data: {
-                  establishment: {
-                    id: 'abc123',
-                    uid: uidLinkedToMockUsers,
-                    name: 'abc123',
+                  user: primaryEditUser,
+                },
+              },
+              parent: {
+                snapshot: {
+                  url: [{ path: 'workplace' }],
+                  data: {
+                    establishment: {
+                      id: 'abc123',
+                      uid: uidLinkedToMockUsers,
+                      name: 'abc123',
+                    },
                   },
                 },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -89,6 +92,7 @@ describe('ChangePrimaryUserComponent', () => {
     return {
       component,
       fixture,
+      router,
       routerSpy,
       getByText,
       getAllByText,
@@ -97,15 +101,15 @@ describe('ChangePrimaryUserComponent', () => {
     };
   }
 
-  it('should render a ChangePrimaryUserComponent', async () => {
+  it('should render a SelectPrimaryUserDeleteComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should display title', async () => {
-    const { getByText } = await setup();
+  it('should display title with dynamic current user name', async () => {
+    const { component, getByText } = await setup();
 
-    const title = 'Select the new primary user';
+    const title = `You need to select the new primary user before you delete ${component.currentUserName}`;
     expect(getByText(title)).toBeTruthy();
   });
 
@@ -138,7 +142,7 @@ describe('ChangePrimaryUserComponent', () => {
   });
 
   describe('Submission', async () => {
-    it('should submit and go back to user details page when user selected', async () => {
+    it('should submit and go on to delete user page when user selected', async () => {
       const { component, routerSpy, getByText, getByLabelText } = await setup();
 
       const firstUserName = component.users[0].fullname;
@@ -146,10 +150,10 @@ describe('ChangePrimaryUserComponent', () => {
       const radioButton = getByLabelText(firstUserName);
       fireEvent.click(radioButton);
 
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
+      const saveAndContinueButton = getByText('Save and continue');
+      fireEvent.click(saveAndContinueButton);
 
-      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../']);
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../delete-user']);
     });
 
     it('should set success alert when submission is successful', async () => {
@@ -161,21 +165,38 @@ describe('ChangePrimaryUserComponent', () => {
       const radioButton = getByLabelText(firstUserName);
       fireEvent.click(radioButton);
 
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
+      const saveAndContinueButton = getByText('Save and continue');
+      fireEvent.click(saveAndContinueButton);
 
       expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user` });
     });
   });
 
   describe('Cancel button navigation', async () => {
-    it('should return to permissions page when Cancel button clicked', async () => {
+    it('should return to current user details page when Cancel button clicked', async () => {
       const { routerSpy, getByText } = await setup();
 
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
 
-      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../permissions']);
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['../']);
+    });
+  });
+
+  describe('Back link', () => {
+    it('should set the back link to user details page', async () => {
+      const { component, router } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      Object.defineProperty(router, 'url', {
+        get: () => 'workplace/123/user/abc123/change-primary-user-to-delete',
+      });
+
+      component.ngOnInit();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['workplace', '123', 'user', 'abc123'],
+      });
     });
   });
 
@@ -187,11 +208,11 @@ describe('ChangePrimaryUserComponent', () => {
 
       const errorMessage = 'Select the new primary user';
 
-      const saveAsPrimaryUserButton = getByText('Save as primary user');
-      fireEvent.click(saveAsPrimaryUserButton);
+      const saveAndContinueButton = getByText('Save and continue');
+      fireEvent.click(saveAndContinueButton);
 
       expect(form.invalid).toBeTruthy();
-      expect(getAllByText(errorMessage).length).toBe(3);
+      expect(getAllByText(errorMessage).length).toBe(2);
     });
   });
 

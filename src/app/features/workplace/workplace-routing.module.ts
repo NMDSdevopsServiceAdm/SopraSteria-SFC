@@ -17,8 +17,6 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
-import { ChangePrimaryUserToDeleteComponent } from './change-primary-user-to-delete/change-primary-user-to-delete.component';
-import { ChangePrimaryUserComponent } from './change-primary-user/change-primary-user.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
@@ -31,6 +29,8 @@ import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
+import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
+import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
@@ -317,7 +317,7 @@ const routes: Routes = [
           },
           {
             path: 'select-primary-user',
-            component: ChangePrimaryUserComponent,
+            component: SelectPrimaryUserComponent,
             canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
@@ -327,7 +327,7 @@ const routes: Routes = [
           },
           {
             path: 'select-primary-user-delete',
-            component: ChangePrimaryUserToDeleteComponent,
+            component: SelectPrimaryUserDeleteComponent,
             canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {

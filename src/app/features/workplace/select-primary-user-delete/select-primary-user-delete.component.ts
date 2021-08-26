@@ -6,13 +6,13 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { ChangePrimaryUserDirective } from '@shared/directives/user/change-primary-user.directive';
+import { SelectPrimaryUserDirective } from '@shared/directives/user/select-primary-user.directive';
 
 @Component({
-  selector: 'app-change-primary-user-to-delete',
-  templateUrl: './change-primary-user-to-delete.component.html',
+  selector: 'app-select-primary-user-delete',
+  templateUrl: './select-primary-user-delete.component.html',
 })
-export class ChangePrimaryUserToDeleteComponent extends ChangePrimaryUserDirective {
+export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective {
   constructor(
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,

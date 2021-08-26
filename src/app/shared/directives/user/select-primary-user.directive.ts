@@ -12,7 +12,7 @@ import { filter, find } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class ChangePrimaryUserDirective implements OnInit, OnDestroy, AfterViewInit {
+export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public users: UserDetails[];
