@@ -29,13 +29,16 @@ export const ReadUser = () => {
   });
 };
 
+const readUser = ReadUser();
+readUser.isPrimary = false;
+
 const primaryEditUser = EditUser();
 primaryEditUser.isPrimary = true;
 
 const nonPrimaryEditUser = EditUser();
 nonPrimaryEditUser.isPrimary = false;
 
-export { primaryEditUser, nonPrimaryEditUser };
+export { primaryEditUser, nonPrimaryEditUser, readUser };
 
 const workplaceBuilder = build('Workplace', {
   fields: {

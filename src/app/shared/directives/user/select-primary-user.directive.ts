@@ -1,23 +1,18 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { filter, find } from 'lodash';
 import { Subscription } from 'rxjs';
 
-@Component({
-  selector: 'app-change-primary-user',
-  templateUrl: './change-primary-user.component.html',
-})
-export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewInit {
+@Directive()
+export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public users: UserDetails[];
@@ -27,24 +22,25 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public currentUserUid: string;
+  public currentUserName: string;
   public workplaceUid: string;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private errorSummaryService: ErrorSummaryService,
-    private userService: UserService,
-    private establishmentService: EstablishmentService,
-    private breadcrumbService: BreadcrumbService,
-    private router: Router,
-    private route: ActivatedRoute,
+    protected formBuilder: FormBuilder,
+    protected errorSummaryService: ErrorSummaryService,
+    protected userService: UserService,
+    protected establishmentService: EstablishmentService,
+    protected router: Router,
+    protected route: ActivatedRoute,
     public alertService: AlertService,
   ) {
     this.currentUserUid = this.route.snapshot.data.user.uid;
+    this.currentUserName = this.route.snapshot.data.user.fullname;
     this.workplaceUid = this.route.parent.snapshot.data.establishment.uid;
   }
 
   ngOnInit(): void {
-    this.setBreadcrumbs();
+    this.setBackButtonOrBreadcrumbs();
 
     this.getUsersWhichCanBeMadePrimary();
 
@@ -84,7 +80,7 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplaceUid, selectedUser.uid, { ...selectedUser, ...props }).subscribe(
         (data) => {
-          this.router.navigate(['../'], { relativeTo: this.route });
+          this.navigateToNextPage();
           this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user` });
         },
         (error) => this.onError(error),
@@ -145,15 +141,19 @@ export class ChangePrimaryUserComponent implements OnInit, OnDestroy, AfterViewI
     ];
   }
 
-  private setBreadcrumbs(): void {
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
-  }
-
   public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[]): UserDetails[] {
     return filter(
       allUsers,
       (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== this.currentUserUid,
     );
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public cancelNavigation(): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setBackButtonOrBreadcrumbs(): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected navigateToNextPage(): void {}
 }

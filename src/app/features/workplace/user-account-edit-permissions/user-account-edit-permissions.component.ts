@@ -99,7 +99,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     const updatedPrimary = role === Roles.Read ? false : primary;
 
     if (this.user.isPrimary && !updatedPrimary) {
-      this.navigateToChangePrimaryUserPage();
+      this.navigateToSelectPrimaryUserPage();
       return;
     }
 
@@ -122,7 +122,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
             name = this.user.fullname;
           }
           if (name) {
-            this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user.` });
+            this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user` });
           }
         },
 
@@ -131,9 +131,9 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private navigateToChangePrimaryUserPage(): void {
-    const changePrimaryUserLink = this.router.url.replace('permissions', 'change-primary-user');
-    this.router.navigate([changePrimaryUserLink]);
+  private navigateToSelectPrimaryUserPage(): void {
+    const selectPrimaryUserLink = this.router.url.replace('permissions', 'select-primary-user');
+    this.router.navigate([selectPrimaryUserLink]);
   }
 
   private onError(error): void {

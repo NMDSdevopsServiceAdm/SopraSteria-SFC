@@ -14,7 +14,6 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { SharedModule } from '@shared/shared.module';
 
-import { ChangePrimaryUserComponent } from './change-primary-user/change-primary-user.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
@@ -27,6 +26,8 @@ import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
+import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
+import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
@@ -82,7 +83,8 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     SelectMainServiceCqcComponent,
     SelectMainServiceCqcConfirmComponent,
     DeleteUserAccountComponent,
-    ChangePrimaryUserComponent,
+    SelectPrimaryUserComponent,
+    SelectPrimaryUserDeleteComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
 })
