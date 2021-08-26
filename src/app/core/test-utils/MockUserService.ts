@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails } from '@core/model/userDetails.model';
+import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
 import { bool, build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot/build';
 import { Observable, of } from 'rxjs';
@@ -29,13 +29,16 @@ export const ReadUser = () => {
   });
 };
 
+const readUser = ReadUser();
+readUser.isPrimary = false;
+
 const primaryEditUser = EditUser();
 primaryEditUser.isPrimary = true;
 
 const nonPrimaryEditUser = EditUser();
 nonPrimaryEditUser.isPrimary = false;
 
-export { primaryEditUser, nonPrimaryEditUser };
+export { primaryEditUser, nonPrimaryEditUser, readUser };
 
 const workplaceBuilder = build('Workplace', {
   fields: {
@@ -94,6 +97,9 @@ const subsid2 = subsid2Builder();
 export class MockUserService extends UserService {
   private subsidiaries = 2;
   private isAdmin = false;
+  private isPrimary = false;
+  private isEdit = false;
+  private isActive = false;
   public userDetails$ = of({
     uid: 'mocked-uid',
     email: 'john@test.com',
@@ -102,23 +108,38 @@ export class MockUserService extends UserService {
     phone: '01234 345634',
   });
 
-  public static factory(subsidiaries = 0, isAdmin = false) {
+  public static factory(subsidiaries = 0, isAdmin = false, isPrimary = false, isEdit = false, isActive = true) {
     return (httpClient: HttpClient) => {
       const service = new MockUserService(httpClient);
       service.subsidiaries = subsidiaries;
       service.isAdmin = isAdmin;
+      service.isPrimary = isPrimary;
+      service.isEdit = isEdit;
+      service.isActive = isActive;
       return service;
     };
   }
 
   public get loggedInUser(): UserDetails {
+    let role;
+    if (this.isAdmin) {
+      role = Roles.Admin;
+    } else if (this.isEdit) {
+      role = Roles.Edit;
+    } else {
+      role = Roles.Read;
+    }
+
     return {
       uid: 'mocked-uid',
       email: '',
       fullname: '',
       jobTitle: '',
       phone: '',
-      role: this.isAdmin ? ('Admin' as Roles) : undefined,
+      role,
+      // role: this.isAdmin ? ('Admin' as Roles) : undefined,
+      isPrimary: this.isPrimary,
+      status: this.isActive ? UserStatus.Active : UserStatus.Pending,
     };
   }
 

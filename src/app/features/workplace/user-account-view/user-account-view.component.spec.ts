@@ -12,14 +12,30 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockUserService, nonPrimaryEditUser, primaryEditUser } from '@core/test-utils/MockUserService';
+import { MockUserService, nonPrimaryEditUser, primaryEditUser, readUser } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { UserAccountViewComponent } from './user-account-view.component';
 
-describe('UserAccountViewComponent', () => {
-  async function setup(isPrimary = true, uidLinkedToMockUsers = 'activeEditUsers') {
+fdescribe('UserAccountViewComponent', () => {
+  async function setup(
+    isPrimary = true,
+    uidLinkedToMockUsers = 'activeEditUsers',
+    isEdit = true,
+    logInPrimary = false,
+    logInEdit = false,
+  ) {
+    let userType;
+    if (isPrimary) {
+      userType = primaryEditUser;
+    } else if (isEdit) {
+      userType = nonPrimaryEditUser;
+    } else {
+      userType = readUser;
+    }
+
     const { fixture, getByText, getByTestId, queryByText } = await render(UserAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -33,7 +49,7 @@ describe('UserAccountViewComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(0, false),
+          useFactory: MockUserService.factory(0, false, logInPrimary, logInEdit),
           deps: [HttpClient],
         },
         {
@@ -49,7 +65,7 @@ describe('UserAccountViewComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                user: isPrimary ? primaryEditUser : nonPrimaryEditUser,
+                user: userType,
               },
             },
             parent: {
@@ -71,13 +87,19 @@ describe('UserAccountViewComponent', () => {
 
     const injector = getTestBed();
     const permissionsService = injector.inject(PermissionsService) as PermissionsService;
-
+    const userService = injector.inject(UserService) as UserService;
     const component = fixture.componentInstance;
+
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     return {
       component,
       fixture,
       permissionsService,
+      userService,
+      routerSpy,
       getByText,
       getByTestId,
       queryByText,
@@ -117,5 +139,120 @@ describe('UserAccountViewComponent', () => {
     fixture.detectChanges();
 
     expect(queryByText('Change')).toBeFalsy();
+  });
+
+  it('should not display Delete link when logged in user has read-only access and user has read-only access', async () => {
+    const userIsPrimary = false;
+    const userIsEdit = false;
+    const loggedInUserIsPrimary = false;
+    const loggedInUserIsEdit = false;
+    const { queryByText } = await setup(
+      userIsPrimary,
+      'activeEditUsers',
+      userIsEdit,
+      loggedInUserIsPrimary,
+      loggedInUserIsEdit,
+    );
+
+    expect(queryByText('Delete this user')).toBeFalsy();
+  });
+
+  it('should display Delete link when logged in user has edit access and user has read-only access', async () => {
+    const userIsPrimary = false;
+    const userIsEdit = false;
+    const loggedInUserIsPrimary = false;
+    const loggedInUserIsEdit = true;
+    const { queryByText, routerSpy } = await setup(
+      userIsPrimary,
+      'activeEditUsers',
+      userIsEdit,
+      loggedInUserIsPrimary,
+      loggedInUserIsEdit,
+    );
+
+    const deleteButton = queryByText('Delete this user');
+    fireEvent.click(deleteButton);
+
+    expect(deleteButton).toBeTruthy();
+    expect(routerSpy.calls.mostRecent().args[0]).toEqual(['delete-user']);
+  });
+
+  it('should not display delete link when logged in user has read only access and user has edit access', async () => {
+    const userIsPrimary = false;
+    const userIsEdit = true;
+    const loggedInUserIsPrimary = false;
+    const loggedInUserIsEdit = false;
+    const { queryByText } = await setup(
+      userIsPrimary,
+      'activeEditUsers',
+      userIsEdit,
+      loggedInUserIsPrimary,
+      loggedInUserIsEdit,
+    );
+
+    expect(queryByText('Delete this user')).toBeFalsy();
+  });
+
+  it('should not display a delete link when logged in user is an edit user, and goes onto their details page', async () => {
+    const userIsPrimary = false;
+    const userIsEdit = true;
+    const loggedInUserIsPrimary = false;
+    const loggedInUserIsEdit = true;
+    const { component, fixture, userService, queryByText } = await setup(
+      userIsPrimary,
+      'activeEditUsers',
+      userIsEdit,
+      loggedInUserIsPrimary,
+      loggedInUserIsEdit,
+    );
+
+    const editUser = component.user;
+
+    spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(queryByText('Delete this user')).toBeFalsy();
+  });
+
+  it('should display a delete link when logged in user is an edit user, and user is an edit user', async () => {
+    const userIsPrimary = false;
+    const userIsEdit = true;
+    const loggedInUserIsPrimary = false;
+    const loggedInUserIsEdit = true;
+    const { queryByText, routerSpy } = await setup(
+      userIsPrimary,
+      'activeEditUsers',
+      userIsEdit,
+      loggedInUserIsPrimary,
+      loggedInUserIsEdit,
+    );
+
+    const deleteButton = queryByText('Delete this user');
+    fireEvent.click(deleteButton);
+
+    expect(deleteButton).toBeTruthy();
+    expect(routerSpy.calls.mostRecent().args[0]).toEqual(['delete-user']);
+  });
+
+  it('should display a delete link when logged in user is an edit user, and user is an primary user', async () => {
+    const userIsPrimary = true;
+    const userIsEdit = true;
+    const loggedInUserIsPrimary = false;
+    const loggedInUserIsEdit = true;
+    const { queryByText, routerSpy } = await setup(
+      userIsPrimary,
+      'activeEditUsers',
+      userIsEdit,
+      loggedInUserIsPrimary,
+      loggedInUserIsEdit,
+    );
+
+    const deleteButton = queryByText('Delete this user');
+    fireEvent.click(deleteButton);
+
+    expect(deleteButton).toBeTruthy();
+    expect(routerSpy.calls.mostRecent().args[0]).toEqual(['change-primary-user-to-delete']);
   });
 });
