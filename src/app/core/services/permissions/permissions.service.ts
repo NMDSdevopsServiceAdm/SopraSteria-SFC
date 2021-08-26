@@ -34,7 +34,7 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    if (this.userService.loggedInUser && this.userService.loggedInUser.role !== Roles.Read) {
+    if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
       return true;
     }
 
