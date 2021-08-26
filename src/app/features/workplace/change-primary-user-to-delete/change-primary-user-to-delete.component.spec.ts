@@ -212,7 +212,7 @@ describe('ChangePrimaryUserToDeleteComponent', () => {
       fireEvent.click(saveAndContinueButton);
 
       expect(form.invalid).toBeTruthy();
-      expect(getAllByText(errorMessage).length).toBe(3);
+      expect(getAllByText(errorMessage).length).toBe(2);
     });
   });
 

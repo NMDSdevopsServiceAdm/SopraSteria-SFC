@@ -126,7 +126,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
   public deleteUserNavigation(event: Event): void {
     event.preventDefault();
-    const route = this.user.isPrimary ? 'change-primary-user-to-delete' : 'delete-user';
+    const route = this.user.isPrimary ? 'select-primary-user-delete' : 'delete-user';
     this.router.navigate([route], { relativeTo: this.route });
   }
 

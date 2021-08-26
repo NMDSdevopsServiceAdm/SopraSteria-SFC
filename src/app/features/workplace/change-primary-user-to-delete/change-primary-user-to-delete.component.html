@@ -18,7 +18,6 @@
           <span *ngIf="submitted && form.get('user').errors" id="user-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('user') }}
           </span>
-          <p>Select the new primary user</p>
           <div class="govuk-radios">
             <div class="govuk-radios__item" *ngFor="let user of users; let i = index">
               <input

@@ -132,7 +132,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   }
 
   private navigateToChangePrimaryUserPage(): void {
-    const changePrimaryUserLink = this.router.url.replace('permissions', 'change-primary-user');
+    const changePrimaryUserLink = this.router.url.replace('permissions', 'select-primary-user');
     this.router.navigate([changePrimaryUserLink]);
   }
 

@@ -274,6 +274,6 @@ describe('UserAccountViewComponent', () => {
     fireEvent.click(deleteButton);
 
     expect(deleteButton).toBeTruthy();
-    expect(routerSpy.calls.mostRecent().args[0]).toEqual(['change-primary-user-to-delete']);
+    expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
   });
 });

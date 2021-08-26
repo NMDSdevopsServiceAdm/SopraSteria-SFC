@@ -316,23 +316,23 @@ const routes: Routes = [
             },
           },
           {
-            path: 'change-primary-user',
+            path: 'select-primary-user',
             component: ChangePrimaryUserComponent,
             canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
               permissions: ['canEditUser'],
-              title: 'Change primary user',
+              title: 'Select primary user',
             },
           },
           {
-            path: 'change-primary-user-to-delete',
+            path: 'select-primary-user-delete',
             component: ChangePrimaryUserToDeleteComponent,
             canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
               permissions: ['canEditUser'],
-              title: 'Change primary user',
+              title: 'Select primary user to delete',
             },
           },
           {
