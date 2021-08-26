@@ -124,14 +124,19 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     ];
   }
 
+  public deleteUserNavigation(): void {
+    const route = this.user.isPrimary ? 'change-primary-user-to-delete' : 'delete-user';
+    console.log(route);
+    this.router.navigate([route], { relativeTo: this.route });
+  }
+
   private setPermissions(): void {
     const hasCanEditUserPermission = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
 
     this.canDeleteUser =
       this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&
-      this.allUsers.length > 1 &&
-      !this.user.isPrimary &&
+      this.moreThanOneActiveEditUser() &&
       this.loggedInUser.uid !== this.user.uid;
 
     this.canResendActivationLink = hasCanEditUserPermission && isPending;
