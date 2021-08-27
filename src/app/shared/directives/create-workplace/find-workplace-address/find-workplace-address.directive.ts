@@ -120,8 +120,6 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     );
   }
 
-  protected onSuccess(data: LocationSearchResponse): void {}
-
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
       this.setInvalidPostcode(this.getPostcode.value);
@@ -131,8 +129,6 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }
-
-  protected setInvalidPostcode(postcode: string): void {}
 
   public onSubmit(): void {
     this.submitted = true;
@@ -163,6 +159,14 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private setInvalidPostcode(postcode: string): void {
+    this.workplaceInterfaceService.invalidPostcodeEntered$.next(postcode);
+  }
+
+  private onSuccess(data: LocationSearchResponse): void {
+    this.workplaceInterfaceService.locationAddresses$.next(data.postcodedata);
   }
 
   ngOnDestroy(): void {

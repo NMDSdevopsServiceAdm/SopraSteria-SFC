@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
@@ -60,13 +59,5 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective
         ],
       },
     ];
-  }
-
-  protected setInvalidPostcode(postcode: string): void {
-    this.workplaceService.invalidPostcodeEntered$.next(postcode);
-  }
-
-  protected onSuccess(data: LocationSearchResponse): void {
-    this.workplaceService.locationAddresses$.next(data.postcodedata);
   }
 }
