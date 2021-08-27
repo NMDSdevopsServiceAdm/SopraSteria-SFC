@@ -36,10 +36,8 @@ export class MandatoryDetailsComponent extends QuestionComponent {
 
   navigateToDashboard(event: Event) {
     event.preventDefault();
-    const url =
-      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplace.uid];
+    const url = this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+
     this.router.navigate(url, { fragment: 'staff-records' });
   }
 }

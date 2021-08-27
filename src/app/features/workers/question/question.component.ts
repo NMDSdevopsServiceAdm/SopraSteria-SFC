@@ -91,7 +91,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected onSuccess() {}
 
   protected navigate(action): void {
-    console.log('Question Component navigate:', action);
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);

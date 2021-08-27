@@ -29,7 +29,7 @@ import { StaffDetailsComponent } from './staff-details.component';
 
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
-fdescribe('StaffDetailsComponent', () => {
+describe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),

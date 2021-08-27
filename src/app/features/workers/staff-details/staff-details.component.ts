@@ -47,7 +47,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.contractsAvailable = Object.values(Contracts);
-    this.worker ? (this.editFlow = true) : (this.editFlow = false);
+    this.editFlow = !!this.worker;
     this.subscriptions.add(
       this.jobService.getJobs().subscribe((jobs) => {
         if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
@@ -170,7 +170,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       if (currentUrl.endsWith('create-staff-record')) {
         this.alertService.addAlert({
           type: 'success',
-          message: 'Staff record saved.',
+          message: 'Staff record saved',
         });
       }
     });
