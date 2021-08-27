@@ -17,7 +17,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   @ViewChild('formEl') formEl: ElementRef;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
-  protected flow: string;
+  public flow: string;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;

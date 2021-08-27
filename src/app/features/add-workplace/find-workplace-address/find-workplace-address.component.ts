@@ -10,7 +10,8 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-find-workplace-address',
-  templateUrl: './find-workplace-address.component.html',
+  templateUrl:
+    '../../../shared/directives/create-workplace/find-workplace-address/find-workplace-address.component.html',
 })
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective {
   constructor(
