@@ -175,7 +175,10 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     }
   }
 
-  protected onSuccess(): void {}
+  protected onSuccess(): void {
+    this.workplaceInterfaceService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
+    this.navigateToNextPage();
+  }
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];

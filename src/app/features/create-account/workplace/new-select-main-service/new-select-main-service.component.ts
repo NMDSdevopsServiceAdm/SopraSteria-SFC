@@ -51,11 +51,6 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     );
   }
 
-  protected onSuccess(): void {
-    this.registrationService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
-    this.navigateToNextPage();
-  }
-
   protected navigateToNextPage(): void {
     const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-user-details';
     this.router.navigate([this.flow, url]);

@@ -68,11 +68,6 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     ];
   }
 
-  protected onSuccess(): void {
-    this.workplaceService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
-    this.navigateToNextPage();
-  }
-
   protected navigateToNextPage(): void {
     this.router.navigate([this.flow, 'confirm-workplace-details']);
   }
