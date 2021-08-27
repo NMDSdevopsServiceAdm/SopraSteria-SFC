@@ -14,7 +14,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
-  public isRegulated: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
@@ -40,10 +39,6 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
       false,
     );
     this.setBackLink();
-  }
-
-  protected getServiceCategories(): void {
-    this.subscriptions.add(this.getServicesByCategory(this.isRegulated));
   }
 
   protected setSelectedWorkplaceService(): void {

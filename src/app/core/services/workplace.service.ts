@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
-import { Service, ServiceGroup } from '@core/model/services.model';
+import { Service } from '@core/model/services.model';
 import { AddWorkplaceRequest, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -12,8 +12,8 @@ import { WorkplaceInterfaceService } from './workplace-interface.service';
   providedIn: 'root',
 })
 export class WorkplaceService extends WorkplaceInterfaceService {
-  constructor(private http: HttpClient) {
-    super();
+  constructor(protected http: HttpClient) {
+    super(http);
   }
 
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
@@ -24,10 +24,6 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       message: 'Data validation error.',
     },
   ];
-
-  public getServicesByCategory(isRegulated: boolean): Observable<Array<ServiceGroup>> {
-    return this.http.get<Array<ServiceGroup>>(`/api/services/byCategory?cqc=${isRegulated}`);
-  }
 
   public getAllMandatoryTrainings(establishmentId: number): Observable<any> {
     return this.http.get(`/api/establishment/${establishmentId}/mandatoryTraining/all`);

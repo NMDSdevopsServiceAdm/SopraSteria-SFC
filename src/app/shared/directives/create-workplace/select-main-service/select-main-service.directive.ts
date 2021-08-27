@@ -8,7 +8,7 @@ import { Service, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkplaceService } from '@core/services/workplace.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -28,13 +28,14 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public submitted = false;
   public returnToConfirmDetails: URLStructure;
   public isParent: boolean;
+  public isRegulated: boolean;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   ngOnInit(): void {
@@ -85,13 +86,15 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
 
   protected init(): void {}
 
-  protected getServiceCategories(): void {}
-
   protected setSelectedWorkplaceService(): void {}
+
+  protected getServiceCategories(): void {
+    this.subscriptions.add(this.getServicesByCategory(this.isRegulated));
+  }
 
   protected getServicesByCategory(isRegulated: boolean): void {
     this.subscriptions.add(
-      this.workplaceService.getServicesByCategory(isRegulated).subscribe(
+      this.workplaceInterfaceService.getServicesByCategory(isRegulated).subscribe(
         (categories: Array<ServiceGroup>) => {
           this.categories = categories;
           this.categories.forEach((data: ServiceGroup) => {
@@ -181,19 +184,19 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
 
   protected navigateToNextPage(): void {}
 
-  get displayIntro() {
+  get displayIntro(): boolean {
     return true;
   }
 
-  get callToActionLabel() {
+  get callToActionLabel(): string {
     return 'Continue';
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public serviceNotSelected(id: string): boolean {
+    return !(<HTMLInputElement>document.getElementById(id)).checked;
   }
 
-  serviceNotSelected(id: string): boolean {
-    return !(<HTMLInputElement>document.getElementById(id)).checked;
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
