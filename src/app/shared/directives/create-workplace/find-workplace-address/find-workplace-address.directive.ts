@@ -35,13 +35,19 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.setFlow();
+
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.setFlow();
     this.prefillForm();
+
     await this.getFeatureFlag();
     this.setBackLink();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   async getFeatureFlag(): Promise<void> {
@@ -50,10 +56,6 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
       'createAccountNewDesign',
       false,
     );
-  }
-
-  ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   get getPostcode(): AbstractControl {
@@ -110,7 +112,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     return null;
   }
 
-  protected getAddressesByPostCode(): void {
+  private getAddressesByPostCode(): void {
     this.subscriptions.add(
       this.locationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
         (data: LocationSearchResponse) => {
@@ -137,8 +139,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
-      const postcode = this.form.get('postcode').value;
-      this.workplaceInterfaceService.postcode$.next(postcode);
+      this.workplaceInterfaceService.postcode$.next(this.getPostcode.value);
       this.getAddressesByPostCode();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
