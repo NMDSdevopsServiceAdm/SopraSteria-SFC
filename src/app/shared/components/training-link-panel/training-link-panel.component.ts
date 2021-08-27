@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { saveAs } from 'file-saver';
 import * as moment from 'moment';
@@ -17,18 +18,24 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   @Input() workers: Worker[];
 
   public establishmentUid: string;
+  public canEditEstablishment: boolean;
   public url: string;
   public fromStaffRecord: boolean;
   public lastUpdated: string;
   public now = moment.now();
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private reportService: ReportService, private router: Router) {}
+  constructor(
+    private reportService: ReportService,
+    private router: Router,
+    private permissionsService: PermissionsService,
+  ) {}
 
   ngOnInit() {
     this.url = this.router.url;
 
     this.establishmentUid = this.workplace.uid;
+    this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -38,7 +45,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   public lastUpdatedCheck(): void {
-    if(this.workers) {
+    if (this.workers) {
       this.workers.forEach((worker: Worker) => {
         if (worker.trainingCount > 0) {
           if (this.lastUpdated === undefined || new Date(this.lastUpdated) < new Date(worker.trainingLastUpdated)) {
