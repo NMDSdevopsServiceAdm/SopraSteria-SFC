@@ -8,15 +8,13 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()" id="server-error">
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()" id="server-error" #formEl>
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Find the workplace address</h1>
+          <h1 class="govuk-fieldset__heading">Find {{ flow === 'registration' ? 'your' : 'the' }} workplace address</h1>
         </legend>
 
-        <p *ngIf="createAccountNewDesign">
-          <span>We'll use the workplace postcode to find the address.</span>
-        </p>
+        <p>We'll use {{ flow === 'registration' ? 'your' : 'the' }} workplace postcode to find the address.</p>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <label class="govuk-label" for="postcode"> Postcode </label>
