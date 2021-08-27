@@ -6,14 +6,16 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { FindWorkplaceAddress } from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address';
+import {
+  FindWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-find-workplace-address',
   templateUrl: './find-workplace-address.component.html',
 })
-export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
+export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective {
   constructor(
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
