@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -25,13 +25,14 @@ describe('TrainingLinkPanelComponent', () => {
           useClass: MockWorkerService,
         },
         {
-          provide: PermissionsService,
-          useClass: MockPermissionsService,
-        },
-        {
           provide: UserService,
           useFactory: MockUserService.factory(0, true),
           deps: [HttpClient],
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(['canEditEstablishment']),
+          deps: [HttpClient, Router, UserService],
         },
       ],
       componentProperties: {
@@ -45,7 +46,9 @@ describe('TrainingLinkPanelComponent', () => {
       },
     });
 
-    return { component };
+    const fixture = component.fixture;
+    const componentInstance = fixture.componentInstance;
+    return { component, fixture, componentInstance };
   }
 
   it('should render a TrainingLinkPanelComponent', async () => {
@@ -60,5 +63,20 @@ describe('TrainingLinkPanelComponent', () => {
 
     component.fixture.detectChanges();
     component.getByText('Updated 1 January 2020');
+  });
+
+  it('should show the Manage mandatory training link when canEditEstablishment in permissions service is true', async () => {
+    const { component } = await setup();
+
+    expect(component.getByText('Manage mandatory training')).toBeTruthy();
+  });
+
+  it('should not show the Manage mandatory training link when user does not have edit access', async () => {
+    const { component, fixture, componentInstance } = await setup();
+
+    componentInstance.canEditEstablishment = false;
+    fixture.detectChanges();
+
+    expect(component.queryByText('Manage mandatory training')).toBeFalsy();
   });
 });

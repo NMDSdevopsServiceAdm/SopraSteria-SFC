@@ -3,13 +3,14 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
@@ -26,8 +27,8 @@ describe('SelectWorkplaceComponent', () => {
       ],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -92,29 +93,79 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   it('should display none selected error message(twice) when no radio box selected on clicking Continue', async () => {
-    const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-    const errorMessage = `Select the workplace if it's displayed`;
-    const form = component.form;
-    const continueButton = getByText('Continue');
+    const { component, getAllByText, queryByText, getByText } = await setup();
 
+    component.workplaceService.selectedLocationAddress$ = new BehaviorSubject(null);
+    component.ngOnInit();
+
+    const errorMessage = `Select the workplace if it's displayed`;
     expect(queryByText(errorMessage, { exact: false })).toBeNull();
 
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
-    fixture.detectChanges();
+
+    const form = component.form;
     expect(form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
   });
 
+  describe('prefillForm()', () => {
+    it('should prefill the form with selected workplace if it exists', async () => {
+      const { component, fixture } = await setup();
+
+      component.workplaceService.selectedLocationAddress$.value.locationId = '123';
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.workplace).toBe('123');
+    });
+
+    it('should not prefill the form with selected workplace if it does not exists', async () => {
+      const { component } = await setup();
+
+      component.workplaceService.selectedLocationAddress$ = new BehaviorSubject(null);
+      component.createAccountNewDesign = true;
+      component.ngOnInit();
+
+      const form = component.form;
+      expect(form.valid).toBeFalsy();
+      expect(form.value.workplace).toBe(null);
+    });
+  });
+
   describe('Navigation', () => {
-    it('should navigate to the select-main-service url in add-workplace flow when workplace selected', async () => {
-      const { getByText, fixture, spy } = await setup();
+    it('should navigate to the new-select-main-service url in add-workplace flow when workplace selected', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.createAccountNewDesign = true;
+      fixture.detectChanges();
+
       const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'new-select-main-service']);
+    });
+
+    it('should navigate to the confirm-workplace-details page when returnToConfirmDetails is not null', async () => {
+      const { component, getByText, fixture, spy } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+      component.setNextRoute();
+      fixture.detectChanges();
+
+      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      fireEvent.click(yesRadioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
     });
 
     it('should navigate back to the find-workplace url in add-workplace flow when Change clicked', async () => {

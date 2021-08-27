@@ -10,7 +10,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class StartComponent implements OnInit {
   createAccountNewDesign: boolean;
   constructor(
-    private backService: BackService,
+    public backService: BackService,
     private workplaceService: WorkplaceService,
     private featureFlagsService: FeatureFlagsService,
   ) {}
@@ -20,6 +20,7 @@ export class StartComponent implements OnInit {
       'createAccountNewDesign',
       false,
     );
+    this.workplaceService.resetService();
     this.workplaceService.addWorkplaceInProgress$.next(true);
     this.setStartLink();
     this.setBackLink();
@@ -31,7 +32,7 @@ export class StartComponent implements OnInit {
       : ['/add-workplace', 'regulated-by-cqc'];
   }
 
-  private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/workplace/view-all-workplaces'] });
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: ['/workplace', 'view-all-workplaces'] });
   }
 }

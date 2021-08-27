@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -14,13 +15,30 @@ export const EditUser = build('EditUser', {
     jobTitle: fake((f) => f.lorem.sentence()),
     phone: '01222222222',
     role: Roles.Edit,
+    status: 'Active',
+    isPrimary: null,
+    uid: fake((f) => f.name.firstName()),
   },
 });
 
-const readUser = EditUser();
-readUser.role = Roles.Read;
+export const ReadUser = () => {
+  return EditUser({
+    overrides: {
+      role: Roles.Read,
+    },
+  });
+};
 
-const editUser = EditUser();
+const readUser = ReadUser();
+readUser.isPrimary = false;
+
+const primaryEditUser = EditUser();
+primaryEditUser.isPrimary = true;
+
+const nonPrimaryEditUser = EditUser();
+nonPrimaryEditUser.isPrimary = false;
+
+export { primaryEditUser, nonPrimaryEditUser, readUser };
 
 const workplaceBuilder = build('Workplace', {
   fields: {
@@ -75,11 +93,17 @@ const subsid2Builder = () =>
 
 const subsid2 = subsid2Builder();
 
+@Injectable()
 export class MockUserService extends UserService {
   private subsidiaries = 2;
   private isAdmin = false;
-
-  private;
+  public userDetails$ = of({
+    uid: 'mocked-uid',
+    email: 'john@test.com',
+    fullname: 'John Doe',
+    jobTitle: 'Software Engineer',
+    phone: '01234 345634',
+  });
 
   public static factory(subsidiaries = 0, isAdmin = false) {
     return (httpClient: HttpClient) => {
@@ -101,6 +125,10 @@ export class MockUserService extends UserService {
     };
   }
 
+  public get loggedInUser$(): Observable<UserDetails> {
+    return of(this.loggedInUser);
+  }
+
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     return of({
       primary: primary,
@@ -112,9 +140,33 @@ export class MockUserService extends UserService {
   }
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     if (workplaceUid === 'overLimit') {
-      return of([readUser, readUser, readUser, editUser, editUser, editUser] as UserDetails[]);
+      return of([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[]);
+    }
+    if (workplaceUid === 'activeEditUsers') {
+      return of([EditUser(), EditUser()] as UserDetails[]);
+    }
+    if (workplaceUid === 'twoEditTwoReadOnlyUsers') {
+      return of([EditUser(), EditUser(), ReadUser(), ReadUser()] as UserDetails[]);
     }
 
-    return of([editUser] as UserDetails[]);
+    return of([EditUser()] as UserDetails[]);
   }
+
+  public updateState(userDetails: UserDetails) {
+    return userDetails;
+  }
+
+  public updateUserDetails(): Observable<any> {
+    return of({});
+  }
+}
+
+export class MockUserServiceWithNoUserDetails extends MockUserService {
+  public userDetails$ = of({
+    uid: '',
+    email: '',
+    fullname: '',
+    jobTitle: '',
+    phone: '',
+  });
 }

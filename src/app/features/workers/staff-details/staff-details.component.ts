@@ -3,13 +3,13 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
-import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-staff-details',
@@ -22,7 +22,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public submitTitle = 'Save staff record';
   public canExit = false;
   public canReturn = false;
-
+  public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
@@ -31,9 +31,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService,
+    public workerService: WorkerService,
     protected alertService: AlertService,
-    private jobService: JobService
+    private jobService: JobService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -47,19 +47,19 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.contractsAvailable = Object.values(Contracts);
-
+    this.editFlow = !!this.worker;
     this.subscriptions.add(
-      this.jobService.getJobs().subscribe(jobs => {
+      this.jobService.getJobs().subscribe((jobs) => {
         if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
           this.worker.otherJobs.jobs.map((otherjob) => {
-            jobs = jobs.filter(j => j.id !== otherjob.jobId);
+            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
           });
         }
         this.jobsAvailable = jobs;
         if (this.worker) {
           this.renderInEditMode();
         }
-      })
+      }),
     );
 
     this.previous =
@@ -79,7 +79,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.selectedJobRole(this.worker.mainJob.jobId);
 
     if (this.workerService.returnTo === null) {
-      const mandatoryDetailsURL = {url: this.getRoutePath('mandatory-details')};
+      const mandatoryDetailsURL = { url: this.getRoutePath('mandatory-details') };
       this.workerService.setReturnTo(mandatoryDetailsURL);
       this.return = mandatoryDetailsURL;
     }
@@ -148,13 +148,12 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         this.worker.nurseSpecialism.specialism = null;
       }
     }
-
     return props;
   }
 
   selectedJobRole(id: number) {
     this.showInputTextforOtherRole = false;
-    const otherJob = this.jobsAvailable.find(job => job.id === +id);
+    const otherJob = this.jobsAvailable.find((job) => job.id === +id);
     if (otherJob && otherJob.other) {
       this.showInputTextforOtherRole = true;
     }
@@ -162,18 +161,23 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   protected navigate(action): void {
     const currentUrl = this.router.url;
+
+    if (!this.next) {
+      this.next = this.getRoutePath('');
+    }
+
     this.router.navigate(this.next).then(() => {
       if (currentUrl.endsWith('create-staff-record')) {
         this.alertService.addAlert({
           type: 'success',
-          message: 'Staff record saved.'
+          message: 'Staff record saved',
         });
       }
     });
   }
 
   onSuccess() {
-    this.next = this.getRoutePath('mandatory-details');
+    const path = this.editFlow ? '' : 'mandatory-details';
+    this.next = this.getRoutePath(path);
   }
-
 }

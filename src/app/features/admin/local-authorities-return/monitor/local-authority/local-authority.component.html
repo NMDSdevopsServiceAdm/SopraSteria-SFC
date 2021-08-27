@@ -1,0 +1,45 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <fieldset class="govuk-fieldset" role="group">
+    <div class="govuk-grid-column">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">Local authority: {{ localAuthority.name }}</h1>
+      </legend>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-form-group">
+        <div class="govuk-grid-column-one-half-from-desktop">
+          <label for="workers" class="govuk-label">Number of workers</label>
+          <input
+            type="text"
+            class="govuk-input govuk-input--width-5"
+            name="workers"
+            id="workers"
+            [formControlName]="'workers'"
+          />
+        </div>
+      </div>
+      <div class="govuk-form-group govuk">
+        <div class="govuk-grid-column-one-half-from-desktop">
+          <label for="status" class="govuk-label">Status</label>
+          <select name="status" id="status" class="govuk-select" [formControlName]="'status'">
+            <option value="" selected disabled>Select status</option>
+            <option value="Not updated">Not updated</option>
+            <option value="Update, not complete">Update, not complete</option>
+            <option value="Update, complete">Update, complete</option>
+            <option value="Confirmed, not complete">Confirmed, not complete</option>
+            <option value="Confirmed, complete">Confirmed, complete</option>
+          </select>
+        </div>
+      </div>
+      <div class="govuk-form-group">
+        <div class="govuk-grid-column-two-thirds-from-desktop">
+          <label for="notes" class="govuk-label">Notes</label>
+          <textarea class="govuk-textarea" name="notes" id="notes" rows="4" [formControlName]="'notes'"></textarea>
+        </div>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <button type="submit" class="govuk-button">Save and return</button>
+      </div>
+    </div>
+  </fieldset>
+</form>

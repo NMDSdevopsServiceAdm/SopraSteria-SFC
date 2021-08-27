@@ -7,6 +7,7 @@ import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     protected locationService: LocationService,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -37,6 +39,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.init();
+    this.prefillForm();
     await this.getFeatureFlag();
     this.setBackLink();
   }
@@ -89,6 +92,15 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
+  protected prefillForm(): void {
+    const postcode = this.workplaceInterfaceService.postcode$.value;
+    if (postcode) {
+      this.form.setValue({
+        postcode: postcode,
+      });
+    }
+  }
+
   protected validPostcode(control: FormControl): { [s: string]: boolean } {
     if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
       return { invalidPostcode: true };
@@ -112,6 +124,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
 
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
+      this.setInvalidPostcode(this.getPostcode.value);
       this.router.navigate([this.flow, 'workplace-address-not-found']);
       return;
     }
@@ -119,10 +132,15 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.scrollToErrorSummary();
   }
 
+  protected setInvalidPostcode(postcode: string): void {}
+
   public onSubmit(): void {
     this.submitted = true;
+
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
+      const postcode = this.form.get('postcode').value;
+      this.workplaceInterfaceService.postcode$.next(postcode);
       this.getAddressesByPostCode();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -130,9 +148,16 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setBackLink(): void {
-    let url;
-    this.createAccountNewDesign ? (url = 'workplace-name') : (url = 'select-workplace-address');
-    this.backService.setBackLink({ url: [this.flow, url] });
+    const returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
+
+    let backLink: string;
+    if (this.createAccountNewDesign) {
+      backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'new-regulated-by-cqc';
+    } else {
+      backLink = 'select-workplace-address';
+    }
+    this.backService.setBackLink({ url: [this.flow, backLink] });
+    this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
 
   public getFirstErrorMessage(item: string): string {

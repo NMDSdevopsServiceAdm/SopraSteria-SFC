@@ -95,7 +95,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
           },
           {
             name: 'maxlength',
-            message: `Security question must be ${this.securityDetailsMaxLength} characters or fewer.`,
+            message: `Security question must be ${this.securityDetailsMaxLength} characters or fewer`,
           },
         ],
       },
@@ -108,7 +108,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
           },
           {
             name: 'maxlength',
-            message: `Answer must be ${this.securityDetailsMaxLength} characters or fewer.`,
+            message: `Answer must be ${this.securityDetailsMaxLength} characters or fewer`,
           },
         ],
       },

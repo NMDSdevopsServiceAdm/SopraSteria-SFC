@@ -4,8 +4,10 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { RegistrationModule } from '@features/registration/registration.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -20,6 +22,10 @@ describe('SecurityQuestionComponent', () => {
         {
           provide: LocationService,
           useClass: MockLocationService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
         },
         {
           provide: ActivatedRoute,
@@ -122,5 +128,51 @@ describe('SecurityQuestionComponent', () => {
 
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText('Answer must be 255 characters or fewer', { exact: false }).length).toBe(2);
+  });
+
+  it('should navigate to confirm-details if form is valid', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+
+    form.controls['securityQuestion'].markAsDirty();
+    form.controls['securityQuestion'].setValue('question');
+
+    form.controls['securityQuestionAnswer'].markAsDirty();
+    form.controls['securityQuestionAnswer'].setValue('answer');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the back link to username-password if feature flag is on and return url is null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'username-password'],
+      });
+    });
+
+    it('should set the back link to confirm-details if the feature flag is on and return url is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
+      });
+    });
   });
 });

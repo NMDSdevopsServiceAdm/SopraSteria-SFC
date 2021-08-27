@@ -1,0 +1,71 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">Monitor returns</h2>
+  </div>
+  <div class="govuk-grid-column-one-third govuk-util__align-right">
+    <p>
+      <a role="button" draggable="false" href="openAll" (click)="toggleAll($event)">
+        <ng-container *ngIf="!allOpen; else close">Open</ng-container>
+        <ng-template #close>Close</ng-template>
+        all
+      </a>
+    </p>
+  </div>
+</div>
+<div class="govuk-accordion" data-module="govuk-accordion">
+  <div
+    class="govuk-accordion__section"
+    *ngFor="let area of areas; let i = index"
+    [class]="{ 'govuk-accordion__section--expanded': area.open }"
+    [attr.data-testid]="'accordian-' + i"
+  >
+    <div class="govuk-accordion__section-header" (click)="area.open = !area.open">
+      <h2 class="govuk-accordion__section-heading">
+        <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + i">
+          {{ area.letter }} - {{ area.name }}
+        </span>
+      </h2>
+      <span class="govuk-accordion__icon" aria-hidden="true"></span>
+    </div>
+    <div
+      id="accordion-default-content-1"
+      [id]="'accordion-default-content-' + i"
+      class="govuk-accordion__section-content"
+      [aria-labelledby]="'accordion-default-heading-' + i"
+      [attr.data-testid]="'accordian-drop-' + i"
+    >
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-!-width-one-half">Local authority</th>
+            <th scope="col" class="govuk-table__header">Workers</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+            <th scope="col" class="govuk-table__header">Notes</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let localAuthority of localAuthorities[area.letter]">
+            <td class="govuk-table__cell">
+              <a [routerLink]="[localAuthority.localAuthorityUID]">{{ localAuthority.name }}</a>
+            </td>
+            <td class="govuk-table__cell">
+              {{ localAuthority.workers === 0 ? 'None added' : localAuthority.workers }}
+            </td>
+            <td class="govuk-table__cell">
+              <strong
+                class="govuk-tag"
+                [ngClass]="conditionalClass(localAuthority.status)"
+                [attr.data-testid]="'status-' + localAuthority.name"
+              >
+                {{ localAuthority.status | uppercase }}
+              </strong>
+            </td>
+            <td class="govuk-table__cell">{{ localAuthority.notes ? 'Yes' : 'No' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<button class="govuk-button govuk-button--warning" (click)="resetLAs()">Reset returns data</button>
