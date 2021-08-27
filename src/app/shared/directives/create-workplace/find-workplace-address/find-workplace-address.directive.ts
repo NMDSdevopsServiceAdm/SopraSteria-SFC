@@ -64,8 +64,6 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setFlow(): void {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setupFormErrorsMap(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
@@ -79,7 +77,29 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     });
   }
 
-  protected setupServerErrorsMap(): void {
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: `Enter ${this.flow === 'registration' ? 'your' : 'the'} workplace postcode`,
+          },
+          {
+            name: 'maxlength',
+            message: 'Postcode must be 8 characters or fewer',
+          },
+          {
+            name: 'invalidPostcode',
+            message: 'Enter a valid workplace postcode',
+          },
+        ],
+      },
+    ];
+  }
+
+  private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 400,
@@ -96,7 +116,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     ];
   }
 
-  protected prefillForm(): void {
+  private prefillForm(): void {
     const postcode = this.workplaceInterfaceService.postcode$.value;
     if (postcode) {
       this.form.setValue({
@@ -105,7 +125,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     }
   }
 
-  protected validPostcode(control: FormControl): { [s: string]: boolean } {
+  private validPostcode(control: FormControl): { [s: string]: boolean } {
     if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
       return { invalidPostcode: true };
     }

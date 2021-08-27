@@ -37,26 +37,4 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective
   protected setFlow(): void {
     this.flow = 'registration';
   }
-
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'postcode',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter your workplace postcode',
-          },
-          {
-            name: 'maxlength',
-            message: 'Postcode must be 8 characters or fewer',
-          },
-          {
-            name: 'invalidPostcode',
-            message: 'Enter a valid workplace postcode',
-          },
-        ],
-      },
-    ];
-  }
 }
