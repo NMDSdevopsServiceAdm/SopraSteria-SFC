@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -38,7 +38,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.init();
+    this.setFlow();
     this.prefillForm();
     await this.getFeatureFlag();
     this.setBackLink();
@@ -52,15 +52,17 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     );
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  get getPostcode() {
+  get getPostcode(): AbstractControl {
     return this.form.get('postcode');
   }
 
-  protected init(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setFlow(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setupFormErrorsMap(): void {}
 
   private setupForm(): void {

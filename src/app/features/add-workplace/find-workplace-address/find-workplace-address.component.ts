@@ -5,9 +5,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  FindWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address.directive';
+import { FindWorkplaceAddressDirective } from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -35,7 +33,7 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective
     );
   }
 
-  protected init(): void {
+  protected setFlow(): void {
     this.flow = 'add-workplace';
   }
 
