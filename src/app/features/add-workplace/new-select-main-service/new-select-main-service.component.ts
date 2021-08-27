@@ -16,7 +16,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
-  public isParent: boolean;
   public workplace: Establishment;
   public createAccountNewDesign: boolean;
 
@@ -37,7 +36,8 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     this.flow = 'add-workplace';
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.workplace?.isParent ? (this.isParent = true) : (this.isParent = false);
+    this.isParent = this.workplace?.isParent;
+    this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.setBackLink();
     this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
       'createAccountNewDesign',
@@ -59,17 +59,35 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     );
   }
 
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplaceService',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the main service it provides',
+          },
+        ],
+      },
+    ];
+  }
+
   protected onSuccess(): void {
     this.workplaceService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
     this.navigateToNextPage();
   }
 
   protected navigateToNextPage(): void {
-    const url = this.isParent ? 'confirm-workplace-details' : 'add-user-details';
-    this.router.navigate([this.flow, url]);
+    this.router.navigate([this.flow, 'confirm-workplace-details']);
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      return;
+    }
+
     const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
     this.backService.setBackLink({ url: [this.flow, route] });
   }
@@ -88,12 +106,8 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
 
   private getNonCQCRegulatedBackLink(): string {
     if (this.workplaceService.manuallyEnteredWorkplace$.value) {
-      if (this.workplaceService.locationAddresses$.value.length > 0) {
-        return 'workplace-name-address';
-      }
-      return 'workplace-address-not-found';
+      return 'workplace-name-address';
     }
-
     if (this.workplaceService.manuallyEnteredWorkplaceName$.value) {
       return 'workplace-name';
     }

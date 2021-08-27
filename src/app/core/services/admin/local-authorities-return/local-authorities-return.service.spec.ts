@@ -47,4 +47,23 @@ describe('LocalAuthoriesReturnService', () => {
     expect(req.request.body.laReturnStartDate).toEqual(laReturnStartDate);
     expect(req.request.body.laReturnEndDate).toEqual(laReturnEndDate);
   });
+
+  it('should get a list of all of the local authorities', () => {
+    service.getLAs().subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/local-authority-return/monitor');
+
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should reset las', () => {
+    service.resetLAs().subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/local-authority-return/monitor/reset');
+
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({});
+  });
 });

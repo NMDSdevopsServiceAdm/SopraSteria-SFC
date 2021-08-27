@@ -8,7 +8,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
-import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -17,7 +16,7 @@ import { BehaviorSubject } from 'rxjs';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
 describe('IsThisYourWorkplaceComponent', () => {
-  async function setup(searchMethod = 'locationID') {
+  async function setup(searchMethod = 'locationID', locationId = '1-2123313123') {
     const primaryWorkplace = { isParent: true };
     const component = await render(IsThisYourWorkplaceComponent, {
       imports: [
@@ -32,7 +31,6 @@ describe('IsThisYourWorkplaceComponent', () => {
         BackService,
         {
           provide: WorkplaceService,
-          useClass: MockWorkplaceService,
           useValue: {
             locationAddresses$: {
               value: [
@@ -49,8 +47,16 @@ describe('IsThisYourWorkplaceComponent', () => {
             searchMethod$: {
               value: searchMethod,
             },
-            selectedLocationAddress$: new BehaviorSubject(null),
+            selectedLocationAddress$: {
+              value: {
+                locationId: locationId,
+              },
+              next: () => {
+                return true;
+              },
+            },
             manuallyEnteredWorkplace$: new BehaviorSubject(null),
+            returnTo$: new BehaviorSubject(null),
           },
         },
         {
@@ -106,6 +112,14 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(registrationHeading).toBeFalsy();
   });
 
+  it('should render the correct reveal title when in the parent journey', async () => {
+    const { component } = await setup();
+
+    const revealTitle = 'Spotted a mistake in the workplace details?';
+
+    expect(component.queryByText(revealTitle)).toBeTruthy();
+  });
+
   it('should show the id and address when given the locationId', async () => {
     const { component } = await setup();
 
@@ -144,6 +158,18 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(postalCode.length).toBe(2);
   });
 
+  it('should preselect the "Yes" radio button if selectedLocationAddress is the same as location data', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplaceService.selectedLocationAddress$.value.locationId = '123';
+    component.fixture.componentInstance.locationData.locationId = '123';
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    expect(form.valid).toBeTruthy();
+    expect(form.value.yourWorkplace).toBe('yes');
+  });
+
   it('should navigate to the select-main-serice url when selecting yes', async () => {
     const { component, spy } = await setup();
 
@@ -154,6 +180,22 @@ describe('IsThisYourWorkplaceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
+  });
+
+  it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null', async () => {
+    const { component, spy } = await setup();
+
+    component.fixture.componentInstance.returnToConfirmDetails = {
+      url: ['add-workplace', 'confirm-workplace-details'],
+    };
+
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
   });
 
   it('should navigate back to find-workplace url when selecting no', async () => {
@@ -169,7 +211,7 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should display an error when continue is clicked without selecting anything', async () => {
-    const { component } = await setup();
+    const { component } = await setup('locationID', null);
 
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');

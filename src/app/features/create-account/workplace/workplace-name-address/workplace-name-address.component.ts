@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -16,12 +15,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
-  public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
   public createAccountNewDesign: boolean;
 
   constructor(
-    private registrationService: RegistrationService,
+    public registrationService: RegistrationService,
     private featureFlagsService: FeatureFlagsService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -36,11 +34,13 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
+    this.manuallyEnteredWorkplace = this.registrationService.manuallyEnteredWorkplace$.value;
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
     await this.setFeatureFlag();
-    this.setupSubscription();
+    this.setupPreFillForm();
     this.setBackLink();
   }
 
@@ -51,27 +51,42 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     );
   }
 
-  protected setupSubscription(): void {
-    this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
-        if (selectedLocation) {
-          this.preFillForm(selectedLocation);
-        }
-      }),
-    );
+  public setupPreFillForm(): void {
+    const selectedLocation = this.registrationService.selectedLocationAddress$.value;
+    if (this.createAccountNewDesign) {
+      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
+        this.preFillForm(selectedLocation);
+      }
+    }
+    if (!this.createAccountNewDesign && selectedLocation) {
+      this.preFillForm(selectedLocation);
+    }
   }
 
   protected setSelectedLocationAddress(): void {
     this.registrationService.selectedLocationAddress$.next(this.getLocationAddress());
     this.registrationService.manuallyEnteredWorkplace$.next(true);
-    const url = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+    const url = this.getNextRoute();
     this.router.navigate([this.flow, url]);
   }
 
   public setBackLink(): void {
-    if (this.returnToWorkplaceNotFound && this.createAccountNewDesign) {
-      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
       return;
+    }
+
+    if (this.createAccountNewDesign) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        this.registrationService.workplaceNotFound$.next(false);
+        return;
+      }
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        this.registrationService.workplaceNotFound$.next(false);
+        return;
+      }
     }
 
     if (this.isCqcRegulated) {
@@ -80,5 +95,20 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     }
 
     this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  protected getNextRoute(): string {
+    if (this.createAccountNewDesign) {
+      return this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    }
+    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+  }
+
+  private isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  private isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.registrationService.workplaceNotFound$.value && !this.isCqcRegulated;
   }
 }

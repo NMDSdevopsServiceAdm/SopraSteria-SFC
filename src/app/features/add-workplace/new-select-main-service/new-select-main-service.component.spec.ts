@@ -86,7 +86,6 @@ describe('NewSelectMainServiceComponent', () => {
     const { component, fixture, getByText } = await setup();
 
     component.isRegulated = true;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -100,7 +99,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = false;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -115,7 +113,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = true;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = queryByText(
@@ -125,40 +122,37 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeNull();
   });
 
-  it("should see 'Select its main service' when is a parent", async () => {
+  it('should see "Select its main service"', async () => {
     const { component, fixture, queryByText } = await setup();
 
     component.isParent = true;
     component.isRegulated = false;
-    component.renderForm = true;
     fixture.detectChanges();
 
     expect(queryByText('Select its main service')).toBeTruthy();
   });
 
-  it('should error when nothing has been selected', async () => {
+  it('should show add-workplace error message when nothing has been selected', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
-    component.renderForm = true;
     const form = component.form;
 
     fixture.detectChanges();
 
-    const errorMessage = 'Select your main service';
+    const errorMessage = 'Select the main service it provides';
 
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(form.invalid).toBeTruthy();
-    expect(getAllByText(errorMessage).length).toBe(3);
+    expect(getAllByText(errorMessage).length).toBe(2);
   });
 
-  it('should submit and go to the add-workplace/add-user-details url when option selected and is a parent', async () => {
+  it('should submit and go to the add-workplace/confirm-workplace-details url when option selected', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
     component.isParent = true;
     component.isRegulated = true;
-    component.renderForm = true;
     fixture.detectChanges();
 
     const radioButton = getByLabelText('Name');
@@ -242,38 +236,12 @@ describe('NewSelectMainServiceComponent', () => {
       });
     });
 
-    it('should set back link to workplace-address-not-found when is not regulated, address entered manually and no addresses stored in workplace service', async () => {
+    it('should set back link to workplace-name-address when is not regulated and address entered manually', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
       component.workplaceService.manuallyEnteredWorkplace$.next(true);
-      component.workplaceService.locationAddresses$.next([]);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'workplace-address-not-found'],
-      });
-    });
-
-    it('should set back link to workplace-name-address when is not regulated, address entered manually but there are addresses stored in workplace service', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = false;
-      component.workplaceService.manuallyEnteredWorkplace$.next(true);
-      component.workplaceService.locationAddresses$.next([
-        {
-          postalCode: 'ABC 123',
-          addressLine1: '1 Street',
-          county: 'Greater Manchester',
-          locationName: 'Name',
-          townCity: 'Manchester',
-          locationId: '123',
-        },
-      ]);
 
       component.setBackLink();
       fixture.detectChanges();
@@ -312,6 +280,20 @@ describe('NewSelectMainServiceComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['add-workplace', 'workplace-name'],
+      });
+    });
+
+    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null and feature flag is on', async () => {
+      const { component } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['add-workplace', 'confirm-workplace-details'],
       });
     });
   });

@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { UserService } from '@core/services/user.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockUserServiceWithNoUserDetails } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -25,7 +25,7 @@ describe('YourDetailsComponent', () => {
         },
         {
           provide: UserService,
-          useClass: MockUserService,
+          useClass: MockUserServiceWithNoUserDetails,
         },
       ],
     });
@@ -256,7 +256,7 @@ describe('YourDetailsComponent', () => {
     expect(updateState).toHaveBeenCalledWith(formInputs);
   });
 
-  it('should submit and go to create-username-password url when the form is valid', async () => {
+  it('should submit and go to username-password url when the form is valid', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
@@ -272,8 +272,27 @@ describe('YourDetailsComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'username-password']);
   });
 
+  it('should submit and go to confirm-details url when the form is valid and return URL is not null', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    component.fixture.componentInstance.createAccountNewDesign = true;
+    component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+
+    form.controls['fullname'].setValue('name');
+    form.controls['jobTitle'].setValue('job');
+    form.controls['email'].setValue('name@email.com');
+    form.controls['phone'].setValue('01234567890');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
   describe('setBackLink()', () => {
-    it('should set the correct back link', async () => {
+    it('should set the back link to new-select-main-service if the feature flag is on and return url is null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -282,6 +301,19 @@ describe('YourDetailsComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'new-select-main-service'],
+      });
+    });
+
+    it('should set the back link to new-select-main-service if the feature flag is on and return url is not null', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
       });
     });
   });

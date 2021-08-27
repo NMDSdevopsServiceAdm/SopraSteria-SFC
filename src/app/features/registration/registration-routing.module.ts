@@ -15,6 +15,9 @@ import {
   ConfirmWorkplaceDetailsComponent,
 } from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
 import {
+  CouldNotFindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
+import {
   FindWorkplaceAddressComponent,
 } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
@@ -24,6 +27,7 @@ import {
 import {
   SelectWorkplaceAddressComponent,
 } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
 import {
   WorkplaceNameAddressComponent,
@@ -32,7 +36,6 @@ import { ChangeYourDetailsComponent } from '@features/registration/change-your-d
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
-import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import {
@@ -96,6 +99,12 @@ const routes: Routes = [
     component: NewWorkplaceNotFoundComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Could not find your workplace' },
+  },
+  {
+    path: 'workplace-address-not-found',
+    component: CouldNotFindWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Could not find your workplace address' },
   },
   {
     path: 'select-workplace',

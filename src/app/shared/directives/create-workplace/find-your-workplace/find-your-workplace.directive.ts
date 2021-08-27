@@ -4,17 +4,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
 export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
 
-  protected flow: string;
+  public flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public submitted = false;
@@ -22,6 +24,9 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public returnToWorkplaceNotFound: boolean;
+  public returnToConfirmDetails: URLStructure;
+  public createAccountNewDesign: boolean;
+  public postcodeOrLocationId: string;
 
   constructor(
     protected router: Router,
@@ -31,14 +36,25 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     protected formBuilder: FormBuilder,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected locationService: LocationService,
+    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
+    this.postcodeOrLocationId = this.workplaceInterfaceService.postcodeOrLocationId$.value;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setBackLink();
+    this.prefillForm();
+    this.setFeatureFlag();
+  }
+
+  protected setFeatureFlag(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.setBackLink();
+    });
   }
 
   public ngAfterViewInit(): void {
@@ -46,14 +62,25 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   }
 
   public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.navigateToConfirmDetails();
+      return;
+    }
+
     const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected navigateToConfirmDetails(): void {}
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      postcodeOrLocationID: [null, { validators: Validators.required, updateOn: 'submit' }],
+      postcodeOrLocationID: [
+        null,
+        { validators: [Validators.required, Validators.pattern(`^[a-zA-Z0-9 -]{1,}$`)], updateOn: 'submit' },
+      ],
     });
   }
 
@@ -75,17 +102,30 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   }
 
   private setupFormErrorsMap(): void {
+    const yourOrIts = this.flow === 'registration' ? 'your' : 'its';
     this.formErrorsMap = [
       {
         item: 'postcodeOrLocationID',
         type: [
           {
             name: 'required',
-            message: `Enter your CQC location ID or your workplace postcode`,
+            message: `Enter ${yourOrIts} CQC location ID or ${yourOrIts} workplace postcode`,
+          },
+          {
+            name: 'pattern',
+            message: `Enter a valid CQC location ID or workplace postcode`,
           },
         ],
       },
     ];
+  }
+
+  protected prefillForm(): void {
+    if (this.postcodeOrLocationId) {
+      this.form.setValue({
+        postcodeOrLocationID: this.postcodeOrLocationId,
+      });
+    }
   }
 
   public getErrorMessage(item: string): string {

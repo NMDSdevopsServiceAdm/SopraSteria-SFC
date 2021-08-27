@@ -15,15 +15,23 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   constructor(
-    private registrationService: RegistrationService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected router: Router,
     protected featureFlagsService: FeatureFlagsService,
+    public registrationService: RegistrationService,
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, router, featureFlagsService);
+    super(
+      backService,
+      errorSummaryService,
+      formBuilder,
+      locationService,
+      router,
+      featureFlagsService,
+      registrationService,
+    );
   }
 
   protected init(): void {
@@ -50,6 +58,10 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
         ],
       },
     ];
+  }
+
+  protected setInvalidPostcode(postcode: string): void {
+    this.registrationService.invalidPostcodeEntered$.next(postcode);
   }
 
   protected onSuccess(data: LocationSearchResponse): void {

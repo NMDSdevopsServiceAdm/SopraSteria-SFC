@@ -8,18 +8,21 @@ import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import {
+  MockRegistrationService,
+  MockRegistrationServiceWithMainService,
+} from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByText, render } from '@testing-library/angular';
 
 import { NewSelectMainServiceComponent } from './new-select-main-service.component';
 
 describe('NewSelectMainServiceComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
+  async function setup(mainServicePrefilled = false) {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
       NewSelectMainServiceComponent,
       {
         imports: [
@@ -33,7 +36,7 @@ describe('NewSelectMainServiceComponent', () => {
         providers: [
           {
             provide: RegistrationService,
-            useClass: MockRegistrationService,
+            useClass: mainServicePrefilled ? MockRegistrationServiceWithMainService : MockRegistrationService,
           },
           {
             provide: WorkplaceService,
@@ -65,7 +68,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const registrationService = injector.inject(RegistrationService) as RegistrationService;
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -76,11 +78,11 @@ describe('NewSelectMainServiceComponent', () => {
       fixture,
       component,
       spy,
-      registrationService,
       getAllByText,
       queryByText,
       getByText,
       getByLabelText,
+      getByTestId,
     };
   }
 
@@ -94,7 +96,6 @@ describe('NewSelectMainServiceComponent', () => {
     const { component, fixture, getByText } = await setup();
 
     component.isRegulated = true;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -108,7 +109,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = false;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = getByText(
@@ -123,7 +123,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.createAccountNewDesign = true;
     component.isRegulated = false;
-    component.renderForm = true;
 
     fixture.detectChanges();
     const cqcText = queryByText(
@@ -138,16 +137,14 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = false;
-    component.renderForm = true;
     fixture.detectChanges();
 
     expect(queryByText('Select your main service')).toBeTruthy();
   });
 
-  it('should error when nothing has been selected', async () => {
+  it('should show registration error message when nothing has been selected(plus title with same wording)', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
-    component.renderForm = true;
     const form = component.form;
 
     fixture.detectChanges();
@@ -166,7 +163,6 @@ describe('NewSelectMainServiceComponent', () => {
 
     component.isParent = false;
     component.isRegulated = true;
-    component.renderForm = true;
     fixture.detectChanges();
 
     const radioButton = getByLabelText('Name');
@@ -176,6 +172,51 @@ describe('NewSelectMainServiceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
+  });
+
+  it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is not null', async () => {
+    const { component, fixture, getByText, getByLabelText, spy } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+    fixture.detectChanges();
+
+    const radioButton = getByLabelText('Name');
+    fireEvent.click(radioButton);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
+  it('should show the other input box when an other option is selected', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    fixture.detectChanges();
+    const otherDrop = getByTestId('workplaceServiceOther-123');
+
+    expect(otherDrop.getAttribute('class')).toContain('govuk-radios__conditional--hidden');
+
+    const otherOption = getByTestId('workplaceService-123');
+    fireEvent.click(otherOption);
+
+    expect(otherDrop.getAttribute('class')).not.toContain('govuk-radios__conditional--hidden');
+  });
+
+  it('should prefill the other input box with the correct value', async () => {
+    const { component, fixture } = await setup(true);
+
+    component.isParent = false;
+    component.isRegulated = true;
+
+    fixture.detectChanges();
+    const form = component.form;
+
+    expect(form.get('otherWorkplaceService123').value).toEqual('Hello!');
   });
 
   describe('setBackLink()', () => {
@@ -250,38 +291,12 @@ describe('NewSelectMainServiceComponent', () => {
       });
     });
 
-    it('should set back link to workplace-address-not-found when is not regulated, address entered manually and no addresses stored in registration service', async () => {
+    it('should set back link to workplace-name-address when is not regulated and address entered manually', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
       component.registrationService.manuallyEnteredWorkplace$.next(true);
-      component.registrationService.locationAddresses$.next([]);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-address-not-found'],
-      });
-    });
-
-    it('should set back link to workplace-name-address when is not regulated, address entered manually but there are addresses stored in registration service', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
-      component.registrationService.locationAddresses$.next([
-        {
-          postalCode: 'ABC 123',
-          addressLine1: '1 Street',
-          county: 'Greater Manchester',
-          locationName: 'Name',
-          townCity: 'Manchester',
-          locationId: '123',
-        },
-      ]);
 
       component.setBackLink();
       fixture.detectChanges();
@@ -320,6 +335,22 @@ describe('NewSelectMainServiceComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'workplace-name'],
+      });
+    });
+
+    it('should set back link to confirm-details when returnToConfirmDetails is not null and feature flag is on', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'confirm-details'],
       });
     });
   });

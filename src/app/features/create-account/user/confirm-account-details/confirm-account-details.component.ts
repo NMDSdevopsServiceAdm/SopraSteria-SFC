@@ -31,6 +31,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   }
 
   protected async init() {
+    this.resetReturnTo();
     this.setupSubscriptions();
     this.setBackLink();
     this.subscriptions.add(
@@ -64,12 +65,12 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     );
   }
 
-  private setAccountDetails(): void {
+  public setAccountDetails(): void {
     this.userInfo = [
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: { url: ['/registration/change-your-details'] },
+        route: { url: ['/registration/add-user-details'] },
       },
       {
         label: 'Job title',
@@ -104,7 +105,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
         route: { url: ['/registration/create-security-question'] },
       },
       {
-        label: 'Security answer',
+        label: 'Answer',
         data: this.securityDetails.securityQuestionAnswer,
       },
     ];
@@ -142,7 +143,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
 
   public onSetReturn(): void {
     this.registrationService.setReturnTo({
-      url: ['/registration/confirm-account-details'],
+      url: ['/registration/confirm-details'],
     });
+  }
+
+  private resetReturnTo(): void {
+    this.registrationService.returnTo$.next(null);
   }
 }

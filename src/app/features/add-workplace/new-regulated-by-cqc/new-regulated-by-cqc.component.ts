@@ -4,7 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { NewRegulatedByCqcDirective } from '@shared/directives/create-workplace/new-regulated-by-cqc/new-regulated-by-cqc.directive';
+import {
+  NewRegulatedByCqcDirective,
+} from '@shared/directives/create-workplace/new-regulated-by-cqc/new-regulated-by-cqc.directive';
 
 @Component({
   selector: 'app-new-regulated-by-cqc',
@@ -14,7 +16,7 @@ export class NewRegulatedByCqcComponent extends NewRegulatedByCqcDirective {
   constructor(
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected workplaceService: WorkplaceService,
+    public workplaceService: WorkplaceService,
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,

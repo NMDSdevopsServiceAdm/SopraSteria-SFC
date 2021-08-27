@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { SharedModule } from '@shared/shared.module';
@@ -13,7 +14,12 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found.component';
 
 describe('NewWorkplaceNotFoundComponent', () => {
-  async function setup(postcodeOrLocationId = '', searchMethod = '', workplaceNotFound = false) {
+  async function setup(
+    postcodeOrLocationId = '',
+    searchMethod = '',
+    workplaceNotFound = false,
+    useDifferentLocationIdOrPostcode = null,
+  ) {
     const component = await render(NewWorkplaceNotFoundComponent, {
       imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -33,8 +39,22 @@ describe('NewWorkplaceNotFoundComponent', () => {
                 return true;
               },
             },
+            useDifferentLocationIdOrPostcode$: {
+              value: useDifferentLocationIdOrPostcode,
+              next: () => {
+                return true;
+              },
+            },
           },
           deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useValue: {
+            primaryWorkplace: {
+              isParent: true,
+            },
+          },
         },
         {
           provide: ActivatedRoute,
@@ -77,6 +97,29 @@ describe('NewWorkplaceNotFoundComponent', () => {
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
   });
 
+  describe('Parent messages', () => {
+    it('should display add workplace version of heading', async () => {
+      const { component } = await setup();
+      const expectedHeading = 'We could not find the workplace';
+
+      expect(component.getByText(expectedHeading)).toBeTruthy();
+    });
+
+    it('should display add workplace version of question', async () => {
+      const { component } = await setup();
+      const expectedQuestion = 'Do you want to try find the workplace with a different CQC location ID or postcode?';
+
+      expect(component.getByText(expectedQuestion)).toBeTruthy();
+    });
+
+    it('should display add workplace version of No answer', async () => {
+      const { component } = await setup();
+      const expectedNoAnswer = "No, I'll enter the workplace details myself";
+
+      expect(component.getByText(expectedNoAnswer)).toBeTruthy();
+    });
+  });
+
   describe('Parent journey', () => {
     it('should navigate to the find workplace page when selecting yes', async () => {
       const { component, spy } = await setup();
@@ -107,6 +150,33 @@ describe('NewWorkplaceNotFoundComponent', () => {
       component.fixture.detectChanges();
 
       expect(component.getByText(expectedHeading)).toBeTruthy();
+    });
+  });
+
+  describe('prefillForm()', () => {
+    it('should preselect the "Yes" radio button if useDifferentLocationIdOrPostcode has been set to true in the service', async () => {
+      const { component } = await setup('', '', false, true);
+
+      const form = component.fixture.componentInstance.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.useDifferentLocationIdOrPostcode).toBe('yes');
+    });
+
+    it('should preselect the "No" radio button if useDifferentLocationIdOrPostcode has been set to false in the service', async () => {
+      const { component } = await setup('', '', false, false);
+
+      const form = component.fixture.componentInstance.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.useDifferentLocationIdOrPostcode).toBe('no');
+    });
+
+    it('should not preselect any radio buttons if useDifferentLocationIdOrPostcode has not been set in the service', async () => {
+      const { component } = await setup('', '', false, null);
+
+      const form = component.fixture.componentInstance.form;
+      expect(form.invalid).toBeTruthy();
+      expect(form.value.useDifferentLocationIdOrPostcode).not.toBe('yes');
+      expect(form.value.useDifferentLocationIdOrPostcode).not.toBe('no');
     });
   });
 

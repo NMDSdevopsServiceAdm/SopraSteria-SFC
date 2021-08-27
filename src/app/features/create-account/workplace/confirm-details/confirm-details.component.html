@@ -8,7 +8,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l">Confirm your details before you submit them</h1>
+    <h1 class="govuk-heading-l">Check your details before you submit them</h1>
   </div>
 </div>
 
@@ -31,6 +31,8 @@
             name="termsAndConditions"
             type="checkbox"
             data-testid="checkbox"
+            value="check"
+            (click)="setTermsAndConditionsCheckbox()"
             [formControlName]="'termsAndConditions'"
           />
           <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">

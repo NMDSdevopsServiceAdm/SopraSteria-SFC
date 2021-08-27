@@ -6,10 +6,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
-import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
+import {
+  SelectWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
@@ -72,6 +75,14 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should display the correct title', async () => {
+    const { getAllByText } = await setup();
+
+    const title = 'Select your workplace address';
+
+    expect(getAllByText(title)).toBeTruthy();
+  });
+
   it('should display postcode retrieved from registration service at top and in each workplace address in dropdown(2)', async () => {
     const { getAllByText } = await setup();
 
@@ -88,17 +99,29 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(getByText(noOfAddressesMessage, { exact: false })).toBeTruthy();
   });
 
+  it('should prefill form with selected location address if it exists by using its index in locationAddresses', async () => {
+    const { component } = await setup();
+    const form = component.form;
+
+    expect(form.value.address).toBe(0);
+    expect(form.invalid).toBeFalsy();
+  });
+
   describe('Error messages', () => {
     it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
       const { component, fixture, getAllByText, queryByText, getByText } = await setup();
-      const errorMessage = `Select your workplace address if it's listed`;
-      const form = component.form;
-      const continueButton = getByText('Continue');
 
+      component.registrationService.selectedLocationAddress$ = new BehaviorSubject(null);
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const errorMessage = `Select your workplace address if it's listed`;
       expect(queryByText(errorMessage, { exact: false })).toBeNull();
 
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
-      fixture.detectChanges();
+
+      const form = component.form;
       expect(form.invalid).toBeTruthy();
       expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
     });
@@ -134,7 +157,7 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(changeButton.getAttribute('href')).toBe('/registration/find-workplace-address');
     });
 
-    it('should navigate to workplace-address url in registration flow when workplace not listed button clicked', async () => {
+    it('should navigate to workplace-name-address url in registration flow when workplace not listed button clicked', async () => {
       const { component, fixture, getByText } = await setup();
       component.createAccountNewDesign = true;
       component.ngOnInit();
@@ -142,7 +165,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       const notDisplayedButton = getByText('Workplace address is not listed or is not correct');
 
-      expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-address');
+      expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-name-address');
     });
 
     it('should navigate to select-main-service url in registration flow when workplace with name selected and Continue clicked', async () => {
@@ -159,6 +182,23 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(form.valid).toBeTruthy();
 
       expect(spy).toHaveBeenCalledWith(['/registration/new-select-main-service']);
+    });
+
+    it('should navigate to the confirm-details page in registration flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {
+      const { component, spy, getByText } = await setup();
+
+      component.createAccountNewDesign = true;
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+
+      const form = component.form;
+      form.controls['address'].setValue('1');
+      form.controls['address'].markAsDirty();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(form.valid).toBeTruthy();
+      expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
     });
 
     it('should navigate to workplace-name url in registration flow when workplace without name selected and Continue clicked', async () => {

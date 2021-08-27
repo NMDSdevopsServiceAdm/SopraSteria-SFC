@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
@@ -56,6 +57,11 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   public submitted = false;
   public title: string;
   public workplaceErrorMessage: string;
+  public returnToConfirmDetails: URLStructure;
+  public returnToWorkplaceNotFound: boolean;
+  public isCqcRegulated: boolean;
+  public createAccountNewDesign: boolean;
+  public manuallyEnteredWorkplace: boolean;
   protected flow: string;
   protected workplaceNameMaxLength = 120;
   protected addressMaxLength = 40;
@@ -141,11 +147,11 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     });
   }
 
-  protected preFillForm(selectedLocation: LocationAddress): void {
+  public preFillForm(selectedLocation: LocationAddress): void {
     this.form.setValue({
       address1: selectedLocation.addressLine1,
-      address2: selectedLocation.addressLine2,
-      address3: selectedLocation.addressLine3,
+      address2: selectedLocation.addressLine2 ? selectedLocation.addressLine2 : null,
+      address3: selectedLocation.addressLine3 ? selectedLocation.addressLine3 : null,
       county: selectedLocation.county,
       postcode: selectedLocation.postalCode,
       townOrCity: selectedLocation.townCity,
@@ -177,7 +183,25 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
           },
           {
             name: 'maxlength',
-            message: `Building and street must be ${this.addressMaxLength} characters or fewer`,
+            message: `Building (number or name) and street must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'address2',
+        type: [
+          {
+            name: 'maxlength',
+            message: `This line must be ${this.addressMaxLength} characters or fewer`,
+          },
+        ],
+      },
+      {
+        item: 'address3',
+        type: [
+          {
+            name: 'maxlength',
+            message: `This line must be ${this.addressMaxLength} characters or fewer`,
           },
         ],
       },

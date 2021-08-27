@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -12,10 +14,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent extends AccountDetailsDirective {
-  createAccountNewDesign: boolean;
+  public createAccountNewDesign: boolean;
 
   constructor(
     private userService: UserService,
+    private registrationService: RegistrationService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -26,7 +29,12 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   }
 
   public setBackLink(): void {
-    const url = this.createAccountNewDesign ? 'new-select-main-service' : 'confirm-workplace-details';
+    let url: string;
+    if (this.createAccountNewDesign) {
+      url = this.return ? 'confirm-details' : 'new-select-main-service';
+    } else {
+      url = this.return ? 'confirm-account-details' : 'confirm-workplace-details';
+    }
     this.backService.setBackLink({ url: ['registration', url] });
   }
 
@@ -36,10 +44,30 @@ export class YourDetailsComponent extends AccountDetailsDirective {
       'createAccountNewDesign',
       false,
     );
+    this.return = this.registrationService.returnTo$.value;
+    this.prefillFormIfUserDetailsExist();
+  }
+
+  protected prefillFormIfUserDetailsExist(): void {
+    this.subscriptions.add(
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
+        if (userDetails) {
+          this.prefillForm(userDetails);
+        }
+      }),
+    );
+  }
+
+  protected setFormSubmissionLink(): string {
+    if (this.createAccountNewDesign) {
+      return this.return ? 'confirm-details' : 'username-password';
+    }
+    return this.return ? 'confirm-account-details' : 'username-password';
   }
 
   protected save(): void {
     this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['registration', 'username-password']);
+    const url = this.setFormSubmissionLink();
+    this.router.navigate(['registration', url]);
   }
 }

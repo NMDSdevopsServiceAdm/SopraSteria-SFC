@@ -5,7 +5,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { IsThisYourWorkplaceDirective } from '@shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.directive';
+import {
+  IsThisYourWorkplaceDirective,
+} from '@shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.directive';
 
 @Component({
   selector: 'app-is-this-your-workplace',
@@ -19,7 +21,7 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected workplaceService: WorkplaceService,
+    public workplaceService: WorkplaceService,
     protected formBuilder: FormBuilder,
   ) {
     super(errorSummaryService, establishmentService, backService, route, router, workplaceService, formBuilder);
@@ -37,5 +39,9 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
         ],
       },
     ];
+  }
+
+  protected getNextRoute(): string {
+    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
   }
 }
