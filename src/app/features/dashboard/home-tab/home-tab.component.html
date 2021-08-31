@@ -139,7 +139,12 @@
           *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent"
           class="govuk-!-margin-bottom-3"
         >
-          <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+          <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
+            <a (click)="cancelBecomeAParent($event)" href="#">Parent request pending</a>
+          </ng-container>
+          <ng-template #requestBecomeAParent>
+            <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+          </ng-template>
         </li>
       </ul>
       <div *ngIf="canRunLocalAuthorityReport && workplace">
@@ -158,8 +163,8 @@
         </ul>
       </div>
     </ng-container>
-    <ng-container *ngIf="!(canBecomeAParent && canLinkToParent) && !workplace.isParent">
+    <!-- <ng-container *ngIf="!(canBecomeAParent && canLinkToParent) && !workplace.isParent">
       <p>Parent request pending</p>
-    </ng-container>
+    </ng-container> -->
   </div>
 </div>

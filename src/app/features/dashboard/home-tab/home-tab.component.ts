@@ -15,6 +15,7 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
@@ -294,6 +295,18 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       if (confirmToClose) {
         this.canLinkToParent = false;
         this.canBecomeAParent = false;
+      }
+    });
+  }
+
+  public cancelBecomeAParent($event: Event) {
+    $event.preventDefault();
+    console.log('cancel become a parent');
+    const dialog = this.dialogService.open(BecomeAParentCancelDialogComponent, null);
+    dialog.afterClosed.subscribe((confirmToClose) => {
+      if (confirmToClose) {
+        this.canLinkToParent = true;
+        this.canBecomeAParent = true;
       }
     });
   }

@@ -31,7 +31,7 @@ const MockWindow = {
   },
 };
 
-describe('HomeTabComponent', () => {
+fdescribe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [
@@ -213,7 +213,7 @@ describe('HomeTabComponent', () => {
   it('should not show the Local authority progress link when not a local authority', async () => {
     const { component } = await setup();
 
-    expect(component.queryByText('Local authority progress')).toBeFalsy;
+    expect(component.queryByText('Local authority progress')).toBeFalsy();
   });
 
   it('should show the Local authority progress link when it is a local authority', async () => {
@@ -235,6 +235,8 @@ describe('HomeTabComponent', () => {
 
     const expectedMessage = 'Parent request pending';
     expect(component.queryByText(expectedMessage)).toBeTruthy();
+    expect(component.queryByText('Link to my parent organisation')).toBeFalsy();
+    expect(component.queryByText('Become a parent organisation')).toBeFalsy();
   });
 
   it('should not show Parent request pending before requesting', async () => {
@@ -247,5 +249,7 @@ describe('HomeTabComponent', () => {
 
     const expectedMessage = 'Parent request pending';
     expect(component.queryByText(expectedMessage)).toBeFalsy();
+    expect(component.queryByText('Link to my parent organisation')).toBeTruthy();
+    expect(component.queryByText('Become a parent organisation')).toBeTruthy();
   });
 });

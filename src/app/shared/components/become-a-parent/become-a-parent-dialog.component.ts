@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { AlertService } from '@core/services/alert.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-become-a-parent-dialog',
   templateUrl: './become-a-parent-dialog.component.html',
 })
-export class BecomeAParentDialogComponent extends DialogComponent implements OnInit, OnDestroy {
+export class BecomeAParentDialogComponent extends DialogComponent implements OnDestroy {
   protected subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -22,8 +22,6 @@ export class BecomeAParentDialogComponent extends DialogComponent implements OnI
   ) {
     super(data, dialog);
   }
-
-  ngOnInit() {}
 
   /**
    * Close dialog window after successful confirmation
