@@ -15,13 +15,30 @@ export const EditUser = build('EditUser', {
     jobTitle: fake((f) => f.lorem.sentence()),
     phone: '01222222222',
     role: Roles.Edit,
+    status: 'Active',
+    isPrimary: null,
+    uid: fake((f) => f.name.firstName()),
   },
 });
 
-const readUser = EditUser();
-readUser.role = Roles.Read;
+export const ReadUser = () => {
+  return EditUser({
+    overrides: {
+      role: Roles.Read,
+    },
+  });
+};
 
-const editUser = EditUser();
+const readUser = ReadUser();
+readUser.isPrimary = false;
+
+const primaryEditUser = EditUser();
+primaryEditUser.isPrimary = true;
+
+const nonPrimaryEditUser = EditUser();
+nonPrimaryEditUser.isPrimary = false;
+
+export { primaryEditUser, nonPrimaryEditUser, readUser };
 
 const workplaceBuilder = build('Workplace', {
   fields: {
@@ -88,8 +105,6 @@ export class MockUserService extends UserService {
     phone: '01234 345634',
   });
 
-  private;
-
   public static factory(subsidiaries = 0, isAdmin = false) {
     return (httpClient: HttpClient) => {
       const service = new MockUserService(httpClient);
@@ -110,6 +125,10 @@ export class MockUserService extends UserService {
     };
   }
 
+  public get loggedInUser$(): Observable<UserDetails> {
+    return of(this.loggedInUser);
+  }
+
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     return of({
       primary: primary,
@@ -121,14 +140,24 @@ export class MockUserService extends UserService {
   }
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     if (workplaceUid === 'overLimit') {
-      return of([readUser, readUser, readUser, editUser, editUser, editUser] as UserDetails[]);
+      return of([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[]);
+    }
+    if (workplaceUid === 'activeEditUsers') {
+      return of([EditUser(), EditUser()] as UserDetails[]);
+    }
+    if (workplaceUid === 'twoEditTwoReadOnlyUsers') {
+      return of([EditUser(), EditUser(), ReadUser(), ReadUser()] as UserDetails[]);
     }
 
-    return of([editUser] as UserDetails[]);
+    return of([EditUser()] as UserDetails[]);
   }
 
   public updateState(userDetails: UserDetails) {
     return userDetails;
+  }
+
+  public updateUserDetails(): Observable<any> {
+    return of({});
   }
 }
 

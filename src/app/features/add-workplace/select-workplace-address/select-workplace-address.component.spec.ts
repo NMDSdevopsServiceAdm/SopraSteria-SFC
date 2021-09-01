@@ -7,10 +7,13 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address.directive';
+import {
+  SelectWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
 
@@ -72,6 +75,14 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should display the correct title', async () => {
+    const { getAllByText } = await setup();
+
+    const title = 'Select the workplace address';
+
+    expect(getAllByText(title)).toBeTruthy();
+  });
+
   it('should display postcode retrieved from workplace service at top and in each workplace address in dropdown(2)', async () => {
     const { getAllByText } = await setup();
 
@@ -100,8 +111,7 @@ describe('SelectWorkplaceAddressComponent', () => {
     it('should display none selected error message(twice) when no address selected in dropdown on clicking Continue', async () => {
       const { component, fixture, getAllByText, queryByText, getByText } = await setup();
 
-      spyOn(component.workplaceService.selectedLocationAddress$, 'subscribe').and.returnValue(null);
-      component.selectedLocationAddress = null;
+      component.workplaceService.selectedLocationAddress$ = new BehaviorSubject(null);
       component.ngOnInit();
       fixture.detectChanges();
 

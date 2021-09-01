@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -13,11 +13,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
+export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
-  protected flow: string;
+  public flow: string;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -35,13 +35,19 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.setFlow();
+
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.init();
     this.prefillForm();
+
     await this.getFeatureFlag();
     this.setBackLink();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   async getFeatureFlag(): Promise<void> {
@@ -52,16 +58,12 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  ngAfterViewInit() {
-    this.errorSummaryService.formEl$.next(this.formEl);
-  }
-
-  get getPostcode() {
+  get getPostcode(): AbstractControl {
     return this.form.get('postcode');
   }
 
-  protected init(): void {}
-  protected setupFormErrorsMap(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setFlow(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
@@ -75,7 +77,29 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  protected setupServerErrorsMap(): void {
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: `Enter ${this.flow === 'registration' ? 'your' : 'the'} workplace postcode`,
+          },
+          {
+            name: 'maxlength',
+            message: 'Postcode must be 8 characters or fewer',
+          },
+          {
+            name: 'invalidPostcode',
+            message: 'Enter a valid workplace postcode',
+          },
+        ],
+      },
+    ];
+  }
+
+  private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 400,
@@ -92,7 +116,7 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     ];
   }
 
-  protected prefillForm(): void {
+  private prefillForm(): void {
     const postcode = this.workplaceInterfaceService.postcode$.value;
     if (postcode) {
       this.form.setValue({
@@ -101,14 +125,14 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  protected validPostcode(control: FormControl): { [s: string]: boolean } {
+  private validPostcode(control: FormControl): { [s: string]: boolean } {
     if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
       return { invalidPostcode: true };
     }
     return null;
   }
 
-  protected getAddressesByPostCode(): void {
+  private getAddressesByPostCode(): void {
     this.subscriptions.add(
       this.locationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
         (data: LocationSearchResponse) => {
@@ -120,8 +144,6 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  protected onSuccess(data: LocationSearchResponse): void {}
-
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
       this.setInvalidPostcode(this.getPostcode.value);
@@ -132,15 +154,12 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.scrollToErrorSummary();
   }
 
-  protected setInvalidPostcode(postcode: string): void {}
-
   public onSubmit(): void {
     this.submitted = true;
 
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
-      const postcode = this.form.get('postcode').value;
-      this.workplaceInterfaceService.postcode$.next(postcode);
+      this.workplaceInterfaceService.postcode$.next(this.getPostcode.value);
       this.getAddressesByPostCode();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -163,6 +182,14 @@ export class FindWorkplaceAddress implements OnInit, OnDestroy, AfterViewInit {
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private setInvalidPostcode(postcode: string): void {
+    this.workplaceInterfaceService.invalidPostcodeEntered$.next(postcode);
+  }
+
+  private onSuccess(data: LocationSearchResponse): void {
+    this.workplaceInterfaceService.locationAddresses$.next(data.postcodedata);
   }
 
   ngOnDestroy(): void {
