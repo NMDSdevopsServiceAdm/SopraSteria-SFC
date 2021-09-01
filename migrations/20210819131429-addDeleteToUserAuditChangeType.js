@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query(`ALTER TYPE cqc."UserAuditChangeType" ADD VALUE 'delete';`)
+    return queryInterface.sequelize.query(`ALTER TYPE cqc."UserAuditChangeType" ADD VALUE IF NOT EXISTS 'delete';`)
   },
 
   down: (queryInterface, Sequelize) => {
