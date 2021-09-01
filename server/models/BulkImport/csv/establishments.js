@@ -982,7 +982,7 @@ class Establishment {
 
   _validateProvID() {
     // must be given if "REGTYPE" is 2 - but if given must be in the format "n-nnnnnnnnn"
-    const provIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
+    const provIDRegex = /^[0-9]{1}-[0-9]{8,12}$/;
     const myprovID = this._currentLine.PROVNUM;
 
     if (this._regType === 2 && (!myprovID || myprovID.length === 0)) {
