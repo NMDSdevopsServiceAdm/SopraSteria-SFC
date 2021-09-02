@@ -40,6 +40,7 @@ module.exports = function (sequelize, DataTypes) {
           'loginFailed',
           'loginWhileLocked',
           'logout',
+          'delete',
         ],
         field: '"EventType"',
       },
@@ -77,8 +78,8 @@ module.exports = function (sequelize, DataTypes) {
           [Op.gte]: fromDate,
         },
         type: 'logout',
-        userFk
-      }
+        userFk,
+      },
     });
   };
 
