@@ -20,6 +20,8 @@ export interface Registrations {
       locationId: string;
       provid: string;
       mainService: number;
+      status: string;
+      uid: string;
     };
   };
 }
