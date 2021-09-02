@@ -1,25 +1,51 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
+import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
 
 describe('SelectStaffComponent', () => {
-  let component: SelectStaffComponent;
-  let fixture: ComponentFixture<SelectStaffComponent>;
+  async function setup() {
+    const component = await render(SelectStaffComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
+      providers: [BackService],
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ SelectStaffComponent ]
-    })
-    .compileComponents();
-  });
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SelectStaffComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
 
-  it('should create', () => {
+    return {
+      component,
+      router,
+      spy,
+    };
+  }
+
+  it('should render a SelectStaffComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the back link to the dashboard', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/dashboard'],
+        fragment: 'training-and-qualifications',
+      });
+    });
   });
 });
