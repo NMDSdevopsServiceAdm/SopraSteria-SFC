@@ -8,6 +8,7 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
@@ -70,6 +71,16 @@ const routes: Routes = [
             },
           },
         ],
+      },
+    ],
+  },
+  {
+    path: 'registrations/request',
+    children: [
+      {
+        path: '',
+        component: RegistrationRequestComponent,
+        data: { title: 'Registration Request' },
       },
     ],
   },

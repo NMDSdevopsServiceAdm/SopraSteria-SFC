@@ -1,0 +1,90 @@
+<div class="govuk-grid-row">
+  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
+    <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
+    <p>Received {{ registration.created }}</p>
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Workplace details</th>
+          <td class="govuk-table__cell"></td>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Provider ID</th>
+          <td class="govuk-table__cell">
+            {{ registration.establishment.provid }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Location ID</th>
+          <td class="govuk-table__cell">
+            {{ registration.establishment.locationId }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Parent ID</th>
+          <td class="govuk-table__cell">
+            {{ registration.establishment.parentEstablishmentId }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Regulated</th>
+          <td class="govuk-table__cell">
+            {{ registration.establishment.isRegulated ? 'Yes' : 'No' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Account details</th>
+          <td class="govuk-table__cell"></td>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Name</th>
+          <td class="govuk-table__cell">
+            {{ registration.name }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Email address</th>
+          <td class="govuk-table__cell">
+            {{ registration.email }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Phone number</th>
+          <td class="govuk-table__cell">
+            {{ registration.phone }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Username</th>
+          <td class="govuk-table__cell">
+            {{ registration.username }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Security question</th>
+          <td class="govuk-table__cell">
+            {{ registration.securityQuestion }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Answer</th>
+          <td class="govuk-table__cell">
+            {{ registration.securityQuestionAnswer }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

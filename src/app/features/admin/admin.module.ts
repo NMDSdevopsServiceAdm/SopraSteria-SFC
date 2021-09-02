@@ -16,6 +16,7 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { SearchComponent } from './search/search.component';
 
 @NgModule({
@@ -28,6 +29,7 @@ import { SearchComponent } from './search/search.component';
     SetDatesComponent,
     MonitorComponent,
     LocalAuthorityComponent,
+    RegistrationRequestComponent,
   ],
   providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver, GetLaResolver],
   bootstrap: [AdminComponent],
