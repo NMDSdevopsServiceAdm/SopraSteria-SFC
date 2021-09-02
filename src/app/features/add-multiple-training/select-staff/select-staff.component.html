@@ -2,11 +2,37 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l">Select the staff who have completed the training</h1>
 
-    <div class="govuk-button-group">
-      <button class="govuk-button govuk-!-margin-right-9">Continue</button>
-      <a class="govuk-link govuk-!-margin-left-9" [routerLink]="['/dashboard']" fragment="training-and-qualifications"
-        >Cancel</a
-      >
+    <div class="govuk-form-group govuk-!-margin-top-6">
+      <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="govuk-checkboxes">
+          <ng-container *ngFor="let worker of selectStaff.controls; let i = index">
+            <div class="govuk-checkboxes__item">
+              <input
+                formControlName="selectStaff"
+                class="govuk-checkboxes__input"
+                type="checkbox"
+                id="selectStaff-{{ i }}"
+                name="selectStaff-{{ i }}"
+                [checked]="worker.value.checked"
+                [value]="worker.value.name"
+              />
+              <label for="selectedStaff-{{ i }}" class="govuk-label govuk-checkboxes__label">
+                {{ worker.value.name }}
+              </label>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="govuk-button-group">
+          <button class="govuk-button govuk-!-margin-right-9">Continue</button>
+          <a
+            class="govuk-link govuk-!-margin-left-9"
+            [routerLink]="['/dashboard']"
+            fragment="training-and-qualifications"
+            >Cancel</a
+          >
+        </div>
+      </form>
     </div>
   </div>
 </div>
