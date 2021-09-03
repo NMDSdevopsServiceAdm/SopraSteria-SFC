@@ -339,12 +339,10 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     if (this.createAccountNewDesign) {
       if (this.isCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-        this.workplaceInterfaceService.workplaceNotFound$.next(false);
         return;
       }
       if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
         this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
-        this.workplaceInterfaceService.workplaceNotFound$.next(false);
         return;
       }
     }
