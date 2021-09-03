@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -74,6 +75,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   ngOnInit() {
     this.setupForm();
     this.setupFormControlsMap();
+    this.setFlow();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.init();
@@ -86,7 +88,6 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   protected setupForm(): void {
@@ -312,7 +313,9 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     this.router.navigate([this.flow, url]);
   }
 
-  protected getNextRoute(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  protected getNextRoute(): void {}
+
+  protected setFlow(): void {}
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {

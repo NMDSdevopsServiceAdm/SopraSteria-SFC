@@ -33,11 +33,14 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected init(): void {
-    this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
     this.setLocationAddress();
+  }
+
+  protected setFlow(): void {
+    this.flow = `workplace/${this.establishmentService.establishmentId}`;
   }
 
   public setBackLink(): void {

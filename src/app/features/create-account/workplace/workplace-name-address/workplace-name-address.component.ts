@@ -31,7 +31,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected init(): void {
-    this.flow = '/registration';
     this.title = `What's your workplace name and address?`;
     this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
@@ -40,6 +39,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
 
     this.setupPreFillForm();
+  }
+
+  protected setFlow(): void {
+    this.flow = '/registration';
   }
 
   protected setConfirmDetailsBackLink(): void {
