@@ -31,11 +31,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected init(): void {
-    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
-    this.returnToWorkplaceNotFound = this.registrationService.workplaceNotFound$.value;
-    this.manuallyEnteredWorkplace = this.registrationService.manuallyEnteredWorkplace$.value;
-    this.isCqcRegulated = this.registrationService.isCqcRegulated$.value;
-
+    this.setServiceVariables();
     this.setupPreFillForm();
   }
 

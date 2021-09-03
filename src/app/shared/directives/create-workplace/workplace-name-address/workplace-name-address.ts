@@ -323,6 +323,13 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   protected setErrorMessage(): void {}
 
+  protected setServiceVariables(): void {
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
+    this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
+    this.manuallyEnteredWorkplace = this.workplaceInterfaceService.manuallyEnteredWorkplace$.value;
+    this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
+  }
+
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
       this.setConfirmDetailsBackLink();
