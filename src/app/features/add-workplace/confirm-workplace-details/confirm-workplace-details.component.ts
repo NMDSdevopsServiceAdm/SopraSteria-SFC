@@ -33,13 +33,6 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   protected init(): void {
     this.flow = '/add-workplace';
-    this.resetReturnTo();
-    this.getWorkplaceData();
-  }
-
-  protected getWorkplaceData(): void {
-    this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
-    this.workplace = this.workplaceService.selectedWorkplaceService$.value;
   }
 
   public setBackLink(): void {
@@ -74,11 +67,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   public onSetReturn(): void {
     this.workplaceService.setReturnTo({
-      url: [`${this.flow}/confirm-details`],
+      url: [`${this.flow}/confirm-workplace-details`],
     });
-  }
-
-  private resetReturnTo(): void {
-    this.workplaceService.returnTo$.next(null);
   }
 }

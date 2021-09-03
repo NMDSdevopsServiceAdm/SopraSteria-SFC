@@ -31,15 +31,20 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       this.setBackLink();
     });
     this.init();
+    this.resetReturnTo();
+    this.getWorkplaceData();
     this.setNameAndAddress();
     this.setWorkplaceDetails();
   }
 
   protected init(): void {}
 
-  protected getWorkplaceData(): void {}
-
   public setBackLink(): void {}
+
+  protected getWorkplaceData(): void {
+    this.locationAddress = this.workplaceInterfaceService.selectedLocationAddress$.value;
+    this.workplace = this.workplaceInterfaceService.selectedWorkplaceService$.value;
+  }
 
   public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {
@@ -121,6 +126,10 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
 
   private convertWorkplaceAddressToString(workplaceAddress: Array<string>): string {
     return workplaceAddress.filter((x) => x).join('<br>');
+  }
+
+  protected resetReturnTo(): void {
+    this.workplaceInterfaceService.returnTo$.next(null);
   }
 
   ngOnDestroy() {

@@ -21,13 +21,6 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   protected async init(): Promise<void> {
     this.flow = '/registration';
-    this.resetReturnTo();
-    this.getWorkplaceData();
-  }
-
-  protected getWorkplaceData(): void {
-    this.locationAddress = this.registrationService.selectedLocationAddress$.value;
-    this.workplace = this.registrationService.selectedWorkplaceService$.value;
   }
 
   public setBackLink(): void {
@@ -40,9 +33,5 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     this.registrationService.setReturnTo({
       url: [`${this.flow}/confirm-details`],
     });
-  }
-
-  private resetReturnTo(): void {
-    this.registrationService.returnTo$.next(null);
   }
 }
