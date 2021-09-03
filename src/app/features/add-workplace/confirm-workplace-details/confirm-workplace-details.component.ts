@@ -31,7 +31,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     super(backService, featureFlagsService, workplaceService);
   }
 
-  protected init(): void {
+  protected setFlow(): void {
     this.flow = '/add-workplace';
   }
 

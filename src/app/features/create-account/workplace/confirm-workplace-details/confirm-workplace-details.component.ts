@@ -19,7 +19,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     super(backService, featureFlagsService, registrationService);
   }
 
-  protected async init(): Promise<void> {
+  protected setFlow(): void {
     this.flow = '/registration';
   }
 

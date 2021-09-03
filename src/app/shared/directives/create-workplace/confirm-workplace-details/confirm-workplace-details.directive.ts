@@ -30,14 +30,14 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       this.createAccountNewDesign = value;
       this.setBackLink();
     });
-    this.init();
+    this.setFlow();
     this.resetReturnTo();
     this.getWorkplaceData();
     this.setNameAndAddress();
     this.setWorkplaceDetails();
   }
 
-  protected init(): void {}
+  protected setFlow(): void {}
 
   public setBackLink(): void {}
 
