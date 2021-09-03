@@ -357,7 +357,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
   }
 
-  protected setConfirmDetailsBackLink(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  protected setConfirmDetailsBackLink(): void {}
 
   protected isCqcRegulatedAndWorkplaceNotFound(): boolean {
     return this.workplaceInterfaceService.workplaceNotFound$.value && this.isCqcRegulated;
