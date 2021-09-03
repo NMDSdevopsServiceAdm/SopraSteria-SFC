@@ -17,44 +17,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
-
-  public formControlsMap: any[] = [
-    {
-      label: 'Workplace name',
-      name: 'workplaceName',
-      width: 20,
-    },
-    {
-      label: 'Building (number or name) and street <span class="govuk-visually-hidden">line 1 of 3</span>',
-      name: 'address1',
-      width: 20,
-    },
-    {
-      label: '<span class="govuk-visually-hidden">Building and street line 2 of 3</span>',
-      name: 'address2',
-      width: 20,
-    },
-    {
-      label: '<span class="govuk-visually-hidden">Building and street line 3 of 3</span>',
-      name: 'address3',
-      width: 20,
-    },
-    {
-      label: 'Town or city',
-      name: 'townOrCity',
-      width: 10,
-    },
-    {
-      label: 'County',
-      name: 'county',
-      width: 10,
-    },
-    {
-      label: 'Postcode',
-      name: 'postcode',
-      width: 10,
-    },
-  ];
+  public formControlsMap: any[];
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public title: string;
@@ -110,6 +73,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   ngOnInit() {
     this.setupForm();
+    this.setupFormControlsMap();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.init();
@@ -177,6 +141,46 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
       townOrCity: selectedLocation.townCity,
       workplaceName: selectedLocation.locationName,
     });
+  }
+
+  protected setupFormControlsMap(): void {
+    this.formControlsMap = [
+      {
+        label: 'Workplace name',
+        name: 'workplaceName',
+        width: 20,
+      },
+      {
+        label: 'Building (number or name) and street <span class="govuk-visually-hidden">line 1 of 3</span>',
+        name: 'address1',
+        width: 20,
+      },
+      {
+        label: '<span class="govuk-visually-hidden">Building and street line 2 of 3</span>',
+        name: 'address2',
+        width: 20,
+      },
+      {
+        label: '<span class="govuk-visually-hidden">Building and street line 3 of 3</span>',
+        name: 'address3',
+        width: 20,
+      },
+      {
+        label: 'Town or city',
+        name: 'townOrCity',
+        width: 10,
+      },
+      {
+        label: 'County',
+        name: 'county',
+        width: 10,
+      },
+      {
+        label: 'Postcode',
+        name: 'postcode',
+        width: 10,
+      },
+    ];
   }
 
   protected setupFormErrorsMap(): void {
