@@ -77,15 +77,18 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   it('should display the correct title', async () => {
-    const { getByText } = await setup();
+    const { fixture, getByText } = await setup();
     const expectedTitle = `What's the workplace name and address?`;
 
-    expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
+    });
   });
 
   describe('preFillForm()', () => {
     it('should prefill the workplace name and address if manuallyEnteredWorkplace is true', async () => {
-      const { component, getByText } = await setup();
+      const { component, fixture, getByText } = await setup();
 
       const spy = spyOn(component, 'preFillForm').and.callThrough();
 
@@ -96,20 +99,22 @@ describe('WorkplaceNameAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalled();
-      expect(component.form.value).toEqual({
-        workplaceName: 'Workplace Name',
-        address1: '1 Street',
-        address2: 'Second Line',
-        address3: 'Third Line',
-        townOrCity: 'Manchester',
-        county: 'Greater Manchester',
-        postcode: 'ABC 123',
+      fixture.whenStable().then(() => {
+        expect(spy).toHaveBeenCalled();
+        expect(component.form.value).toEqual({
+          workplaceName: 'Workplace Name',
+          address1: '1 Street',
+          address2: 'Second Line',
+          address3: 'Third Line',
+          townOrCity: 'Manchester',
+          county: 'Greater Manchester',
+          postcode: 'ABC 123',
+        });
       });
     });
 
     it('should prefill the workplace name and address if returnToConfirmDetails is true', async () => {
-      const { component, getByText } = await setup();
+      const { component, fixture, getByText } = await setup();
 
       const spy = spyOn(component, 'preFillForm').and.callThrough();
 
@@ -120,15 +125,17 @@ describe('WorkplaceNameAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalled();
-      expect(component.form.value).toEqual({
-        workplaceName: 'Workplace Name',
-        address1: '1 Street',
-        address2: 'Second Line',
-        address3: 'Third Line',
-        townOrCity: 'Manchester',
-        county: 'Greater Manchester',
-        postcode: 'ABC 123',
+      fixture.whenStable().then(() => {
+        expect(spy).toHaveBeenCalled();
+        expect(component.form.value).toEqual({
+          workplaceName: 'Workplace Name',
+          address1: '1 Street',
+          address2: 'Second Line',
+          address3: 'Third Line',
+          townOrCity: 'Manchester',
+          county: 'Greater Manchester',
+          postcode: 'ABC 123',
+        });
       });
     });
   });
@@ -212,7 +219,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
   describe('setBackLink', () => {
     it('should set the back link to `confirm-workplace-details` when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.returnTo$.next({ url: ['add-workplace', 'confirm-details'] });
@@ -220,15 +227,17 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.ngOnInit();
 
-      component.setBackLink();
+      fixture.whenStable().then(() => {
+        component.setBackLink();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'confirm-workplace-details'],
+        expect(backLinkSpy).toHaveBeenCalledWith({
+          url: ['/add-workplace', 'confirm-workplace-details'],
+        });
       });
     });
 
     it('should set the back link to `workplace-not-found` when isCqcRegulated and workplaceNotFound in service are true', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.workplaceNotFound$.next(true);
@@ -237,15 +246,17 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.ngOnInit();
 
-      component.setBackLink();
+      fixture.whenStable().then(() => {
+        component.setBackLink();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'new-workplace-not-found'],
+        expect(backLinkSpy).toHaveBeenCalledWith({
+          url: ['/add-workplace', 'new-workplace-not-found'],
+        });
       });
     });
 
     it('should set the back link to `workplace-address-not-found` when isCqcRegulated is false and workplaceNotFound in service is true', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.workplaceNotFound$.next(true);
@@ -254,15 +265,17 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.ngOnInit();
 
-      component.setBackLink();
+      fixture.whenStable().then(() => {
+        component.setBackLink();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'workplace-address-not-found'],
+        expect(backLinkSpy).toHaveBeenCalledWith({
+          url: ['/add-workplace', 'workplace-address-not-found'],
+        });
       });
     });
 
     it('should set the back link to `select-workplace` when isCqcRegulated is true and workplaceNotFound in service is false', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.workplaceNotFound$.next(false);
@@ -271,15 +284,17 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.ngOnInit();
 
-      component.setBackLink();
+      fixture.whenStable().then(() => {
+        component.setBackLink();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'select-workplace'],
+        expect(backLinkSpy).toHaveBeenCalledWith({
+          url: ['/add-workplace', 'select-workplace'],
+        });
       });
     });
 
     it('should set the back link to `select-workplace-address` when isCqcRegulated is false and workplaceNotFound in service is false', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.workplaceNotFound$.next(false);
@@ -288,10 +303,12 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.ngOnInit();
 
-      component.setBackLink();
+      fixture.whenStable().then(() => {
+        component.setBackLink();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'select-workplace-address'],
+        expect(backLinkSpy).toHaveBeenCalledWith({
+          url: ['/add-workplace', 'select-workplace-address'],
+        });
       });
     });
   });
