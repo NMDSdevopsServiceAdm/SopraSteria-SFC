@@ -31,8 +31,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected init(): void {
-    this.title = `What's the workplace name and address?`;
-    this.workplaceErrorMessage = 'Enter the name of the workplace';
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.returnToWorkplaceNotFound = this.workplaceService.workplaceNotFound$.value;
     this.manuallyEnteredWorkplace = this.workplaceService.manuallyEnteredWorkplace$.value;
@@ -43,6 +41,14 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
 
   protected setFlow(): void {
     this.flow = '/add-workplace';
+  }
+
+  protected setTitle(): void {
+    this.title = `What's the workplace name and address?`;
+  }
+
+  protected setErrorMessage(): void {
+    this.workplaceErrorMessage = 'Enter the name of the workplace';
   }
 
   protected setConfirmDetailsBackLink(): void {

@@ -76,6 +76,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     this.setupForm();
     this.setupFormControlsMap();
     this.setFlow();
+    this.setTitle();
+    this.setErrorMessage();
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
       this.createAccountNewDesign = value;
       this.init();
@@ -316,6 +318,10 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   protected getNextRoute(): void {}
 
   protected setFlow(): void {}
+
+  protected setTitle(): void {}
+
+  protected setErrorMessage(): void {}
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
