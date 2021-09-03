@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
@@ -17,7 +19,11 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public nameAndAddress: string;
   protected subscriptions: Subscription = new Subscription();
 
-  constructor(protected backService: BackService, protected featureFlagsService: FeatureFlagsService) {}
+  constructor(
+    protected backService: BackService,
+    protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
+  ) {}
 
   ngOnInit(): void {
     this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
@@ -29,13 +35,10 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     this.setWorkplaceDetails();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected getWorkplaceData(): void {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setBackLink(): void {}
 
   public setWorkplaceDetails(): void {

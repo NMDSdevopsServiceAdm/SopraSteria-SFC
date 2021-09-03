@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import {
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -14,7 +16,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     protected backService: BackService,
     protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, featureFlagsService);
+    super(backService, featureFlagsService, registrationService);
   }
 
   protected async init(): Promise<void> {

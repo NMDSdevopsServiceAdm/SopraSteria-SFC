@@ -7,7 +7,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import {
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
@@ -26,7 +28,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     public backService: BackService,
     protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, featureFlagsService);
+    super(backService, featureFlagsService, workplaceService);
   }
 
   protected init(): void {
