@@ -1,6 +1,7 @@
 // default route for admin/registrations
 const express = require('express');
 const moment = require('moment-timezone');
+const { Op } = require('sequelize');
 
 const models = require('../../../models');
 const config = require('../../../config/config');
@@ -14,7 +15,7 @@ router.route('/').get(async (req, res) => {
       attributes: ['id', 'username'],
       where: {
         isActive: false,
-        status: 'PENDING',
+        status: { [Op.not]: null },
       },
       order: [['id', 'DESC']],
       include: [
@@ -75,13 +76,14 @@ router.route('/').get(async (req, res) => {
         'NmdsID',
         'EstablishmentID',
         'ParentID',
+        'ParentUID',
         'created',
         'updatedBy',
         'Status',
         'EstablishmentUID',
       ],
       where: {
-        ustatus: 'PENDING',
+        ustatus: { [Op.not]: null },
       },
       order: [['id', 'DESC']],
       include: [
@@ -147,6 +149,7 @@ router.route('/').get(async (req, res) => {
             provid: registration.ProvID,
             mainService: registration.mainService.name,
             parentId: registration.ParentID,
+            parentUid: registration.ParentUID,
             status: registration.Status,
             uid: registration.EstablishmentUID,
           },

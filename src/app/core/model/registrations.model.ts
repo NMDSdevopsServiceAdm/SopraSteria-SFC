@@ -19,6 +19,8 @@ export interface Registrations {
       county: string;
       locationId: string;
       provid: string;
+      parentId: string;
+      parentUID: string;
       mainService: number;
       status: string;
       uid: string;
