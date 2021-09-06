@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Registrations } from '@core/model/registrations.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
@@ -11,9 +10,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
   styleUrls: ['./registration-requests.component.scss'],
 })
 export class RegistrationRequestsComponent implements OnInit {
-  public registrations: Registrations[];
-  public pendingRegistrations: Registrations[];
-  public rejectedRegistrations: Registrations[];
+  public registrations = [];
+  public pendingRegistrations = [];
+  public rejectedRegistrations = [];
   public showPendingRegistrations: boolean;
 
   constructor(
@@ -32,16 +31,15 @@ export class RegistrationRequestsComponent implements OnInit {
 
   public getPendingRegistrations(): void {
     this.pendingRegistrations = this.registrations;
-    // this.pendingRegistrations = this.registrations.filter((registration, index) => {
-    //   return registration.establishment.status === 'PENDING';
-    // });
+    this.pendingRegistrations = this.registrations.filter((registration) => {
+      return registration.establishment.status === 'PENDING' || registration.establishment.status === 'IN PROGRESS';
+    });
   }
 
   public getRejectedRegistrations(): void {
-    this.rejectedRegistrations = [];
-    // this.rejectedRegistrations = this.registrations.filter((registration, index) => {
-    //   return registration.establishment.status === 'REJECTED';
-    // });
+    this.rejectedRegistrations = this.registrations.filter((registration) => {
+      return registration.establishment.status === 'REJECTED';
+    });
   }
 
   public displayPendingRegistrations(event: Event, bool: boolean): void {
@@ -53,6 +51,7 @@ export class RegistrationRequestsComponent implements OnInit {
     event.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
+
   public conditionalClass(status: string): string {
     return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
   }

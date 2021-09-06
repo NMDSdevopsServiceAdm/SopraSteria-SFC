@@ -185,8 +185,7 @@ router.route('/').get(async (req, res) => {
           }
         }
       }
-      // console.log("ArrToReturn ***************");
-      // console.log(arrToReturn);
+
       res.status(200).send(arrToReturn);
     } else if (loginReturnArr && !workplaceReturnArr) {
       loginReturnArr.map((registration) => {
@@ -201,7 +200,6 @@ router.route('/').get(async (req, res) => {
 
       res.status(200).send(workplaceReturnArr);
     } else {
-      console.log('Else');
       res.status(200);
     }
   } catch (error) {
