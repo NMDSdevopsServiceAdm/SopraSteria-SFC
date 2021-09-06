@@ -4,9 +4,11 @@ const moment = require('moment-timezone');
 
 const models = require('../../../models');
 const config = require('../../../config/config');
+const { getSingleRegistration } = require('./getSingleRegistration');
 
 const router = express.Router();
 
+router.route('/:establishmentUid').get(getSingleRegistration);
 router.route('/').get(async (req, res) => {
   try {
     // Get the login, user and establishment records
@@ -26,7 +28,7 @@ router.route('/').get(async (req, res) => {
           include: [
             {
               model: models.establishment,
-              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID'],
+              attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID','Status', 'EstablishmentUID'],
               include: [{
                 model: models.services,
                 as: 'mainService',
@@ -37,9 +39,10 @@ router.route('/').get(async (req, res) => {
         }
       ]
     });
+
     // Get the pending workplace records
     const workplaceResults = await models.establishment.findAll({
-      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'ParentID', 'created', 'updatedBy'],
+      attributes: ['NameValue', 'IsRegulated', 'LocationID', 'ProvID', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'PostCode', 'NmdsID', 'EstablishmentID', 'ParentID', 'created', 'updatedBy','Status', 'EstablishmentUID'],
       where: {
           ustatus: 'PENDING'
       },
@@ -79,7 +82,9 @@ router.route('/').get(async (req, res) => {
             county: registration.user.establishment.County,
             locationId: registration.user.establishment.LocationID,
             provid: registration.user.establishment.ProvID,
-            mainService: registration.user.establishment.mainService.name
+            mainService: registration.user.establishment.mainService.name,
+            status: registration.user.establishment.Status,
+            uid: registration.user.establishment.EstablishmentUID,
           }
         };
       });
@@ -104,7 +109,9 @@ router.route('/').get(async (req, res) => {
             locationId: registration.LocationID,
             provid: registration.ProvID,
             mainService: registration.mainService.name,
-            parentId: registration.ParentID
+            parentId: registration.ParentID,
+            status: registration.Status,
+            uid: registration.EstablishmentUID,
           }
         };
       });
