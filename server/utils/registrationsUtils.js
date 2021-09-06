@@ -1,8 +1,11 @@
+const config = require('../config/config');
+const moment = require('moment-timezone');
+
 module.exports.convertWorkplaceToCorrectFormat = (rawWorkplace) => {
   const workplace = rawWorkplace.toJSON();
 
   return {
-    created: workplace.created,
+    created: moment.utc(workplace.created).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
     username: workplace.updatedBy,
     establishment: {
       id: workplace.EstablishmentID,
@@ -21,20 +24,20 @@ module.exports.convertWorkplaceToCorrectFormat = (rawWorkplace) => {
       parentId: workplace.ParentID,
       status: workplace.Status,
       uid: workplace.EstablishmentUID,
-    }
+    },
   };
 };
 
 module.exports.convertLoginToCorrectFormat = (rawLogin) => {
-  const convertedLogin = rawLogin.toJSON();
+  const login = rawLogin.toJSON();
 
   return {
-    name: convertedLogin.FullNameValue,
-    username: convertedLogin.login.username,
-    securityQuestion: convertedLogin.SecurityQuestionValue,
-    securityQuestionAnswer: convertedLogin.SecurityQuestionAnswerValue,
-    email: convertedLogin.EmailValue,
-    phone: convertedLogin.PhoneValue,
-    created: convertedLogin.created,
+    name: login.FullNameValue,
+    username: login.login.username,
+    securityQuestion: login.SecurityQuestionValue,
+    securityQuestionAnswer: login.SecurityQuestionAnswerValue,
+    email: login.EmailValue,
+    phone: login.PhoneValue,
+    created: moment.utc(login.created).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
   };
-}
+};
