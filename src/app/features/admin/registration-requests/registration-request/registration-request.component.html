@@ -11,6 +11,32 @@
       </thead>
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
+          <th class="govuk-table__cell">Workplace ID</th>
+          <td class="govuk-table__cell">
+            <input
+              class="govuk-input govuk-input--width-10"
+              id="nmdsid"
+              name="nmdsid"
+              [formControlName]="'nmdsId'"
+              pattern="^[A-Z].*"
+              type="text"
+            />
+            <button type="submit" class="govuk-button">Save this ID</button>
+          </td>
+        </tr>
+        <tr>
+          <th class="govuk-table__cell">Name and address</th>
+          <td class="govuk-table__cell">
+            {{ registration.establishment.name }}<br />
+            {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+            {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+            {{ registration.establishment.address3 }}<br />
+            {{ registration.establishment.town }}<br />
+            {{ registration.establishment.county }}<br *ngIf="registration.establishment.county" />
+            {{ registration.establishment.postcode }}
+          </td>
+        </tr>
+        <tr class="govuk-table__row">
           <th class="govuk-table__cell">Provider ID</th>
           <td class="govuk-table__cell">
             {{ registration.establishment.provid }}
@@ -25,7 +51,7 @@
         <tr class="govuk-table__row">
           <th class="govuk-table__cell">Parent ID</th>
           <td class="govuk-table__cell">
-            {{ registration.establishment.parentEstablishmentId }}
+            {{ registration.establishment.parentId }}
           </td>
         </tr>
         <tr class="govuk-table__row">

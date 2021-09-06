@@ -1,30 +1,47 @@
 import { JourneyRoute } from './breadcrumb.model';
 
+enum Path {
+  ADMIN = '/sfcadmin',
+  LOCAL_AUTHORITIES_RETURN = '/sfcadmin/local-authorities-return',
+  REGISTRATIONS = '/sfcadmin/registrations',
+  REGISTRATION_REQUEST = '/sfcadmin/registrations/:establishmentUid',
+}
+
 export const adminJourney: JourneyRoute = {
   children: [
     {
-      path: '/sfcadmin',
+      path: Path.ADMIN,
       title: 'Admin',
       children: [
         {
-          path: '/sfcadmin/local-authorities-return',
+          path: Path.LOCAL_AUTHORITIES_RETURN,
           title: 'Local authorities return',
           children: [
             {
-              path: '/sfcadmin/local-authorities-return/set-dates',
+              path: 'set-dates',
               title: 'Set start and end date',
             },
             {
-              path: '/sfcadmin/local-authorities-return/monitor',
+              path: 'monitor',
               title: 'Monitor returns',
               children: [
                 {
-                  path: '/sfcadmin/local-authorities-return/monitor/:uid',
+                  path: ':uid',
                   title: 'Local authority',
                 },
               ],
             },
           ],
+        },
+      ],
+    },
+    {
+      path: Path.REGISTRATIONS,
+      title: 'Registrations',
+      children: [
+        {
+          path: Path.REGISTRATION_REQUEST,
+          title: 'Registration request',
         },
       ],
     },

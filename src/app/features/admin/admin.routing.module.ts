@@ -75,10 +75,10 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'registrations/request',
+    path: 'registrations',
     children: [
       {
-        path: '',
+        path: ':establishmentUid',
         component: RegistrationRequestComponent,
         data: { title: 'Registration Request' },
       },
