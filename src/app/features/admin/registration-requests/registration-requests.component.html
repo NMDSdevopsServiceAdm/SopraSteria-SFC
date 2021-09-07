@@ -1,0 +1,81 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">Registration requests</h2>
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <ul class="govuk-list">
+      <li [class.active]="showPendingRegistrations" data-testid="pendingLink">
+        <a
+          href="#"
+          (click)="displayPendingRegistrations($event, true)"
+          class="govuk-link"
+          data-testid="pendingLinkAnchor"
+        >
+          Pending ({{ pendingRegistrations.length }})
+        </a>
+      </li>
+      <li [class.active]="!showPendingRegistrations" data-testid="rejectedLink">
+        <a
+          href="#"
+          (click)="displayPendingRegistrations($event, false)"
+          class="govuk-link"
+          data-testid="rejectedLinkAnchor"
+        >
+          Rejected
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="govuk-grid-column-full" *ngIf="showPendingRegistrations; else showRejectedRegistrations">
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Workplace</th>
+          <th scope="col" class="govuk-table__header">Postcode</th>
+          <th scope="col" class="govuk-table__header">Parent ID</th>
+          <th scope="col" class="govuk-table__header">Received</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" *ngFor="let registration of pendingRegistrations">
+          <td class="govuk-table__cell">
+            <a [routerLink]="[registration.establishment.uid]">{{ registration.establishment.name }}</a>
+          </td>
+          <td class="govuk-table__cell">
+            {{ registration.establishment.postcode }}
+          </td>
+          <td class="govuk-table__cell">
+            <a
+              (click)="
+                navigateToParentPage(
+                  registration.establishment.parentUid,
+                  '',
+                  registration.establishment.parentEstablishmentId,
+                  $event
+                )
+              "
+              href="#"
+              [attr.data-testid]="'parentId-' + registration.establishment.parentEstablishmentId"
+            >
+              {{ registration.establishment.parentEstablishmentId }}
+            </a>
+          </td>
+          <td class="govuk-table__cell">
+            {{ registration.created }}
+          </td>
+          <td class="govuk-table__cell">
+            <strong class="govuk-tag" [ngClass]="setStatusClass(registration.establishment.status)">
+              {{ registration.establishment.status | uppercase }}
+            </strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #showRejectedRegistrations>
+    <div class="govuk-grid-column-full">
+      <h1>Rejected Registrations</h1>
+    </div>
+  </ng-template>
+</div>
