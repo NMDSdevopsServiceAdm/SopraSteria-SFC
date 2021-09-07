@@ -43,9 +43,6 @@ export class AddEditTrainingDirective implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.worker = this.workerService.worker;
-    this.workplace = this.route.parent.snapshot.data.establishment;
-
     this.init();
     this.setBackLink();
     this.setupForm();
@@ -67,7 +64,7 @@ export class AddEditTrainingDirective implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      title: [null, [Validators.maxLength(this.titleMaxLength)]],
+      title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
       category: [null, Validators.required],
       accredited: null,
       completed: this.formBuilder.group({
@@ -121,17 +118,12 @@ export class AddEditTrainingDirective implements OnInit {
         item: 'title',
         type: [
           {
-            name: 'maxlength',
+            name: 'minlength',
             message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
           },
-        ],
-      },
-      {
-        item: 'accredited',
-        type: [
           {
-            name: 'required',
-            message: 'Select if training is accredited',
+            name: 'maxlength',
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
           },
         ],
       },
@@ -139,20 +131,16 @@ export class AddEditTrainingDirective implements OnInit {
         item: 'completed',
         type: [
           {
-            name: 'required',
-            message: 'Completed date is required.',
-          },
-          {
             name: 'dateValid',
-            message: 'Completed date must be a valid date.',
+            message: 'Completed date must be a valid date',
           },
           {
             name: 'todayOrBefore',
-            message: 'Completed date must be before today.',
+            message: 'Completed date must be before today',
           },
           {
             name: 'dateMin',
-            message: 'Completed date cannot be more than 100 years ago.',
+            message: 'Completed date cannot be more than 100 years ago',
           },
         ],
       },
@@ -161,11 +149,11 @@ export class AddEditTrainingDirective implements OnInit {
         type: [
           {
             name: 'dateValid',
-            message: 'Expiry date must be a valid date.',
+            message: 'Expiry date must be a valid date',
           },
           {
             name: 'dateMin',
-            message: 'Expiry date cannot be more than 100 years ago.',
+            message: 'Expiry date cannot be more than 100 years ago',
           },
           {
             name: 'expiresBeforeCompleted',

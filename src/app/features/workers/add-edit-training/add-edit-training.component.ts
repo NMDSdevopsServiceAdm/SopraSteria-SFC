@@ -28,12 +28,13 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected init(): void {
+    this.worker = this.workerService.worker;
+    this.workplace = this.route.parent.snapshot.data.establishment;
+
     this.workerService.getRoute$.subscribe((route) => {
       if (route) {
         this.previousUrl = route;
       } else {
-        console.log(this.workplace);
-        console.log(this.worker);
         this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
       }
     });
