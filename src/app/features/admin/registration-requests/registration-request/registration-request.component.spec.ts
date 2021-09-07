@@ -3,9 +3,11 @@ import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationsService } from '@core/test-utils/MockRegistrationsService';
@@ -13,6 +15,7 @@ import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplace
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { RegistrationRequestComponent } from './registration-request.component';
 
@@ -32,6 +35,8 @@ describe('RegistrationRequestComponent', () => {
         { provide: RegistrationsService, useClass: MockRegistrationsService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: SwitchWorkplaceService, useClass: MockSwitchWorkplaceService },
+        AlertService,
+        WindowRef,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -110,69 +115,93 @@ describe('RegistrationRequestComponent', () => {
     expect(switchWorkplaceServiceSpy).toHaveBeenCalled();
   });
 
-  describe('Updating workplace ID validation', () => {
-    it('displays enter a valid workplace ID message when box is empty', async () => {
+  describe('Updating workplace ID', () => {
+    it('should have a success alert when delete is successful', async () => {
       const { component, fixture, getByText } = await setup();
+
+      spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(of({}));
+
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
       const form = component.workplaceIdForm;
 
-      form.controls['nmdsId'].setValue('');
+      form.controls['nmdsId'].setValue('A1234567');
       form.controls['nmdsId'].markAsDirty();
 
       fireEvent.click(getByText('Save this ID'));
-
       fixture.detectChanges();
 
-      expect(form.valid).toBeFalsy();
-      expect(getByText('To update, enter a valid workplace ID', { exact: false })).toBeTruthy();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'The workplace ID has been successfully updated to A1234567',
+      });
     });
 
-    it('shows length error message if workplace ID is shorter than 8 characters', async () => {
-      const { component, fixture, getByText } = await setup();
+    describe('Workplace ID validation', () => {
+      it('displays enter a valid workplace ID message when box is empty', async () => {
+        const { component, fixture, getByText } = await setup();
 
-      const form = component.workplaceIdForm;
+        const form = component.workplaceIdForm;
 
-      form.controls['nmdsId'].setValue('A1');
-      form.controls['nmdsId'].markAsDirty();
+        form.controls['nmdsId'].setValue('');
+        form.controls['nmdsId'].markAsDirty();
 
-      fireEvent.click(getByText('Save this ID'));
+        fireEvent.click(getByText('Save this ID'));
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      expect(form.valid).toBeFalsy();
-      expect(getByText('Workplace ID must be 8 characters long', { exact: false })).toBeTruthy();
-    });
+        expect(form.valid).toBeFalsy();
+        expect(getByText('To update, enter a valid workplace ID', { exact: false })).toBeTruthy();
+      });
 
-    it('shows length error message if workplace ID is longer than 8 characters', async () => {
-      const { component, fixture, getByText } = await setup();
+      it('shows length error message if workplace ID is shorter than 8 characters', async () => {
+        const { component, fixture, getByText } = await setup();
 
-      const form = component.workplaceIdForm;
+        const form = component.workplaceIdForm;
 
-      form.controls['nmdsId'].setValue('A123123123');
-      form.controls['nmdsId'].markAsDirty();
+        form.controls['nmdsId'].setValue('A1');
+        form.controls['nmdsId'].markAsDirty();
 
-      fireEvent.click(getByText('Save this ID'));
+        fireEvent.click(getByText('Save this ID'));
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      expect(form.valid).toBeFalsy();
-      expect(getByText('Workplace ID must be 8 characters long', { exact: false })).toBeTruthy();
-    });
+        expect(form.valid).toBeFalsy();
+        expect(getByText('Workplace ID must be 8 characters long', { exact: false })).toBeTruthy();
+      });
 
-    it('validates that a Workplace ID must start with an uppercase letter', async () => {
-      const { component, fixture, getByText } = await setup();
+      it('shows length error message if workplace ID is longer than 8 characters', async () => {
+        const { component, fixture, getByText } = await setup();
 
-      const form = component.workplaceIdForm;
+        const form = component.workplaceIdForm;
 
-      form.controls['nmdsId'].setValue('a1231231');
-      form.controls['nmdsId'].markAsDirty();
+        form.controls['nmdsId'].setValue('A123123123');
+        form.controls['nmdsId'].markAsDirty();
 
-      fireEvent.click(getByText('Save this ID'));
+        fireEvent.click(getByText('Save this ID'));
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      expect(form.valid).toBeFalsy();
-      expect(getByText('Workplace ID must start with an uppercase letter', { exact: false })).toBeTruthy();
+        expect(form.valid).toBeFalsy();
+        expect(getByText('Workplace ID must be 8 characters long', { exact: false })).toBeTruthy();
+      });
+
+      it('validates that a Workplace ID must start with an uppercase letter', async () => {
+        const { component, fixture, getByText } = await setup();
+
+        const form = component.workplaceIdForm;
+
+        form.controls['nmdsId'].setValue('a1231231');
+        form.controls['nmdsId'].markAsDirty();
+
+        fireEvent.click(getByText('Save this ID'));
+
+        fixture.detectChanges();
+
+        expect(form.valid).toBeFalsy();
+        expect(getByText('Workplace ID must start with an uppercase letter', { exact: false })).toBeTruthy();
+      });
     });
   });
 });

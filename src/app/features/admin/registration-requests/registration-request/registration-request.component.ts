@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -19,6 +20,7 @@ export class RegistrationRequestComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private route: ActivatedRoute,
     private switchWorkplaceService: SwitchWorkplaceService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +55,19 @@ export class RegistrationRequestComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    console.log('submitted');
+    const body = {
+      uid: this.registration.establishment.uid,
+      nmdsId: this.nmdsId.value,
+    };
+
+    this.registrationsService.updateWorkplaceId(body).subscribe(
+      () => {
+        this.showWorkplaceIdUpdatedAlert();
+      },
+      (error) => {
+        console.error(error);
+      },
+    );
   }
 
   private setBreadcrumbs(): void {
@@ -67,5 +81,12 @@ export class RegistrationRequestComponent implements OnInit {
       '',
       this.registration.establishment.parentEstablishmentId,
     );
+  }
+
+  private showWorkplaceIdUpdatedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
+    });
   }
 }

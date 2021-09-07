@@ -23,3 +23,8 @@ export interface Registrations {
     };
   };
 }
+
+export interface UpdateWorkplaceIdRequest {
+  uid: string;
+  nmdsId: string;
+}
