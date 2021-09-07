@@ -13,15 +13,37 @@
         <tr class="govuk-table__row">
           <th class="govuk-table__cell">Workplace ID</th>
           <td class="govuk-table__cell">
-            <input
-              class="govuk-input govuk-input--width-10"
-              id="nmdsid"
-              name="nmdsid"
-              [formControlName]="'nmdsId'"
-              pattern="^[A-Z].*"
-              type="text"
-            />
-            <button type="submit" class="govuk-button">Save this ID</button>
+            <form #formEl (ngSubmit)="onSubmit()" [formGroup]="workplaceIdForm" id="form-registration">
+              <input
+                class="govuk-input govuk-input--width-10"
+                id="nmdsId"
+                name="nmdsId"
+                [formControlName]="'nmdsId'"
+                pattern="^[A-Z].*"
+                type="text"
+              />
+              <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-left-6">
+                Save this ID
+              </button>
+              <span *ngIf="nmdsId.invalid && (nmdsId.dirty || nmdsId.touched)" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.required">
+                  To update, enter a valid workplace ID
+                </span>
+                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.minlength">
+                  Workplace ID must be 8 characters long
+                </span>
+                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.maxlength">
+                  Workplace ID must be 8 characters long
+                </span>
+                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.pattern">
+                  Workplace ID must start with an uppercase letter
+                </span>
+                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.serverError">
+                  {{ nmdsId.errors?.serverError }}
+                </span>
+              </span>
+            </form>
           </td>
         </tr>
         <tr>
