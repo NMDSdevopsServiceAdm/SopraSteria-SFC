@@ -3,7 +3,9 @@ import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -11,7 +13,7 @@ import { render } from '@testing-library/angular';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
 
-xdescribe('SelectStaffComponent', () => {
+describe('SelectStaffComponent', () => {
   async function setup() {
     const component = await render(SelectStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
@@ -19,7 +21,11 @@ xdescribe('SelectStaffComponent', () => {
         BackService,
         {
           provide: WorkerService,
-          useValue: MockWorkerService,
+          useClass: MockWorkerService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
         },
       ],
     });

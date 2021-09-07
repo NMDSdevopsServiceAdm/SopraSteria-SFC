@@ -5,10 +5,9 @@
     <div class="govuk-form-group govuk-!-margin-top-6">
       <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="govuk-checkboxes">
-          <ng-container *ngFor="let worker of selectStaff.controls; let i = index">
+          <ng-container *ngFor="let worker of selectStaff.controls; let i = index" formArrayName="selectStaff">
             <div class="govuk-checkboxes__item">
               <input
-                formControlName="selectStaff"
                 class="govuk-checkboxes__input"
                 type="checkbox"
                 id="selectStaff-{{ i }}"

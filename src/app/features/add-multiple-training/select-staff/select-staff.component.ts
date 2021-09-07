@@ -17,7 +17,6 @@ export class SelectStaffComponent implements OnInit {
   public form: FormGroup;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  private selectedStaff: Array<Worker>;
 
   constructor(
     public backService: BackService,
@@ -51,8 +50,6 @@ export class SelectStaffComponent implements OnInit {
       });
       this.selectStaff.push(formControl);
     });
-
-    console.log(this.selectStaff.controls);
   };
 
   public setBackLink(): void {
@@ -71,7 +68,6 @@ export class SelectStaffComponent implements OnInit {
       this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
         this.workers = sortBy(workers, ['']);
         this.setupForm();
-        console.log(this.workers);
       }),
     );
   }
