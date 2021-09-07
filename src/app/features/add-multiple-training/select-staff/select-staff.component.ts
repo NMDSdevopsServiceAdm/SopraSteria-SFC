@@ -16,9 +16,9 @@ import { Subscription } from 'rxjs';
 export class SelectStaffComponent implements OnInit {
   public workers: Array<Worker>;
   public form: FormGroup;
+  public allWorkersSelected = false;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  private allWorkersSelected = false;
 
   constructor(
     public backService: BackService,
@@ -41,6 +41,7 @@ export class SelectStaffComponent implements OnInit {
 
   private setupForm = () => {
     this.form = this.formBuilder.group({
+      selectAll: null,
       selectStaff: this.formBuilder.array([]),
     });
 
@@ -61,6 +62,7 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public updateState(): void {
+    this.updateSelectAllCheckbox();
     const selectedStaff = this.selectStaff.controls
       .filter((control) => control.value.checked)
       .map((control) => {
@@ -89,9 +91,22 @@ export class SelectStaffComponent implements OnInit {
     this.updateState();
   }
 
+  private updateSelectAllCheckbox(): void {
+    const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
+    if (allWorkersSelected) {
+      this.form.patchValue({
+        selectAll: true,
+      });
+    } else {
+      this.form.patchValue({
+        selectAll: false,
+      });
+    }
+  }
+
   public onSubmit(): void {
     console.log(this.trainingService.selectedStaff);
-    // this.router.navigate(['']);
+    this.router.navigate(['add-multiple-training', 'training-details']);
   }
 
   private getWorkers(): void {

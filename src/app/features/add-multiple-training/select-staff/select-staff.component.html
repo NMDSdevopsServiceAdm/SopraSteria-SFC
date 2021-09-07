@@ -11,12 +11,12 @@
         <div class="govuk-grid-column-full">
           <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
             <input
+              formControlName="selectAll"
               class="govuk-checkboxes__input"
               type="checkbox"
               id="selectAll"
               name="selectAll"
               (change)="selectAllWorkers()"
-              [value]="selectAll"
             />
             <label for="selectAll" class="govuk-label govuk-checkboxes__label"> Select all </label>
           </div>
