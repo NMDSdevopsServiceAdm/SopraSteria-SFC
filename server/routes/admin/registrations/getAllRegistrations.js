@@ -1,4 +1,6 @@
 const moment = require('moment-timezone');
+const { Op } = require('sequelize');
+
 const models = require('../../../models');
 const config = require('../../../config/config');
 
@@ -9,7 +11,7 @@ const getAllRegistrations = async (req, res) => {
       attributes: ['id', 'username'],
       where: {
         isActive: false,
-        status: 'PENDING',
+        status: { [Op.not]: null },
       },
       order: [['id', 'DESC']],
       include: [
@@ -54,7 +56,6 @@ const getAllRegistrations = async (req, res) => {
         },
       ],
     });
-
     // Get the pending workplace records
     const workplaceResults = await models.establishment.findAll({
       attributes: [
@@ -71,13 +72,14 @@ const getAllRegistrations = async (req, res) => {
         'NmdsID',
         'EstablishmentID',
         'ParentID',
+        'ParentUID',
         'created',
         'updatedBy',
         'Status',
         'EstablishmentUID',
       ],
       where: {
-        ustatus: 'PENDING',
+        ustatus: { [Op.not]: null },
       },
       order: [['id', 'DESC']],
       include: [
@@ -143,12 +145,14 @@ const getAllRegistrations = async (req, res) => {
             provid: registration.ProvID,
             mainService: registration.mainService.name,
             parentId: registration.ParentID,
+            parentUid: registration.ParentUID,
             status: registration.Status,
             uid: registration.EstablishmentUID,
           },
         };
       });
     }
+
     if (loginResults && workplaceResults) {
       let loginWorkplaceIds = new Set(loginReturnArr.map((d) => d.establishment.id));
       arrToReturn = [
@@ -177,16 +181,19 @@ const getAllRegistrations = async (req, res) => {
           }
         }
       }
+
       res.status(200).send(arrToReturn);
     } else if (loginReturnArr && !workplaceReturnArr) {
       loginReturnArr.map((registration) => {
         registration.created = moment.utc(registration.created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
       });
+
       res.status(200).send(loginReturnArr);
     } else if (!loginReturnArr && workplaceReturnArr) {
       workplaceReturnArr.map((registration) => {
         registration.created = moment.utc(registration.created).tz(config.get('timezone')).format('D/M/YYYY h:mma');
       });
+
       res.status(200).send(workplaceReturnArr);
     } else {
       res.status(200);

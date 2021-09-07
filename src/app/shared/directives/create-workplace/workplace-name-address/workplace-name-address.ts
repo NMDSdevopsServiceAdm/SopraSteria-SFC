@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +7,9 @@ import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -15,44 +18,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
-
-  public formControlsMap: any[] = [
-    {
-      label: 'Workplace name',
-      name: 'workplaceName',
-      width: 20,
-    },
-    {
-      label: 'Building (number or name) and street <span class="govuk-visually-hidden">line 1 of 3</span>',
-      name: 'address1',
-      width: 20,
-    },
-    {
-      label: '<span class="govuk-visually-hidden">Building and street line 2 of 3</span>',
-      name: 'address2',
-      width: 20,
-    },
-    {
-      label: '<span class="govuk-visually-hidden">Building and street line 3 of 3</span>',
-      name: 'address3',
-      width: 20,
-    },
-    {
-      label: 'Town or city',
-      name: 'townOrCity',
-      width: 10,
-    },
-    {
-      label: 'County',
-      name: 'county',
-      width: 10,
-    },
-    {
-      label: 'Postcode',
-      name: 'postcode',
-      width: 10,
-    },
-  ];
+  public formControlsMap: any[];
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public title: string;
@@ -74,6 +40,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   get getWorkplaceName() {
@@ -106,15 +74,22 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   ngOnInit() {
     this.setupForm();
-    this.init();
-    this.setupFormErrorsMap();
+    this.setupFormControlsMap();
+    this.setFlow();
+    this.setTitle();
+    this.setErrorMessage();
+    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
+      this.createAccountNewDesign = value;
+      this.init();
+      this.setBackLink();
+      this.setupFormErrorsMap();
+    });
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   protected setupForm(): void {
@@ -147,6 +122,18 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     });
   }
 
+  public setupPreFillForm(): void {
+    const selectedLocation = this.workplaceInterfaceService.selectedLocationAddress$.value;
+    if (this.createAccountNewDesign) {
+      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
+        this.preFillForm(selectedLocation);
+      }
+    }
+    if (!this.createAccountNewDesign && selectedLocation) {
+      this.preFillForm(selectedLocation);
+    }
+  }
+
   public preFillForm(selectedLocation: LocationAddress): void {
     this.form.setValue({
       address1: selectedLocation.addressLine1,
@@ -157,6 +144,46 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
       townOrCity: selectedLocation.townCity,
       workplaceName: selectedLocation.locationName,
     });
+  }
+
+  protected setupFormControlsMap(): void {
+    this.formControlsMap = [
+      {
+        label: 'Workplace name',
+        name: 'workplaceName',
+        width: 20,
+      },
+      {
+        label: 'Building (number or name) and street <span class="govuk-visually-hidden">line 1 of 3</span>',
+        name: 'address1',
+        width: 20,
+      },
+      {
+        label: '<span class="govuk-visually-hidden">Building and street line 2 of 3</span>',
+        name: 'address2',
+        width: 20,
+      },
+      {
+        label: '<span class="govuk-visually-hidden">Building and street line 3 of 3</span>',
+        name: 'address3',
+        width: 20,
+      },
+      {
+        label: 'Town or city',
+        name: 'townOrCity',
+        width: 10,
+      },
+      {
+        label: 'County',
+        name: 'county',
+        width: 10,
+      },
+      {
+        label: 'Postcode',
+        name: 'postcode',
+        width: 10,
+      },
+    ];
   }
 
   protected setupFormErrorsMap(): void {
@@ -281,8 +308,62 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setSelectedLocationAddress(): void {}
+  protected setSelectedLocationAddress(): void {
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.getLocationAddress());
+    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(true);
+    const url = this.getNextRoute();
+    this.router.navigate([this.flow, url]);
+  }
+
+  protected getNextRoute(): void {}
+
+  protected setFlow(): void {}
+
+  protected setTitle(): void {}
+
+  protected setErrorMessage(): void {}
+
+  protected setServiceVariables(): void {
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
+    this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
+    this.manuallyEnteredWorkplace = this.workplaceInterfaceService.manuallyEnteredWorkplace$.value;
+    this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
+  }
+
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.setConfirmDetailsBackLink();
+      return;
+    }
+
+    if (this.createAccountNewDesign) {
+      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+        return;
+      }
+      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+        return;
+      }
+    }
+
+    if (this.isCqcRegulated) {
+      this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
+      return;
+    }
+
+    this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+  }
+
+  protected setConfirmDetailsBackLink(): void {}
+
+  protected isCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceInterfaceService.workplaceNotFound$.value && this.isCqcRegulated;
+  }
+
+  protected isNotCqcRegulatedAndWorkplaceNotFound(): boolean {
+    return this.workplaceInterfaceService.workplaceNotFound$.value && !this.isCqcRegulated;
+  }
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];

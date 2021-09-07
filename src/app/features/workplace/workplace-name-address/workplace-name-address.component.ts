@@ -7,9 +7,8 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  WorkplaceNameAddressDirective,
-} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-name-address',
@@ -25,21 +24,27 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
+    protected featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router);
+    super(backService, errorSummaryService, formBuilder, route, router, featureFlagsService, workplaceService);
   }
 
   protected init(): void {
-    this.flow = `workplace/${this.establishmentService.establishmentId}`;
-    this.workplaceErrorMessage = 'Enter the name of your workplace';
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
-    this.setBackLink();
     this.setLocationAddress();
   }
 
-  protected setBackLink(): void {
+  protected setFlow(): void {
+    this.flow = `workplace/${this.establishmentService.establishmentId}`;
+  }
+
+  protected setErrorMessage(): void {
+    this.workplaceErrorMessage = 'Enter the name of your workplace';
+  }
+
+  public setBackLink(): void {
     this.backService.setBackLink(this.establishmentService.returnTo);
   }
 

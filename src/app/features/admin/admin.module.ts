@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
+import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
 
@@ -17,6 +18,7 @@ import { LocalAuthorityComponent } from './local-authorities-return/monitor/loca
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
+import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
 import { SearchComponent } from './search/search.component';
 
 @NgModule({
@@ -30,8 +32,9 @@ import { SearchComponent } from './search/search.component';
     MonitorComponent,
     LocalAuthorityComponent,
     RegistrationRequestComponent,
+    RegistrationRequestsComponent,
   ],
-  providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver, GetLaResolver],
+  providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver, GetLaResolver, GetRegistrationsResolver],
   bootstrap: [AdminComponent],
 })
 export class AdminModule {}
