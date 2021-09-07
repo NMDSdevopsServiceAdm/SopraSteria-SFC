@@ -51,7 +51,9 @@
         <tr class="govuk-table__row">
           <th class="govuk-table__cell">Parent ID</th>
           <td class="govuk-table__cell">
-            {{ registration.establishment.parentId }}
+            <a (click)="navigateToParentAccount($event)" href="#">{{
+              registration.establishment.parentEstablishmentId
+            }}</a>
           </td>
         </tr>
         <tr class="govuk-table__row">

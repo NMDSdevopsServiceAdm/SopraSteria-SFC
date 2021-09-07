@@ -22,6 +22,8 @@ module.exports.convertWorkplaceToCorrectFormat = (rawWorkplace) => {
       provid: workplace.ProvID,
       mainService: workplace.mainService.name,
       parentId: workplace.ParentID,
+      parentUid: workplace.ParentUID,
+      parentEstablishmentId: null,
       status: workplace.Status,
       uid: workplace.EstablishmentUID,
     },

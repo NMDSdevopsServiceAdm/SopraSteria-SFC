@@ -23,7 +23,7 @@ export class MockRegistrationsService extends RegistrationsService {
         locationId: '1234',
         provid: '15111',
         mainService: 'Care services',
-        parentId: '6311133333333',
+        parentEstablishmentId: '6311133333333',
         status: 'PENDING',
         uid: 'uidForAddedWorkplace',
       },
