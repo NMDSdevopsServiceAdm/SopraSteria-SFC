@@ -18,6 +18,7 @@ export class SelectStaffComponent implements OnInit {
   public form: FormGroup;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
+  private allWorkersSelected = false;
 
   constructor(
     public backService: BackService,
@@ -69,12 +70,28 @@ export class SelectStaffComponent implements OnInit {
     this.trainingService.updateSelectedStaff(selectedStaff);
   }
 
-  public onChange(control) {
+  public selectWorker(control) {
     control.value.checked = !control.value.checked;
+    this.updateState();
+  }
+
+  public selectAllWorkers(): void {
+    if (this.allWorkersSelected) {
+      this.selectStaff.controls.forEach((control) => {
+        return (control.value.checked = false);
+      });
+    } else {
+      this.selectStaff.controls.forEach((control) => {
+        return (control.value.checked = true);
+      });
+    }
+    this.allWorkersSelected = !this.allWorkersSelected;
+    this.updateState();
   }
 
   public onSubmit(): void {
-    this.router.navigate(['']);
+    console.log(this.trainingService.selectedStaff);
+    // this.router.navigate(['']);
   }
 
   private getWorkers(): void {

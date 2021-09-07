@@ -8,6 +8,19 @@
   <div class="govuk-form-group govuk-!-margin-top-6">
     <form *ngIf="form" #formEl [formGroup]="form">
       <div class="govuk-checkboxes">
+        <div class="govuk-grid-column-full">
+          <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
+            <input
+              class="govuk-checkboxes__input"
+              type="checkbox"
+              id="selectAll"
+              name="selectAll"
+              (change)="selectAllWorkers()"
+              [value]="selectAll"
+            />
+            <label for="selectAll" class="govuk-label govuk-checkboxes__label"> Select all </label>
+          </div>
+        </div>
         <ng-container *ngFor="let worker of selectStaff.controls; let i = index" formArrayName="selectStaff">
           <div class="govuk-grid-column-one-third-from-desktop">
             <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
@@ -16,8 +29,7 @@
                 type="checkbox"
                 id="selectStaff-{{ i }}"
                 name="selectStaff-{{ i }}"
-                (change)="onChange(worker)"
-                (change)="updateState()"
+                (change)="selectWorker(worker)"
                 [checked]="worker.value.checked"
                 [value]="worker.value.name"
               />
