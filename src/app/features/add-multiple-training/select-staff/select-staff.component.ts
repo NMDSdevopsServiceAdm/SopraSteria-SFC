@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
-import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +25,7 @@ export class SelectStaffComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     private trainingService: TrainingService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -73,16 +74,13 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    console.log('submitted');
-    // this.updateState();
-    // this.router.navigate(this.nextPage.url);
-    // this.registrationSurveyService.submitSurvey();
+    this.router.navigate(['']);
   }
 
   private getWorkers(): void {
     this.subscriptions.add(
       this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
-        this.workers = sortBy(workers, ['']);
+        this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
         this.setupForm();
       }),
     );
