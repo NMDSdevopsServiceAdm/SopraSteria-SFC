@@ -8,6 +8,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class TrainingService {
+  public selectedStaff = [];
+
   constructor(private http: HttpClient) {}
 
   getCategories(): Observable<TrainingCategory[]> {

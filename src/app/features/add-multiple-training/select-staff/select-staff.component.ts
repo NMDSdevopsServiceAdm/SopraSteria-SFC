@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -23,6 +24,7 @@ export class SelectStaffComponent implements OnInit {
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
+    private trainingService: TrainingService,
   ) {}
 
   ngOnInit(): void {
@@ -41,12 +43,12 @@ export class SelectStaffComponent implements OnInit {
     });
 
     this.workers.map((worker) => {
-      // const checked = this.registrationSurveyService.howDidYouHearAboutFormData?.includes(response) ? true : false;
+      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
 
-      console.log(worker);
       const formControl = this.formBuilder.control({
         name: worker.nameOrId,
-        checked: true,
+        workerUid: worker.uid,
+        checked,
       });
       this.selectStaff.push(formControl);
     });

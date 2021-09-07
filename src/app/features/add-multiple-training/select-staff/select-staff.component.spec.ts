@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
@@ -27,6 +28,12 @@ describe('SelectStaffComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        {
+          provide: TrainingService,
+          useValue: {
+            selectedStaff: ['1234'],
+          },
+        },
       ],
     });
 
@@ -46,6 +53,14 @@ describe('SelectStaffComponent', () => {
   it('should render a SelectStaffComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should pre-check the checkboxes for staff that have already been selected', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    expect(form.value.selectStaff[0].workerUid).toEqual('1234');
+    expect(form.value.selectStaff[0].checked).toEqual(true);
   });
 
   describe('setBackLink()', () => {
