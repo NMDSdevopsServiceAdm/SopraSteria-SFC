@@ -3,7 +3,7 @@
     <h1 class="govuk-heading-l">Select the staff who have completed the training</h1>
 
     <div class="govuk-form-group govuk-!-margin-top-6">
-      <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+      <form *ngIf="form" #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="govuk-checkboxes">
           <ng-container *ngFor="let worker of selectStaff.controls; let i = index" formArrayName="selectStaff">
             <div class="govuk-checkboxes__item">
