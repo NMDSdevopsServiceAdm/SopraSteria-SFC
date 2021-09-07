@@ -18,7 +18,6 @@ export class RegistrationsComponent implements OnInit {
     this.registrationsService.getRegistrations().subscribe(
       (data) => {
         this.registrations = data;
-        console.log(this.registrations);
       },
       (error) => this.onError(error),
     );

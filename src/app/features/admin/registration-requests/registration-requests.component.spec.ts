@@ -136,11 +136,11 @@ describe('RegistrationRequestsComponent', () => {
     expect(workplace2Status).toBeTruthy();
     expect(workplace2Created).toBeTruthy();
 
-    // expect(workplace3Name).toBeFalsy();
-    // expect(workplace3Postcode).toBeFalsy();
-    // expect(workplace3ParentId).toBeFalsy();
-    // expect(workplace3Status).toBeFalsy();
-    // expect(workplace3Created).toBeFalsy();
+    expect(workplace3Name).toBeFalsy();
+    expect(workplace3Postcode).toBeFalsy();
+    expect(workplace3ParentId).toBeFalsy();
+    expect(workplace3Status).toBeFalsy();
+    expect(workplace3Created).toBeFalsy();
   });
 
   it('should give status a conditional class for different values', async () => {

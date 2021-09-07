@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Registration } from '@core/model/registrations.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
@@ -10,9 +11,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
   styleUrls: ['./registration-requests.component.scss'],
 })
 export class RegistrationRequestsComponent implements OnInit {
-  public registrations = [];
-  public pendingRegistrations = [];
-  public rejectedRegistrations = [];
+  public registrations: Registration[];
+  public pendingRegistrations: Registration[];
+  public rejectedRegistrations: Registration[];
   public showPendingRegistrations: boolean;
 
   constructor(
@@ -47,12 +48,12 @@ export class RegistrationRequestsComponent implements OnInit {
     this.showPendingRegistrations = bool;
   }
 
-  public setEstablishmentId(id: string, username: string, nmdsId: string, event: Event): void {
+  public navigateToParentPage(id: string, username: string, nmdsId: string, event: Event): void {
     event.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
-  public conditionalClass(status: string): string {
+  public setStatusClass(status: string): string {
     return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
   }
 }
