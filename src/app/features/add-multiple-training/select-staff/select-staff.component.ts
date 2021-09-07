@@ -58,6 +58,20 @@ export class SelectStaffComponent implements OnInit {
     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'training-and-qualifications' });
   }
 
+  public updateState(): void {
+    const selectedStaff = this.selectStaff.controls
+      .filter((control) => control.value.checked)
+      .map((control) => {
+        return control.value.workerUid;
+      });
+
+    this.trainingService.updateSelectedStaff(selectedStaff);
+  }
+
+  public onChange(control) {
+    control.value.checked = !control.value.checked;
+  }
+
   public onSubmit(): void {
     console.log('submitted');
     // this.updateState();

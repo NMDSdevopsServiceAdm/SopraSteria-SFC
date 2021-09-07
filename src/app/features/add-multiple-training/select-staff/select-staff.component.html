@@ -12,6 +12,8 @@
                 type="checkbox"
                 id="selectStaff-{{ i }}"
                 name="selectStaff-{{ i }}"
+                (change)="onChange(worker)"
+                (change)="updateState()"
                 [checked]="worker.value.checked"
                 [value]="worker.value.name"
               />
