@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -70,11 +71,26 @@ export class RegistrationRequestComponent implements OnInit {
       () => {
         this.showWorkplaceIdUpdatedAlert();
       },
-      (error) => {
+      (err) => {
         this.invalidWorkplaceIdEntered = true;
-        this.nmdsId.errors.serverError = error;
+        if (err instanceof HttpErrorResponse) {
+          this.populateErrorFromServer(err);
+        }
       },
     );
+  }
+
+  private populateErrorFromServer(err) {
+    const validationErrors = err.error;
+
+    Object.keys(validationErrors).forEach((prop) => {
+      const formControl = this.workplaceIdForm.get(prop);
+      if (formControl) {
+        formControl.setErrors({
+          serverError: validationErrors[prop],
+        });
+      }
+    });
   }
 
   private setBreadcrumbs(): void {
