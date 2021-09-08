@@ -2,139 +2,122 @@
   <div *ngIf="registration" class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
     <p>Received {{ registration.created }}</p>
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Workplace details</th>
-          <td class="govuk-table__cell"></td>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Workplace ID</th>
-          <td class="govuk-table__cell">
-            <form #formEl (ngSubmit)="updateWorkplaceId()" [formGroup]="workplaceIdForm">
-              <input
-                class="govuk-input govuk-input--width-10"
-                id="nmdsId"
-                name="nmdsId"
-                [formControlName]="'nmdsId'"
-                pattern="^[A-Z].*"
-                type="text"
-              />
-              <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-left-6">
-                Save this ID
-              </button>
-              <span *ngIf="nmdsId.invalid && invalidWorkplaceIdEntered" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.required">
-                  To update, enter a valid workplace ID
-                </span>
-                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.minlength">
-                  Workplace ID must be 8 characters long
-                </span>
-                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.maxlength">
-                  Workplace ID must be 8 characters long
-                </span>
-                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.pattern">
-                  Workplace ID must start with an uppercase letter
-                </span>
-                <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.serverError">
-                  {{ nmdsId.errors?.serverError }}
-                </span>
+
+    <h2 class="govuk-heading-m">Workplace details</h2>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Workplace ID</dt>
+        <dd class="govuk-summary-list__value">
+          <form #formEl (ngSubmit)="updateWorkplaceId()" [formGroup]="workplaceIdForm">
+            <input
+              class="govuk-input govuk-input--width-10"
+              id="nmdsId"
+              name="nmdsId"
+              [formControlName]="'nmdsId'"
+              pattern="^[A-Z].*"
+              type="text"
+            />
+            <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-left-6">
+              Save this ID
+            </button>
+            <span *ngIf="nmdsId.invalid && invalidWorkplaceIdEntered" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.required">
+                To update, enter a valid workplace ID
               </span>
-            </form>
-          </td>
-        </tr>
-        <tr>
-          <th class="govuk-table__cell">Name and address</th>
-          <td class="govuk-table__cell">
-            {{ registration.establishment.name }}<br />
-            {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
-            {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
-            {{ registration.establishment.address3 }}<br />
-            {{ registration.establishment.town }}<br />
-            {{ registration.establishment.county }}<br *ngIf="registration.establishment.county" />
-            {{ registration.establishment.postcode }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Provider ID</th>
-          <td class="govuk-table__cell">
-            {{ registration.establishment.provid }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Location ID</th>
-          <td class="govuk-table__cell">
-            {{ registration.establishment.locationId }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Parent ID</th>
-          <td class="govuk-table__cell">
-            <a (click)="navigateToParentAccount($event)" href="#">{{
-              registration.establishment.parentEstablishmentId
-            }}</a>
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Regulated</th>
-          <td class="govuk-table__cell">
-            {{ registration.establishment.isRegulated ? 'Yes' : 'No' }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="govuk-grid-row">
-  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Account details</th>
-          <td class="govuk-table__cell"></td>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Name</th>
-          <td class="govuk-table__cell">
-            {{ registration.name }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Email address</th>
-          <td class="govuk-table__cell">
-            {{ registration.email }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Phone number</th>
-          <td class="govuk-table__cell">
-            {{ registration.phone }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Username</th>
-          <td class="govuk-table__cell">
-            {{ registration.username }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Security question</th>
-          <td class="govuk-table__cell">
-            {{ registration.securityQuestion }}
-          </td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th class="govuk-table__cell">Answer</th>
-          <td class="govuk-table__cell">
-            {{ registration.securityQuestionAnswer }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.minlength">
+                Workplace ID must be 8 characters long
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.maxlength">
+                Workplace ID must be 8 characters long
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.pattern">
+                Workplace ID must start with an uppercase letter
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.serverError">
+                {{ nmdsId.errors?.serverError }}
+              </span>
+            </span>
+          </form>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name and address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+          {{ registration.establishment.address3 }}<br />
+          {{ registration.establishment.town }}<br />
+          {{ registration.establishment.postcode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Provider ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.provid }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Location ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.locationId }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Parent ID</dt>
+        <dd class="govuk-summary-list__value">
+          <a (click)="navigateToParentAccount($event)" href="#">{{
+            registration.establishment.parentEstablishmentId
+          }}</a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Regulated</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.isRegulated ? 'Yes' : 'No' }}
+        </dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-8">Account details</h2>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.name }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Email address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.email }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Phone number</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.phone }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Username</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.username }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Security question</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.securityQuestion }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Answer</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.securityQuestionAnswer }}
+        </dd>
+      </div>
+    </dl>
   </div>
 </div>
