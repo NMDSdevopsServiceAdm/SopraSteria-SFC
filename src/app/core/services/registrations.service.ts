@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Registrations, UpdateWorkplaceIdRequest } from '@core/model/registrations.model';
+import { Registration, Registrations, UpdateWorkplaceIdRequest } from '@core/model/registrations.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,8 +13,8 @@ export class RegistrationsService {
     return this.http.get<Registrations[]>('/api/admin/registrations/');
   }
 
-  public getSingleRegistration(establishmentUid: string): Observable<Registrations[]> {
-    return this.http.get<Registrations[]>(`/api/admin/registrations/${establishmentUid}`);
+  public getSingleRegistration(establishmentUid: string): Observable<Registration> {
+    return this.http.get<Registration>(`/api/admin/registrations/${establishmentUid}`);
   }
 
   public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {

@@ -4,6 +4,9 @@ import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
+import {
+  GetSingleRegistrationResolver,
+} from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -41,6 +44,9 @@ const routes: Routes = [
         path: ':establishmentUid',
         component: RegistrationRequestComponent,
         data: { title: 'Registration Request' },
+        resolve: {
+          registration: GetSingleRegistrationResolver,
+        },
       },
     ],
   },

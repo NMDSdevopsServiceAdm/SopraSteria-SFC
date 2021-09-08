@@ -28,22 +28,15 @@ export class RegistrationRequestComponent implements OnInit {
   ngOnInit(): void {
     this.setBreadcrumbs();
     this.getRegistration();
+    this.setupForm();
   }
 
   get nmdsId(): AbstractControl {
     return this.workplaceIdForm.get('nmdsId');
   }
 
-  public getRegistration(): void {
-    const establishmentUid = this.route.snapshot.paramMap.get('establishmentUid');
-
-    this.registrationsService.getSingleRegistration(establishmentUid).subscribe(
-      (data) => {
-        this.registration = data;
-        this.setupForm();
-      },
-      (error) => console.log(error),
-    );
+  private getRegistration(): void {
+    this.registration = this.route.snapshot.data.registration;
   }
 
   private setupForm(): void {

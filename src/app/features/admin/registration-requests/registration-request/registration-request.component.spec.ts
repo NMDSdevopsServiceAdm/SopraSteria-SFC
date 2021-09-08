@@ -11,7 +11,7 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockRegistrationsService } from '@core/test-utils/MockRegistrationsService';
+import { mockRegistration, MockRegistrationsService } from '@core/test-utils/MockRegistrationsService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -42,10 +42,8 @@ describe('RegistrationRequestComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              paramMap: {
-                get() {
-                  'uidForAddedWorkplace';
-                },
+              data: {
+                registration: mockRegistration,
               },
             },
           },
