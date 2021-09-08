@@ -1,45 +1,50 @@
 const config = require('../config/config');
 const moment = require('moment-timezone');
+const get = require('lodash/get');
 
-module.exports.convertWorkplaceToCorrectFormat = (rawWorkplace) => {
-  const workplace = rawWorkplace.toJSON();
-
-  return {
+module.exports.convertWorkplaceAndUserDetails = (workplace) => {
+  const convertedWorkplace = {
     created: moment.utc(workplace.created).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
     username: workplace.updatedBy,
     establishment: {
-      id: workplace.EstablishmentID,
+      id: workplace.get('EstablishmentID'),
       name: workplace.NameValue,
-      isRegulated: workplace.IsRegulated,
-      nmdsId: workplace.NmdsID,
-      address: workplace.Address1,
-      address2: workplace.Address2,
-      address3: workplace.Address3,
-      postcode: workplace.PostCode,
-      town: workplace.Town,
-      county: workplace.County,
-      locationId: workplace.LocationID,
-      provid: workplace.ProvID,
+      isRegulated: workplace.get('IsRegulated'),
+      nmdsId: workplace.nmdsId,
+      address: workplace.get('Address1'),
+      address2: workplace.get('Address2'),
+      address3: workplace.get('Address3'),
+      postcode: workplace.get('PostCode'),
+      town: workplace.get('Town'),
+      county: workplace.get('County'),
+      locationId: workplace.get('LocationID'),
+      provid: workplace.get('ProvID'),
       mainService: workplace.mainService.name,
-      parentId: workplace.ParentID,
-      parentUid: workplace.ParentUID,
-      parentEstablishmentId: null,
-      status: workplace.Status,
-      uid: workplace.EstablishmentUID,
+      parentId: workplace.get('ParentID'),
+      parentUid: workplace.get('ParentUID'),
+      parentEstablishmentID: null,
+      status: workplace.get('Status'),
+      uid: workplace.get('EstablishmentUID'),
     },
   };
+
+  if (workplace.users.length > 0) {
+    return {
+      ...convertedWorkplace,
+      ...convertUserDetails(workplace.users[0]),
+    };
+  }
+  return convertedWorkplace;
 };
 
-module.exports.convertLoginToCorrectFormat = (rawLogin) => {
-  const login = rawLogin.toJSON();
-
+const convertUserDetails = (user) => {
   return {
-    name: login.FullNameValue,
-    username: login.login.username,
-    securityQuestion: login.SecurityQuestionValue,
-    securityQuestionAnswer: login.SecurityQuestionAnswerValue,
-    email: login.EmailValue,
-    phone: login.PhoneValue,
-    created: moment.utc(login.created).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+    name: user.get('FullNameValue'),
+    username: get(user, 'login.username'),
+    securityQuestion: user.get('SecurityQuestionValue'),
+    securityQuestionAnswer: user.get('SecurityQuestionAnswerValue'),
+    email: user.get('EmailValue'),
+    phone: user.get('PhoneValue'),
+    created: moment.utc(user.created).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
   };
 };

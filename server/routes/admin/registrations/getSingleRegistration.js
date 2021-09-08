@@ -1,79 +1,19 @@
-const { convertWorkplaceToCorrectFormat, convertLoginToCorrectFormat } = require('../../../utils/registrationsUtils');
+const { convertWorkplaceAndUserDetails } = require('../../../utils/registrationsUtils');
 const models = require('../../../models');
 
 const getSingleRegistration = async (req, res) => {
   try {
-    const workplace = await models.establishment.findOne({
-      attributes: [
-        'NameValue',
-        'IsRegulated',
-        'LocationID',
-        'ProvID',
-        'Address1',
-        'Address2',
-        'Address3',
-        'Town',
-        'County',
-        'PostCode',
-        'NmdsID',
-        'EstablishmentID',
-        'ParentID',
-        'ParentUID',
-        'created',
-        'updatedBy',
-        'Status',
-        'EstablishmentUID',
-      ],
-      where: {
-        ustatus: 'PENDING',
-        uid: req.params.establishmentUid,
-      },
-      include: [
-        {
-          model: models.services,
-          as: 'mainService',
-          attributes: ['id', 'name'],
-        },
-      ],
-    });
+    const workplaceAndUser = await models.establishment.getEstablishmentWithPrimaryUser(req.params.establishmentUid);
 
-    const workplaceDetails = convertWorkplaceToCorrectFormat(workplace);
+    const workplaceAndUserDetails = convertWorkplaceAndUserDetails(workplaceAndUser);
 
-    if (workplaceDetails.establishment.parentId) {
-      workplaceDetails.establishment.parentEstablishmentId = await getParentEstablishmentId(
-        workplaceDetails.establishment.parentId,
+    if (workplaceAndUserDetails.establishment.parentId) {
+      workplaceAndUserDetails.establishment.parentEstablishmentId = await getParentEstablishmentId(
+        workplaceAndUserDetails.establishment.parentId,
       );
     }
 
-    const login = await models.user.findOne({
-      attributes: [
-        'EmailValue',
-        'PhoneValue',
-        'FullNameValue',
-        'SecurityQuestionValue',
-        'SecurityQuestionAnswerValue',
-        'created',
-      ],
-      where: {
-        establishmentId: workplaceDetails.establishment.id,
-      },
-      include: [
-        {
-          model: models.login,
-          attributes: ['id', 'username'],
-        },
-      ],
-    });
-
-    if (login) {
-      const loginDetails = convertLoginToCorrectFormat(login);
-      res.status(200).send({
-        ...workplaceDetails,
-        ...loginDetails,
-      });
-    } else {
-      res.status(200).send(workplaceDetails);
-    }
+    res.status(200).send(workplaceAndUserDetails);
   } catch (err) {
     console.error(err);
     res.status(503);
