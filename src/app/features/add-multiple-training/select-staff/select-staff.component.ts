@@ -16,7 +16,6 @@ import { Subscription } from 'rxjs';
 export class SelectStaffComponent implements OnInit {
   public workers: Array<Worker>;
   public form: FormGroup;
-  public allWorkersSelected = false;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
 
@@ -78,16 +77,15 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public selectAllWorkers(): void {
-    if (this.allWorkersSelected) {
-      this.selectStaff.controls.forEach((control) => {
-        return (control.value.checked = false);
-      });
-    } else {
+    if (this.form.value.selectAll) {
       this.selectStaff.controls.forEach((control) => {
         return (control.value.checked = true);
       });
+    } else {
+      this.selectStaff.controls.forEach((control) => {
+        return (control.value.checked = false);
+      });
     }
-    this.allWorkersSelected = !this.allWorkersSelected;
     this.updateState();
   }
 
@@ -114,6 +112,7 @@ export class SelectStaffComponent implements OnInit {
       this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
         this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
         this.setupForm();
+        this.updateSelectAllCheckbox();
       }),
     );
   }
