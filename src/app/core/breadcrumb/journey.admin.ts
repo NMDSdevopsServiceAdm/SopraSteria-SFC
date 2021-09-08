@@ -1,35 +1,59 @@
 import { JourneyRoute } from './breadcrumb.model';
 
+enum Path {
+  ADMIN = '/sfcadmin',
+  LOCAL_AUTHORITIES_RETURN = '/sfcadmin/local-authorities-return',
+  SET_DATES = '/sfcadmin/local-authorities-return/set-dates',
+  MONITOR_RETURNS = '/sfcadmin/local-authorities-return/monitor',
+  LOCAL_AUTHORITY = '/sfcadmin/local-authorities-return/monitor/:uid',
+  PENDING = '/sfcadmin/registrations/pending',
+  REJECTED = '/sfcadmin/registrations/rejected',
+}
+
 export const adminJourney: JourneyRoute = {
   children: [
     {
-      path: '/sfcadmin',
       title: 'Admin',
+      path: Path.ADMIN,
       children: [
         {
-          path: '/sfcadmin/registrations',
-          title: 'Registrations',
-          children: [],
-        },
-        {
-          path: '/sfcadmin/local-authorities-return',
           title: 'Local authorities return',
+          path: Path.LOCAL_AUTHORITIES_RETURN,
           children: [
             {
-              path: '/sfcadmin/local-authorities-return/set-dates',
               title: 'Set start and end date',
+              path: Path.SET_DATES,
             },
             {
-              path: '/sfcadmin/local-authorities-return/monitor',
               title: 'Monitor returns',
+              path: Path.MONITOR_RETURNS,
               children: [
                 {
-                  path: '/sfcadmin/local-authorities-return/monitor/:uid',
                   title: 'Local authority',
+                  path: Path.LOCAL_AUTHORITY,
                 },
               ],
             },
           ],
+        },
+      ],
+    },
+  ],
+};
+
+export const adminRegistrationJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Admin',
+      path: Path.ADMIN,
+      children: [
+        {
+          title: 'Registration requests pending',
+          path: Path.PENDING,
+        },
+        {
+          title: 'Registration requests rejected',
+          path: Path.REJECTED,
         },
       ],
     },

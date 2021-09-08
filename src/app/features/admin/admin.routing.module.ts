@@ -9,7 +9,9 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { PendingRegistrationRequestsComponent } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { RejectedRegistrationRequestsComponent } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
@@ -77,11 +79,29 @@ const routes: Routes = [
   },
   {
     path: 'registrations',
+    component: RegistrationRequestsComponent,
+    data: { title: 'Registration Requests' },
+    resolve: {
+      registrations: GetRegistrationsResolver,
+    },
     children: [
       {
         path: '',
-        component: RegistrationRequestsComponent,
-        data: { title: 'Registration Requests' },
+        redirectTo: 'pending',
+        pathMatch: 'full',
+      },
+      {
+        path: 'pending',
+        component: PendingRegistrationRequestsComponent,
+        data: { title: 'Pending Registration Requests' },
+        resolve: {
+          registrations: GetRegistrationsResolver,
+        },
+      },
+      {
+        path: 'rejected',
+        component: RejectedRegistrationRequestsComponent,
+        data: { title: 'Rejected Registration Requests' },
         resolve: {
           registrations: GetRegistrationsResolver,
         },

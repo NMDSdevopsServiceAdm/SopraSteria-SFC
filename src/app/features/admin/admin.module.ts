@@ -17,7 +17,9 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { PendingRegistrationRequestsComponent } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { RejectedRegistrationRequestsComponent } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
 import { SearchComponent } from './search/search.component';
 
 @NgModule({
@@ -31,6 +33,8 @@ import { SearchComponent } from './search/search.component';
     MonitorComponent,
     LocalAuthorityComponent,
     RegistrationRequestsComponent,
+    PendingRegistrationRequestsComponent,
+    RejectedRegistrationRequestsComponent,
   ],
   providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver, GetLaResolver, GetRegistrationsResolver],
   bootstrap: [AdminComponent],
