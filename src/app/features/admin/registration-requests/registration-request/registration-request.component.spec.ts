@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplace
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { RegistrationRequestComponent } from './registration-request.component';
 
@@ -209,6 +210,32 @@ describe('RegistrationRequestComponent', () => {
         expect(getByText('Workplace ID must start with an uppercase letter', { exact: false })).toBeTruthy();
         expect(registrationsServiceSpy).not.toHaveBeenCalled();
       });
+    });
+
+    it('validates that a Workplace ID cannot be the same as an existing Workplace ID', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const form = component.workplaceIdForm;
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        error: {
+          nmdsId: 'This workplace ID (A1231231) belongs to another workplace, enter a different workplace ID',
+        },
+      });
+
+      spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(throwError(mockErrorResponse));
+
+      form.controls['nmdsId'].setValue('A1231231');
+      form.controls['nmdsId'].markAsDirty();
+
+      fireEvent.click(getByText('Save this ID'));
+
+      fixture.detectChanges();
+
+      expect(
+        getByText(`This workplace ID (A1231231) belongs to another workplace, enter a different workplace ID`),
+      ).toBeTruthy();
     });
   });
 });

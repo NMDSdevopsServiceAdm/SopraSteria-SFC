@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 export class MockRegistrationsService extends RegistrationsService {
   public getSingleRegistration(): any {
     return of({
-      created: moment.utc('01/01/2021').format('D/M/YYYY h:mma'),
+      created: moment.utc('20210101').format('D/M/YYYY h:mma'),
       username: 'testuser',
       establishment: {
         id: 'abc',
