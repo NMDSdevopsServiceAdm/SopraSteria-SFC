@@ -87,7 +87,7 @@ export class RegistrationRequestComponent implements OnInit {
   }
 
   private setBreadcrumbs(): void {
-    this.breadcrumbService.show(JourneyType.ADMIN);
+    this.breadcrumbService.show(JourneyType.ADMIN_REGISTRATIONS);
   }
 
   public navigateToParentAccount(e: Event): void {
