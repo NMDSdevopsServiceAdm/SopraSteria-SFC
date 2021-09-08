@@ -9,7 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
@@ -32,6 +32,9 @@ describe('SelectStaffComponent', () => {
           provide: TrainingService,
           useValue: {
             selectedStaff: ['1234'],
+            updateSelectedStaff: () => {
+              return true;
+            },
           },
         },
       ],
@@ -61,6 +64,43 @@ describe('SelectStaffComponent', () => {
 
     expect(form.value.selectStaff[0].workerUid).toEqual('1234');
     expect(form.value.selectStaff[0].checked).toEqual(true);
+  });
+
+  it('should select all checkboxes when `Select all` is checked', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    const selectAllCheckbox = component.getByText('Select all');
+    fireEvent.click(selectAllCheckbox);
+
+    form.value.selectStaff.forEach((worker) => {
+      expect(worker.checked).toEqual(true);
+    });
+  });
+
+  it('should deselect all checkboxes when `Select all` is unchecked', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+
+    const selectAllCheckbox = component.getByText('Select all');
+    fireEvent.click(selectAllCheckbox);
+    form.value.selectStaff.forEach((worker) => {
+      expect(worker.checked).toEqual(true);
+    });
+
+    fireEvent.click(selectAllCheckbox);
+    form.value.selectStaff.forEach((worker) => {
+      expect(worker.checked).toEqual(false);
+    });
+  });
+
+  xit('should display an error message when the continue button is pressed without selecting anything', async () => {
+    const { component } = await setup();
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(component.getAllByText('Select the staff who have completed the training').length).toBe(2);
   });
 
   describe('setBackLink()', () => {
