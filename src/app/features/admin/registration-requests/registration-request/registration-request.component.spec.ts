@@ -143,6 +143,7 @@ describe('RegistrationRequestComponent', () => {
         const { component, fixture, getByText } = await setup();
 
         const form = component.workplaceIdForm;
+        const registrationsServiceSpy = spyOn(component.registrationsService, 'updateWorkplaceId');
 
         form.controls['nmdsId'].setValue('');
         form.controls['nmdsId'].markAsDirty();
@@ -153,12 +154,14 @@ describe('RegistrationRequestComponent', () => {
 
         expect(form.valid).toBeFalsy();
         expect(getByText('To update, enter a valid workplace ID', { exact: false })).toBeTruthy();
+        expect(registrationsServiceSpy).not.toHaveBeenCalled();
       });
 
       it('shows length error message if workplace ID is shorter than 8 characters', async () => {
         const { component, fixture, getByText } = await setup();
 
         const form = component.workplaceIdForm;
+        const registrationsServiceSpy = spyOn(component.registrationsService, 'updateWorkplaceId');
 
         form.controls['nmdsId'].setValue('A1');
         form.controls['nmdsId'].markAsDirty();
@@ -169,12 +172,14 @@ describe('RegistrationRequestComponent', () => {
 
         expect(form.valid).toBeFalsy();
         expect(getByText('Workplace ID must be 8 characters long', { exact: false })).toBeTruthy();
+        expect(registrationsServiceSpy).not.toHaveBeenCalled();
       });
 
       it('shows length error message if workplace ID is longer than 8 characters', async () => {
         const { component, fixture, getByText } = await setup();
 
         const form = component.workplaceIdForm;
+        const registrationsServiceSpy = spyOn(component.registrationsService, 'updateWorkplaceId');
 
         form.controls['nmdsId'].setValue('A123123123');
         form.controls['nmdsId'].markAsDirty();
@@ -185,12 +190,14 @@ describe('RegistrationRequestComponent', () => {
 
         expect(form.valid).toBeFalsy();
         expect(getByText('Workplace ID must be 8 characters long', { exact: false })).toBeTruthy();
+        expect(registrationsServiceSpy).not.toHaveBeenCalled();
       });
 
       it('validates that a Workplace ID must start with an uppercase letter', async () => {
         const { component, fixture, getByText } = await setup();
 
         const form = component.workplaceIdForm;
+        const registrationsServiceSpy = spyOn(component.registrationsService, 'updateWorkplaceId');
 
         form.controls['nmdsId'].setValue('a1231231');
         form.controls['nmdsId'].markAsDirty();
@@ -201,6 +208,7 @@ describe('RegistrationRequestComponent', () => {
 
         expect(form.valid).toBeFalsy();
         expect(getByText('Workplace ID must start with an uppercase letter', { exact: false })).toBeTruthy();
+        expect(registrationsServiceSpy).not.toHaveBeenCalled();
       });
     });
   });

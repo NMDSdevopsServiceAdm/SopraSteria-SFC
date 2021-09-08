@@ -14,6 +14,7 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 export class RegistrationRequestComponent implements OnInit {
   public registration;
   public workplaceIdForm: FormGroup;
+  public invalidWorkplaceIdEntered: boolean;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -54,7 +55,12 @@ export class RegistrationRequestComponent implements OnInit {
     });
   }
 
-  public onSubmit(): void {
+  public updateWorkplaceId(): void {
+    if (this.nmdsId.invalid) {
+      this.invalidWorkplaceIdEntered = true;
+      return;
+    }
+
     const body = {
       uid: this.registration.establishment.uid,
       nmdsId: this.nmdsId.value,
@@ -65,7 +71,8 @@ export class RegistrationRequestComponent implements OnInit {
         this.showWorkplaceIdUpdatedAlert();
       },
       (error) => {
-        console.error(error);
+        this.invalidWorkplaceIdEntered = true;
+        this.nmdsId.errors.serverError = error;
       },
     );
   }
