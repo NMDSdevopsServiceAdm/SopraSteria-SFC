@@ -85,28 +85,45 @@ const viewTrainingRecord = async (req, res) => {
   }
 };
 
+const createSingleTrainingRecord = async (req, res, establishmentId, workerUid, trainingRecord) => {
+  const thisTrainingRecord = new Training(establishmentId, workerUid);
+  const isValidRecord = await thisTrainingRecord.load(trainingRecord);
+
+  if (isValidRecord) {
+    await thisTrainingRecord.save(req.username);
+    return thisTrainingRecord;
+  } else {
+    return res.status(400).send('Unexpected Input.');
+  }
+};
+
 // creates given training record for the 'given' worker by UID
 const createTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
-  const thisTrainingRecord = new Training(establishmentId, workerUid);
-
   try {
-    // by loading after the restore, only those properties defined in the
-    //  PUT body will be updated (peristed)
-    const isValidRecord = await thisTrainingRecord.load(req.body);
+    const thisTrainingRecord = await createSingleTrainingRecord(req, res, establishmentId, workerUid, req.body);
 
-    // this is an update to an existing User, so no mandatory properties!
-    if (isValidRecord) {
-      await thisTrainingRecord.save(req.username);
-
-      return res.status(200).json(thisTrainingRecord.toJSON());
-    } else {
-      return res.status(400).send('Unexpected Input.');
-    }
+    return res.status(200).json(thisTrainingRecord.toJSON());
   } catch (err) {
     console.error(err);
+    return res.status(503).send();
+  }
+};
+
+const createMultipleTrainingRecords = async (req, res) => {
+  const establishmentId = req.establishmentId;
+  const workerUids = req.body.workerUids;
+
+  try {
+    await Promise.all(
+      workerUids.map(async (workerUid) => {
+        await createSingleTrainingRecord(req, res, establishmentId, workerUid, req.body.trainingRecord);
+      }),
+    );
+    return res.status(200).send({ savedRecords: workerUids.length });
+  } catch {
     return res.status(503).send();
   }
 };
@@ -183,9 +200,11 @@ const deleteTrainingRecord = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
+router.route('/multiple-training').post(hasPermission('canEditWorker'), createMultipleTrainingRecords);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
+module.exports.createMultipleTrainingRecords = createMultipleTrainingRecords;
