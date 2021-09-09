@@ -33,6 +33,7 @@ const newWorkplaceIdIsUnique = async (establishmentUid, nmdsId) => {
     },
     attributes: ['id'],
   });
+
   return workplaceWithDuplicateId === null;
 };
 
