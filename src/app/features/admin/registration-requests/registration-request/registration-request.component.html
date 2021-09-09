@@ -8,7 +8,7 @@
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Workplace ID</dt>
         <dd class="govuk-summary-list__value">
-          <form #formEl (ngSubmit)="updateWorkplaceId()" [formGroup]="workplaceIdForm">
+          <form #formEl (ngSubmit)="updateWorkplaceId()" [formGroup]="workplaceIdForm" id="workplaceIdForm">
             <input
               class="govuk-input govuk-input--width-10"
               id="nmdsId"
@@ -48,6 +48,7 @@
           {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
           {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
           {{ registration.establishment.address3 }}<br />
+          {{ registration.establishment.county }}<br />
           {{ registration.establishment.town }}<br />
           {{ registration.establishment.postcode }}
         </dd>

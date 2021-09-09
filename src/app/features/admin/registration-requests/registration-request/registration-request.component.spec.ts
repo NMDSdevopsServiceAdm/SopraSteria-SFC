@@ -78,6 +78,7 @@ describe('RegistrationRequestComponent', () => {
     expect(getByText('Third Line Place', { exact: false })).toBeTruthy();
     expect(getByText('ABC123', { exact: false })).toBeTruthy();
     expect(getByText('Nowhereville', { exact: false })).toBeTruthy();
+    expect(getByText('Wessex', { exact: false })).toBeTruthy();
   });
 
   it('should display the provider ID and location ID', async () => {

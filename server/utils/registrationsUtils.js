@@ -10,7 +10,7 @@ module.exports.convertWorkplaceAndUserDetails = (workplace) => {
       id: workplace.get('EstablishmentID'),
       name: workplace.NameValue,
       isRegulated: workplace.get('IsRegulated'),
-      nmdsId: workplace.nmdsId,
+      nmdsId: workplace.get('NmdsID'),
       address: workplace.get('Address1'),
       address2: workplace.get('Address2'),
       address3: workplace.get('Address3'),
