@@ -37,9 +37,10 @@ export class SelectStaffComponent implements OnInit {
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.setupForm();
+    this.setupFormErrorsMap();
     this.getWorkers();
     this.setBackLink();
-    this.setupFormErrorsMap();
   }
 
   ngAfterViewInit() {
@@ -51,24 +52,10 @@ export class SelectStaffComponent implements OnInit {
   }
 
   private setupForm = async () => {
-    const formControls = await Promise.all(
-      this.workers.map(async (worker) => {
-        const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
-
-        const formControl = this.formBuilder.control({
-          name: worker.nameOrId,
-          workerUid: worker.uid,
-          checked,
-        });
-
-        return formControl;
-      }),
-    );
-
     this.form = this.formBuilder.group(
       {
         selectAll: null,
-        selectStaff: this.formBuilder.array(formControls),
+        selectStaff: this.formBuilder.array([]),
       },
       {
         validator: this.oneCheckboxRequired,
@@ -77,6 +64,20 @@ export class SelectStaffComponent implements OnInit {
 
     // this.updateSelectAllCheckbox();
   };
+
+  private updateForm(): void {
+    this.workers.map(async (worker) => {
+      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
+
+      const formControl = this.formBuilder.control({
+        name: worker.nameOrId,
+        workerUid: worker.uid,
+        checked,
+      });
+
+      this.selectStaff.push(formControl);
+    });
+  }
 
   minLengthArray(min: number) {
     return (c: AbstractControl): { [key: string]: any } => {
@@ -178,7 +179,7 @@ export class SelectStaffComponent implements OnInit {
     this.subscriptions.add(
       this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
         this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
-        this.setupForm();
+        this.updateForm();
       }),
     );
   }
