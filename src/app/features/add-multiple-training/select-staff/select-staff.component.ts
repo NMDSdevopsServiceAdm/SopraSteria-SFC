@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -20,7 +20,6 @@ export class SelectStaffComponent implements OnInit {
   public workers: Array<Worker>;
   public form: FormGroup;
   public submitted: boolean;
-  public formInvalid: boolean;
   private formErrorsMap: Array<ErrorDetails>;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
@@ -61,12 +60,10 @@ export class SelectStaffComponent implements OnInit {
         validator: this.oneCheckboxRequired,
       },
     );
-
-    // this.updateSelectAllCheckbox();
   };
 
   private updateForm(): void {
-    this.workers.map(async (worker) => {
+    this.workers.map((worker) => {
       const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
 
       const formControl = this.formBuilder.control({
@@ -77,17 +74,11 @@ export class SelectStaffComponent implements OnInit {
 
       this.selectStaff.push(formControl);
     });
+
+    this.updateSelectAllCheckbox();
   }
 
-  minLengthArray(min: number) {
-    return (c: AbstractControl): { [key: string]: any } => {
-      if (c.value.length >= min) return { minLengthArray: true };
-
-      return { minLengthArray: false };
-    };
-  }
-
-  private oneCheckboxRequired(form: FormGroup) {
+  private oneCheckboxRequired(form: FormGroup): void {
     if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
       form.controls.selectStaff.setErrors({
         oneCheckboxRequired: true,
@@ -115,8 +106,7 @@ export class SelectStaffComponent implements OnInit {
     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'training-and-qualifications' });
   }
 
-  public updateState(): void {
-    this.updateSelectAllCheckbox();
+  private updateSelectedStaff(): void {
     const selectedStaff = this.selectStaff.controls
       .filter((control) => control.value.checked)
       .map((control) => {
@@ -128,50 +118,33 @@ export class SelectStaffComponent implements OnInit {
 
   public selectWorker(control) {
     control.value.checked = !control.value.checked;
-    this.updateState();
+    this.updateSelectAllCheckbox();
   }
 
   public selectAllWorkers(): void {
-    if (this.form.value.selectAll) {
-      this.selectStaff.controls.forEach((control) => {
-        return (control.value.checked = true);
-      });
-    } else {
-      this.selectStaff.controls.forEach((control) => {
-        return (control.value.checked = false);
-      });
-    }
-    this.updateState();
+    const isChecked = this.form.value.selectAll ? true : false;
+    this.selectStaff.controls.forEach((control) => {
+      return (control.value.checked = isChecked);
+    });
   }
 
   private updateSelectAllCheckbox(): void {
     const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
-    if (allWorkersSelected) {
-      this.form.patchValue({
-        selectAll: true,
-      });
-    } else {
-      this.form.patchValue({
-        selectAll: false,
-      });
-    }
+    const selectAllChecked = allWorkersSelected ? true : false;
+    this.form.patchValue({
+      selectAll: selectAllChecked,
+    });
   }
 
   public onSubmit(): void {
-    // this.checkIfFormInvalid();
-    console.log(this.form);
-
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    console.log(this.form.valid);
-
-    if (!this.form.valid) {
-      this.errorSummaryService.scrollToErrorSummary();
-      console.log('not valid');
-      // this.router.navigate(['add-multiple-training', 'training-details']);
+    if (this.form.valid) {
+      this.updateSelectedStaff();
+      this.router.navigate(['add-multiple-training', 'training-details']);
     } else {
-      console.log('valid');
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
@@ -187,13 +160,5 @@ export class SelectStaffComponent implements OnInit {
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  public getFormErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  private allNotChecked(form): boolean {
-    return form.controls.selectStaff.every((control) => control.value.checked === false);
   }
 }

@@ -103,6 +103,16 @@ describe('SelectStaffComponent', () => {
     expect(component.getAllByText('Select the staff who have completed the training').length).toEqual(3);
   });
 
+  it('should store the selected staff in the training service when pressing continue', async () => {
+    const { component } = await setup();
+    const spy = spyOn(component.fixture.componentInstance.trainingService, 'updateSelectedStaff');
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['1234']);
+  });
+
   describe('setBackLink()', () => {
     it('should set the back link to the dashboard', async () => {
       const { component } = await setup();
