@@ -66,34 +66,6 @@ describe('SelectStaffComponent', () => {
     expect(form.value.selectStaff[0].checked).toEqual(true);
   });
 
-  it('should select all checkboxes when `Select all` is checked', async () => {
-    const { component } = await setup();
-    const form = component.fixture.componentInstance.form;
-
-    const selectAllCheckbox = component.getByText('Select all');
-    fireEvent.click(selectAllCheckbox);
-
-    form.value.selectStaff.forEach((worker) => {
-      expect(worker.checked).toEqual(true);
-    });
-  });
-
-  it('should deselect all checkboxes when `Select all` is unchecked', async () => {
-    const { component } = await setup();
-    const form = component.fixture.componentInstance.form;
-
-    const selectAllCheckbox = component.getByText('Select all');
-    fireEvent.click(selectAllCheckbox);
-    form.value.selectStaff.forEach((worker) => {
-      expect(worker.checked).toEqual(true);
-    });
-
-    fireEvent.click(selectAllCheckbox);
-    form.value.selectStaff.forEach((worker) => {
-      expect(worker.checked).toEqual(false);
-    });
-  });
-
   it('should display an error message when the continue button is pressed without selecting anything', async () => {
     const { component } = await setup(null);
 
@@ -111,6 +83,45 @@ describe('SelectStaffComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['1234']);
+  });
+
+  it('should navigate to the training details page when pressing continue', async () => {
+    const { component, spy } = await setup();
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['add-multiple-training', 'training-details']);
+  });
+
+  describe('Select all checkbox', () => {
+    it('should select all checkboxes when `Select all` is checked', async () => {
+      const { component } = await setup();
+      const form = component.fixture.componentInstance.form;
+
+      const selectAllCheckbox = component.getByText('Select all');
+      fireEvent.click(selectAllCheckbox);
+
+      form.value.selectStaff.forEach((worker) => {
+        expect(worker.checked).toEqual(true);
+      });
+    });
+
+    it('should deselect all checkboxes when `Select all` is unchecked', async () => {
+      const { component } = await setup();
+      const form = component.fixture.componentInstance.form;
+
+      const selectAllCheckbox = component.getByText('Select all');
+      fireEvent.click(selectAllCheckbox);
+      form.value.selectStaff.forEach((worker) => {
+        expect(worker.checked).toEqual(true);
+      });
+
+      fireEvent.click(selectAllCheckbox);
+      form.value.selectStaff.forEach((worker) => {
+        expect(worker.checked).toEqual(false);
+      });
+    });
   });
 
   describe('setBackLink()', () => {
