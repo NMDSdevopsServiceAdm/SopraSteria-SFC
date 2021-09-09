@@ -102,8 +102,37 @@ export class SelectStaffComponent implements OnInit {
     ];
   }
 
+  private getWorkers(): void {
+    this.subscriptions.add(
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
+        this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
+        this.updateForm();
+      }),
+    );
+  }
+
   public setBackLink(): void {
     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'training-and-qualifications' });
+  }
+
+  public selectAllWorkers(): void {
+    const isChecked = this.form.value.selectAll ? true : false;
+    this.selectStaff.controls.forEach((control) => {
+      return (control.value.checked = isChecked);
+    });
+  }
+
+  public selectWorker(control) {
+    control.value.checked = !control.value.checked;
+    this.updateSelectAllCheckbox();
+  }
+
+  public updateSelectAllCheckbox(): void {
+    const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
+    const selectAllChecked = allWorkersSelected ? true : false;
+    this.form.patchValue({
+      selectAll: selectAllChecked,
+    });
   }
 
   private updateSelectedStaff(): void {
@@ -116,26 +145,6 @@ export class SelectStaffComponent implements OnInit {
     this.trainingService.updateSelectedStaff(selectedStaff);
   }
 
-  public selectWorker(control) {
-    control.value.checked = !control.value.checked;
-    this.updateSelectAllCheckbox();
-  }
-
-  public selectAllWorkers(): void {
-    const isChecked = this.form.value.selectAll ? true : false;
-    this.selectStaff.controls.forEach((control) => {
-      return (control.value.checked = isChecked);
-    });
-  }
-
-  private updateSelectAllCheckbox(): void {
-    const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
-    const selectAllChecked = allWorkersSelected ? true : false;
-    this.form.patchValue({
-      selectAll: selectAllChecked,
-    });
-  }
-
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -146,15 +155,6 @@ export class SelectStaffComponent implements OnInit {
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
-  }
-
-  private getWorkers(): void {
-    this.subscriptions.add(
-      this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
-        this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
-        this.updateForm();
-      }),
-    );
   }
 
   public getFirstErrorMessage(item: string): string {

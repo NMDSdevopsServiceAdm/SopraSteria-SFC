@@ -122,6 +122,32 @@ describe('SelectStaffComponent', () => {
         expect(worker.checked).toEqual(false);
       });
     });
+
+    it('should automatically check the `Select all` checkbox when all staff are selected manually', async () => {
+      const { component } = await setup(null);
+      const form = component.fixture.componentInstance.form;
+
+      form.value.selectStaff[0].checked = true;
+      form.value.selectStaff[1].checked = true;
+      form.value.selectStaff[2].checked = true;
+
+      component.fixture.componentInstance.updateSelectAllCheckbox();
+
+      expect(form.value.selectAll).toBeTruthy();
+    });
+
+    it('should automatically uncheck the `Select all` checkbox when at least one staff checkbox is unchecked', async () => {
+      const { component } = await setup(null);
+      const form = component.fixture.componentInstance.form;
+
+      form.value.selectStaff[0].checked = true;
+      form.value.selectStaff[1].checked = true;
+      form.value.selectStaff[2].checked = false;
+
+      component.fixture.componentInstance.updateSelectAllCheckbox();
+
+      expect(form.value.selectAll).toBeFalsy();
+    });
   });
 
   describe('setBackLink()', () => {
