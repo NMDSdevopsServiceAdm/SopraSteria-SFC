@@ -21,15 +21,14 @@ const getSingleRegistration = async (req, res) => {
 };
 
 const getParentEstablishmentId = async (parentId) => {
-  const parentEstabishmentData = await models.establishment.findOne({
+  const parentEstablishmentData = await models.establishment.findOne({
     where: {
       id: parentId,
     },
     attributes: ['NmdsID'],
   });
 
-  const parentEstablishment = parentEstabishmentData.toJSON();
-  return parentEstablishment.NmdsID;
+  return parentEstablishmentData.get('NmdsID');
 };
 
 module.exports.getSingleRegistration = getSingleRegistration;

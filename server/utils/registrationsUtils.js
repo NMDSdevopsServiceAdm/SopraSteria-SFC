@@ -22,13 +22,13 @@ module.exports.convertWorkplaceAndUserDetails = (workplace) => {
       mainService: workplace.mainService.name,
       parentId: workplace.get('ParentID'),
       parentUid: workplace.get('ParentUID'),
-      parentEstablishmentID: null,
+      parentEstablishmentId: null,
       status: workplace.get('Status'),
       uid: workplace.get('EstablishmentUID'),
     },
   };
 
-  if (workplace.users.length > 0) {
+  if (workplace.users && workplace.users.length > 0) {
     return {
       ...convertedWorkplace,
       ...convertUserDetails(workplace.users[0]),
