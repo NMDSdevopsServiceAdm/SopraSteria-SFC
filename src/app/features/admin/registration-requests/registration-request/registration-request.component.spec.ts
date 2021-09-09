@@ -67,25 +67,35 @@ describe('RegistrationRequestComponent', () => {
 
   it('should display the workplace name twice (heading and name section)', async () => {
     const { queryAllByText } = await setup();
-    expect(queryAllByText('Test Workplace', { exact: false }).length).toBe(2);
+
+    const workplaceName = mockRegistration.establishment.name;
+
+    expect(queryAllByText(workplaceName, { exact: false }).length).toBe(2);
   });
 
   it('should display the workplace address', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Address line 1', { exact: false })).toBeTruthy();
-    expect(getByText('Somewhere', { exact: false })).toBeTruthy();
-    expect(getByText('Third Line Place', { exact: false })).toBeTruthy();
-    expect(getByText('ABC123', { exact: false })).toBeTruthy();
-    expect(getByText('Nowhereville', { exact: false })).toBeTruthy();
-    expect(getByText('Wessex', { exact: false })).toBeTruthy();
+    const address = mockRegistration.establishment.address;
+    const address2 = mockRegistration.establishment.address2;
+    const address3 = mockRegistration.establishment.address3;
+    const postcode = mockRegistration.establishment.postcode;
+    const town = mockRegistration.establishment.town;
+    const county = mockRegistration.establishment.county;
+
+    expect(getByText(address, { exact: false })).toBeTruthy();
+    expect(getByText(address2, { exact: false })).toBeTruthy();
+    expect(getByText(address3, { exact: false })).toBeTruthy();
+    expect(getByText(postcode, { exact: false })).toBeTruthy();
+    expect(getByText(town, { exact: false })).toBeTruthy();
+    expect(getByText(county, { exact: false })).toBeTruthy();
   });
 
   it('should display the provider ID and location ID', async () => {
     const { getByText } = await setup();
 
-    const locationId = '1234';
-    const provid = '15111';
+    const locationId = mockRegistration.establishment.locationId;
+    const provid = mockRegistration.establishment.provid;
 
     expect(getByText(locationId, { exact: false })).toBeTruthy();
     expect(getByText(provid, { exact: false })).toBeTruthy();
@@ -99,6 +109,32 @@ describe('RegistrationRequestComponent', () => {
     expect(getByText(receivedDate, { exact: false })).toBeTruthy();
   });
 
+  it('should display the main service', async () => {
+    const { getByText } = await setup();
+
+    const mainService = mockRegistration.establishment.mainService;
+
+    expect(getByText(mainService, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the user details when user registration', async () => {
+    const { getByText } = await setup();
+
+    const username = mockRegistration.username;
+    const name = mockRegistration.name;
+    const securityQuestion = mockRegistration.securityQuestion;
+    const securityQuestionAnswer = mockRegistration.securityQuestionAnswer;
+    const email = mockRegistration.email;
+    const phone = mockRegistration.phone;
+
+    expect(getByText(username, { exact: false })).toBeTruthy();
+    expect(getByText(name, { exact: false })).toBeTruthy();
+    expect(getByText(securityQuestion, { exact: false })).toBeTruthy();
+    expect(getByText(securityQuestionAnswer, { exact: false })).toBeTruthy();
+    expect(getByText(email, { exact: false })).toBeTruthy();
+    expect(getByText(phone, { exact: false })).toBeTruthy();
+  });
+
   it('should call navigateToWorkplace in switchWorkplaceService when the parentId link is clicked', async () => {
     const { fixture, getByText } = await setup();
 
@@ -106,7 +142,9 @@ describe('RegistrationRequestComponent', () => {
 
     const switchWorkplaceServiceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
 
-    const parentIdLink = getByText('6311133333333', { exact: false });
+    const parentId = mockRegistration.establishment.parentEstablishmentId;
+
+    const parentIdLink = getByText(parentId, { exact: false });
     fireEvent.click(parentIdLink);
 
     fixture.detectChanges();

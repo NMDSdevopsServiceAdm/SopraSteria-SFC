@@ -5,6 +5,11 @@ import * as moment from 'moment';
 export const mockRegistration = {
   created: moment.utc('20210101').format('D/M/YYYY h:mma'),
   username: 'testuser',
+  name: 'Bob Bobby',
+  securityQuestion: 'Do you like cheese?',
+  securityQuestionAnswer: 'Yes, I really like cheese',
+  email: 'bob-bob@user.com',
+  phone: '01010106422',
   establishment: {
     id: 'abc',
     name: 'Test Workplace',
@@ -18,7 +23,7 @@ export const mockRegistration = {
     county: 'Wessex',
     locationId: '1234',
     provid: '15111',
-    mainService: 'Care services',
+    mainService: 'Community support and outreach',
     parentEstablishmentId: '6311133333333',
     status: 'PENDING',
     uid: 'uidForAddedWorkplace',
