@@ -15,7 +15,7 @@ import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
 
 describe('SelectStaffComponent', () => {
-  async function setup() {
+  async function setup(preselectedStaff = ['1234']) {
     const component = await render(SelectStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
       providers: [
@@ -31,7 +31,7 @@ describe('SelectStaffComponent', () => {
         {
           provide: TrainingService,
           useValue: {
-            selectedStaff: ['1234'],
+            selectedStaff: preselectedStaff,
             updateSelectedStaff: () => {
               return true;
             },
@@ -94,13 +94,13 @@ describe('SelectStaffComponent', () => {
     });
   });
 
-  xit('should display an error message when the continue button is pressed without selecting anything', async () => {
-    const { component } = await setup();
+  it('should display an error message when the continue button is pressed without selecting anything', async () => {
+    const { component } = await setup(null);
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(component.getAllByText('Select the staff who have completed the training').length).toBe(2);
+    expect(component.getAllByText('Select the staff who have completed the training').length).toEqual(3);
   });
 
   describe('setBackLink()', () => {
