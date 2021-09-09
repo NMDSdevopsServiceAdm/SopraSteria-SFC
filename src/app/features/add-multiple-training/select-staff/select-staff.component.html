@@ -1,4 +1,4 @@
-<app-error-summary *ngIf="form?.invalid && submitted" [formErrorsMap]="formErrorsMap" [form]="form">
+<app-error-summary *ngIf="submitted && form?.invalid" [formErrorsMap]="formErrorsMap" [form]="form">
 </app-error-summary>
 
 <div class="govuk-grid-row">
@@ -7,10 +7,10 @@
   </div>
 </div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-form-group govuk-!-margin-top-6">
-    <form *ngIf="form" #formEl [formGroup]="form">
-      <span *ngIf="submitted && form.invalid" id="selectStaff-error" class="govuk-error-message">
+<form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="govuk-grid-row">
+    <div class="govuk-form-group govuk-!-margin-top-6" [class.govuk-form-group--error]="submitted && form.invalid">
+      <span *ngIf="submitted && form?.invalid" id="selectStaff-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span>
         {{ getFirstErrorMessage('selectStaff') }}
       </span>
@@ -47,12 +47,12 @@
           </div>
         </ng-container>
       </div>
-    </form>
+    </div>
+    <div class="govuk-button-group">
+      <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Continue</button>
+      <a class="govuk-link govuk-!-margin-left-9" [routerLink]="['/dashboard']" fragment="training-and-qualifications"
+        >Cancel</a
+      >
+    </div>
   </div>
-  <div class="govuk-button-group">
-    <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" (click)="onSubmit()">Continue</button>
-    <a class="govuk-link govuk-!-margin-left-9" [routerLink]="['/dashboard']" fragment="training-and-qualifications"
-      >Cancel</a
-    >
-  </div>
-</div>
+</form>

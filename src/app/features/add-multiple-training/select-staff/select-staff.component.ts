@@ -65,21 +65,35 @@ export class SelectStaffComponent implements OnInit {
       }),
     );
 
-    this.form = this.formBuilder.group({
-      selectAll: null,
-      selectStaff: this.formBuilder.array(formControls, this.minLengthArray(1)),
-    });
+    this.form = this.formBuilder.group(
+      {
+        selectAll: null,
+        selectStaff: this.formBuilder.array(formControls),
+      },
+      {
+        validator: this.oneCheckboxRequired,
+      },
+    );
 
     // this.updateSelectAllCheckbox();
-    console.log(this.form);
   };
 
   minLengthArray(min: number) {
     return (c: AbstractControl): { [key: string]: any } => {
-      if (c.value.length >= min) return null;
+      if (c.value.length >= min) return { minLengthArray: true };
 
-      return { minLengthArray: { valid: false } };
+      return { minLengthArray: false };
     };
+  }
+
+  private oneCheckboxRequired(form: FormGroup) {
+    if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
+      form.controls.selectStaff.setErrors({
+        oneCheckboxRequired: true,
+      });
+    } else {
+      form.controls.selectStaff.setErrors(null);
+    }
   }
 
   private setupFormErrorsMap(): void {
@@ -88,23 +102,12 @@ export class SelectStaffComponent implements OnInit {
         item: 'selectStaff',
         type: [
           {
-            name: 'required',
+            name: 'oneCheckboxRequired',
             message: 'Select the staff who have completed the training',
           },
         ],
       },
     ];
-  }
-
-  private oneCheckboxRequired(form: FormGroup) {
-    console.log(form.get('selectStaff').value);
-    if (form.get('selectStaff').value.length === 0) {
-      form.controls.selectStaff.setErrors({
-        oneCheckboxRequired: true,
-      });
-    } else {
-      form.controls.selectStaff.setErrors(null);
-    }
   }
 
   public setBackLink(): void {
@@ -154,13 +157,15 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    this.checkIfFormInvalid();
+    // this.checkIfFormInvalid();
+    console.log(this.form);
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     console.log(this.form.valid);
 
-    if (this.formInvalid) {
+    if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       console.log('not valid');
       // this.router.navigate(['add-multiple-training', 'training-details']);
@@ -183,7 +188,11 @@ export class SelectStaffComponent implements OnInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private checkIfFormInvalid(): void {
-    // this.formInvalid = this.selectStaff.controls.every((control) => control.value.checked === false);
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private allNotChecked(form): boolean {
+    return form.controls.selectStaff.every((control) => control.value.checked === false);
   }
 }
