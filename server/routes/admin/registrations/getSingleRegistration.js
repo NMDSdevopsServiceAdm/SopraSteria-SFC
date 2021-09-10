@@ -21,12 +21,7 @@ const getSingleRegistration = async (req, res) => {
 };
 
 const getParentEstablishmentId = async (parentId) => {
-  const parentEstablishmentData = await models.establishment.findOne({
-    where: {
-      id: parentId,
-    },
-    attributes: ['NmdsID'],
-  });
+  const parentEstablishmentData = await models.establishment.getNmdsIdUsingEstablishmentId(parentId);
 
   return parentEstablishmentData.get('NmdsID');
 };

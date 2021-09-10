@@ -136,7 +136,7 @@ describe('getSingleRegistration', async () => {
     getEstablishmentWithPrimaryUserStub = sinon.stub(models.establishment, 'getEstablishmentWithPrimaryUser');
     getEstablishmentWithPrimaryUserStub.returns(dummyEstablishmentDetails);
 
-    sinon.stub(models.establishment, 'findOne').returns(dummyParentDetails);
+    sinon.stub(models.establishment, 'getNmdsIdUsingEstablishmentId').returns(dummyParentDetails);
 
     const request = {
       method: 'GET',
@@ -211,8 +211,8 @@ describe('getSingleRegistration', async () => {
     });
 
     it('should return a 503 on error', async () => {
-      models.establishment.findOne.restore();
-      sinon.stub(models.establishment, 'findOne').throws();
+      models.establishment.getNmdsIdUsingEstablishmentId.restore();
+      sinon.stub(models.establishment, 'getNmdsIdUsingEstablishmentId').throws();
 
       await registrations.getSingleRegistration(req, res);
 

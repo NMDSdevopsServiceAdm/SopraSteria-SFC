@@ -1098,6 +1098,15 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getNmdsIdUsingEstablishmentId = async function (id) {
+    return await this.findOne({
+      where: {
+        id: id,
+      },
+      attributes: ['NmdsID'],
+    });
+  };
+
   Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
     const scopes = ['defaultScope', 'noUstatus'];
 
