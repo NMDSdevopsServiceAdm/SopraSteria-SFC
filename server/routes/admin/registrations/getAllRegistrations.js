@@ -203,4 +203,8 @@ const getAllRegistrations = async (req, res) => {
   }
 };
 
-module.exports.getAllRegistrations = getAllRegistrations;
+const router = require('express').Router();
+
+router.route('/').get(getAllRegistrations);
+
+module.exports = router;

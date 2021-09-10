@@ -31,4 +31,9 @@ const getParentEstablishmentId = async (parentId) => {
   return parentEstablishmentData.get('NmdsID');
 };
 
+const router = require('express').Router();
+
+router.route('/:establishmentUid').get(getSingleRegistration);
+
+module.exports = router;
 module.exports.getSingleRegistration = getSingleRegistration;

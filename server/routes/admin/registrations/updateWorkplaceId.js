@@ -37,4 +37,9 @@ const newWorkplaceIdIsUnique = async (establishmentUid, nmdsId) => {
   return workplaceWithDuplicateId === null;
 };
 
+const router = require('express').Router();
+
+router.route('/').post(updateWorkplaceId);
+
+module.exports = router;
 module.exports.updateWorkplaceId = updateWorkplaceId;
