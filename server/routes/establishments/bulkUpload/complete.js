@@ -319,6 +319,6 @@ const completePost = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').post(acquireLock.bind(null, completePost, buStates.COMPLETING));
+router.route('/').post(acquireLock.bind(null, completePost, buStates.COMPLETING, true));
 
 module.exports = router;
