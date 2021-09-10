@@ -106,7 +106,7 @@ app.use(compression());
 // middleware which blocks requests when we're too busy
 app.use(function (req, res, next) {
   if (toobusy()) {
-    res.setHeader('Retry-After', '10');
+    res.setHeader('Retry-After', '2');
     res.send(503, 'Server busy, try again later');
   } else {
     next();
