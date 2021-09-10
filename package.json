@@ -34,7 +34,7 @@
     "@angular/cdk": "^10.2.7",
     "@angular/cli": "~10.2.0",
     "@angular/common": "~10.2.1",
-    "@angular/compiler": "~10.2.1",
+    "@angular/compiler": "~12.2.5",
     "@angular/compiler-cli": "^10.2.1",
     "@angular/core": "~10.2.1",
     "@angular/forms": "~10.2.1",
