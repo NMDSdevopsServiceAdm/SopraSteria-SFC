@@ -104,7 +104,7 @@
     "text-encoding-utf-8": "^1.0.2",
     "toobusy-js": "^0.5.1",
     "tslib": "^2.1.0",
-    "typescript": "^4.0.5",
+    "typescript": "^4.4.2",
     "ua-parser-js": "^0.7.28",
     "url-parse": "^1.4.7",
     "uuid": "^3.4.0",
