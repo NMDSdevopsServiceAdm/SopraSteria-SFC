@@ -19,7 +19,7 @@ const updateWorkplaceId = async (req, res) => {
     res.status(200).send();
   } catch (err) {
     console.error(err);
-    res.status(503);
+    res.status(500);
   }
 };
 

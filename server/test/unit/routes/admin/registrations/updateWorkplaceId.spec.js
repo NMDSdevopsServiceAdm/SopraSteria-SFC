@@ -50,12 +50,12 @@ describe('updateWorkplaceId', async () => {
     expect(res.statusCode).to.deep.equal(200);
   });
 
-  it('should return 503 status when error is thrown', async () => {
+  it('should return 500 status when error is thrown', async () => {
     sinon.stub(models.establishment, 'findOne').returns(null);
     sinon.stub(models.establishment, 'findByUid').throws();
 
     await registrations.updateWorkplaceId(req, res);
 
-    expect(res.statusCode).to.deep.equal(503);
+    expect(res.statusCode).to.deep.equal(500);
   });
 });

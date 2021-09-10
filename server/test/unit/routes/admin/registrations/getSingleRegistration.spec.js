@@ -210,13 +210,13 @@ describe('getSingleRegistration', async () => {
       expect(returnedResponse.phone).to.equal(undefined);
     });
 
-    it('should return a 503 on error', async () => {
+    it('should return a 500 on error', async () => {
       models.establishment.getNmdsIdUsingEstablishmentId.restore();
       sinon.stub(models.establishment, 'getNmdsIdUsingEstablishmentId').throws();
 
       await registrations.getSingleRegistration(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 

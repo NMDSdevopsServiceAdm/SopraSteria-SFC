@@ -16,7 +16,7 @@ const getSingleRegistration = async (req, res) => {
     res.status(200).send(workplaceAndUserDetails);
   } catch (err) {
     console.error(err);
-    res.status(503);
+    res.status(500);
   }
 };
 
