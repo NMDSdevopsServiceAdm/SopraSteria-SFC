@@ -127,7 +127,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
   public setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Database error.',
       },
     ];

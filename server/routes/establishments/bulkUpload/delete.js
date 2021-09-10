@@ -15,7 +15,7 @@ const deleteFiles = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(503).send();
+    res.status(500).send();
   }
 };
 router.delete('/:fileName', deleteFiles);

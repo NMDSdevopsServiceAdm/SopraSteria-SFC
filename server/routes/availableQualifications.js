@@ -57,7 +57,7 @@ router.route('/:id').put(async function (req, res) {
     res.status(200).send({ qualification: { id: qualificationId } });
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 
@@ -116,7 +116,7 @@ router.route('/').post(async function (req, res) {
     res.status(200).send({ qualification: { id: qualification.id } });
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 

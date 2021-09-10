@@ -50,7 +50,7 @@ describe('server/routes/admin/local-authority-returns/dates', async () => {
       });
     });
 
-    it('should reply with a 503 when there is an error', async () => {
+    it('should reply with a 500 when there is an error', async () => {
       sinon.restore();
 
       sinon.stub(models.AdminSettings, 'getValue').throws();
@@ -60,7 +60,7 @@ describe('server/routes/admin/local-authority-returns/dates', async () => {
 
       await getLAReturnDates(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
@@ -103,7 +103,7 @@ describe('server/routes/admin/local-authority-returns/dates', async () => {
       });
     });
 
-    it('should reply with a 503 when there is an error', async () => {
+    it('should reply with a 500 when there is an error', async () => {
       sinon.restore();
 
       sinon.stub(models.AdminSettings, 'setValue').throws();
@@ -113,7 +113,7 @@ describe('server/routes/admin/local-authority-returns/dates', async () => {
 
       await setLAReturnDates(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
 
     it('should reply with a 404 when trying to update a field that does not exist', async () => {

@@ -17,7 +17,7 @@ const getLocalAuthorities = async (req, res) => {
     return res.status(200).send(laResponse);
   } catch (error) {
     console.error(error);
-    return res.sendStatus(503);
+    return res.sendStatus(500);
   }
 };
 
@@ -28,7 +28,7 @@ const getLocalAuthority = async (req, res) => {
     return res.status(200).send(laResponse);
   } catch (error) {
     console.error(error);
-    return res.sendStatus(503);
+    return res.sendStatus(500);
   }
 };
 
@@ -39,7 +39,7 @@ const updateLocalAuthority = async (req, res) => {
     return res.status(200).send();
   } catch (error) {
     console.error(error);
-    return res.sendStatus(503);
+    return res.sendStatus(500);
   }
 };
 
@@ -52,7 +52,7 @@ const resetLocalAuthorities = async (req, res) => {
     return res.status(200).send(laResponse);
   } catch (error) {
     console.error(error);
-    return res.sendStatus(503);
+    return res.sendStatus(500);
   }
 };
 

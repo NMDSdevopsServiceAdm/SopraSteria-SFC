@@ -26,6 +26,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy'); // for service public/download content
 var compression = require('compression');
+var toobusy = require('toobusy-js');
 
 // app config
 var AppConfig = require('./server/config/appConfig');
@@ -101,6 +102,16 @@ app.use(
   }),
 );
 app.use(compression());
+
+// middleware which blocks requests when we're too busy
+app.use(function (req, res, next) {
+  if (toobusy()) {
+    res.setHeader('Retry-After', '1');
+    res.send(503, 'Server busy, try again later');
+  } else {
+    next();
+  }
+});
 
 /* public/download - proxy interception */
 const publicDownloadBaseUrl = config.get('public.download.baseurl');

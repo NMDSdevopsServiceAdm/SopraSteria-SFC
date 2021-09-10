@@ -59,7 +59,7 @@ const viewWorker = async (req, res) => {
     );
 
     console.error('worker::GET/:workerId - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -99,10 +99,10 @@ const createWorker = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
       console.error('Worker POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
     console.error('Worker POST: unexpected exception: ', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -169,11 +169,11 @@ const editWorker = async (req, res) => {
       return res.send(err.safe);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
       console.error('Worker PUT: ', err.message);
-      res.status(503);
+      res.status(500);
       return res.send(err.safe);
     }
 
-    res.status(503);
+    res.status(500);
     return res.send(err);
   }
 };
@@ -219,7 +219,7 @@ const deleteWorker = async (req, res) => {
   } catch (err) {
     if (err instanceof Workers.WorkerExceptions.WorkerDeleteException) {
       console.error('Worker DELETE: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Worker DELETE - unexpected exception: ', err);
       return res.status(500).send();
@@ -242,7 +242,7 @@ const getTotalWorkers = async (req, res) => {
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);
-    return res.status(503).send('Failed to get total workers for establishment having id: ' + establishmentId);
+    return res.status(500).send('Failed to get total workers for establishment having id: ' + establishmentId);
   }
 };
 
@@ -286,7 +286,7 @@ const viewAllWorkers = async (req, res) => {
     });
   } catch (err) {
     console.error('worker::GET:all - failed', err);
-    return res.status(503).send('Failed to get workers for establishment having id: ' + establishmentId);
+    return res.status(500).send('Failed to get workers for establishment having id: ' + establishmentId);
   }
 };
 
@@ -331,7 +331,7 @@ const updateLocalIdentifiers = async (req, res) => {
       }
     }
     console.log(err);
-    return res.status(503).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 

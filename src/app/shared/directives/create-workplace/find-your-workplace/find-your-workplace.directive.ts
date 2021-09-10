@@ -95,7 +95,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
         message: 'Invalid Postcode.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'Database error.',
       },
     ];
