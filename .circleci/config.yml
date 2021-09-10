@@ -143,6 +143,7 @@ orbs:
 
 jobs:
   install:
+    resource_class: large
     working_directory: ~/project
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -165,6 +166,7 @@ jobs:
           paths:
             - dist
   test_frontend:
+    resource_class: large
     docker:
       - image: circleci/node:12.19.0-browsers
     steps:
@@ -390,7 +392,6 @@ workflows:
   build-test-deploy:
     jobs:
       - install:
-          resource_class: large
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
