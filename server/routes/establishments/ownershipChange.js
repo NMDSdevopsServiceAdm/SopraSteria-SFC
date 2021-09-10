@@ -95,7 +95,7 @@ const ownershipChangeRequest = async (req, res) => {
               }
             } catch (err) {
               console.error(err);
-              res.status(503).send({});
+              res.status(500).send({});
             }
           }
         }
@@ -107,7 +107,7 @@ const ownershipChangeRequest = async (req, res) => {
     }
   } catch (e) {
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 
@@ -170,7 +170,7 @@ const cancelOwnershipChangeRequest = async (req, res) => {
     }
   } catch (e) {
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 
@@ -218,7 +218,7 @@ const getOwnershipChangeRequest = async (req, res) => {
     }
   } catch (e) {
     console.error(' /establishment/:id/ownershipChange/details : ERR: ', e.message);
-    return res.status(503).send({}); //intentionally an empty JSON response
+    return res.status(500).send({}); //intentionally an empty JSON response
   }
 };
 

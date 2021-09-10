@@ -116,7 +116,7 @@ const downloadGet = async (req, res) => {
         err,
       );
 
-      await s3.saveResponse(req, res, 503, {
+      await s3.saveResponse(req, res, 500, {
         message: 'Failed to retrieve establishment data',
       });
     }

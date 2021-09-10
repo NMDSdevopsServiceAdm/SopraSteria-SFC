@@ -193,7 +193,7 @@ const reportGet = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 

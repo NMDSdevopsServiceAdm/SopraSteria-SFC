@@ -417,7 +417,7 @@ router.post('/', async (req, res) => {
     );
   } catch (err) {
     console.error('POST .../login failed: ', err);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 });
 

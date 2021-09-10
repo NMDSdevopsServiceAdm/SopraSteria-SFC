@@ -66,7 +66,7 @@ const getAddressesWithPostcode = async (req, res) => {
     });
   } catch (err) {
     console.error('[GET] .../api/postcode/:postcode - failed: ', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

@@ -140,7 +140,7 @@ const validatePut = async (req, res) => {
     console.error(err);
     Sentry.captureException(err);
 
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 

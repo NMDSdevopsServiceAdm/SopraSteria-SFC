@@ -63,7 +63,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   protected setWorkerServerErrors() {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Service unavailable.',
       },
       {
@@ -75,7 +75,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   protected setWorkplaceServerErrors() {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Service unavailable.',
       },
       {

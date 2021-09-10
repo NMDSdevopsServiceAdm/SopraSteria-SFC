@@ -6,31 +6,29 @@ const models = require('../models/index');
 router.route('/').get(async function (req, res) {
   try {
     let results = await models.recruitedFrom.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+      order: [['seq', 'ASC']],
+    });
 
     res.send({
-      recruitedFrom: recruitedFromJSON(results)
+      recruitedFrom: recruitedFromJSON(results),
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 
-function recruitedFromJSON(givenFrom){
-  let recruitedFrom=[];
+function recruitedFromJSON(givenFrom) {
+  let recruitedFrom = [];
 
-  givenFrom.forEach(thisFrom => {
+  givenFrom.forEach((thisFrom) => {
     recruitedFrom.push({
       id: thisFrom.id,
-      from: thisFrom.from
+      from: thisFrom.from,
     });
   });
 
   return recruitedFrom;
-};
+}
 
 module.exports = router;

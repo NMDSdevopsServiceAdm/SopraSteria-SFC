@@ -59,7 +59,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
     return res.json(allTrainingRecords);
   } catch (err) {
     console.error('Training::root - failed', err);
-    res.status(503);
+    res.status(500);
     return res.send(`Failed to get Training Records for Worker having uid: ${escape(workerUid)}`);
   }
 };
@@ -81,7 +81,7 @@ const viewTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -107,7 +107,7 @@ const createTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -144,7 +144,7 @@ const updateTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -177,7 +177,7 @@ const deleteTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

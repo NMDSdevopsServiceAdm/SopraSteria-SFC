@@ -22,7 +22,7 @@ const signedUrlGet = async (req, res) => {
     });
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 
