@@ -396,7 +396,6 @@ workflows:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
       - test_frontend:
-          resource_class: large
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
