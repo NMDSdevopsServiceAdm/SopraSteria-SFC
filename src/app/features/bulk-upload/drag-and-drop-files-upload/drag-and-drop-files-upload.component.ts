@@ -123,8 +123,8 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
       this.bulkUploadService.getPresignedUrls(this.getPresignedUrlsRequest()).subscribe(
         (response: PresignedUrlResponseItem[]) => this.prepForUpload(response),
         (error) => {
-          //handle 503 with custom message to prevent service unavailable redirection
-          if (error.status === 503) {
+          //handle 500 with custom message to prevent service unavailable redirection
+          if (error.status === 500) {
             const customeMessage = [
               {
                 name: error.status,

@@ -9,23 +9,24 @@ const router = express.Router();
 
 const getGroup = async (type) => {
   const groups = {
-    'primaryUsers': await models.user.allPrimaryUsers(),
-  }
+    primaryUsers: await models.user.allPrimaryUsers(),
+  };
   return groups[type];
 };
 
-const getHistory = (req, emailCampaign, templateId, users) => users.map((user) => {
-  return {
-    emailCampaignID: emailCampaign.id,
-    establishmentID: user.establishment.id,
-    template: templateId,
-    data: {
-      type: req.body.groupType,
-    },
-    sentToName: user.FullNameValue,
-    sentToEmail: user.get('email'),
-  };
-});
+const getHistory = (req, emailCampaign, templateId, users) =>
+  users.map((user) => {
+    return {
+      emailCampaignID: emailCampaign.id,
+      establishmentID: user.establishment.id,
+      template: templateId,
+      data: {
+        type: req.body.groupType,
+      },
+      sentToName: user.FullNameValue,
+      sentToEmail: user.get('email'),
+    };
+  });
 
 const templateOptions = {
   templateStatus: true, // Boolean | Filter on the status of the template. Active = true, inactive = false
@@ -38,9 +39,9 @@ const getTargetedTotalEmails = async (req, res) => {
   try {
     const users = await getGroup(req.query.groupType);
     return res.status(200).send({ totalEmails: users.length });
-  } catch(error) {
+  } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -83,7 +84,7 @@ const createTargetedEmailsCampaign = async (req, res) => {
     return res.status(200).send({ success: true });
   } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -107,7 +108,7 @@ router.route('/').post(
       groupType: Joi.string().valid('primaryUsers'),
     },
   }),
-  createTargetedEmailsCampaign
+  createTargetedEmailsCampaign,
 );
 
 module.exports = router;

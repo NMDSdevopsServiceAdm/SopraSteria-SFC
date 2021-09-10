@@ -159,7 +159,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'There has been a problem saving your mandatory training. Please try again.',
       },
       {

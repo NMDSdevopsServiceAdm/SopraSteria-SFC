@@ -8,7 +8,6 @@ const findParentWorkplaces = require('../../../../services/email-campaigns/inact
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const { limit } = require('../../../../services/email-campaigns/limit');
 
-
 const getInactiveWorkplaces = async (_req, res) => {
   try {
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
@@ -20,7 +19,7 @@ const getInactiveWorkplaces = async (_req, res) => {
   } catch (err) {
     console.error(err);
 
-    return res.status(503).json({});
+    return res.status(500).json({});
   }
 };
 
@@ -65,7 +64,7 @@ const createCampaign = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).json();
+    return res.status(500).json();
   }
 };
 

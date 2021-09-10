@@ -48,7 +48,7 @@ const getEmployerType = async (req, res) => {
     );
 
     console.error('establishment::employerType GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -91,7 +91,7 @@ const updateEmployerType = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error('Establishment::employerType POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
     }
@@ -100,6 +100,5 @@ const updateEmployerType = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewEstablishment'), getEmployerType);
 router.route('/').post(hasPermission('canEditEstablishment'), updateEmployerType);
-
 
 module.exports = router;

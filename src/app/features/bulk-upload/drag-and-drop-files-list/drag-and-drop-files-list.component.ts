@@ -362,8 +362,8 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
    */
   private onValidateError(response: HttpErrorResponse): void {
     const error: ValidatedFilesResponse = response.error;
-    //handle 503 with custom message to prevent service unavailable redirection
-    if (response.status === 503) {
+    //handle 500 with custom message to prevent service unavailable redirection
+    if (response.status === 500) {
       const customeMessage = [
         {
           name: response.status,
