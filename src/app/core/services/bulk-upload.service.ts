@@ -276,7 +276,7 @@ export class BulkUploadService {
         message: 'Validation failed.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'There is a problem with the service.',
       },
     ];

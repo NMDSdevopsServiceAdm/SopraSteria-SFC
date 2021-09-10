@@ -44,7 +44,7 @@ const listAllUsers = async (req, res) => {
     });
   } catch (err) {
     console.error('user::establishment - failed', err);
-    return res.status(503).send(`Failed to get users for establishment having id: ${establishmentId}`);
+    return res.status(500).send(`Failed to get users for establishment having id: ${establishmentId}`);
   }
 };
 
@@ -100,7 +100,7 @@ const getUser = async (req, res) => {
     );
 
     console.error('user::GET/:userId - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -200,7 +200,7 @@ const updateUser = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
       console.error('User PUT: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
   }
 };
@@ -281,7 +281,7 @@ const resetPassword = async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('User /resetPassword failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -383,7 +383,7 @@ const changePassword = async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('User /changePassword failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -456,7 +456,7 @@ const partAddUser = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
       console.error('/add/establishment/:id POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
 
     console.error('Unexpected exception: ', err);
@@ -511,7 +511,7 @@ const resendActivationLink = async (req, res) => {
 
     return res.status(404).send('Not found');
   } catch (err) {
-    return res.status(503).send(err.safe);
+    return res.status(500).send(err.safe);
   }
 };
 
@@ -581,7 +581,7 @@ const finishAddUser = async (req, res) => {
     }
   } catch (err) {
     console.error('/add/validateAddUser - failed: ', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -590,7 +590,7 @@ const deleteUser = async (req, res) => {
 
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
   if (!uuidRegex.test(userId.toUpperCase())) {
-    return res.status(503).send('Invalid request');
+    return res.status(500).send('Invalid request');
   }
 
   const thisUser = new User.User(userId);
@@ -623,7 +623,7 @@ const deleteUser = async (req, res) => {
     );
 
     console.error('User::DELETE - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -708,7 +708,7 @@ const addUser = async (req, res) => {
       return res.status(400).send(err.message);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
       console.error('/add/establishment/:id POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
 
     console.error('Unexpected exception: ', err);
@@ -732,7 +732,7 @@ const listEstablishments = async (req, res) => {
     return res.status(200).send(myEstablishments);
   } catch (err) {
     console.error('/user/my/establishments: ERR: ', err.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 

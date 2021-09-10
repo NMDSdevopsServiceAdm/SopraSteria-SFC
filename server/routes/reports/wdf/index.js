@@ -47,7 +47,7 @@ router.route('/establishment/:id').get(async (req, res) => {
     });
   } catch (err) {
     console.error('report/wdf/establishment/:eID - failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 

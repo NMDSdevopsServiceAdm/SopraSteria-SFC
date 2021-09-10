@@ -1400,8 +1400,8 @@ const reportGet = async (req, res) => {
         } else {
           // only allow on those establishments being a parent
 
-          console.error('report/localAuthority/user 503 response');
-          await reportLock.saveResponse(req, res, 503, {});
+          console.error('report/localAuthority/user 500 response');
+          await reportLock.saveResponse(req, res, 500, {});
         }
       } else {
         console.error('report/localAuthority/user 403 response');
@@ -1411,11 +1411,11 @@ const reportGet = async (req, res) => {
       // only allow on those establishments being a local authority
 
       console.error('report/localAuthority/user - failed restoring establishment');
-      await reportLock.saveResponse(req, res, 503, {});
+      await reportLock.saveResponse(req, res, 500, {});
     }
   } catch (err) {
     console.error('report/localAuthority/user - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
+    return res.status(500).send('ERR: Failed to retrieve report');
   }
 };
 

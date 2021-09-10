@@ -203,7 +203,7 @@ router.route('/').get(async (req, res) => {
       res.status(200);
     }
   } catch (error) {
-    res.status(503);
+    res.status(500);
   }
 });
 

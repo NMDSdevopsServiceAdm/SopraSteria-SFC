@@ -25,7 +25,7 @@ const getLAReturnDates = async (req, res) => {
     return res.status(200).send(formatResponse(laReturnStartDate.Data.value, laReturnEndDate.Data.value));
   } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -47,7 +47,7 @@ const setLAReturnDates = async (req, res) => {
     if (error.message === "Couldn't find columns to update") {
       return res.status(404).send();
     }
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
