@@ -146,7 +146,7 @@ jobs:
     working_directory: ~/project
     docker:
       - image: circleci/node:12.19.0-browsers
-    environment: NODE_OPTIONS=--max_old_space_size=4096
+    environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
       - node/install-packages:
@@ -390,10 +390,12 @@ workflows:
   build-test-deploy:
     jobs:
       - install:
+          resource_class: large
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
       - test_frontend:
+          resource_class: large
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
