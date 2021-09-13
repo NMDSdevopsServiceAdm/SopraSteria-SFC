@@ -9,6 +9,11 @@
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFirstErrorMessage('reviewingRegistration') }}
         </span> -->
+        <p>
+          <strong class="govuk-tag" [ngClass]="setStatusClass(registration.establishment.status)">
+            {{ registration.establishment.status | uppercase }}
+          </strong>
+        </p>
         <div class="govuk-checkboxes">
           <div class="govuk-checkboxes__item">
             <input
@@ -17,8 +22,8 @@
               id="reviewingRegistration"
               name="reviewingRegistration"
               type="checkbox"
-              [formControlName]="'reviewingRegistration'"
-              (click)="selectCheckBox($event)"
+              [checked]="registration.establishment.status === 'IN PROGRESS'"
+              (change)="toggleCheckbox($event.target)"
             />
             <label class="govuk-label govuk-checkboxes__label" for="reviewingRegistration">
               I am reviewing this request

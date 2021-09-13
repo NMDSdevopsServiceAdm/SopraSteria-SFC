@@ -10,7 +10,7 @@ const models = require('../../../../../models');
 
 const { updateRegistrationStatus } = require('../../../../../routes/admin/registrations/updateRegistrationStatus');
 
-describe.only('updateRegistrationStatus', () => {
+describe('updateRegistrationStatus', () => {
   const request = {
     method: 'POST',
     url: '/api/admin/registrations/updateRegistrationStatus',

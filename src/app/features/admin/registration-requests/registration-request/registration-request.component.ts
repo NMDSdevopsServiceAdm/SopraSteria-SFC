@@ -106,4 +106,41 @@ export class RegistrationRequestComponent implements OnInit {
       message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
     });
   }
+
+  public setStatusClass(status: string): string {
+    return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
+  }
+
+  public toggleCheckbox(target: HTMLInputElement): void {
+    const { checked } = target;
+
+    const body = {
+      uid: this.registration.establishment.uid,
+      status: checked ? 'IN PROGRESS' : 'PENDING',
+      reviewer: checked ? 'someone' : null,
+      inReview: checked,
+    };
+
+    this.registrationsService.updateRegistrationStatus(body).subscribe(
+      () => {
+        console.log('success');
+        this.getUpdatedRegistration();
+      },
+      (error) => {
+        console.log('error');
+        console.log(error);
+      },
+    );
+  }
+
+  private getUpdatedRegistration() {
+    this.registrationsService.getSingleRegistration(this.registration.establishment.uid).subscribe(
+      (data) => {
+        this.registration = data;
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+  }
 }

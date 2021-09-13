@@ -6,22 +6,22 @@ const updateRegistrationStatus = async (req, res) => {
     const workplace = await models.establishment.findByUid(uid);
 
     if (!workplace) {
-      return res.sendStatus(400);
+      return res.status(400).send();
     }
 
-    workplace.status = status;
-    workplace.save();
+    workplace.ustatus = status;
+    await workplace.save();
 
-    return res.sendStatus(200);
+    return res.status(200).send();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).send();
   }
 };
 
 const router = require('express').Router();
 
-router.route('/:establishmentUid').post(updateRegistrationStatus);
+router.route('/').post(updateRegistrationStatus);
 
 module.exports = router;
 module.exports.updateRegistrationStatus = updateRegistrationStatus;

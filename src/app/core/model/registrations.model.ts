@@ -33,3 +33,10 @@ export interface UpdateWorkplaceIdRequest {
   uid: string;
   nmdsId: string;
 }
+
+export interface UpdateRegistrationStatusRequest {
+  uid: string;
+  status: string;
+  reviewer: string;
+  inReview: boolean;
+}
