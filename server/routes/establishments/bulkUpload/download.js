@@ -131,7 +131,7 @@ const downloadGet = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING));
+router.route('/:downloadType').get(acquireLock.bind(null, downloadGet, buStates.DOWNLOADING, true));
 
 module.exports = router;
 module.exports.downloadGet = downloadGet;
