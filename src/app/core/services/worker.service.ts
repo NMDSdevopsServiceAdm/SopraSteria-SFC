@@ -166,7 +166,7 @@ export class WorkerService {
 
   createMultipleTrainingRecords(workplaceUid: string, workerUids: string[], record: TrainingRecordRequest) {
     return this.http.post<MultipleTrainingResponse>(`/api/establishment/${workplaceUid}/worker/multiple-training`, {
-      ...record,
+      trainingRecord: record,
       workerUids,
     });
   }
