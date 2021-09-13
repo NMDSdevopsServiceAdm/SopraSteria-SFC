@@ -44,6 +44,8 @@ export class AddEditTrainingDirective implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.workplace = this.route.parent.snapshot.data.establishment;
+
     this.init();
     this.setBackLink();
     this.setupForm();

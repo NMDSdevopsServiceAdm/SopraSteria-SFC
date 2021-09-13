@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TrainingRecordRequest } from '@core/model/training.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -42,24 +43,15 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   protected setBackLink(): void {}
 
-  protected submit(record: any): void {
-    if (this.trainingRecordId) {
-      this.subscriptions.add(
-        this.workerService
-          .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
-          .subscribe(
-            () => this.onSuccess(),
-            (error) => this.onError(error),
-          ),
-      );
-    } else {
-      this.subscriptions.add(
-        this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
+  protected submit(record: TrainingRecordRequest): void {
+    this.subscriptions.add(
+      this.workerService
+        .createMultipleTrainingRecords(this.workplace.uid, this.trainingService.selectedStaff, record)
+        .subscribe(
           () => this.onSuccess(),
           (error) => this.onError(error),
         ),
-      );
-    }
+    );
   }
 
   private onSuccess() {
