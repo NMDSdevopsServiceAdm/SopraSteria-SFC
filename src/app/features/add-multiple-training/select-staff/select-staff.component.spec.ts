@@ -7,6 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -15,7 +16,7 @@ import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
 
 describe('SelectStaffComponent', () => {
-  async function setup(preselectedStaff = ['1234']) {
+  async function setup(preselectedStaff = true) {
     const component = await render(SelectStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
       providers: [
@@ -30,12 +31,7 @@ describe('SelectStaffComponent', () => {
         },
         {
           provide: TrainingService,
-          useValue: {
-            selectedStaff: preselectedStaff,
-            updateSelectedStaff: () => {
-              return true;
-            },
-          },
+          useClass: preselectedStaff ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
         },
       ],
     });
@@ -67,7 +63,7 @@ describe('SelectStaffComponent', () => {
   });
 
   it('should display an error message when the continue button is pressed without selecting anything', async () => {
-    const { component } = await setup(null);
+    const { component } = await setup(false);
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
@@ -124,7 +120,7 @@ describe('SelectStaffComponent', () => {
     });
 
     it('should automatically check the `Select all` checkbox when all staff are selected manually', async () => {
-      const { component } = await setup(null);
+      const { component } = await setup(false);
       const form = component.fixture.componentInstance.form;
 
       form.value.selectStaff[0].checked = true;
@@ -137,7 +133,7 @@ describe('SelectStaffComponent', () => {
     });
 
     it('should automatically uncheck the `Select all` checkbox when at least one staff checkbox is unchecked', async () => {
-      const { component } = await setup(null);
+      const { component } = await setup(false);
       const form = component.fixture.componentInstance.form;
 
       form.value.selectStaff[0].checked = true;
