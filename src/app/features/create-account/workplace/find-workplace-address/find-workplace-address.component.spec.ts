@@ -159,7 +159,7 @@ describe('FindWorkplaceAddressComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'workplace-address-not-found']);
   });
 
-  it('should show error when server fails with a 503 error', async () => {
+  it('should show error when server fails with a 500 error', async () => {
     const { component, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
     const findAddressButton = component.getByText('Find address');
@@ -168,7 +168,7 @@ describe('FindWorkplaceAddressComponent', () => {
 
     const errorResponse = new HttpErrorResponse({
       error: { code: `some code`, message: `some message.` },
-      status: 503,
+      status: 500,
       statusText: 'Server error',
     });
 

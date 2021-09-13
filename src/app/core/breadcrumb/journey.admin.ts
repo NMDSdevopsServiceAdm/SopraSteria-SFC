@@ -7,6 +7,11 @@ export const adminJourney: JourneyRoute = {
       title: 'Admin',
       children: [
         {
+          path: '/sfcadmin/registrations',
+          title: 'Registrations',
+          children: [],
+        },
+        {
           path: '/sfcadmin/local-authorities-return',
           title: 'Local authorities return',
           children: [

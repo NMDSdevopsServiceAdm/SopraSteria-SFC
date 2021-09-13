@@ -111,7 +111,7 @@ const printRow = (WS, data, type) => {
 const generateBUReport = async (req, res) => {
   if (!req.establishmentId) {
     console.error('EstablishmentID invalid');
-    return res.status(503).end();
+    return res.status(500).end();
   }
 
   generateHeaderArray(EstablishmentFileHeaders, WorkersFileHeaders, TrainingFileHeaders);

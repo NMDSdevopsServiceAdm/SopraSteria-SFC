@@ -1,4 +1,3 @@
-/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -14,6 +13,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 @Directive()
 export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -171,7 +171,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Database error',
       },
     ];

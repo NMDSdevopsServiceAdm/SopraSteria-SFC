@@ -119,7 +119,7 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
         message: 'Parent or Sub not found.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'Failed to save updates.',
       },
     ];

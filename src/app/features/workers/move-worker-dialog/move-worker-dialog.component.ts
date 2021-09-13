@@ -175,7 +175,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'We could not send request to move worker. You can try again or contact us.',
       },
       {

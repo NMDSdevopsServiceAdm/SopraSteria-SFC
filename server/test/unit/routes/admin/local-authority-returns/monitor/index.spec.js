@@ -121,7 +121,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       expect(res._getData()).to.deep.equal(expectedResponse);
     });
 
-    it('should reply with a 503 when there is an error', async () => {
+    it('should reply with a 500 when there is an error', async () => {
       sinon.restore();
 
       sinon.stub(models.LocalAuthorities, 'getAll').throws();
@@ -131,7 +131,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
 
       await getLocalAuthorities(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
@@ -181,7 +181,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       expect(res._getData()).to.deep.equal(expectedResponse);
     });
 
-    it('should reply with a 503 when there is an error', async () => {
+    it('should reply with a 500 when there is an error', async () => {
       sinon.restore();
 
       sinon.stub(models.LocalAuthorities, 'findById').throws();
@@ -191,7 +191,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
 
       await getLocalAuthority(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
@@ -222,7 +222,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should reply with a 503 when there is an error', async () => {
+    it('should reply with a 500 when there is an error', async () => {
       sinon.restore();
 
       sinon.stub(models.LocalAuthorities, 'updateLA').throws();
@@ -232,7 +232,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
 
       await updateLocalAuthority(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
@@ -343,7 +343,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
       expect(res._getData()).to.deep.equal(expectedResponse);
     });
 
-    it('should reply with a 503 when there is an error', async () => {
+    it('should reply with a 500 when there is an error', async () => {
       sinon.restore();
 
       sinon.stub(models.LocalAuthorities, 'resetLocalAuthorities').throws();
@@ -354,7 +354,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
 
       await resetLocalAuthorities(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 });

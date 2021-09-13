@@ -113,11 +113,11 @@ ${NEWLINE}`);
 
       return res.status(200).end();
     } else {
-      res.status(503).send('Failed to rertrieve report');
+      res.status(500).send('Failed to rertrieve report');
     }
   } catch (err) {
     console.error('report/wdfSummary - failed', err);
-    return res.status(503).send('ERR: Failed to rertrieve report');
+    return res.status(500).send('ERR: Failed to rertrieve report');
   }
 });
 

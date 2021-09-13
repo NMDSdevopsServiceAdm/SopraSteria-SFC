@@ -119,7 +119,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
       const response = res._getJSONData();
 
-      expect(res.statusCode).to.equal(503);
+      expect(res.statusCode).to.equal(500);
       expect(response).to.deep.equal({});
     });
   });
