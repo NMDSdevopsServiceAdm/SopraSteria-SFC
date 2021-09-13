@@ -99,6 +99,27 @@ export class MockWorkerService extends WorkerService {
     return of([
       {
         nameOrId: worker.nameOrId,
+        uid: '1234',
+        trainingCount: 1,
+        trainingLastUpdated: '2020-01-01T00:00:00Z',
+        mainJob: {
+          jobId: 8,
+          other: null,
+        },
+      },
+      {
+        nameOrId: worker.nameOrId,
+        uid: '5678',
+        trainingCount: 1,
+        trainingLastUpdated: '2020-01-01T00:00:00Z',
+        mainJob: {
+          jobId: 8,
+          other: null,
+        },
+      },
+      {
+        nameOrId: worker.nameOrId,
+        uid: '4321',
         trainingCount: 1,
         trainingLastUpdated: '2020-01-01T00:00:00Z',
         mainJob: {
