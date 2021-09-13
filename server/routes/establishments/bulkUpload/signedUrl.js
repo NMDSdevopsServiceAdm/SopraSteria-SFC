@@ -29,6 +29,6 @@ const signedUrlGet = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING, true));
 
 module.exports = router;

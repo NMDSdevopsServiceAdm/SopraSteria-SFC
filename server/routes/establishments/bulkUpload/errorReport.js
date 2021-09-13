@@ -147,7 +147,7 @@ const generateBUReport = async (req, res) => {
   return res.status(200).end();
 };
 
-router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING, true));
 router.route('/report').get(generateBUReport);
 
 module.exports = router;

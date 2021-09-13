@@ -260,10 +260,10 @@ const uploadedStarGet = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING));
-router.route('/').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING));
-router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING));
-router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING, true));
+router.route('/').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING, true));
+router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING, true));
+router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING, true));
 
 module.exports = router;
 module.exports.uploadedPut = uploadedPut;
