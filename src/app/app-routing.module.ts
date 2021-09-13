@@ -231,14 +231,6 @@ const routes: Routes = [
         loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
       },
       {
-        path: 'add-multiple-training',
-        loadChildren: () =>
-          import('@features/add-multiple-training/add-multiple-training.module').then(
-            (m) => m.AddMultipleTrainingModule,
-          ),
-        data: { title: 'Add Multiple Training' },
-      },
-      {
         path: '',
         loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
       },

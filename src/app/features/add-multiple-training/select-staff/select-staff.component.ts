@@ -1,12 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -21,21 +19,21 @@ export class SelectStaffComponent implements OnInit {
   public form: FormGroup;
   public submitted: boolean;
   private formErrorsMap: Array<ErrorDetails>;
-  private workplace: Establishment;
+  private workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     public backService: BackService,
     private workerService: WorkerService,
-    private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
     public trainingService: TrainingService,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.setupForm();
     this.setupFormErrorsMap();
     this.getWorkers();
@@ -104,7 +102,7 @@ export class SelectStaffComponent implements OnInit {
 
   private getWorkers(): void {
     this.subscriptions.add(
-      this.workerService.getAllWorkers(this.workplace.uid).subscribe((workers) => {
+      this.workerService.getAllWorkers(this.workplaceUid).subscribe((workers) => {
         this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
         this.updateForm();
       }),
@@ -152,7 +150,7 @@ export class SelectStaffComponent implements OnInit {
 
     if (this.form.valid) {
       this.updateSelectedStaff();
-      this.router.navigate(['add-multiple-training', 'training-details']);
+      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
