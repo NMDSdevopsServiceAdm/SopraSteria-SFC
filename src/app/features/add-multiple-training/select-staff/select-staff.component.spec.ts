@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -32,6 +32,16 @@ describe('SelectStaffComponent', () => {
         {
           provide: TrainingService,
           useClass: preselectedStaff ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {
+                establishmentuid: '1234-5678',
+              },
+            },
+          },
         },
       ],
     });
@@ -87,7 +97,7 @@ describe('SelectStaffComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-multiple-training', 'training-details']);
+    expect(spy).toHaveBeenCalledWith(['workplace', '1234-5678', 'add-multiple-training', 'training-details']);
   });
 
   describe('Select all checkbox', () => {
