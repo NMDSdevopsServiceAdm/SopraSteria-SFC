@@ -15,7 +15,6 @@ const { buStates } = require('../states');
 const Sentry = require('@sentry/node');
 
 const validatePut = async (req, res) => {
-  console.log(req);
   const keepAlive = (stepName = '', stepId = '') => {
     console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
   };
