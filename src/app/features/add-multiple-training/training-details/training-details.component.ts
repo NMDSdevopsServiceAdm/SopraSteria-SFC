@@ -13,6 +13,9 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit {
+  public showWorkerCount = true;
+  public workerCount: number = this.trainingService.selectedStaff.length;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,

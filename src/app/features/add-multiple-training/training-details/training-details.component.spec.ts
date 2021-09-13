@@ -8,7 +8,7 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByText, render } from '@testing-library/angular';
@@ -41,7 +41,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         },
         FormBuilder,
         ErrorSummaryService,
-        { provide: TrainingService, useClass: MockTrainingService },
+        { provide: TrainingService, useClass: MockTrainingServiceWithPreselectedStaff },
         { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
       ],
     });
@@ -76,6 +76,16 @@ describe('MultipleTrainingDetailsComponent', () => {
       { id: 1, seq: 10, category: 'Activity provision/Well-being' },
       { id: 2, seq: 20, category: 'Autism' },
     ]);
+  });
+
+  it('should show a how many staff are selected', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Number of staff selected:', { exact: false })).toBeTruthy();
+  });
+
+  it('should have the correct number of staff selected', async () => {
+    const { component } = await setup();
+    expect(component.workerCount).toEqual(1);
   });
 
   describe('errors', () => {

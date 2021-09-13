@@ -31,6 +31,7 @@ export class AddEditTrainingDirective implements OnInit {
   public previousUrl: string;
   public title: string;
   public buttonText: string;
+  public showWorkerCount = false;
 
   constructor(
     protected formBuilder: FormBuilder,
