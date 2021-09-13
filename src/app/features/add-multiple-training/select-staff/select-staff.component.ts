@@ -146,6 +146,7 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    this.oneCheckboxRequired(this.form);
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
