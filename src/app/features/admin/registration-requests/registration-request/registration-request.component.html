@@ -3,6 +3,31 @@
     <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
     <p>Received {{ registration.created }}</p>
 
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+      <fieldset class="govuk-fieldset" aria-describedby="reviewingRegistration-hint">
+        <!-- <span *ngIf="submitted && form.invalid" id="reviewingRegistration-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFirstErrorMessage('reviewingRegistration') }}
+        </span> -->
+        <div class="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input
+              class="govuk-checkboxes__input"
+              [class.govuk-input--error]="submitted && form.errors"
+              id="reviewingRegistration"
+              name="reviewingRegistration"
+              type="checkbox"
+              [formControlName]="'reviewingRegistration'"
+              (click)="selectCheckBox($event)"
+            />
+            <label class="govuk-label govuk-checkboxes__label" for="reviewingRegistration">
+              I am reviewing this request
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
     <h2 class="govuk-heading-m">Workplace details</h2>
     <dl class="govuk-summary-list asc-summarylist-border-top">
       <div class="govuk-summary-list__row">

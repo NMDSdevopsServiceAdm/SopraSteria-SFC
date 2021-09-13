@@ -16,6 +16,7 @@ export class RegistrationRequestComponent implements OnInit {
   public registration;
   public workplaceIdForm: FormGroup;
   public invalidWorkplaceIdEntered: boolean;
+  public submitted: boolean;
 
   constructor(
     public registrationsService: RegistrationsService,
