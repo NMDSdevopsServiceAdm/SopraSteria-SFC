@@ -112,22 +112,6 @@ const createTrainingRecord = async (req, res) => {
   }
 };
 
-const createMultipleTrainingRecords = async (req, res) => {
-  const establishmentId = req.establishmentId;
-  const workerUids = req.body.workerUids;
-
-  try {
-    await Promise.all(
-      workerUids.map(async (workerUid) => {
-        await createSingleTrainingRecord(req, res, establishmentId, workerUid, req.body.trainingRecord);
-      }),
-    );
-    return res.status(200).send({ savedRecords: workerUids.length });
-  } catch {
-    return res.status(500).send();
-  }
-};
-
 // updates requested training record using the training uid
 const updateTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -200,11 +184,10 @@ const deleteTrainingRecord = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
-router.route('/multiple-training').post(hasPermission('canEditWorker'), createMultipleTrainingRecords);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
-module.exports.createMultipleTrainingRecords = createMultipleTrainingRecords;
+module.exports.createSingleTrainingRecord = createSingleTrainingRecord;

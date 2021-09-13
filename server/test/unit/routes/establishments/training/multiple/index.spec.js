@@ -2,11 +2,11 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 
-const trainingRecords = require('../../../../../routes/establishments/training/index');
-const buildUser = require('../../../../factories/user');
-const Training = require('../../../../../models/classes/training').Training;
+const trainingRecords = require('../../../../../../routes/establishments/training/multiple/index');
+const buildUser = require('../../../../../factories/user');
+const Training = require('../../../../../../models/classes/training').Training;
 
-describe.only('server/routes/establishments/training/index.js', () => {
+describe('server/routes/establishments/training/multiple/index.js', () => {
   const user = buildUser();
 
   afterEach(() => {
@@ -21,7 +21,7 @@ describe.only('server/routes/establishments/training/index.js', () => {
   function createReq() {
     const req = httpMocks.createRequest({
       method: 'POST',
-      url: `/api/establishment/${user.establishmentId}/training`,
+      url: `/api/establishment/${user.establishmentId}/worker/multiple-training`,
       body: {
         workerUids: [1, 2, 3, 4],
         trainingRecord: {
@@ -79,7 +79,7 @@ describe.only('server/routes/establishments/training/index.js', () => {
 
       await trainingRecords.createMultipleTrainingRecords(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 });
