@@ -124,7 +124,7 @@ const createMultipleTrainingRecords = async (req, res) => {
     );
     return res.status(200).send({ savedRecords: workerUids.length });
   } catch {
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
