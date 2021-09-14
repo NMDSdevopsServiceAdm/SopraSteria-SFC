@@ -1,4 +1,4 @@
-import { Directive, OnInit } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -15,7 +15,8 @@ import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Directive({})
-export class AddEditTrainingDirective implements OnInit {
+export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
@@ -43,7 +44,7 @@ export class AddEditTrainingDirective implements OnInit {
     protected workerService: WorkerService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
 
     this.init();
@@ -53,6 +54,10 @@ export class AddEditTrainingDirective implements OnInit {
     this.setupFormErrorsMap();
     this.setTitle();
     this.setButtonText();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setBackLink(): void {}
@@ -66,22 +71,25 @@ export class AddEditTrainingDirective implements OnInit {
   protected setButtonText(): void {}
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-      category: [null, Validators.required],
-      accredited: null,
-      completed: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-      expires: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-      notes: [null, Validators.maxLength(this.notesMaxLength)],
-    });
+    this.form = this.formBuilder.group(
+      {
+        title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
+        category: [null, Validators.required],
+        accredited: null,
+        completed: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+        expires: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+        notes: [null, Validators.maxLength(this.notesMaxLength)],
+      },
+      { updateOn: 'submit' },
+    );
 
     const minDate = moment().subtract(100, 'years');
 
@@ -122,11 +130,11 @@ export class AddEditTrainingDirective implements OnInit {
         type: [
           {
             name: 'minlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
           {
             name: 'maxlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters in length`,
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
         ],
       },
@@ -135,15 +143,15 @@ export class AddEditTrainingDirective implements OnInit {
         type: [
           {
             name: 'dateValid',
-            message: 'Completed date must be a valid date',
+            message: 'Date completed must be a valid date',
           },
           {
             name: 'todayOrBefore',
-            message: 'Completed date must be before today',
+            message: 'Date completed must be before today',
           },
           {
             name: 'dateMin',
-            message: 'Completed date cannot be more than 100 years ago',
+            message: 'Date completed cannot be more than 100 years ago',
           },
         ],
       },
@@ -183,7 +191,6 @@ export class AddEditTrainingDirective implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
-
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
@@ -239,7 +246,7 @@ export class AddEditTrainingDirective implements OnInit {
     }
     return null;
   }
-  public navigateToPreviousPage() {
+  public navigateToPreviousPage(): void {
     this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
   }
 }

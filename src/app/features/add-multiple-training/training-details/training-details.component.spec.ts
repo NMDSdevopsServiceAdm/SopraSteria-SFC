@@ -112,7 +112,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Finish');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Training name must be between 3 and 120 characters in length').length).toEqual(2);
+      expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
     });
 
     it('should show an error when training name more than 120 characters', async () => {
@@ -127,7 +127,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Finish');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Training name must be between 3 and 120 characters in length').length).toEqual(2);
+      expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
     });
 
     it('should show an error when completed date not valid', async () => {
@@ -138,7 +138,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Finish');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Completed date must be a valid date').length).toEqual(2);
+      expect(getAllByText('Date completed must be a valid date').length).toEqual(2);
     });
 
     it('should show an error when completed date is after today', async () => {
@@ -151,7 +151,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Finish');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Completed date must be before today').length).toEqual(2);
+      expect(getAllByText('Date completed must be before today').length).toEqual(2);
     });
 
     it('should show an error when completed date is more than 100 years ago', async () => {
@@ -164,7 +164,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Finish');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Completed date cannot be more than 100 years ago').length).toEqual(2);
+      expect(getAllByText('Date completed cannot be more than 100 years ago').length).toEqual(2);
     });
 
     it('should show an error when expiry date not valid', async () => {
@@ -190,24 +190,5 @@ describe('MultipleTrainingDetailsComponent', () => {
       fixture.detectChanges();
       expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
     });
-
-    // it('should show an error when expiry date is before the completed date', async () => {
-    //   const { component, getByText, fixture, getAllByText } = await setup();
-    //   component.form.markAsDirty();
-    //   const today = new Date();
-    //   const todayDate = { day: 31, month: 12, year: today.getFullYear() - 1 };
-    //   console.log(todayDate);
-    //   component.form.get('completed').setValue(todayDate);
-    //   component.form.get('completed').markAsDirty();
-    //   todayDate.day = 30;
-    //   console.log(todayDate);
-
-    //   component.form.get('expires').setValue(todayDate);
-    //   component.form.get('expires').markAsDirty();
-    //   const finishButton = getByText('Finish');
-    //   fireEvent.click(finishButton);
-    //   fixture.detectChanges();
-    //   expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
-    // });
   });
 });

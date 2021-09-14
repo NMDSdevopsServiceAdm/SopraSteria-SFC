@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TrainingRecordRequest } from '@core/model/training.model';
@@ -14,7 +14,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   selector: 'app-add-edit-training',
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
-export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit {
+export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = true;
   public workerCount: number = this.trainingService.selectedStaff.length;
 
