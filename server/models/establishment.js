@@ -1041,6 +1041,72 @@ module.exports = function (sequelize, DataTypes) {
     return await this.scope(scopes).count();
   };
 
+  Establishment.getEstablishmentWithPrimaryUser = async function (uid) {
+    return await this.findOne({
+      attributes: [
+        'NameValue',
+        'IsRegulated',
+        'LocationID',
+        'ProvID',
+        'Address1',
+        'Address2',
+        'Address3',
+        'Town',
+        'County',
+        'PostCode',
+        'NmdsID',
+        'EstablishmentID',
+        'ParentID',
+        'ParentUID',
+        'created',
+        'updatedBy',
+        'Status',
+        'EstablishmentUID',
+      ],
+      where: {
+        uid,
+      },
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: sequelize.models.user,
+          as: 'users',
+          attributes: [
+            'EmailValue',
+            'PhoneValue',
+            'FullNameValue',
+            'SecurityQuestionValue',
+            'SecurityQuestionAnswerValue',
+            'created',
+          ],
+          where: {
+            isPrimary: true,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.login,
+              attributes: ['id', 'username'],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getNmdsIdUsingEstablishmentId = async function (id) {
+    return await this.findOne({
+      where: {
+        id: id,
+      },
+      attributes: ['NmdsID'],
+    });
+  };
+
   Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
     const scopes = ['defaultScope', 'noUstatus'];
 

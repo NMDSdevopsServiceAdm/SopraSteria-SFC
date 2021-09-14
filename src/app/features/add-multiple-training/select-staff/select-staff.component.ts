@@ -5,9 +5,8 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
-import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-staff',
@@ -18,15 +17,16 @@ export class SelectStaffComponent implements OnInit {
   public workers: Array<Worker>;
   public form: FormGroup;
   public submitted: boolean;
+  public primaryWorkplaceUid: string;
+  public returnLink: Array<string>;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     public backService: BackService,
-    private workerService: WorkerService,
-    private formBuilder: FormBuilder,
     public trainingService: TrainingService,
+    private establishmentService: EstablishmentService,
+    private formBuilder: FormBuilder,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
@@ -34,13 +34,14 @@ export class SelectStaffComponent implements OnInit {
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.workers = this.route.snapshot.data.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
     this.setupForm();
     this.setupFormErrorsMap();
-    this.getWorkers();
     this.setBackLink();
   }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -48,33 +49,29 @@ export class SelectStaffComponent implements OnInit {
     return this.form.get('selectStaff') as FormArray;
   }
 
-  private setupForm = async () => {
+  private setupForm = () => {
+    const workerFormArray = this.workers.map((worker) => {
+      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
+
+      return this.formBuilder.control({
+        name: worker.nameOrId,
+        workerUid: worker.uid,
+        checked,
+      });
+    });
+
     this.form = this.formBuilder.group(
       {
         selectAll: null,
-        selectStaff: this.formBuilder.array([]),
+        selectStaff: this.formBuilder.array(workerFormArray),
       },
       {
         validator: this.oneCheckboxRequired,
       },
     );
-  };
-
-  private updateForm(): void {
-    this.workers.map((worker) => {
-      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
-
-      const formControl = this.formBuilder.control({
-        name: worker.nameOrId,
-        workerUid: worker.uid,
-        checked,
-      });
-
-      this.selectStaff.push(formControl);
-    });
 
     this.updateSelectAllCheckbox();
-  }
+  };
 
   private oneCheckboxRequired(form: FormGroup): void {
     if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
@@ -100,17 +97,14 @@ export class SelectStaffComponent implements OnInit {
     ];
   }
 
-  private getWorkers(): void {
-    this.subscriptions.add(
-      this.workerService.getAllWorkers(this.workplaceUid).subscribe((workers) => {
-        this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
-        this.updateForm();
-      }),
-    );
+  public setReturnLink(): void {
+    this.returnLink =
+      this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: ['/dashboard'], fragment: 'training-and-qualifications' });
+    this.setReturnLink();
+    this.backService.setBackLink({ url: this.returnLink, fragment: 'training-and-qualifications' });
   }
 
   public selectAllWorkers(): void {

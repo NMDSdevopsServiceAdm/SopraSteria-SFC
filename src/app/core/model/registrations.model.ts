@@ -28,3 +28,8 @@ export interface Registration {
     uid: string;
   };
 }
+
+export interface UpdateWorkplaceIdRequest {
+  uid: string;
+  nmdsId: string;
+}

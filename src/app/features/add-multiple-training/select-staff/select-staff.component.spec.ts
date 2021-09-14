@@ -5,10 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
-import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { AllWorkers } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -22,10 +21,6 @@ describe('SelectStaffComponent', () => {
       providers: [
         BackService,
         {
-          provide: WorkerService,
-          useClass: MockWorkerService,
-        },
-        {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
@@ -37,6 +32,9 @@ describe('SelectStaffComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
+              data: {
+                workers: AllWorkers,
+              },
               params: {
                 establishmentuid: '1234-5678',
               },
@@ -156,16 +154,53 @@ describe('SelectStaffComponent', () => {
     });
   });
 
+  describe('setReturnLink', () => {
+    it('should set returnLink to the dashboard if the establishment uid is the same as the primary uid', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
+      component.fixture.componentInstance.setReturnLink();
+      component.fixture.detectChanges();
+
+      expect(component.fixture.componentInstance.returnLink).toEqual(['/dashboard']);
+    });
+
+    it(`should set returnLink to the subsidiary's dashboard if the establishment uid is not the same as the primary uid`, async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
+      component.fixture.componentInstance.setReturnLink();
+      component.fixture.detectChanges();
+
+      expect(component.fixture.componentInstance.returnLink).toEqual(['/workplace', '1234-5678']);
+    });
+  });
+
   describe('setBackLink()', () => {
-    it('should set the back link to the dashboard', async () => {
+    it('should set the back link to the dashboard if the establishment uid is the same as the primary uid', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
+      component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/dashboard'],
+        fragment: 'training-and-qualifications',
+      });
+    });
+
+    it(`should set the back link to the subsidiary's dashboard if the establishment uid is not the same as the primary uid`, async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', '1234-5678'],
         fragment: 'training-and-qualifications',
       });
     });
