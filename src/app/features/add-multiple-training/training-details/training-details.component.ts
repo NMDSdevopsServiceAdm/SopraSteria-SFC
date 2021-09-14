@@ -33,7 +33,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   protected init(): void {
     this.previousUrl =
-      this.establishmentService.primaryWorkplace.uid === this.workplace.uid
+      this.establishmentService.primaryWorkplace?.uid === this.workplace.uid
         ? ['/dashboard']
         : ['workplace', this.workplace.uid];
   }
