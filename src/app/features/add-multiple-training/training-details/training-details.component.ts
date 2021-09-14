@@ -46,7 +46,12 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.buttonText = 'Finish';
   }
 
-  protected setBackLink(): void {}
+  protected setBackLink(): void {
+    this.backService.setBackLink({
+      url: this.previousUrl,
+      fragment: 'training-and-qualifications',
+    });
+  }
 
   protected submit(record: TrainingRecordRequest): void {
     this.subscriptions.add(
