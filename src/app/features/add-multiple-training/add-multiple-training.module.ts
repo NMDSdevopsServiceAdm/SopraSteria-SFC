@@ -7,10 +7,11 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AddMultipleTrainingRoutingModule } from './add-multiple-training-routing.module';
 import { SelectStaffComponent } from './select-staff/select-staff.component';
+import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, AddMultipleTrainingRoutingModule],
-  declarations: [SelectStaffComponent],
+  declarations: [SelectStaffComponent, MultipleTrainingDetailsComponent],
   providers: [WorkersResolver],
 })
 export class AddMultipleTrainingModule {}

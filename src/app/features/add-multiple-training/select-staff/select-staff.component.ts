@@ -144,6 +144,7 @@ export class SelectStaffComponent implements OnInit {
 
     if (this.form.valid) {
       this.updateSelectedStaff();
+      this.trainingService.addMultipleTrainingInProgress$.next(true);
       this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
