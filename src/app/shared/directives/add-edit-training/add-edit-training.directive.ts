@@ -177,7 +177,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'maxlength',
-            message: `Notes must be ${this.notesMaxLength} characters or less`,
+            message: `Notes must be ${this.notesMaxLength} characters or fewer`,
           },
         ],
       },
