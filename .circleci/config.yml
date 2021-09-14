@@ -143,10 +143,11 @@ orbs:
 
 jobs:
   install:
+    resource_class: large
     working_directory: ~/project
     docker:
       - image: circleci/node:12.19.0-browsers
-    environment: NODE_OPTIONS=--max_old_space_size=4096
+    environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
       - node/install-packages:
@@ -165,6 +166,7 @@ jobs:
           paths:
             - dist
   test_frontend:
+    resource_class: large
     docker:
       - image: circleci/node:12.19.0-browsers
     steps:
