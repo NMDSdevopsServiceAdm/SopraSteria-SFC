@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import {
+  AddMultipleTrainingInProgressGuard,
+} from '@core/guards/add-multiple-training-in-progress/add-multiple-training-in-progress.guard';
 
 import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
@@ -16,6 +19,7 @@ const routes: Routes = [
     data: {
       title: 'Training details',
     },
+    canActivate: [AddMultipleTrainingInProgressGuard],
   },
 ];
 

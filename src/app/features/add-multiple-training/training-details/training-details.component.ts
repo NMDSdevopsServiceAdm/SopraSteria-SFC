@@ -55,6 +55,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   private onSuccess() {
+    this.trainingService.addMultipleTrainingInProgress$.next(false);
     let url = '';
     if (this.previousUrl.indexOf('dashboard') > -1) {
       url = this.previousUrl;

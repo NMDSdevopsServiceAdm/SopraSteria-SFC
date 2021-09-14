@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 })
 export class TrainingService {
   public selectedStaff = [];
+  public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
