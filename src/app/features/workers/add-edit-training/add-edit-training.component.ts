@@ -125,7 +125,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    let url = [''];
+    let url: string[];
     if (this.previousUrl.indexOf('dashboard') > -1) {
       url = this.previousUrl;
     } else {
