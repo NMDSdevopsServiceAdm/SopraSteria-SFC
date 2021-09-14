@@ -24,7 +24,7 @@ export class RegistrationRequestsComponent implements OnInit {
 
   ngOnInit(): void {
     this.registrations = this.route.snapshot.data.registrations;
-    this.breadcrumbService.show(JourneyType.ADMIN);
+    this.breadcrumbService.show(JourneyType.ADMIN_REGISTRATIONS);
     this.getPendingRegistrations();
     this.getRejectedRegistrations();
     this.showPendingRegistrations = true;

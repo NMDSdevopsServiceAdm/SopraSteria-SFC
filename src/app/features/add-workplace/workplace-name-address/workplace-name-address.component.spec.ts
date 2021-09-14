@@ -6,9 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import {
-  WorkplaceNameAddressComponent,
-} from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
