@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 
 @Component({
@@ -16,13 +17,15 @@ export class SelectStaffComponent implements OnInit {
   public workers: Array<Worker>;
   public form: FormGroup;
   public submitted: boolean;
+  public primaryWorkplaceUid: string;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
 
   constructor(
     public backService: BackService,
-    private formBuilder: FormBuilder,
     public trainingService: TrainingService,
+    private establishmentService: EstablishmentService,
+    private formBuilder: FormBuilder,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
@@ -30,6 +33,7 @@ export class SelectStaffComponent implements OnInit {
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.workers = this.route.snapshot.data.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
     this.setupForm();
     this.setupFormErrorsMap();
@@ -93,7 +97,9 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: ['/dashboard'], fragment: 'training-and-qualifications' });
+    const backLink =
+      this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
+    this.backService.setBackLink({ url: backLink, fragment: 'training-and-qualifications' });
   }
 
   public selectAllWorkers(): void {

@@ -155,15 +155,30 @@ describe('SelectStaffComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to the dashboard', async () => {
+    it('should set the back link to the dashboard if the establishment uid is the same as the primary uid', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
+      component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/dashboard'],
+        fragment: 'training-and-qualifications',
+      });
+    });
+
+    it(`should set the back link to the subsidiary's dashboard if the establishment uid is not the same as the primary uid`, async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', '1234-5678'],
         fragment: 'training-and-qualifications',
       });
     });
