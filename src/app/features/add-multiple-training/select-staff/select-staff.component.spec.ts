@@ -5,10 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
-import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { AllWorkers } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -22,10 +21,6 @@ describe('SelectStaffComponent', () => {
       providers: [
         BackService,
         {
-          provide: WorkerService,
-          useClass: MockWorkerService,
-        },
-        {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
@@ -37,6 +32,9 @@ describe('SelectStaffComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
+              data: {
+                workers: AllWorkers,
+              },
               params: {
                 establishmentuid: '1234-5678',
               },

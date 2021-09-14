@@ -6,8 +6,6 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
-import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-staff',
@@ -20,11 +18,9 @@ export class SelectStaffComponent implements OnInit {
   public submitted: boolean;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     public backService: BackService,
-    private workerService: WorkerService,
     private formBuilder: FormBuilder,
     public trainingService: TrainingService,
     private router: Router,
@@ -34,9 +30,9 @@ export class SelectStaffComponent implements OnInit {
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
+    this.workers = this.route.snapshot.data.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
     this.setupForm();
     this.setupFormErrorsMap();
-    this.getWorkers();
     this.setBackLink();
   }
 
@@ -48,33 +44,29 @@ export class SelectStaffComponent implements OnInit {
     return this.form.get('selectStaff') as FormArray;
   }
 
-  private setupForm = async () => {
+  private setupForm = () => {
+    const workerFormArray = this.workers.map((worker) => {
+      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
+
+      return this.formBuilder.control({
+        name: worker.nameOrId,
+        workerUid: worker.uid,
+        checked,
+      });
+    });
+
     this.form = this.formBuilder.group(
       {
         selectAll: null,
-        selectStaff: this.formBuilder.array([]),
+        selectStaff: this.formBuilder.array(workerFormArray),
       },
       {
         validator: this.oneCheckboxRequired,
       },
     );
-  };
-
-  private updateForm(): void {
-    this.workers.map((worker) => {
-      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
-
-      const formControl = this.formBuilder.control({
-        name: worker.nameOrId,
-        workerUid: worker.uid,
-        checked,
-      });
-
-      this.selectStaff.push(formControl);
-    });
 
     this.updateSelectAllCheckbox();
-  }
+  };
 
   private oneCheckboxRequired(form: FormGroup): void {
     if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
@@ -98,15 +90,6 @@ export class SelectStaffComponent implements OnInit {
         ],
       },
     ];
-  }
-
-  private getWorkers(): void {
-    this.subscriptions.add(
-      this.workerService.getAllWorkers(this.workplaceUid).subscribe((workers) => {
-        this.workers = workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
-        this.updateForm();
-      }),
-    );
   }
 
   public setBackLink(): void {
