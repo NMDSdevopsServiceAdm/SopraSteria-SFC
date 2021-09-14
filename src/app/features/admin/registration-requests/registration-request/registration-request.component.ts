@@ -17,6 +17,8 @@ export class RegistrationRequestComponent implements OnInit {
   public workplaceIdForm: FormGroup;
   public invalidWorkplaceIdEntered: boolean;
   public submitted: boolean;
+  public userFullName: string;
+  public checkBoxError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -29,6 +31,7 @@ export class RegistrationRequestComponent implements OnInit {
   ngOnInit(): void {
     this.setBreadcrumbs();
     this.getRegistration();
+    this.getUserFullName();
     this.setupForm();
   }
 
@@ -38,6 +41,10 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getRegistration(): void {
     this.registration = this.route.snapshot.data.registration;
+  }
+
+  private getUserFullName(): void {
+    this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
   }
 
   private setupForm(): void {
@@ -112,12 +119,13 @@ export class RegistrationRequestComponent implements OnInit {
   }
 
   public toggleCheckbox(target: HTMLInputElement): void {
+    console.log('Inside registration-request toggleCheckbox');
     const { checked } = target;
 
     const body = {
       uid: this.registration.establishment.uid,
       status: checked ? 'IN PROGRESS' : 'PENDING',
-      reviewer: checked ? 'someone' : null,
+      reviewer: checked ? this.userFullName : null,
       inReview: checked,
     };
 
@@ -127,13 +135,14 @@ export class RegistrationRequestComponent implements OnInit {
         this.getUpdatedRegistration();
       },
       (error) => {
+        this.checkBoxError = 'This registration is already in progress';
         console.log('error');
         console.log(error);
       },
     );
   }
 
-  private getUpdatedRegistration() {
+  public getUpdatedRegistration(): void {
     this.registrationsService.getSingleRegistration(this.registration.establishment.uid).subscribe(
       (data) => {
         this.registration = data;

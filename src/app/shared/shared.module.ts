@@ -39,6 +39,7 @@ import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
+import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -163,6 +164,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
+    ReviewCheckboxComponent,
   ],
   exports: [
     AlertComponent,
@@ -238,6 +240,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
+    ReviewCheckboxComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })

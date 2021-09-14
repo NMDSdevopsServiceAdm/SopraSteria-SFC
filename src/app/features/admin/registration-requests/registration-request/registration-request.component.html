@@ -3,26 +3,28 @@
     <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
     <p>Received {{ registration.created }}</p>
 
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+    <!-- <div class="govuk-form-group" [class.govuk-form-group--error]="checkBoxError">
       <fieldset class="govuk-fieldset" aria-describedby="reviewingRegistration-hint">
-        <!-- <span *ngIf="submitted && form.invalid" id="reviewingRegistration-error" class="govuk-error-message">
+        <span *ngIf="checkBoxError" id="reviewingRegistration-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
-          {{ getFirstErrorMessage('reviewingRegistration') }}
-        </span> -->
+          {{ checkBoxError }}
+        </span>
         <p>
           <strong class="govuk-tag" [ngClass]="setStatusClass(registration.establishment.status)">
             {{ registration.establishment.status | uppercase }}
           </strong>
         </p>
-        <div class="govuk-checkboxes">
+        <div
+          class="govuk-checkboxes"
+          *ngIf="registration.establishment.reviewer === userFullName || !registration.establishment.inReview"
+        >
           <div class="govuk-checkboxes__item">
             <input
               class="govuk-checkboxes__input"
-              [class.govuk-input--error]="submitted && form.errors"
               id="reviewingRegistration"
               name="reviewingRegistration"
               type="checkbox"
-              [checked]="registration.establishment.status === 'IN PROGRESS'"
+              [checked]="registration.establishment.inReview"
               (change)="toggleCheckbox($event.target)"
             />
             <label class="govuk-label govuk-checkboxes__label" for="reviewingRegistration">
@@ -30,9 +32,19 @@
             </label>
           </div>
         </div>
+        <div *ngIf="registration.establishment.reviewer !== userFullName && registration.establishment.inReview">
+          <p>{{ registration.establishment.reviewer }} is reviewing this request</p>
+        </div>
       </fieldset>
-    </div>
+    </div> -->
 
+    <app-review-checkbox
+      [toggleCheckbox]="toggleCheckbox"
+      [registration]="registration"
+      [userFullName]="userFullName"
+      [checkboxError]="checkBoxError"
+      [getUpdatedRegistration]="getUpdatedRegistration"
+    ></app-review-checkbox>
     <h2 class="govuk-heading-m">Workplace details</h2>
     <dl class="govuk-summary-list asc-summarylist-border-top">
       <div class="govuk-summary-list__row">
