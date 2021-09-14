@@ -4,14 +4,16 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
@@ -21,6 +23,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { fixture, getByText, getAllByText } = await render(MultipleTrainingDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
       providers: [
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: ActivatedRoute,
