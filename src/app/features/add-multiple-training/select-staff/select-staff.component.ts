@@ -18,6 +18,7 @@ export class SelectStaffComponent implements OnInit {
   public form: FormGroup;
   public submitted: boolean;
   public primaryWorkplaceUid: string;
+  public returnLink: Array<string>;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
 
@@ -40,7 +41,7 @@ export class SelectStaffComponent implements OnInit {
     this.setBackLink();
   }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -96,10 +97,14 @@ export class SelectStaffComponent implements OnInit {
     ];
   }
 
-  public setBackLink(): void {
-    const backLink =
+  public setReturnLink(): void {
+    this.returnLink =
       this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-    this.backService.setBackLink({ url: backLink, fragment: 'training-and-qualifications' });
+  }
+
+  public setBackLink(): void {
+    this.setReturnLink();
+    this.backService.setBackLink({ url: this.returnLink, fragment: 'training-and-qualifications' });
   }
 
   public selectAllWorkers(): void {

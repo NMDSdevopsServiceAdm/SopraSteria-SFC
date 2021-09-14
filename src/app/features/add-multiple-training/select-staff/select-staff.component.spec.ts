@@ -154,6 +154,28 @@ describe('SelectStaffComponent', () => {
     });
   });
 
+  describe('setReturnLink', () => {
+    it('should set returnLink to the dashboard if the establishment uid is the same as the primary uid', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
+      component.fixture.componentInstance.setReturnLink();
+      component.fixture.detectChanges();
+
+      expect(component.fixture.componentInstance.returnLink).toEqual(['/dashboard']);
+    });
+
+    it(`should set returnLink to the subsidiary's dashboard if the establishment uid is not the same as the primary uid`, async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
+      component.fixture.componentInstance.setReturnLink();
+      component.fixture.detectChanges();
+
+      expect(component.fixture.componentInstance.returnLink).toEqual(['/workplace', '1234-5678']);
+    });
+  });
+
   describe('setBackLink()', () => {
     it('should set the back link to the dashboard if the establishment uid is the same as the primary uid', async () => {
       const { component } = await setup();
