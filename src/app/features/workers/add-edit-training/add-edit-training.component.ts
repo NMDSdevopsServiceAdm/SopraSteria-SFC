@@ -125,13 +125,13 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    let url = '';
+    let url = [''];
     if (this.previousUrl.indexOf('dashboard') > -1) {
       url = this.previousUrl;
     } else {
-      url = `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
+      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
     }
-    this.router.navigateByUrl(url).then(() => {
+    this.router.navigate(url).then(() => {
       if (this.trainingRecordId) {
         this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
       } else {
