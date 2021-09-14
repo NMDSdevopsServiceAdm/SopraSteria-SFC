@@ -28,7 +28,7 @@ export class AddEditTrainingDirective implements OnInit {
   private titleMaxLength = 120;
   private titleMinLength = 3;
   public subscriptions: Subscription = new Subscription();
-  public previousUrl: string;
+  public previousUrl: string[];
   public title: string;
   public buttonText: string;
   public showWorkerCount = false;
@@ -240,6 +240,6 @@ export class AddEditTrainingDirective implements OnInit {
     return null;
   }
   public navigateToPreviousPage() {
-    this.router.navigateByUrl(this.previousUrl);
+    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
   }
 }

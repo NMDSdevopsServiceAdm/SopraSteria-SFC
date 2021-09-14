@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TrainingRecordRequest } from '@core/model/training.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -25,12 +26,16 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    private establishmentService: EstablishmentService,
   ) {
     super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
   }
 
   protected init(): void {
-    this.previousUrl = '/dashboard';
+    this.previousUrl =
+      this.establishmentService.primaryWorkplace.uid === this.workplace.uid
+        ? ['/dashboard']
+        : ['workplace', this.workplace.uid];
   }
 
   protected setTitle(): void {
@@ -56,18 +61,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   private onSuccess() {
     this.trainingService.addMultipleTrainingInProgress$.next(false);
-    let url = '';
-    if (this.previousUrl.indexOf('dashboard') > -1) {
-      url = this.previousUrl;
-    } else {
-      url = `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
-    }
-    this.router.navigateByUrl(url).then(() => {
-      if (this.trainingRecordId) {
-        this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
-      } else {
-        this.workerService.alert = { type: 'success', message: 'Training has been added.' };
-      }
+
+    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' }).then(() => {
+      // add banner here
     });
   }
 

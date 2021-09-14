@@ -32,9 +32,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
     this.workerService.getRoute$.subscribe((route) => {
       if (route) {
-        this.previousUrl = route;
+        this.previousUrl = [route];
       } else {
-        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
+        this.previousUrl = [
+          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`,
+        ];
       }
     });
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
@@ -53,7 +55,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected setBackLink(): void {
-    const parsed = this.router.parseUrl(this.previousUrl);
+    const parsed = this.router.parseUrl(this.previousUrl[0]);
     this.backService.setBackLink({
       url: [parsed.root.children.primary.segments.map((seg) => seg.path).join('/')],
       fragment: parsed.fragment,
