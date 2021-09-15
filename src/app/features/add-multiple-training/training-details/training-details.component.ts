@@ -74,7 +74,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     await this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
     this.alertService.addAlert({
       type: 'success',
-      message: `Training records have been added for ${response.savedRecords} staff.`,
+      message: `Training records have been added for ${response.savedRecords} staff`,
     } as Alert);
   }
 
