@@ -140,7 +140,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     await fixture.whenStable();
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'success',
-      message: `Training records have been added for 1 staff.`,
+      message: `Training records have been added for 1 staff`,
     } as Alert);
   });
 
