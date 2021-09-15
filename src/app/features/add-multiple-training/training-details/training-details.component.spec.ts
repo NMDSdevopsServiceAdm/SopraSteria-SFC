@@ -1,11 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Alert } from '@core/model/alert.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
@@ -23,6 +27,8 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { fixture, getByText, getAllByText } = await render(MultipleTrainingDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
       providers: [
+        AlertService,
+        WindowRef,
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -50,11 +56,30 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
+
+    const alert = injector.inject(AlertService) as AlertService;
+
+    const alertSpy = spyOn(alert, 'addAlert');
+    alertSpy.and.callThrough();
+
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
+    const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords');
+    workerSpy.and.callThrough();
+
     return {
       component,
       fixture,
       getByText,
       getAllByText,
+      spy,
+      alertSpy,
+      workerSpy,
     };
   }
 
@@ -89,6 +114,26 @@ describe('MultipleTrainingDetailsComponent', () => {
   it('should have the correct number of staff selected', async () => {
     const { component } = await setup();
     expect(component.workerCount).toEqual(1);
+  });
+
+  fit('should submit, navigate and add alert when complete', async () => {
+    const { component, getByText, fixture, spy, alertSpy, workerSpy } = await setup();
+    component.form.markAsDirty();
+    component.form.get('category').setValue('Autism');
+    component.form.get('category').markAsDirty();
+    const finishButton = getByText('Finish');
+    fireEvent.click(finishButton);
+    fixture.detectChanges();
+    expect(component.form.valid).toBeTruthy();
+    expect(workerSpy).toHaveBeenCalledWith('1', ['1234'], {
+      trainingCategory: { id: 1 },
+      title: 'Autism',
+    });
+    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: `Training records have been added for 1 staff.`,
+    } as Alert);
   });
 
   describe('errors', () => {
