@@ -67,16 +67,15 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     );
   }
 
-  private onSuccess(response: MultipleTrainingResponse) {
+  private async onSuccess(response: MultipleTrainingResponse) {
     this.trainingService.selectedStaff = [];
     this.trainingService.addMultipleTrainingInProgress$.next(false);
 
-    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' }).then(() => {
-      this.alertService.addAlert({
-        type: 'success',
-        message: `Training records have been added for ${response.savedRecords} staff.`,
-      } as Alert);
-    });
+    await this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Training records have been added for ${response.savedRecords} staff.`,
+    } as Alert);
   }
 
   private onError(error) {

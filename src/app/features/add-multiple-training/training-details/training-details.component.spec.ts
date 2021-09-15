@@ -116,20 +116,28 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(component.workerCount).toEqual(1);
   });
 
-  fit('should submit, navigate and add alert when complete', async () => {
+  it('should submit, navigate and add alert when complete', async () => {
     const { component, getByText, fixture, spy, alertSpy, workerSpy } = await setup();
     component.form.markAsDirty();
-    component.form.get('category').setValue('Autism');
+    component.form.get('category').setValue('1');
     component.form.get('category').markAsDirty();
+
     const finishButton = getByText('Finish');
     fireEvent.click(finishButton);
     fixture.detectChanges();
+
     expect(component.form.valid).toBeTruthy();
     expect(workerSpy).toHaveBeenCalledWith('1', ['1234'], {
       trainingCategory: { id: 1 },
-      title: 'Autism',
+      title: null,
+      accredited: null,
+      completed: null,
+      expires: null,
+      notes: null,
     });
     expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+
+    await fixture.whenStable();
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'success',
       message: `Training records have been added for 1 staff.`,
