@@ -51,8 +51,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   protected setBackLink(): void {
     this.backService.setBackLink({
-      url: this.previousUrl,
-      fragment: 'training-and-qualifications',
+      url: ['workplace', this.workplace.uid, 'add-multiple-training', 'select-staff'],
     });
   }
 
@@ -68,7 +67,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   private async onSuccess(response: MultipleTrainingResponse) {
-    this.trainingService.selectedStaff = [];
+    this.trainingService.resetSelectedStaff();
     this.trainingService.addMultipleTrainingInProgress$.next(false);
 
     await this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });

@@ -72,6 +72,11 @@ describe('MultipleTrainingDetailsComponent', () => {
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords');
     workerSpy.and.callThrough();
 
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
+    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff');
+    trainingSpy.and.callThrough();
+
     return {
       component,
       fixture,
@@ -80,6 +85,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       spy,
       alertSpy,
       workerSpy,
+      trainingSpy,
     };
   }
 
@@ -117,7 +123,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should submit, navigate and add alert when complete', async () => {
-    const { component, getByText, fixture, spy, alertSpy, workerSpy } = await setup();
+    const { component, getByText, fixture, spy, alertSpy, workerSpy, trainingSpy } = await setup();
     component.form.markAsDirty();
     component.form.get('category').setValue('1');
     component.form.get('category').markAsDirty();
@@ -127,6 +133,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.valid).toBeTruthy();
+    expect(trainingSpy).toHaveBeenCalled();
     expect(workerSpy).toHaveBeenCalledWith('1', ['1234'], {
       trainingCategory: { id: 1 },
       title: null,

@@ -40,7 +40,7 @@
                   [checked]="worker.value.checked"
                   [value]="worker.value.name"
                 />
-                <label for="selectedStaff-{{ i }}" class="govuk-label govuk-checkboxes__label">
+                <label for="selectStaff-{{ i }}" class="govuk-label govuk-checkboxes__label">
                   {{ worker.value.name }}
                 </label>
               </div>
@@ -50,9 +50,7 @@
       </div>
       <div class="govuk-button-group">
         <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Continue</button>
-        <a class="govuk-link govuk-!-margin-left-9" [routerLink]="returnLink" fragment="training-and-qualifications"
-          >Cancel</a
-        >
+        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
       </div>
     </fieldset>
   </div>
