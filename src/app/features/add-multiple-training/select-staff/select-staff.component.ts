@@ -41,7 +41,7 @@ export class SelectStaffComponent implements OnInit {
     this.setBackLink();
   }
 
-  ngAfterContentInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
