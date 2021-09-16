@@ -63,6 +63,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -116,7 +117,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
-    MandatoryDetailsComponent
+    MandatoryDetailsComponent,
+    LongTermAbsenceComponent
   ],
   providers: [DialogService, WorkerResolver],
 })
