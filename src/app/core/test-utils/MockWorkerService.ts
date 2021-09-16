@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -130,5 +131,9 @@ export class MockWorkerService extends WorkerService {
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
     return of(AllWorkers);
+  }
+
+  createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {
+    return of({ savedRecords: 1 } as MultipleTrainingResponse);
   }
 }

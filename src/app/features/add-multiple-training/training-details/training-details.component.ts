@@ -1,7 +1,9 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TrainingRecordRequest } from '@core/model/training.model';
+import { Alert } from '@core/model/alert.model';
+import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -27,6 +29,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
     private establishmentService: EstablishmentService,
+    private alertService: AlertService,
   ) {
     super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
   }
@@ -58,18 +61,21 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       this.workerService
         .createMultipleTrainingRecords(this.workplace.uid, this.trainingService.selectedStaff, record)
         .subscribe(
-          () => this.onSuccess(),
+          (response: MultipleTrainingResponse) => this.onSuccess(response),
           (error) => this.onError(error),
         ),
     );
   }
 
-  private onSuccess() {
+  private async onSuccess(response: MultipleTrainingResponse) {
+    this.trainingService.selectedStaff = [];
     this.trainingService.addMultipleTrainingInProgress$.next(false);
 
-    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' }).then(() => {
-      // add banner here
-    });
+    await this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Training records have been added for ${response.savedRecords} staff`,
+    } as Alert);
   }
 
   private onError(error) {
