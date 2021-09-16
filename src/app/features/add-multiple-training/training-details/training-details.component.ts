@@ -51,8 +51,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   protected setBackLink(): void {
     this.backService.setBackLink({
-      url: this.previousUrl,
-      fragment: 'training-and-qualifications',
+      url: ['workplace', this.workplace.uid, 'add-multiple-training', 'select-staff'],
     });
   }
 
