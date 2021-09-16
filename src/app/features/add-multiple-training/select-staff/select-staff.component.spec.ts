@@ -50,10 +50,16 @@ describe('SelectStaffComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
+    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff');
+    trainingSpy.and.callThrough();
+
     return {
       component,
       router,
       spy,
+      trainingSpy,
     };
   }
 
@@ -151,6 +157,36 @@ describe('SelectStaffComponent', () => {
       component.fixture.componentInstance.updateSelectAllCheckbox();
 
       expect(form.value.selectAll).toBeFalsy();
+    });
+  });
+
+  describe('onCancel()', () => {
+    it('should reset selected staff in training service and navigate to dashboard if primary user', async () => {
+      const { component, spy, trainingSpy } = await setup();
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
+      component.fixture.componentInstance.setReturnLink();
+      component.fixture.detectChanges();
+
+      const cancelButton = component.getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(trainingSpy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+    });
+
+    it(`should reset selected staff in training service and navigate to subsidiary's dashboard if not primary user`, async () => {
+      const { component, spy, trainingSpy } = await setup();
+
+      component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
+      component.fixture.componentInstance.setReturnLink();
+      component.fixture.detectChanges();
+
+      const cancelButton = component.getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(trainingSpy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(['/workplace', '1234-5678'], { fragment: 'training-and-qualifications' });
     });
   });
 

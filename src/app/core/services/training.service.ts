@@ -22,4 +22,8 @@ export class TrainingService {
   public updateSelectedStaff(formValue) {
     this.selectedStaff = formValue;
   }
+
+  public resetSelectedStaff(): void {
+    this.selectedStaff = [];
+  }
 }

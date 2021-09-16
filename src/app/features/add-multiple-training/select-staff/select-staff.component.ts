@@ -155,4 +155,9 @@ export class SelectStaffComponent implements OnInit {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
+
+  public onCancel(): void {
+    this.trainingService.resetSelectedStaff();
+    this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+  }
 }
