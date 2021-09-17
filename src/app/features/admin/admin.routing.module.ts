@@ -13,7 +13,7 @@ import { MonitorComponent } from './local-authorities-return/monitor/monitor.com
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
-import { ReportComponent } from './report/report.component';
+import { ReportComponent } from './report/admin-report.component';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
@@ -47,6 +47,16 @@ const routes: Routes = [
         resolve: {
           registration: GetSingleRegistrationResolver,
         },
+      },
+    ],
+  },
+  {
+    path: 'admin-reports',
+    children: [
+      {
+        path: '',
+        component: ReportComponent,
+        data: { title: 'Admin Reports' },
       },
     ],
   },
