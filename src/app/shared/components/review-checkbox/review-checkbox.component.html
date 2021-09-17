@@ -4,7 +4,7 @@
       <span class="govuk-visually-hidden">Error:</span>
       {{ checkBoxError }}
     </span>
-    <p>
+    <p data-testid="banner">
       <strong class="govuk-tag" [ngClass]="setStatusClass()">
         {{ registration.establishment.status | uppercase }}
       </strong>
@@ -19,6 +19,7 @@
           id="reviewingRegistration"
           name="reviewingRegistration"
           type="checkbox"
+          data-testid="reviewingRegistrationCheckbox"
           [checked]="registration.establishment.inReview"
           (change)="toggleCheckbox($event.target)"
         />

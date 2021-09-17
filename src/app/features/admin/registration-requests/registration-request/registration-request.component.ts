@@ -119,7 +119,6 @@ export class RegistrationRequestComponent implements OnInit {
   }
 
   public toggleCheckbox(target: HTMLInputElement): void {
-    console.log('Inside registration-request toggleCheckbox');
     const { checked } = target;
 
     const body = {
@@ -131,12 +130,10 @@ export class RegistrationRequestComponent implements OnInit {
 
     this.registrationsService.updateRegistrationStatus(body).subscribe(
       () => {
-        console.log('success');
         this.getUpdatedRegistration();
       },
       (error) => {
         this.checkBoxError = 'This registration is already in progress';
-        console.log('error');
         console.log(error);
       },
     );

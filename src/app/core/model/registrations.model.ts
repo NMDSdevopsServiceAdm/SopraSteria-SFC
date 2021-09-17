@@ -23,9 +23,11 @@ export interface Registration {
     provid: string;
     parentId: string;
     parentUid: string;
-    mainService: number;
+    mainService: string;
     status: string;
     uid: string;
+    reviewer: string;
+    inReview: boolean;
   };
 }
 
