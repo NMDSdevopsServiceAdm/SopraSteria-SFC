@@ -4,9 +4,7 @@ import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
-import {
-  GetSingleRegistrationResolver,
-} from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
+import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -14,6 +12,7 @@ import { MonitorComponent } from './local-authorities-return/monitor/monitor.com
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { ReportComponent } from './report/report.component';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
@@ -85,6 +84,16 @@ const routes: Routes = [
             resolve: {
               localAuthorities: GetLasResolver,
             },
+          },
+          {
+            path: 'admin-reports',
+            children: [
+              {
+                path: '',
+                component: ReportComponent,
+                data: { title: 'Admin Reports' },
+              },
+            ],
           },
           {
             path: ':uid',
