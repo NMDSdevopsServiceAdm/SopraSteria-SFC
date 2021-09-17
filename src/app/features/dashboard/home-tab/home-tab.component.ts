@@ -15,15 +15,29 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
-import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import {
+  BecomeAParentCancelDialogComponent,
+} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -126,6 +140,10 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         event: 'firstLogin',
       });
     }
+    // console.log('parentStatusRequested:', this.parentStatusRequested);
+    // console.log('canBecomeAParent:', this.canBecomeAParent);
+    // console.log('linkToParentRequestedStatus:', this.linkToParentRequestedStatus);
+    // console.log('workplace.isParent:', this.workplace.isParent);
   }
 
   public downloadLocalAuthorityReport(event: Event) {
@@ -215,6 +233,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = true;
+        this.canBecomeAParent = false;
       }
     });
   }
@@ -230,6 +249,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = false;
+        this.canBecomeAParent = true;
       }
     });
   }
@@ -294,19 +314,18 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.canLinkToParent = false;
-        this.canBecomeAParent = false;
+        this.parentStatusRequested = true;
       }
     });
   }
 
   public cancelBecomeAParent($event: Event) {
     $event.preventDefault();
-    console.log('cancel become a parent');
     const dialog = this.dialogService.open(BecomeAParentCancelDialogComponent, null);
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.canLinkToParent = true;
-        this.canBecomeAParent = true;
+        this.parentStatusRequested = false;
       }
     });
   }
@@ -353,9 +372,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.linkToParentRequestedStatus = true;
     }
     this.canBecomeAParent =
-      this.permissionsService.can(workplaceUid, 'canBecomeAParent') &&
-      !this.parentStatusRequested &&
-      !this.linkToParentRequestedStatus;
+      this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
   }
 
   public selectStaffTab(event: Event) {

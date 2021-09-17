@@ -13,7 +13,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -31,7 +33,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('HomeTabComponent', () => {
+describe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [

@@ -29,4 +29,9 @@ export class ParentRequestsService {
   public becomeParent() {
     return this.http.post<any>('/api/approvals/become-a-parent/', null);
   }
+
+  public cancelBecomeAParent() {
+    console.log('Cancel Become a Parent in Parent-request service');
+    return this.http.delete<any>('/api/approvals/become-a-parent/');
+  }
 }

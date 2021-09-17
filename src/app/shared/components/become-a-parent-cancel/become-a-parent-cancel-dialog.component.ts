@@ -5,6 +5,7 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { Subscription } from 'rxjs';
 
@@ -23,12 +24,35 @@ export class BecomeAParentCancelDialogComponent extends DialogComponent implemen
 
   constructor(
     @Inject(DIALOG_DATA) public data,
+    private errorSummaryService: ErrorSummaryService,
     private parentRequestsService: ParentRequestsService,
     public dialog: Dialog<BecomeAParentCancelDialogComponent>,
     private alertService: AlertService,
     private router: Router,
   ) {
     super(data, dialog);
+  }
+
+  ngOnInit(): void {
+    this.setupServerErrorsMap();
+  }
+
+  //setup server error message
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 500,
+        message: 'We could not cancel parent request. You can try again or contact us.',
+      },
+      {
+        name: 400,
+        message: 'Unable to cancel parent request.',
+      },
+      {
+        name: 404,
+        message: 'Cancel parent request to parent service not found. You can try again or contact us.',
+      },
+    ];
   }
 
   /**
@@ -40,18 +64,21 @@ export class BecomeAParentCancelDialogComponent extends DialogComponent implemen
     this.dialog.close(confirm);
   }
 
-  public canelRequestToBecomeAParent(): void {
+  public cancelRequestToBecomeAParent(): void {
     this.subscriptions.add(
-      this.parentRequestsService.cancelBecomeAParent().subscribe((data) => {
-        if (data) {
+      this.parentRequestsService.cancelBecomeAParent().subscribe(
+        () => {
           this.router.navigate(['/dashboard']);
           this.alertService.addAlert({
             type: 'success',
             message: 'Request to become a parent organisation has been cancelled.',
           });
-        }
-        this.closeDialogWindow(true);
-      }),
+          this.closeDialogWindow(true);
+        },
+        (error) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        },
+      ),
     );
   }
 
