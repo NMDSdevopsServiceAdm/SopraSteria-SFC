@@ -6,6 +6,7 @@ import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/g
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
+import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
@@ -106,6 +107,17 @@ const routes: Routes = [
             },
           },
         ],
+      },
+    ],
+  },
+
+  {
+    path: 'external-links',
+    children: [
+      {
+        path: '',
+        component: ExternalLinkComponent,
+        data: { title: 'External Links' },
       },
     ],
   },
