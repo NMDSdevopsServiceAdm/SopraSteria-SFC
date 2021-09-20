@@ -56,7 +56,7 @@ const routes: Routes = [
       {
         path: '',
         component: ReportComponent,
-        data: { title: 'Admin Reports' },
+        data: { title: 'Admin reports' },
       },
     ],
   },
@@ -95,16 +95,6 @@ const routes: Routes = [
             resolve: {
               localAuthorities: GetLasResolver,
             },
-          },
-          {
-            path: 'admin-reports',
-            children: [
-              {
-                path: '',
-                component: ReportComponent,
-                data: { title: 'Admin Reports' },
-              },
-            ],
           },
           {
             path: ':uid',
