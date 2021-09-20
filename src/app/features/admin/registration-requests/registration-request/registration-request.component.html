@@ -133,4 +133,23 @@
       </div>
     </dl>
   </div>
+  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
+    <div class="govuk-button-group">
+      <button
+        class="govuk-button"
+        type="submit"
+        name="approve"
+        (click)="approveRegistration($event, registration.username)"
+      >
+        Approve
+      </button>
+      <button
+        type="submit"
+        class="govuk-button govuk-button--warning govuk-!-margin-left-6"
+        (click)="approveRegistration(registration.username, false)"
+      >
+        Reject
+      </button>
+    </div>
+  </div>
 </div>

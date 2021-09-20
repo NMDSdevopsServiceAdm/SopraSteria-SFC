@@ -5,8 +5,11 @@ import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+
+import { RegistrationApprovalDialogComponent } from '../registration-approval-dialog/registration-approval-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -26,6 +29,7 @@ export class RegistrationRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private switchWorkplaceService: SwitchWorkplaceService,
     private alertService: AlertService,
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -151,5 +155,18 @@ export class RegistrationRequestComponent implements OnInit {
         this.checkBoxError = 'There was an error retrieving the registration';
       },
     );
+  }
+
+  public approveRegistration($event: Event, username: string): void {
+    $event.preventDefault();
+
+    const dialog = this.dialogService.open(RegistrationApprovalDialogComponent, {
+      workplaceName: this.registration.establishment.name,
+    });
+    dialog.afterClosed.subscribe((approvalConfirmed) => {
+      if (approvalConfirmed) {
+        console.log('Approval confirmed');
+      }
+    });
   }
 }

@@ -21,7 +21,7 @@ import {
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
 import { RegistrationRequestComponent } from './registration-request.component';
@@ -435,6 +435,49 @@ describe('RegistrationRequestComponent', () => {
       expect(
         getByText(`This workplace ID (A1231231) belongs to another workplace, enter a different workplace ID`),
       ).toBeTruthy();
+    });
+  });
+
+  describe('Approving registration', () => {
+    it('shows confirmation modal when Approve button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+    });
+
+    it('shows approval confirmation message in confirmation modal', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const modalMessage = `You're about to approve this registration request`;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(modalMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('shows workplace name in confirmation modal', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
     });
   });
 });

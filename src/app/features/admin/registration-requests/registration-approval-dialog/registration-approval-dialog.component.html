@@ -1,0 +1,8 @@
+<div class="govuk-!-padding-3">
+  <h1 id="dialogHeading">You're about to approve this registration request</h1>
+  <p><b>Workplace: </b>{{ data.workplaceName }}</p>
+  <div class="govuk-!-padding-top-6 govuk-button-group">
+    <button type="button" (click)="closeDialogWindow($event, true)" class="govuk-button">Approve this request</button>
+    <a href="#" class="govuk-!-padding-left-9 govuk-list" (click)="closeDialogWindow($event, null)">Cancel</a>
+  </div>
+</div>
