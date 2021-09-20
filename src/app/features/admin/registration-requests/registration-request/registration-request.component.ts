@@ -9,7 +9,7 @@ import { DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
-import { RegistrationApprovalDialogComponent } from '../registration-approval-dialog/registration-approval-dialog.component';
+import { RegistrationApprovalOrRejectionDialogComponent } from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -157,14 +157,16 @@ export class RegistrationRequestComponent implements OnInit {
     );
   }
 
-  public approveRegistration($event: Event, username: string): void {
+  public approveOrRejectRegistration($event: Event, username: string, isApproval: boolean): void {
     $event.preventDefault();
 
-    const dialog = this.dialogService.open(RegistrationApprovalDialogComponent, {
+    const dialog = this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
       workplaceName: this.registration.establishment.name,
+      isApproval,
     });
-    dialog.afterClosed.subscribe((approvalConfirmed) => {
-      if (approvalConfirmed) {
+
+    dialog.afterClosed.subscribe((confirmed) => {
+      if (confirmed) {
         console.log('Approval confirmed');
       }
     });

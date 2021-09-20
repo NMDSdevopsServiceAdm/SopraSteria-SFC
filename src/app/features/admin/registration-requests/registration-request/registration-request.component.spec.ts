@@ -439,10 +439,11 @@ describe('RegistrationRequestComponent', () => {
   });
 
   describe('Approving registration', () => {
-    it('shows confirmation modal when Approve button is clicked', async () => {
+    it('shows dialog with approval confirmation message when Approve button is clicked', async () => {
       const { fixture, getByText } = await setup();
 
       const approveButton = getByText('Approve');
+      const dialogMessage = `You're about to approve this registration request`;
 
       fireEvent.click(approveButton);
       fixture.detectChanges();
@@ -450,29 +451,47 @@ describe('RegistrationRequestComponent', () => {
       const dialog = await within(document.body).findByRole('dialog');
 
       expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
     });
 
-    it('shows approval confirmation message in confirmation modal', async () => {
-      const { fixture, getByText } = await setup();
-
-      const approveButton = getByText('Approve');
-      const modalMessage = `You're about to approve this registration request`;
-
-      fireEvent.click(approveButton);
-      fixture.detectChanges();
-
-      const dialog = await within(document.body).findByRole('dialog');
-
-      expect(within(dialog).getByText(modalMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('shows workplace name in confirmation modal', async () => {
+    it('shows workplace name in confirmation dialog', async () => {
       const { component, fixture, getByText } = await setup();
 
       const approveButton = getByText('Approve');
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
+  });
+
+  describe('Rejecting registration', () => {
+    it('shows dialog with rejection confirmation message when Reject button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const rejectButton = getByText('Reject');
+      const dialogMessage = `You're about to reject this registration request`;
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('shows workplace name in rejection confirmation dialog', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const rejectButton = getByText('Reject');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(rejectButton);
       fixture.detectChanges();
 
       const dialog = await within(document.body).findByRole('dialog');

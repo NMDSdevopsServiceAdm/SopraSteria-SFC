@@ -42,3 +42,8 @@ export interface UpdateRegistrationStatusRequest {
   reviewer: string;
   inReview: boolean;
 }
+
+export interface RegistrationApprovalOrRejectionConfirmation {
+  workplaceName: string;
+  isApproval: boolean;
+}
