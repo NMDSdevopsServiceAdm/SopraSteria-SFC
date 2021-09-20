@@ -164,13 +164,33 @@ describe('RegistrationRequestComponent', () => {
     expect(getSingleRegistrationSpy).toHaveBeenCalled();
   });
 
-  it('should show an error when clicking on the checkbox when someone has already clicked on it while you have been on the page', async () => {
+  it('should show an error when clicking on the checkbox and someone has already clicked on it while you have been on the page', async () => {
     const { getByTestId, getAllByText, fixture } = await setup();
 
     const registrationsService = TestBed.inject(RegistrationsService);
     spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError('Error'));
 
     const errorMessage = 'This registration is already in progress';
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    expect(getAllByText(errorMessage).length).toBe(1);
+  });
+
+  it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
+    const { getByTestId, getAllByText, fixture } = await setup();
+
+    const mockErrorResponse = new HttpErrorResponse({
+      status: 400,
+      statusText: 'Bad Request',
+      error: {},
+    });
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError(mockErrorResponse));
+
+    const errorMessage = 'There was a server error';
     const checkbox = getByTestId('reviewingRegistrationCheckbox');
     fireEvent.click(checkbox);
     fixture.detectChanges();
@@ -198,6 +218,21 @@ describe('RegistrationRequestComponent', () => {
 
     expect(pendingBanner).toBeTruthy();
     expect(getSingleRegistrationSpy).toHaveBeenCalled();
+  });
+
+  it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
+    const { getByTestId, getAllByText, fixture } = await setup();
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+    spyOn(registrationsService, 'getSingleRegistration').and.returnValue(throwError('Error'));
+
+    const errorMessage = 'There was an error retrieving the registration';
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    expect(getAllByText(errorMessage).length).toBe(1);
   });
 
   it('should display the workplace address', async () => {

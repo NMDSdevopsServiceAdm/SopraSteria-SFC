@@ -133,8 +133,11 @@ export class RegistrationRequestComponent implements OnInit {
         this.getUpdatedRegistration();
       },
       (error) => {
-        this.checkBoxError = 'This registration is already in progress';
-        console.log(error);
+        if (error instanceof HttpErrorResponse) {
+          this.checkBoxError = 'There was a server error';
+        } else {
+          this.checkBoxError = 'This registration is already in progress';
+        }
       },
     );
   }
@@ -145,7 +148,7 @@ export class RegistrationRequestComponent implements OnInit {
         this.registration = data;
       },
       (error) => {
-        console.log(error);
+        this.checkBoxError = 'There was an error retrieving the registration';
       },
     );
   }
