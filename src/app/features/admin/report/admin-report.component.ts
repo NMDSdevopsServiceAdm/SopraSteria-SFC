@@ -20,7 +20,6 @@ export class ReportComponent {
       this.reportsService.getLocalAuthorityAdminReport().subscribe((response) => this.saveFile(response)),
     );
   }
-
   public downloadDeleteReport(event: Event) {
     event.preventDefault();
     this.subscriptions.add(this.reportsService.getDeleteReport().subscribe((response) => this.saveFile(response)));

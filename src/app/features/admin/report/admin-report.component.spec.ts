@@ -7,6 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+import { AdminModule } from '../admin.module';
 import { ReportComponent } from './admin-report.component';
 
 describe('ReportComponent', () => {
@@ -15,7 +16,7 @@ describe('ReportComponent', () => {
 
   async function setup() {
     return render(ReportComponent, {
-      imports: [SharedModule, SearchModule, HttpClientTestingModule, RouterTestingModule],
+      imports: [SharedModule, SearchModule, HttpClientTestingModule, RouterTestingModule, AdminModule],
     });
   }
 
@@ -57,7 +58,7 @@ describe('ReportComponent', () => {
     const getReport = spyOn(reportService, 'getDeleteReport').and.callFake(() => of(null));
     const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-    fireEvent.click(component.getByText('Delete report', { exact: false }));
+    fireEvent.click(component.getByText('Deletion report', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
@@ -70,7 +71,7 @@ describe('ReportComponent', () => {
     const getReport = spyOn(reportService, 'getLocalAuthorityAdminReport').and.callFake(() => of(null));
     const saveAs = spyOn(component.fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-    fireEvent.click(component.getByText('Local admin authority progress', { exact: false }));
+    fireEvent.click(component.getByText('Admin local authority progress', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
