@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -30,6 +30,7 @@ export class RegistrationRequestComponent implements OnInit {
     private switchWorkplaceService: SwitchWorkplaceService,
     private alertService: AlertService,
     private dialogService: DialogService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -167,7 +168,31 @@ export class RegistrationRequestComponent implements OnInit {
 
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
-        console.log('Approval confirmed');
+        let data;
+        data = {
+          username: this.registration.username,
+          nmdsId: this.registration.establishment.nmdsId,
+          approve: isApproval,
+        };
+
+        if (!this.registration.email) {
+          data = {
+            establishmentId: this.registration.username,
+            nmdsId: this.registration.establishment.nmdsId,
+            approve: isApproval,
+          };
+        }
+
+        this.registrationsService.registrationApproval(data).subscribe(
+          () => {
+            this.router.navigate(['/sfcadmin', 'registrations']);
+          },
+          (err) => {
+            if (err instanceof HttpErrorResponse) {
+              this.populateErrorFromServer(err);
+            }
+          },
+        );
       }
     });
   }

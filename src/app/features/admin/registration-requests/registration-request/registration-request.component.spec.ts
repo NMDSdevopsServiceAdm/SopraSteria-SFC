@@ -467,6 +467,28 @@ describe('RegistrationRequestComponent', () => {
 
       expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
     });
+
+    it('should call registrationApproval in registrations service when approval confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
+        username: component.registration.username,
+        nmdsId: component.registration.establishment.nmdsId,
+        approve: true,
+      });
+    });
   });
 
   describe('Rejecting registration', () => {
@@ -497,6 +519,28 @@ describe('RegistrationRequestComponent', () => {
       const dialog = await within(document.body).findByRole('dialog');
 
       expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
+
+    it('should call registrationApproval in registrations service when rejection confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectConfirmButton);
+
+      expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
+        username: component.registration.username,
+        nmdsId: component.registration.establishment.nmdsId,
+        approve: false,
+      });
     });
   });
 
