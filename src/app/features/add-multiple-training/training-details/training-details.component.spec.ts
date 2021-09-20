@@ -151,6 +151,16 @@ describe('MultipleTrainingDetailsComponent', () => {
     } as Alert);
   });
 
+  it('should clear selected staff and navigate when pressing cancel', async () => {
+    const { getByText, spy, trainingSpy } = await setup();
+
+    const cancelButton = getByText('Cancel');
+    fireEvent.click(cancelButton);
+
+    expect(trainingSpy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+  });
+
   describe('errors', () => {
     it('should show an error when no training category selected', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();

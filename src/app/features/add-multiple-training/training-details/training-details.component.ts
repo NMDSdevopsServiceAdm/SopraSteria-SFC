@@ -80,4 +80,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   private onError(error) {
     console.log(error);
   }
+
+  public onCancel(): void {
+    this.trainingService.resetSelectedStaff();
+    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
+  }
 }
