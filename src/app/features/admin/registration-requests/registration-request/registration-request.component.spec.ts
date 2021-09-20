@@ -480,4 +480,13 @@ describe('RegistrationRequestComponent', () => {
       expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
     });
   });
+
+  describe('Navigation', () => {
+    it('has registrations page url for exit link', async () => {
+      const { getByText } = await setup();
+      const exitButton = getByText('Exit');
+
+      expect(exitButton.getAttribute('href')).toBe('/sfcadmin/registrations');
+    });
+  });
 });
