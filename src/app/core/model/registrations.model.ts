@@ -47,3 +47,10 @@ export interface RegistrationApprovalOrRejectionConfirmation {
   workplaceName: string;
   isApproval: boolean;
 }
+
+export interface RegistrationApprovalOrRejectionRequestParams {
+  nmdsId: string;
+  approve: boolean;
+  username?: string;
+  establishmentId?: string;
+}

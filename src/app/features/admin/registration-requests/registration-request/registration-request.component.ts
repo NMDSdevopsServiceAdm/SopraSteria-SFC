@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { RegistrationApprovalOrRejectionRequestParams } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -184,17 +185,18 @@ export class RegistrationRequestComponent implements OnInit {
     });
   }
 
-  private getApprovalOrRejectionRequestParams(isApproval: boolean): any {
-    const data = {
+  private getApprovalOrRejectionRequestParams(isApproval: boolean): RegistrationApprovalOrRejectionRequestParams {
+    const params: RegistrationApprovalOrRejectionRequestParams = {
       nmdsId: this.registration.establishment.nmdsId,
       approve: isApproval,
     };
 
-    return Object.assign(
-      data,
-      this.registration.email
-        ? { username: this.registration.username }
-        : { establishmentId: this.registration.username },
-    );
+    if (this.registration.email) {
+      params.username = this.registration.username;
+    } else {
+      params.establishmentId = this.registration.username;
+    }
+
+    return params;
   }
 }
