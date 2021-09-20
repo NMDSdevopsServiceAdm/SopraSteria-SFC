@@ -31,7 +31,6 @@ export class ParentRequestsService {
   }
 
   public cancelBecomeAParent() {
-    console.log('Cancel Become a Parent in Parent-request service');
     return this.http.delete<any>('/api/approvals/become-a-parent/');
   }
 }

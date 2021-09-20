@@ -33,7 +33,7 @@ const MockWindow = {
   },
 };
 
-describe('HomeTabComponent', () => {
+fdescribe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [
@@ -231,8 +231,9 @@ describe('HomeTabComponent', () => {
     const { component } = await setup();
 
     component.fixture.componentInstance.workplace.isParent = false;
-    component.fixture.componentInstance.canBecomeAParent = false;
-    component.fixture.componentInstance.canLinkToParent = false;
+    component.fixture.componentInstance.canBecomeAParent = true;
+    component.fixture.componentInstance.linkToParentRequestedStatus = false;
+    component.fixture.componentInstance.parentStatusRequested = true;
     component.fixture.detectChanges();
 
     const expectedMessage = 'Parent request pending';
@@ -246,6 +247,8 @@ describe('HomeTabComponent', () => {
 
     component.fixture.componentInstance.workplace.isParent = false;
     component.fixture.componentInstance.canBecomeAParent = true;
+    component.fixture.componentInstance.linkToParentRequestedStatus = false;
+    component.fixture.componentInstance.parentStatusRequested = false;
     component.fixture.componentInstance.canLinkToParent = true;
     component.fixture.detectChanges();
 
