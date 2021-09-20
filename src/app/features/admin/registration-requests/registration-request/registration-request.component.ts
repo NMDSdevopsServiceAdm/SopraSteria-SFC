@@ -168,20 +168,7 @@ export class RegistrationRequestComponent implements OnInit {
 
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
-        let data;
-        data = {
-          username: this.registration.username,
-          nmdsId: this.registration.establishment.nmdsId,
-          approve: isApproval,
-        };
-
-        if (!this.registration.email) {
-          data = {
-            establishmentId: this.registration.username,
-            nmdsId: this.registration.establishment.nmdsId,
-            approve: isApproval,
-          };
-        }
+        const data = this.getApprovalOrRejectionRequestParams(isApproval);
 
         this.registrationsService.registrationApproval(data).subscribe(
           () => {
@@ -195,5 +182,19 @@ export class RegistrationRequestComponent implements OnInit {
         );
       }
     });
+  }
+
+  private getApprovalOrRejectionRequestParams(isApproval: boolean): any {
+    const data = {
+      nmdsId: this.registration.establishment.nmdsId,
+      approve: isApproval,
+    };
+
+    return Object.assign(
+      data,
+      this.registration.email
+        ? { username: this.registration.username }
+        : { establishmentId: this.registration.username },
+    );
   }
 }
