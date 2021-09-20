@@ -2,7 +2,13 @@
   <div *ngIf="registration" class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
     <p>Received {{ registration.created }}</p>
-
+    <app-review-checkbox
+      [toggleCheckbox]="toggleCheckbox"
+      [registration]="registration"
+      [userFullName]="userFullName"
+      [checkBoxError]="checkBoxError"
+      [getUpdatedRegistration]="getUpdatedRegistration"
+    ></app-review-checkbox>
     <h2 class="govuk-heading-m">Workplace details</h2>
     <dl class="govuk-summary-list asc-summarylist-border-top">
       <div class="govuk-summary-list__row">

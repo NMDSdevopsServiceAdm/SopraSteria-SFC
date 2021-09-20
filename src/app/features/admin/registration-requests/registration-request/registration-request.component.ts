@@ -16,6 +16,9 @@ export class RegistrationRequestComponent implements OnInit {
   public registration;
   public workplaceIdForm: FormGroup;
   public invalidWorkplaceIdEntered: boolean;
+  public submitted: boolean;
+  public userFullName: string;
+  public checkBoxError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -28,6 +31,7 @@ export class RegistrationRequestComponent implements OnInit {
   ngOnInit(): void {
     this.setBreadcrumbs();
     this.getRegistration();
+    this.getUserFullName();
     this.setupForm();
   }
 
@@ -37,6 +41,10 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getRegistration(): void {
     this.registration = this.route.snapshot.data.registration;
+  }
+
+  private getUserFullName(): void {
+    this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
   }
 
   private setupForm(): void {
@@ -104,5 +112,44 @@ export class RegistrationRequestComponent implements OnInit {
       type: 'success',
       message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
     });
+  }
+
+  public setStatusClass(status: string): string {
+    return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
+  }
+
+  public toggleCheckbox(target: HTMLInputElement): void {
+    const { checked } = target;
+
+    const body = {
+      uid: this.registration.establishment.uid,
+      status: checked ? 'IN PROGRESS' : 'PENDING',
+      reviewer: checked ? this.userFullName : null,
+      inReview: checked,
+    };
+
+    this.registrationsService.updateRegistrationStatus(body).subscribe(
+      () => {
+        this.getUpdatedRegistration();
+      },
+      (error) => {
+        if (error instanceof HttpErrorResponse) {
+          this.checkBoxError = 'There was a server error';
+        } else {
+          this.checkBoxError = 'This registration is already in progress';
+        }
+      },
+    );
+  }
+
+  public getUpdatedRegistration(): void {
+    this.registrationsService.getSingleRegistration(this.registration.establishment.uid).subscribe(
+      (data) => {
+        this.registration = data;
+      },
+      (error) => {
+        this.checkBoxError = 'There was an error retrieving the registration';
+      },
+    );
   }
 }

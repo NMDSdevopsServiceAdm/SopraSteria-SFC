@@ -11,7 +11,7 @@ const getAllRegistrations = async (req, res) => {
       attributes: ['id', 'username'],
       where: {
         isActive: false,
-        status: { [Op.not]: null },
+        status: { [Op.or]: ['PENDING', 'IN PROGRESS'] },
       },
       order: [['id', 'DESC']],
       include: [
@@ -79,7 +79,7 @@ const getAllRegistrations = async (req, res) => {
         'EstablishmentUID',
       ],
       where: {
-        ustatus: { [Op.not]: null },
+        ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] },
       },
       order: [['id', 'DESC']],
       include: [

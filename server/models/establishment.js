@@ -703,6 +703,17 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'eightWeeksFromFirstLogin',
       },
+      reviewer: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'Reviewer',
+      },
+      inReview: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+        field: 'InReview',
+      },
     },
     {
       defaultScope: {
@@ -1062,6 +1073,8 @@ module.exports = function (sequelize, DataTypes) {
         'updatedBy',
         'Status',
         'EstablishmentUID',
+        'Reviewer',
+        'InReview',
       ],
       where: {
         uid,
