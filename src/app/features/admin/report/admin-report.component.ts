@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ReportService } from '@core/services/report.service';
@@ -9,9 +10,9 @@ import { Subscription } from 'rxjs';
 })
 export class ReportComponent {
   private subscriptions: Subscription = new Subscription();
-  public now: Date = new Date();
+  public now = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
 
-  constructor(private reportsService: ReportService) {}
+  constructor(private reportsService: ReportService, private datePipe: DatePipe) {}
 
   public downloadLocalAuthorityAdminReport(event: Event) {
     event.preventDefault();

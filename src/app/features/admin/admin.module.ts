@@ -1,5 +1,5 @@
 import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -44,6 +44,7 @@ import { SearchComponent } from './search/search.component';
     GetLaResolver,
     GetRegistrationsResolver,
     GetSingleRegistrationResolver,
+    DatePipe,
   ],
   bootstrap: [AdminComponent],
 })
