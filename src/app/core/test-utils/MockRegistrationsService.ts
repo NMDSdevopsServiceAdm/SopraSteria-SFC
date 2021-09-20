@@ -3,6 +3,9 @@ import { RegistrationsService } from '@core/services/registrations.service';
 import { build } from '@jackfranklin/test-data-bot';
 import * as moment from 'moment';
 
+<<<<<<< HEAD
+=======
+>>>>>>> test
 export const mockRegistration = {
   created: moment.utc('20210101').format('D/M/YYYY h:mma'),
   username: 'testuser',

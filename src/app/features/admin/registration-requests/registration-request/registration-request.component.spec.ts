@@ -26,6 +26,13 @@ import { of, throwError } from 'rxjs';
 
 import { RegistrationRequestComponent } from './registration-request.component';
 
+<<<<<<< HEAD
+=======
+>>>>>>> test
+<<<<<<< HEAD
+=======
+import { mockRegistration, MockRegistrationsService } from '@core/test-utils/MockRegistrationsService';
+>>>>>>> test
 describe('RegistrationRequestComponent', () => {
   async function setup(inProgress = false, reviewer = null) {
     const { fixture, getByText, getAllByText, queryAllByText, queryByText, getByTestId } = await render(

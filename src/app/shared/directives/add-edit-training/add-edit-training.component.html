@@ -1,18 +1,20 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form">
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
           <h1 class="govuk-fieldset__heading">
-            {{ trainingRecordId ? 'Edit training details' : 'Enter training details' }}
+            {{ title }}
           </h1>
         </legend>
+        <p class="govuk-body" *ngIf="showWorkerCount">
+          <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
+          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
+        </p>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
-          <label class="govuk-label" for="category">
-            Training category
-          </label>
+          <label class="govuk-label" for="category"> Training category </label>
           <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('category') }}
           </span>
@@ -31,9 +33,7 @@
         </div>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
-          <label class="govuk-label" for="title">
-            Training name
-          </label>
+          <label class="govuk-label" for="title"> Training name </label>
           <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
           </span>
@@ -49,9 +49,7 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('accredited').invalid">
           <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend">
-              Is this training accredited?
-            </legend>
+            <legend class="govuk-fieldset__legend">Is this training accredited?</legend>
             <span *ngIf="submitted && form.get('accredited').invalid" id="accredited-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('accredited') }}
             </span>
@@ -64,9 +62,7 @@
                   type="radio"
                   value="Yes"
                 />
-                <label class="govuk-label govuk-radios__label" for="accredited-yes">
-                  Yes
-                </label>
+                <label class="govuk-label govuk-radios__label" for="accredited-yes"> Yes </label>
               </div>
               <div class="govuk-radios__item">
                 <input
@@ -76,9 +72,7 @@
                   type="radio"
                   value="No"
                 />
-                <label class="govuk-label govuk-radios__label" for="accredited-no">
-                  No
-                </label>
+                <label class="govuk-label govuk-radios__label" for="accredited-no"> No </label>
               </div>
               <div class="govuk-radios__item">
                 <input
@@ -88,9 +82,7 @@
                   type="radio"
                   value="Don't know"
                 />
-                <label class="govuk-label govuk-radios__label" for="accredited-dont-know">
-                  Don't know
-                </label>
+                <label class="govuk-label govuk-radios__label" for="accredited-dont-know"> Don't know </label>
               </div>
             </div>
           </fieldset>
@@ -98,12 +90,8 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('completed').invalid">
           <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
-            <legend class="govuk-fieldset__legend">
-              Date completed
-            </legend>
-            <span id="completed-hint" class="govuk-hint">
-              For example, 31 3 1980
-            </span>
+            <legend class="govuk-fieldset__legend">Date completed</legend>
+            <span id="completed-hint" class="govuk-hint"> For example, 31 3 1980 </span>
             <span *ngIf="submitted && form.get('completed').invalid" id="completed-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
             </span>
@@ -113,12 +101,8 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('expires').invalid">
           <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
-            <legend class="govuk-fieldset__legend">
-              Expiry date
-            </legend>
-            <span id="expires-hint" class="govuk-hint">
-              For example, 31 3 1980
-            </span>
+            <legend class="govuk-fieldset__legend">Expiry date</legend>
+            <span id="expires-hint" class="govuk-hint"> For example, 31 3 1980 </span>
             <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
             </span>
@@ -128,9 +112,7 @@
 
         <div class="govuk-character-count">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-            <label class="govuk-label" for="notes">
-              Add notes
-            </label>
+            <label class="govuk-label" for="notes"> Add notes </label>
             <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
             </span>
@@ -143,18 +125,18 @@
               rows="5"
             ></textarea>
           </div>
-          <app-character-count [control]="form.get('notes')" [max]="notesMaxLength"></app-character-count>
+          <span class="govuk-character-count__message govuk-hint" aria-live="polite"> 1,000 characters or fewer </span>
         </div>
       </fieldset>
     </div>
   </div>
 
   <div class="govuk-button-group">
-    <button type="submit" class="govuk-button">
-      {{ trainingRecordId ? 'Update training' : 'Add training' }}
+    <button type="submit" class="govuk-button govuk-!-margin-right-9">
+      {{ buttonText }}
     </button>
     <a
-      class="govuk-button govuk-button--link govuk-util__float-right"
+      class="govuk-button govuk-button--link govuk-!-margin-left-9"
       role="button"
       draggable="false"
       (click)="navigateToPreviousPage()"
