@@ -78,7 +78,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   private onError(error) {
-    console.log(error);
+    console.error(error);
   }
 
   public onCancel(): void {
