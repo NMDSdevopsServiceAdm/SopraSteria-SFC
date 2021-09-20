@@ -19,6 +19,7 @@ export class SelectStaffComponent implements OnInit {
   public submitted: boolean;
   public primaryWorkplaceUid: string;
   public returnLink: Array<string>;
+  public selectAll = false;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
 
@@ -38,6 +39,7 @@ export class SelectStaffComponent implements OnInit {
     this.workers = this.route.snapshot.data.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
     this.setupForm();
     this.setupFormErrorsMap();
+    this.setReturnLink();
     this.setBackLink();
   }
 
@@ -62,11 +64,11 @@ export class SelectStaffComponent implements OnInit {
 
     this.form = this.formBuilder.group(
       {
-        selectAll: null,
         selectStaff: this.formBuilder.array(workerFormArray),
       },
       {
         validator: this.oneCheckboxRequired,
+        updateOn: 'submit',
       },
     );
 
@@ -103,12 +105,10 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.setReturnLink();
     this.backService.setBackLink({ url: this.returnLink, fragment: 'training-and-qualifications' });
   }
 
-  public selectAllWorkers(): void {
-    const isChecked = this.form.value.selectAll ? true : false;
+  public selectAllWorkers(isChecked: boolean): void {
     this.selectStaff.controls.forEach((control) => {
       return (control.value.checked = isChecked);
     });
@@ -121,10 +121,7 @@ export class SelectStaffComponent implements OnInit {
 
   public updateSelectAllCheckbox(): void {
     const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
-    const selectAllChecked = allWorkersSelected ? true : false;
-    this.form.patchValue({
-      selectAll: selectAllChecked,
-    });
+    this.selectAll = allWorkersSelected ? true : false;
   }
 
   private updateSelectedStaff(): void {
