@@ -69,11 +69,26 @@ fdescribe('LongTermAbsenceComponent', () => {
     it('should set the correct back link if returnTo$ in worker service is training and quals record page', async () => {
       const { component, fixture, backLinkSpy } = await setup();
 
+      component.returnToUrl = {
+        url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
+      };
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid],
+        url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
+      });
+    });
+
+    it('should set the correct back link if returnTo$ in worker service is staff record page', async () => {
+      const { component, fixture, backLinkSpy } = await setup();
+
+      component.returnToUrl = { url: ['workplace', workplace.uid, 'staff-record', worker.uid] };
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['workplace', workplace.uid, 'staff-record', worker.uid],
       });
     });
   });
