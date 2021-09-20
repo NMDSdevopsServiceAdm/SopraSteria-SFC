@@ -143,7 +143,7 @@ describe('SelectStaffComponent', () => {
 
       component.fixture.componentInstance.updateSelectAllCheckbox();
 
-      expect(form.value.selectAll).toBeTruthy();
+      expect(component.fixture.componentInstance.selectAll).toBeTruthy();
     });
 
     it('should automatically uncheck the `Select all` checkbox when at least one staff checkbox is unchecked', async () => {
@@ -156,7 +156,7 @@ describe('SelectStaffComponent', () => {
 
       component.fixture.componentInstance.updateSelectAllCheckbox();
 
-      expect(form.value.selectAll).toBeFalsy();
+      expect(component.fixture.componentInstance.selectAll).toBeFalsy();
     });
   });
 
@@ -218,6 +218,7 @@ describe('SelectStaffComponent', () => {
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
+      component.fixture.componentInstance.setReturnLink();
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
@@ -232,6 +233,7 @@ describe('SelectStaffComponent', () => {
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
+      component.fixture.componentInstance.setReturnLink();
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
