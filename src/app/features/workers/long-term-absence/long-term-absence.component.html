@@ -1,3 +1,6 @@
+<app-error-summary *ngIf="submitted && form?.invalid" [formErrorsMap]="formErrorsMap" [form]="form">
+</app-error-summary>
+
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-grid">
     <div class="govuk-grid-column-three-quarters-from-desktop">
@@ -9,9 +12,13 @@
         qualifications. The flag can be used to show why their training records may be out of date.
       </div>
 
-      <div class="govuk-form-group">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Select a reason</legend>
+          <span *ngIf="submitted && form?.invalid" id="longTermAbsence-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFirstErrorMessage('longTermAbsence') }}
+          </span>
           <div class="govuk-radios">
             <div class="govuk-radios__item" *ngFor="let reason of longTermAbsenceReasons; let i = index">
               <input
@@ -27,6 +34,7 @@
               </label>
             </div>
           </div>
+
           <ng-container *ngIf="this.worker.longTermAbsence">
             <p class="govuk-!-margin-top-6">Or set them as being back at work</p>
             <div class="govuk-checkboxes govuk-!-padding-left-0">
@@ -45,6 +53,12 @@
             </div>
           </ng-container>
         </fieldset>
+      </div>
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Save and return</button>
+        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" [routerLink]="returnUrl.url"
+          >Cancel</a
+        >
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -16,7 +16,7 @@ import { WorkerService } from '@core/services/worker.service';
 export class LongTermAbsenceComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public worker: Worker;
-  public returnToUrl: URLStructure;
+  public returnUrl: URLStructure;
   public form: FormGroup;
   public submitted: boolean;
   public longTermAbsenceReasons = [];
@@ -30,14 +30,16 @@ export class LongTermAbsenceComponent implements OnInit {
     private workerService: WorkerService,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.worker = this.route.snapshot.data.worker;
     this.workplace = this.route.snapshot.data.establishment;
-    this.returnToUrl = this.workerService.returnTo;
+    this.returnUrl = this.workerService.returnTo ? this.workerService.returnTo : { url: ['/dashboard'] };
     this.longTermAbsenceReasons = ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'];
     this.setupForm();
+    this.setupFormErrorsMap();
     this.setBackLink();
   }
 
@@ -49,16 +51,35 @@ export class LongTermAbsenceComponent implements OnInit {
     // this.worker.longTermAbsence = 'Illness';
     const workerLongTermAbsence = this.worker.longTermAbsence;
 
-    this.form = this.formBuilder.group(
-      {
-        longTermAbsence: [workerLongTermAbsence],
-      },
-      // { validator: Validators.required },
-    );
+    this.form = this.formBuilder.group({
+      longTermAbsence: new FormControl(workerLongTermAbsence, [this.radioButtonOrCheckboxRequired.bind(this)]),
+    });
   };
 
+  private radioButtonOrCheckboxRequired(control: FormControl): { [key: string]: boolean } {
+    if (control.value === null && !this.backAtWork) {
+      return { radioButtonOrCheckboxRequired: true };
+    } else {
+      return null;
+    }
+  }
+
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'longTermAbsence',
+        type: [
+          {
+            name: 'radioButtonOrCheckboxRequired',
+            message: 'Select a reason for their long-term absence',
+          },
+        ],
+      },
+    ];
+  }
+
   public setBackLink(): void {
-    this.backService.setBackLink(this.returnToUrl);
+    this.backService.setBackLink(this.returnUrl);
   }
 
   public setBackAtWork(event): void {
@@ -68,6 +89,18 @@ export class LongTermAbsenceComponent implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
-    console.log('submitted');
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
+      // update worker with long term absence
+      // this.router.navigate(this.returnUrl.url);
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 }

@@ -7,7 +7,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { queryByText, render } from '@testing-library/angular';
+import { fireEvent, queryByText, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -18,7 +18,7 @@ describe('LongTermAbsenceComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(LongTermAbsenceComponent, {
+    const { fixture, getByText, getAllByText, queryByText } = await render(LongTermAbsenceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
         {
@@ -50,6 +50,7 @@ describe('LongTermAbsenceComponent', () => {
       component,
       fixture,
       getByText,
+      getAllByText,
       queryByText,
       routerSpy,
       backLinkSpy,
@@ -98,11 +99,23 @@ describe('LongTermAbsenceComponent', () => {
     expect(queryByText('Set as back at work')).toBeFalsy();
   });
 
+  it('should display error messages if submitted without selecting a reason for long term absence', async () => {
+    const { component, fixture, getByText, getAllByText } = await setup();
+
+    component.worker.longTermAbsence = null;
+    fixture.detectChanges();
+
+    const saveAndReturnButton = getByText('Save and return');
+    fireEvent.click(saveAndReturnButton);
+
+    expect(getAllByText('Select a reason for their long-term absence').length).toBe(2);
+  });
+
   describe('setBackLink()', () => {
     it('should set the correct back link if returnTo$ in worker service is training and quals record page', async () => {
       const { component, fixture, backLinkSpy } = await setup();
 
-      component.returnToUrl = {
+      component.returnUrl = {
         url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
       };
       component.setBackLink();
@@ -116,7 +129,7 @@ describe('LongTermAbsenceComponent', () => {
     it('should set the correct back link if returnTo$ in worker service is staff record page', async () => {
       const { component, fixture, backLinkSpy } = await setup();
 
-      component.returnToUrl = { url: ['workplace', workplace.uid, 'staff-record', worker.uid] };
+      component.returnUrl = { url: ['workplace', workplace.uid, 'staff-record', worker.uid] };
       component.setBackLink();
       fixture.detectChanges();
 
