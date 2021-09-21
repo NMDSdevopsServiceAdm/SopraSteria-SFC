@@ -82,9 +82,14 @@ export class LongTermAbsenceComponent implements OnInit {
     this.backService.setBackLink(this.returnUrl);
   }
 
-  public setBackAtWork(event): void {
-    console.log(this.form);
-    console.log(event);
+  public setBackAtWork(): void {
+    this.form.patchValue({
+      longTermAbsence: null,
+    });
+  }
+
+  public resetBackAtWork(): void {
+    this.backAtWork = false;
   }
 
   public onSubmit(): void {

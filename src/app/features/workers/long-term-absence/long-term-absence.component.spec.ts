@@ -99,16 +99,55 @@ describe('LongTermAbsenceComponent', () => {
     expect(queryByText('Set as back at work')).toBeFalsy();
   });
 
-  it('should display error messages if submitted without selecting a reason for long term absence', async () => {
-    const { component, fixture, getByText, getAllByText } = await setup();
+  it('should reset radio buttons when pressing back at work checkbox', async () => {
+    const { component, fixture, getByText } = await setup();
 
-    component.worker.longTermAbsence = null;
+    component.worker.longTermAbsence = 'Illness';
     fixture.detectChanges();
 
-    const saveAndReturnButton = getByText('Save and return');
-    fireEvent.click(saveAndReturnButton);
+    const backAtWorkCheckbox = getByText('Set as back at work');
+    fireEvent.click(backAtWorkCheckbox);
 
-    expect(getAllByText('Select a reason for their long-term absence').length).toBe(2);
+    expect(component.form.value.longTermAbsence).toBe(null);
+  });
+
+  it('should reset back at work checkbox when clicking a radio button', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.backAtWork = true;
+    fixture.detectChanges();
+
+    const illnessRadioButton = getByText('Illness');
+    fireEvent.click(illnessRadioButton);
+
+    expect(component.backAtWork).toBeFalsy();
+  });
+
+  describe('Error messages', () => {
+    it('should display error messages if submitted without selecting a reason for long term absence', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+
+      component.worker.longTermAbsence = null;
+      fixture.detectChanges();
+
+      const saveAndReturnButton = getByText('Save and return');
+      fireEvent.click(saveAndReturnButton);
+
+      expect(getAllByText('Select a reason for their long-term absence').length).toBe(2);
+    });
+
+    it('should not display error messages if submitted when back at work checkbox is selected', async () => {
+      const { component, fixture, getByText, queryByText } = await setup();
+
+      component.worker.longTermAbsence = null;
+      component.backAtWork = true;
+      fixture.detectChanges();
+
+      const saveAndReturnButton = getByText('Save and return');
+      fireEvent.click(saveAndReturnButton);
+
+      expect(queryByText('Select a reason for their long-term absence')).toBeFalsy;
+    });
   });
 
   describe('setBackLink()', () => {

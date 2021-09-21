@@ -28,6 +28,7 @@
                 name="longTermAbsence"
                 type="radio"
                 value="{{ reason }}"
+                (click)="resetBackAtWork()"
               />
               <label for="longTermAbsence-{{ i }}" class="govuk-label govuk-radios__label">
                 {{ reason }}
@@ -46,7 +47,7 @@
                   name="backAtWork"
                   [(ngModel)]="backAtWork"
                   [ngModelOptions]="{ standalone: true }"
-                  (ngModelChange)="setBackAtWork($event)"
+                  (ngModelChange)="setBackAtWork()"
                 />
                 <label for="backAtWork" class="govuk-label govuk-checkboxes__label"> Set as back at work </label>
               </div>
