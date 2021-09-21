@@ -1,6 +1,7 @@
 'use strict';
 const csv = require('csvtojson');
 const { MetaData } = require('../../../../models/BulkImport/csv/metaData');
+const models = require('../../../../models');
 
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
 const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers').Worker;
@@ -148,4 +149,7 @@ const validatePut = async (req, res) => {
 
 (async () => {
   await validatePut(workerData.req, workerData.res);
+
+  models.sequelize.close();
+  process.exit(0);
 })();
