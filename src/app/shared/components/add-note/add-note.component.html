@@ -1,0 +1,7 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="notesForm">
+  <div class="govuk-form-group">
+    <label for="notes" class="govuk-label govuk-!-font-weight-bold">Notes</label>
+    <textarea class="govuk-textarea" name="notes" id="notes" rows="4" [formControlName]="'notes'"></textarea>
+  </div>
+  <button type="submit" class="govuk-button govuk-button--secondary">Add this note</button>
+</form>

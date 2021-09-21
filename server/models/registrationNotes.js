@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
   const RegistrationNotes = sequelize.define(
-    'registrationNodes',
+    'registrationNotes',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -19,10 +19,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'EstablishmentFK',
       },
-      notes: {
+      note: {
         type: DataTypes.TEXT,
         allowNull: false,
-        field: 'Notes',
+        field: 'Note',
       },
     },
     {
@@ -36,13 +36,21 @@ module.exports = function (sequelize, DataTypes) {
     RegistrationNotes.belongsTo(models.user, {
       foreignKey: 'userFk',
       targetKey: 'id',
-      as: 'User',
+      as: 'user',
     });
 
-    RegistrationNotes.belongsTo(models.user, {
+    RegistrationNotes.belongsTo(models.establishment, {
       foreignKey: 'establishmentFk',
       targetKey: 'id',
-      as: 'Establishment',
+      as: 'establishment'
+    });
+  };
+
+  RegistrationNotes.createNote = function (userId, establishmentId, note) {
+    return this.create({
+      userFk: userId,
+      establishmentFk: establishmentId,
+      note: note,
     });
   };
 

@@ -152,4 +152,19 @@ export class RegistrationRequestComponent implements OnInit {
       },
     );
   }
+
+  public addNote(form: FormGroup): void {
+    const body = { note: form.get('notes').value };
+
+    this.registrationsService.addRegistrationNote(body).subscribe(
+      (data) => {
+        console.log('success');
+        console.log(data);
+      },
+      (error) => {
+        console.log('error');
+        console.log(error);
+      },
+    );
+  }
 }

@@ -18,6 +18,7 @@ import { SummaryRecordValueComponent } from '@shared/components/summary-record-v
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 
+import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
@@ -183,6 +184,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    AddNoteComponent,
   ],
   exports: [
     AlertComponent,
@@ -259,6 +261,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    AddNoteComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })

@@ -37,4 +37,8 @@ export class RegistrationsService {
   public unlockAccount(data: object) {
     return this.http.post<any>('/api/admin/unlock-account/', data);
   }
+
+  public addRegistrationNote(data: object) {
+    return this.http.post<any>('/api/admin/registrations/addRegistrationNote', data);
+  }
 }

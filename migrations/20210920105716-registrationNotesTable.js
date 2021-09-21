@@ -31,7 +31,7 @@ module.exports = {
             key: 'EstablishmentID',
           },
         },
-        Notes: {
+        Note: {
           allowNull: false,
           type: Sequelize.TEXT,
         },
