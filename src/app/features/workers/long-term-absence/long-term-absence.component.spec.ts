@@ -114,6 +114,7 @@ describe('LongTermAbsenceComponent', () => {
   it('should reset back at work checkbox when clicking a radio button', async () => {
     const { component, fixture, getByText } = await setup();
 
+    component.worker.longTermAbsence = null;
     component.backAtWork = true;
     fixture.detectChanges();
 
@@ -127,7 +128,8 @@ describe('LongTermAbsenceComponent', () => {
     it('should display error messages if submitted without selecting a reason for long term absence', async () => {
       const { component, fixture, getByText, getAllByText } = await setup();
 
-      component.worker.longTermAbsence = null;
+      component.form.patchValue({ longTermAbsence: null });
+      component.backAtWork = false;
       fixture.detectChanges();
 
       const saveAndReturnButton = getByText('Save and return');
@@ -139,9 +141,12 @@ describe('LongTermAbsenceComponent', () => {
     it('should not display error messages if submitted when back at work checkbox is selected', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
-      component.worker.longTermAbsence = null;
-      component.backAtWork = true;
+      component.worker.longTermAbsence = 'Illness';
+      component.backAtWork = false;
       fixture.detectChanges();
+
+      const backAtWorkCheckbox = getByText('Set as back at work');
+      fireEvent.click(backAtWorkCheckbox);
 
       const saveAndReturnButton = getByText('Save and return');
       fireEvent.click(saveAndReturnButton);

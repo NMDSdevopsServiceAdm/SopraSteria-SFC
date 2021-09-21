@@ -51,9 +51,14 @@ export class LongTermAbsenceComponent implements OnInit {
     // this.worker.longTermAbsence = 'Illness';
     const workerLongTermAbsence = this.worker.longTermAbsence;
 
-    this.form = this.formBuilder.group({
-      longTermAbsence: new FormControl(workerLongTermAbsence, [this.radioButtonOrCheckboxRequired.bind(this)]),
-    });
+    this.form = this.formBuilder.group(
+      {
+        longTermAbsence: new FormControl(workerLongTermAbsence, [this.radioButtonOrCheckboxRequired.bind(this)]),
+      },
+      {
+        updateOn: 'submit',
+      },
+    );
   };
 
   private radioButtonOrCheckboxRequired(control: FormControl): { [key: string]: boolean } {
