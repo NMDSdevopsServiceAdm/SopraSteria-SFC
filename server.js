@@ -1,7 +1,9 @@
 const Sqreen = process.env.SQREEN_APP_NAME ? require('sqreen') : require('./server/utils/middleware/sqreen.mock');
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
-const { Integrations } = require('@sentry/tracing');
+const Tracing = require('@sentry/tracing');
+const Integrations = require('@sentry/integrations');
+
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: 'sfc',
@@ -90,10 +92,16 @@ if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
     integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
       // enable Express.js middleware tracing
-      new Integrations.Express({ app }),
+      new Tracing.Integrations.Express({ app }),
+      new Integrations.CaptureConsole({
+        levels: ['error'],
+      }),
     ],
     environment: config.get('env'),
+    tracesSampleRate: 1,
+    serverName: process.env.CF_INSTANCE_INDEX,
   });
 }
 app.use(
@@ -101,6 +109,7 @@ app.use(
     user: ['id'],
   }),
 );
+app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
 
 // middleware which blocks requests when we're too busy
