@@ -510,10 +510,30 @@ describe('RegistrationRequestComponent', () => {
       fireEvent.click(approvalConfirmButton);
 
       expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
-        establishmentId: component.registration.username,
+        establishmentId: component.registration.establishment.id,
         nmdsId: component.registration.establishment.nmdsId,
         approve: true,
       });
+    });
+
+    it('should display approval server error message when server error', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approvalServerErrorMessage = 'There was an error completing the approval';
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(throwError('Service unavailable'));
+
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(getByText(approvalServerErrorMessage, { exact: false })).toBeTruthy();
     });
   });
 
@@ -586,10 +606,30 @@ describe('RegistrationRequestComponent', () => {
       fireEvent.click(rejectConfirmButton);
 
       expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
-        establishmentId: component.registration.username,
+        establishmentId: component.registration.establishment.id,
         nmdsId: component.registration.establishment.nmdsId,
         approve: false,
       });
+    });
+
+    it('should display rejection server error message when server error', async () => {
+      const { fixture, getByText } = await setup();
+
+      const rejectionServerErrorMessage = 'There was an error completing the rejection';
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(throwError('Service unavailable'));
+
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectionConfirmButton);
+
+      expect(getByText(rejectionServerErrorMessage, { exact: false })).toBeTruthy();
     });
   });
 

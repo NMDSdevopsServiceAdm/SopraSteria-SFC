@@ -23,6 +23,7 @@ export class RegistrationRequestComponent implements OnInit {
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
+  public approvalOrRejectionServerError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -171,9 +172,9 @@ export class RegistrationRequestComponent implements OnInit {
             this.router.navigate(['/sfcadmin', 'registrations']);
           },
           (err) => {
-            if (err instanceof HttpErrorResponse) {
-              this.populateErrorFromServer(err);
-            }
+            this.approvalOrRejectionServerError = `There was an error completing the ${
+              isApproval ? 'approval' : 'rejection'
+            }`;
           },
         );
       }
@@ -189,7 +190,7 @@ export class RegistrationRequestComponent implements OnInit {
     if (this.registration.email) {
       body.username = this.registration.username;
     } else {
-      body.establishmentId = this.registration.username;
+      body.establishmentId = this.registration.establishment.id;
     }
 
     return body;
