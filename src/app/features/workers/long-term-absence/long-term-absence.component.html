@@ -13,24 +13,19 @@
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Select a reason</legend>
           <div class="govuk-radios">
-            <ng-container
-              *ngFor="let reason of longTermAbsence.controls; let i = index"
-              formArrayName="longTermAbsence"
-            >
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  id="longTermAbsence-{{ i }}"
-                  name="longTermAbsence-{{ i }}"
-                  type="radio"
-                  (change)="selectWorker(worker)"
-                  value="reason.value.name"
-                />
-                <label for="longTermAbsence-{{ i }}" class="govuk-label govuk-radios__label">
-                  {{ reason.value.name }}
-                </label>
-              </div>
-            </ng-container>
+            <div class="govuk-radios__item" *ngFor="let reason of longTermAbsenceReasons; let i = index">
+              <input
+                [formControlName]="'longTermAbsence'"
+                class="govuk-radios__input"
+                id="longTermAbsence-{{ i }}"
+                name="longTermAbsence"
+                type="radio"
+                value="{{ reason }}"
+              />
+              <label for="longTermAbsence-{{ i }}" class="govuk-label govuk-radios__label">
+                {{ reason }}
+              </label>
+            </div>
           </div>
         </fieldset>
       </div>

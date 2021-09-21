@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -44,26 +44,10 @@ export class LongTermAbsenceComponent implements OnInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  get longTermAbsence(): FormArray {
-    return this.form.get('longTermAbsence') as FormArray;
-  }
-
   private setupForm = () => {
-    const longTermAbsenceFormArray = this.longTermAbsenceReasons.map((reason) => {
-      return this.formBuilder.control({
-        name: reason,
-      });
+    this.form = this.formBuilder.group({
+      longTermAbsence: [null, Validators.required],
     });
-
-    this.form = this.formBuilder.group(
-      {
-        longTermAbsence: this.formBuilder.array(longTermAbsenceFormArray),
-      },
-      {
-        validator: Validators.required,
-      },
-    );
-    console.log(this.form);
   };
 
   public setBackLink(): void {
