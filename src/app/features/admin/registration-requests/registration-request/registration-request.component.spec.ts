@@ -24,6 +24,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
+import { RegistrationRequestsComponent } from '../registration-requests.component';
 import { RegistrationRequestComponent } from './registration-request.component';
 
 describe('RegistrationRequestComponent', () => {
@@ -34,7 +35,9 @@ describe('RegistrationRequestComponent', () => {
         imports: [
           SharedModule,
           RouterModule,
-          RouterTestingModule,
+          RouterTestingModule.withRoutes([
+            { path: 'sfcadmin/registrations', component: RegistrationRequestsComponent },
+          ]),
           HttpClientTestingModule,
           FormsModule,
           ReactiveFormsModule,

@@ -6,7 +6,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { RegistrationApprovalOrRejectionRequestParams } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
+import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
@@ -159,19 +159,14 @@ export class RegistrationRequestComponent implements OnInit {
     );
   }
 
-  public approveOrRejectRegistration($event: Event, username: string, isApproval: boolean): void {
-    $event.preventDefault();
-
-    const dialog = this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
-      workplaceName: this.registration.establishment.name,
-      isApproval,
-    });
+  public approveOrRejectRegistration(isApproval: boolean): void {
+    const dialog = this.openApprovalOrRejectionDialog(isApproval);
 
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
-        const data = this.getApprovalOrRejectionRequestParams(isApproval);
+        const body = this.getApprovalOrRejectionRequestBody(isApproval);
 
-        this.registrationsService.registrationApproval(data).subscribe(
+        this.registrationsService.registrationApproval(body).subscribe(
           () => {
             this.router.navigate(['/sfcadmin', 'registrations']);
           },
@@ -185,18 +180,25 @@ export class RegistrationRequestComponent implements OnInit {
     });
   }
 
-  private getApprovalOrRejectionRequestParams(isApproval: boolean): RegistrationApprovalOrRejectionRequestParams {
-    const params: RegistrationApprovalOrRejectionRequestParams = {
+  private getApprovalOrRejectionRequestBody(isApproval: boolean): RegistrationApprovalOrRejectionRequestParams {
+    const body: RegistrationApprovalOrRejectionRequestParams = {
       nmdsId: this.registration.establishment.nmdsId,
       approve: isApproval,
     };
 
     if (this.registration.email) {
-      params.username = this.registration.username;
+      body.username = this.registration.username;
     } else {
-      params.establishmentId = this.registration.username;
+      body.establishmentId = this.registration.username;
     }
 
-    return params;
+    return body;
+  }
+
+  private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<RegistrationApprovalOrRejectionDialogComponent> {
+    return this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
+      workplaceName: this.registration.establishment.name,
+      isApproval,
+    });
   }
 }

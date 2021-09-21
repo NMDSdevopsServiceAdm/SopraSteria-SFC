@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
+  <div class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
     <p>Received {{ registration.created }}</p>
     <app-review-checkbox
@@ -133,20 +133,17 @@
       </div>
     </dl>
   </div>
-  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
+  <div class="govuk-grid-column-three-quarters">
     <div class="govuk-button-group">
       <button
         class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
-        type="submit"
-        name="approve"
-        (click)="approveOrRejectRegistration($event, registration.username, true)"
+        (click)="approveOrRejectRegistration(true)"
       >
         Approve
       </button>
       <button
-        type="submit"
         class="govuk-button govuk-button--warning govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6"
-        (click)="approveOrRejectRegistration($event, registration.username, false)"
+        (click)="approveOrRejectRegistration(false)"
       >
         Reject
       </button>
