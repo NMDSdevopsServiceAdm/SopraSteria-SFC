@@ -100,7 +100,7 @@ if (config.get('sentry.dsn')) {
       }),
     ],
     environment: config.get('env'),
-    tracesSampleRate: 1,
+    tracesSampleRate: config.get('sentry.sample_rate'),
     serverName: process.env.CF_INSTANCE_INDEX,
   });
 }
