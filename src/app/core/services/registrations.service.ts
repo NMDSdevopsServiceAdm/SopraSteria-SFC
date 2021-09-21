@@ -1,6 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Registration, Registrations, UpdateWorkplaceIdRequest } from '@core/model/registrations.model';
+import {
+  Registration,
+  Registrations,
+  UpdateRegistrationStatusRequest,
+  UpdateWorkplaceIdRequest,
+} from '@core/model/registrations.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -19,6 +24,10 @@ export class RegistrationsService {
 
   public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {
     return this.http.post<any>(`/api/admin/registrations/updateWorkplaceId`, data);
+  }
+
+  public updateRegistrationStatus(data: UpdateRegistrationStatusRequest): Observable<any> {
+    return this.http.post<any>(`/api/admin/registrations/updateRegistrationStatus`, data);
   }
 
   public registrationApproval(data: object) {

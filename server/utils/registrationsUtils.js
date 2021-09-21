@@ -25,6 +25,8 @@ module.exports.convertWorkplaceAndUserDetails = (workplace) => {
       parentEstablishmentId: null,
       status: workplace.get('Status'),
       uid: workplace.get('EstablishmentUID'),
+      reviewer: workplace.get('Reviewer'),
+      inReview: workplace.get('InReview'),
     },
   };
 

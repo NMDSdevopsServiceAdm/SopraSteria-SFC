@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Registration } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { RegistrationsService } from '@core/services/registrations.service';
@@ -11,7 +12,12 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { mockRegistration, MockRegistrationsService } from '@core/test-utils/MockRegistrationsService';
+import {
+  InProgressRegistration,
+  mockRegistration,
+  MockRegistrationsService,
+  PendingRegistration,
+} from '@core/test-utils/MockRegistrationsService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -21,42 +27,49 @@ import { of, throwError } from 'rxjs';
 import { RegistrationRequestComponent } from './registration-request.component';
 
 describe('RegistrationRequestComponent', () => {
-  async function setup() {
-    const { fixture, getByText, queryAllByText } = await render(RegistrationRequestComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: RegistrationsService, useClass: MockRegistrationsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-        { provide: SwitchWorkplaceService, useClass: MockSwitchWorkplaceService },
-        AlertService,
-        WindowRef,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                registration: mockRegistration,
+  async function setup(inProgress = false, reviewer = null) {
+    const { fixture, getByText, getAllByText, queryAllByText, queryByText, getByTestId } = await render(
+      RegistrationRequestComponent,
+      {
+        imports: [
+          SharedModule,
+          RouterModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+          { provide: RegistrationsService, useClass: MockRegistrationsService },
+          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+          { provide: SwitchWorkplaceService, useClass: MockSwitchWorkplaceService },
+          AlertService,
+          WindowRef,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  registration: inProgress ? InProgressRegistration(reviewer) : PendingRegistration(),
+                  loggedInUser: { fullname: 'adminUser' },
+                },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     return {
       component,
       fixture,
       getByText,
+      queryByText,
       queryAllByText,
+      getByTestId,
+      getAllByText,
     };
   }
 
@@ -66,22 +79,171 @@ describe('RegistrationRequestComponent', () => {
   });
 
   it('should display the workplace name twice (heading and name section)', async () => {
-    const { queryAllByText } = await setup();
+    const { queryAllByText, component } = await setup();
 
-    const workplaceName = mockRegistration.establishment.name;
-
+    const workplaceName = component.registration.establishment.name;
     expect(queryAllByText(workplaceName, { exact: false }).length).toBe(2);
   });
 
-  it('should display the workplace address', async () => {
-    const { getByText } = await setup();
+  it('should show a PENDING banner when no one is reviewing the registration', async () => {
+    const { queryByText } = await setup();
 
-    const address = mockRegistration.establishment.address;
-    const address2 = mockRegistration.establishment.address2;
-    const address3 = mockRegistration.establishment.address3;
-    const postcode = mockRegistration.establishment.postcode;
-    const town = mockRegistration.establishment.town;
-    const county = mockRegistration.establishment.county;
+    const pendingBanner = queryByText('PENDING');
+    expect(pendingBanner).toBeTruthy();
+  });
+
+  it('should show a checkbox when no one is reviewing the registration', async () => {
+    const { getByTestId } = await setup();
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+    expect(checkbox).toBeTruthy();
+  });
+
+  it('should show an IN PROGRESS banner and checkbox when you are reviewing the registration', async () => {
+    const inProgress = true;
+    const reviewer = 'adminUser';
+    const { queryByText, getByTestId } = await setup(inProgress, reviewer);
+
+    const inProgressBanner = queryByText('IN PROGRESS');
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+    expect(inProgressBanner).toBeTruthy();
+    expect(checkbox).toBeTruthy();
+  });
+
+  it('should show the name of the person reviewing the registration and remove checkbox, when already in progress', async () => {
+    const inProgress = true;
+    const reviewer = 'Another User';
+    const { queryByText } = await setup(inProgress, reviewer);
+
+    const inProgressBanner = queryByText('IN PROGRESS');
+    const checkboxLabel = queryByText('I am reviewing this request');
+    const expectedLabel = queryByText('Another User is reviewing this request');
+
+    expect(inProgressBanner).toBeTruthy();
+    expect(checkboxLabel).toBeFalsy();
+    expect(expectedLabel).toBeTruthy();
+  });
+
+  it('should show call updateRegistrationStatus when the checkbox is clicked', async () => {
+    const { getByTestId, fixture } = await setup();
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    const updateRegistrationSpy = spyOn(registrationsService, 'updateRegistrationStatus').and.callThrough();
+
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    const updateData = {
+      uid: mockRegistration.establishment.uid,
+      status: 'IN PROGRESS',
+      reviewer: 'adminUser',
+      inReview: true,
+    };
+
+    expect(updateRegistrationSpy).toHaveBeenCalledWith(updateData);
+  });
+
+  it('should show a IN PROGRESS banner when the checkbox is clicked', async () => {
+    const { getByTestId, queryByText, fixture } = await setup();
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+    const getSingleRegistrationSpy = spyOn(registrationsService, 'getSingleRegistration').and.returnValue(
+      of(InProgressRegistration('adminUser') as Registration),
+    );
+
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    const inProgressBanner = queryByText('IN PROGRESS');
+
+    expect(inProgressBanner).toBeTruthy();
+    expect(getSingleRegistrationSpy).toHaveBeenCalled();
+  });
+
+  it('should show an error when clicking on the checkbox and someone has already clicked on it while you have been on the page', async () => {
+    const { getByTestId, getAllByText, fixture } = await setup();
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError('Error'));
+
+    const errorMessage = 'This registration is already in progress';
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    expect(getAllByText(errorMessage).length).toBe(1);
+  });
+
+  it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
+    const { getByTestId, getAllByText, fixture } = await setup();
+
+    const mockErrorResponse = new HttpErrorResponse({
+      status: 400,
+      statusText: 'Bad Request',
+      error: {},
+    });
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError(mockErrorResponse));
+
+    const errorMessage = 'There was a server error';
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    expect(getAllByText(errorMessage).length).toBe(1);
+  });
+
+  it('should show the PENDING banner when unchecking the checkbox', async () => {
+    const inProgress = true;
+    const reviewer = 'adminUser';
+    const { queryByText, getByTestId, fixture } = await setup(inProgress, reviewer);
+
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+    const getSingleRegistrationSpy = spyOn(registrationsService, 'getSingleRegistration').and.returnValue(
+      of(PendingRegistration() as Registration),
+    );
+
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    const pendingBanner = queryByText('PENDING');
+
+    expect(pendingBanner).toBeTruthy();
+    expect(getSingleRegistrationSpy).toHaveBeenCalled();
+  });
+
+  it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
+    const { getByTestId, getAllByText, fixture } = await setup();
+
+    const registrationsService = TestBed.inject(RegistrationsService);
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+    spyOn(registrationsService, 'getSingleRegistration').and.returnValue(throwError('Error'));
+
+    const errorMessage = 'There was an error retrieving the registration';
+    const checkbox = getByTestId('reviewingRegistrationCheckbox');
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    expect(getAllByText(errorMessage).length).toBe(1);
+  });
+
+  it('should display the workplace address', async () => {
+    const { getByText, component } = await setup();
+
+    const address = component.registration.establishment.address;
+    const address2 = component.registration.establishment.address2;
+    const address3 = component.registration.establishment.address3;
+    const postcode = component.registration.establishment.postcode;
+    const town = component.registration.establishment.town;
+    const county = component.registration.establishment.county;
 
     expect(getByText(address, { exact: false })).toBeTruthy();
     expect(getByText(address2, { exact: false })).toBeTruthy();
@@ -92,10 +254,10 @@ describe('RegistrationRequestComponent', () => {
   });
 
   it('should display the provider ID and location ID', async () => {
-    const { getByText } = await setup();
+    const { getByText, component } = await setup();
 
-    const locationId = mockRegistration.establishment.locationId;
-    const provid = mockRegistration.establishment.provid;
+    const locationId = component.registration.establishment.locationId;
+    const provid = component.registration.establishment.provid;
 
     expect(getByText(locationId, { exact: false })).toBeTruthy();
     expect(getByText(provid, { exact: false })).toBeTruthy();
@@ -110,22 +272,22 @@ describe('RegistrationRequestComponent', () => {
   });
 
   it('should display the main service', async () => {
-    const { getByText } = await setup();
+    const { getByText, component } = await setup();
 
-    const mainService = mockRegistration.establishment.mainService;
+    const mainService = component.registration.establishment.mainService;
 
     expect(getByText(mainService, { exact: false })).toBeTruthy();
   });
 
   it('should display the user details when user registration', async () => {
-    const { getByText } = await setup();
+    const { getByText, component } = await setup();
 
-    const username = mockRegistration.username;
-    const name = mockRegistration.name;
-    const securityQuestion = mockRegistration.securityQuestion;
-    const securityQuestionAnswer = mockRegistration.securityQuestionAnswer;
-    const email = mockRegistration.email;
-    const phone = mockRegistration.phone;
+    const username = component.registration.username;
+    const name = component.registration.name;
+    const securityQuestion = component.registration.securityQuestion;
+    const securityQuestionAnswer = component.registration.securityQuestionAnswer;
+    const email = component.registration.email;
+    const phone = component.registration.phone;
 
     expect(getByText(username, { exact: false })).toBeTruthy();
     expect(getByText(name, { exact: false })).toBeTruthy();
@@ -136,13 +298,13 @@ describe('RegistrationRequestComponent', () => {
   });
 
   it('should call navigateToWorkplace in switchWorkplaceService when the parentId link is clicked', async () => {
-    const { fixture, getByText } = await setup();
+    const { fixture, getByText, component } = await setup();
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
 
     const switchWorkplaceServiceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
 
-    const parentId = mockRegistration.establishment.parentEstablishmentId;
+    const parentId = component.registration.establishment.parentEstablishmentId;
 
     const parentIdLink = getByText(parentId, { exact: false });
     fireEvent.click(parentIdLink);

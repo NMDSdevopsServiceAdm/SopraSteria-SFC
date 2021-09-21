@@ -8,12 +8,14 @@ import {
   GetSingleRegistrationResolver,
 } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
+import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { ReportComponent } from './report/admin-report.component';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
@@ -47,6 +49,16 @@ const routes: Routes = [
         resolve: {
           registration: GetSingleRegistrationResolver,
         },
+      },
+    ],
+  },
+  {
+    path: 'admin-reports',
+    children: [
+      {
+        path: '',
+        component: ReportComponent,
+        data: { title: 'Admin reports' },
       },
     ],
   },
@@ -97,6 +109,17 @@ const routes: Routes = [
             },
           },
         ],
+      },
+    ],
+  },
+
+  {
+    path: 'external-links',
+    children: [
+      {
+        path: '',
+        component: ExternalLinkComponent,
+        data: { title: 'External Links' },
       },
     ],
   },
