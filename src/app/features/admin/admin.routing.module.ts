@@ -47,6 +47,7 @@ const routes: Routes = [
         data: { title: 'Registration Request' },
         resolve: {
           registration: GetSingleRegistrationResolver,
+          // notes: GetRegistrationNotesResolver,
         },
       },
     ],

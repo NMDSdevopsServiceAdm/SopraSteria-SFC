@@ -54,5 +54,21 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  RegistrationNotes.getNotesByEstablishmentId = function (establishmentId) {
+    return this.findAll({
+      where: {
+        establishmentFk: establishmentId
+      },
+      attributes: ['note','createdAt'],
+      include: [
+        {
+          model: sequelize.models.user,
+          attributes: ['FullNameValue'],
+          as: 'user',
+        }
+      ]
+    })
+  }
+
   return RegistrationNotes;
 };

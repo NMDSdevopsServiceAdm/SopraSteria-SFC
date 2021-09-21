@@ -19,7 +19,6 @@ const addRegistrationNote = async (req, res) => {
       });
     }
 
-
     await models.registrationNotes.createNote(user.id, establishmentId, note);
 
     res.status(200).send();

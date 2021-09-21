@@ -25,7 +25,6 @@ export class AddNoteComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    console.log('onSubmit');
     if (this.notesForm.valid) {
       this.addNote(this.notesForm);
     }

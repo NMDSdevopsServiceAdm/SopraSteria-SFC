@@ -163,10 +163,23 @@ export class RegistrationRequestComponent implements OnInit {
       (data) => {
         console.log('success');
         console.log(data);
+        // this.getRegistrationNotes();
       },
       (error) => {
         console.log('error');
         console.log(error);
+      },
+    );
+  }
+
+  public getRegistrationNotes(): void {
+    this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
+      (data) => {
+        console.log(data);
+        // this.registrationNotes = data;
+      },
+      (error) => {
+        console.log('error');
       },
     );
   }
