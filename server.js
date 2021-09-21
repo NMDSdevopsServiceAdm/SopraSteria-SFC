@@ -98,6 +98,9 @@ if (config.get('sentry.dsn')) {
       new Integrations.CaptureConsole({
         levels: ['error'],
       }),
+      new Tracing.Integrations.Postgres({
+        usePgNative: false,
+      }),
     ],
     environment: config.get('env'),
     tracesSampleRate: config.get('sentry.sample_rate'),
