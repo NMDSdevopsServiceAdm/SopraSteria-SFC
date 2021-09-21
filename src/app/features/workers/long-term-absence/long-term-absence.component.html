@@ -27,6 +27,23 @@
               </label>
             </div>
           </div>
+          <ng-container *ngIf="this.worker.longTermAbsence">
+            <p class="govuk-!-margin-top-6">Or set them as being back at work</p>
+            <div class="govuk-checkboxes govuk-!-padding-left-0">
+              <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
+                <input
+                  class="govuk-checkboxes__input"
+                  type="checkbox"
+                  id="backAtWork"
+                  name="backAtWork"
+                  [(ngModel)]="backAtWork"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="setBackAtWork($event)"
+                />
+                <label for="backAtWork" class="govuk-label govuk-checkboxes__label"> Set as back at work </label>
+              </div>
+            </div>
+          </ng-container>
         </fieldset>
       </div>
     </div>

@@ -7,18 +7,18 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { queryByText, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { LongTermAbsenceComponent } from './long-term-absence.component';
 
-fdescribe('LongTermAbsenceComponent', () => {
+describe('LongTermAbsenceComponent', () => {
   const worker = workerBuilder() as Worker;
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
-    const { fixture, getByText } = await render(LongTermAbsenceComponent, {
+    const { fixture, getByText, queryByText } = await render(LongTermAbsenceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
         {
@@ -50,6 +50,7 @@ fdescribe('LongTermAbsenceComponent', () => {
       component,
       fixture,
       getByText,
+      queryByText,
       routerSpy,
       backLinkSpy,
     };
@@ -57,12 +58,44 @@ fdescribe('LongTermAbsenceComponent', () => {
 
   it('should render a LongTermAbsenceComponent', async () => {
     const { component } = await setup();
+
     expect(component).toBeTruthy();
   });
 
   it('should display the worker name', async () => {
     const { getByText } = await setup();
+
     expect(getByText(worker.nameOrId)).toBeTruthy();
+  });
+
+  it('should display the reasons for long term absence', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Maternity leave')).toBeTruthy();
+    expect(getByText('Paternity leave')).toBeTruthy();
+    expect(getByText('Illness')).toBeTruthy();
+    expect(getByText('Injury')).toBeTruthy();
+    expect(getByText('Other')).toBeTruthy();
+  });
+
+  it('should display the "back at work" checkbox if the worker is currently flagged as long term absent', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.worker.longTermAbsence = 'Illness';
+    fixture.detectChanges();
+
+    expect(getByText('Or set them as being back at work')).toBeTruthy();
+    expect(getByText('Set as back at work')).toBeTruthy();
+  });
+
+  it('should not display the "back at work" checkbox if the worker is not currently flagged as long term absent', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.worker.longTermAbsence = null;
+    fixture.detectChanges();
+
+    expect(queryByText('Or set them as being back at work')).toBeFalsy();
+    expect(queryByText('Set as back at work')).toBeFalsy();
   });
 
   describe('setBackLink()', () => {

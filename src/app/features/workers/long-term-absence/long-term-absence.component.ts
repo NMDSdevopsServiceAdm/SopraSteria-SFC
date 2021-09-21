@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -20,6 +20,7 @@ export class LongTermAbsenceComponent implements OnInit {
   public form: FormGroup;
   public submitted: boolean;
   public longTermAbsenceReasons = [];
+  public backAtWork = false;
   private formErrorsMap: Array<ErrorDetails>;
   private workplace: Establishment;
 
@@ -44,14 +45,25 @@ export class LongTermAbsenceComponent implements OnInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  private setupForm = () => {
-    this.form = this.formBuilder.group({
-      longTermAbsence: [null, Validators.required],
-    });
+  public setupForm = () => {
+    // this.worker.longTermAbsence = 'Illness';
+    const workerLongTermAbsence = this.worker.longTermAbsence;
+
+    this.form = this.formBuilder.group(
+      {
+        longTermAbsence: [workerLongTermAbsence],
+      },
+      // { validator: Validators.required },
+    );
   };
 
   public setBackLink(): void {
     this.backService.setBackLink(this.returnToUrl);
+  }
+
+  public setBackAtWork(event): void {
+    console.log(this.form);
+    console.log(event);
   }
 
   public onSubmit(): void {

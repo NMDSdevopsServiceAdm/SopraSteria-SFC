@@ -1,7 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
@@ -30,6 +30,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
@@ -63,10 +64,9 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
+  imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
@@ -118,7 +118,7 @@ import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
     MandatoryDetailsComponent,
-    LongTermAbsenceComponent
+    LongTermAbsenceComponent,
   ],
   providers: [DialogService, WorkerResolver],
 })
