@@ -38,7 +38,7 @@ export class RegistrationsService {
     return this.http.post<any>('/api/admin/unlock-account/', data);
   }
 
-  public addRegistrationNote(data: object) {
+  public addRegistrationNote(data: object): Observable<any> {
     return this.http.post<any>('/api/admin/registrations/addRegistrationNote', data);
   }
 }

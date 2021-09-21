@@ -154,7 +154,10 @@ export class RegistrationRequestComponent implements OnInit {
   }
 
   public addNote(form: FormGroup): void {
-    const body = { note: form.get('notes').value };
+    const body = {
+      note: form.get('notes').value,
+      establishmentId: this.registration.establishment.id,
+    };
 
     this.registrationsService.addRegistrationNote(body).subscribe(
       (data) => {

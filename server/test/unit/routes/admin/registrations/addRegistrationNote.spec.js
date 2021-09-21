@@ -11,30 +11,121 @@ const models = require('../../../../../models');
 const { addRegistrationNote } = require('../../../../../routes/admin/registrations/addRegistrationNote');
 
 describe.only('addRegistrationNote', () => {
-  const request = {
-    method: 'POST',
-    url: '/api/admin/registrations/addRegistrationNote',
-    userId: 101,
-    establishment: {
-      id: 1001,
-    },
-    body: {
-      note: 'This is a not about the registration request',
-    },
-  };
+  let req;
+  let res;
 
-  const req = httpMocks.createRequest(request);
-  const res = httpMocks.createResponse();
+  beforeEach(() => {
+    const request = {
+      method: 'POST',
+      url: '/api/admin/registrations/addRegistrationNote',
+    };
+
+    req = httpMocks.createRequest(request);
+    res = httpMocks.createResponse();
+  })
 
   afterEach(() => {
     sinon.restore();
   });
 
   it('should return 200 when a new note is created', async () => {
-    sinon.stub(models.registrationNotes, 'createNote').returns(true)
+    const userId = '123';
+    const establishmentId = '123';
+
+    sinon.stub(models.user, 'findByUUID').returns({
+      id: userId,
+    });
+
+    sinon.stub(models.establishment, 'findByPk').returns({
+      id: establishmentId,
+    });
+
+    sinon.stub(models.registrationNotes, 'createNote').returns(true);
+
+    req.userUid = '123';
+    req.body = {
+      establishmentId: '123',
+      note: 'This is a note',
+    };
+
     await addRegistrationNote(req, res);
+
     expect(res.statusCode).to.deep.equal(200);
   });
 
+  it('should return a 400 error code when given an invalid user uuid', async () => {
+    const establishmentId = '123';
+
+    sinon.stub(models.user, 'findByUUID').returns(null);
+
+    sinon.stub(models.establishment, 'findByPk').returns({
+      id: establishmentId,
+    });
+
+    sinon.stub(models.registrationNotes, 'createNote').returns(true);
+
+    req.userUid = '123';
+    req.body = {
+      establishmentId: '123',
+      note: 'This is a note',
+    };
+
+    await addRegistrationNote(req, res);
+    const { message } = res._getJSONData();
+
+    expect(res.statusCode).to.deep.equal(400);
+    expect(message).to.equal('User not found');
+  });
+
+  it('should return a 400 error code when given an invalid establishment id', async () => {
+    const userId = '123';
+
+    sinon.stub(models.user, 'findByUUID').returns({
+      id: userId,
+    });
+
+    sinon.stub(models.establishment, 'findByPk').returns(null);
+
+    sinon.stub(models.registrationNotes, 'createNote').returns(true);
+
+    req.userUid = '123';
+    req.body = {
+      establishmentId: 'invalid id',
+      note: 'This is a note',
+    };
+
+    await addRegistrationNote(req, res);
+    const { message } = res._getJSONData();
+
+    expect(res.statusCode).to.deep.equal(400);
+    expect(message).to.equal('Establishment not found');
+  });
+
+  it('should return an 500 error if an exception is thrown', async () => {
+    const userId = '123';
+    const establishmentId = '123';
+
+    sinon.stub(models.user, 'findByUUID').returns({
+      id: userId,
+    });
+
+    sinon.stub(models.establishment, 'findByPk').returns({
+      id: establishmentId,
+    });
+
+    sinon.stub(models.registrationNotes, 'createNote').throws(function() { return new Error() });
+
+    req.userUid = '123';
+    req.body = {
+      establishmentId: '123',
+      note: 'This is a note',
+    };
+
+    await addRegistrationNote(req, res);
+    const { message } = res._getJSONData();
+
+    expect(res.statusCode).to.deep.equal(500);
+    expect(message).to.equal('There was a problem adding the note');
+  })
 
 });
