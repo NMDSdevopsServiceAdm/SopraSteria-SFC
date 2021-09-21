@@ -47,6 +47,7 @@ export const workerBuilder = build('Worker', {
     missingMandatoryTrainingCount: 0,
     qualificationCount: 0,
     fluJab: null,
+    longTermAbsence: null,
   },
 });
 
