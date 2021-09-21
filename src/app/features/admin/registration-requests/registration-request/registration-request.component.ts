@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { RegistrationApprovalOrRejectionRequestParams } from '@core/model/registrations.model';
+import { RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Dialog, DialogService } from '@core/services/dialog.service';
@@ -180,8 +180,8 @@ export class RegistrationRequestComponent implements OnInit {
     });
   }
 
-  private getApprovalOrRejectionRequestBody(isApproval: boolean): RegistrationApprovalOrRejectionRequestParams {
-    const body: RegistrationApprovalOrRejectionRequestParams = {
+  private getApprovalOrRejectionRequestBody(isApproval: boolean): RegistrationApprovalOrRejectionRequestBody {
+    const body: RegistrationApprovalOrRejectionRequestBody = {
       nmdsId: this.registration.establishment.nmdsId,
       approve: isApproval,
     };

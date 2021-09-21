@@ -48,7 +48,7 @@ export interface RegistrationApprovalOrRejectionConfirmation {
   isApproval: boolean;
 }
 
-export interface RegistrationApprovalOrRejectionRequestParams {
+export interface RegistrationApprovalOrRejectionRequestBody {
   nmdsId: string;
   approve: boolean;
   username?: string;
