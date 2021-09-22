@@ -28,7 +28,7 @@ const _approveOrRejectNewUser = async (req, res) => {
 
     // Make sure we have the matching user
     if (login && login.id && username === login.username) {
-      const workplace = await _findWorkplace(login.user.establishment.id);
+      const workplace = await models.establishment.findbyId(login.user.establishment.id);
       const user = await models.user.findByLoginId(login.user.id);
 
       var workplaceIsUnique = await _workplaceIsUnique(login.user.establishment.id, req.body.nmdsId);
@@ -61,7 +61,7 @@ const _approveOrRejectNewWorkplace = async (req, res) => {
     });
   }
 
-  const workplace = await _findWorkplace(req.body.establishmentId);
+  const workplace = await await models.establishment.findbyId(req.body.establishmentId);
 
   if (req.body.approve && req.body.establishmentId) {
     await _approveNewWorkplace(workplace, nmdsId, res);
@@ -110,18 +110,7 @@ const _findLoginMatchingUsername = async (username) => {
   });
 };
 
-const _findWorkplace = async (establishmentId) => {
-  return await models.establishment.findOne({
-    where: {
-      id: establishmentId,
-    },
-    attributes: ['id'],
-  });
-};
-
 const _approveNewUser = async (login, workplace, nmdsId, res) => {
-  // TODO: Email saying they've been accepted
-  // Update their active status to true
   try {
     const updatedLogin = await login.update({
       isActive: true,
@@ -143,8 +132,6 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
 };
 
 const _rejectNewUser = async (user, workplace, res) => {
-  // TODO: Email saying they've been rejected
-  // Remove the user
   try {
     if (user && workplace) {
       const deleteduser = await user.destroy();
