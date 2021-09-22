@@ -18,7 +18,8 @@ module.exports = function (sequelize, DataTypes) {
         field: '"EstablishmentUID"',
       },
       ustatus: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ENUM,
+        values: ['PENDING', 'IN PROGRESS', 'REJECTED'],
         allowNull: true,
         field: '"Status"',
       },
