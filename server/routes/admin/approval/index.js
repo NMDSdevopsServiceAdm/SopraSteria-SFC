@@ -4,9 +4,9 @@ const router = express.Router();
 const models = require('../../../models');
 const Sequelize = require('sequelize');
 const userApprovalConfirmation = 'User has been set as active';
-const userRejectionConfirmation = 'User has been removed';
+const userRejectionConfirmation = 'User has been rejected';
 const workplaceApprovalConfirmation = 'Workplace has been set as active';
-const workplaceRejectionConfirmation = 'Workplace has been removed';
+const workplaceRejectionConfirmation = 'Workplace has been rejected';
 
 router.route('/').post(async (req, res) => {
   await adminApproval(req, res);
@@ -157,8 +157,12 @@ const _rejectNewUser = async (user, workplace, res) => {
   try {
     if (user && workplace) {
       const deleteduser = await user.destroy();
-      const deletedworkplace = await workplace.destroy();
-      if (deleteduser && deletedworkplace) {
+
+      const rejectedworkplace = await workplace.update({
+        ustatus: 'REJECTED',
+      });
+
+      if (deleteduser && rejectedworkplace) {
         return res.status(200).json({ status: '0', message: userRejectionConfirmation });
       } else {
         return res.status(500).send();
@@ -191,8 +195,11 @@ const _approveNewWorkplace = async (workplace, nmdsId, res) => {
 
 const _rejectNewWorkplace = async (workplace, res) => {
   try {
-    const deletedworkplace = await workplace.destroy();
-    if (deletedworkplace) {
+    const rejectedWorkplace = await workplace.update({
+      ustatus: 'REJECTED',
+    });
+
+    if (rejectedWorkplace) {
       return res.status(200).json({ status: '0', message: workplaceRejectionConfirmation });
     } else {
       return res.status(500).send();
