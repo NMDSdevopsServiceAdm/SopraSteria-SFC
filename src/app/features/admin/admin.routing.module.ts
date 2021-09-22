@@ -5,6 +5,9 @@ import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/ge
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import {
+  GetRegistrationNotesResolver,
+} from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
+import {
   GetSingleRegistrationResolver,
 } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
@@ -47,7 +50,7 @@ const routes: Routes = [
         data: { title: 'Registration Request' },
         resolve: {
           registration: GetSingleRegistrationResolver,
-          // notes: GetRegistrationNotesResolver,
+          notes: GetRegistrationNotesResolver,
         },
       },
     ],

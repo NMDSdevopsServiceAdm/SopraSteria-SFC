@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Note } from '@core/model/registrations.model';
 import { RegistrationsService } from '@core/services/registrations.service';
 
 @Component({
@@ -9,7 +10,9 @@ import { RegistrationsService } from '@core/services/registrations.service';
 export class AddNoteComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   @Input() public addNote: (form: FormGroup) => void;
+  @Input() public getRegistrationNotes: () => void;
   @Input() public registration;
+  @Input() public registrationNotes: Note[];
   public notesForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder, public registrationsService: RegistrationsService) {}
@@ -25,8 +28,12 @@ export class AddNoteComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    // console.log('*********** onSubmit ***********');
+    // console.log(this.notesForm.valid);
+    // console.log(this.notesForm.get('notes').value);
     if (this.notesForm.valid) {
       this.addNote(this.notesForm);
+      this.notesForm.reset();
     }
   }
 }

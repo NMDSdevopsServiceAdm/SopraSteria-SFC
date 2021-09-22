@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { RegistrationsService } from '@core/services/registrations.service';
@@ -19,6 +20,7 @@ export class RegistrationRequestComponent implements OnInit {
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
+  public registrationNotes: Note[];
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -32,7 +34,9 @@ export class RegistrationRequestComponent implements OnInit {
     this.setBreadcrumbs();
     this.getRegistration();
     this.getUserFullName();
+    this.getNotes();
     this.setupForm();
+    console.log(this.registration);
   }
 
   get nmdsId(): AbstractControl {
@@ -45,6 +49,10 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getUserFullName(): void {
     this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
+  }
+
+  private getNotes(): void {
+    this.registrationNotes = this.route.snapshot.data.notes;
   }
 
   private setupForm(): void {
@@ -159,11 +167,11 @@ export class RegistrationRequestComponent implements OnInit {
       establishmentId: this.registration.establishment.id,
     };
 
+    console.log('************ add Note **************');
+    console.log(body);
     this.registrationsService.addRegistrationNote(body).subscribe(
       (data) => {
-        console.log('success');
-        console.log(data);
-        // this.getRegistrationNotes();
+        this.getRegistrationNotes();
       },
       (error) => {
         console.log('error');
@@ -175,8 +183,7 @@ export class RegistrationRequestComponent implements OnInit {
   public getRegistrationNotes(): void {
     this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
       (data) => {
-        console.log(data);
-        // this.registrationNotes = data;
+        this.registrationNotes = data;
       },
       (error) => {
         console.log('error');

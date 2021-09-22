@@ -2,7 +2,6 @@ const router = require('express').Router();
 const models = require('../../../models');
 
 const getRegistrationNotes = async (req, res) => {
-
   try {
     const { establishmentUid } = req.params;
     const establishment = await models.establishment.findByUid(establishmentUid);

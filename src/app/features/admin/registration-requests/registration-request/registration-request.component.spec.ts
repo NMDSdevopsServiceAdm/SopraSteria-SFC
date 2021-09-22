@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Registration } from '@core/model/registrations.model';
@@ -27,8 +28,21 @@ import { of, throwError } from 'rxjs';
 import { RegistrationRequestComponent } from './registration-request.component';
 
 describe('RegistrationRequestComponent', () => {
-  async function setup(inProgress = false, reviewer = null) {
-    const { fixture, getByText, getAllByText, queryAllByText, queryByText, getByTestId } = await render(
+  const notes = [
+    {
+      createdAt: new Date('01/09/2021'),
+      note: 'Note about the registration',
+      user: { FullNameValue: 'adminUser' },
+    },
+    {
+      createdAt: new Date('05/09/2021'),
+      note: 'Another note about the registration',
+      user: { FullNameValue: 'adminUser' },
+    },
+  ];
+
+  async function setup(inProgress = false, reviewer = null, existingNotes = false) {
+    const { fixture, getByText, getAllByText, queryAllByText, queryByText, getByTestId, queryByTestId } = await render(
       RegistrationRequestComponent,
       {
         imports: [
@@ -53,6 +67,7 @@ describe('RegistrationRequestComponent', () => {
                 data: {
                   registration: inProgress ? InProgressRegistration(reviewer) : PendingRegistration(),
                   loggedInUser: { fullname: 'adminUser' },
+                  notes: existingNotes && notes,
                 },
               },
             },
@@ -70,6 +85,7 @@ describe('RegistrationRequestComponent', () => {
       queryAllByText,
       getByTestId,
       getAllByText,
+      queryByTestId,
     };
   }
 
@@ -83,156 +99,6 @@ describe('RegistrationRequestComponent', () => {
 
     const workplaceName = component.registration.establishment.name;
     expect(queryAllByText(workplaceName, { exact: false }).length).toBe(2);
-  });
-
-  it('should show a PENDING banner when no one is reviewing the registration', async () => {
-    const { queryByText } = await setup();
-
-    const pendingBanner = queryByText('PENDING');
-    expect(pendingBanner).toBeTruthy();
-  });
-
-  it('should show a checkbox when no one is reviewing the registration', async () => {
-    const { getByTestId } = await setup();
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-
-    expect(checkbox).toBeTruthy();
-  });
-
-  it('should show an IN PROGRESS banner and checkbox when you are reviewing the registration', async () => {
-    const inProgress = true;
-    const reviewer = 'adminUser';
-    const { queryByText, getByTestId } = await setup(inProgress, reviewer);
-
-    const inProgressBanner = queryByText('IN PROGRESS');
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-
-    expect(inProgressBanner).toBeTruthy();
-    expect(checkbox).toBeTruthy();
-  });
-
-  it('should show the name of the person reviewing the registration and remove checkbox, when already in progress', async () => {
-    const inProgress = true;
-    const reviewer = 'Another User';
-    const { queryByText } = await setup(inProgress, reviewer);
-
-    const inProgressBanner = queryByText('IN PROGRESS');
-    const checkboxLabel = queryByText('I am reviewing this request');
-    const expectedLabel = queryByText('Another User is reviewing this request');
-
-    expect(inProgressBanner).toBeTruthy();
-    expect(checkboxLabel).toBeFalsy();
-    expect(expectedLabel).toBeTruthy();
-  });
-
-  it('should show call updateRegistrationStatus when the checkbox is clicked', async () => {
-    const { getByTestId, fixture } = await setup();
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-
-    const registrationsService = TestBed.inject(RegistrationsService);
-    const updateRegistrationSpy = spyOn(registrationsService, 'updateRegistrationStatus').and.callThrough();
-
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
-
-    const updateData = {
-      uid: mockRegistration.establishment.uid,
-      status: 'IN PROGRESS',
-      reviewer: 'adminUser',
-      inReview: true,
-    };
-
-    expect(updateRegistrationSpy).toHaveBeenCalledWith(updateData);
-  });
-
-  it('should show a IN PROGRESS banner when the checkbox is clicked', async () => {
-    const { getByTestId, queryByText, fixture } = await setup();
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-
-    const registrationsService = TestBed.inject(RegistrationsService);
-    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
-    const getSingleRegistrationSpy = spyOn(registrationsService, 'getSingleRegistration').and.returnValue(
-      of(InProgressRegistration('adminUser') as Registration),
-    );
-
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
-
-    const inProgressBanner = queryByText('IN PROGRESS');
-
-    expect(inProgressBanner).toBeTruthy();
-    expect(getSingleRegistrationSpy).toHaveBeenCalled();
-  });
-
-  it('should show an error when clicking on the checkbox and someone has already clicked on it while you have been on the page', async () => {
-    const { getByTestId, getAllByText, fixture } = await setup();
-
-    const registrationsService = TestBed.inject(RegistrationsService);
-    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError('Error'));
-
-    const errorMessage = 'This registration is already in progress';
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
-
-    expect(getAllByText(errorMessage).length).toBe(1);
-  });
-
-  it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
-    const { getByTestId, getAllByText, fixture } = await setup();
-
-    const mockErrorResponse = new HttpErrorResponse({
-      status: 400,
-      statusText: 'Bad Request',
-      error: {},
-    });
-
-    const registrationsService = TestBed.inject(RegistrationsService);
-    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError(mockErrorResponse));
-
-    const errorMessage = 'There was a server error';
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
-
-    expect(getAllByText(errorMessage).length).toBe(1);
-  });
-
-  it('should show the PENDING banner when unchecking the checkbox', async () => {
-    const inProgress = true;
-    const reviewer = 'adminUser';
-    const { queryByText, getByTestId, fixture } = await setup(inProgress, reviewer);
-
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-
-    const registrationsService = TestBed.inject(RegistrationsService);
-    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
-    const getSingleRegistrationSpy = spyOn(registrationsService, 'getSingleRegistration').and.returnValue(
-      of(PendingRegistration() as Registration),
-    );
-
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
-
-    const pendingBanner = queryByText('PENDING');
-
-    expect(pendingBanner).toBeTruthy();
-    expect(getSingleRegistrationSpy).toHaveBeenCalled();
-  });
-
-  it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
-    const { getByTestId, getAllByText, fixture } = await setup();
-
-    const registrationsService = TestBed.inject(RegistrationsService);
-    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
-    spyOn(registrationsService, 'getSingleRegistration').and.returnValue(throwError('Error'));
-
-    const errorMessage = 'There was an error retrieving the registration';
-    const checkbox = getByTestId('reviewingRegistrationCheckbox');
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
-
-    expect(getAllByText(errorMessage).length).toBe(1);
   });
 
   it('should display the workplace address', async () => {
@@ -436,5 +302,217 @@ describe('RegistrationRequestComponent', () => {
         getByText(`This workplace ID (A1231231) belongs to another workplace, enter a different workplace ID`),
       ).toBeTruthy();
     });
+  });
+
+  describe('Checkbox component', () => {
+    it('should show a PENDING banner when no one is reviewing the registration', async () => {
+      const { queryByText } = await setup();
+
+      const pendingBanner = queryByText('PENDING');
+      expect(pendingBanner).toBeTruthy();
+    });
+
+    it('should show a checkbox when no one is reviewing the registration', async () => {
+      const { getByTestId } = await setup();
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      expect(checkbox).toBeTruthy();
+    });
+
+    it('should show an IN PROGRESS banner and checkbox when you are reviewing the registration', async () => {
+      const inProgress = true;
+      const reviewer = 'adminUser';
+      const { queryByText, getByTestId } = await setup(inProgress, reviewer);
+
+      const inProgressBanner = queryByText('IN PROGRESS');
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      expect(inProgressBanner).toBeTruthy();
+      expect(checkbox).toBeTruthy();
+    });
+
+    it('should show the name of the person reviewing the registration and remove checkbox, when already in progress', async () => {
+      const inProgress = true;
+      const reviewer = 'Another User';
+      const { queryByText } = await setup(inProgress, reviewer);
+
+      const inProgressBanner = queryByText('IN PROGRESS');
+      const checkboxLabel = queryByText('I am reviewing this request');
+      const expectedLabel = queryByText('Another User is reviewing this request');
+
+      expect(inProgressBanner).toBeTruthy();
+      expect(checkboxLabel).toBeFalsy();
+      expect(expectedLabel).toBeTruthy();
+    });
+
+    it('should call updateRegistrationStatus when the checkbox is clicked', async () => {
+      const { getByTestId, fixture } = await setup();
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      const updateRegistrationSpy = spyOn(registrationsService, 'updateRegistrationStatus').and.callThrough();
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      const updateData = {
+        uid: mockRegistration.establishment.uid,
+        status: 'IN PROGRESS',
+        reviewer: 'adminUser',
+        inReview: true,
+      };
+
+      expect(updateRegistrationSpy).toHaveBeenCalledWith(updateData);
+    });
+
+    it('should show a IN PROGRESS banner when the checkbox is clicked', async () => {
+      const { getByTestId, queryByText, fixture } = await setup();
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+      const getSingleRegistrationSpy = spyOn(registrationsService, 'getSingleRegistration').and.returnValue(
+        of(InProgressRegistration('adminUser') as Registration),
+      );
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      const inProgressBanner = queryByText('IN PROGRESS');
+
+      expect(inProgressBanner).toBeTruthy();
+      expect(getSingleRegistrationSpy).toHaveBeenCalled();
+    });
+
+    it('should show an error when clicking on the checkbox and someone has already clicked on it while you have been on the page', async () => {
+      const { getByTestId, getAllByText, fixture } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError('Error'));
+
+      const errorMessage = 'This registration is already in progress';
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+
+    it('should show an error when an error is thrown by the updateRegistrationStatus call', async () => {
+      const { getByTestId, getAllByText, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        error: {},
+      });
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'There was a server error';
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+
+    it('should show the PENDING banner when unchecking the checkbox', async () => {
+      const inProgress = true;
+      const reviewer = 'adminUser';
+      const { queryByText, getByTestId, fixture } = await setup(inProgress, reviewer);
+
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+      const getSingleRegistrationSpy = spyOn(registrationsService, 'getSingleRegistration').and.returnValue(
+        of(PendingRegistration() as Registration),
+      );
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      const pendingBanner = queryByText('PENDING');
+
+      expect(pendingBanner).toBeTruthy();
+      expect(getSingleRegistrationSpy).toHaveBeenCalled();
+    });
+
+    it('should show an error when an error is thrown by the getSingleRegistration call', async () => {
+      const { getByTestId, getAllByText, fixture } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
+      spyOn(registrationsService, 'getSingleRegistration').and.returnValue(throwError('Error'));
+
+      const errorMessage = 'There was an error retrieving the registration';
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+  });
+
+  describe('Notes component', () => {
+    it('should show a textbox', async () => {
+      const { getByTestId, queryByText } = await setup();
+
+      const textbox = getByTestId('notesTextbox');
+      const addNotesButton = queryByText('Add this note');
+
+      expect(textbox).toBeTruthy();
+      expect(addNotesButton).toBeTruthy();
+    });
+
+    it('should not show any notes when there are not notes for this registration', async () => {
+      const { queryByTestId, component } = await setup();
+
+      const notes = component.registrationNotes;
+      const notesList = queryByTestId('notesList');
+
+      expect(notes).toBeFalsy();
+      expect(notesList).toBeFalsy();
+    });
+
+    it('should show a list of notes when there are notes associated with this registration', async () => {
+      const notInProgress = false;
+      const noReviewer = null;
+      const existingNotes = true;
+      const { component, queryByTestId } = await setup(notInProgress, noReviewer, existingNotes);
+
+      const notes = component.registrationNotes;
+      const notesList = queryByTestId('notesList');
+
+      expect(notes.length).toEqual(2);
+      expect(notesList).toBeTruthy();
+    });
+
+    xit('should call the addRegistrationNote when the note is submitted', async () => {
+      const { getByText, component, fixture, queryByTestId } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      const addRegistrationNotesSpy = spyOn(registrationsService, 'addRegistrationNote').and.callThrough();
+
+      console.log(component);
+      const textbox = fixture.debugElement.query(By.css('textarea')).nativeElement;
+      textbox.value = 'This is a note';
+      const addNotesButton = getByText('Add this note');
+
+      fireEvent.click(addNotesButton);
+      fixture.detectChanges();
+      console.log(textbox);
+      // console.log(form);
+
+      expect(addRegistrationNotesSpy).toHaveBeenCalled();
+    });
+
+    xit('should submit a note and update the list of notes', async () => {});
+
+    xit('should not be able to submit the note when textarea is empty', async () => {});
+
+    xit('should show an error when an error is thrown', async () => {});
   });
 });

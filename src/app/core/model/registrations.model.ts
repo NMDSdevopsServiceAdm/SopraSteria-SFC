@@ -42,3 +42,9 @@ export interface UpdateRegistrationStatusRequest {
   reviewer: string;
   inReview: boolean;
 }
+
+export interface Note {
+  createdAt: Date;
+  note: string;
+  user: { FullNameValue: string };
+}
