@@ -911,8 +911,8 @@ class User {
         }
       });
     } catch (err) {
-      console.log('throwing error');
-      console.log(err);
+      console.error('throwing error');
+      console.error(err);
       throw new UserExceptions.UserDeleteException(
         null,
         this.uid,

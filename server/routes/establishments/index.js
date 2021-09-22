@@ -221,7 +221,7 @@ const addEstablishment = async (req, res) => {
       });
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     console.error('Add establishment: rolling back all changes because: ', err.errCode, err.errMessage);
     if (err.errCode > -99) {
       console.error('Add establishment: original error: ', err.err);

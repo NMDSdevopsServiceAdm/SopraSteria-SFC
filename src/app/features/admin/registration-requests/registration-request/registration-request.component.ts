@@ -1,13 +1,18 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Note } from '@core/model/registrations.model';
+import { Note, RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+
+import {
+  RegistrationApprovalOrRejectionDialogComponent,
+} from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -22,6 +27,7 @@ export class RegistrationRequestComponent implements OnInit {
   public checkBoxError: string;
   public registrationNotes: Note[];
   public notesError: string;
+  public approvalOrRejectionServerError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -29,6 +35,8 @@ export class RegistrationRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private switchWorkplaceService: SwitchWorkplaceService,
     private alertService: AlertService,
+    private dialogService: DialogService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -140,11 +148,11 @@ export class RegistrationRequestComponent implements OnInit {
       () => {
         this.getUpdatedRegistration();
       },
-      (error) => {
-        if (error instanceof HttpErrorResponse) {
-          this.checkBoxError = 'There was a server error';
-        } else {
+      (error: HttpErrorResponse) => {
+        if (error.status === 400) {
           this.checkBoxError = 'This registration is already in progress';
+        } else {
+          this.checkBoxError = 'There was a server error';
         }
       },
     );
@@ -192,5 +200,46 @@ export class RegistrationRequestComponent implements OnInit {
         this.notesError = 'There was an error retrieving notes for this registration';
       },
     );
+  public approveOrRejectRegistration(isApproval: boolean): void {
+    const dialog = this.openApprovalOrRejectionDialog(isApproval);
+
+    dialog.afterClosed.subscribe((confirmed) => {
+      if (confirmed) {
+        const body = this.getApprovalOrRejectionRequestBody(isApproval);
+
+        this.registrationsService.registrationApproval(body).subscribe(
+          () => {
+            this.router.navigate(['/sfcadmin', 'registrations']);
+          },
+          (err) => {
+            this.approvalOrRejectionServerError = `There was an error completing the ${
+              isApproval ? 'approval' : 'rejection'
+            }`;
+          },
+        );
+      }
+    });
+  }
+
+  private getApprovalOrRejectionRequestBody(isApproval: boolean): RegistrationApprovalOrRejectionRequestBody {
+    const body: RegistrationApprovalOrRejectionRequestBody = {
+      nmdsId: this.registration.establishment.nmdsId,
+      approve: isApproval,
+    };
+
+    if (this.registration.email) {
+      body.username = this.registration.username;
+    } else {
+      body.establishmentId = this.registration.establishment.id;
+    }
+
+    return body;
+  }
+
+  private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<RegistrationApprovalOrRejectionDialogComponent> {
+    return this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
+      workplaceName: this.registration.establishment.name,
+      isApproval,
+    });
   }
 }

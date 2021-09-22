@@ -1,5 +1,5 @@
 import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -27,6 +27,7 @@ import { MonitorComponent } from './local-authorities-return/monitor/monitor.com
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { ReportComponent } from './report/admin-report.component';
 import { SearchComponent } from './search/search.component';
 
 @NgModule({
@@ -41,6 +42,7 @@ import { SearchComponent } from './search/search.component';
     LocalAuthorityComponent,
     RegistrationRequestComponent,
     RegistrationRequestsComponent,
+    ReportComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
@@ -50,6 +52,7 @@ import { SearchComponent } from './search/search.component';
     GetRegistrationsResolver,
     GetSingleRegistrationResolver,
     GetRegistrationNotesResolver,
+    DatePipe,
   ],
   bootstrap: [AdminComponent],
 })

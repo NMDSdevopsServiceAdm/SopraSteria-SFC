@@ -47,7 +47,7 @@ const unlockAccount = async (req, res) => {
         return res.send();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   } else {
     res.status(400);

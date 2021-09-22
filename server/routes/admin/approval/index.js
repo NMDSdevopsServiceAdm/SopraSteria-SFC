@@ -47,7 +47,7 @@ const _approveOrRejectNewUser = async (req, res) => {
       return res.status(400).send();
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

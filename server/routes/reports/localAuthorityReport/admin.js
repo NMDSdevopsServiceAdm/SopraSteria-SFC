@@ -86,7 +86,7 @@ Notes' +
       NEWLINE;
 
     const runReport = await models.sequelize.query(
-      'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);',
+      'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate) ORDER BY "LocalAuthority" ASC;',
       {
         replacements: {
           givenFromDate: fromDate,

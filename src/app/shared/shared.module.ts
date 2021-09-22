@@ -6,6 +6,9 @@ import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import {
+  RegistrationApprovalOrRejectionDialogComponent,
+} from '@features/admin/registration-requests/registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
@@ -185,6 +188,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
+    RegistrationApprovalOrRejectionDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -262,6 +266,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
+    RegistrationApprovalOrRejectionDialogComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })

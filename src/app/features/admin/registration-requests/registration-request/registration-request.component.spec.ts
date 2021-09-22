@@ -22,9 +22,10 @@ import {
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
+import { RegistrationRequestsComponent } from '../registration-requests.component';
 import { RegistrationRequestComponent } from './registration-request.component';
 
 describe('RegistrationRequestComponent', () => {
@@ -48,7 +49,9 @@ describe('RegistrationRequestComponent', () => {
         imports: [
           SharedModule,
           RouterModule,
-          RouterTestingModule,
+          RouterTestingModule.withRoutes([
+            { path: 'sfcadmin/registrations', component: RegistrationRequestsComponent },
+          ]),
           HttpClientTestingModule,
           FormsModule,
           ReactiveFormsModule,
@@ -514,5 +517,204 @@ describe('RegistrationRequestComponent', () => {
     xit('should not be able to submit the note when textarea is empty', async () => {});
 
     xit('should show an error when an error is thrown', async () => {});
+  describe('Approving registration', () => {
+    it('shows dialog with approval confirmation message when Approve button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const dialogMessage = `You're about to approve this registration request`;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('shows workplace name in confirmation dialog', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
+
+    it('should call registrationApproval in registrations service when approval confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
+        username: component.registration.username,
+        nmdsId: component.registration.establishment.nmdsId,
+        approve: true,
+      });
+    });
+
+    it('should call registrationApproval with establishmentId field when approval confirmed for registration with no email', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const approveButton = getByText('Approve');
+      component.registration.email = null;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
+        establishmentId: component.registration.establishment.id,
+        nmdsId: component.registration.establishment.nmdsId,
+        approve: true,
+      });
+    });
+
+    it('should display approval server error message when server error', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approvalServerErrorMessage = 'There was an error completing the approval';
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(throwError('Service unavailable'));
+
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(getByText(approvalServerErrorMessage, { exact: false })).toBeTruthy();
+    });
+  });
+
+  describe('Rejecting registration', () => {
+    it('shows dialog with rejection confirmation message when Reject button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const rejectButton = getByText('Reject');
+      const dialogMessage = `You're about to reject this registration request`;
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('shows workplace name in rejection confirmation dialog', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const rejectButton = getByText('Reject');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
+
+    it('should call registrationApproval in registrations service when rejection confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectConfirmButton);
+
+      expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
+        username: component.registration.username,
+        nmdsId: component.registration.establishment.nmdsId,
+        approve: false,
+      });
+    });
+
+    it('should call registrationApproval with establishmentId field when rejection confirmed for registration with no email', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const rejectButton = getByText('Reject');
+      component.registration.email = null;
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectConfirmButton);
+
+      expect(registrationsService.registrationApproval).toHaveBeenCalledWith({
+        establishmentId: component.registration.establishment.id,
+        nmdsId: component.registration.establishment.nmdsId,
+        approve: false,
+      });
+    });
+
+    it('should display rejection server error message when server error', async () => {
+      const { fixture, getByText } = await setup();
+
+      const rejectionServerErrorMessage = 'There was an error completing the rejection';
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(throwError('Service unavailable'));
+
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectionConfirmButton);
+
+      expect(getByText(rejectionServerErrorMessage, { exact: false })).toBeTruthy();
+    });
+  });
+
+  describe('Navigation', () => {
+    it('has registrations page url for exit link', async () => {
+      const { getByText } = await setup();
+      const exitButton = getByText('Exit');
+
+      expect(exitButton.getAttribute('href')).toBe('/sfcadmin/registrations');
+    });
   });
 });
