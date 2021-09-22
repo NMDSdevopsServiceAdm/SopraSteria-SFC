@@ -24,14 +24,14 @@ const _approveOrRejectNewUser = async (req, res) => {
   const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
 
   try {
-    const login = await _findLoginMatchingUsername(username);
+    const login = await models.login.findByUsername(username);
 
     // Make sure we have the matching user
     if (login && login.id && username === login.username) {
-      const workplace = await models.establishment.findbyId(login.user.establishment.id);
+      const workplace = await models.establishment.findbyId(login.user.establishmentId);
       const user = await models.user.findByLoginId(login.user.id);
 
-      var workplaceIsUnique = await _workplaceIsUnique(login.user.establishment.id, req.body.nmdsId);
+      var workplaceIsUnique = await _workplaceIsUnique(login.user.establishmentId, req.body.nmdsId);
       if (!workplaceIsUnique) {
         return res.status(400).json({
           nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
@@ -85,29 +85,6 @@ const _workplaceIsUnique = async (establishmentId, nmdsId) => {
 
 const _parseEscapedInputAndSanitizeUsername = (username) => {
   return escape(username.toLowerCase());
-};
-
-const _findLoginMatchingUsername = async (username) => {
-  return await models.login.findOne({
-    where: {
-      username: {
-        [models.Sequelize.Op.iLike]: username,
-      },
-    },
-    attributes: ['id', 'username'],
-    include: [
-      {
-        model: models.user,
-        attributes: ['id'],
-        include: [
-          {
-            model: models.establishment,
-            attributes: ['id'],
-          },
-        ],
-      },
-    ],
-  });
 };
 
 const _approveNewUser = async (login, workplace, nmdsId, res) => {
