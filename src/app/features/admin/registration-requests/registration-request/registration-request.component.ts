@@ -139,11 +139,11 @@ export class RegistrationRequestComponent implements OnInit {
       () => {
         this.getUpdatedRegistration();
       },
-      (error) => {
-        if (error instanceof HttpErrorResponse) {
-          this.checkBoxError = 'There was a server error';
-        } else {
+      (error: HttpErrorResponse) => {
+        if (error.status === 400) {
           this.checkBoxError = 'This registration is already in progress';
+        } else {
+          this.checkBoxError = 'There was a server error';
         }
       },
     );
