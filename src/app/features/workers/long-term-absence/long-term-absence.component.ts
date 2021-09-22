@@ -103,7 +103,7 @@ export class LongTermAbsenceComponent implements OnInit {
 
     if (this.form.valid) {
       // update worker with long term absence
-      // this.router.navigate(this.returnUrl.url);
+      this.router.navigate(this.returnUrl.url);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

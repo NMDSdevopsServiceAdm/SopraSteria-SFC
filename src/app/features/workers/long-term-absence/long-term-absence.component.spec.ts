@@ -124,6 +124,29 @@ describe('LongTermAbsenceComponent', () => {
     expect(component.backAtWork).toBeFalsy();
   });
 
+  it('should navigate to the previous page on submit', async () => {
+    const { component, fixture, routerSpy, getByText } = await setup();
+
+    component.returnUrl = {
+      url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
+    };
+    fixture.detectChanges();
+
+    const illnessRadioButton = getByText('Illness');
+    fireEvent.click(illnessRadioButton);
+
+    const saveAndReturnButton = getByText('Save and return');
+    fireEvent.click(saveAndReturnButton);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      'workplace',
+      workplace.uid,
+      'training-and-qualifications-record',
+      worker.uid,
+      'training',
+    ]);
+  });
+
   describe('Error messages', () => {
     it('should display error messages if submitted without selecting a reason for long term absence', async () => {
       const { component, fixture, getByText, getAllByText } = await setup();
