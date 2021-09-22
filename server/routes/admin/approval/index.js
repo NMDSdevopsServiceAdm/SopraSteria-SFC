@@ -29,7 +29,7 @@ const _approveOrRejectNewUser = async (req, res) => {
     // Make sure we have the matching user
     if (login && login.id && username === login.username) {
       const workplace = await _findWorkplace(login.user.establishment.id);
-      const user = await _findUser(login.user.id);
+      const user = await models.user.findByLoginId(login.user.id);
 
       var workplaceIsUnique = await _workplaceIsUnique(login.user.establishment.id, req.body.nmdsId);
       if (!workplaceIsUnique) {
@@ -114,15 +114,6 @@ const _findWorkplace = async (establishmentId) => {
   return await models.establishment.findOne({
     where: {
       id: establishmentId,
-    },
-    attributes: ['id'],
-  });
-};
-
-const _findUser = async (loginId) => {
-  return await models.user.findOne({
-    where: {
-      id: loginId,
     },
     attributes: ['id'],
   });
