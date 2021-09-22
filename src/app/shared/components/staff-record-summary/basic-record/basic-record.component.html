@@ -39,6 +39,7 @@
         "
         [changeLink]="getRoutePath('staff-details')"
         (fieldConfirmation)="this.confirmField('mainJob')"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -75,6 +76,7 @@
         "
         [changeLink]="getRoutePath('staff-details')"
         (fieldConfirmation)="this.confirmField('contract')"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
