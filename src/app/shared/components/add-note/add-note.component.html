@@ -1,5 +1,9 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="notesForm">
   <div class="govuk-form-group govuk-!-padding-right-9">
+    <span *ngIf="notesError" id="addNote-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ notesError }}
+    </span>
     <label for="notes" class="govuk-label govuk-!-font-weight-bold">Notes</label>
     <textarea
       class="govuk-textarea"

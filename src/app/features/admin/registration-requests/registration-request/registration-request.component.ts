@@ -21,6 +21,7 @@ export class RegistrationRequestComponent implements OnInit {
   public userFullName: string;
   public checkBoxError: string;
   public registrationNotes: Note[];
+  public notesError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -36,7 +37,6 @@ export class RegistrationRequestComponent implements OnInit {
     this.getUserFullName();
     this.getNotes();
     this.setupForm();
-    console.log(this.registration);
   }
 
   get nmdsId(): AbstractControl {
@@ -173,9 +173,12 @@ export class RegistrationRequestComponent implements OnInit {
       (data) => {
         this.getRegistrationNotes();
       },
-      (error) => {
-        console.log('error');
-        console.log(error);
+      (error: HttpErrorResponse) => {
+        if (error.status === 400) {
+          this.notesError = 'There was an error adding note to registration';
+        } else {
+          this.notesError = 'There was a server error';
+        }
       },
     );
   }
@@ -186,7 +189,7 @@ export class RegistrationRequestComponent implements OnInit {
         this.registrationNotes = data;
       },
       (error) => {
-        console.log('error');
+        this.notesError = 'There was an error retrieving notes for this registration';
       },
     );
   }
