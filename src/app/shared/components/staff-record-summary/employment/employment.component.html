@@ -38,6 +38,7 @@
         [changeLink]="getRoutePath('main-job-start-date')"
         (fieldConfirmation)="this.confirmField('mainJobStartDate')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -205,6 +206,7 @@
         [changeLink]="getRoutePath('days-of-sickness')"
         (fieldConfirmation)="this.confirmField('daysSick')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -246,6 +248,7 @@
         [changeLink]="getRoutePath('contract-with-zero-hours')"
         (fieldConfirmation)="this.confirmField('zeroHoursContract')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -291,6 +294,7 @@
         [changeLink]="getRoutePath('average-weekly-hours')"
         (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -341,6 +345,7 @@
         [changeLink]="getRoutePath('weekly-contracted-hours')"
         (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -388,6 +393,7 @@
         [changeLink]="getRoutePath('salary')"
         (fieldConfirmation)="this.confirmField('annualHourlyPay')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">

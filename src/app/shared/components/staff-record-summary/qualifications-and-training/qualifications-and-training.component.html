@@ -22,6 +22,7 @@
         [changeLink]="getRoutePath('care-certificate')"
         (fieldConfirmation)="this.confirmField('careCertificate')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -65,6 +66,7 @@
         [changeLink]="getRoutePath('social-care-qualification')"
         (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -109,6 +111,7 @@
           this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
         "
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -151,6 +154,7 @@
         [changeLink]="getRoutePath('other-qualifications')"
         (fieldConfirmation)="this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -184,6 +188,7 @@
         [changeLink]="getRoutePath('other-qualifications-level')"
         (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
