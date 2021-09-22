@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/router';
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
-import { adminJourney } from '@core/breadcrumb/journey.admin';
+import { adminJourney, adminRegistrationJourney } from '@core/breadcrumb/journey.admin';
 import {
   benchmarksPayJourney,
   benchmarksQualificationsJourney,
@@ -147,6 +147,10 @@ export class BreadcrumbService {
     switch (journey) {
       case JourneyType.ADMIN: {
         routes = adminJourney;
+        break;
+      }
+      case JourneyType.ADMIN_REGISTRATIONS: {
+        routes = adminRegistrationJourney;
         break;
       }
       case JourneyType.REPORTS: {

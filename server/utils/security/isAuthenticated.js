@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const AUTH_HEADER = 'authorization';
 const thisIss = config.get('jwt.iss');
 const models = require('../../models');
+const Sentry = require('@sentry/node');
 
 const getTokenSecret = () => {
   return config.get('jwt.secret');
@@ -32,6 +33,26 @@ const isAuthorised = (req, res, next) => {
           uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null,
         };
         req.establishmentId = claim.EstblishmentId;
+
+        Sentry.setUser({
+          username: req.username,
+          id: req.userUid,
+          ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        });
+
+        Sentry.setContext('establishment', {
+          id: req.establishment.id,
+          uid: req.establishment.uid,
+          isParent: req.isParent,
+        });
+
+        Sentry.setContext('user', {
+          username: req.username,
+          id: req.userUid,
+          ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+          role: req.role,
+        });
+
         next();
       }
     });
@@ -204,7 +225,7 @@ const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck)
           }
 
           const foundEstablishment = await models.establishment.findOne({
-            attributes: ['id', 'parentId', 'dataPermissions', 'dataOwner'],
+            attributes: ['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId'],
             where: lookupClause,
           });
 
@@ -233,6 +254,26 @@ const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck)
               role: req.role,
             },
           );
+
+          Sentry.setUser({
+            username: req.username,
+            id: req.userUid,
+            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+          });
+
+          Sentry.setContext('establishment', {
+            id: req.establishment.id,
+            uid: req.establishment.uid,
+            isParent: req.isParent,
+            nmdsID: foundEstablishment.nmdsId,
+          });
+
+          Sentry.setContext('user', {
+            username: req.username,
+            id: req.userUid,
+            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+            role: req.role,
+          });
 
           next();
         }

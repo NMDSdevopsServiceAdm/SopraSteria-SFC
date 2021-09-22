@@ -4,9 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  WorkplaceNameAddressDirective,
-} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({

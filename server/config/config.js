@@ -239,8 +239,7 @@ const config = convict({
     },
     secrets: {
       use: {
-        doc:
-          'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
+        doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
         format: 'Boolean',
         default: false,
       },
@@ -428,7 +427,7 @@ const config = convict({
     dsn: {
       doc: 'Sentry Endpoint',
       format: String,
-      default: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
+      default: 'https://b5e1291ec8934cf7b6b426bc45f1dbbd@o409195.ingest.sentry.io/5972061',
       sensitive: true,
       env: 'SENTRY_DSN',
     },
@@ -439,7 +438,7 @@ const config = convict({
           throw new Error('must be a float between 0 and 1, inclusive');
         }
       },
-      default: 0.3,
+      default: 1.0,
     },
   },
   honeycomb: {

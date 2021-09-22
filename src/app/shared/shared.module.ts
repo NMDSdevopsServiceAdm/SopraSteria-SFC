@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import { RegistrationApprovalOrRejectionDialogComponent } from '@features/admin/registration-requests/registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
@@ -39,6 +40,7 @@ import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
+import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -71,6 +73,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
@@ -161,6 +164,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageNotFoundComponent,
     ArticleListComponent,
     PageComponent,
+    FirstErrorPipe,
+    ReviewCheckboxComponent,
+    RegistrationApprovalOrRejectionDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -235,6 +241,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageNotFoundComponent,
     ArticleListComponent,
     PageComponent,
+    FirstErrorPipe,
+    ReviewCheckboxComponent,
+    RegistrationApprovalOrRejectionDialogComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })

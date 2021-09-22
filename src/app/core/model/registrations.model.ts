@@ -23,8 +23,34 @@ export interface Registration {
     provid: string;
     parentId: string;
     parentUid: string;
-    mainService: number;
+    mainService: string;
     status: string;
     uid: string;
+    reviewer: string;
+    inReview: boolean;
   };
+}
+
+export interface UpdateWorkplaceIdRequest {
+  uid: string;
+  nmdsId: string;
+}
+
+export interface UpdateRegistrationStatusRequest {
+  uid: string;
+  status: string;
+  reviewer: string;
+  inReview: boolean;
+}
+
+export interface RegistrationApprovalOrRejectionConfirmation {
+  workplaceName: string;
+  isApproval: boolean;
+}
+
+export interface RegistrationApprovalOrRejectionRequestBody {
+  nmdsId: string;
+  approve: boolean;
+  username?: string;
+  establishmentId?: string;
 }
