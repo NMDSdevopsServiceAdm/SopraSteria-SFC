@@ -5,9 +5,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
+import { WorkerService } from '@core/services/worker.service';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, queryByText, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -46,6 +48,10 @@ describe('LongTermAbsenceComponent', () => {
     const backLinkSpy = spyOn(backService, 'setBackLink');
     backLinkSpy.and.returnValue();
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const updateWorkerSpy = spyOn(workerService, 'updateWorker');
+    updateWorkerSpy.and.returnValue(of());
+
     return {
       component,
       fixture,
@@ -54,6 +60,7 @@ describe('LongTermAbsenceComponent', () => {
       queryByText,
       routerSpy,
       backLinkSpy,
+      updateWorkerSpy,
     };
   }
 
@@ -124,7 +131,22 @@ describe('LongTermAbsenceComponent', () => {
     expect(component.backAtWork).toBeFalsy();
   });
 
-  it('should navigate to the previous page on submit', async () => {
+  it('should update the worker on submit', async () => {
+    const { component, fixture, updateWorkerSpy, getByText } = await setup();
+
+    component.worker.longTermAbsence = null;
+    fixture.detectChanges();
+
+    const illnessRadioButton = getByText('Illness');
+    fireEvent.click(illnessRadioButton);
+
+    const saveAndReturnButton = getByText('Save and return');
+    fireEvent.click(saveAndReturnButton);
+
+    expect(updateWorkerSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, { longTermAbsence: 'Illness' });
+  });
+
+  xit('should navigate to the previous page on submit', async () => {
     const { component, fixture, routerSpy, getByText } = await setup();
 
     component.returnUrl = {
@@ -145,6 +167,29 @@ describe('LongTermAbsenceComponent', () => {
       worker.uid,
       'training',
     ]);
+  });
+
+  describe('generateProps()', () => {
+    it('should generate correct props for updateWorker function when selecting a radio button ', async () => {
+      const { component, fixture } = await setup();
+
+      component.form.patchValue({ longTermAbsence: 'Illness' });
+      fixture.detectChanges();
+
+      const generatedProps = component.generateProps();
+      expect(generatedProps).toEqual({ longTermAbsence: 'Illness' });
+    });
+
+    it('should generate correct props for updateWorker function when selecting back at work checkbox ', async () => {
+      const { component, fixture } = await setup();
+
+      component.form.patchValue({ longTermAbsence: null });
+      component.backAtWork = true;
+      fixture.detectChanges();
+
+      const generatedProps = component.generateProps();
+      expect(generatedProps).toEqual({ longTermAbsence: 'null' });
+    });
   });
 
   describe('Error messages', () => {

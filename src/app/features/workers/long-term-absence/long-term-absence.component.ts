@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-long-term-absence',
@@ -23,6 +24,7 @@ export class LongTermAbsenceComponent implements OnInit {
   public backAtWork = false;
   private formErrorsMap: Array<ErrorDetails>;
   private workplace: Establishment;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -47,8 +49,12 @@ export class LongTermAbsenceComponent implements OnInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+    this.workerService.setReturnTo(null);
+  }
+
   public setupForm = () => {
-    // this.worker.longTermAbsence = 'Illness';
     const workerLongTermAbsence = this.worker.longTermAbsence;
 
     this.form = this.formBuilder.group(
@@ -102,11 +108,34 @@ export class LongTermAbsenceComponent implements OnInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      // update worker with long term absence
-      this.router.navigate(this.returnUrl.url);
+      this.updateWorker();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  public generateProps() {
+    const value = this.form.value.longTermAbsence;
+    return { longTermAbsence: String(value) };
+  }
+
+  private updateWorker(): void {
+    const props = this.generateProps();
+
+    this.subscriptions.add(
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
+        () => this.onSuccess(),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  onSuccess(): void {
+    this.router.navigate(this.returnUrl.url);
+  }
+
+  onError(error): void {
+    console.error(error);
   }
 
   public getFirstErrorMessage(item: string): string {
