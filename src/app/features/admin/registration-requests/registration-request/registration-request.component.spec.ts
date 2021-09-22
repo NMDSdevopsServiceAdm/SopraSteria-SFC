@@ -170,8 +170,14 @@ describe('RegistrationRequestComponent', () => {
   it('should show an error when clicking on the checkbox and someone has already clicked on it while you have been on the page', async () => {
     const { getByTestId, getAllByText, fixture } = await setup();
 
+    const mockErrorResponse = new HttpErrorResponse({
+      status: 400,
+      statusText: 'Bad Request',
+      error: {},
+    });
+
     const registrationsService = TestBed.inject(RegistrationsService);
-    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError('Error'));
+    spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(throwError(mockErrorResponse));
 
     const errorMessage = 'This registration is already in progress';
     const checkbox = getByTestId('reviewingRegistrationCheckbox');
@@ -185,8 +191,8 @@ describe('RegistrationRequestComponent', () => {
     const { getByTestId, getAllByText, fixture } = await setup();
 
     const mockErrorResponse = new HttpErrorResponse({
-      status: 400,
-      statusText: 'Bad Request',
+      status: 500,
+      statusText: 'Internal Server Error',
       error: {},
     });
 
@@ -226,9 +232,15 @@ describe('RegistrationRequestComponent', () => {
   it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
     const { getByTestId, getAllByText, fixture } = await setup();
 
+    const mockErrorResponse = new HttpErrorResponse({
+      status: 400,
+      statusText: 'Bad Request',
+      error: {},
+    });
+
     const registrationsService = TestBed.inject(RegistrationsService);
     spyOn(registrationsService, 'updateRegistrationStatus').and.returnValue(of({}));
-    spyOn(registrationsService, 'getSingleRegistration').and.returnValue(throwError('Error'));
+    spyOn(registrationsService, 'getSingleRegistration').and.returnValue(throwError(mockErrorResponse));
 
     const errorMessage = 'There was an error retrieving the registration';
     const checkbox = getByTestId('reviewingRegistrationCheckbox');
