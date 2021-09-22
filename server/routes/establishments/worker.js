@@ -20,6 +20,7 @@ const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculato
 const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 const MandatoryTrainingRoutes = require('./mandatoryTraining');
+const MutipleTrainingRecordsRoute = require('./training/multiple');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
 
@@ -330,7 +331,7 @@ const updateLocalIdentifiers = async (req, res) => {
         return res.status(400).send({ duplicateValue: err.fields.LocalIdentifierValue });
       }
     }
-    console.log(err);
+    console.error(err);
     return res.status(500).send(err.message);
   }
 };
@@ -340,6 +341,8 @@ router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
 router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
+
+router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);

@@ -1,5 +1,5 @@
 import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -7,6 +7,7 @@ import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
+import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
 
@@ -17,7 +18,9 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { ReportComponent } from './report/admin-report.component';
 import { SearchComponent } from './search/search.component';
 
 @NgModule({
@@ -30,9 +33,19 @@ import { SearchComponent } from './search/search.component';
     SetDatesComponent,
     MonitorComponent,
     LocalAuthorityComponent,
+    RegistrationRequestComponent,
     RegistrationRequestsComponent,
+    ReportComponent,
   ],
-  providers: [LocalAuthoritiesReturnService, GetDatesResolver, GetLasResolver, GetLaResolver, GetRegistrationsResolver],
+  providers: [
+    LocalAuthoritiesReturnService,
+    GetDatesResolver,
+    GetLasResolver,
+    GetLaResolver,
+    GetRegistrationsResolver,
+    GetSingleRegistrationResolver,
+    DatePipe,
+  ],
   bootstrap: [AdminComponent],
 })
 export class AdminModule {}

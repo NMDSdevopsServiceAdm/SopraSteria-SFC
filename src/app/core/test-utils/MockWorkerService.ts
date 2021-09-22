@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -51,6 +52,39 @@ export const workerBuilder = build('Worker', {
 
 const worker = workerBuilder();
 
+export const AllWorkers = [
+  {
+    nameOrId: worker.nameOrId,
+    uid: '1234',
+    trainingCount: 1,
+    trainingLastUpdated: '2020-01-01T00:00:00Z',
+    mainJob: {
+      jobId: 8,
+      other: null,
+    },
+  },
+  {
+    nameOrId: worker.nameOrId,
+    uid: '5678',
+    trainingCount: 1,
+    trainingLastUpdated: '2020-01-01T00:00:00Z',
+    mainJob: {
+      jobId: 8,
+      other: null,
+    },
+  },
+  {
+    nameOrId: worker.nameOrId,
+    uid: '4321',
+    trainingCount: 1,
+    trainingLastUpdated: '2020-01-01T00:00:00Z',
+    mainJob: {
+      jobId: 8,
+      other: null,
+    },
+  },
+] as Worker[];
+
 @Injectable()
 export class MockWorkerService extends WorkerService {
   private _worker;
@@ -96,16 +130,10 @@ export class MockWorkerService extends WorkerService {
   ] as Worker[]);
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
-    return of([
-      {
-        nameOrId: worker.nameOrId,
-        trainingCount: 1,
-        trainingLastUpdated: '2020-01-01T00:00:00Z',
-        mainJob: {
-          jobId: 8,
-          other: null,
-        },
-      },
-    ] as Worker[]);
+    return of(AllWorkers);
+  }
+
+  createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {
+    return of({ savedRecords: 1 } as MultipleTrainingResponse);
   }
 }

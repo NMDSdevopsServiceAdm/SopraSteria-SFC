@@ -85,26 +85,27 @@ const viewTrainingRecord = async (req, res) => {
   }
 };
 
+const createSingleTrainingRecord = async (req, res, establishmentId, workerUid, trainingRecord) => {
+  const thisTrainingRecord = new Training(establishmentId, workerUid);
+  const isValidRecord = await thisTrainingRecord.load(trainingRecord);
+
+  if (isValidRecord) {
+    await thisTrainingRecord.save(req.username);
+    return thisTrainingRecord;
+  } else {
+    return res.status(400).send('Unexpected Input.');
+  }
+};
+
 // creates given training record for the 'given' worker by UID
 const createTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
-  const thisTrainingRecord = new Training(establishmentId, workerUid);
-
   try {
-    // by loading after the restore, only those properties defined in the
-    //  PUT body will be updated (peristed)
-    const isValidRecord = await thisTrainingRecord.load(req.body);
+    const thisTrainingRecord = await createSingleTrainingRecord(req, res, establishmentId, workerUid, req.body);
 
-    // this is an update to an existing User, so no mandatory properties!
-    if (isValidRecord) {
-      await thisTrainingRecord.save(req.username);
-
-      return res.status(200).json(thisTrainingRecord.toJSON());
-    } else {
-      return res.status(400).send('Unexpected Input.');
-    }
+    return res.status(200).json(thisTrainingRecord.toJSON());
   } catch (err) {
     console.error(err);
     return res.status(500).send();
@@ -189,3 +190,4 @@ router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrain
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
+module.exports.createSingleTrainingRecord = createSingleTrainingRecord;
