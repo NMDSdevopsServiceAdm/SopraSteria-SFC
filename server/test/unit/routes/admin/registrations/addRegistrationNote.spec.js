@@ -10,7 +10,7 @@ const models = require('../../../../../models');
 
 const { addRegistrationNote } = require('../../../../../routes/admin/registrations/addRegistrationNote');
 
-describe('addRegistrationNote', () => {
+describe.only('addRegistrationNote', () => {
   let req;
   let res;
 
@@ -18,17 +18,16 @@ describe('addRegistrationNote', () => {
     const request = {
       method: 'POST',
       url: '/api/admin/registrations/addRegistrationNote',
+      userUid: '123',
+      body: {
+        establishmentId: '123',
+        note: 'This is a note',
+      },
     };
 
     req = httpMocks.createRequest(request);
     res = httpMocks.createResponse();
-
-    req.userUid = '123';
-    req.body = {
-      establishmentId: '123',
-      note: 'This is a note',
-    };
-  })
+  });
 
   afterEach(() => {
     sinon.restore();
@@ -106,13 +105,14 @@ describe('addRegistrationNote', () => {
       id: establishmentId,
     });
 
-    sinon.stub(models.registrationNotes, 'createNote').throws(function() { return new Error() });
+    sinon.stub(models.registrationNotes, 'createNote').throws(function () {
+      return new Error();
+    });
 
     await addRegistrationNote(req, res);
     const { message } = res._getJSONData();
 
     expect(res.statusCode).to.deep.equal(500);
     expect(message).to.equal('There was a problem adding the note');
-  })
-
+  });
 });
