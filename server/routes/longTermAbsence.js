@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models');
 
-const longTermAbsence = async (req, res) => {
+const longTermAbsence = (req, res) => {
   try {
-    const reasons = await models.worker.rawAttributes.LongTermAbsence.values;
-    res.status(200).send({
+    const reasons = models.worker.rawAttributes.LongTermAbsence.values;
+    res.status(200)
+    return res.json({
       reasons,
     });
   } catch (error) {
@@ -16,3 +17,4 @@ const longTermAbsence = async (req, res) => {
 
 router.route('/').get(longTermAbsence);
 module.exports = router;
+module.exports.longTermAbsence = longTermAbsence;

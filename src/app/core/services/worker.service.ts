@@ -222,7 +222,7 @@ export class WorkerService {
     );
   }
 
-  public getLongTermAbsenceReasons() {
+  public getLongTermAbsenceReasons(): Observable<Array<string>> {
     return this.http.get<any>('/api/longTermAbsence').pipe(map((res) => res.reasons));
   }
 }
