@@ -7,8 +7,15 @@ import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
-import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
-import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import {
+  GetRegistrationNotesResolver,
+} from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
+import {
+  GetSingleRegistrationResolver,
+} from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
+import {
+  LocalAuthoritiesReturnService,
+} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
 
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
@@ -44,6 +51,7 @@ import { SearchComponent } from './search/search.component';
     GetLaResolver,
     GetRegistrationsResolver,
     GetSingleRegistrationResolver,
+    GetRegistrationNotesResolver,
     DatePipe,
   ],
   bootstrap: [AdminComponent],
