@@ -37,32 +37,33 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private workerService: WorkerService
-  ) { }
+    private workerService: WorkerService,
+  ) {}
 
   ngOnInit() {
+    // this.flagLongTerm();
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
         this.returnToRecord = {
           url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
           fragment: 'staff-record',
         };
         this.workerService.setReturnTo(this.returnToRecord);
-      })
+      }),
     );
 
     this.subscriptions.add(
-      this.workerService.alert$.subscribe(alert => {
+      this.workerService.alert$.subscribe((alert) => {
         if (alert) {
           this.alertService.addAlert(alert);
         }
-      })
+      }),
     );
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
@@ -90,6 +91,21 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         : null,
     });
   }
+
+  // public flagLongTerm() {
+  //   this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+  //   console.log(this.workplace.uid);
+  // }
+
+  // public toggleCheckbox(target: HTMLInputElement): void {
+  //   const { checked } = target;
+
+  //   const body = {
+  //     uid: this.registration.establishment.uid,
+  //     status: checked ? 'IN PROGRESS' : 'PENDING',
+  //     reviewer: checked ? this.userFullName : null,
+  //     inReview: checked,
+  //   };
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();

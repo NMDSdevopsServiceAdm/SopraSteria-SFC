@@ -1,11 +1,17 @@
 <ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-list--inline govuk-list govuk__flex">
+        <span class="govuk-caption-xl govuk-!-margin-right-3">{{ worker.nameOrId }}</span>
+        <p *ngIf="worker.long - term - absence" class="govuk-tag govuk-tag--grey">
+          Long-Term Absence <a class="govuk-asc-tag-link">View</a>
+        </p>
+      </div>
+    </div>
+  </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
-      <h1 class="govuk-heading-l">
-        <span class="govuk-caption-xl govuk-!-margin-bottom-3">{{ worker.nameOrId }}</span>
-        Staff record
-      </h1>
-
+      <h1 class="govuk-heading-l">Staff record</h1>
       <a
         *ngIf="canEditWorker"
         class="govuk-button govuk-button--link govuk-!-padding-left-0"
@@ -17,9 +23,9 @@
       </a>
     </div>
 
-    <div class="govuk-grid-column-two-thirds govuk-!-margin-top-3">
-      <div class="govuk-grid-row govuk-!-margin-bottom-3">
-        <div class="govuk-button-group govuk__align-items-center govuk-util__float-right">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-row govuk-!-margin-bottom-3 govuk-!-margin-top-0">
+        <div class="govuk-button-group govuk__align-items-center govuk-util__float-right govuk-!-margin-top-0">
           <a
             class="govuk-button govuk-button--link"
             *ngIf="canEditWorker"
