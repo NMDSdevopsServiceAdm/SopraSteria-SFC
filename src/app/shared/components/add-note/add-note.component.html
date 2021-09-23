@@ -16,11 +16,11 @@
   </div>
   <button type="submit" class="govuk-button govuk-button--secondary">Add this note</button>
 </form>
-<dl class="gouk-summary-list" *ngIf="notes" data-testid="notesList">
+<dl class="govuk-summary-list" *ngIf="notes" data-testid="notesList">
   <div class="govuk-summary-list__row" *ngFor="let note of notes">
-    <dt class="govuk-summary-list__key">
+    <dt class="govuk-summary-list__key--no-border govuk-!-display-block govuk-!-font-weight-bold">
       {{ note.user.FullNameValue }}, {{ note.createdAt | date: 'dd MMMM yyyy hh:mm a' }}
     </dt>
-    <dd class="govuk-summary-list__value">{{ note.note }}</dd>
+    <dd class="govuk-summary-list__value govuk-!-display-block govuk-!-margin-bottom-4">{{ note.note }}</dd>
   </div>
 </dl>
