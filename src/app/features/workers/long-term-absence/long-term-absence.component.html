@@ -1,0 +1,34 @@
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-grid">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
+      <span class="govuk-caption-l">{{ worker.nameOrId }}</span>
+      <h1 class="govuk-heading-l">Flag long-term absence</h1>
+
+      <div class="govuk-inset-text govuk-!-margin-top-0">
+        When you flag a member of staff as long-term absent, a label appears next to their name under training and
+        qualifications. The flag can be used to show why their training records may be out of date.
+      </div>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Select a reason</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let reason of longTermAbsenceReasons; let i = index">
+              <input
+                [formControlName]="'longTermAbsence'"
+                class="govuk-radios__input"
+                id="longTermAbsence-{{ i }}"
+                name="longTermAbsence"
+                type="radio"
+                value="{{ reason }}"
+              />
+              <label for="longTermAbsence-{{ i }}" class="govuk-label govuk-radios__label">
+                {{ reason }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</form>
