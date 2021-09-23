@@ -1091,11 +1091,11 @@ const reportGet = async (req, res) => {
       }
     } else {
       console.error('report/training - failed restoring establishment');
-      await reportLock.saveResponse(req, res, 503, {});
+      await reportLock.saveResponse(req, res, 500, {});
     }
   } catch (err) {
     console.error('report/training - failed', err);
-    await reportLock.saveResponse(req, res, 503, {});
+    await reportLock.saveResponse(req, res, 500, {});
   }
 };
 

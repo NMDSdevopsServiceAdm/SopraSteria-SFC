@@ -4,8 +4,10 @@ const router = express.Router();
 const moment = require('moment');
 const Authorization = require('../utils/security/isAuthenticated');
 const config = require('../config/config');
+const Sentry = require('@sentry/node');
 
 const logout = async function (username) {
+  Sentry.configureScope((scope) => scope.setUser(null));
   const { registrationId } = await models.login.findByUsername(username);
 
   const auditEvent = {

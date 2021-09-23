@@ -26,11 +26,11 @@ router.route('/').post(async (req, res) => {
     if (results) {
       return res.status(201).send();
     } else {
-      return res.status(503).send('Unable to post feedback');
+      return res.status(500).send('Unable to post feedback');
     }
   } catch (err) {
     console.error('jobs GET - failed', err);
-    return res.status(503).send('Unable to post feedback');
+    return res.status(500).send('Unable to post feedback');
   }
 });
 

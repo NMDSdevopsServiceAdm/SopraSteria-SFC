@@ -10,7 +10,7 @@ const permissions = async (req, res) => {
     await permissionsCheck(req, res);
   } catch (thisError) {
     console.error('establishment::permissions GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 

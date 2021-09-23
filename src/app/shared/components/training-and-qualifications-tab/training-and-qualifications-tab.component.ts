@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -24,13 +25,14 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   public missingMandatoryTraining: number;
   public totalStaff: number;
   public isShowAllTrainings: boolean;
-
   public viewTrainingByCategory = false;
+  public canEditWorker: boolean;
 
   constructor(
     private route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +42,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
       }
     });
     this.getAllTrainingByCategory();
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

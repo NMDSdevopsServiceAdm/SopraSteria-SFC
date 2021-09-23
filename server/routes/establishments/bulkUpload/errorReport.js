@@ -111,7 +111,7 @@ const printRow = (WS, data, type) => {
 const generateBUReport = async (req, res) => {
   if (!req.establishmentId) {
     console.error('EstablishmentID invalid');
-    return res.status(503).end();
+    return res.status(500).end();
   }
 
   generateHeaderArray(EstablishmentFileHeaders, WorkersFileHeaders, TrainingFileHeaders);
@@ -147,7 +147,7 @@ const generateBUReport = async (req, res) => {
   return res.status(200).end();
 };
 
-router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING, true));
 router.route('/report').get(generateBUReport);
 
 module.exports = router;

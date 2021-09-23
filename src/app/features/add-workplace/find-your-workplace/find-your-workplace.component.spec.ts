@@ -204,7 +204,7 @@ describe('FindYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-workplace-not-found']);
   });
 
-  it("should show error if server 503's", async () => {
+  it("should show error if server 500's", async () => {
     const { component, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
     const findWorkplaceButton = component.getByText('Find workplace');
@@ -213,7 +213,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     const errorResponse = new HttpErrorResponse({
       error: { code: `some code`, message: `some message.` },
-      status: 503,
+      status: 500,
       statusText: 'Server error',
     });
 
@@ -223,7 +223,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(component.getAllByText('Server Error. code 503', { exact: false })).toBeTruthy();
+    expect(component.getAllByText('Server Error. code 500', { exact: false })).toBeTruthy();
   });
 
   describe('setBackLink', () => {

@@ -8,6 +8,8 @@ enum Path {
   LOCAL_AUTHORITY = '/sfcadmin/local-authorities-return/monitor/:uid',
   PENDING = '/sfcadmin/registrations/pending',
   REJECTED = '/sfcadmin/registrations/rejected',
+  SINGLE_REGISTRATION = '/sfcadmin/registrations/:establishmentUid',
+  REGISTRATION_REQUESTS = '/sfcadmin/registrations',
 }
 
 export const adminJourney: JourneyRoute = {
@@ -54,6 +56,16 @@ export const adminRegistrationJourney: JourneyRoute = {
         {
           title: 'Registration requests rejected',
           path: Path.REJECTED,
+        },
+        {
+          title: 'Registration requests',
+          path: Path.REGISTRATION_REQUESTS,
+          children: [
+            {
+              path: Path.SINGLE_REGISTRATION,
+              title: 'Request',
+            },
+          ],
         },
       ],
     },

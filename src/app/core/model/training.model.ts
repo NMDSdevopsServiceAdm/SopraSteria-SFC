@@ -43,3 +43,6 @@ export interface TrainingRecord {
   missing?: boolean;
 }
 
+export interface MultipleTrainingResponse {
+  savedRecords: number;
+}

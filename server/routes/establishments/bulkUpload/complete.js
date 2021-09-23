@@ -4,7 +4,7 @@ const timerLog = require('../../../utils/timerLog');
 const { sendCountToSlack } = require('./slack');
 const { Establishment } = require('../../../models/classes/establishment');
 const { buStates } = require('./states');
-const { saveResponse, downloadContent, purgeBulkUploadS3Objects ,saveLastBulkUpload} = require('./s3');
+const { saveResponse, downloadContent, purgeBulkUploadS3Objects, saveLastBulkUpload } = require('./s3');
 const { restoreExistingEntities, restoreOnloadEntities } = require('./entities');
 
 const completeNewEstablishment = async (
@@ -293,7 +293,7 @@ const completePost = async (req, res) => {
       } catch (err) {
         console.error("route('/complete') err: ", err);
 
-        await saveResponse(req, res, 503, {
+        await saveResponse(req, res, 500, {
           message: 'Failed to save',
         });
       }
@@ -310,7 +310,7 @@ const completePost = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    await saveResponse(req, res, 503, {
+    await saveResponse(req, res, 500, {
       message: 'Service Unavailable',
     });
   }
@@ -319,6 +319,6 @@ const completePost = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').post(acquireLock.bind(null, completePost, buStates.COMPLETING));
+router.route('/').post(acquireLock.bind(null, completePost, buStates.COMPLETING, true));
 
 module.exports = router;

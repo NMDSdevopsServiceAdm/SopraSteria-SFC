@@ -51,7 +51,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
     this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
       this.wdfNewDesign = value;
-      if (this.wdfNewDesign && this.wdfView) {
+      if (this.canEditWorker && this.wdfNewDesign && this.wdfView) {
         if (this.allRequiredFieldsUpdatedAndEligible()) {
           this.updateFieldsWhichDontRequireConfirmation();
         }

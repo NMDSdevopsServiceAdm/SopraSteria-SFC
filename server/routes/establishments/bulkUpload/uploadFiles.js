@@ -104,7 +104,7 @@ const uploadedGet = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    await S3.saveResponse(req, res, 503, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
 const uploadedPost = async (req, res) => {
@@ -144,7 +144,7 @@ const uploadedPost = async (req, res) => {
     await S3.saveResponse(req, res, 200, signedUrls);
   } catch (err) {
     console.error('API POST bulkupload/uploaded: ', err);
-    await S3.saveResponse(req, res, 503, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
 const uploadedPut = async (req, res) => {
@@ -218,7 +218,7 @@ const uploadedPut = async (req, res) => {
     await S3.saveResponse(req, res, 200, returnData);
   } catch (err) {
     console.error(err);
-    await S3.saveResponse(req, res, 503, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
 const uploadedStarGet = async (req, res) => {
@@ -252,7 +252,7 @@ const uploadedStarGet = async (req, res) => {
       await S3.saveResponse(req, res, 404, {});
     } else {
       console.error(err);
-      await S3.saveResponse(req, res, 503, {});
+      await S3.saveResponse(req, res, 500, {});
     }
   }
 };
@@ -260,10 +260,10 @@ const uploadedStarGet = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING));
-router.route('/').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING));
-router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING));
-router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING, true));
+router.route('/').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING, true));
+router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING, true));
+router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING, true));
 
 module.exports = router;
 module.exports.uploadedPut = uploadedPut;

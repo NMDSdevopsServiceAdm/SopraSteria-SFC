@@ -2,7 +2,7 @@ import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_PATTERN } from '@core/constants/constants';
 import { Observable } from 'rxjs/Observable';
-import { catchError, debounceTime } from 'rxjs/operators';
+import { catchError, debounceTime, delay, retryWhen, tap } from 'rxjs/operators';
 
 import { HttpErrorHandler } from './http-error-handler.service';
 
@@ -16,7 +16,19 @@ export class HttpInterceptor implements HttpInterceptor {
 
       return next.handle(cloned).pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError)
+        retryWhen((errors) =>
+          errors.pipe(
+            // inside the retryWhen, use a tap operator to throw an error
+            // if you don't want to retry
+            tap((error) => {
+              if (error.status !== 503) {
+                throw error;
+              }
+            }),
+            delay(500),
+          ),
+        ),
+        catchError(this.httpErrorHandler.handleHttpError),
       );
     }
 

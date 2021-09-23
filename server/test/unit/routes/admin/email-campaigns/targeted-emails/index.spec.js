@@ -15,7 +15,7 @@ const user = build('User', {
     establishment: {
       id: sequence(),
       NameValue: fake((f) => f.lorem.sentence()),
-      nmdsId: fake((f) => f.helpers.replaceSymbols('?#####'))
+      nmdsId: fake((f) => f.helpers.replaceSymbols('?#####')),
     },
   },
 });
@@ -156,11 +156,11 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       mockUsers.push(user());
     }
 
-    afterEach(()=> {
+    afterEach(() => {
       sinon.restore();
     });
 
-    it('should return a 503 on error', async () => {
+    it('should return a 500 on error', async () => {
       sinon.stub(models.user, 'allPrimaryUsers').throws();
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -174,7 +174,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       const res = httpMocks.createResponse();
       await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
 
     it('should create a targeted emails campaign', async () => {

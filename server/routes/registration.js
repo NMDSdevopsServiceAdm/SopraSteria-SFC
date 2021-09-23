@@ -60,7 +60,7 @@ router.get('/service/:name', async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('registration GET service/:name - failed', err);
-    return res.status(503).send(`Unable to retrive service by name: ${escape(requestedServiceName)}`);
+    return res.status(500).send(`Unable to retrive service by name: ${escape(requestedServiceName)}`);
   }
 });
 
@@ -138,7 +138,7 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('registration GET /usernameOrEmail/:usernameOrEmail - failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 
@@ -704,7 +704,7 @@ router.post('/requestPasswordReset', async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('registration POST /requestPasswordReset - failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 
@@ -785,7 +785,7 @@ router.post('/validateResetPassword', async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('registration POST /validateResetPassword - failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 

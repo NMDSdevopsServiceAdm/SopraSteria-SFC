@@ -110,7 +110,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
         message: 'No results found.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'Database error.',
       },
     ];

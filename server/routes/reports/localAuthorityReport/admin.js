@@ -86,7 +86,7 @@ Notes' +
       NEWLINE;
 
     const runReport = await models.sequelize.query(
-      'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);',
+      'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate) ORDER BY "LocalAuthority" ASC;',
       {
         replacements: {
           givenFromDate: fromDate,
@@ -168,7 +168,7 @@ ${_csvQuote(_csvNoNull(thisPrimaryLaEstablishment.Notes))}` +
     });
   } catch (err) {
     console.error('report/localAuthority/admin - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
+    return res.status(500).send('ERR: Failed to retrieve report');
   }
 };
 

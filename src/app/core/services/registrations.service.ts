@@ -1,6 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Registrations } from '@core/model/registrations.model';
+import {
+  Note,
+  Registration,
+  Registrations,
+  UpdateRegistrationStatusRequest,
+  UpdateWorkplaceIdRequest,
+} from '@core/model/registrations.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,11 +19,31 @@ export class RegistrationsService {
     return this.http.get<Registrations[]>('/api/admin/registrations/');
   }
 
+  public getSingleRegistration(establishmentUid: string): Observable<Registration> {
+    return this.http.get<Registration>(`/api/admin/registrations/${establishmentUid}`);
+  }
+
+  public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {
+    return this.http.post<any>(`/api/admin/registrations/updateWorkplaceId`, data);
+  }
+
+  public updateRegistrationStatus(data: UpdateRegistrationStatusRequest): Observable<any> {
+    return this.http.post<any>(`/api/admin/registrations/updateRegistrationStatus`, data);
+  }
+
   public registrationApproval(data: object) {
     return this.http.post<any>('/api/admin/approval/', data);
   }
 
   public unlockAccount(data: object) {
     return this.http.post<any>('/api/admin/unlock-account/', data);
+  }
+
+  public addRegistrationNote(data: object): Observable<any> {
+    return this.http.post<any>('/api/admin/registrations/addRegistrationNote', data);
+  }
+
+  public getRegistrationNotes(establishmentUid: string): Observable<Note[]> {
+    return this.http.get<any>(`/api/admin/registrations/getRegistrationNotes/${establishmentUid}`);
   }
 }

@@ -21,7 +21,7 @@ const search = async function (req, res) {
   } catch (err) {
     console.error(err.type);
     console.error(err.message);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

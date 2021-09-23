@@ -184,7 +184,7 @@ describe('/server/routes/reports/localAuthorityReport/admin', () => {
       sinon.assert.called(getValue);
       sinon.assert.calledOnce(query);
       expect(queryOutput.query).to.deep.equal(
-        'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);',
+        'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate) ORDER BY "LocalAuthority" ASC;',
       );
       expect(queryOutput.options).to.deep.equal({
         replacements: {
@@ -206,14 +206,14 @@ describe('/server/routes/reports/localAuthorityReport/admin', () => {
       });
     });
 
-    it('should return a 503 on error', async () => {
+    it('should return a 500 on error', async () => {
       sinon.restore();
 
       sinon.stub(models.AdminSettings, 'getValue').throws();
 
       await adminReportGet(req, res);
 
-      expect(res.statusCode).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 

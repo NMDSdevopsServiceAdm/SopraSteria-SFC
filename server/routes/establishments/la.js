@@ -48,7 +48,7 @@ const getLAs = async (req, res) => {
     );
 
     console.error('establishment::share GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -130,7 +130,7 @@ const getAltLA = async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::jobs GET - failed', err);
-    return res.status(503).send(`Unable to retrive Establishment: ${escape(req.params.id)}`);
+    return res.status(500).send(`Unable to retrive Establishment: ${escape(req.params.id)}`);
   }
 };
 
@@ -173,7 +173,7 @@ const updateLAs = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error('Establishment::share POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
     }
@@ -207,7 +207,7 @@ const updateAltLA = async (req, res) => {
       });
       if (!allLAResult) {
         console.error('establishment::la POST - unable to retrieve all known local authorities');
-        return res.status(503).send('Unable to retrieve all Local Authorities');
+        return res.status(500).send('Unable to retrieve all Local Authorities');
       }
       const allLAs = [];
       allLAResult.forEach((thisRes) => allLAs.push(thisRes.id));
@@ -277,7 +277,7 @@ const updateAltLA = async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::la POST - failed', err);
-    return res.status(503).send(`Unable to update Establishment with local authorities: ${escape(req.params.id)}`);
+    return res.status(500).send(`Unable to update Establishment with local authorities: ${escape(req.params.id)}`);
   }
 };
 
