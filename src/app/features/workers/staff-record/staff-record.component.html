@@ -20,7 +20,12 @@
     <div class="govuk-grid-column-two-thirds govuk-!-margin-top-3">
       <div class="govuk-grid-row govuk-!-margin-bottom-3">
         <div class="govuk-button-group govuk__align-items-center govuk-util__float-right">
-          <a class="govuk-button govuk-button--link" *ngIf="canEditWorker" draggable="false" role="button" href="#"
+          <a
+            class="govuk-button govuk-button--link"
+            *ngIf="canEditWorker"
+            draggable="false"
+            role="button"
+            [routerLink]="['./long-term-absence']"
             >Flag long-term absence</a
           >
 
