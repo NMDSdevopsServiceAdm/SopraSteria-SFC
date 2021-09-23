@@ -221,4 +221,8 @@ export class WorkerService {
       request,
     );
   }
+
+  public getLongTermAbsenceReasons() {
+    return this.http.get<any>('/api/longTermAbsence').pipe(map((res) => res.reasons));
+  }
 }

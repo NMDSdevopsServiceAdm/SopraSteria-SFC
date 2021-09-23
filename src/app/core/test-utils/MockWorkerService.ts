@@ -137,6 +137,10 @@ export class MockWorkerService extends WorkerService {
   createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {
     return of({ savedRecords: 1 } as MultipleTrainingResponse);
   }
+
+  getLongTermAbsenceReasons(): Observable<Array<string>> {
+    return of(['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other']);
+  }
 }
 
 @Injectable()

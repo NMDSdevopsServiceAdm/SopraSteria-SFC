@@ -20,7 +20,7 @@ export class LongTermAbsenceComponent implements OnInit {
   public returnUrl: URLStructure;
   public form: FormGroup;
   public submitted: boolean;
-  public longTermAbsenceReasons = [];
+  public longTermAbsenceReasons;
   public backAtWork = false;
   private formErrorsMap: Array<ErrorDetails>;
   private workplace: Establishment;
@@ -39,7 +39,11 @@ export class LongTermAbsenceComponent implements OnInit {
     this.worker = this.route.snapshot.data.worker;
     this.workplace = this.route.snapshot.data.establishment;
     this.returnUrl = this.workerService.returnTo ? this.workerService.returnTo : { url: ['/dashboard'] };
-    this.longTermAbsenceReasons = ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'];
+    this.subscriptions.add(
+      this.workerService.getLongTermAbsenceReasons().subscribe((reasons) => {
+        this.longTermAbsenceReasons = reasons;
+      }),
+    );
     this.setupForm();
     this.setupFormErrorsMap();
     this.setBackLink();
