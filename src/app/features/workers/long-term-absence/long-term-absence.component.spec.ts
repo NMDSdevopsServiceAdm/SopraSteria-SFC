@@ -29,6 +29,7 @@ describe('LongTermAbsenceComponent', () => {
               data: {
                 worker: worker,
                 establishment: workplace,
+                longTermAbsenceReasons: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
               },
             },
           },
@@ -89,6 +90,16 @@ describe('LongTermAbsenceComponent', () => {
     expect(getByText('Other')).toBeTruthy();
   });
 
+  it('should prefill the form if the worker is already long term absent', async () => {
+    const { component, fixture } = await setup();
+
+    component.worker.longTermAbsence = 'Illness';
+    component.setupForm();
+    fixture.detectChanges();
+
+    expect(component.form.value.longTermAbsence).toBe('Illness');
+  });
+
   it('should display the "back at work" checkbox if the worker is currently flagged as long term absent', async () => {
     const { component, fixture, getByText } = await setup();
 
@@ -113,7 +124,10 @@ describe('LongTermAbsenceComponent', () => {
     const { component, fixture, getByText } = await setup();
 
     component.worker.longTermAbsence = 'Illness';
+    component.setupForm();
     fixture.detectChanges();
+
+    expect(component.form.value.longTermAbsence).toBe('Illness');
 
     const backAtWorkCheckbox = getByText('Set as back at work');
     fireEvent.click(backAtWorkCheckbox);

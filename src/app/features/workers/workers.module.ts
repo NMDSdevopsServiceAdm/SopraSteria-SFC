@@ -2,6 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
@@ -120,6 +121,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     MandatoryDetailsComponent,
     LongTermAbsenceComponent,
   ],
-  providers: [DialogService, WorkerResolver],
+  providers: [DialogService, WorkerResolver, LongTermAbsenceResolver],
 })
 export class WorkersModule {}
