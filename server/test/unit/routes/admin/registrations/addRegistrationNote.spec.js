@@ -22,6 +22,12 @@ describe('addRegistrationNote', () => {
 
     req = httpMocks.createRequest(request);
     res = httpMocks.createResponse();
+
+    req.userUid = '123';
+    req.body = {
+      establishmentId: '123',
+      note: 'This is a note',
+    };
   })
 
   afterEach(() => {
@@ -42,12 +48,6 @@ describe('addRegistrationNote', () => {
 
     sinon.stub(models.registrationNotes, 'createNote').returns(true);
 
-    req.userUid = '123';
-    req.body = {
-      establishmentId: '123',
-      note: 'This is a note',
-    };
-
     await addRegistrationNote(req, res);
 
     expect(res.statusCode).to.deep.equal(200);
@@ -63,12 +63,6 @@ describe('addRegistrationNote', () => {
     });
 
     sinon.stub(models.registrationNotes, 'createNote').returns(true);
-
-    req.userUid = '123';
-    req.body = {
-      establishmentId: '123',
-      note: 'This is a note',
-    };
 
     await addRegistrationNote(req, res);
     const { message } = res._getJSONData();
@@ -88,10 +82,9 @@ describe('addRegistrationNote', () => {
 
     sinon.stub(models.registrationNotes, 'createNote').returns(true);
 
-    req.userUid = '123';
     req.body = {
+      ...req.body,
       establishmentId: 'invalid id',
-      note: 'This is a note',
     };
 
     await addRegistrationNote(req, res);
@@ -114,12 +107,6 @@ describe('addRegistrationNote', () => {
     });
 
     sinon.stub(models.registrationNotes, 'createNote').throws(function() { return new Error() });
-
-    req.userUid = '123';
-    req.body = {
-      establishmentId: '123',
-      note: 'This is a note',
-    };
 
     await addRegistrationNote(req, res);
     const { message } = res._getJSONData();
