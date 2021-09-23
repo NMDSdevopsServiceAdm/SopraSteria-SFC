@@ -1,5 +1,5 @@
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="notesForm">
-  <div class="govuk-form-group govuk-!-padding-right-9">
+<form #formEl (ngSubmit)="addNote()" [formGroup]="notesForm">
+  <div class="govuk-form-group govuk-!-padding-right-9" [class.govuk-form-group--error]="notesError">
     <span *ngIf="notesError" id="addNote-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span>
       {{ notesError }}
@@ -16,11 +16,11 @@
   </div>
   <button type="submit" class="govuk-button govuk-button--secondary">Add this note</button>
 </form>
-<dl class="gouk-summary-list" *ngIf="registrationNotes" data-testid="notesList">
-  <div class="govuk-summary-list__row" *ngFor="let registrationNote of registrationNotes">
+<dl class="gouk-summary-list" *ngIf="notes" data-testid="notesList">
+  <div class="govuk-summary-list__row" *ngFor="let note of notes">
     <dt class="govuk-summary-list__key">
-      {{ registrationNote.user.FullNameValue }}, {{ registrationNote.createdAt | date: 'dd MMMM yyyy hh:mm a' }}
+      {{ note.user.FullNameValue }}, {{ note.createdAt | date: 'dd MMMM yyyy hh:mm a' }}
     </dt>
-    <dd class="govuk-summary-list__value">{{ registrationNote.note }}</dd>
+    <dd class="govuk-summary-list__value">{{ note.note }}</dd>
   </div>
 </dl>

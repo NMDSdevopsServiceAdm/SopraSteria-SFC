@@ -5,7 +5,7 @@ const models = require('../../../../../models');
 
 const { getRegistrationNotes } = require('../../../../../routes/admin/registrations/getRegistrationNotes');
 
-describe.only('getRegistrationNotes', () => {
+describe('getRegistrationNotes', () => {
   let req;
   let res;
 

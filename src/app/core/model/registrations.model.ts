@@ -47,6 +47,7 @@ export interface Note {
   createdAt: Date;
   note: string;
   user: { FullNameValue: string };
+}
 export interface RegistrationApprovalOrRejectionConfirmation {
   workplaceName: string;
   isApproval: boolean;

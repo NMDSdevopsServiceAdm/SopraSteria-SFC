@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Note, RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
@@ -25,7 +25,8 @@ export class RegistrationRequestComponent implements OnInit {
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
-  public registrationNotes: Note[];
+  public notes: Note[];
+  public notesForm: FormGroup;
   public notesError: string;
   public approvalOrRejectionServerError: string;
 
@@ -37,14 +38,16 @@ export class RegistrationRequestComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     private router: Router,
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit(): void {
     this.setBreadcrumbs();
     this.getRegistration();
     this.getUserFullName();
-    this.getNotes();
+    this.getRegistrationNotes();
     this.setupForm();
+    this.setupNotesForm();
   }
 
   get nmdsId(): AbstractControl {
@@ -59,8 +62,8 @@ export class RegistrationRequestComponent implements OnInit {
     this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
   }
 
-  private getNotes(): void {
-    this.registrationNotes = this.route.snapshot.data.notes;
+  private getRegistrationNotes(): void {
+    this.notes = this.route.snapshot.data.notes;
   }
 
   private setupForm(): void {
@@ -169,37 +172,46 @@ export class RegistrationRequestComponent implements OnInit {
     );
   }
 
-  public addNote(form: FormGroup): void {
-    const body = {
-      note: form.get('notes').value,
-      establishmentId: this.registration.establishment.id,
-    };
-
-    console.log('************ add Note **************');
-    console.log(body);
-    this.registrationsService.addRegistrationNote(body).subscribe(
-      (data) => {
-        this.getRegistrationNotes();
-      },
-      (error: HttpErrorResponse) => {
-        if (error.status === 400) {
-          this.notesError = 'There was an error adding note to registration';
-        } else {
-          this.notesError = 'There was a server error';
-        }
-      },
-    );
+  private setupNotesForm(): void {
+    this.notesForm = this.formBuilder.group({
+      notes: ['', { validators: [Validators.required], updateOn: 'submit' }],
+    });
   }
 
-  public getRegistrationNotes(): void {
+  public addNote(): void {
+    if (this.notesForm.valid) {
+      const body = {
+        note: this.notesForm.get('notes').value,
+        establishmentId: this.registration.establishment.id,
+      };
+
+      this.registrationsService.addRegistrationNote(body).subscribe(
+        () => {
+          this.getNotes();
+          this.notesForm.reset();
+        },
+        (error: HttpErrorResponse) => {
+          if (error.status === 400) {
+            this.notesError = 'There was an error adding the note to the registration';
+          } else {
+            this.notesError = 'There was a server error';
+          }
+        },
+      );
+    }
+  }
+
+  public getNotes(): void {
     this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
       (data) => {
-        this.registrationNotes = data;
+        this.notes = data;
       },
       (error) => {
         this.notesError = 'There was an error retrieving notes for this registration';
       },
     );
+  }
+
   public approveOrRejectRegistration(isApproval: boolean): void {
     const dialog = this.openApprovalOrRejectionDialog(isApproval);
 
