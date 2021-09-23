@@ -130,11 +130,11 @@ export class LongTermAbsenceComponent implements OnInit {
     );
   }
 
-  onSuccess(): void {
+  private onSuccess(): void {
     this.router.navigate(this.returnUrl.url);
   }
 
-  onError(error): void {
+  private onError(error): void {
     console.error(error);
   }
 

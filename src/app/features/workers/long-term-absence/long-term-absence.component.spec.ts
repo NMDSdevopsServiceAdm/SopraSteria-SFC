@@ -6,10 +6,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, queryByText, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -34,6 +33,10 @@ describe('LongTermAbsenceComponent', () => {
             },
           },
         },
+        {
+          provide: WorkerService,
+          useClass: MockWorkerServiceWithUpdateWorker,
+        },
       ],
     });
 
@@ -50,7 +53,7 @@ describe('LongTermAbsenceComponent', () => {
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const updateWorkerSpy = spyOn(workerService, 'updateWorker');
-    updateWorkerSpy.and.returnValue(of());
+    updateWorkerSpy.and.callThrough();
 
     return {
       component,
@@ -143,10 +146,11 @@ describe('LongTermAbsenceComponent', () => {
     const saveAndReturnButton = getByText('Save and return');
     fireEvent.click(saveAndReturnButton);
 
+    expect(component.form.valid).toBeTruthy();
     expect(updateWorkerSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, { longTermAbsence: 'Illness' });
   });
 
-  xit('should navigate to the previous page on submit', async () => {
+  it('should navigate to the previous page on submit', async () => {
     const { component, fixture, routerSpy, getByText } = await setup();
 
     component.returnUrl = {
@@ -160,6 +164,7 @@ describe('LongTermAbsenceComponent', () => {
     const saveAndReturnButton = getByText('Save and return');
     fireEvent.click(saveAndReturnButton);
 
+    expect(component.form.valid).toBeTruthy();
     expect(routerSpy).toHaveBeenCalledWith([
       'workplace',
       workplace.uid,
