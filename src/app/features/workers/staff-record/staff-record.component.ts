@@ -50,6 +50,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
+        console.log(worker);
+
         this.returnToRecord = {
           url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
           fragment: 'staff-record',
