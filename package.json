@@ -159,7 +159,7 @@
     "opener": "^1.5.2",
     "prettier": "2.3.2",
     "protractor": "^7.0.0",
-    "puppeteer": "^10.2.0",
+    "puppeteer": "^10.4.0",
     "require-dir": "^1.2.0",
     "rimraf": "^3.0.2",
     "sandboxed-module": "^2.0.4",
