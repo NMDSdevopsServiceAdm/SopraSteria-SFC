@@ -178,10 +178,10 @@
     "npm": "7.6.3"
   },
   "nyc": {
-    "branches": 24,
-    "lines": 33,
-    "functions": 34,
-    "statements": 33,
+    "branches": 22,
+    "lines": 31,
+    "functions": 32,
+    "statements": 31,
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
     "check-coverage": true,
