@@ -199,7 +199,7 @@ jobs:
       - run:
           command: npm run server:cover:unit:ci
           environment:
-            MOCHA_FILE: ~/junit/test-results.xml
+            MOCHA_FILE: ./junit/test-results.xml
             NODE_ENV: example
           when: always
       - store_test_results:
