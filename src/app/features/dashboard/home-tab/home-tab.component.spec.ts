@@ -35,7 +35,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('HomeTabComponent', () => {
+describe('HomeTabComponent', () => {
   async function setup() {
     const component = await render(HomeTabComponent, {
       imports: [
@@ -230,7 +230,7 @@ fdescribe('HomeTabComponent', () => {
   });
 
   describe('Other links', () => {
-    fdescribe('Link to my parent organisation', () => {
+    describe('Link to my parent organisation', () => {
       it('should show Link to my parent organisation pending when trying to link to a parent', async () => {
         const { component } = await setup();
 
@@ -277,43 +277,6 @@ fdescribe('HomeTabComponent', () => {
 
         expect(dialog).toBeTruthy();
         expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
-      });
-
-      xit('should call setRequestToParent() in the establishmentService and set success alert when successful', async () => {
-        const { component } = await setup();
-
-        const establishmentService = TestBed.inject(EstablishmentService);
-        const setRequestToParentSpy = spyOn(establishmentService, 'setRequestToParentForLink').and.returnValue(
-          of({}) as Establishment,
-        );
-
-        const alertService = TestBed.inject(AlertService);
-        const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
-        const linkToParentLink = component.getByText('Link to my parent organisation');
-
-        fireEvent.click(linkToParentLink);
-        component.fixture.detectChanges();
-
-        const dialog = await within(document.body).findByRole('dialog');
-
-        // put data in form
-
-        const sendRequestButton = await within(dialog).getByText('Send request');
-
-        fireEvent.click(sendRequestButton);
-        component.fixture.detectChanges();
-
-        const becomeAParentLink = component.getByText('Become a parent organisation');
-        const pendingParentLink = component.queryByText('Link to my parent organisation pending');
-
-        expect(setRequestToParentSpy).toHaveBeenCalled();
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Your request to become a parent organisation has been sent.',
-        });
-        expect(becomeAParentLink).toBeFalsy();
-        expect(pendingParentLink).toBeTruthy();
       });
 
       it('should show a dialog to confirm you want to cancel parent request when clicking on link after requesting', async () => {
