@@ -92,21 +92,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  // public flagLongTerm() {
-  //   this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-  //   console.log(this.workplace.uid);
-  // }
-
-  // public toggleCheckbox(target: HTMLInputElement): void {
-  //   const { checked } = target;
-
-  //   const body = {
-  //     uid: this.registration.establishment.uid,
-  //     status: checked ? 'IN PROGRESS' : 'PENDING',
-  //     reviewer: checked ? this.userFullName : null,
-  //     inReview: checked,
-  //   };
-
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

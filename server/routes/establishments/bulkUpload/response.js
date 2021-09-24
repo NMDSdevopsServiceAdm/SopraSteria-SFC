@@ -35,7 +35,7 @@ const responseGet = (req, res) => {
       }
     })
     .catch((err) => {
-      console.log('bulkUpload::responseGet: getting data returned an error:', err);
+      console.error('bulkUpload::responseGet: getting data returned an error:', err);
 
       res.status(404).send({
         message: 'Not Found',

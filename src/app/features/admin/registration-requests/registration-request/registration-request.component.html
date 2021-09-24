@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div *ngIf="registration" class="govuk-grid-column-three-quarters">
+  <div class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
     <p>Received {{ registration.created }}</p>
     <app-review-checkbox
@@ -132,5 +132,35 @@
         </dd>
       </div>
     </dl>
+
+    <app-add-note
+      [addNote]="addNote"
+      [registration]="registration"
+      [notes]="notes"
+      [getNotes]="getNotes"
+      [notesError]="notesError"
+      [notesForm]="notesForm"
+    ></app-add-note>
+  </div>
+  <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-button-group">
+      <button
+        class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
+        (click)="approveOrRejectRegistration(true)"
+      >
+        Approve
+      </button>
+      <button
+        class="govuk-button govuk-button--warning govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6"
+        (click)="approveOrRejectRegistration(false)"
+      >
+        Reject
+      </button>
+      <a [routerLink]="['/sfcadmin', 'registrations']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
+    </div>
+    <span *ngIf="approvalOrRejectionServerError" id="approvalOrRejectionServerError" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ approvalOrRejectionServerError }}
+    </span>
   </div>
 </div>

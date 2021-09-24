@@ -6,6 +6,9 @@ import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import {
+  RegistrationApprovalOrRejectionDialogComponent,
+} from '@features/admin/registration-requests/registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
@@ -18,6 +21,7 @@ import { SummaryRecordValueComponent } from '@shared/components/summary-record-v
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 
+import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
@@ -183,6 +187,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    AddNoteComponent,
+    RegistrationApprovalOrRejectionDialogComponent,
   ],
   exports: [
     AlertComponent,
@@ -259,6 +265,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    AddNoteComponent,
+    RegistrationApprovalOrRejectionDialogComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver],
 })

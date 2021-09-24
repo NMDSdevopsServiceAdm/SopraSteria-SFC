@@ -18,8 +18,8 @@ jwt:
 
 db:
   pool:
-    min: 100
-    max: 300
+    min: 50
+    max: 150
     acquire: 240000
     idle: 200000
   ssl: true

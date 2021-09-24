@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
-import { Worker } from '@core/model/worker.model';
+import { Worker, WorkerEditResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
 
@@ -47,6 +47,7 @@ export const workerBuilder = build('Worker', {
     missingMandatoryTrainingCount: 0,
     qualificationCount: 0,
     fluJab: null,
+    longTermAbsence: null,
   },
 });
 
@@ -135,5 +136,16 @@ export class MockWorkerService extends WorkerService {
 
   createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {
     return of({ savedRecords: 1 } as MultipleTrainingResponse);
+  }
+
+  getLongTermAbsenceReasons(): Observable<Array<string>> {
+    return of(['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other']);
+  }
+}
+
+@Injectable()
+export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
+  updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
+    return of({ uid: '1' } as WorkerEditResponse);
   }
 }

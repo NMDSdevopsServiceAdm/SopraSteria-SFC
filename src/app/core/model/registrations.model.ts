@@ -42,3 +42,20 @@ export interface UpdateRegistrationStatusRequest {
   reviewer: string;
   inReview: boolean;
 }
+
+export interface Note {
+  createdAt: Date;
+  note: string;
+  user: { FullNameValue: string };
+}
+export interface RegistrationApprovalOrRejectionConfirmation {
+  workplaceName: string;
+  isApproval: boolean;
+}
+
+export interface RegistrationApprovalOrRejectionRequestBody {
+  nmdsId: string;
+  approve: boolean;
+  username?: string;
+  establishmentId?: string;
+}

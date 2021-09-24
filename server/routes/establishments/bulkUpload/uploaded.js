@@ -359,7 +359,7 @@ const uploadedStarGet = async (req, res) => {
     if (err.code && err.code === 'NotFound') {
       await saveResponse(req, res, 404, {});
     } else {
-      console.log(err);
+      console.error(err);
       await saveResponse(req, res, 500, {});
     }
   }

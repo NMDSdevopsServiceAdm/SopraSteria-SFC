@@ -1,12 +1,18 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Note, RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+
+import {
+  RegistrationApprovalOrRejectionDialogComponent,
+} from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -19,6 +25,10 @@ export class RegistrationRequestComponent implements OnInit {
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
+  public notes: Note[];
+  public notesForm: FormGroup;
+  public notesError: string;
+  public approvalOrRejectionServerError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -26,13 +36,18 @@ export class RegistrationRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private switchWorkplaceService: SwitchWorkplaceService,
     private alertService: AlertService,
+    private dialogService: DialogService,
+    private router: Router,
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit(): void {
     this.setBreadcrumbs();
     this.getRegistration();
     this.getUserFullName();
+    this.getRegistrationNotes();
     this.setupForm();
+    this.setupNotesForm();
   }
 
   get nmdsId(): AbstractControl {
@@ -45,6 +60,10 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getUserFullName(): void {
     this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
+  }
+
+  private getRegistrationNotes(): void {
+    this.notes = this.route.snapshot.data.notes;
   }
 
   private setupForm(): void {
@@ -132,11 +151,11 @@ export class RegistrationRequestComponent implements OnInit {
       () => {
         this.getUpdatedRegistration();
       },
-      (error) => {
-        if (error instanceof HttpErrorResponse) {
-          this.checkBoxError = 'There was a server error';
-        } else {
+      (error: HttpErrorResponse) => {
+        if (error.status === 400) {
           this.checkBoxError = 'This registration is already in progress';
+        } else {
+          this.checkBoxError = 'There was a server error';
         }
       },
     );
@@ -151,5 +170,88 @@ export class RegistrationRequestComponent implements OnInit {
         this.checkBoxError = 'There was an error retrieving the registration';
       },
     );
+  }
+
+  private setupNotesForm(): void {
+    this.notesForm = this.formBuilder.group({
+      notes: ['', { validators: [Validators.required], updateOn: 'submit' }],
+    });
+  }
+
+  public addNote(): void {
+    if (this.notesForm.valid) {
+      const body = {
+        note: this.notesForm.get('notes').value,
+        establishmentId: this.registration.establishment.id,
+      };
+
+      this.registrationsService.addRegistrationNote(body).subscribe(
+        () => {
+          this.getNotes();
+          this.notesForm.reset();
+        },
+        (error: HttpErrorResponse) => {
+          if (error.status === 400) {
+            this.notesError = 'There was an error adding the note to the registration';
+          } else {
+            this.notesError = 'There was a server error';
+          }
+        },
+      );
+    }
+  }
+
+  public getNotes(): void {
+    this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
+      (data) => {
+        this.notes = data;
+      },
+      (error) => {
+        this.notesError = 'There was an error retrieving notes for this registration';
+      },
+    );
+  }
+
+  public approveOrRejectRegistration(isApproval: boolean): void {
+    const dialog = this.openApprovalOrRejectionDialog(isApproval);
+
+    dialog.afterClosed.subscribe((confirmed) => {
+      if (confirmed) {
+        const body = this.getApprovalOrRejectionRequestBody(isApproval);
+
+        this.registrationsService.registrationApproval(body).subscribe(
+          () => {
+            this.router.navigate(['/sfcadmin', 'registrations']);
+          },
+          (err) => {
+            this.approvalOrRejectionServerError = `There was an error completing the ${
+              isApproval ? 'approval' : 'rejection'
+            }`;
+          },
+        );
+      }
+    });
+  }
+
+  private getApprovalOrRejectionRequestBody(isApproval: boolean): RegistrationApprovalOrRejectionRequestBody {
+    const body: RegistrationApprovalOrRejectionRequestBody = {
+      nmdsId: this.registration.establishment.nmdsId,
+      approve: isApproval,
+    };
+
+    if (this.registration.email) {
+      body.username = this.registration.username;
+    } else {
+      body.establishmentId = this.registration.establishment.id;
+    }
+
+    return body;
+  }
+
+  private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<RegistrationApprovalOrRejectionDialogComponent> {
+    return this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
+      workplaceName: this.registration.establishment.name,
+      isApproval,
+    });
   }
 }
