@@ -177,11 +177,19 @@ jobs:
           docker_layer_caching: true
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: sudo apt-get install -yq libxss1
       - run:
           command: npm run test
+          environment:
+            JUNIT_REPORT_PATH: ./junit/
+            JUNIT_REPORT_NAME: test-results.xml
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -191,9 +199,17 @@ jobs:
           docker_layer_caching: true
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: export NODE_ENV=example && npm run server:test:unit
+          command: npm run server:cover:unit:ci
+          environment:
+            MOCHA_FILE: ~/junit/test-results.xml
+            NODE_ENV: example
+          when: always
+      - store_test_results:
+          path: ~/junit
+      - store_artifacts:
+          path: ~/junit
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -205,7 +221,7 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
   feature_flag:
@@ -218,9 +234,6 @@ jobs:
           docker_layer_caching: true
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: sudo apt-get install silversearcher-ag
       - run:
@@ -307,7 +320,7 @@ jobs:
           docker_layer_caching: true
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>
