@@ -8,7 +8,7 @@ module.exports = function (config) {
   process.env.no_proxy = 'localhost, 0.0.0.0/4201, 0.0.0.0/9876';
   config.set({
     basePath: '',
-    frameworks: isCI
+    frameworks: !isCI
       ? ['parallel', 'jasmine', '@angular-devkit/build-angular']
       : ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
@@ -49,6 +49,10 @@ module.exports = function (config) {
       outputDir: process.env.JUNIT_REPORT_PATH,
       outputFile: process.env.JUNIT_REPORT_NAME,
       useBrowserName: false,
+    },
+    parallelOptions: {
+      executors: 4,
+      shardStrategy: 'round-robin',
     },
   });
 };
