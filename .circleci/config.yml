@@ -203,9 +203,9 @@ jobs:
             NODE_ENV: example
           when: always
       - store_test_results:
-          path: ~/junit
+          path: ./junit
       - store_artifacts:
-          path: ~/junit
+          path: ./junit
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
