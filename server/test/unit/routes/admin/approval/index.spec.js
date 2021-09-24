@@ -1,148 +1,5 @@
 /* eslint-disable no-unused-vars */
 
-//   describe('approving a new workplace', () => {
-//     beforeEach(async () => {
-//       // For new workplace registrations, username is set to null. See onSubmit in registration.component.ts
-//       testRequestBody.username = null;
-//       testRequestBody.approve = true;
-//     });
-
-//     it('should return a confirmation message and status 200 when the workplace is approved', async () => {
-//       // Arrange (see beforeEach)
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-//       expect(returnedJson.message).to.deep.equal(approval.workplaceApprovalConfirmation);
-//       expect(returnedStatus).to.deep.equal(200);
-//     });
-
-//     it('should remove the pending status from the workplace when approving a new workplace', async () => {
-//       // Arrange
-//       var workplaceStatus = 'PENDING';
-//       testWorkplace.update = (args) => {
-//         workplaceStatus = args.ustatus;
-//         return true;
-//       };
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(workplaceStatus).to.deep.equal(null, "workplace should have status set to null (instead of 'PENDING')");
-//     });
-
-//     it('should update the workplace Id when approving a new workplace', async () => {
-//       // Arrange
-//       testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
-//       var workplaceId = testWorkplace.nmdsId;
-//       testWorkplace.update = (args) => {
-//         workplaceId = args.nmdsId;
-//         return true;
-//       };
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
-//     });
-
-//     it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
-//       // Arrange
-//       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
-//       expect(returnedJson.nmdsId).to.deep.equal(
-//         `This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
-//       );
-//       expect(returnedStatus).to.deep.equal(400);
-//     });
-
-//     it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
-//       // Arrange
-//       workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
-//       var workplaceUpdated = false;
-//       testWorkplace.update = (args) => {
-//         workplaceUpdated = true;
-//         return true;
-//       };
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(workplaceUpdated).to.equal(false, 'workplace should not have been updated');
-//     });
-
-//     it('should return status 500 if workplace update returns false when approving a new workplace', async () => {
-//       // Arrange
-//       testWorkplace.update = () => {
-//         return false;
-//       };
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(returnedStatus).to.deep.equal(500);
-//     });
-
-//     it('should return status 500 if workplace update throws exception when approving a new workplace', async () => {
-//       // Arrange
-//       testWorkplace.update = () => {
-//         throw 'Error';
-//       };
-
-//       // Act
-//       await approval.adminApproval(
-//         {
-//           body: testRequestBody,
-//         },
-//         { status: approvalStatus },
-//       );
-
-//       // Assert
-//       expect(returnedStatus).to.deep.equal(500);
-//     });
-//   });
-
 const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
@@ -218,8 +75,8 @@ describe('adminApproval', async () => {
 
       sinon.stub(models.login, 'findByUsername').returns(mockLoginResponse);
       sinon.stub(models.user, 'findByLoginId').returns(mockUserResponse);
-      sinon.stub(models.establishment, 'findOne').returns(null);
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
+      sinon.stub(models.establishment, 'findOne').returns(null);
     });
 
     it('should return a confirmation message and status 200 when the user is approved', async () => {
@@ -356,6 +213,63 @@ describe('adminApproval', async () => {
     });
   });
 
+  describe('Workplace approval', async () => {
+    beforeEach(() => {
+      const request = buildRequest(true, false);
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+
+      sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
+      sinon.stub(models.establishment, 'findOne').returns(null);
+    });
+
+    it('should return an approval confirmation message and 200 status when workplace is successfully approved', async () => {
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.include(approval.workplaceApprovalConfirmation);
+    });
+
+    it('should call the update method on the workplace to update status when workplace is successfully approved', async () => {
+      const workplaceUpdateSpy = sinon.spy(mockWorkplaceResponse, 'update');
+
+      await approval.adminApproval(req, res);
+
+      expect(workplaceUpdateSpy.called).to.deep.equal(true);
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: null, nmdsId: 'A1234567' });
+    });
+
+    it('should return 500 status when unable to update workplace when approving', async () => {
+      sinon.stub(mockWorkplaceResponse, 'update').returns(false);
+
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+
+    it('should return 400 status when nmdsId already exists', async () => {
+      models.establishment.findOne.restore();
+      sinon.stub(models.establishment, 'findOne').returns({ id: 'A1234567' });
+
+      const expectedResponseMessage =
+        'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';
+
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+      expect(res._getData()).to.include(expectedResponseMessage);
+    });
+
+    it('should return 500 status when error is thrown when getting workplace', async () => {
+      models.establishment.findbyId.restore();
+      sinon.stub(models.establishment, 'findbyId').throws();
+
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
   describe('Workplace rejection', async () => {
     beforeEach(() => {
       const request = buildRequest(false, false);
@@ -373,7 +287,7 @@ describe('adminApproval', async () => {
       expect(res._getData()).to.include(approval.workplaceRejectionConfirmation);
     });
 
-    it('should call the update method on the workplace to update the status when user is successfully rejected', async () => {
+    it('should call the update method on the workplace to update the status when workplace is successfully rejected', async () => {
       const workplaceUpdateSpy = sinon.spy(mockWorkplaceResponse, 'update');
 
       await approval.adminApproval(req, res);
