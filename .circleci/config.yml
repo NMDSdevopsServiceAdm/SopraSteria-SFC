@@ -150,6 +150,8 @@ jobs:
     environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - node/install-packages:
           cache-path: ~/project/node_modules
           cache-version: v2
@@ -171,6 +173,8 @@ jobs:
       - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - restore_cache:
           keys:
             - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
@@ -183,6 +187,8 @@ jobs:
       - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - restore_cache:
           keys:
             - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
@@ -193,6 +199,8 @@ jobs:
       - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - restore_cache:
@@ -206,6 +214,7 @@ jobs:
       - image: circleci/python:2.7
     steps:
       - checkout
+      - setup_remote_docker:
       - attach_workspace:
           at: .
       - restore_cache:
@@ -293,6 +302,8 @@ jobs:
         type: string
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - restore_cache:
           keys:
             - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
@@ -380,6 +391,8 @@ jobs:
         type: string
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - run: |
