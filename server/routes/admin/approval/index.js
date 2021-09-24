@@ -21,17 +21,17 @@ const adminApproval = async (req, res) => {
 };
 
 const _approveOrRejectNewUser = async (req, res) => {
-  const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
-
   try {
+    const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
+
     const login = await models.login.findByUsername(username);
 
-    // Make sure we have the matching user
     if (login && login.id && username === login.username) {
       const workplace = await models.establishment.findbyId(login.user.establishmentId);
       const user = await models.user.findByLoginId(login.user.id);
 
       var workplaceIsUnique = await _workplaceIsUnique(login.user.establishmentId, req.body.nmdsId);
+
       if (!workplaceIsUnique) {
         return res.status(400).json({
           nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
@@ -47,26 +47,32 @@ const _approveOrRejectNewUser = async (req, res) => {
       return res.status(400).send();
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).send();
   }
 };
 
 const _approveOrRejectNewWorkplace = async (req, res) => {
-  const nmdsId = req.body.nmdsId;
+  try {
+    const nmdsId = req.body.nmdsId;
 
-  var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
-  if (!workplaceIsUnique) {
-    return res.status(400).json({
-      nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
-    });
-  }
+    var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
+    if (!workplaceIsUnique) {
+      return res.status(400).json({
+        nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+      });
+    }
 
-  const workplace = await await models.establishment.findbyId(req.body.establishmentId);
+    const workplace = await models.establishment.findbyId(req.body.establishmentId);
 
-  if (req.body.approve && req.body.establishmentId) {
-    await _approveNewWorkplace(workplace, nmdsId, res);
-  } else {
-    await _rejectNewWorkplace(workplace, res);
+    if (req.body.approve && req.body.establishmentId) {
+      await _approveNewWorkplace(workplace, nmdsId, res);
+    } else {
+      await _rejectNewWorkplace(workplace, res);
+    }
+  } catch  (error) {
+    console.error(error);
+    return res.status(500).send();
   }
 };
 
@@ -93,11 +99,11 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
       isActive: true,
       status: null,
     });
-    const updatedworkplace = await workplace.update({
+    const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
       ustatus: null,
     });
-    if (updatedLogin && updatedworkplace) {
+    if (updatedLogin && updatedWorkplace) {
       return res.status(200).json({ status: '0', message: userApprovalConfirmation });
     } else {
       return res.status(500).send();
@@ -111,13 +117,13 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
 const _rejectNewUser = async (user, workplace, res) => {
   try {
     if (user && workplace) {
-      const deleteduser = await user.destroy();
+      const deletedUser = await user.destroy();
 
-      const rejectedworkplace = await workplace.update({
+      const rejectedWorkplace = await workplace.update({
         ustatus: 'REJECTED',
       });
 
-      if (deleteduser && rejectedworkplace) {
+      if (deletedUser && rejectedWorkplace) {
         return res.status(200).json({ status: '0', message: userRejectionConfirmation });
       } else {
         return res.status(500).send();
@@ -133,11 +139,11 @@ const _rejectNewUser = async (user, workplace, res) => {
 
 const _approveNewWorkplace = async (workplace, nmdsId, res) => {
   try {
-    const updatedworkplace = await workplace.update({
+    const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
       ustatus: null,
     });
-    if (updatedworkplace) {
+    if (updatedWorkplace) {
       return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation });
     } else {
       return res.status(500).send();
