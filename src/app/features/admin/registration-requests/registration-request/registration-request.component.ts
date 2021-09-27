@@ -64,6 +64,7 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getRegistrationNotes(): void {
     this.notes = this.route.snapshot.data.notes;
+    console.log(this.notes);
   }
 
   private setupForm(): void {
@@ -183,6 +184,7 @@ export class RegistrationRequestComponent implements OnInit {
       const body = {
         note: this.notesForm.get('notes').value,
         establishmentId: this.registration.establishment.id,
+        noteType: 'Registration',
       };
 
       this.registrationsService.addRegistrationNote(body).subscribe(
@@ -205,6 +207,7 @@ export class RegistrationRequestComponent implements OnInit {
     this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
       (data) => {
         this.notes = data;
+        console.log(this.notes);
       },
       (error) => {
         this.notesError = 'There was an error retrieving notes for this registration';

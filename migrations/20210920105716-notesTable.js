@@ -3,7 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable(
-      'RegistrationNotes',
+      'Notes',
       {
         ID: {
           allowNull: false,
@@ -35,6 +35,11 @@ module.exports = {
           allowNull: false,
           type: Sequelize.TEXT,
         },
+        NoteType: {
+          allowNull: false,
+          type: Sequelize.DataTypes.ENUM,
+          values: ['Registration', 'Parent Request', 'Main Service'],
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,
@@ -49,7 +54,7 @@ module.exports = {
   down: (queryInterface) => {
     return queryInterface.dropTable({
       schema: 'cqc',
-      tableName: 'RegistrationNotes',
+      tableName: 'Notes',
     });
   },
 };

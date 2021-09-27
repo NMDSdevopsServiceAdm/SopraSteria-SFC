@@ -15,7 +15,7 @@ export class GetSingleRegistrationResolver implements Resolve<any> {
 
     return this.registrationsService.getSingleRegistration(establishmentUid).pipe(
       catchError(() => {
-        this.router.navigate(['/sfcadmin']);
+        this.router.navigate(['/problem-with-the-service']);
         return EMPTY;
       }),
     );

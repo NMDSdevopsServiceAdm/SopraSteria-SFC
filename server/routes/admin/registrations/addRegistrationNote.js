@@ -2,7 +2,7 @@ const router = require('express').Router();
 const models = require('../../../models');
 
 const addRegistrationNote = async (req, res) => {
-  const { note, establishmentId } = req.body;
+  const { note, establishmentId, noteType } = req.body;
 
   try {
     const user = await models.user.findByUUID(req.userUid);
@@ -19,7 +19,7 @@ const addRegistrationNote = async (req, res) => {
       });
     }
 
-    await models.registrationNotes.createNote(user.id, establishmentId, note);
+    await models.notes.createNote(user.id, establishmentId, note, noteType);
 
     res.status(200).send();
   } catch (error) {

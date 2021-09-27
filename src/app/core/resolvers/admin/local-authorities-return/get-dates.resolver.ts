@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Resolve, Router } from '@angular/router';
 import { SetDates } from '@core/model/admin/local-authorities-return.model';
-import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import {
+  LocalAuthoritiesReturnService,
+} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -12,7 +14,7 @@ export class GetDatesResolver implements Resolve<any> {
   resolve(): Observable<SetDates> {
     return this.localAuthoritiesReturnService.getDates().pipe(
       catchError(() => {
-        this.router.navigate(['/sfcadmin']);
+        this.router.navigate(['/problem-with-the-service']);
         return EMPTY;
       }),
     );
