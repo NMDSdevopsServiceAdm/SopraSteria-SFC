@@ -45,7 +45,7 @@ describe('addRegistrationNote', () => {
       id: establishmentId,
     });
 
-    sinon.stub(models.registrationNotes, 'createNote').returns(true);
+    sinon.stub(models.notes, 'createNote').returns(true);
 
     await addRegistrationNote(req, res);
 
@@ -61,7 +61,7 @@ describe('addRegistrationNote', () => {
       id: establishmentId,
     });
 
-    sinon.stub(models.registrationNotes, 'createNote').returns(true);
+    sinon.stub(models.notes, 'createNote').returns(true);
 
     await addRegistrationNote(req, res);
     const { message } = res._getJSONData();
@@ -79,7 +79,7 @@ describe('addRegistrationNote', () => {
 
     sinon.stub(models.establishment, 'findByPk').returns(null);
 
-    sinon.stub(models.registrationNotes, 'createNote').returns(true);
+    sinon.stub(models.notes, 'createNote').returns(true);
 
     req.body = {
       ...req.body,
@@ -105,7 +105,9 @@ describe('addRegistrationNote', () => {
       id: establishmentId,
     });
 
-    sinon.stub(models.registrationNotes, 'createNote').throws();
+    sinon.stub(models.notes, 'createNote').throws(function () {
+      return new Error();
+    });
 
     await addRegistrationNote(req, res);
     const { message } = res._getJSONData();

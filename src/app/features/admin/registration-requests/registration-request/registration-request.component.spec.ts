@@ -522,6 +522,7 @@ describe('RegistrationRequestComponent', () => {
       const expectedBody = {
         note: 'This is a note for this registration',
         establishmentId: component.registration.establishment.id,
+        noteType: 'Registration',
       };
 
       expect(addRegistrationNotesSpy).toHaveBeenCalledWith(expectedBody);

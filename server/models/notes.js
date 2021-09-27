@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-  const RegistrationNotes = sequelize.define(
-    'registrationNotes',
+  const Notes = sequelize.define(
+    'notes',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -24,42 +24,49 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'Note',
       },
+      noteType: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['Registration', 'Parent Request', 'Main Service'],
+        field: 'NoteType',
+      }
     },
     {
-      tableName: 'RegistrationNotes',
+      tableName: 'Notes',
       schema: 'cqc',
       updatedAt: false,
     },
   );
 
-  RegistrationNotes.associate = (models) => {
-    RegistrationNotes.belongsTo(models.user, {
+  Notes.associate = (models) => {
+    Notes.belongsTo(models.user, {
       foreignKey: 'userFk',
       targetKey: 'id',
       as: 'user',
     });
 
-    RegistrationNotes.belongsTo(models.establishment, {
+    Notes.belongsTo(models.establishment, {
       foreignKey: 'establishmentFk',
       targetKey: 'id',
       as: 'establishment'
     });
   };
 
-  RegistrationNotes.createNote = function (userId, establishmentId, note) {
+  Notes.createNote = function (userId, establishmentId, note, noteType) {
     return this.create({
       userFk: userId,
       establishmentFk: establishmentId,
-      note: note,
+      note,
+      noteType,
     });
   };
 
-  RegistrationNotes.getNotesByEstablishmentId = function (establishmentId) {
+  Notes.getNotesByEstablishmentId = function (establishmentId) {
     return this.findAll({
       where: {
         establishmentFk: establishmentId
       },
-      attributes: ['note','createdAt'],
+      attributes: ['note', 'createdAt', 'noteType'],
       include: [
         {
           model: sequelize.models.user,
@@ -70,5 +77,5 @@ module.exports = function (sequelize, DataTypes) {
     })
   }
 
-  return RegistrationNotes;
+  return Notes;
 };

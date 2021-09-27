@@ -19,7 +19,7 @@ describe('getRegistrationNotes', () => {
     req = httpMocks.createRequest(request);
     res = httpMocks.createResponse();
 
-    sinon.stub(models.registrationNotes, 'getNotesByEstablishmentId').callsFake(async (establishmentId) => {
+    sinon.stub(models.notes, 'getNotesByEstablishmentId').callsFake(async (establishmentId) => {
       return [
         {
           createdAt: new Date('10/08/2021'),
@@ -90,7 +90,7 @@ describe('getRegistrationNotes', () => {
       id: '123',
     });
 
-    sinon.stub(models.registrationNotes, 'getNotesByEstablishmentId').throws();
+    sinon.stub(models.notes, 'getNotesByEstablishmentId').throws();
 
     await getRegistrationNotes(req, res);
     const { message } = res._getJSONData();
