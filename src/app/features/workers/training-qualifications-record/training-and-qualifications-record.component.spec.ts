@@ -51,7 +51,6 @@ describe('TrainingAndQualificationsRecordComponent', () => {
           { provide: EstablishmentService, useClass: MockEstablishmentService },
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: PermissionsService, useClass: MockPermissionsService },
-          // { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         ],
       },
     );
@@ -63,6 +62,10 @@ describe('TrainingAndQualificationsRecordComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const workerSpy = spyOn(workerService, 'setReturnTo');
+    workerSpy.and.callThrough();
+
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
@@ -70,6 +73,7 @@ describe('TrainingAndQualificationsRecordComponent', () => {
       component,
       fixture,
       routerSpy,
+      workerSpy,
       getByText,
       getAllByText,
       getByTestId,
@@ -88,6 +92,16 @@ describe('TrainingAndQualificationsRecordComponent', () => {
     const { component, getByText } = await setup();
 
     expect(getByText(component.worker.nameOrId)).toBeTruthy();
+  });
+
+  it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
+    const { component, getByText, workerSpy, workplaceUid, workerUid } = await setup();
+
+    component.ngOnInit();
+
+    expect(workerSpy).toHaveBeenCalledWith({
+      url: ['/workplace', workplaceUid, 'training-and-qualifications-record', workerUid, 'training'],
+    });
   });
 
   describe('Long-Term Absence', () => {

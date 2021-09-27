@@ -50,12 +50,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
-
-        this.returnToRecord = {
-          url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-          fragment: 'staff-record',
-        };
-        this.workerService.setReturnTo(this.returnToRecord);
       }),
     );
 
@@ -69,6 +63,15 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+  }
+
+  ngOnDestroy(): void {
+    this.returnToRecord = {
+      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
+      fragment: 'staff-record',
+    };
+    this.workerService.setReturnTo(this.returnToRecord);
+    this.subscriptions.unsubscribe();
   }
 
   deleteWorker(event) {
@@ -91,9 +94,5 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         ? this.route.parent.snapshot.data.primaryWorkplace.uid
         : null,
     });
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
 }
