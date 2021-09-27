@@ -12,33 +12,26 @@
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row" *ngFor="let registration of pendingRegistrations">
         <td class="govuk-table__cell">
-          <a [routerLink]="[registration.establishment.uid]">{{ registration.establishment.name }}</a>
+          <a [routerLink]="['../', registration.uid]">{{ registration.name }}</a>
         </td>
         <td class="govuk-table__cell">
-          {{ registration.establishment.postcode }}
+          {{ registration.postcode }}
         </td>
         <td class="govuk-table__cell">
           <a
-            (click)="
-              navigateToParentPage(
-                registration.establishment.parentUid,
-                '',
-                registration.establishment.parentEstablishmentId,
-                $event
-              )
-            "
+            (click)="navigateToParentPage(registration.parentUid, '', registration.parentEstablishmentId, $event)"
             href="#"
-            [attr.data-testid]="'parentId-' + registration.establishment.parentEstablishmentId"
+            [attr.data-testid]="'parentId-' + registration.parentEstablishmentId"
           >
-            {{ registration.establishment.parentEstablishmentId }}
+            {{ registration.parentEstablishmentId }}
           </a>
         </td>
         <td class="govuk-table__cell">
           {{ registration.created }}
         </td>
         <td class="govuk-table__cell">
-          <strong class="govuk-tag" [ngClass]="setStatusClass(registration.establishment.status)">
-            {{ registration.establishment.status | uppercase }}
+          <strong class="govuk-tag" [ngClass]="setStatusClass(registration.status)">
+            {{ registration.status | uppercase }}
           </strong>
         </td>
       </tr>

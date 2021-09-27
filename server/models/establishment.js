@@ -1111,6 +1111,23 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getEstablishmentRegistrationsByStatus = async function (status) {
+    return await this.findAll({
+      attributes: [
+        'NameValue',
+        'PostCode',
+        'ParentID',
+        'created',
+        'Status',
+        'EstablishmentUID',
+      ],
+      where: {
+        ustatus: status,
+      },
+
+    });
+  }
+
   Establishment.getNmdsIdUsingEstablishmentId = async function (id) {
     return await this.findOne({
       where: {

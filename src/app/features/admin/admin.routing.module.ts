@@ -50,6 +50,29 @@ const routes: Routes = [
         resolve: {
           registrations: GetRegistrationsResolver,
         },
+        children: [
+          {
+            path: '',
+            redirectTo: 'pending',
+            pathMatch: 'full',
+          },
+          {
+            path: 'pending',
+            component: PendingRegistrationRequestsComponent,
+            data: { title: 'Pending Registration Requests' },
+            resolve: {
+              registrations: GetRegistrationsResolver,
+            },
+          },
+          {
+            path: 'rejected',
+            component: RejectedRegistrationRequestsComponent,
+            data: { title: 'Rejected Registration Requests' },
+            resolve: {
+              registrations: GetRegistrationsResolver,
+            },
+          },
+        ],
       },
       {
         path: ':establishmentUid',
@@ -119,38 +142,6 @@ const routes: Routes = [
             },
           },
         ],
-      },
-    ],
-  },
-
-  {
-    path: 'registrations',
-    component: RegistrationRequestsComponent,
-    data: { title: 'Registration Requests' },
-    resolve: {
-      registrations: GetRegistrationsResolver,
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: 'pending',
-        pathMatch: 'full',
-      },
-      {
-        path: 'pending',
-        component: PendingRegistrationRequestsComponent,
-        data: { title: 'Pending Registration Requests' },
-        resolve: {
-          registrations: GetRegistrationsResolver,
-        },
-      },
-      {
-        path: 'rejected',
-        component: RejectedRegistrationRequestsComponent,
-        data: { title: 'Rejected Registration Requests' },
-        resolve: {
-          registrations: GetRegistrationsResolver,
-        },
       },
     ],
   },

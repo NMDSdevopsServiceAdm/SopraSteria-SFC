@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.use('/', require('./getAllRegistrations'));
+router.use('/', require('./getRegistrations'));
 router.use('/', require('./getSingleRegistration'));
 router.use('/updateWorkplaceId', require('./updateWorkplaceId'));
 router.use('/updateRegistrationStatus', require('./updateRegistrationStatus'));

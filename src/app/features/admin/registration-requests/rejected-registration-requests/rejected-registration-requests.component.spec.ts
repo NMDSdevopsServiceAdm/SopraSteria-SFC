@@ -12,7 +12,7 @@ import { render } from '@testing-library/angular';
 
 import { RejectedRegistrationRequestsComponent } from './rejected-registration-requests.component';
 
-fdescribe('RejectedRegistrationRequestsComponent', () => {
+describe('RejectedRegistrationRequestsComponent', () => {
   async function setup() {
     const component = await render(RejectedRegistrationRequestsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
