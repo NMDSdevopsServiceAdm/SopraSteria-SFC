@@ -29,7 +29,7 @@ const _approveOrRejectNewUser = async (req, res) => {
       const workplace = await models.establishment.findbyId(login.user.establishmentId);
       const user = await models.user.findByLoginId(login.user.id);
 
-      var workplaceIsUnique = await _workplaceIsUnique(workplace.uid, req.body.nmdsId);
+      const workplaceIsUnique = await _workplaceIsUnique(workplace.uid, req.body.nmdsId);
 
       if (!workplaceIsUnique) {
         return res.status(400).json({
