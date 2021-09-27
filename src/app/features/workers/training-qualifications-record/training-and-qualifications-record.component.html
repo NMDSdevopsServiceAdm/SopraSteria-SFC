@@ -1,10 +1,30 @@
 <ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-list--inline govuk-list govuk__flex">
+        <span class="govuk-caption-xl govuk-!-margin-right-3">{{ worker.nameOrId }}</span>
+        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey">
+          Long-Term Absence
+          <a
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
+            data-testid="longTermAbsence"
+            class="govuk-link govuk-link--no-visited-state"
+            style="text-transform: capitalize"
+            >View</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l">
-        <span class="govuk-caption-xl govuk-!-margin-bottom-3">{{ worker.nameOrId }}</span>
-        Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})
-      </h1>
+      <h1 class="govuk-heading-l">Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})</h1>
       <a
         *ngIf="canEditWorker"
         class="govuk-list govuk-list--inline govuk-!-padding-left-0"
@@ -20,10 +40,17 @@
         <div class="govuk-button-group govuk__align-items-center govuk-util__float-right">
           <a
             class="govuk-list govuk-list--inline govuk-!-margin-left-5"
-            *ngIf="canEditWorker"
+            *ngIf="canEditWorker && worker.longTermAbsence === null"
             draggable="false"
             role="button"
-            [routerLink]="['../long-term-absence']"
+            data-testid="flagLongTermAbsence"
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
             >Flag long-term absence</a
           >
           <a
