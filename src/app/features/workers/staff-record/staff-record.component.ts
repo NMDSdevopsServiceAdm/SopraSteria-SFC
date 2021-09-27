@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -37,11 +37,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
+    private router: Router,
     private workerService: WorkerService,
   ) {}
 
   ngOnInit() {
-    // this.flagLongTerm();
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -50,7 +50,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
-        console.log(worker);
 
         this.returnToRecord = {
           url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],

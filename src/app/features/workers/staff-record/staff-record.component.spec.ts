@@ -1,93 +1,142 @@
-// fdescribe('StaffRecordComponent', () => {
-//   const worker = workerBuilder() as Worker;
-//   //   const workplace = establishmentBuilder() as Establishment;
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
-//   async function setup() {
-//     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
-//       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
-//       providers: [
-//         AlertService,
-//         WindowRef,
-//         BreadcrumbService,
-//         DialogService,
-//         EstablishmentService,
-//         PermissionsService,
-//         WorkerService,
-//         {
-//           provide: ActivatedRoute,
-//           useValue: {
-//             snapshot: {
-//               data: {
-//                 worker: worker,
-//                 longTermAbsenceReasons: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
-//               },
-//             },
-//           },
-//         },
-//         {
-//           provide: WorkerService,
-//           useClass: MockWorkerServiceWithUpdateWorker,
-//         },
-//       ],
-//     });
+import { establishmentBuilder } from '../../../../../server/test/factories/models';
+import { WorkersModule } from '../workers.module';
+import { StaffRecordComponent } from './staff-record.component';
 
-//     const component = fixture.componentInstance;
+describe('StaffRecordComponent', () => {
+  const workplace = establishmentBuilder() as Establishment;
 
-//     const injector = getTestBed();
-//     const router = injector.inject(Router) as Router;
-//     const routerSpy = spyOn(router, 'navigate');
-//     routerSpy.and.returnValue(Promise.resolve(true));
+  async function setup() {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+      providers: [
+        AlertService,
+        WindowRef,
+        DialogService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: workplace,
+                },
+              },
+            },
+            snapshot: {},
+          },
+        },
+        {
+          provide: WorkerService,
+          useClass: MockWorkerServiceWithUpdateWorker,
+        },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
+    });
 
-//     const workerService = injector.inject(WorkerService) as WorkerService;
-//     const updateWorkerSpy = spyOn(workerService, 'updateWorker');
-//     updateWorkerSpy.and.callThrough();
+    const component = fixture.componentInstance;
 
-//     return {
-//       component,
-//       fixture,
-//       getByText,
-//       getAllByText,
-//       getByTestId,
-//       queryByText,
-//     };
-//   }
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
-//   it('should render a StaffRecordComponent', async () => {
-//     const { component } = await setup();
-//     expect(component).toBeTruthy();
-//   });
+    const workplaceUid = component.workplace.uid;
+    const workerUid = component.worker.uid;
 
-//   xit('should display the worker name', async () => {
-//     const { getByText } = await setup();
+    return {
+      component,
+      fixture,
+      routerSpy,
+      getByText,
+      getAllByText,
+      getByTestId,
+      queryByText,
+      workplaceUid,
+      workerUid,
+    };
+  }
 
-//     expect(getByText(worker.nameOrId)).toBeTruthy();
-//   });
+  it('should render a StaffRecordComponent', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
 
-//   xit('should display the Long-Term Absence  if the worker is currently flagged as long term absent', async () => {
-//     const { component, fixture, getByText } = await setup();
+  it('should display the worker name', async () => {
+    const { component, getAllByText } = await setup();
 
-//     component.worker.longTermAbsence = 'Illness';
-//     fixture.detectChanges();
+    expect(getAllByText(component.worker.nameOrId).length).toBe(2);
+  });
 
-//     expect(getByText('Long-Term Absence')).toBeTruthy();
-//     expect(getByText('Flag long-term absence')).toBeFalsy();
-//   });
+  describe('Long-Term Absence', () => {
+    it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
+      const { component, fixture, getByText, queryByText } = await setup();
 
-//   xit('should not display the Long-Term Absence if the worker is not currently flagged as long term absent', async () => {
-//     const { component, fixture, queryByText } = await setup();
+      component.worker.longTermAbsence = 'Illness';
+      fixture.detectChanges();
 
-//     component.worker.longTermAbsence = null;
-//     fixture.detectChanges();
+      expect(getByText('Long-Term Absence')).toBeTruthy();
+      expect(queryByText('Flag long-term absence')).toBeFalsy();
+    });
 
-//     expect(queryByText('Flag long-term absence')).toBeTruthy();
-//     expect(queryByText('Long-Term Absence')).toBeFalsy();
-//   });
+    it('should navigate to `long-term-absence` when pressing the "view" button', async () => {
+      const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
 
-//   xit('should contain a local authorit return link that links to admin/local-authorities-return url', async () => {
-//     const { component, fixture, getByTestId } = await setup();
+      component.worker.longTermAbsence = 'Illness';
+      fixture.detectChanges();
 
-//     const laCompletionsLink = within(getByTestId('longtermabsence'));
-//     expect(laCompletionsLink.getByTestId('longtermabsence').getAttribute('href')).toBe('./long-term-absence');
+      const longTermAbsenceLink = getByTestId('longTermAbsence');
+      expect(longTermAbsenceLink.getAttribute('href')).toBe(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
+      );
+    });
+  });
 
-//   });
-// });
+  describe('Flag long-term absence', () => {
+    it('should display the "Flag long-term absence" link if the worker is not currently flagged as long term absent', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.worker.longTermAbsence = null;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(getByText('Flag long-term absence')).toBeTruthy();
+    });
+
+    it('should navigate to `./long-term-absence` when pressing the "Flag long-term absence" button', async () => {
+      const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
+
+      component.worker.longTermAbsence = null;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
+      expect(flagLongTermAbsenceLink.getAttribute('href')).toBe(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
+      );
+    });
+  });
+});

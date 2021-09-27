@@ -6,11 +6,17 @@
         <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey">
           Long-Term Absence
           <a
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
+            data-testid="longTermAbsence"
             class="govuk-link govuk-link--no-visited-state"
-            style="text-transform: lowercase"
-            data-testid="longtermabsence"
-            [routerLink]="['./long-term-absence']"
-            >view</a
+            style="text-transform: capitalize"
+            >View</a
           >
         </p>
       </div>
@@ -38,8 +44,14 @@
             *ngIf="canEditWorker && worker.longTermAbsence === null"
             draggable="false"
             role="button"
-            data-testid="flagLA"
-            [routerLink]="['./long-term-absence']"
+            data-testid="flagLongTermAbsence"
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
             >Flag long-term absence</a
           >
 
