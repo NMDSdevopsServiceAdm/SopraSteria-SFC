@@ -8,13 +8,17 @@ module.exports = function (config) {
   process.env.no_proxy = 'localhost, 0.0.0.0/4201, 0.0.0.0/9876';
   config.set({
     basePath: '',
-    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    frameworks: isCI
+      ? ['parallel', 'jasmine', '@angular-devkit/build-angular']
+      : ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
+      require('karma-junit-reporter'),
       require('@angular-devkit/build-angular/plugins/karma'),
+      require('karma-parallel'),
     ],
     client: {
       clearContext: false, // leave Jasmine Spec Runner output visible in browser
@@ -24,7 +28,7 @@ module.exports = function (config) {
       reports: ['html', 'lcovonly'],
       fixWebpackSourcePaths: true,
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml', 'junit'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
@@ -40,6 +44,15 @@ module.exports = function (config) {
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 100000,
-    captureTimeout: 140000
+    captureTimeout: 140000,
+    junitReporter: {
+      outputDir: process.env.JUNIT_REPORT_PATH,
+      outputFile: process.env.JUNIT_REPORT_NAME,
+      useBrowserName: false,
+    },
+    parallelOptions: {
+      executors: 4,
+      shardStrategy: 'round-robin',
+    },
   });
 };

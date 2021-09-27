@@ -150,9 +150,19 @@ jobs:
     environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
-      - node/install-packages:
-          cache-path: ~/project/node_modules
-          cache-version: v2
+      - restore_cache:
+          keys:
+            - node-deps-v2-{{ checksum "package-lock.json" }}
+      - run: |
+          if [ -d "/home/circleci/project/node_modules" ]; then
+            echo "Skipping install as node modules already exists"
+          else
+            npm ci
+          fi
+      - save_cache:
+          key: node-deps-v2-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/project/node_modules
       - run: |
           if [ -n "$CIRCLE_TAG" ]; then
               npm run build:prod
@@ -173,11 +183,19 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: sudo apt-get install -yq libxss1
       - run:
           command: npm run test
+          environment:
+            JUNIT_REPORT_PATH: ./junit/
+            JUNIT_REPORT_NAME: test-results.xml
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -185,9 +203,17 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: export NODE_ENV=example && npm run server:test:unit
+          command: npm run server:cover:unit:ci
+          environment:
+            MOCHA_FILE: ./junit/test-results.xml
+            NODE_ENV: example
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -197,7 +223,7 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
   feature_flag:
@@ -208,9 +234,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           command: sudo apt-get install silversearcher-ag
       - run:
@@ -295,7 +318,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>

@@ -10,7 +10,7 @@ const models = require('../../../../../models');
 
 const { addRegistrationNote } = require('../../../../../routes/admin/registrations/addRegistrationNote');
 
-describe.only('addRegistrationNote', () => {
+describe('addRegistrationNote', () => {
   let req;
   let res;
 
@@ -105,9 +105,7 @@ describe.only('addRegistrationNote', () => {
       id: establishmentId,
     });
 
-    sinon.stub(models.registrationNotes, 'createNote').throws(function () {
-      return new Error();
-    });
+    sinon.stub(models.registrationNotes, 'createNote').throws();
 
     await addRegistrationNote(req, res);
     const { message } = res._getJSONData();
