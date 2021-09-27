@@ -4,9 +4,9 @@ const { convertBasicRegistrationResponse } = require('../../../utils/registratio
 
 const getRegistrations = async (req, res) => {
   try {
-    const establishmentRegistrations = await models.establishment.getEstablishmentRegistrationsByStatus('PENDING');
+    const registrations = await models.establishment.getEstablishmentRegistrationsByStatus('PENDING');
 
-    const formattedEstablishments = establishmentRegistrations.map(async (registration) => {
+    const convertedRegistrations = registrations.map(async (registration) => {
       const parentId = registration.get('ParentID');
       registration.parentEstablishmentId = parentId
         ? await getParentEstablishmentId(registration.get('ParentID'))
@@ -14,7 +14,7 @@ const getRegistrations = async (req, res) => {
       return convertBasicRegistrationResponse(registration);
     });
 
-    const allRegistrations = await Promise.all(formattedEstablishments);
+    const allRegistrations = await Promise.all(convertedRegistrations);
 
     res.status(200).send(allRegistrations);
   } catch (error) {
