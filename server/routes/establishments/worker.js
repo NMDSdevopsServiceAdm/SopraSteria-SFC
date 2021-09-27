@@ -331,7 +331,7 @@ const updateLocalIdentifiers = async (req, res) => {
         return res.status(400).send({ duplicateValue: err.fields.LocalIdentifierValue });
       }
     }
-    console.log(err);
+    console.error(err);
     return res.status(500).send(err.message);
   }
 };

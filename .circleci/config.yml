@@ -373,6 +373,7 @@ jobs:
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
+      SENTRY_BACKEND_PROJECT: asc-wds-backend
     parameters:
       env:
         description: Environment
@@ -387,6 +388,9 @@ jobs:
           sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
           sentry-cli releases set-commits --auto $SENTRY_RELEASE
           sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist
+          sentry-cli releases finalize $SENTRY_RELEASE
+          sentry-cli releases new -p $SENTRY_BACKEND_PROJECT $SENTRY_RELEASE
+          sentry-cli releases set-commits --auto $SENTRY_RELEASE
           sentry-cli releases finalize $SENTRY_RELEASE
 workflows:
   build-test-deploy:
