@@ -1251,7 +1251,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.RESOURCE_ERROR,
+        errCode: Worker.RECSOURCE_ERROR,
         errType: 'RECSOURCE_ERROR',
         error: 'The code you have entered for RECSOURCE is incorrect',
         source: this._currentLine.RECSOURCE,
