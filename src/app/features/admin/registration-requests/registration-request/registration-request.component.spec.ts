@@ -739,6 +739,29 @@ describe('RegistrationRequestComponent', () => {
 
       expect(getByText(approvalServerErrorMessage, { exact: false })).toBeTruthy();
     });
+
+    it('should show approval alert when approval confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `The workplace '${component.registration.establishment.name}' has been approved`,
+      });
+    });
   });
 
   describe('Rejecting registration', () => {
@@ -834,6 +857,29 @@ describe('RegistrationRequestComponent', () => {
       fireEvent.click(rejectionConfirmButton);
 
       expect(getByText(rejectionServerErrorMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should show rejection alert when rejection confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'registrationApproval').and.returnValue(of(true));
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectionConfirmButton);
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `The workplace '${component.registration.establishment.name}' has been rejected`,
+      });
     });
   });
 
