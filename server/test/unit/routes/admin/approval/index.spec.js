@@ -76,7 +76,7 @@ describe('adminApproval', async () => {
       sinon.stub(models.login, 'findByUsername').returns(mockLoginResponse);
       sinon.stub(models.user, 'findByLoginId').returns(mockUserResponse);
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
-      sinon.stub(models.establishment, 'findOne').returns(null);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
     it('should return a confirmation message and status 200 when the user is approved', async () => {
@@ -146,7 +146,7 @@ describe('adminApproval', async () => {
       sinon.stub(models.login, 'findByUsername').returns(mockLoginResponse);
       sinon.stub(models.user, 'findByLoginId').returns(mockUserResponse);
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
-      sinon.stub(models.establishment, 'findOne').returns(null);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
     it('should return a rejection confirmation message and 200 status when user is successfully rejected', async () => {
@@ -191,8 +191,8 @@ describe('adminApproval', async () => {
     });
 
     it('should return 400 status when nmdsId already exists', async () => {
-      models.establishment.findOne.restore();
-      sinon.stub(models.establishment, 'findOne').returns({ id: 'A1234567' });
+      models.establishment.findEstablishmentWithSameNmdsId.restore();
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns({ id: 'A1234567' });
 
       const expectedResponseMessage =
         'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';
@@ -220,7 +220,7 @@ describe('adminApproval', async () => {
       res = httpMocks.createResponse();
 
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
-      sinon.stub(models.establishment, 'findOne').returns(null);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
     it('should return an approval confirmation message and 200 status when workplace is successfully approved', async () => {
@@ -248,8 +248,8 @@ describe('adminApproval', async () => {
     });
 
     it('should return 400 status when nmdsId already exists', async () => {
-      models.establishment.findOne.restore();
-      sinon.stub(models.establishment, 'findOne').returns({ id: 'A1234567' });
+      models.establishment.findEstablishmentWithSameNmdsId.restore();
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns({ id: 'A1234567' });
 
       const expectedResponseMessage =
         'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';
@@ -277,7 +277,7 @@ describe('adminApproval', async () => {
       res = httpMocks.createResponse();
 
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
-      sinon.stub(models.establishment, 'findOne').returns(null);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
     it('should return a rejection confirmation message and 200 status when workplace is successfully rejected', async () => {
@@ -305,8 +305,8 @@ describe('adminApproval', async () => {
     });
 
     it('should return 400 status when nmdsId already exists', async () => {
-      models.establishment.findOne.restore();
-      sinon.stub(models.establishment, 'findOne').returns({ id: 'A1234567' });
+      models.establishment.findEstablishmentWithSameNmdsId.restore();
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns({ id: 'A1234567' });
 
       const expectedResponseMessage =
         'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';

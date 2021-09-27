@@ -880,6 +880,18 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.findEstablishmentWithSameNmdsId = async function (establishmentUid, nmdsId) {
+    return await this.findOne({
+      where: {
+        uid: {
+          [Op.ne]: establishmentUid,
+        },
+        nmdsId: nmdsId,
+      },
+      attributes: ['id'],
+    });
+  };
+
   Establishment.find = async function (where) {
     return await this.findOne({
       where: {

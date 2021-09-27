@@ -2,7 +2,6 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const Sequelize = require('sequelize');
 const userApprovalConfirmation = 'User has been set as active';
 const userRejectionConfirmation = 'User has been rejected';
 const workplaceApprovalConfirmation = 'Workplace has been set as active';
@@ -30,7 +29,7 @@ const _approveOrRejectNewUser = async (req, res) => {
       const workplace = await models.establishment.findbyId(login.user.establishmentId);
       const user = await models.user.findByLoginId(login.user.id);
 
-      var workplaceIsUnique = await _workplaceIsUnique(login.user.establishmentId, req.body.nmdsId);
+      var workplaceIsUnique = await _workplaceIsUnique(workplace.uid, req.body.nmdsId);
 
       if (!workplaceIsUnique) {
         return res.status(400).json({
@@ -56,41 +55,25 @@ const _approveOrRejectNewWorkplace = async (req, res) => {
   try {
     const nmdsId = req.body.nmdsId;
 
-    var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
+    const workplace = await models.establishment.findbyId(req.body.establishmentId);
+
+    const workplaceIsUnique = await _workplaceIsUnique(workplace.uid, req.body.nmdsId);
+
     if (!workplaceIsUnique) {
       return res.status(400).json({
         nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
       });
     }
 
-    const workplace = await models.establishment.findbyId(req.body.establishmentId);
-
     if (req.body.approve && req.body.establishmentId) {
       await _approveNewWorkplace(workplace, nmdsId, res);
     } else {
       await _rejectNewWorkplace(workplace, res);
     }
-  } catch  (error) {
+  } catch (error) {
     console.error(error);
     return res.status(500).send();
   }
-};
-
-const _workplaceIsUnique = async (establishmentId, nmdsId) => {
-  const workplaceWithDuplicateId = await models.establishment.findOne({
-    where: {
-      id: {
-        [Sequelize.Op.ne]: establishmentId,
-      },
-      nmdsId: nmdsId,
-    },
-    attributes: ['id'],
-  });
-  return workplaceWithDuplicateId === null;
-};
-
-const _parseEscapedInputAndSanitizeUsername = (username) => {
-  return escape(username.toLowerCase());
 };
 
 const _approveNewUser = async (login, workplace, nmdsId, res) => {
@@ -169,6 +152,16 @@ const _rejectNewWorkplace = async (workplace, res) => {
     console.error(error);
     return res.status(500).send();
   }
+};
+
+const _workplaceIsUnique = async (establishmentUid, nmdsId) => {
+  const workplaceWithDuplicateId = await models.establishment.findEstablishmentWithSameNmdsId(establishmentUid, nmdsId);
+
+  return workplaceWithDuplicateId === null;
+};
+
+const _parseEscapedInputAndSanitizeUsername = (username) => {
+  return escape(username.toLowerCase());
 };
 
 module.exports = router;

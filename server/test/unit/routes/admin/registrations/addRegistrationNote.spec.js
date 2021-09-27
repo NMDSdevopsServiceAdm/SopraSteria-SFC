@@ -10,7 +10,7 @@ const models = require('../../../../../models');
 
 const { addRegistrationNote } = require('../../../../../routes/admin/registrations/addRegistrationNote');
 
-describe.only('addRegistrationNote', () => {
+describe('addRegistrationNote', () => {
   let req;
   let res;
 
