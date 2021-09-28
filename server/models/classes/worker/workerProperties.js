@@ -48,6 +48,7 @@ const establishmentFkProperty = require('./properties/establishmentFkProperty').
 const fluJabProperty = require('./properties/fluJabProperty').WorkerFluJabProperty;
 const latitudeProperty = require('./properties/latitudeProperty').LatitudeProperty;
 const longitudeProperty = require('./properties/longitudeProperty').LongitudeProperty;
+const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').LongTermAbsenceProperty;
 
 class WorkerPropertyManager {
   constructor() {
@@ -91,6 +92,7 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(fluJabProperty);
     this._thisManager.registerProperty(latitudeProperty);
     this._thisManager.registerProperty(longitudeProperty);
+    this._thisManager.registerProperty(longTermAbsenceProperty);
   }
 
   get manager() {

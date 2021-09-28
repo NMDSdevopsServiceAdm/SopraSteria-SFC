@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
@@ -20,8 +21,10 @@ import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.com
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
@@ -48,7 +51,6 @@ import {
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { FluJabComponent } from './flu-jab/flu-jab.component';
 
 const routes: Routes = [
   {
@@ -296,6 +298,12 @@ const routes: Routes = [
         path: 'training',
         component: TrainingAndQualificationsRecordComponent,
         data: { title: 'Training and qualification record' },
+      },
+      {
+        path: 'long-term-absence',
+        component: LongTermAbsenceComponent,
+        resolve: { longTermAbsenceReasons: LongTermAbsenceResolver },
+        data: { title: 'Flag long term absence' },
       },
     ],
   },

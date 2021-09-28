@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
+import { Note, RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Dialog, DialogService } from '@core/services/dialog.service';
@@ -23,6 +23,9 @@ export class RegistrationRequestComponent implements OnInit {
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
+  public notes: Note[];
+  public notesForm: FormGroup;
+  public notesError: string;
   public approvalOrRejectionServerError: string;
 
   constructor(
@@ -33,13 +36,16 @@ export class RegistrationRequestComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     private router: Router,
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit(): void {
     this.setBreadcrumbs();
     this.getRegistration();
     this.getUserFullName();
+    this.getRegistrationNotes();
     this.setupForm();
+    this.setupNotesForm();
   }
 
   get nmdsId(): AbstractControl {
@@ -52,6 +58,11 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getUserFullName(): void {
     this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
+  }
+
+  private getRegistrationNotes(): void {
+    this.notes = this.route.snapshot.data.notes;
+    console.log(this.notes);
   }
 
   private setupForm(): void {
@@ -114,13 +125,6 @@ export class RegistrationRequestComponent implements OnInit {
     );
   }
 
-  private showWorkplaceIdUpdatedAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
-    });
-  }
-
   public setStatusClass(status: string): string {
     return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
   }
@@ -160,6 +164,48 @@ export class RegistrationRequestComponent implements OnInit {
     );
   }
 
+  private setupNotesForm(): void {
+    this.notesForm = this.formBuilder.group({
+      notes: ['', { validators: [Validators.required], updateOn: 'submit' }],
+    });
+  }
+
+  public addNote(): void {
+    if (this.notesForm.valid) {
+      const body = {
+        note: this.notesForm.get('notes').value,
+        establishmentId: this.registration.establishment.id,
+        noteType: 'Registration',
+      };
+
+      this.registrationsService.addRegistrationNote(body).subscribe(
+        () => {
+          this.getNotes();
+          this.notesForm.reset();
+        },
+        (error: HttpErrorResponse) => {
+          if (error.status === 400) {
+            this.notesError = 'There was an error adding the note to the registration';
+          } else {
+            this.notesError = 'There was a server error';
+          }
+        },
+      );
+    }
+  }
+
+  public getNotes(): void {
+    this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
+      (data) => {
+        this.notes = data;
+        console.log(this.notes);
+      },
+      (error) => {
+        this.notesError = 'There was an error retrieving notes for this registration';
+      },
+    );
+  }
+
   public approveOrRejectRegistration(isApproval: boolean): void {
     const dialog = this.openApprovalOrRejectionDialog(isApproval);
 
@@ -170,6 +216,7 @@ export class RegistrationRequestComponent implements OnInit {
         this.registrationsService.registrationApproval(body).subscribe(
           () => {
             this.router.navigate(['/sfcadmin', 'registrations']);
+            this.showApprovalOrRejectionConfirmationAlert(isApproval);
           },
           (err) => {
             this.approvalOrRejectionServerError = `There was an error completing the ${
@@ -200,6 +247,22 @@ export class RegistrationRequestComponent implements OnInit {
     return this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
       workplaceName: this.registration.establishment.name,
       isApproval,
+    });
+  }
+
+  private showWorkplaceIdUpdatedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
+    });
+  }
+
+  private showApprovalOrRejectionConfirmationAlert(isApproval: boolean): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `The workplace '${this.registration.establishment.name}' has been ${
+        isApproval ? 'approved' : 'rejected'
+      }`,
     });
   }
 }

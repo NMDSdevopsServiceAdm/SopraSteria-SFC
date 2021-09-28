@@ -16,7 +16,7 @@ export class GetLaResolver implements Resolve<any> {
     if (uid) {
       return this.localAuthoritiesReturnService.getLA(uid).pipe(
         catchError(() => {
-          this.router.navigate(['/sfcadmin']);
+          this.router.navigate(['/problem-with-the-service']);
           return EMPTY;
         }),
       );

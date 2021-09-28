@@ -1074,6 +1074,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'MainJobFkOther',
       },
+      LongTermAbsence: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
+        field: '"LongTermAbsence"',
+      },
       source: {
         type: DataTypes.ENUM,
         allowNull: false,

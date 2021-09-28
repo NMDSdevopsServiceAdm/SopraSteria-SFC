@@ -12,7 +12,7 @@ export class GetRegistrationsResolver implements Resolve<any> {
   resolve(): Observable<Registrations[]> {
     return this.registrationsService.getRegistrations().pipe(
       catchError(() => {
-        this.router.navigate(['/sfcadmin']);
+        this.router.navigate(['/problem-with-the-service']);
         return EMPTY;
       }),
     );
