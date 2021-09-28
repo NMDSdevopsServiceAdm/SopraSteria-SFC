@@ -95,7 +95,7 @@ describe('TrainingAndQualificationsRecordComponent', () => {
   });
 
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
-    const { component, getByText, workerSpy, workplaceUid, workerUid } = await setup();
+    const { component, workerSpy, workplaceUid, workerUid } = await setup();
 
     component.ngOnInit();
 

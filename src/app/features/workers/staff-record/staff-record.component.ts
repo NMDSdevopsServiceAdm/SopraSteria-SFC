@@ -66,11 +66,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.returnToRecord = {
-      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-      fragment: 'staff-record',
-    };
-    this.workerService.setReturnTo(this.returnToRecord);
     this.subscriptions.unsubscribe();
   }
 
@@ -94,5 +89,13 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         ? this.route.parent.snapshot.data.primaryWorkplace.uid
         : null,
     });
+  }
+
+  public setReturnTo(): void {
+    this.returnToRecord = {
+      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
+      fragment: 'staff-record',
+    };
+    this.workerService.setReturnTo(this.returnToRecord);
   }
 }

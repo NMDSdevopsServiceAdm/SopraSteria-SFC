@@ -16,6 +16,7 @@
             data-testid="longTermAbsence"
             class="govuk-link govuk-link--no-visited-state"
             style="text-transform: capitalize"
+            (click)="setReturnTo()"
             >View</a
           >
         </p>
@@ -52,6 +53,7 @@
               worker.uid,
               'long-term-absence'
             ]"
+            (click)="setReturnTo()"
             >Flag long-term absence</a
           >
 

@@ -64,6 +64,10 @@ describe('StaffRecordComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const workerSpy = spyOn(workerService, 'setReturnTo');
+    workerSpy.and.callThrough();
+
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
@@ -71,6 +75,7 @@ describe('StaffRecordComponent', () => {
       component,
       fixture,
       routerSpy,
+      workerSpy,
       getByText,
       getAllByText,
       getByTestId,
@@ -89,6 +94,17 @@ describe('StaffRecordComponent', () => {
     const { component, getAllByText } = await setup();
 
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
+  });
+
+  it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
+    const { component, workerSpy, workplaceUid, workerUid } = await setup();
+
+    component.setReturnTo();
+
+    expect(workerSpy).toHaveBeenCalledWith({
+      url: ['/workplace', workplaceUid, 'staff-record', workerUid],
+      fragment: 'staff-record',
+    });
   });
 
   describe('Long-Term Absence', () => {
