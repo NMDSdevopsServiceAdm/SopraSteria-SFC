@@ -35,6 +35,7 @@ const workerBuilder = build('Worker', {
     qualificationCount: 0,
     trainingAlert: 0,
     trainingCount: 0,
+    longTermAbsence: null,
   },
 });
 
@@ -217,5 +218,37 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Carl');
+  });
+
+  it('should display the "LONG-TERM ABSENT" tag if the worker is long term absent', async () => {
+    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+      can: sinon.stub().returns(true),
+    });
+
+    const workers = [
+      workerBuilder({
+        overrides: {
+          nameOrId: 'Ben',
+          longTermAbsence: null,
+        },
+      }),
+      workerBuilder({
+        overrides: {
+          nameOrId: 'Darlyn',
+          longTermAbsence: 'Illness',
+        },
+      }),
+    ];
+
+    const { getAllByText } = await render(TrainingAndQualificationsSummaryComponent, {
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      componentProperties: {
+        workplace: establishmentBuilder() as Establishment,
+        workers,
+      },
+    });
+
+    expect(getAllByText('LONG-TERM ABSENT').length).toBe(1);
   });
 });
