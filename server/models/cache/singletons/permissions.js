@@ -412,7 +412,7 @@ class PermissionCache {
       }
       if (permission.code === 'canBecomeAParent') {
         return {
-          [permission.code]: !isLoggedInAsParent && !thisEstablishment.parentId && becomeAParentRequest === null,
+          [permission.code]: !isLoggedInAsParent && !thisEstablishment.parentId,
         };
       }
       if (permission.code === 'canViewBenchmarks') {

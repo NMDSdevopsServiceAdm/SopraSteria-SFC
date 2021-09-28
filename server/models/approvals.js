@@ -200,5 +200,13 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  Approvals.deleteParentRequest = async function (establishmentId) {
+    return await this.destroy({
+      where: {
+        EstablishmentID: establishmentId,
+      },
+    });
+  };
+
   return Approvals;
 };
