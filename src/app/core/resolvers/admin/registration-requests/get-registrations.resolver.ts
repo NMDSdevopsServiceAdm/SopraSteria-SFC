@@ -10,7 +10,7 @@ export class GetRegistrationsResolver implements Resolve<any> {
   constructor(private router: Router, private registrationsService: RegistrationsService) {}
 
   resolve(): Observable<Registrations[]> {
-    return this.registrationsService.getRegistrations().pipe(
+    return this.registrationsService.getRegistrations('pending').pipe(
       catchError(() => {
         this.router.navigate(['/sfcadmin']);
         return EMPTY;

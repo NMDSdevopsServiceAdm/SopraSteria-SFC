@@ -52,7 +52,6 @@ const convertUserDetails = (user) => {
 };
 
 module.exports.convertBasicRegistrationResponse = (registration) => {
-  const parentId = registration.get('ParentID');
   return {
     created: registration.created,
     name: registration.NameValue,
@@ -60,7 +59,7 @@ module.exports.convertBasicRegistrationResponse = (registration) => {
     status: registration.get('Status'),
     workplaceUid: registration.get('EstablishmentUID'),
     parentUid: registration.get('parentUID'),
-    parentId: parentId,
+    parentId: registration.get('ParentID'),
     parentEstablishmentId: registration.parentEstablishmentId,
   };
 };

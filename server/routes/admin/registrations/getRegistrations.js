@@ -3,8 +3,10 @@ const models = require('../../../models');
 const { convertBasicRegistrationResponse } = require('../../../utils/registrationsUtils');
 
 const getRegistrations = async (req, res) => {
+
+  const isRejection = req.params.status === 'pending' ? false : true;
   try {
-    const registrations = await models.establishment.getEstablishmentRegistrationsByStatus('PENDING');
+    const registrations = await models.establishment.getEstablishmentRegistrationsByStatus(isRejection);
 
     const convertedRegistrations = registrations.map(async (registration) => {
       const parentId = registration.get('ParentID');
@@ -29,7 +31,7 @@ const getParentEstablishmentId = async (parentId) => {
   return parentEstablishmentData.get('NmdsID');
 };
 
-router.route('/').get(getRegistrations);
+router.route('/:status').get(getRegistrations);
 
 module.exports = router;
 module.exports.getRegistrations = getRegistrations;
