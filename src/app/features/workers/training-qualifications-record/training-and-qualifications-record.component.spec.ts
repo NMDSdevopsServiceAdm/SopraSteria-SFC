@@ -41,7 +41,21 @@ describe('TrainingAndQualificationsRecordComponent', () => {
                   },
                 },
               },
-              snapshot: {},
+              snapshot: {
+                data: {
+                  worker: {
+                    uid: 123,
+                    nameOrId: 'John',
+                  },
+                  trainingRecords: {
+                    count: 1,
+                    training: [],
+                  },
+                  qualifications: {
+                    count: 2,
+                  },
+                },
+              },
             },
           },
           {

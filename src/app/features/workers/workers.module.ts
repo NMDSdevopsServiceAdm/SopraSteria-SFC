@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
+import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
@@ -121,6 +123,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     MandatoryDetailsComponent,
     LongTermAbsenceComponent,
   ],
-  providers: [DialogService, WorkerResolver, LongTermAbsenceResolver],
+  providers: [DialogService, WorkerResolver, LongTermAbsenceResolver, QualificationsResolver, TrainingRecordsResolver],
 })
 export class WorkersModule {}
