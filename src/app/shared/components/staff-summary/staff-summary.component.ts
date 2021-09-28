@@ -17,6 +17,7 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
+  public currentlyDisplayedWorkers: Array<Worker>;
 
   constructor(private permissionsService: PermissionsService) {}
 
@@ -78,5 +79,9 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
         break;
       }
     }
+  }
+
+  public updateDisplayedWorkers(pageOfWorkers: Array<Worker>): void {
+    this.currentlyDisplayedWorkers = pageOfWorkers;
   }
 }
