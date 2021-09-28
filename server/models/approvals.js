@@ -201,14 +201,12 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Approvals.deleteAParentRequest = async function (establishmentId) {
-    const deletedRequest = await this.destroy({
+    return await this.destroy({
       where: {
         EstablishmentID: establishmentId,
       },
     });
-
-    return deletedRequest;
-  }
+  };
 
   return Approvals;
 };
