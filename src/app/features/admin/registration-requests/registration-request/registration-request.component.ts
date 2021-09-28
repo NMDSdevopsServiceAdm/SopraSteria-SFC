@@ -10,9 +10,7 @@ import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
-import {
-  RegistrationApprovalOrRejectionDialogComponent,
-} from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
+import { RegistrationApprovalOrRejectionDialogComponent } from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -127,13 +125,6 @@ export class RegistrationRequestComponent implements OnInit {
     );
   }
 
-  private showWorkplaceIdUpdatedAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
-    });
-  }
-
   public setStatusClass(status: string): string {
     return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
   }
@@ -225,6 +216,7 @@ export class RegistrationRequestComponent implements OnInit {
         this.registrationsService.registrationApproval(body).subscribe(
           () => {
             this.router.navigate(['/sfcadmin', 'registrations']);
+            this.showApprovalOrRejectionConfirmationAlert(isApproval);
           },
           (err) => {
             this.approvalOrRejectionServerError = `There was an error completing the ${
@@ -255,6 +247,22 @@ export class RegistrationRequestComponent implements OnInit {
     return this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
       workplaceName: this.registration.establishment.name,
       isApproval,
+    });
+  }
+
+  private showWorkplaceIdUpdatedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `The workplace ID has been successfully updated to ${this.nmdsId.value}`,
+    });
+  }
+
+  private showApprovalOrRejectionConfirmationAlert(isApproval: boolean): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `The workplace '${this.registration.establishment.name}' has been ${
+        isApproval ? 'approved' : 'rejected'
+      }`,
     });
   }
 }
