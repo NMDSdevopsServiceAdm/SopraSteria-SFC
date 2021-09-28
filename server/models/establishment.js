@@ -18,7 +18,8 @@ module.exports = function (sequelize, DataTypes) {
         field: '"EstablishmentUID"',
       },
       ustatus: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ENUM,
+        values: ['PENDING', 'IN PROGRESS', 'REJECTED'],
         allowNull: true,
         field: '"Status"',
       },
@@ -876,6 +877,18 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         uid,
       },
+    });
+  };
+
+  Establishment.findEstablishmentWithSameNmdsId = async function (uid, nmdsId) {
+    return await this.findOne({
+      where: {
+        uid: {
+          [Op.ne]: uid,
+        },
+        nmdsId: nmdsId,
+      },
+      attributes: ['id'],
     });
   };
 

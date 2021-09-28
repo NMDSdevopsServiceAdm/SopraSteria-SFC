@@ -14,7 +14,7 @@ export class GetLasResolver implements Resolve<any> {
   resolve(): Observable<LAs> {
     return this.localAuthoritiesReturnService.getLAs().pipe(
       catchError(() => {
-        this.router.navigate(['/sfcadmin']);
+        this.router.navigate(['/problem-with-the-service']);
         return EMPTY;
       }),
     );

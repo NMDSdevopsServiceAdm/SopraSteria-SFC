@@ -1,5 +1,4 @@
 const models = require('../../../models');
-const Sequelize = require('sequelize');
 
 const updateWorkplaceId = async (req, res) => {
   try {
@@ -24,15 +23,7 @@ const updateWorkplaceId = async (req, res) => {
 };
 
 const newWorkplaceIdIsUnique = async (establishmentUid, nmdsId) => {
-  const workplaceWithDuplicateId = await models.establishment.findOne({
-    where: {
-      uid: {
-        [Sequelize.Op.ne]: establishmentUid,
-      },
-      nmdsId: nmdsId,
-    },
-    attributes: ['id'],
-  });
+  const workplaceWithDuplicateId = await models.establishment.findEstablishmentWithSameNmdsId(establishmentUid, nmdsId);
 
   return workplaceWithDuplicateId === null;
 };

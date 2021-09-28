@@ -15,7 +15,7 @@ export class GetRegistrationNotesResolver implements Resolve<any> {
 
     return this.registrationsService.getRegistrationNotes(establishmentUid).pipe(
       catchError(() => {
-        this.router.navigate(['/sfcadmin']);
+        this.router.navigate(['/problem-with-the-service']);
         return EMPTY;
       }),
     );

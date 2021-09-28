@@ -14,7 +14,7 @@ const getRegistrationNotes = async (req, res) => {
 
     const establishmentId = establishment.id;
 
-    const notes = await models.registrationNotes.getNotesByEstablishmentId(establishmentId);
+    const notes = await models.notes.getNotesByEstablishmentId(establishmentId);
 
     res.status(200).send(notes);
   } catch (error) {
