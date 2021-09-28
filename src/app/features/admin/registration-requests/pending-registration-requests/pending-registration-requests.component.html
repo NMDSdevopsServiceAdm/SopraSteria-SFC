@@ -12,7 +12,7 @@
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row" *ngFor="let registration of pendingRegistrations">
         <td class="govuk-table__cell">
-          <a [routerLink]="['../', registration.uid]">{{ registration.name }}</a>
+          <a [routerLink]="['../', registration.workplaceUid]">{{ registration.name }}</a>
         </td>
         <td class="govuk-table__cell">
           {{ registration.postcode }}
