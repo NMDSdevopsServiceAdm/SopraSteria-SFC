@@ -39,7 +39,7 @@ const validateBecomeAParentRequest = async (req, res, next) => {
   }
 };
 
-const validateDeleteAParentRequest = async (req, res, next) => {
+const validateDeleteParentRequest = async (req, res, next) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
     if (!user) {
@@ -65,7 +65,6 @@ const validateDeleteAParentRequest = async (req, res, next) => {
       message: 'Something went wrong cancelling the Become a Parent request.',
     });
   }
-
 };
 
 const becomeAParentEndpoint = async (req, res) => {
@@ -73,14 +72,14 @@ const becomeAParentEndpoint = async (req, res) => {
   res.send(becomeAParentRequest);
 };
 
-const deleteAParentEndpoint = async (req, res) => {
-  const deleteAParentRequest = await models.Approvals.deleteAParentRequest(req.establishment.id);
+const deleteParentRequest = async (req, res) => {
+  const deleteRequest = await models.Approvals.deleteParentRequest(req.establishment.id);
 
-  if (deleteAParentRequest) {
+  if (deleteRequest) {
     return res.status(200).send();
   }
   res.status(400).json({ message: 'Something went wrong cancelling the Become a Parent request.' });
-}
+};
 
 router
   .route('/')
@@ -88,10 +87,10 @@ router
 
 router
   .route('/')
-  .delete([isAuthorised, hasPermission('canEditEstablishment'), validateDeleteAParentRequest, deleteAParentEndpoint]);
+  .delete([isAuthorised, hasPermission('canEditEstablishment'), validateDeleteParentRequest, deleteParentRequest]);
 
 module.exports = router;
 module.exports.validateBecomeAParentRequest = validateBecomeAParentRequest;
-module.exports.validateDeleteAParentRequest = validateDeleteAParentRequest;
+module.exports.validateDeleteParentRequest = validateDeleteParentRequest;
 module.exports.becomeAParentEndpoint = becomeAParentEndpoint;
-module.exports.deleteAParentEndpoint = deleteAParentEndpoint;
+module.exports.deleteParentRequest = deleteParentRequest;

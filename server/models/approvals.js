@@ -200,7 +200,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Approvals.deleteAParentRequest = async function (establishmentId) {
+  Approvals.deleteParentRequest = async function (establishmentId) {
     return await this.destroy({
       where: {
         EstablishmentID: establishmentId,
