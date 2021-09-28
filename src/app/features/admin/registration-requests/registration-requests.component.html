@@ -38,7 +38,7 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let registration of pendingRegistrations">
+        <tr class="govuk-table__row" *ngFor="let registration of currentlyDisplayedPendingRegistrations">
           <td class="govuk-table__cell">
             <a [routerLink]="[registration.establishment.uid]">{{ registration.establishment.name }}</a>
           </td>
@@ -73,6 +73,11 @@
       </tbody>
     </table>
   </div>
+  <app-pagination
+    [items]="registrations"
+    [noOfItemsOnPage]="15"
+    (emitCurrentPage)="updateDisplayedRegistrations($event)"
+  ></app-pagination>
   <ng-template #showRejectedRegistrations>
     <div class="govuk-grid-column-full">
       <h1>Rejected Registrations</h1>

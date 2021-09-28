@@ -13,7 +13,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 export class RegistrationRequestsComponent implements OnInit {
   public registrations: Registration[];
   public pendingRegistrations: Registration[];
+  public currentlyDisplayedPendingRegistrations: Registration[];
   public rejectedRegistrations: Registration[];
+  public currentlyDisplayedRejectedRegistrations: Registration[];
   public showPendingRegistrations: boolean;
 
   constructor(
@@ -55,5 +57,9 @@ export class RegistrationRequestsComponent implements OnInit {
 
   public setStatusClass(status: string): string {
     return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
+  }
+
+  public updateDisplayedRegistrations(pageOfRegistrations: Array<Registration>): void {
+    this.currentlyDisplayedPendingRegistrations = pageOfRegistrations;
   }
 }
