@@ -58,7 +58,7 @@ module.exports.convertBasicRegistrationResponse = (registration) => {
     postcode: registration.get('PostCode'),
     status: registration.get('Status'),
     workplaceUid: registration.get('EstablishmentUID'),
-    parentUid: registration.get('parentUID'),
+    parentUid: registration.get('ParentUID'),
     parentId: registration.get('ParentID'),
     parentEstablishmentId: registration.parentEstablishmentId,
   };

@@ -19,7 +19,7 @@ describe('getRegistrationNotes', () => {
     req = httpMocks.createRequest(request);
     res = httpMocks.createResponse();
 
-    sinon.stub(models.registrationNotes, 'getNotesByEstablishmentId').callsFake(async (establishmentId) => {
+    sinon.stub(models.registrationNotes, 'getNotesByEstablishmentId').callsFake(async () => {
       return [
         {
           createdAt: new Date('10/08/2021'),
@@ -83,7 +83,7 @@ describe('getRegistrationNotes', () => {
     expect(message).to.equal('Establishment could not be found');
   });
 
-  it('should return a 400 error code if an exception is thrown', async () => {
+  it('should return a 500 error code if an exception is thrown', async () => {
     sinon.restore();
 
     sinon.stub(models.establishment, 'findByUid').returns({

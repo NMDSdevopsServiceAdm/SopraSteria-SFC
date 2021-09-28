@@ -1111,24 +1111,21 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getEstablishmentRegistrationsByStatus = async function (isRejection) {
-
-    const params = isRejection ?
-    { ustatus: 'REJECTED' } :
-    { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
-
-
+  Establishment.getEstablishmentRegistrationsByStatus = async function (status) {
     return await this.findAll({
       attributes: [
         'NameValue',
         'PostCode',
         'ParentID',
+        'ParentUID',
         'created',
         'Status',
         'EstablishmentUID',
       ],
-      where: params,
-      order: [['created', 'DESC']]
+      where: {
+        ustatus: status,
+      },
+
     });
   }
 
