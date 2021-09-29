@@ -10,7 +10,9 @@ import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
-import { RegistrationApprovalOrRejectionDialogComponent } from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
+import {
+  RegistrationApprovalOrRejectionDialogComponent,
+} from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -62,7 +64,6 @@ export class RegistrationRequestComponent implements OnInit {
 
   private getRegistrationNotes(): void {
     this.notes = this.route.snapshot.data.notes;
-    console.log(this.notes);
   }
 
   private setupForm(): void {
@@ -113,7 +114,7 @@ export class RegistrationRequestComponent implements OnInit {
   }
 
   private setBreadcrumbs(): void {
-    this.breadcrumbService.show(JourneyType.ADMIN_REGISTRATIONS);
+    this.breadcrumbService.show(JourneyType.ADMIN_PENDING_REGISTRATIONS);
   }
 
   public navigateToParentAccount(e: Event): void {
@@ -198,7 +199,6 @@ export class RegistrationRequestComponent implements OnInit {
     this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
       (data) => {
         this.notes = data;
-        console.log(this.notes);
       },
       (error) => {
         this.notesError = 'There was an error retrieving notes for this registration';

@@ -3,7 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
-import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
+import {
+  GetPendingRegistrationsResolver,
+} from '@core/resolvers/admin/registration-requests/get-pending-registrations.resolver';
+import {
+  GetRejectedRegistrationsResolver,
+} from '@core/resolvers/admin/registration-requests/get-rejected-registrations.resolver';
 import {
   GetRegistrationNotesResolver,
 } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
@@ -21,6 +26,9 @@ import {
 } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import {
+  RejectedRegistrationRequestComponent,
+} from './registration-requests/rejected-registration-request/rejected-registration-request.component';
 import {
   RejectedRegistrationRequestsComponent,
 } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
@@ -48,7 +56,7 @@ const routes: Routes = [
         component: RegistrationRequestsComponent,
         data: { title: 'Registration Requests' },
         resolve: {
-          registrations: GetRegistrationsResolver,
+          registrations: GetPendingRegistrationsResolver,
         },
         children: [
           {
@@ -61,7 +69,7 @@ const routes: Routes = [
             component: PendingRegistrationRequestsComponent,
             data: { title: 'Pending Registration Requests' },
             resolve: {
-              registrations: GetRegistrationsResolver,
+              registrations: GetPendingRegistrationsResolver,
             },
           },
           {
@@ -69,15 +77,24 @@ const routes: Routes = [
             component: RejectedRegistrationRequestsComponent,
             data: { title: 'Rejected Registration Requests' },
             resolve: {
-              registrations: GetRegistrationsResolver,
+              registrations: GetRejectedRegistrationsResolver,
             },
           },
         ],
       },
       {
-        path: ':establishmentUid',
+        path: 'pending/:establishmentUid',
         component: RegistrationRequestComponent,
         data: { title: 'Registration Request' },
+        resolve: {
+          registration: GetSingleRegistrationResolver,
+          notes: GetRegistrationNotesResolver,
+        },
+      },
+      {
+        path: 'rejected/:establishmentUid',
+        component: RejectedRegistrationRequestComponent,
+        data: { title: 'Rejected Registration Request' },
         resolve: {
           registration: GetSingleRegistrationResolver,
           notes: GetRegistrationNotesResolver,

@@ -15,6 +15,6 @@ export class RejectedRegistrationRequestsComponent implements OnInit {
 
   ngOnInit(): void {
     this.rejectedRegistrations = this.route.snapshot.data.registrations;
-    this.breadcrumbService.show(JourneyType.ADMIN_REGISTRATIONS);
+    this.breadcrumbService.show(JourneyType.ADMIN_REJECTED_REGISTRATIONS);
   }
 }

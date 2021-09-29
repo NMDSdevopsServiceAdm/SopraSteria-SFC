@@ -18,36 +18,21 @@ describe('RegistrationRequestsComponent', () => {
               data: {
                 registrations: [
                   {
-                    establishment: {
-                      name: 'Workplace 1',
-                      postcode: 'PO5 3CO',
-                      parentEstablishmentId: 'J234567',
-                      parentUid: 'parentUid',
-                      uid: 'someuid',
-                      status: 'PENDING',
-                    },
+                    name: 'Workplace 1',
+                    postcode: 'PO5 3CO',
+                    parentEstablishmentId: 'J234567',
+                    parentUid: 'parentUid',
+                    workplaceUid: 'someuid',
+                    status: 'PENDING',
                     created: '23/01/2000',
                   },
                   {
-                    establishment: {
-                      name: 'Workplace 2',
-                      postcode: 'AS4 8DS',
-                      parentEstablishmentId: null,
-                      uid: 'anotheruid',
-                      status: 'IN PROGRESS',
-                    },
+                    name: 'Workplace 2',
+                    postcode: 'AS4 8DS',
+                    parentEstablishmentId: null,
+                    workplaceUid: 'anotheruid',
+                    status: 'IN PROGRESS',
                     created: '24/01/2001',
-                  },
-                  {
-                    establishment: {
-                      name: 'Workplace 3',
-                      postcode: 'ER4 5XC',
-                      parentEstablishmentId: 'W123456',
-                      parentUid: 'anotherParentUid',
-                      uid: 'uiduid',
-                      status: 'REJECTED',
-                    },
-                    created: '25/01/2002',
                   },
                 ],
               },
@@ -73,7 +58,7 @@ describe('RegistrationRequestsComponent', () => {
   it('should contain a pending link that links to sfcadmin/registrations/pending url', async () => {
     const { component } = await setup();
 
-    const pendingLink = component.getByText('Pending', { exact: false });
+    const pendingLink = component.getByText('Pending (2)', { exact: false });
     expect(pendingLink.getAttribute('href')).toBe('/sfcadmin/registrations/pending');
   });
 

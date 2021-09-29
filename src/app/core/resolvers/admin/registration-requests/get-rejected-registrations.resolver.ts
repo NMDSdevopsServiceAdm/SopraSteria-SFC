@@ -6,11 +6,11 @@ import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetRegistrationsResolver implements Resolve<any> {
+export class GetRejectedRegistrationsResolver implements Resolve<any> {
   constructor(private router: Router, private registrationsService: RegistrationsService) {}
 
   resolve(): Observable<Registrations[]> {
-    return this.registrationsService.getRegistrations('pending').pipe(
+    return this.registrationsService.getRegistrations('rejected').pipe(
       catchError(() => {
         this.router.navigate(['/problem-with-the-service']);
         return EMPTY;

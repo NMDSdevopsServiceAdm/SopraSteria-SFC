@@ -20,7 +20,7 @@ export class RegistrationsService {
   }
 
   public getSingleRegistration(establishmentUid: string): Observable<Registration> {
-    return this.http.get<Registration>(`/api/admin/registrations/${establishmentUid}`);
+    return this.http.get<Registration>(`/api/admin/registrations/status/${establishmentUid}`);
   }
 
   public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {

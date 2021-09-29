@@ -6,7 +6,12 @@ import { RouterModule } from '@angular/router';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
-import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
+import {
+  GetPendingRegistrationsResolver,
+} from '@core/resolvers/admin/registration-requests/get-pending-registrations.resolver';
+import {
+  GetRejectedRegistrationsResolver,
+} from '@core/resolvers/admin/registration-requests/get-rejected-registrations.resolver';
 import {
   GetRegistrationNotesResolver,
 } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
@@ -31,6 +36,9 @@ import {
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
 import {
+  RejectedRegistrationRequestComponent,
+} from './registration-requests/rejected-registration-request/rejected-registration-request.component';
+import {
   RejectedRegistrationRequestsComponent,
 } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
 import { ReportComponent } from './report/admin-report.component';
@@ -50,6 +58,7 @@ import { SearchComponent } from './search/search.component';
     RegistrationRequestsComponent,
     PendingRegistrationRequestsComponent,
     RejectedRegistrationRequestsComponent,
+    RejectedRegistrationRequestComponent,
     ReportComponent,
   ],
   providers: [
@@ -57,7 +66,8 @@ import { SearchComponent } from './search/search.component';
     GetDatesResolver,
     GetLasResolver,
     GetLaResolver,
-    GetRegistrationsResolver,
+    GetPendingRegistrationsResolver,
+    GetRejectedRegistrationsResolver,
     GetSingleRegistrationResolver,
     GetRegistrationNotesResolver,
     DatePipe,

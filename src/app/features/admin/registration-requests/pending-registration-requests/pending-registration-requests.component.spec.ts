@@ -28,25 +28,22 @@ describe('PendingRegistrationRequestsComponent', () => {
               data: {
                 registrations: [
                   {
-                    establishment: {
-                      name: 'Workplace 1',
-                      postcode: 'PO5 3CO',
-                      parentEstablishmentId: 'J234567',
-                      parentUid: 'parentUid',
-                      uid: 'someuid',
-                      status: 'PENDING',
-                    },
-                    created: '23/01/2000',
+                    name: 'Workplace 1',
+                    postcode: 'PO5 3CO',
+                    parentEstablishmentId: 'J234567',
+                    parentId: 'parentId',
+                    parentUid: 'parentUid',
+                    workplaceUid: 'someuid',
+                    status: 'PENDING',
+                    created: new Date('01/01/2021'),
                   },
                   {
-                    establishment: {
-                      name: 'Workplace 2',
-                      postcode: 'AS4 8DS',
-                      parentEstablishmentId: null,
-                      uid: 'anotheruid',
-                      status: 'IN PROGRESS',
-                    },
-                    created: '24/01/2001',
+                    name: 'Workplace 2',
+                    postcode: 'AS4 8DS',
+                    parentEstablishmentId: null,
+                    workplaceUid: 'anotheruid',
+                    status: 'IN PROGRESS',
+                    created: new Date('02/01/2021'),
                   },
                 ],
               },
@@ -76,12 +73,12 @@ describe('PendingRegistrationRequestsComponent', () => {
     const workplace1Postcode = component.queryByText('PO5 3CO');
     const workplace1ParentId = component.queryByText('J234567');
     const workplace1Status = component.queryByText('PENDING');
-    const workplace1Created = component.queryByText('23/01/2000');
+    const workplace1Created = component.queryByText('01 Jan 2021 12:00 AM');
 
     const workplace2Name = component.queryByText('Workplace 2');
     const workplace2Postcode = component.queryByText('AS4 8DS');
     const workplace2Status = component.queryByText('IN PROGRESS');
-    const workplace2Created = component.queryByText('24/01/2001');
+    const workplace2Created = component.queryByText('01 Feb 2021 12:00 AM');
 
     expect(workplace1Name).toBeTruthy();
     expect(workplace1Postcode).toBeTruthy();
@@ -109,7 +106,6 @@ describe('PendingRegistrationRequestsComponent', () => {
     const { component, fixture } = await setup();
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
-
     const spy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
 
     const workplace1ParentId = component.getByTestId('parentId-J234567');

@@ -20,7 +20,7 @@ export class PendingRegistrationRequestsComponent implements OnInit {
 
   ngOnInit(): void {
     this.pendingRegistrations = this.route.snapshot.data.registrations;
-    this.breadcrumbService.show(JourneyType.ADMIN_REGISTRATIONS);
+    this.breadcrumbService.show(JourneyType.ADMIN_PENDING_REGISTRATIONS);
   }
 
   public navigateToParentPage(id: string, username: string, nmdsId: string, event: Event): void {

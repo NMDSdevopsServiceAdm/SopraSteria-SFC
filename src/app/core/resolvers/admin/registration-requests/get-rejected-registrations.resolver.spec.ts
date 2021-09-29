@@ -4,17 +4,17 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { AdminModule } from '@features/admin/admin.module';
 
-import { GetRegistrationsResolver } from './get-registrations.resolver';
+import { GetRejectedRegistrationsResolver } from './get-rejected-registrations.resolver';
 
-describe('GetRegistrationsResolver', () => {
-  let resolver: GetRegistrationsResolver;
+describe('GetRejectedRegistrationsResolver', () => {
+  let resolver: GetRejectedRegistrationsResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [GetRegistrationsResolver],
+      providers: [GetRejectedRegistrationsResolver],
     });
-    resolver = TestBed.inject(GetRegistrationsResolver);
+    resolver = TestBed.inject(GetRejectedRegistrationsResolver);
   });
 
   it('should be created', () => {
@@ -27,6 +27,6 @@ describe('GetRegistrationsResolver', () => {
 
     resolver.resolve();
 
-    expect(registrationsService.getRegistrations).toHaveBeenCalled();
+    expect(registrationsService.getRegistrations).toHaveBeenCalledWith('rejected');
   });
 });

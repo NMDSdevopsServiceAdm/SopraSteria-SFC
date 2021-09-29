@@ -3,8 +3,8 @@ const models = require('../../../models');
 const { convertBasicRegistrationResponse } = require('../../../utils/registrationsUtils');
 
 const getRegistrations = async (req, res) => {
-
   const isRejection = req.params.status === 'pending' ? false : true;
+
   try {
     const registrations = await models.establishment.getEstablishmentRegistrationsByStatus(isRejection);
 
