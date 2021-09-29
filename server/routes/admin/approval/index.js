@@ -85,6 +85,8 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
     const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
       ustatus: null,
+      inReview: false,
+      reviewer: null,
     });
     if (updatedLogin && updatedWorkplace) {
       return res.status(200).json({ status: '0', message: userApprovalConfirmation });
@@ -131,6 +133,8 @@ const _approveNewWorkplace = async (workplace, nmdsId, res) => {
     const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
       ustatus: null,
+      inReview: false,
+      reviewer: null,
     });
     if (updatedWorkplace) {
       return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation });

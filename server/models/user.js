@@ -309,7 +309,7 @@ module.exports = function (sequelize, DataTypes) {
   User.findByLoginId = function (loginId) {
     return this.findOne({
       where: { id: loginId },
-      attributes: ['id'],
+      attributes: ['id', 'FullNameValue'],
     });
   };
 

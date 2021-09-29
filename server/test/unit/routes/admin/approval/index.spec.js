@@ -101,7 +101,12 @@ describe('adminApproval', async () => {
       await approval.adminApproval(req, res);
 
       expect(workplaceUpdateSpy.called).to.deep.equal(true);
-      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: null, nmdsId: 'A1234567' });
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({
+        inReview: false,
+        reviewer: null,
+        ustatus: null,
+        nmdsId: 'A1234567',
+      });
     });
 
     it('should return status 500 if login update returns false when approving a new user', async () => {
@@ -242,7 +247,12 @@ describe('adminApproval', async () => {
       await approval.adminApproval(req, res);
 
       expect(workplaceUpdateSpy.called).to.deep.equal(true);
-      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: null, nmdsId: 'A1234567' });
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({
+        inReview: false,
+        reviewer: null,
+        ustatus: null,
+        nmdsId: 'A1234567',
+      });
     });
 
     it('should return 500 status when unable to update workplace when approving', async () => {
