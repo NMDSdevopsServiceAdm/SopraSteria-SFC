@@ -60,7 +60,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   public downloadTrainingReport(event: Event): void {
     event.preventDefault();
     this.subscriptions.add(
-      this.reportService.getTrainingReport(this.establishmentUid).subscribe(
+      this.reportService.getTrainingAndQualificationsReport(this.establishmentUid).subscribe(
         (response) => this.saveFile(response),
         (error) => console.error(error),
       ),

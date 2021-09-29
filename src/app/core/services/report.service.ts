@@ -47,6 +47,13 @@ export class ReportService {
     });
   }
 
+  public getTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<any>('/api/reports/trainingAndQualifications', {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getSatisfactionSurveyReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/satisfactionSurvey/new`, {
       observe: 'response',
