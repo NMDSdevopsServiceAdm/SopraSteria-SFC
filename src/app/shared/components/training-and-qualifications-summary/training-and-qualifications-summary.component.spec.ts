@@ -3,6 +3,13 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import {
+  longTermAbsentWorker,
+  workerWithExpiredTraining,
+  workerWithExpiringTraining,
+  workerWithMissingTraining,
+  workerWithUpToDateTraining,
+} from '@core/test-utils/MockWorkerService';
 import { render } from '@testing-library/angular';
 
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
@@ -18,80 +25,12 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
-const workerBuilder = build('Worker', {
-  fields: {
-    id: sequence(),
-    uid: fake((f) => f.random.uuid()),
-    nameOrId: fake((f) => f.name.findName()),
-    mainJob: perBuild(() => {
-      return {
-        id: sequence(),
-        title: fake((f) => f.lorem.sentence()),
-      };
-    }),
-    expiredTrainingCount: 0,
-    expiringTrainingCount: 0,
-    missingMandatoryTrainingCount: 0,
-    qualificationCount: 0,
-    trainingAlert: 0,
-    trainingCount: 0,
-    longTermAbsence: null,
-  },
-});
-
 const workers = [
-  workerBuilder({
-    // expired
-    overrides: {
-      nameOrId: 'Ben',
-      expiredTrainingCount: 3,
-      expiringTrainingCount: 0,
-      missingMandatoryTrainingCount: 0,
-      qualificationCount: 0,
-      trainingAlert: 0,
-      trainingCount: 0,
-      longTermAbsence: 'Illness',
-    },
-  }),
-  workerBuilder({
-    // expiring
-    overrides: {
-      nameOrId: 'Alice',
-      expiredTrainingCount: 0,
-      expiringTrainingCount: 2,
-      missingMandatoryTrainingCount: 0,
-      qualificationCount: 0,
-      trainingAlert: 0,
-      trainingCount: 1,
-      longTermAbsence: null,
-    },
-  }),
-  workerBuilder({
-    // up to date
-    overrides: {
-      nameOrId: 'Carl',
-      expiredTrainingCount: 0,
-      expiringTrainingCount: 1,
-      missingMandatoryTrainingCount: 0,
-      qualificationCount: 0,
-      trainingAlert: 1,
-      trainingCount: 3,
-      longTermAbsence: null,
-    },
-  }),
-  workerBuilder({
-    // Missing
-    overrides: {
-      nameOrId: 'Darlyn',
-      expiredTrainingCount: 0,
-      expiringTrainingCount: 0,
-      missingMandatoryTrainingCount: 2,
-      qualificationCount: 0,
-      trainingAlert: 2,
-      trainingCount: 0,
-      longTermAbsence: null,
-    },
-  }),
+  workerWithExpiredTraining,
+  workerWithExpiringTraining,
+  workerWithUpToDateTraining,
+  workerWithMissingTraining,
+  longTermAbsentWorker,
 ];
 
 describe('TrainingAndQualificationsSummaryComponent', () => {
@@ -128,11 +67,12 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
-    expect(rows.length).toBe(4);
+    expect(rows.length).toBe(5);
     expect(rows[0].innerHTML).toContain('3 Expired');
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Carl');
     expect(rows[3].innerHTML).toContain('Darlyn');
+    expect(rows[4].innerHTML).toContain('John');
   });
 
   it('should list by Expired as default', async () => {
@@ -144,11 +84,12 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     fixture.detectChanges();
     let rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
-    expect(rows.length).toBe(4);
+    expect(rows.length).toBe(5);
     expect(rows[0].innerHTML).toContain('Alice');
     expect(rows[1].innerHTML).toContain('Carl');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Darlyn');
+    expect(rows[4].innerHTML).toContain('John');
 
     select.value = select.options[2].value; // Missing
     select.dispatchEvent(new Event('change'));
@@ -158,6 +99,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Carl');
+    expect(rows[4].innerHTML).toContain('John');
   });
 
   it('should display the "LONG-TERM ABSENT" tag if the worker is long term absent', async () => {

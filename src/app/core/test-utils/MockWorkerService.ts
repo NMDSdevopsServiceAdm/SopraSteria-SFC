@@ -53,6 +53,61 @@ export const workerBuilder = build('Worker', {
 
 const worker = workerBuilder();
 
+export const workerWithExpiringTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Alice',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 2,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 0,
+    trainingCount: 1,
+  },
+});
+
+export const workerWithExpiredTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Ben',
+    expiredTrainingCount: 3,
+    expiringTrainingCount: 0,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 0,
+    trainingCount: 0,
+  },
+});
+
+export const workerWithUpToDateTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Carl',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 1,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 1,
+    trainingCount: 3,
+  },
+});
+
+export const workerWithMissingTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Darlyn',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 0,
+    missingMandatoryTrainingCount: 2,
+    qualificationCount: 0,
+    trainingAlert: 2,
+    trainingCount: 0,
+  },
+});
+
+export const longTermAbsentWorker = workerBuilder({
+  overrides: {
+    nameOrId: 'John',
+    longTermAbsence: 'Illness',
+  },
+});
+
 export const AllWorkers = [
   {
     nameOrId: worker.nameOrId,
