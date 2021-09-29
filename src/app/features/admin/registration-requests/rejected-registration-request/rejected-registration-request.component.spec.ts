@@ -101,6 +101,14 @@ describe('RejectedRegistrationRequestComponent', () => {
     expect(queryAllByText(workplaceName, { exact: false }).length).toBe(2);
   });
 
+  it('should display the workplace id', async () => {
+    const { getByText, component } = await setup();
+
+    const workplaceId = component.registration.establishment.nmdsId;
+
+    expect(getByText(workplaceId, { exact: false })).toBeTruthy();
+  });
+
   it('should display the workplace address', async () => {
     const { getByText, component } = await setup();
 
@@ -125,8 +133,8 @@ describe('RejectedRegistrationRequestComponent', () => {
     const locationId = component.registration.establishment.locationId;
     const provid = component.registration.establishment.provid;
 
-    expect(getByText(locationId, { exact: false })).toBeTruthy();
-    expect(getByText(provid, { exact: false })).toBeTruthy();
+    expect(getByText(locationId)).toBeTruthy();
+    expect(getByText(provid)).toBeTruthy();
   });
 
   it('should display the main service', async () => {
