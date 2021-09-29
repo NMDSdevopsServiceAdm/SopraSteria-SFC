@@ -5,7 +5,6 @@ const models = require('../../../models');
 const config = require('../../../config/config');
 
 const getAllRegistrations = async (req, res) => {
-
   try {
     // Get the login, user and establishment records
     const loginResults = await models.login.findAll({
@@ -153,12 +152,6 @@ const getAllRegistrations = async (req, res) => {
         };
       });
     }
-
-    console.log("*********")
-    const rejectedWorkplaces = workplaceReturnArr.filter(workplace => workplace.establishment.status === 'REJECTED');
-    console.log('rejectedWorkplaces:', rejectedWorkplaces);
-    const rejectedLogins = loginReturnArr.filter(login => login.establishment.status === 'REJECTED');
-    console.log('rejectedLogins:', rejectedLogins);
 
     if (loginResults && workplaceResults) {
       let loginWorkplaceIds = new Set(loginReturnArr.map((d) => d.establishment.id));

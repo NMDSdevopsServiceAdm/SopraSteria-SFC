@@ -33,6 +33,7 @@ describe('RejectedRegistrationRequestsComponent', () => {
                     workplaceUid: 'someuid',
                     status: 'REJECTED',
                     created: new Date('01/01/2021'),
+                    updated: new Date('01/02/2021'),
                   },
                   {
                     name: 'Workplace 2',
@@ -41,6 +42,7 @@ describe('RejectedRegistrationRequestsComponent', () => {
                     workplaceUid: 'anotheruid',
                     status: 'REJECTED',
                     created: new Date('02/01/2021'),
+                    updated: new Date('02/02/2021'),
                   },
                 ],
               },
@@ -67,10 +69,10 @@ describe('RejectedRegistrationRequestsComponent', () => {
     const { component } = await setup();
 
     const workplace1Name = component.queryByText('Workplace 1');
-    const workplace1Updated = component.queryByText('01 Jan 2021');
+    const workplace1Updated = component.queryByText('02 Jan 2021');
 
     const workplace2Name = component.queryByText('Workplace 2');
-    const workplace2Updated = component.queryByText('01 Feb 2021');
+    const workplace2Updated = component.queryByText('02 Feb 2021');
 
     expect(workplace1Name).toBeTruthy();
     expect(workplace1Updated).toBeTruthy();
