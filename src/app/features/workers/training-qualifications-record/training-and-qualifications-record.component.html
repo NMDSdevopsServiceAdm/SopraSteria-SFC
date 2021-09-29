@@ -3,8 +3,8 @@
     <div class="govuk-grid-column-full">
       <div class="govuk-list--inline govuk-list govuk__flex">
         <span class="govuk-caption-xl govuk-!-margin-right-3">{{ worker.nameOrId }}</span>
-        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey">
-          Long-Term Absence
+        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1">
+          LONG-TERM ABSENT
           <a
             [routerLink]="[
               '/workplace',
@@ -14,7 +14,7 @@
               'long-term-absence'
             ]"
             data-testid="longTermAbsence"
-            class="govuk-link govuk-link--no-visited-state"
+            class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
             style="text-transform: capitalize"
             >View</a
           >
