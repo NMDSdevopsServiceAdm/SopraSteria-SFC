@@ -72,12 +72,12 @@
         </tr>
       </tbody>
     </table>
+    <app-pagination
+      [items]="registrations"
+      [noOfItemsOnPage]="15"
+      (emitCurrentPage)="updateDisplayedRegistrations($event)"
+    ></app-pagination>
   </div>
-  <app-pagination
-    [items]="registrations"
-    [noOfItemsOnPage]="15"
-    (emitCurrentPage)="updateDisplayedRegistrations($event)"
-  ></app-pagination>
   <ng-template #showRejectedRegistrations>
     <div class="govuk-grid-column-full">
       <h1>Rejected Registrations</h1>

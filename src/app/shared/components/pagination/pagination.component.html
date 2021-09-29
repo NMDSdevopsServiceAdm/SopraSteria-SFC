@@ -1,12 +1,24 @@
-<div class="govuk-button-group">
-  <a *ngIf="currentPageNo != 0" class="govuk-link" href="#" (click)="goToPreviousPage($event)">Previous page</a>
+<div *ngIf="pages.length > 1" class="govuk-button-group">
+  <ng-container *ngIf="currentPageNo != 0; else notLink">
+    <a class="govuk-link" href="#" (click)="goToPreviousPage($event)">Previous page</a>
+  </ng-container>
+  <ng-template #notLink>
+    <p class="govuk-!-margin-right-3">Previous page</p>
+  </ng-template>
   <ng-container *ngFor="let page of pages; let i = index">
     <ng-container *ngIf="currentPageNo == i; else showLink">
-      <p class="govuk-!-margin-right-3">{{ i + 1 }}</p>
+      <p class="govuk-!-margin-right-3">
+        <b>{{ i + 1 }}</b>
+      </p>
     </ng-container>
     <ng-template #showLink>
       <a class="govuk-link" href="#" (click)="goToSelectedPage($event, i)">{{ i + 1 }}</a>
     </ng-template>
   </ng-container>
-  <a *ngIf="currentPageNo != noOfPages - 1" class="govuk-link" href="#" (click)="goToNextPage($event)">Next page</a>
+  <ng-container *ngIf="currentPageNo != noOfPages - 1; else nextNotLink">
+    <a class="govuk-link" href="#" (click)="goToNextPage($event)">Next page</a>
+  </ng-container>
+  <ng-template #nextNotLink>
+    <p>Next page</p>
+  </ng-template>
 </div>
