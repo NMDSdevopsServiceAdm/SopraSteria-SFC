@@ -1128,7 +1128,16 @@ module.exports = function (sequelize, DataTypes) {
     const params = isRejection ? { ustatus: 'REJECTED' } : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
 
     return await this.findAll({
-      attributes: ['NameValue', 'PostCode', 'ParentID', 'ParentUID', 'created', 'Status', 'EstablishmentUID'],
+      attributes: [
+        'NameValue',
+        'PostCode',
+        'ParentID',
+        'ParentUID',
+        'created',
+        'updated',
+        'Status',
+        'EstablishmentUID',
+      ],
       where: params,
       order: [['created', 'DESC']],
     });

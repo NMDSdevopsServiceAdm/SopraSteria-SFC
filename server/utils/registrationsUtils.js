@@ -54,6 +54,7 @@ const convertUserDetails = (user) => {
 module.exports.convertBasicRegistrationResponse = (registration) => {
   return {
     created: registration.created,
+    updated: registration.updated,
     name: registration.NameValue,
     postcode: registration.get('PostCode'),
     status: registration.get('Status'),

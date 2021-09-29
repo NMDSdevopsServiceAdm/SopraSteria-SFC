@@ -11,23 +11,30 @@ const models = require('../../../../../models');
 const { getRegistrations } = require('../../../../../routes/admin/registrations/getRegistrations');
 
 describe('getRegistrations', async () => {
-  const getDummyEstablishment = details => {
-    const { name, postcode, parentId, parentUid, status, establishmentUid, created } = details;
+  const getDummyEstablishment = (details) => {
+    const { name, postcode, parentId, parentUid, status, establishmentUid, created, updated } = details;
     const dummyEstablishment = {
       NameValue: name,
       created,
+      updated,
       get() {},
-    }
+    };
 
-    sinon.stub(dummyEstablishment, 'get')
-      .withArgs('PostCode').returns(postcode)
-      .withArgs('ParentID').returns(parentId)
-      .withArgs('ParentUID').returns(parentUid)
-      .withArgs('Status').returns(status)
-      .withArgs('EstablishmentUID').returns(establishmentUid)
+    sinon
+      .stub(dummyEstablishment, 'get')
+      .withArgs('PostCode')
+      .returns(postcode)
+      .withArgs('ParentID')
+      .returns(parentId)
+      .withArgs('ParentUID')
+      .returns(parentUid)
+      .withArgs('Status')
+      .returns(status)
+      .withArgs('EstablishmentUID')
+      .returns(establishmentUid);
 
     return dummyEstablishment;
-  }
+  };
 
   const expectedResponseArray = [
     {
@@ -38,6 +45,7 @@ describe('getRegistrations', async () => {
       status: 'PENDING',
       workplaceUid: 'establishment1Uid',
       created: '01/01/2021',
+      updated: '01/02/2021',
       parentEstablishmentId: 'A1321121',
     },
     {
@@ -48,6 +56,7 @@ describe('getRegistrations', async () => {
       status: 'IN PROGRESS',
       workplaceUid: 'establishment2Uid',
       created: '02/01/2021',
+      updated: '02/02/2021',
       parentEstablishmentId: 'A1321121',
     },
   ];
@@ -64,6 +73,7 @@ describe('getRegistrations', async () => {
       status: 'PENDING',
       establishmentUid: 'establishment1Uid',
       created: '01/01/2021',
+      updated: '01/02/2021',
     });
 
     const dummyEstablishment2 = getDummyEstablishment({
@@ -74,24 +84,27 @@ describe('getRegistrations', async () => {
       status: 'IN PROGRESS',
       establishmentUid: 'establishment2Uid',
       created: '02/01/2021',
+      updated: '02/02/2021',
     });
 
-    sinon.stub(models.establishment, 'getEstablishmentRegistrationsByStatus')
+    sinon
+      .stub(models.establishment, 'getEstablishmentRegistrationsByStatus')
       .returns([dummyEstablishment1, dummyEstablishment2]);
 
     sinon.stub(models.establishment, 'getNmdsIdUsingEstablishmentId').returns({
-      get() { return 'A1321121' }
+      get() {
+        return 'A1321121';
+      },
     });
 
     const request = {
       method: 'GET',
-      url: 'api/admin/registrations/pending'
-    }
+      url: 'api/admin/registrations/pending',
+    };
 
     req = httpMocks.createRequest(request);
     res = httpMocks.createResponse();
-
-  }
+  };
 
   beforeEach(() => {
     setup();
@@ -120,6 +133,7 @@ describe('getRegistrations', async () => {
       expect(registration.parentId).to.equal(expectedResponseArray[index].parentId);
       expect(registration.parentUid).to.equal(expectedResponseArray[index].parentUid);
       expect(registration.created).to.equal(expectedResponseArray[index].created);
+      expect(registration.updated).to.equal(expectedResponseArray[index].updated);
       expect(registration.parentEstablishmentId).to.equal(expectedResponseArray[index].parentEstablishmentId);
     });
   });
@@ -132,5 +146,5 @@ describe('getRegistrations', async () => {
     await getRegistrations(req, res);
 
     expect(res.statusCode).to.deep.equal(500);
-  })
+  });
 });
