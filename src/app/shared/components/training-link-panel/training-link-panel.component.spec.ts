@@ -7,10 +7,12 @@ import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { TrainingLinkPanelComponent } from '@shared/components/training-link-panel/training-link-panel.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 
 import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';
@@ -23,6 +25,10 @@ describe('TrainingLinkPanelComponent', () => {
         {
           provide: WorkerService,
           useClass: MockWorkerService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
         },
         {
           provide: UserService,
