@@ -11,6 +11,19 @@ const generateTrainingAndQualificationsReport = async (_, res) => {
   workbook.creator = 'Skills-For-Care';
   workbook.properties.date1904 = true;
 
+  generateHowToTab(workbook);
+
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader(
+    'Content-Disposition',
+    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-training-report.xlsx',
+  );
+
+  await workbook.xlsx.write(res);
+  return res.status(200).end();
+};
+
+const generateHowToTab = (workbook) => {
   const howToTab = workbook.addWorksheet('How to...', { views: [{ showGridLines: false }] });
 
   setColourBars(howToTab);
@@ -35,15 +48,6 @@ const generateTrainingAndQualificationsReport = async (_, res) => {
   const howToPrintInstructions =
     "To print the information in this report, click on the 'File' menu and then click 'Print'. You can choose to only print the page you're currently looking at or perhaps change the settings to print the whole report.";
   addTextBox(howToTab, 'B23', 'K25', howToPrintInstructions);
-
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader(
-    'Content-Disposition',
-    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-training-report.xlsx',
-  );
-
-  await workbook.xlsx.write(res);
-  return res.status(200).end();
 };
 
 const setColourBars = (worksheet) => {
@@ -75,7 +79,7 @@ const addHeading = (tab, startCell, endCell, content) => {
 const addTextBox = (tab, startCell, endCell, content) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = content;
-  tab.getCell('B9').alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+  tab.getCell(startCell).alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
 };
 
 router.route('/').get(generateTrainingAndQualificationsReport);

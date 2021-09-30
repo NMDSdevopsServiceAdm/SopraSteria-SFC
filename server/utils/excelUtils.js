@@ -10,6 +10,7 @@ exports.fullBorder = {
   bottom: { style: 'thin' },
   right: { style: 'thin' },
 };
+
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
     let col = ws.getColumn(c);
