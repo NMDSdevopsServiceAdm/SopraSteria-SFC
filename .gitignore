@@ -64,3 +64,5 @@ CQCLocationAPICall/.nyc_output/
 # ESLint
 .eslintcache
 test-results.xml
+
+TESTS.xml
