@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const excelJS = require('exceljs');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
@@ -70,9 +69,9 @@ const generateHowToTab = (workbook) => {
 };
 
 const setColourBars = (worksheet) => {
-  setColourLine(worksheet, 1, '123387');
-  setColourLine(worksheet, 2, '6a88d4');
-  setColourLine(worksheet, 3, '638eab');
+  setColourLine(worksheet, 1, '0050ab');
+  setColourLine(worksheet, 2, 'a4b8df');
+  setColourLine(worksheet, 3, '608ac8');
 };
 
 const setColourLine = (worksheet, lineNumber, colour) => {
@@ -105,7 +104,7 @@ const addHeading = (tab, startCell, endCell, content) => {
     family: 4,
     size: 16,
     bold: true,
-    color: { argb: '282c84' },
+    color: { argb: '0050ab' },
   };
 };
 
