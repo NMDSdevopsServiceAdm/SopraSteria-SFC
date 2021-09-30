@@ -114,7 +114,7 @@ describe('StaffRecordComponent', () => {
       component.worker.longTermAbsence = 'Illness';
       fixture.detectChanges();
 
-      expect(getByText('Long-Term Absence')).toBeTruthy();
+      expect(getByText('LONG-TERM ABSENT')).toBeTruthy();
       expect(queryByText('Flag long-term absence')).toBeFalsy();
     });
 
