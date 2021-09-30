@@ -102,9 +102,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(rows[4].innerHTML).toContain('John');
   });
 
-  it('should display the "LONG-TERM ABSENT" tag if the worker is long term absent', async () => {
+  it('should display the "Long-term absent" tag if the worker is long term absent', async () => {
     const { getAllByText } = await setup();
 
-    expect(getAllByText('LONG-TERM ABSENT').length).toBe(1);
+    expect(getAllByText('Long-term absent').length).toBe(1);
   });
 });
