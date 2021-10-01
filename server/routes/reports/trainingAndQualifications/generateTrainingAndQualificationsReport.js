@@ -27,7 +27,7 @@ const generateTrainingAndQualificationsReport = async (_, res) => {
   }
 };
 
-router.route('/report').get(generateTrainingAndQualificationsReport);
+router.route('/:id/report').get(generateTrainingAndQualificationsReport);
 
 module.exports = router;
 module.exports.generateTrainingAndQualificationsReport = generateTrainingAndQualificationsReport;

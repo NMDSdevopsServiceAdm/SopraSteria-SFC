@@ -15,9 +15,9 @@ const generateHowToTab = (workbook) => {
   const filteringInstructions =
     'Click on the arrow in the header of the column you want to sort or filter. In the menu displayed, you can sort the data to suit your needs (for example, you can sort it alphabetically). The menu also lets you select what you want to view by filtering the data so that only certain rows are shown.';
 
-  addTextBox(howToTab, 'B11', 'K14', filteringInstructions);
+  addTextBox(howToTab, 'B11', 'K15', filteringInstructions);
 
-  addHeading(howToTab, 'B16', 'K16', 'How to delete unwanted sheets');
+  addHeading(howToTab, 'B17', 'K17', 'How to delete unwanted sheets');
 
   const howToDeleteInstructions = [
     'To delete a sheet in this report, right click on the tab at the bottom of the sheet and select delete. ',
@@ -25,25 +25,25 @@ const generateHowToTab = (workbook) => {
     ", you cannot undo this action. Only delete a sheet if you're sure you do not need that information. If you accidentally delete a sheet, re-open the report if you've not saved over the file or download the report again from ASC-WDS.",
   ];
 
-  howToTab.mergeCells('B18:K22');
-  howToTab.getCell('B18').value = {
+  howToTab.mergeCells('B19:K23');
+  howToTab.getCell('B19').value = {
     richText: [
       { font: { name: 'Serif', family: 4, size: 12 }, text: howToDeleteInstructions[0] },
       { font: { name: 'Serif', family: 4, size: 12, bold: true }, text: howToDeleteInstructions[1] },
       { font: { name: 'Serif', family: 4, size: 12 }, text: howToDeleteInstructions[2] },
     ],
   };
-  howToTab.getCell('B18').alignment = { vertical: 'middle', horizontal: 'justify', wrapText: true };
-  addBorder(howToTab, 'B18');
+  howToTab.getCell('B19').alignment = { vertical: 'middle', horizontal: 'justify', wrapText: true };
+  addBorder(howToTab, 'B19');
 
   const howToPrintTitle = 'How to print the information in this file';
-  addHeading(howToTab, 'B24', 'K24', howToPrintTitle);
+  addHeading(howToTab, 'B25', 'K25', howToPrintTitle);
 
   const howToPrintInstructions =
     "To print the information in this report, click on the 'File' menu and then click 'Print'. You can choose to only print the page you're currently looking at or perhaps change the settings to print the whole report.";
-  addTextBox(howToTab, 'B26', 'K28', howToPrintInstructions);
+  addTextBox(howToTab, 'B27', 'K30', howToPrintInstructions);
 
-  howToTab.mergeCells('A29:L29');
+  howToTab.mergeCells('A31:L31');
 };
 
 const setColourBars = (worksheet) => {

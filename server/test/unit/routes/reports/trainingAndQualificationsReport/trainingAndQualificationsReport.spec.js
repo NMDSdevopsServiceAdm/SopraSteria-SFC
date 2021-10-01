@@ -12,7 +12,7 @@ describe('generateTrainingAndQualificationsReport', () => {
 
   const req = httpMocks.createRequest({
     method: 'GET',
-    url: '/api/report/trainingAndQualifications',
+    url: '/api/report/trainingAndQualifications/establishmentUid/report',
   });
   const res = httpMocks.createResponse();
 

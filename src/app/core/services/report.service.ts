@@ -48,7 +48,7 @@ export class ReportService {
   }
 
   public getTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get<any>('/api/reports/trainingAndQualifications/report', {
+    return this.http.get<any>(`/api/reports/trainingAndQualifications/${workplaceUid}/report`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
