@@ -1,4 +1,4 @@
-const excelUtils = require('../../../utils/excelUtils');
+const { addHeading, addLine, addTextBox, addBorder } = require('../../../utils/excelUtils');
 
 const generateHowToTab = (workbook) => {
   const howToTab = workbook.addWorksheet('How to...', { views: [{ showGridLines: false }] });
@@ -15,9 +15,9 @@ const generateHowToTab = (workbook) => {
   const filteringInstructions =
     'Click on the arrow in the header of the column you want to sort or filter. In the menu displayed, you can sort the data to suit your needs (for example, you can sort it alphabetically). The menu also lets you select what you want to view by filtering the data so that only certain rows are shown.';
 
-  addTextBox(howToTab, 'B11', 'K15', filteringInstructions);
+  addTextBox(howToTab, 'B11', 'K16', filteringInstructions);
 
-  addHeading(howToTab, 'B17', 'K17', 'How to delete unwanted sheets');
+  addHeading(howToTab, 'B18', 'K18', 'How to delete unwanted sheets');
 
   const howToDeleteInstructions = [
     'To delete a sheet in this report, right click on the tab at the bottom of the sheet and select delete. ',
@@ -25,25 +25,25 @@ const generateHowToTab = (workbook) => {
     ", you cannot undo this action. Only delete a sheet if you're sure you do not need that information. If you accidentally delete a sheet, re-open the report if you've not saved over the file or download the report again from ASC-WDS.",
   ];
 
-  howToTab.mergeCells('B19:K23');
-  howToTab.getCell('B19').value = {
+  howToTab.mergeCells('B20:K25');
+  howToTab.getCell('B20').value = {
     richText: [
       { font: { name: 'Serif', family: 4, size: 12 }, text: howToDeleteInstructions[0] },
       { font: { name: 'Serif', family: 4, size: 12, bold: true }, text: howToDeleteInstructions[1] },
       { font: { name: 'Serif', family: 4, size: 12 }, text: howToDeleteInstructions[2] },
     ],
   };
-  howToTab.getCell('B19').alignment = { vertical: 'middle', horizontal: 'justify', wrapText: true };
-  addBorder(howToTab, 'B19');
+  howToTab.getCell('B20').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+  addBorder(howToTab, 'B20');
 
   const howToPrintTitle = 'How to print the information in this file';
-  addHeading(howToTab, 'B25', 'K25', howToPrintTitle);
+  addHeading(howToTab, 'B27', 'K27', howToPrintTitle);
 
   const howToPrintInstructions =
     "To print the information in this report, click on the 'File' menu and then click 'Print'. You can choose to only print the page you're currently looking at or perhaps change the settings to print the whole report.";
-  addTextBox(howToTab, 'B27', 'K30', howToPrintInstructions);
+  addTextBox(howToTab, 'B29', 'K33', howToPrintInstructions);
 
-  howToTab.mergeCells('A31:L31');
+  howToTab.mergeCells('A34:L34');
 };
 
 const setColourBars = (worksheet) => {
@@ -59,40 +59,6 @@ const setColourLine = (worksheet, lineNumber, colour) => {
     pattern: 'solid',
     fgColor: { argb: colour },
   };
-};
-
-const addLine = (worksheet, startCell, endCell) => {
-  worksheet.mergeCells(`${startCell}:${endCell}`);
-  worksheet.getCell(startCell).border = {
-    top: { style: 'thin' },
-  };
-};
-
-const addBorder = (worksheet, cell) => {
-  worksheet.getCell(cell).border = {
-    ...excelUtils.fullBorder,
-    color: { argb: 'a6a1a1' },
-  };
-};
-
-const addHeading = (tab, startCell, endCell, content) => {
-  tab.mergeCells(`${startCell}:${endCell}`);
-  tab.getCell(startCell).value = content;
-  tab.getCell(startCell).font = {
-    family: 4,
-    size: 16,
-    bold: true,
-    color: { argb: '0050ab' },
-  };
-};
-
-const addTextBox = (tab, startCell, endCell, content) => {
-  tab.mergeCells(`${startCell}:${endCell}`);
-  tab.getCell(startCell).value = content;
-  tab.getCell(startCell).alignment = { vertical: 'middle', horizontal: 'justify', wrapText: true };
-  tab.getCell(startCell).font = { name: 'Serif', family: 4, size: 12 };
-
-  addBorder(tab, startCell);
 };
 
 module.exports.generateHowToTab = generateHowToTab;
