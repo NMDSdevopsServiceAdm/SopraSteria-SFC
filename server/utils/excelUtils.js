@@ -112,8 +112,8 @@ exports.addBorder = addBorder;
 exports.addTextBox = (tab, startCell, endCell, content) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = content;
-  tab.getCell(startCell).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-  tab.getCell(startCell).font = { name: 'Serif', family: 4, size: 12 };
+  tab.getCell(startCell).alignment = textBoxAlignment;
+  tab.getCell(startCell).font = standardFont;
 
   addBorder(tab, startCell);
 };
@@ -135,3 +135,9 @@ exports.addLine = (worksheet, startCell, endCell) => {
     top: { style: 'thin' },
   };
 };
+
+const standardFont = { name: 'Serif', family: 4, size: 12 };
+exports.standardFont = standardFont;
+
+const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+exports.textBoxAlignment = textBoxAlignment;
