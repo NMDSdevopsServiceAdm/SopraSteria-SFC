@@ -35,6 +35,7 @@ yarn-error.log
 testem.log
 /typings
 /oldtest
+TESTS.xml
 
 # System Files
 .DS_Store
