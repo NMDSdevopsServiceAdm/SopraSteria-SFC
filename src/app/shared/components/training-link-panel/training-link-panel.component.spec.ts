@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -14,6 +16,7 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { TrainingLinkPanelComponent } from '@shared/components/training-link-panel/training-link-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';
 
@@ -84,5 +87,21 @@ describe('TrainingLinkPanelComponent', () => {
     fixture.detectChanges();
 
     expect(component.queryByText('Manage mandatory training')).toBeFalsy();
+  });
+
+  it('should call getTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
+    const { component, componentInstance, fixture } = await setup();
+
+    const reportService = TestBed.inject(ReportService);
+    const reportServiceSpy = spyOn(reportService, 'getTrainingAndQualificationsReport').and.returnValue(of(null));
+    const saveFileSpy = spyOn(componentInstance, 'saveFile').and.returnValue(null);
+
+    const downloadTrainingButton = component.getByText('Download training report');
+
+    downloadTrainingButton.click();
+    fixture.detectChanges();
+
+    expect(reportServiceSpy).toHaveBeenCalledWith(componentInstance.establishmentUid);
+    expect(saveFileSpy).toHaveBeenCalled();
   });
 });

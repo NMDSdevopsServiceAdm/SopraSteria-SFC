@@ -87,7 +87,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   //set content type and save file
-  private saveFile(response: HttpResponse<Blob>) {
+  public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');
     const filenameMatches = header && header.match(filenameRegEx);
