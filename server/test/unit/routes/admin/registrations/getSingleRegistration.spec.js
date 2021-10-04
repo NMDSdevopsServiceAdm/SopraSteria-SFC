@@ -140,7 +140,7 @@ describe('getSingleRegistration', async () => {
 
     const request = {
       method: 'GET',
-      url: '/api/admin/registrations/a131313dasd123325453bac',
+      url: '/api/admin/registrations/status/a131313dasd123325453bac',
     };
 
     req = httpMocks.createRequest(request);

@@ -101,7 +101,12 @@ describe('adminApproval', async () => {
       await approval.adminApproval(req, res);
 
       expect(workplaceUpdateSpy.called).to.deep.equal(true);
-      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: null, nmdsId: 'A1234567' });
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({
+        inReview: false,
+        reviewer: null,
+        ustatus: null,
+        nmdsId: 'A1234567',
+      });
     });
 
     it('should return status 500 if login update returns false when approving a new user', async () => {
@@ -145,6 +150,7 @@ describe('adminApproval', async () => {
 
       sinon.stub(models.login, 'findByUsername').returns(mockLoginResponse);
       sinon.stub(models.user, 'findByLoginId').returns(mockUserResponse);
+      sinon.stub(models.user, 'findByUUID').returns({ FullNameValue: 'Joe Bloggs' });
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
       sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
@@ -170,7 +176,12 @@ describe('adminApproval', async () => {
       await approval.adminApproval(req, res);
 
       expect(workplaceUpdateSpy.called).to.deep.equal(true);
-      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: 'REJECTED' });
+      expect(workplaceUpdateSpy.args[0][0]).to.contain({
+        ustatus: 'REJECTED',
+        inReview: false,
+        reviewer: null,
+        updatedBy: 'Joe Bloggs',
+      });
     });
 
     it('should return status 500 if it is not possible to delete the user when rejecting a new user', async () => {
@@ -236,7 +247,12 @@ describe('adminApproval', async () => {
       await approval.adminApproval(req, res);
 
       expect(workplaceUpdateSpy.called).to.deep.equal(true);
-      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: null, nmdsId: 'A1234567' });
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({
+        inReview: false,
+        reviewer: null,
+        ustatus: null,
+        nmdsId: 'A1234567',
+      });
     });
 
     it('should return 500 status when unable to update workplace when approving', async () => {
@@ -276,6 +292,7 @@ describe('adminApproval', async () => {
       req = httpMocks.createRequest(request);
       res = httpMocks.createResponse();
 
+      sinon.stub(models.user, 'findByUUID').returns({ FullNameValue: 'Joe Bloggs' });
       sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
       sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
@@ -293,7 +310,13 @@ describe('adminApproval', async () => {
       await approval.adminApproval(req, res);
 
       expect(workplaceUpdateSpy.called).to.deep.equal(true);
-      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({ ustatus: 'REJECTED' });
+      expect(workplaceUpdateSpy.args[0][0]).to.contain({
+        ustatus: 'REJECTED',
+        inReview: false,
+        reviewer: null,
+        updatedBy: 'Joe Bloggs',
+      });
+      expect(workplaceUpdateSpy.args[0][0]).to.haveOwnProperty('updated');
     });
 
     it('should return 500 status when unable to update workplace when rejecting', async () => {

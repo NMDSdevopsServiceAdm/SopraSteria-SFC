@@ -1,6 +1,18 @@
+// export interface Registrations {
+//   [index: number]: Registration;
+// }
+
 export interface Registrations {
-  [index: number]: Registration;
+  [index: number]: {
+    created: string;
+    name: string;
+    postcode: string;
+    status: string;
+    workplaceUid: string;
+    parentNmds: string;
+  };
 }
+
 export interface Registration {
   name: string;
   username: string;

@@ -4,20 +4,19 @@ import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
-import {
-  GetRegistrationNotesResolver,
-} from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
-import {
-  GetSingleRegistrationResolver,
-} from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
+import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
+import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
 import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { PendingRegistrationRequestsComponent } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
+import { RejectedRegistrationRequestComponent } from './registration-requests/rejected-registration-request/rejected-registration-request.component';
+import { RejectedRegistrationRequestsComponent } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
 import { ReportComponent } from './report/admin-report.component';
 import { SearchComponent } from './search/search.component';
 
@@ -44,11 +43,43 @@ const routes: Routes = [
         resolve: {
           registrations: GetRegistrationsResolver,
         },
+        children: [
+          {
+            path: '',
+            redirectTo: 'pending',
+            pathMatch: 'full',
+          },
+          {
+            path: 'pending',
+            component: PendingRegistrationRequestsComponent,
+            data: { title: 'Pending Registration Requests' },
+            resolve: {
+              registrations: GetRegistrationsResolver,
+            },
+          },
+          {
+            path: 'rejected',
+            component: RejectedRegistrationRequestsComponent,
+            data: { title: 'Rejected Registration Requests' },
+            resolve: {
+              registrations: GetRegistrationsResolver,
+            },
+          },
+        ],
       },
       {
-        path: ':establishmentUid',
+        path: 'pending/:establishmentUid',
         component: RegistrationRequestComponent,
         data: { title: 'Registration Request' },
+        resolve: {
+          registration: GetSingleRegistrationResolver,
+          notes: GetRegistrationNotesResolver,
+        },
+      },
+      {
+        path: 'rejected/:establishmentUid',
+        component: RejectedRegistrationRequestComponent,
+        data: { title: 'Rejected Registration Request' },
         resolve: {
           registration: GetSingleRegistrationResolver,
           notes: GetRegistrationNotesResolver,
@@ -116,7 +147,6 @@ const routes: Routes = [
       },
     ],
   },
-
   {
     path: 'external-links',
     children: [

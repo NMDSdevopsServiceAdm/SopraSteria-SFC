@@ -50,3 +50,17 @@ const convertUserDetails = (user) => {
     created: moment.utc(user.created).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
   };
 };
+
+module.exports.convertBasicRegistrationResponse = (registration) => {
+  return {
+    created: registration.created,
+    updated: registration.updated,
+    name: registration.NameValue,
+    postcode: registration.get('PostCode'),
+    status: registration.get('Status'),
+    workplaceUid: registration.get('EstablishmentUID'),
+    parentUid: registration.get('ParentUID'),
+    parentId: registration.get('ParentID'),
+    parentEstablishmentId: registration.parentEstablishmentId,
+  };
+};
