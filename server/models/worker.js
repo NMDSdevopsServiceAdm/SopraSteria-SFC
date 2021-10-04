@@ -1335,6 +1335,7 @@ module.exports = function (sequelize, DataTypes) {
           ),
           'missingMandatoryTrainingCount',
         ],
+        'LongTermAbsence'
       ],
       where: {
         establishmentFk: establishmentId,

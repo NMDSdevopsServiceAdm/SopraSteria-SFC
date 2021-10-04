@@ -47,6 +47,13 @@ export class ReportService {
     });
   }
 
+  public getTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<any>(`/api/reports/trainingAndQualifications/${workplaceUid}/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getSatisfactionSurveyReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/satisfactionSurvey/new`, {
       observe: 'response',
@@ -105,6 +112,7 @@ export class ReportService {
       training: `/api/reports/training/establishment/${workplaceUid}/training`,
       la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`,
       adminla: '/api/reports/localauthority/admin',
+      trainingAndQuals: '/api/reports/trainingAndQualifications',
     };
     const apiPath = reportData[report];
     // Run function every second until lock aquired

@@ -6,8 +6,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -31,6 +33,10 @@ describe('TrainingAndQualificationsTabComponent', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
         },
         {
           provide: PermissionsService,

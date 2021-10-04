@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
+import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
@@ -297,12 +299,17 @@ const routes: Routes = [
       {
         path: 'training',
         component: TrainingAndQualificationsRecordComponent,
+        resolve: {
+          worker: WorkerResolver,
+          qualifications: QualificationsResolver,
+          trainingRecords: TrainingRecordsResolver,
+        },
         data: { title: 'Training and qualification record' },
       },
       {
         path: 'long-term-absence',
         component: LongTermAbsenceComponent,
-        resolve: { longTermAbsenceReasons: LongTermAbsenceResolver },
+        resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
         data: { title: 'Flag long term absence' },
       },
     ],
