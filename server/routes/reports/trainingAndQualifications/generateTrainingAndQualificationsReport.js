@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
 const { generateHowToTab } = require('./howToTab');
+const { generateSummaryTab } = require('./summaryTab');
 
 const generateTrainingAndQualificationsReport = async (_, res) => {
   try {
@@ -12,6 +13,7 @@ const generateTrainingAndQualificationsReport = async (_, res) => {
     workbook.properties.date1904 = true;
 
     generateHowToTab(workbook);
+    generateSummaryTab(workbook);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
