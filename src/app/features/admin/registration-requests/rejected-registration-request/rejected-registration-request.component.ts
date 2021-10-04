@@ -14,7 +14,7 @@ import { RegistrationRequestDirective } from '@shared/directives/admin/registrat
 export class RejectedRegistrationRequestComponent extends RegistrationRequestDirective {
   constructor(
     protected breadcrumbService: BreadcrumbService,
-    protected registrationsService: RegistrationsService,
+    public registrationsService: RegistrationsService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
     protected switchWorkplaceService: SwitchWorkplaceService,

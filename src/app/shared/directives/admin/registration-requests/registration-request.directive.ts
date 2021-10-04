@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Directive, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Note } from '@core/model/registrations.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -9,12 +10,12 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 @Directive()
 export class RegistrationRequestDirective implements OnInit {
   public registration;
-  public notes;
-  public notesForm;
-  public notesError;
+  public notes: Note[];
+  public notesForm: FormGroup;
+  public notesError: string;
 
   constructor(
-    protected registrationsService: RegistrationsService,
+    public registrationsService: RegistrationsService,
     protected breadcrumbService: BreadcrumbService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
@@ -26,7 +27,10 @@ export class RegistrationRequestDirective implements OnInit {
     this.notes = this.route.snapshot.data.notes;
     this.setBreadcrumbs();
     this.setupNotesForm();
+    this.init();
   }
+
+  protected init(): void {}
 
   protected setBreadcrumbs(): void {}
 

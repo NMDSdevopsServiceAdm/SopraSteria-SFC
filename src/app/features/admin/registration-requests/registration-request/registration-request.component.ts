@@ -1,14 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Note, RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
+import { RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
 
 import {
   RegistrationApprovalOrRejectionDialogComponent,
@@ -18,52 +19,34 @@ import {
   selector: 'app-registration-request',
   templateUrl: './registration-request.component.html',
 })
-export class RegistrationRequestComponent implements OnInit {
-  public registration;
+export class RegistrationRequestComponent extends RegistrationRequestDirective {
   public workplaceIdForm: FormGroup;
   public invalidWorkplaceIdEntered: boolean;
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
-  public notes: Note[];
-  public notesForm: FormGroup;
-  public notesError: string;
   public approvalOrRejectionServerError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
-    private breadcrumbService: BreadcrumbService,
-    private route: ActivatedRoute,
-    private switchWorkplaceService: SwitchWorkplaceService,
+    protected breadcrumbService: BreadcrumbService,
+    protected route: ActivatedRoute,
+    protected switchWorkplaceService: SwitchWorkplaceService,
+    protected formBuilder: FormBuilder,
     private alertService: AlertService,
     private dialogService: DialogService,
     private router: Router,
-    private formBuilder: FormBuilder,
-  ) {}
+  ) {
+    super(registrationsService, breadcrumbService, route, formBuilder, switchWorkplaceService);
+  }
 
-  ngOnInit(): void {
-    this.setBreadcrumbs();
-    this.getRegistration();
-    this.getUserFullName();
-    this.getRegistrationNotes();
+  protected init(): void {
+    this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
     this.setupForm();
-    this.setupNotesForm();
   }
 
   get nmdsId(): AbstractControl {
     return this.workplaceIdForm.get('nmdsId');
-  }
-
-  private getRegistration(): void {
-    this.registration = this.route.snapshot.data.registration;
-  }
-
-  private getUserFullName(): void {
-    this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
-  }
-
-  private getRegistrationNotes(): void {
-    this.notes = this.route.snapshot.data.notes;
   }
 
   private setupForm(): void {
@@ -113,17 +96,8 @@ export class RegistrationRequestComponent implements OnInit {
     });
   }
 
-  private setBreadcrumbs(): void {
+  protected setBreadcrumbs(): void {
     this.breadcrumbService.show(JourneyType.ADMIN_PENDING_REGISTRATIONS);
-  }
-
-  public navigateToParentAccount(e: Event): void {
-    e.preventDefault();
-    this.switchWorkplaceService.navigateToWorkplace(
-      this.registration.establishment.parentUid,
-      '',
-      this.registration.establishment.parentEstablishmentId,
-    );
   }
 
   public setStatusClass(status: string): string {
@@ -161,47 +135,6 @@ export class RegistrationRequestComponent implements OnInit {
       },
       (error) => {
         this.checkBoxError = 'There was an error retrieving the registration';
-      },
-    );
-  }
-
-  private setupNotesForm(): void {
-    this.notesForm = this.formBuilder.group({
-      notes: ['', { validators: [Validators.required], updateOn: 'submit' }],
-    });
-  }
-
-  public addNote(): void {
-    if (this.notesForm.valid) {
-      const body = {
-        note: this.notesForm.get('notes').value,
-        establishmentId: this.registration.establishment.id,
-        noteType: 'Registration',
-      };
-
-      this.registrationsService.addRegistrationNote(body).subscribe(
-        () => {
-          this.getNotes();
-          this.notesForm.reset();
-        },
-        (error: HttpErrorResponse) => {
-          if (error.status === 400) {
-            this.notesError = 'There was an error adding the note to the registration';
-          } else {
-            this.notesError = 'There was a server error';
-          }
-        },
-      );
-    }
-  }
-
-  public getNotes(): void {
-    this.registrationsService.getRegistrationNotes(this.registration.establishment.uid).subscribe(
-      (data) => {
-        this.notes = data;
-      },
-      (error) => {
-        this.notesError = 'There was an error retrieving notes for this registration';
       },
     );
   }
