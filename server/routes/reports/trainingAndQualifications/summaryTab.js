@@ -12,30 +12,49 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
 
-  const expiringSoonTable = createExpiringSoonTable(summaryTab);
+  const allTrainingRecordsTable = createAllTrainingRecordsTable(summaryTab);
 
   let currentLineNumber = convertedWorkers.length + 9;
 
+  const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber);
+
+  currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
   const expiredTable = createExpiredTable(summaryTab, currentLineNumber);
 
   currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
   const missingTable = createMissingTable(summaryTab, currentLineNumber);
 
   for (let worker of convertedWorkers) {
+    allTrainingRecordsTable.addRow([worker.name, worker.trainingCount]);
     expiringSoonTable.addRow([worker.name, worker.expiringTrainingCount]);
     expiredTable.addRow([worker.name, worker.expiredTrainingCount]);
     missingTable.addRow([worker.name, worker.missingMandatoryTrainingCount]);
   }
-
+  allTrainingRecordsTable.commit();
   expiringSoonTable.commit();
   expiredTable.commit();
   missingTable.commit();
 };
 
-const createExpiringSoonTable = (tab) => {
+const createAllTrainingRecordsTable = (tab) => {
+  return tab.addTable({
+    name: 'allTrainingRecordsTable',
+    ref: 'B6',
+    headerRow: true,
+    columns: [
+      { name: 'All training records', filterButton: false },
+      { name: 'Total', filterButton: false },
+      { name: 'Mandatory', filterButton: false },
+      { name: 'Non-mandatory', filterButton: false },
+    ],
+    rows: [],
+  });
+};
+
+const createExpiringSoonTable = (tab, lineNumber) => {
   return tab.addTable({
     name: 'expiringSoonTable',
-    ref: 'B6',
+    ref: 'B' + lineNumber,
     headerRow: true,
     columns: [
       { name: 'Expiring soon', filterButton: false },
