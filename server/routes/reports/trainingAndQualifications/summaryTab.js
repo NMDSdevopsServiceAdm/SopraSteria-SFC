@@ -32,11 +32,25 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     };
   });
 
+  let currentLineNumber = convertedWorkers.length + 9;
+  const missingTable = summaryTab.addTable({
+    name: 'missingTable',
+    ref: 'B' + currentLineNumber,
+    headerRow: true,
+    columns: [
+      { name: 'Missing', filterButton: false },
+      { name: 'Total', filterButton: false },
+    ],
+    rows: [],
+  });
+
   for (let worker of convertedWorkers) {
     expiringSoonTable.addRow([worker.name, worker.expiringTrainingCount]);
+    missingTable.addRow([worker.name, worker.missingMandatoryTrainingCount]);
   }
 
   expiringSoonTable.commit();
+  missingTable.commit();
 };
 
 module.exports.generateSummaryTab = generateSummaryTab;
