@@ -62,8 +62,5 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     this._passwordResetService.updateState(data);
-
-    const resetPasswordUuid = data.uuid;
-    this.resetPasswordLink = '/reset-password/?reset=' + resetPasswordUuid;
   }
 }
