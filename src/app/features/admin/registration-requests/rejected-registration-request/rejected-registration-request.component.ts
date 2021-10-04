@@ -11,6 +11,7 @@ import { RegistrationRequestDirective } from '@shared/directives/admin/registrat
   selector: 'app-rejected-registration-request',
   templateUrl: './rejected-registration-request.component.html',
 })
+
 export class RejectedRegistrationRequestComponent extends RegistrationRequestDirective {
   constructor(
     protected breadcrumbService: BreadcrumbService,

@@ -70,7 +70,6 @@ describe('LongTermAbsenceComponent', () => {
 
   it('should render a LongTermAbsenceComponent', async () => {
     const { component } = await setup();
-
     expect(component).toBeTruthy();
   });
 

@@ -104,14 +104,14 @@ const _rejectNewUser = async (user, workplace, req, res) => {
     if (user && workplace) {
       const deletedUser = await user.destroy();
 
-      const { FullNameValue } = await models.user.findByUUID(req.userUid);
+      const adminUser = await models.user.findByUUID(req.userUid);
 
       const rejectedWorkplace = await workplace.update({
         ustatus: 'REJECTED',
         inReview: false,
         reviewer: null,
         updated: new Date(),
-        updatedBy: FullNameValue,
+        updatedBy: adminUser.FullNameValue,
       });
 
       if (deletedUser && rejectedWorkplace) {
@@ -149,14 +149,14 @@ const _approveNewWorkplace = async (workplace, nmdsId, res) => {
 
 const _rejectNewWorkplace = async (workplace, req, res) => {
   try {
-    const { FullNameValue } = await models.user.findByUUID(req.userUid);
-
+    const adminUser = await models.user.findByUUID(req.userUid);
+    
     const rejectedWorkplace = await workplace.update({
       ustatus: 'REJECTED',
       inReview: false,
       reviewer: null,
       updated: new Date(),
-      updatedBy: FullNameValue,
+      updatedBy: adminUser.FullNameValue,
     });
 
     if (rejectedWorkplace) {

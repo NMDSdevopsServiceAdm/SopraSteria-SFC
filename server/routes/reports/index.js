@@ -12,12 +12,14 @@ const TrainingReport = require('./trainingReport');
 const DeleteReport = require('./deleteReport');
 const RegistrationSurveyReport = require('./registrationSurveyReport');
 const SatisfactionSurveyReport = require('./satisfactionSurveyReport');
+const TrainingAndQualifications = require('./trainingAndQualifications');
 
 router.use('/wdf', WDF);
 router.use('/wdfSummary', WDFsummary);
 router.use('/dailySnapshot', DailySnapshot);
 router.use('/localAuthority', LocalAuthority);
 router.use('/training', TrainingReport);
+router.use('/trainingAndQualifications', TrainingAndQualifications);
 router.use('/delete', [isAdmin, DeleteReport]);
 router.use('/registrationSurvey', [isAdmin, RegistrationSurveyReport]);
 router.use('/satisfactionSurvey', [isAdmin, SatisfactionSurveyReport]);
