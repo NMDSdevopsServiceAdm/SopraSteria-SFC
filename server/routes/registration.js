@@ -681,10 +681,6 @@ router.post('/requestPasswordReset', async (req, res) => {
         uuid: requestUuid,
       });
 
-      const resetLink = `${req.protocol}://${req.get(
-        'host',
-      )}/api/registration/validateResetPassword?reset=${requestUuid}`;
-
       // send email to recipient with the reset UUID
       await sendMail(sendToAddress, sendToName, requestUuid);
 
