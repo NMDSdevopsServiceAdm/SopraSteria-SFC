@@ -4,16 +4,19 @@ const router = express.Router({ mergeParams: true });
 const moment = require('moment');
 const { generateHowToTab } = require('./howToTab');
 const { generateSummaryTab } = require('./summaryTab');
+const models = require('../../../models');
 
-const generateTrainingAndQualificationsReport = async (_, res) => {
+const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
     const workbook = new excelJS.Workbook();
+
+    const establishment = await models.establishment.findByUid(req.params.id);
 
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
     generateHowToTab(workbook);
-    generateSummaryTab(workbook);
+    await generateSummaryTab(workbook, establishment.id);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
