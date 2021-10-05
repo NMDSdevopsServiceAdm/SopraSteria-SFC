@@ -20,9 +20,9 @@
         name="qualification"
       >
         <option [ngValue]="null">Select</option>
-        <option *ngIf="preselectedQualification" [value]="preselectedQualification.id"
-          >{{ preselectedQualification.title }} {{ preselectedQualification?.level }}</option
-        >
+        <option *ngIf="preselectedQualification" [value]="preselectedQualification.id">
+          {{ preselectedQualification.title }} {{ preselectedQualification?.level }}
+        </option>
         <option *ngFor="let qualification of qualifications" [value]="qualification.id">
           {{ qualification.title }} {{ qualification?.level }}
         </option>
@@ -30,9 +30,7 @@
     </div>
 
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('year').invalid">
-      <label class="govuk-label" for="{{ type.key }}-year">
-        Year achieved
-      </label>
+      <label class="govuk-label" for="{{ type.key }}-year"> Year achieved </label>
       <span *ngIf="submitted && group.get('year').invalid" id="{{ type.key }}-year-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('year') }}
       </span>
@@ -49,9 +47,7 @@
 
     <div class="govuk-character-count">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('notes').invalid">
-        <label class="govuk-label" for="{{ type.key }}-notes">
-          Notes
-        </label>
+        <label class="govuk-label" for="{{ type.key }}-notes"> Notes </label>
         <span
           *ngIf="submitted && group.get('notes').invalid"
           id="{{ type.key }}-notes-error"
@@ -68,7 +64,7 @@
           rows="5"
         ></textarea>
       </div>
-      <app-character-count [control]="group.get('notes')" [max]="notesMaxLength"></app-character-count>
+      <span class="govuk-character-count__message govuk-hint" aria-live="polite"> 500 characters or fewer </span>
     </div>
   </fieldset>
 </ng-container>

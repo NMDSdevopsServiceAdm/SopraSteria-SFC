@@ -189,11 +189,16 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   private createQualificationGroup(): FormGroup {
-    return this.formBuilder.group({
-      qualification: null,
-      year: null,
-      notes: null,
-    });
+    return this.formBuilder.group(
+      {
+        qualification: null,
+        year: null,
+        notes: null,
+      },
+      {
+        updateOn: 'submit',
+      },
+    );
   }
 
   public getFirstErrorMessage(item: string): string {
