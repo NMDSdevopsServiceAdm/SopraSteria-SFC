@@ -40,21 +40,20 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 
   const allTrainingRecordsTable = createAllTrainingRecordsTable(
     summaryTab,
-    totalMissingMandatoryTraining,
     expiredTrainingTotals,
     expiringTrainingTotals,
     totalTrainingRecords,
     totalUpToDateRecords,
   );
 
-  let currentLineNumber = convertedWorkers.length + 9;
+  let currentLineNumber = 13;
 
   const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber, expiringTrainingTotals);
 
-  currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
+  currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
   const expiredTable = createExpiredTable(summaryTab, currentLineNumber, expiredTrainingTotals);
 
-  currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
+  currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
   const missingTable = createMissingTable(summaryTab, currentLineNumber, totalMissingMandatoryTraining);
 
   for (let worker of convertedWorkers) {
@@ -80,7 +79,6 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 
 const createAllTrainingRecordsTable = (
   tab,
-  totalMissingMandatoryTraining,
   expiredTrainingTotals,
   expiringTrainingTotals,
   totalTrainingRecords,
@@ -111,7 +109,6 @@ const createAllTrainingRecordsTable = (
         expiredTrainingTotals.totalMandatory,
         expiredTrainingTotals.totalNonMandatory,
       ],
-      ['Missing', totalMissingMandatoryTraining, totalMissingMandatoryTraining, 'Not applicable'],
     ],
   });
 };
