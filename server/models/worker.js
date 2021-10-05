@@ -1341,6 +1341,30 @@ module.exports = function (sequelize, DataTypes) {
         ],
         [
           sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiringMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" NOT IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiringNonMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
             `
               (
                 SELECT

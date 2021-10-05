@@ -26,7 +26,12 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 
   for (let worker of convertedWorkers) {
     allTrainingRecordsTable.addRow([worker.name, worker.trainingCount]);
-    expiringSoonTable.addRow([worker.name, worker.expiringTrainingCount]);
+    expiringSoonTable.addRow([
+      worker.name,
+      worker.expiringTrainingCount,
+      worker.expiringMandatoryTrainingCount,
+      worker.expiringNonMandatoryTrainingCount,
+    ]);
     expiredTable.addRow([
       worker.name,
       worker.expiredTrainingCount,
@@ -108,7 +113,9 @@ const convertWorker = (worker) => {
     expiredMandatoryTrainingCount: worker.get('expiredMandatoryTrainingCount'),
     expiredNonMandatoryTrainingCount: worker.get('expiredNonMandatoryTrainingCount'),
     expiringTrainingCount: worker.get('expiringTrainingCount'),
+    expiringMandatoryTrainingCount: worker.get('expiringMandatoryTrainingCount'),
     missingMandatoryTrainingCount: worker.get('missingMandatoryTrainingCount'),
+    expiringNonMandatoryTrainingCount: worker.get('expiringNonMandatoryTrainingCount'),
   };
 };
 
