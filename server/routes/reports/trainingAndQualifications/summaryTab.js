@@ -7,25 +7,41 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     return convertWorker(worker);
   });
 
+  const totalMissingMandatoryTraining = convertedWorkers
+    .map((worker) => worker.missingMandatoryTrainingCount)
+    .reduce((a, b) => a + b, 0);
+  const total = convertedWorkers.map((worker) => worker.expiredTrainingCount).reduce((a, b) => a + b, 0);
+  const totalMandatory = convertedWorkers
+    .map((worker) => worker.expiredMandatoryTrainingCount)
+    .reduce((a, b) => a + b, 0);
+  const expiredTrainingTotals = {
+    total,
+    totalMandatory,
+    totalNonMandatory: total - totalMandatory,
+  };
+
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
 
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
 
-  const allTrainingRecordsTable = createAllTrainingRecordsTable(summaryTab);
+  const allTrainingRecordsTable = createAllTrainingRecordsTable(
+    summaryTab,
+    totalMissingMandatoryTraining,
+    expiredTrainingTotals,
+  );
 
   let currentLineNumber = convertedWorkers.length + 9;
 
   const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber);
 
   currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
-  const expiredTable = createExpiredTable(summaryTab, currentLineNumber);
+  const expiredTable = createExpiredTable(summaryTab, currentLineNumber, expiredTrainingTotals);
 
   currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
-  const missingTable = createMissingTable(summaryTab, currentLineNumber);
+  const missingTable = createMissingTable(summaryTab, currentLineNumber, totalMissingMandatoryTraining);
 
   for (let worker of convertedWorkers) {
-    allTrainingRecordsTable.addRow([worker.name, worker.trainingCount]);
     expiringSoonTable.addRow([
       worker.name,
       worker.expiringTrainingCount,
@@ -46,7 +62,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   missingTable.commit();
 };
 
-const createAllTrainingRecordsTable = (tab) => {
+const createAllTrainingRecordsTable = (tab, totalMissingMandatoryTraining, expiredTrainingTotals) => {
   return tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
@@ -57,7 +73,15 @@ const createAllTrainingRecordsTable = (tab) => {
       { name: 'Mandatory', filterButton: false },
       { name: 'Non-mandatory', filterButton: false },
     ],
-    rows: [],
+    rows: [
+      [
+        'Expired',
+        expiredTrainingTotals.total,
+        expiredTrainingTotals.totalMandatory,
+        expiredTrainingTotals.totalNonMandatory,
+      ],
+      ['Missing', totalMissingMandatoryTraining, totalMissingMandatoryTraining, 'Not applicable'],
+    ],
   });
 };
 
@@ -76,7 +100,7 @@ const createExpiringSoonTable = (tab, lineNumber) => {
   });
 };
 
-const createExpiredTable = (tab, lineNumber) => {
+const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
   return tab.addTable({
     name: 'expiredTable',
     ref: 'B' + lineNumber,
@@ -87,11 +111,18 @@ const createExpiredTable = (tab, lineNumber) => {
       { name: 'Mandatory', filterButton: false },
       { name: 'Non-mandatory', filterButton: false },
     ],
-    rows: [],
+    rows: [
+      [
+        'Total',
+        expiredTrainingTotals.total,
+        expiredTrainingTotals.totalMandatory,
+        expiredTrainingTotals.totalNonMandatory,
+      ],
+    ],
   });
 };
 
-const createMissingTable = (tab, lineNumber) => {
+const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
   return tab.addTable({
     name: 'missingTable',
     ref: 'B' + lineNumber,
@@ -100,22 +131,22 @@ const createMissingTable = (tab, lineNumber) => {
       { name: 'Missing', filterButton: false },
       { name: 'Total', filterButton: false },
     ],
-    rows: [],
+    rows: [['Total', totalMissingMandatoryTraining]],
   });
 };
 
 const convertWorker = (worker) => {
   return {
     name: worker.get('NameOrIdValue'),
-    trainingCount: worker.get('trainingCount'),
-    qualificationCount: worker.get('qualificationCount'),
-    expiredTrainingCount: worker.get('expiredTrainingCount'),
-    expiredMandatoryTrainingCount: worker.get('expiredMandatoryTrainingCount'),
-    expiredNonMandatoryTrainingCount: worker.get('expiredNonMandatoryTrainingCount'),
-    expiringTrainingCount: worker.get('expiringTrainingCount'),
-    expiringMandatoryTrainingCount: worker.get('expiringMandatoryTrainingCount'),
-    missingMandatoryTrainingCount: worker.get('missingMandatoryTrainingCount'),
-    expiringNonMandatoryTrainingCount: worker.get('expiringNonMandatoryTrainingCount'),
+    trainingCount: parseInt(worker.get('trainingCount')),
+    qualificationCount: parseInt(worker.get('qualificationCount')),
+    expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
+    expiredMandatoryTrainingCount: parseInt(worker.get('expiredMandatoryTrainingCount')),
+    expiredNonMandatoryTrainingCount: parseInt(worker.get('expiredNonMandatoryTrainingCount')),
+    expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
+    expiringMandatoryTrainingCount: parseInt(worker.get('expiringMandatoryTrainingCount')),
+    missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+    expiringNonMandatoryTrainingCount: parseInt(worker.get('expiringNonMandatoryTrainingCount')),
   };
 };
 
