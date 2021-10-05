@@ -1311,6 +1311,30 @@ module.exports = function (sequelize, DataTypes) {
         ],
         [
           sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiredMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" NOT IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiredNonMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
           ),
           'expiringTrainingCount',
@@ -1335,7 +1359,7 @@ module.exports = function (sequelize, DataTypes) {
           ),
           'missingMandatoryTrainingCount',
         ],
-        'LongTermAbsence'
+        'LongTermAbsence',
       ],
       where: {
         establishmentFk: establishmentId,
