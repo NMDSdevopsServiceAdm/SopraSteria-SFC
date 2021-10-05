@@ -30,6 +30,9 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     totalNonMandatory: totalExpiring - totalExpiringMandatory,
   };
 
+  const totalTrainingRecords = convertedWorkers.map((worker) => worker.trainingCount).reduce((a, b) => a + b, 0);
+  const totalUpToDateRecords = totalTrainingRecords - expiringTrainingTotals.total - expiredTrainingTotals.total;
+
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
 
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
@@ -40,6 +43,8 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     totalMissingMandatoryTraining,
     expiredTrainingTotals,
     expiringTrainingTotals,
+    totalTrainingRecords,
+    totalUpToDateRecords,
   );
 
   let currentLineNumber = convertedWorkers.length + 9;
@@ -78,6 +83,8 @@ const createAllTrainingRecordsTable = (
   totalMissingMandatoryTraining,
   expiredTrainingTotals,
   expiringTrainingTotals,
+  totalTrainingRecords,
+  totalUpToDateRecords,
 ) => {
   return tab.addTable({
     name: 'allTrainingRecordsTable',
@@ -90,6 +97,8 @@ const createAllTrainingRecordsTable = (
       { name: 'Non-mandatory', filterButton: false },
     ],
     rows: [
+      ['Total', totalTrainingRecords],
+      ['Up-to-date', totalUpToDateRecords],
       [
         'Expiring soon',
         expiringTrainingTotals.total,
