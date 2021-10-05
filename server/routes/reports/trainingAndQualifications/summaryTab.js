@@ -20,6 +20,16 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     totalNonMandatory: total - totalMandatory,
   };
 
+  const totalExpiring = convertedWorkers.map((worker) => worker.expiringTrainingCount).reduce((a, b) => a + b, 0);
+  const totalExpiringMandatory = convertedWorkers
+    .map((worker) => worker.expiringMandatoryTrainingCount)
+    .reduce((a, b) => a + b, 0);
+  const expiringTrainingTotals = {
+    total: totalExpiring,
+    totalMandatory: totalExpiringMandatory,
+    totalNonMandatory: totalExpiring - totalExpiringMandatory,
+  };
+
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
 
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
@@ -29,11 +39,12 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     summaryTab,
     totalMissingMandatoryTraining,
     expiredTrainingTotals,
+    expiringTrainingTotals,
   );
 
   let currentLineNumber = convertedWorkers.length + 9;
 
-  const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber);
+  const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber, expiringTrainingTotals);
 
   currentLineNumber = currentLineNumber + convertedWorkers.length + 3;
   const expiredTable = createExpiredTable(summaryTab, currentLineNumber, expiredTrainingTotals);
@@ -62,7 +73,12 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   missingTable.commit();
 };
 
-const createAllTrainingRecordsTable = (tab, totalMissingMandatoryTraining, expiredTrainingTotals) => {
+const createAllTrainingRecordsTable = (
+  tab,
+  totalMissingMandatoryTraining,
+  expiredTrainingTotals,
+  expiringTrainingTotals,
+) => {
   return tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
@@ -75,6 +91,12 @@ const createAllTrainingRecordsTable = (tab, totalMissingMandatoryTraining, expir
     ],
     rows: [
       [
+        'Expiring soon',
+        expiringTrainingTotals.total,
+        expiringTrainingTotals.totalMandatory,
+        expiringTrainingTotals.totalNonMandatory,
+      ],
+      [
         'Expired',
         expiredTrainingTotals.total,
         expiredTrainingTotals.totalMandatory,
@@ -85,7 +107,7 @@ const createAllTrainingRecordsTable = (tab, totalMissingMandatoryTraining, expir
   });
 };
 
-const createExpiringSoonTable = (tab, lineNumber) => {
+const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
   return tab.addTable({
     name: 'expiringSoonTable',
     ref: 'B' + lineNumber,
@@ -96,7 +118,14 @@ const createExpiringSoonTable = (tab, lineNumber) => {
       { name: 'Mandatory', filterButton: false },
       { name: 'Non-mandatory', filterButton: false },
     ],
-    rows: [],
+    rows: [
+      [
+        'Total',
+        expiringTrainingTotals.total,
+        expiringTrainingTotals.totalMandatory,
+        expiringTrainingTotals.totalNonMandatory,
+      ],
+    ],
   });
 };
 
