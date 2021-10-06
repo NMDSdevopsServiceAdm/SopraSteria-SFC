@@ -4,6 +4,7 @@ const {
   backgroundColours,
   textColours,
   setCellTextAndBackgroundColour,
+  setTableHeadingsStyle,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -232,19 +233,10 @@ const setColumnsWidths = (tab) => {
   nonMandatoryColumn.width = 18;
 };
 
-const setHeadingAndTotalRowStyles = (tab, currentLineNumber, backgroundColour, textColour, cellLetters) => {
-  tab.getRow(currentLineNumber).font = { bold: true, color: textColour };
-  tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
+const setHeadingAndTotalRowStyles = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
+  setTableHeadingsStyle(tab, currentLineNumber, backgroundColour, textColour, cellColumns);
 
   tab.getRow(currentLineNumber + 1).style = { font: { bold: true } };
-
-  cellLetters.map((key) => {
-    tab.getCell(key + currentLineNumber).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: backgroundColour,
-    };
-  });
 };
 
 const addBordersToAllTables = (tab) => {
