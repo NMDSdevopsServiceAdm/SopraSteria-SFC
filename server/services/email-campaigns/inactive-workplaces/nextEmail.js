@@ -41,6 +41,15 @@ const getTemplate = (inactiveWorkplace) => {
     const nextTemplate = month.template;
     const notReceivedTemplate = inactiveWorkplace.LastTemplate !== nextTemplate.id;
 
+    console.log('************************************************')
+    console.log('workplace id:', inactiveWorkplace.NmdsID)
+    console.log('last updated:', inactiveWorkplace.LastUpdated)
+    console.log('next template:', nextTemplate);
+    console.log('last template:', inactiveWorkplace.LastTemplate);
+    console.log('month matches last updated?', month.matches(lastUpdated));
+    console.log('notReceivedTemplate:', notReceivedTemplate);
+    console.log('receive email?', month.matches(lastUpdated) && notReceivedTemplate)
+
     if (month.matches(lastUpdated) && notReceivedTemplate) {
       return nextTemplate;
     }
