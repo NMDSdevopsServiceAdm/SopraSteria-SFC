@@ -31,6 +31,9 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   };
 
   const totalTrainingRecords = convertedWorkers.map((worker) => worker.trainingCount).reduce((a, b) => a + b, 0);
+  const totalMandatoryTrainingRecords = convertedWorkers
+    .map((worker) => worker.mandatoryTrainingCount)
+    .reduce((a, b) => a + b, 0);
   const totalUpToDateRecords = totalTrainingRecords - expiringTrainingTotals.total - expiredTrainingTotals.total;
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
@@ -44,6 +47,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     expiringTrainingTotals,
     totalTrainingRecords,
     totalUpToDateRecords,
+    totalMandatoryTrainingRecords,
   );
 
   let currentLineNumber = 13;
@@ -83,7 +87,13 @@ const createAllTrainingRecordsTable = (
   expiringTrainingTotals,
   totalTrainingRecords,
   totalUpToDateRecords,
+  totalMandatoryTrainingRecords,
 ) => {
+  const totalNonMandatoryTrainingRecords = totalTrainingRecords - totalMandatoryTrainingRecords;
+  const totalUpToDateMandatoryTrainingRecords =
+    totalMandatoryTrainingRecords - expiringTrainingTotals.totalMandatory - expiredTrainingTotals.totalMandatory;
+  const totalUpToDateNonMandatoryTrainingRecords = totalUpToDateRecords - totalUpToDateMandatoryTrainingRecords;
+
   return tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
@@ -95,8 +105,13 @@ const createAllTrainingRecordsTable = (
       { name: 'Non-mandatory', filterButton: false },
     ],
     rows: [
-      ['Total', totalTrainingRecords],
-      ['Up-to-date', totalUpToDateRecords],
+      ['Total', totalTrainingRecords, totalMandatoryTrainingRecords, totalNonMandatoryTrainingRecords],
+      [
+        'Up-to-date',
+        totalUpToDateRecords,
+        totalUpToDateMandatoryTrainingRecords,
+        totalUpToDateNonMandatoryTrainingRecords,
+      ],
       [
         'Expiring soon',
         expiringTrainingTotals.total,
@@ -182,6 +197,7 @@ const convertWorker = (worker) => {
     expiringMandatoryTrainingCount: parseInt(worker.get('expiringMandatoryTrainingCount')),
     missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
     expiringNonMandatoryTrainingCount: parseInt(worker.get('expiringNonMandatoryTrainingCount')),
+    mandatoryTrainingCount: parseInt(worker.get('mandatoryTrainingCount')),
   };
 };
 
