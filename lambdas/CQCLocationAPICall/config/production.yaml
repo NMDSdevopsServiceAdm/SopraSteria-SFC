@@ -1,0 +1,11 @@
+aws:
+  region: eu-west-1
+  secrets:
+    use: true
+log:
+  sequelize: false
+db:
+  ssl: false
+  client_ssl:
+    status: false
+    usingFiles: false

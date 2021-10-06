@@ -76,9 +76,10 @@ const createTargetedEmailsCampaign = async (req, res) => {
 
     const history = getHistory(req, emailCampaign, templateId, users);
     await models.EmailCampaignHistory.bulkCreate(history);
-
+    // Don't require limit, call sendEmail.sendEmail, which will then add to queue
     users.map((user) => {
-      return limit(() => sendEmail.sendEmail(user, templateId));
+      return () => sendEmail.sendEmail(user, templateId);
+      // return limit(() => sendEmail.sendEmail(user, templateId));
     });
 
     return res.status(200).send({ success: true });

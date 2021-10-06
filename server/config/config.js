@@ -266,6 +266,12 @@ const config = convict({
         default: 'sns-feedback-arn',
       },
     },
+    sqsqueue: {
+      doc: 'SQS queue to send email requests',
+      format: '*',
+      default: 'https://sqs.eu-west-2.amazonaws.com/364648107127/email-queue-dev.fifo',
+      env: 'SEND_EMAILS_SQS_QUEUE'
+    }
   },
   bulkupload: {
     region: {
