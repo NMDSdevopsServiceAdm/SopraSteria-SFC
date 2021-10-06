@@ -29,35 +29,16 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   addRowsToTables(convertedWorkers, expiringSoonTable, expiredTable, missingTable);
 
   setColumnsWidths(summaryTab);
-
-  summaryTab.eachRow(function (row, _rowNumber) {
-    if (_rowNumber > 5) {
-      row.eachCell(function (cell, _colNumber) {
-        // console.log(cell.address); // <- to see I actullay go into the cells
-        cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-        };
-      });
-    }
-  });
-
+  addBordersToAllTables(summaryTab);
 };
 
 const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
-  return tab.addTable({
+  setHeadingAndTotalRowStyles(tab, 6, blueBackgroundColour, whiteTextColour, ['B', 'C', 'D', 'E']);
+
+  const allTrainingRecordsTable = tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
     headerRow: true,
-    style: { border: {
-        top: {style:'double'},
-        left: {style:'double'},
-        bottom: {style:'double'},
-        right: {style:'double'},
-      }
-    },
     columns: [
       { name: 'All training records', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -91,9 +72,17 @@ const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
       ],
     ],
   });
+
+  setCellColourAndBackgroundColour(tab, 'B8', greenBackgroundColour, greenTextColour);
+  setCellColourAndBackgroundColour(tab, 'B9', yellowBackgroundColour, yellowTextColour);
+  setCellColourAndBackgroundColour(tab, 'B10', redBackgroundColour, redTextColour);
+
+  return allTrainingRecordsTable;
 };
 
 const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
+  setHeadingAndTotalRowStyles(tab, lineNumber, yellowBackgroundColour, yellowTextColour, ['B', 'C', 'D', 'E']);
+
   return tab.addTable({
     name: 'expiringSoonTable',
     ref: 'B' + lineNumber,
@@ -112,6 +101,8 @@ const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
 };
 
 const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
+  setHeadingAndTotalRowStyles(tab, lineNumber, redBackgroundColour, redTextColour, ['B', 'C', 'D', 'E']);
+
   return tab.addTable({
     name: 'expiredTable',
     ref: 'B' + lineNumber,
@@ -127,7 +118,9 @@ const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
 };
 
 const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
-  return tab.addTable({
+  setHeadingAndTotalRowStyles(tab, lineNumber, redBackgroundColour, redTextColour, ['B', 'C']);
+
+  const missingTable = tab.addTable({
     name: 'missingTable',
     ref: 'B' + lineNumber,
     headerRow: true,
@@ -137,6 +130,7 @@ const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
     ],
     rows: [['Total', totalMissingMandatoryTraining]],
   });
+  return missingTable;
 };
 
 const convertWorker = (worker) => {
@@ -230,6 +224,56 @@ const setColumnsWidths = (tab) => {
   totalColumn.width = 18;
   mandatoryColumn.width = 18;
   nonMandatoryColumn.width = 18;
-}
+};
+
+const setHeadingAndTotalRowStyles = (tab, currentLineNumber, backgroundColour, textColour, cellLetters) => {
+  tab.getRow(currentLineNumber).font = { bold: true, color: textColour };
+  tab.getRow(currentLineNumber).alignment = { vertical: 'middle', horizontal: 'center' };
+
+  tab.getRow(currentLineNumber + 1).style = { font: { bold: true } };
+
+  cellLetters.map((key) => {
+    tab.getCell(key + currentLineNumber).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: backgroundColour,
+    };
+  });
+};
+
+const addBordersToAllTables = (tab) => {
+  tab.eachRow(function (row, _rowNumber) {
+    if (_rowNumber > 5) {
+      row.eachCell(function (cell) {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    }
+  });
+};
+
+const setCellColourAndBackgroundColour = (tab, cellCoordinate, backgroundColour, textColour) => {
+  const cell = tab.getCell(cellCoordinate);
+  cell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: backgroundColour,
+  };
+
+  cell.font = { color: textColour };
+};
+
+const yellowBackgroundColour = { argb: 'FFEA99' };
+const yellowTextColour = { argb: '945B19' };
+const blueBackgroundColour = { argb: '0050AB' };
+const whiteTextColour = { argb: 'FFFFFF' };
+const redBackgroundColour = { argb: 'FFC0C8' };
+const redTextColour = { argb: '960512' };
+const greenBackgroundColour = { argb: 'BBEDC9' };
+const greenTextColour = { argb: '005713' };
 
 module.exports.generateSummaryTab = generateSummaryTab;
