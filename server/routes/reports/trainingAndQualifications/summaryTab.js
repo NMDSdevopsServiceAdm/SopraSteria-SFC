@@ -27,6 +27,23 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   const missingTable = createMissingTable(summaryTab, currentLineNumber, trainingRecordTotals.missing);
 
   addRowsToTables(convertedWorkers, expiringSoonTable, expiredTable, missingTable);
+
+  setColumnsWidths(summaryTab);
+
+  summaryTab.eachRow(function (row, _rowNumber) {
+    if (_rowNumber > 5) {
+      row.eachCell(function (cell, _colNumber) {
+        // console.log(cell.address); // <- to see I actullay go into the cells
+        cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
+      });
+    }
+  });
+
 };
 
 const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
@@ -34,6 +51,13 @@ const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
     name: 'allTrainingRecordsTable',
     ref: 'B6',
     headerRow: true,
+    style: { border: {
+        top: {style:'double'},
+        left: {style:'double'},
+        bottom: {style:'double'},
+        right: {style:'double'},
+      }
+    },
     columns: [
       { name: 'All training records', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -195,5 +219,17 @@ const addRowsToTables = (workers, expiringSoonTable, expiredTable, missingTable)
   expiredTable.commit();
   missingTable.commit();
 };
+
+const setColumnsWidths = (tab) => {
+  const firstColumn = tab.getColumn(2);
+  const totalColumn = tab.getColumn(3);
+  const mandatoryColumn = tab.getColumn(4);
+  const nonMandatoryColumn = tab.getColumn(5);
+
+  firstColumn.width = 24;
+  totalColumn.width = 18;
+  mandatoryColumn.width = 18;
+  nonMandatoryColumn.width = 18;
+}
 
 module.exports.generateSummaryTab = generateSummaryTab;
