@@ -14,7 +14,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
 
-  const allTrainingRecordsTable = createAllTrainingRecordsTable(summaryTab, trainingRecordTotals);
+  createAllTrainingRecordsTable(summaryTab, trainingRecordTotals);
 
   let currentLineNumber = 13;
 
@@ -26,25 +26,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
   const missingTable = createMissingTable(summaryTab, currentLineNumber, trainingRecordTotals.missing);
 
-  for (let worker of convertedWorkers) {
-    expiringSoonTable.addRow([
-      worker.name,
-      worker.expiringTrainingCount,
-      worker.expiringMandatoryTrainingCount,
-      worker.expiringNonMandatoryTrainingCount,
-    ]);
-    expiredTable.addRow([
-      worker.name,
-      worker.expiredTrainingCount,
-      worker.expiredMandatoryTrainingCount,
-      worker.expiredNonMandatoryTrainingCount,
-    ]);
-    missingTable.addRow([worker.name, worker.missingMandatoryTrainingCount]);
-  }
-  allTrainingRecordsTable.commit();
-  expiringSoonTable.commit();
-  expiredTable.commit();
-  missingTable.commit();
+  addRowsToTables(convertedWorkers, expiringSoonTable, expiredTable, missingTable);
 };
 
 const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
@@ -190,6 +172,28 @@ const getTrainingTotals = (workers) => {
     },
     missing: workers.map((worker) => worker.missingMandatoryTrainingCount).reduce((a, b) => a + b, 0),
   };
+};
+
+const addRowsToTables = (workers, expiringSoonTable, expiredTable, missingTable) => {
+  for (let worker of workers) {
+    expiringSoonTable.addRow([
+      worker.name,
+      worker.expiringTrainingCount,
+      worker.expiringMandatoryTrainingCount,
+      worker.expiringNonMandatoryTrainingCount,
+    ]);
+    expiredTable.addRow([
+      worker.name,
+      worker.expiredTrainingCount,
+      worker.expiredMandatoryTrainingCount,
+      worker.expiredNonMandatoryTrainingCount,
+    ]);
+    missingTable.addRow([worker.name, worker.missingMandatoryTrainingCount]);
+  }
+
+  expiringSoonTable.commit();
+  expiredTable.commit();
+  missingTable.commit();
 };
 
 module.exports.generateSummaryTab = generateSummaryTab;
