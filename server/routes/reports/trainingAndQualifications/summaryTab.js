@@ -7,58 +7,24 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     return convertWorker(worker);
   });
 
-  const totalMissingMandatoryTraining = convertedWorkers
-    .map((worker) => worker.missingMandatoryTrainingCount)
-    .reduce((a, b) => a + b, 0);
-  const total = convertedWorkers.map((worker) => worker.expiredTrainingCount).reduce((a, b) => a + b, 0);
-  const totalMandatory = convertedWorkers
-    .map((worker) => worker.expiredMandatoryTrainingCount)
-    .reduce((a, b) => a + b, 0);
-  const expiredTrainingTotals = {
-    total,
-    totalMandatory,
-    totalNonMandatory: total - totalMandatory,
-  };
-
-  const totalExpiring = convertedWorkers.map((worker) => worker.expiringTrainingCount).reduce((a, b) => a + b, 0);
-  const totalExpiringMandatory = convertedWorkers
-    .map((worker) => worker.expiringMandatoryTrainingCount)
-    .reduce((a, b) => a + b, 0);
-  const expiringTrainingTotals = {
-    total: totalExpiring,
-    totalMandatory: totalExpiringMandatory,
-    totalNonMandatory: totalExpiring - totalExpiringMandatory,
-  };
-
-  const totalTrainingRecords = convertedWorkers.map((worker) => worker.trainingCount).reduce((a, b) => a + b, 0);
-  const totalMandatoryTrainingRecords = convertedWorkers
-    .map((worker) => worker.mandatoryTrainingCount)
-    .reduce((a, b) => a + b, 0);
-  const totalUpToDateRecords = totalTrainingRecords - expiringTrainingTotals.total - expiredTrainingTotals.total;
+  const trainingRecordTotals = getTrainingTotals(convertedWorkers);
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
 
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
 
-  const allTrainingRecordsTable = createAllTrainingRecordsTable(
-    summaryTab,
-    expiredTrainingTotals,
-    expiringTrainingTotals,
-    totalTrainingRecords,
-    totalUpToDateRecords,
-    totalMandatoryTrainingRecords,
-  );
+  const allTrainingRecordsTable = createAllTrainingRecordsTable(summaryTab, trainingRecordTotals);
 
   let currentLineNumber = 13;
 
-  const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber, expiringTrainingTotals);
+  const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber, trainingRecordTotals.expiringSoon);
 
   currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
-  const expiredTable = createExpiredTable(summaryTab, currentLineNumber, expiredTrainingTotals);
+  const expiredTable = createExpiredTable(summaryTab, currentLineNumber, trainingRecordTotals.expired);
 
   currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
-  const missingTable = createMissingTable(summaryTab, currentLineNumber, totalMissingMandatoryTraining);
+  const missingTable = createMissingTable(summaryTab, currentLineNumber, trainingRecordTotals.missing);
 
   for (let worker of convertedWorkers) {
     expiringSoonTable.addRow([
@@ -81,19 +47,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   missingTable.commit();
 };
 
-const createAllTrainingRecordsTable = (
-  tab,
-  expiredTrainingTotals,
-  expiringTrainingTotals,
-  totalTrainingRecords,
-  totalUpToDateRecords,
-  totalMandatoryTrainingRecords,
-) => {
-  const totalNonMandatoryTrainingRecords = totalTrainingRecords - totalMandatoryTrainingRecords;
-  const totalUpToDateMandatoryTrainingRecords =
-    totalMandatoryTrainingRecords - expiringTrainingTotals.totalMandatory - expiredTrainingTotals.totalMandatory;
-  const totalUpToDateNonMandatoryTrainingRecords = totalUpToDateRecords - totalUpToDateMandatoryTrainingRecords;
-
+const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
   return tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
@@ -105,24 +59,29 @@ const createAllTrainingRecordsTable = (
       { name: 'Non-mandatory', filterButton: false },
     ],
     rows: [
-      ['Total', totalTrainingRecords, totalMandatoryTrainingRecords, totalNonMandatoryTrainingRecords],
+      [
+        'Total',
+        trainingRecordTotals.total.totalRecords,
+        trainingRecordTotals.total.mandatory,
+        trainingRecordTotals.total.nonMandatory,
+      ],
       [
         'Up-to-date',
-        totalUpToDateRecords,
-        totalUpToDateMandatoryTrainingRecords,
-        totalUpToDateNonMandatoryTrainingRecords,
+        trainingRecordTotals.upToDate.total,
+        trainingRecordTotals.upToDate.mandatory,
+        trainingRecordTotals.upToDate.nonMandatory,
       ],
       [
         'Expiring soon',
-        expiringTrainingTotals.total,
-        expiringTrainingTotals.totalMandatory,
-        expiringTrainingTotals.totalNonMandatory,
+        trainingRecordTotals.expiringSoon.total,
+        trainingRecordTotals.expiringSoon.mandatory,
+        trainingRecordTotals.expiringSoon.nonMandatory,
       ],
       [
         'Expired',
-        expiredTrainingTotals.total,
-        expiredTrainingTotals.totalMandatory,
-        expiredTrainingTotals.totalNonMandatory,
+        trainingRecordTotals.expired.total,
+        trainingRecordTotals.expired.mandatory,
+        trainingRecordTotals.expired.nonMandatory,
       ],
     ],
   });
@@ -133,6 +92,7 @@ const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
     name: 'expiringSoonTable',
     ref: 'B' + lineNumber,
     headerRow: true,
+
     columns: [
       { name: 'Expiring soon', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -140,12 +100,7 @@ const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
       { name: 'Non-mandatory', filterButton: false },
     ],
     rows: [
-      [
-        'Total',
-        expiringTrainingTotals.total,
-        expiringTrainingTotals.totalMandatory,
-        expiringTrainingTotals.totalNonMandatory,
-      ],
+      ['Total', expiringTrainingTotals.total, expiringTrainingTotals.mandatory, expiringTrainingTotals.nonMandatory],
     ],
   });
 };
@@ -161,14 +116,7 @@ const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
       { name: 'Mandatory', filterButton: false },
       { name: 'Non-mandatory', filterButton: false },
     ],
-    rows: [
-      [
-        'Total',
-        expiredTrainingTotals.total,
-        expiredTrainingTotals.totalMandatory,
-        expiredTrainingTotals.totalNonMandatory,
-      ],
-    ],
+    rows: [['Total', expiredTrainingTotals.total, expiredTrainingTotals.mandatory, expiredTrainingTotals.nonMandatory]],
   });
 };
 
@@ -198,6 +146,49 @@ const convertWorker = (worker) => {
     missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
     expiringNonMandatoryTrainingCount: parseInt(worker.get('expiringNonMandatoryTrainingCount')),
     mandatoryTrainingCount: parseInt(worker.get('mandatoryTrainingCount')),
+  };
+};
+
+const getTrainingTotals = (workers) => {
+  const expiredTotalRecords = workers.map((worker) => worker.expiredTrainingCount).reduce((a, b) => a + b, 0);
+  const expiredTotalMandatory = workers
+    .map((worker) => worker.expiredMandatoryTrainingCount)
+    .reduce((a, b) => a + b, 0);
+
+  const expiringTotalRecords = workers.map((worker) => worker.expiringTrainingCount).reduce((a, b) => a + b, 0);
+  const expiringTotalMandatory = workers
+    .map((worker) => worker.expiringMandatoryTrainingCount)
+    .reduce((a, b) => a + b, 0);
+
+  const totalRecords = workers.map((worker) => worker.trainingCount).reduce((a, b) => a + b, 0);
+  const totalMandatoryRecords = workers.map((worker) => worker.mandatoryTrainingCount).reduce((a, b) => a + b, 0);
+
+  const upToDateTotalRecords = totalRecords - expiringTotalRecords - expiredTotalRecords;
+  const upToDateTotalMandatory = totalMandatoryRecords - expiringTotalMandatory - expiredTotalMandatory;
+  const upToDateTotalNonMandatory = upToDateTotalRecords - upToDateTotalMandatory;
+
+  return {
+    total: {
+      mandatory: totalMandatoryRecords,
+      nonMandatory: totalRecords - totalMandatoryRecords,
+      totalRecords,
+    },
+    upToDate: {
+      total: upToDateTotalRecords,
+      mandatory: upToDateTotalMandatory,
+      nonMandatory: upToDateTotalNonMandatory,
+    },
+    expiringSoon: {
+      mandatory: expiringTotalMandatory,
+      nonMandatory: expiringTotalRecords - expiringTotalMandatory,
+      total: expiringTotalRecords,
+    },
+    expired: {
+      mandatory: expiredTotalMandatory,
+      nonMandatory: expiredTotalRecords - expiredTotalMandatory,
+      total: expiredTotalRecords,
+    },
+    missing: workers.map((worker) => worker.missingMandatoryTrainingCount).reduce((a, b) => a + b, 0),
   };
 };
 
