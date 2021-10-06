@@ -1,4 +1,10 @@
-const { addHeading, addLine } = require('../../../utils/excelUtils');
+const {
+  addHeading,
+  addLine,
+  backgroundColours,
+  textColours,
+  setCellTextAndBackgroundColour,
+} = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
@@ -33,7 +39,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 };
 
 const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
-  setHeadingAndTotalRowStyles(tab, 6, blueBackgroundColour, whiteTextColour, ['B', 'C', 'D', 'E']);
+  setHeadingAndTotalRowStyles(tab, 6, backgroundColours.blue, textColours.white, ['B', 'C', 'D', 'E']);
 
   const allTrainingRecordsTable = tab.addTable({
     name: 'allTrainingRecordsTable',
@@ -73,15 +79,15 @@ const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
     ],
   });
 
-  setCellColourAndBackgroundColour(tab, 'B8', greenBackgroundColour, greenTextColour);
-  setCellColourAndBackgroundColour(tab, 'B9', yellowBackgroundColour, yellowTextColour);
-  setCellColourAndBackgroundColour(tab, 'B10', redBackgroundColour, redTextColour);
+  setCellTextAndBackgroundColour(tab, 'B8', backgroundColours.green, textColours.green);
+  setCellTextAndBackgroundColour(tab, 'B9', backgroundColours.yellow, textColours.yellow);
+  setCellTextAndBackgroundColour(tab, 'B10', backgroundColours.red, textColours.red);
 
   return allTrainingRecordsTable;
 };
 
 const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
-  setHeadingAndTotalRowStyles(tab, lineNumber, yellowBackgroundColour, yellowTextColour, ['B', 'C', 'D', 'E']);
+  setHeadingAndTotalRowStyles(tab, lineNumber, backgroundColours.yellow, textColours.yellow, ['B', 'C', 'D', 'E']);
 
   return tab.addTable({
     name: 'expiringSoonTable',
@@ -101,7 +107,7 @@ const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
 };
 
 const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
-  setHeadingAndTotalRowStyles(tab, lineNumber, redBackgroundColour, redTextColour, ['B', 'C', 'D', 'E']);
+  setHeadingAndTotalRowStyles(tab, lineNumber, backgroundColours.red, textColours.red, ['B', 'C', 'D', 'E']);
 
   return tab.addTable({
     name: 'expiredTable',
@@ -118,7 +124,7 @@ const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
 };
 
 const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
-  setHeadingAndTotalRowStyles(tab, lineNumber, redBackgroundColour, redTextColour, ['B', 'C']);
+  setHeadingAndTotalRowStyles(tab, lineNumber, backgroundColours.red, textColours.red, ['B', 'C']);
 
   const missingTable = tab.addTable({
     name: 'missingTable',
@@ -228,7 +234,7 @@ const setColumnsWidths = (tab) => {
 
 const setHeadingAndTotalRowStyles = (tab, currentLineNumber, backgroundColour, textColour, cellLetters) => {
   tab.getRow(currentLineNumber).font = { bold: true, color: textColour };
-  tab.getRow(currentLineNumber).alignment = { vertical: 'middle', horizontal: 'center' };
+  tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
 
   tab.getRow(currentLineNumber + 1).style = { font: { bold: true } };
 
@@ -255,25 +261,5 @@ const addBordersToAllTables = (tab) => {
     }
   });
 };
-
-const setCellColourAndBackgroundColour = (tab, cellCoordinate, backgroundColour, textColour) => {
-  const cell = tab.getCell(cellCoordinate);
-  cell.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: backgroundColour,
-  };
-
-  cell.font = { color: textColour };
-};
-
-const yellowBackgroundColour = { argb: 'FFEA99' };
-const yellowTextColour = { argb: '945B19' };
-const blueBackgroundColour = { argb: '0050AB' };
-const whiteTextColour = { argb: 'FFFFFF' };
-const redBackgroundColour = { argb: 'FFC0C8' };
-const redTextColour = { argb: '960512' };
-const greenBackgroundColour = { argb: 'BBEDC9' };
-const greenTextColour = { argb: '005713' };
 
 module.exports.generateSummaryTab = generateSummaryTab;
