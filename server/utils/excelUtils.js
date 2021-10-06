@@ -4,12 +4,14 @@ exports.blueBackground = {
   fgColor: { argb: '282c84' },
 };
 
-exports.fullBorder = {
+const fullBorder = {
   top: { style: 'thin' },
   left: { style: 'thin' },
   bottom: { style: 'thin' },
   right: { style: 'thin' },
 };
+exports.fullBorder = fullBorder;
+
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
     let col = ws.getColumn(c);
@@ -98,3 +100,44 @@ exports.fitColumnsToSize = function (ws) {
     column.width = endWidth;
   });
 };
+
+const addBorder = (worksheet, cell) => {
+  worksheet.getCell(cell).border = {
+    ...fullBorder,
+    color: { argb: 'a6a1a1' },
+  };
+};
+exports.addBorder = addBorder;
+
+exports.addTextBox = (tab, startCell, endCell, content) => {
+  tab.mergeCells(`${startCell}:${endCell}`);
+  tab.getCell(startCell).value = content;
+  tab.getCell(startCell).alignment = textBoxAlignment;
+  tab.getCell(startCell).font = standardFont;
+
+  addBorder(tab, startCell);
+};
+
+exports.addHeading = (tab, startCell, endCell, content) => {
+  tab.mergeCells(`${startCell}:${endCell}`);
+  tab.getCell(startCell).value = content;
+  tab.getCell(startCell).font = {
+    family: 4,
+    size: 16,
+    bold: true,
+    color: { argb: '0050ab' },
+  };
+};
+
+exports.addLine = (worksheet, startCell, endCell) => {
+  worksheet.mergeCells(`${startCell}:${endCell}`);
+  worksheet.getCell(startCell).border = {
+    top: { style: 'thin' },
+  };
+};
+
+const standardFont = { name: 'Serif', family: 4, size: 12 };
+exports.standardFont = standardFont;
+
+const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+exports.textBoxAlignment = textBoxAlignment;

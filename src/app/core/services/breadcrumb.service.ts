@@ -3,7 +3,11 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/router';
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
-import { adminJourney, adminRegistrationJourney } from '@core/breadcrumb/journey.admin';
+import {
+  adminJourney,
+  adminPendingRegistrationJourney,
+  adminRejectedRegistrationJourney,
+} from '@core/breadcrumb/journey.admin';
 import {
   benchmarksPayJourney,
   benchmarksQualificationsJourney,
@@ -149,8 +153,12 @@ export class BreadcrumbService {
         routes = adminJourney;
         break;
       }
-      case JourneyType.ADMIN_REGISTRATIONS: {
-        routes = adminRegistrationJourney;
+      case JourneyType.ADMIN_PENDING_REGISTRATIONS: {
+        routes = adminPendingRegistrationJourney;
+        break;
+      }
+      case JourneyType.ADMIN_REJECTED_REGISTRATIONS: {
+        routes = adminRejectedRegistrationJourney;
         break;
       }
       case JourneyType.REPORTS: {

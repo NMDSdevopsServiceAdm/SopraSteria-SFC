@@ -12,8 +12,8 @@ const OTHER_MAX_LENGTH = 120;
 
 // extended change properties
 const EstablishmentModel = require('../models/classes/establishment').Establishment;
-const EstablishmentSaveException = require('../models/classes/establishment/establishmentExceptions')
-  .EstablishmentSaveException;
+const EstablishmentSaveException =
+  require('../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 const UserModel = require('../models/classes/user').User;
 const UserSaveException = require('../models/classes/user/userExceptions').UserSaveException;
 
@@ -681,10 +681,6 @@ router.post('/requestPasswordReset', async (req, res) => {
         uuid: requestUuid,
       });
 
-      const resetLink = `${req.protocol}://${req.get(
-        'host',
-      )}/api/registration/validateResetPassword?reset=${requestUuid}`;
-
       // send email to recipient with the reset UUID
       await sendMail(sendToAddress, sendToName, requestUuid);
 
@@ -692,11 +688,7 @@ router.post('/requestPasswordReset', async (req, res) => {
         userId: userResults.uid,
       });
 
-      if (isLocal(req)) {
-        return res.status(200).json({ resetLink, uuid: requestUuid });
-      } else {
-        return res.status(200).send();
-      }
+      return res.status(200).send();
     } else {
       // non-disclosure - if account is not found, return 200 anyway - suggesting that an email has been found
       return res.status(200).send();

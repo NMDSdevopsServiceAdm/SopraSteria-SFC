@@ -15,12 +15,12 @@ import { Observable } from 'rxjs';
 export class RegistrationsService {
   constructor(private http: HttpClient) {}
 
-  public getRegistrations(): Observable<Registrations[]> {
-    return this.http.get<Registrations[]>('/api/admin/registrations/');
+  public getRegistrations(status: string): Observable<any> {
+    return this.http.get<Registrations[]>(`/api/admin/registrations/${status}`);
   }
 
   public getSingleRegistration(establishmentUid: string): Observable<Registration> {
-    return this.http.get<Registration>(`/api/admin/registrations/${establishmentUid}`);
+    return this.http.get<Registration>(`/api/admin/registrations/status/${establishmentUid}`);
   }
 
   public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {

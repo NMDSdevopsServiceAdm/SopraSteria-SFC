@@ -1124,6 +1124,25 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getEstablishmentRegistrationsByStatus = async function (isRejection) {
+    const params = isRejection ? { ustatus: 'REJECTED' } : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
+
+    return await this.findAll({
+      attributes: [
+        'NameValue',
+        'PostCode',
+        'ParentID',
+        'ParentUID',
+        'created',
+        'updated',
+        'Status',
+        'EstablishmentUID',
+      ],
+      where: params,
+      order: [['created', 'DESC']],
+    });
+  };
+
   Establishment.getNmdsIdUsingEstablishmentId = async function (id) {
     return await this.findOne({
       where: {

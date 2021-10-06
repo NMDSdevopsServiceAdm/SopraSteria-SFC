@@ -70,9 +70,53 @@ export const InProgressRegistration = (reviewer) => {
   return PendingRegistration({
     overrides: {
       establishment: {
+        id: 'abc',
+        name: 'Test Workplace',
+        isRegulated: true,
+        nmdsId: '1234111',
+        address: 'Address line 1',
+        address2: 'Somewhere',
+        address3: 'Third Line Place',
+        postcode: 'ABC123',
+        town: 'Nowhereville',
+        county: 'Wessex',
+        locationId: '1234',
+        provid: '15111',
+        parentEstablishmentId: '6311133333333',
+        parentUid: 'parentUid',
+        mainService: 'Community support and outreach',
         status: 'IN PROGRESS',
+        uid: 'uidForAddedWorkplace',
         reviewer: reviewer,
         inReview: true,
+      },
+    },
+  });
+};
+
+export const RejectedRegistration = () => {
+  return PendingRegistration({
+    overrides: {
+      establishment: {
+        id: 'abc',
+        name: 'Test Workplace',
+        isRegulated: true,
+        nmdsId: '1234111',
+        address: 'Address line 1',
+        address2: 'Somewhere',
+        address3: 'Third Line Place',
+        postcode: 'ABC123',
+        town: 'Nowhereville',
+        county: 'Wessex',
+        locationId: '1234',
+        provid: '15111',
+        parentEstablishmentId: '6311133333333',
+        parentUid: 'parentUid',
+        mainService: 'Community support and outreach',
+        status: 'REJECTED',
+        uid: 'uidForAddedWorkplace',
+        reviewer: null,
+        inReview: false,
       },
     },
   });

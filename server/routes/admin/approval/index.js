@@ -40,7 +40,7 @@ const _approveOrRejectNewUser = async (req, res) => {
       if (req.body.approve && workplace) {
         await _approveNewUser(login, workplace, req.body.nmdsId, res);
       } else {
-        await _rejectNewUser(user, workplace, res);
+        await _rejectNewUser(user, workplace, req, res);
       }
     } else {
       return res.status(400).send();
@@ -68,7 +68,7 @@ const _approveOrRejectNewWorkplace = async (req, res) => {
     if (req.body.approve && req.body.establishmentId) {
       await _approveNewWorkplace(workplace, nmdsId, res);
     } else {
-      await _rejectNewWorkplace(workplace, res);
+      await _rejectNewWorkplace(workplace, req, res);
     }
   } catch (error) {
     console.error(error);
@@ -85,6 +85,8 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
     const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
       ustatus: null,
+      inReview: false,
+      reviewer: null,
     });
     if (updatedLogin && updatedWorkplace) {
       return res.status(200).json({ status: '0', message: userApprovalConfirmation });
@@ -97,13 +99,19 @@ const _approveNewUser = async (login, workplace, nmdsId, res) => {
   }
 };
 
-const _rejectNewUser = async (user, workplace, res) => {
+const _rejectNewUser = async (user, workplace, req, res) => {
   try {
     if (user && workplace) {
       const deletedUser = await user.destroy();
 
+      const adminUser = await models.user.findByUUID(req.userUid);
+
       const rejectedWorkplace = await workplace.update({
         ustatus: 'REJECTED',
+        inReview: false,
+        reviewer: null,
+        updated: new Date(),
+        updatedBy: adminUser.FullNameValue,
       });
 
       if (deletedUser && rejectedWorkplace) {
@@ -125,6 +133,8 @@ const _approveNewWorkplace = async (workplace, nmdsId, res) => {
     const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
       ustatus: null,
+      inReview: false,
+      reviewer: null,
     });
     if (updatedWorkplace) {
       return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation });
@@ -137,10 +147,16 @@ const _approveNewWorkplace = async (workplace, nmdsId, res) => {
   }
 };
 
-const _rejectNewWorkplace = async (workplace, res) => {
+const _rejectNewWorkplace = async (workplace, req, res) => {
   try {
+    const adminUser = await models.user.findByUUID(req.userUid);
+
     const rejectedWorkplace = await workplace.update({
       ustatus: 'REJECTED',
+      inReview: false,
+      reviewer: null,
+      updated: new Date(),
+      updatedBy: adminUser.FullNameValue,
     });
 
     if (rejectedWorkplace) {
