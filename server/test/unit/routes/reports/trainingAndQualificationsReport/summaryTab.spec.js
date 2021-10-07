@@ -45,7 +45,7 @@ describe('generateTrainingAndQualificationsReport', () => {
       expiringTrainingCount: 2,
       expiringMandatoryTrainingCount: 0,
       expiringNonMandatoryTrainingCount: 2,
-      missingMandatoryTrainingCount: 0,
+      missingMandatoryTrainingCount: 2,
       mandatoryTrainingCount: 3,
     },
     {
@@ -58,7 +58,7 @@ describe('generateTrainingAndQualificationsReport', () => {
       expiringTrainingCount: 2,
       expiringMandatoryTrainingCount: 0,
       expiringNonMandatoryTrainingCount: 2,
-      missingMandatoryTrainingCount: 0,
+      missingMandatoryTrainingCount: 3,
       mandatoryTrainingCount: 3,
     },
   ];
@@ -240,6 +240,40 @@ describe('generateTrainingAndQualificationsReport', () => {
       );
       expect(mockSummaryTab.getCell('E24').value).to.equal(
         mockWorkerTrainingBreakdowns[3].expiredNonMandatoryTrainingCount,
+      );
+    });
+  });
+
+  describe('Missing table', () => {
+    it('should add Missing table headings three rows below last row of Expired table', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+
+      expect(mockSummaryTab.getCell('B27').value).to.equal('Missing');
+      expect(mockSummaryTab.getCell('C27').value).to.equal('Total');
+    });
+
+    it('should add total row to Missing table', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+
+      expect(mockSummaryTab.getCell('B28').value).to.equal('Total');
+      expect(mockSummaryTab.getCell('C28').value).to.equal(mockTrainingRecordTotals.missing);
+    });
+
+    it('should skip first two workers with no missing mandatory training and add third worker to Missing table', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+
+      expect(mockSummaryTab.getCell('B29').value).to.equal(mockWorkerTrainingBreakdowns[2].name);
+      expect(mockSummaryTab.getCell('C29').value).to.equal(
+        mockWorkerTrainingBreakdowns[2].missingMandatoryTrainingCount,
+      );
+    });
+
+    it('should add next worker with missing mandatory training to Missing table', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+
+      expect(mockSummaryTab.getCell('B30').value).to.equal(mockWorkerTrainingBreakdowns[3].name);
+      expect(mockSummaryTab.getCell('C30').value).to.equal(
+        mockWorkerTrainingBreakdowns[3].missingMandatoryTrainingCount,
       );
     });
   });
