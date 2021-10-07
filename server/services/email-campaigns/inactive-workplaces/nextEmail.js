@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { type } = require('os');
 const config = require('../../../config/config');
 
 const lastMonth = moment().subtract(1, 'months');
@@ -39,7 +40,18 @@ const getTemplate = (inactiveWorkplace) => {
 
   for (const [, month] of Object.entries(templates)) {
     const nextTemplate = month.template;
-    const notReceivedTemplate = inactiveWorkplace.LastTemplate !== nextTemplate.id;
+    const lastTemplate = inactiveWorkplace.LastTemplate ? parseInt(inactiveWorkplace.LastTemplate) : null;
+    const notReceivedTemplate = lastTemplate !== nextTemplate.id;
+
+    console.log('************************************************')
+    console.log('workplace id:', inactiveWorkplace.NmdsID)
+    console.log('last updated:', inactiveWorkplace.LastUpdated)
+    console.log('next template:', nextTemplate);
+    console.log('inactiveWorkplace.LastTemplate:', inactiveWorkplace.LastTemplate);
+    console.log('lastTemplate:', lastTemplate)
+    console.log('month matches last updated?', month.matches(lastUpdated));
+    console.log('notReceivedTemplate:', notReceivedTemplate);
+    console.log('receive email?', month.matches(lastUpdated) && notReceivedTemplate)
 
     if (month.matches(lastUpdated) && notReceivedTemplate) {
       return nextTemplate;
