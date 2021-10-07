@@ -7,6 +7,7 @@ const {
   setCellTextAndBackgroundColour,
   setTableHeadingsStyle,
   alignColumnToLeft,
+  addBordersToAllFilledCells,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -41,7 +42,7 @@ const addContentToSummaryTab = (summaryTab, workerTrainingBreakdowns, trainingRe
   addRowsToMissingTable(workerTrainingBreakdowns, missingTable);
 
   setColumnWidths(summaryTab);
-  addBordersToAllTables(summaryTab);
+  addBordersToAllFilledCells(summaryTab, 5);
 };
 
 const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
@@ -211,21 +212,6 @@ const setHeadingAndTotalRowStyles = (tab, currentLineNumber, backgroundColour, t
   setTableHeadingsStyle(tab, currentLineNumber, backgroundColour, textColour, cellColumns);
 
   tab.getRow(currentLineNumber + 1).style = { font: { bold: true } };
-};
-
-const addBordersToAllTables = (tab) => {
-  tab.eachRow(function (row, _rowNumber) {
-    if (_rowNumber > 5) {
-      row.eachCell(function (cell) {
-        cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
-        };
-      });
-    }
-  });
 };
 
 module.exports.generateSummaryTab = generateSummaryTab;

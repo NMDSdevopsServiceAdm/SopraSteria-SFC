@@ -109,6 +109,16 @@ const addBorder = (worksheet, cell) => {
 };
 exports.addBorder = addBorder;
 
+exports.addBordersToAllFilledCells = (tab, startingRow) => {
+  tab.eachRow(function (row, rowNumber) {
+    if (rowNumber > startingRow) {
+      row.eachCell((cell) => {
+        cell.border = fullBorder;
+      });
+    }
+  });
+};
+
 exports.addTextBox = (tab, startCell, endCell, content) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = content;
