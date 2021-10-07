@@ -21,7 +21,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + moment().format('DD-MM-YYYY') + '-training-report.xlsx',
+      'attachment; filename=' + moment().format('DD-MM-YYYY') + '-SFC-Training-Report.xlsx',
     );
 
     await workbook.xlsx.write(res);
