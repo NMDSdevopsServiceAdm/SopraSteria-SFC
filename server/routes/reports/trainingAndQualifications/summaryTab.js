@@ -6,6 +6,7 @@ const {
   textColours,
   setCellTextAndBackgroundColour,
   setTableHeadingsStyle,
+  alignColumnToLeft,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -22,6 +23,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 const addContentToSummaryTab = (summaryTab, workerTrainingBreakdowns, trainingRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
+  alignColumnToLeft(summaryTab, 2);
 
   createAllTrainingRecordsTable(summaryTab, trainingRecordTotals);
 

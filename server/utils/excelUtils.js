@@ -166,6 +166,10 @@ exports.setCellTextAndBackgroundColour = (tab, cellCoordinate, backgroundColour,
   cell.font = { color: textColour };
 };
 
+exports.alignColumnToLeft = (tab, colNumber) => {
+  tab.getColumn(colNumber).alignment = { horizontal: 'left' };
+};
+
 exports.backgroundColours = {
   yellow: { argb: 'FFEA99' },
   blue: { argb: '0050AB' },

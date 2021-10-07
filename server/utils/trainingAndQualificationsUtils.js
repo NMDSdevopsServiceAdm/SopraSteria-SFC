@@ -4,8 +4,10 @@ const convertWorkerTrainingBreakdown = (worker) => {
   const expiringTrainingCount = parseInt(worker.get('expiringTrainingCount'));
   const expiringMandatoryTrainingCount = parseInt(worker.get('expiringMandatoryTrainingCount'));
 
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+
   return {
-    name: worker.get('NameOrIdValue'),
+    name: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     trainingCount: parseInt(worker.get('trainingCount')),
     qualificationCount: parseInt(worker.get('qualificationCount')),
     expiredTrainingCount,
