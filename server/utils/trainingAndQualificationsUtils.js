@@ -1,4 +1,4 @@
-exports.convertWorkerTrainingBreakdown = (worker) => {
+const convertWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
   const expiringTrainingCount = parseInt(worker.get('expiringTrainingCount'));
@@ -17,6 +17,12 @@ exports.convertWorkerTrainingBreakdown = (worker) => {
     missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
     mandatoryTrainingCount: parseInt(worker.get('mandatoryTrainingCount')),
   };
+};
+
+exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
+  return rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
+    return convertWorkerTrainingBreakdown(trainingBreakdown);
+  });
 };
 
 exports.getTrainingTotals = (workers) => {
