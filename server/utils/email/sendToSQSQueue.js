@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const appConfig = require('../../config');
+const appConfig = require('../../config/config');
 
 const QueueUrl = appConfig.get('aws.sqsqueue').toString();
 
@@ -9,17 +9,19 @@ const sendToSQSQueue = async (to, templateId, params) => {
   });
 
   try {
-    await sqs.sendMessage({
-      MessageBody: JSON.stringify({
-        to,
-        templateId,
-        params,
-      }),
-      QueueUrl
-    }).promise();
+    await sqs
+      .sendMessage({
+        MessageBody: JSON.stringify({
+          to,
+          templateId,
+          params,
+        }),
+        QueueUrl,
+      })
+      .promise();
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 exports.sendToSQSQueue = sendToSQSQueue;

@@ -2,8 +2,9 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 
 const sendEmail = require('../../../../../services/email-campaigns/targeted-emails/sendEmail');
-const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
+// const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
 const isWhitelisted = require('../../../../../services/email-campaigns/isWhitelisted');
+const sendToSQSQueue = require('../../../../../utils/email/sendToSQSQueue');
 
 describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => {
   afterEach(() => {
@@ -17,26 +18,25 @@ describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => 
         FullNameValue: 'Test Name',
         establishment: {
           nmdsId: 'J1234567',
-          NameValue: 'Haven Care'
+          NameValue: 'Haven Care',
         },
         get: () => {
           return 'test@test.com';
-        }
+        },
       };
       const templateId = 1;
 
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
 
-      const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
+      // const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
+
+      const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
       await sendEmail.sendEmail(user, templateId);
 
+      sinon.assert.calledWith(isWhitelistedStub, 'test@test.com');
       sinon.assert.calledWith(
-        isWhitelistedStub,
-        'test@test.com'
-      )
-      sinon.assert.calledWith(
-        sendEmailStub,
+        sendToSQSQueueStub,
         {
           email: 'test@test.com',
           name: 'Test Name',

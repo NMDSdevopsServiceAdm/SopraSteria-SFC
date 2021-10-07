@@ -1,4 +1,4 @@
-const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
+// const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
 const isWhitelisted = require('../isWhitelisted');
 const sendToSQSQueue = require('../../../utils/email/sendToSQSQueue');
 
@@ -16,7 +16,7 @@ const sendEmail = async (user, templateId) => {
 
   const params = getParams(user);
   // Change this call to add to the sqs queue
-  sendToSQSQueue(
+  sendToSQSQueue.sendToSQSQueue(
     {
       email: user.get('email'),
       name: user.FullNameValue,

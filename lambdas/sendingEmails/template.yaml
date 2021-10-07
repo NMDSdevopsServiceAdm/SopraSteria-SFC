@@ -19,13 +19,13 @@ Resources:
       Runtime: nodejs12.x
       Architectures:
         - x86_64
-    Events:
-      SQSEvent:
-        Type: SQS
-        Properties:
-          Queue: arn:aws:sqs:eu-west-2:364648107127:email-queue-dev.fifo
-          BatchSize: 1
-          Enabled: true
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: arn:aws:sqs:eu-west-2:364648107127:email-queue-dev.fifo
+            BatchSize: 1
+            Enabled: true
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
