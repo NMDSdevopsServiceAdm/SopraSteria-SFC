@@ -30,7 +30,7 @@ const templates = {
     lastUpdated: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
     matches: function (lastUpdated) {
-      return lastUpdated.isSameOrBefore(this.lastUpdated, 'month');
+      return lastUpdated.isSame(this.lastUpdated, 'month');
     },
   },
 };
@@ -42,16 +42,6 @@ const getTemplate = (inactiveWorkplace) => {
     const nextTemplate = month.template;
     const lastTemplate = inactiveWorkplace.LastTemplate ? parseInt(inactiveWorkplace.LastTemplate) : null;
     const notReceivedTemplate = lastTemplate !== nextTemplate.id;
-
-    console.log('************************************************')
-    console.log('workplace id:', inactiveWorkplace.NmdsID)
-    console.log('last updated:', inactiveWorkplace.LastUpdated)
-    console.log('next template:', nextTemplate);
-    console.log('inactiveWorkplace.LastTemplate:', inactiveWorkplace.LastTemplate);
-    console.log('lastTemplate:', lastTemplate)
-    console.log('month matches last updated?', month.matches(lastUpdated));
-    console.log('notReceivedTemplate:', notReceivedTemplate);
-    console.log('receive email?', month.matches(lastUpdated) && notReceivedTemplate)
 
     if (month.matches(lastUpdated) && notReceivedTemplate) {
       return nextTemplate;
