@@ -4,64 +4,10 @@ const excelJS = require('exceljs');
 
 const { addContentToSummaryTab } = require('../../../../../routes/reports/trainingAndQualifications/summaryTab');
 const { getTrainingTotals } = require('../../../../../utils/trainingAndQualificationsUtils');
+const { mockWorkerTrainingBreakdowns } = require('../../../mockdata/trainingAndQualifications');
 
 describe('generateTrainingAndQualificationsReport', () => {
   let mockSummaryTab;
-
-  const mockWorkerTrainingBreakdowns = [
-    {
-      name: 'Bob Test',
-      trainingCount: 6,
-      qualificationCount: 2,
-      expiredTrainingCount: 2,
-      expiredMandatoryTrainingCount: 0,
-      expiredNonMandatoryTrainingCount: 2,
-      expiringTrainingCount: 4,
-      expiringMandatoryTrainingCount: 2,
-      expiringNonMandatoryTrainingCount: 2,
-      missingMandatoryTrainingCount: 0,
-      mandatoryTrainingCount: 0,
-    },
-    {
-      name: 'Mike test',
-      trainingCount: 10,
-      qualificationCount: 0,
-      expiredTrainingCount: 6,
-      expiredMandatoryTrainingCount: 3,
-      expiredNonMandatoryTrainingCount: 3,
-      expiringTrainingCount: 0,
-      expiringMandatoryTrainingCount: 0,
-      expiringNonMandatoryTrainingCount: 0,
-      missingMandatoryTrainingCount: 0,
-      mandatoryTrainingCount: 5,
-    },
-    {
-      name: 'Andrew Test',
-      trainingCount: 13,
-      qualificationCount: 0,
-      expiredTrainingCount: 0,
-      expiredMandatoryTrainingCount: 0,
-      expiredNonMandatoryTrainingCount: 0,
-      expiringTrainingCount: 2,
-      expiringMandatoryTrainingCount: 0,
-      expiringNonMandatoryTrainingCount: 2,
-      missingMandatoryTrainingCount: 2,
-      mandatoryTrainingCount: 3,
-    },
-    {
-      name: 'Daniel Craig',
-      trainingCount: 6,
-      qualificationCount: 0,
-      expiredTrainingCount: 4,
-      expiredMandatoryTrainingCount: 1,
-      expiredNonMandatoryTrainingCount: 3,
-      expiringTrainingCount: 2,
-      expiringMandatoryTrainingCount: 0,
-      expiringNonMandatoryTrainingCount: 2,
-      missingMandatoryTrainingCount: 3,
-      mandatoryTrainingCount: 3,
-    },
-  ];
 
   const mockTrainingRecordTotals = getTrainingTotals(mockWorkerTrainingBreakdowns);
 
