@@ -9,12 +9,12 @@ const {
 const models = require('../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
-  const workers = await models.worker.workersAndTraining(establishmentId);
-  const convertedWorkers = workers.map((worker) => {
-    return convertWorker(worker);
+  const rawWorkerTrainingBreakdowns = await models.worker.workersAndTraining(establishmentId, true);
+  const workerTrainingBreakdowns = rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
+    return convertWorkerTrainingBreakdown(trainingBreakdown);
   });
 
-  const trainingRecordTotals = getTrainingTotals(convertedWorkers);
+  const trainingRecordTotals = getTrainingTotals(workerTrainingBreakdowns);
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
 
@@ -27,15 +27,15 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 
   const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber, trainingRecordTotals.expiringSoon);
 
-  currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
+  currentLineNumber = currentLineNumber + workerTrainingBreakdowns.length + 4;
   const expiredTable = createExpiredTable(summaryTab, currentLineNumber, trainingRecordTotals.expired);
 
-  currentLineNumber = currentLineNumber + convertedWorkers.length + 4;
+  currentLineNumber = currentLineNumber + workerTrainingBreakdowns.length + 4;
   const missingTable = createMissingTable(summaryTab, currentLineNumber, trainingRecordTotals.missing);
 
-  addRowsToTables(convertedWorkers, expiringSoonTable, expiredTable, missingTable);
+  addRowsToTables(workerTrainingBreakdowns, expiringSoonTable, expiredTable, missingTable);
 
-  setColumnsWidths(summaryTab);
+  setColumnWidths(summaryTab);
   addBordersToAllTables(summaryTab);
 };
 
@@ -140,7 +140,7 @@ const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
   return missingTable;
 };
 
-const convertWorker = (worker) => {
+const convertWorkerTrainingBreakdown = (worker) => {
   return {
     name: worker.get('NameOrIdValue'),
     trainingCount: parseInt(worker.get('trainingCount')),
@@ -221,7 +221,7 @@ const addRowsToTables = (workers, expiringSoonTable, expiredTable, missingTable)
   missingTable.commit();
 };
 
-const setColumnsWidths = (tab) => {
+const setColumnWidths = (tab) => {
   const firstColumn = tab.getColumn(2);
   const totalColumn = tab.getColumn(3);
   const mandatoryColumn = tab.getColumn(4);

@@ -1278,125 +1278,134 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.workersAndTraining = async function (establishmentId) {
+  Worker.workersAndTraining = async function (establishmentId, includeMandatoryTrainingBreakdown = false) {
     const currentDate = moment().toISOString();
     const expiresSoon = moment().add(90, 'days').toISOString();
 
-    return this.findAll({
-      attributes: [
-        'id',
-        'uid',
-        'LocalIdentifierValue',
-        'NameOrIdValue',
-        'ContractValue',
-        'CompletedValue',
-        'created',
-        'updated',
-        'updatedBy',
-        'lastWdfEligibility',
-        'wdfEligible',
-        [
-          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
-          'trainingCount',
-        ],
-        [
-          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "worker"."ID")'),
-          'qualificationCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}')`,
-          ),
-          'expiredTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
-              (
-                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
-                AND "JobFK" = "worker"."MainJobFKValue"
-              )
-            )`,
-          ),
-          'expiredMandatoryTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" NOT IN
-              (
-                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
-                AND "JobFK" = "worker"."MainJobFKValue"
-              )
-            )`,
-          ),
-          'expiredNonMandatoryTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
-          ),
-          'expiringTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
-              (
-                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
-                AND "JobFK" = "worker"."MainJobFKValue"
-              )
-            )`,
-          ),
-          'expiringMandatoryTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" NOT IN
-              (
-                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
-                AND "JobFK" = "worker"."MainJobFKValue"
-              )
-            )`,
-          ),
-          'expiringNonMandatoryTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID"  AND "CategoryFK"  IN
-              (
-                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
-                AND "JobFK" = "worker"."MainJobFKValue"
-              )
-            )`,
-          ),
-          'mandatoryTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `
-              (
-                SELECT
-                    COUNT(0)
-                  FROM cqc."MandatoryTraining"
-                  WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
-                  AND "JobFK" = "worker"."MainJobFKValue"
-                  AND "TrainingCategoryFK" NOT IN (
-                    SELECT
-                      DISTINCT "CategoryFK"
-                    FROM cqc."WorkerTraining"
-                    WHERE "WorkerFK" = "worker"."ID"
-                  )
-              )
-              `,
-          ),
-          'missingMandatoryTrainingCount',
-        ],
-        'LongTermAbsence',
+    let attributes = [
+      'id',
+      'uid',
+      'LocalIdentifierValue',
+      'NameOrIdValue',
+      'ContractValue',
+      'CompletedValue',
+      'created',
+      'updated',
+      'updatedBy',
+      'lastWdfEligibility',
+      'wdfEligible',
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
+        'trainingCount',
       ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "worker"."ID")'),
+        'qualificationCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}')`,
+        ),
+        'expiredTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+        ),
+        'expiringTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT
+                  COUNT(0)
+                FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+                AND "TrainingCategoryFK" NOT IN (
+                  SELECT
+                    DISTINCT "CategoryFK"
+                  FROM cqc."WorkerTraining"
+                  WHERE "WorkerFK" = "worker"."ID"
+                )
+            )
+            `,
+        ),
+        'missingMandatoryTrainingCount',
+      ],
+      'LongTermAbsence',
+    ];
+
+    const mandatoryTrainingAttributes = [
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
+            (
+              SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+              WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+              AND "JobFK" = "worker"."MainJobFKValue"
+            )
+          )`,
+        ),
+        'expiredMandatoryTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" NOT IN
+            (
+              SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+              WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+              AND "JobFK" = "worker"."MainJobFKValue"
+            )
+          )`,
+        ),
+        'expiredNonMandatoryTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID"  AND "CategoryFK"  IN
+            (
+              SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+              WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+              AND "JobFK" = "worker"."MainJobFKValue"
+            )
+          )`,
+        ),
+        'mandatoryTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
+            (
+              SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+              WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+              AND "JobFK" = "worker"."MainJobFKValue"
+            )
+          )`,
+        ),
+        'expiringMandatoryTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" NOT IN
+            (
+              SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+              WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+              AND "JobFK" = "worker"."MainJobFKValue"
+            )
+          )`,
+        ),
+        'expiringNonMandatoryTrainingCount',
+      ],
+    ];
+
+    if (includeMandatoryTrainingBreakdown) {
+      attributes = [...attributes, ...mandatoryTrainingAttributes];
+    }
+
+    return this.findAll({
+      attributes: attributes,
       where: {
         establishmentFk: establishmentId,
         archived: false,
