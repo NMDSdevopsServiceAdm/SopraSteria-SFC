@@ -12,15 +12,14 @@ const models = require('../../../models');
 const generateSummaryTab = async (workbook, establishmentId) => {
   const rawWorkerTrainingBreakdowns = await models.worker.workersAndTraining(establishmentId, true);
   const workerTrainingBreakdowns = convertWorkerTrainingBreakdowns(rawWorkerTrainingBreakdowns);
+  const trainingRecordTotals = getTrainingTotals(workerTrainingBreakdowns);
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
 
-  addContentToSummaryTab(summaryTab, workerTrainingBreakdowns);
+  addContentToSummaryTab(summaryTab, workerTrainingBreakdowns, trainingRecordTotals);
 };
 
-const addContentToSummaryTab = (summaryTab, workerTrainingBreakdowns) => {
-  const trainingRecordTotals = getTrainingTotals(workerTrainingBreakdowns);
-
+const addContentToSummaryTab = (summaryTab, workerTrainingBreakdowns, trainingRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
 
@@ -228,3 +227,4 @@ const addBordersToAllTables = (tab) => {
 };
 
 module.exports.generateSummaryTab = generateSummaryTab;
+module.exports.addContentToSummaryTab = addContentToSummaryTab;
