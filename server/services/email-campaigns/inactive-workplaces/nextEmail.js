@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { type } = require('os');
+
 const config = require('../../../config/config');
 
 const lastMonth = moment().subtract(1, 'months');
