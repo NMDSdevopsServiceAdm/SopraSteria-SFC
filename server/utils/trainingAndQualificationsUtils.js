@@ -26,18 +26,23 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 };
 
 exports.getTrainingTotals = (workers) => {
-  const expiredTotalRecords = workers.map((worker) => worker.expiredTrainingCount).reduce((a, b) => a + b, 0);
-  const expiredTotalMandatory = workers
-    .map((worker) => worker.expiredMandatoryTrainingCount)
-    .reduce((a, b) => a + b, 0);
+  let expiredTotalRecords = 0;
+  let expiredTotalMandatory = 0;
+  let expiringTotalRecords = 0;
+  let expiringTotalMandatory = 0;
+  let totalRecords = 0;
+  let totalMandatoryRecords = 0;
+  let missingRecords = 0;
 
-  const expiringTotalRecords = workers.map((worker) => worker.expiringTrainingCount).reduce((a, b) => a + b, 0);
-  const expiringTotalMandatory = workers
-    .map((worker) => worker.expiringMandatoryTrainingCount)
-    .reduce((a, b) => a + b, 0);
-
-  const totalRecords = workers.map((worker) => worker.trainingCount).reduce((a, b) => a + b, 0);
-  const totalMandatoryRecords = workers.map((worker) => worker.mandatoryTrainingCount).reduce((a, b) => a + b, 0);
+  for (let worker of workers) {
+    expiredTotalRecords += worker.expiredTrainingCount;
+    expiredTotalMandatory += worker.expiredMandatoryTrainingCount;
+    expiringTotalRecords += worker.expiringTrainingCount;
+    expiringTotalMandatory += worker.expiringMandatoryTrainingCount;
+    totalRecords += worker.trainingCount;
+    totalMandatoryRecords += worker.mandatoryTrainingCount;
+    missingRecords += worker.missingMandatoryTrainingCount;
+  }
 
   const upToDateTotalRecords = totalRecords - expiringTotalRecords - expiredTotalRecords;
   const upToDateTotalMandatory = totalMandatoryRecords - expiringTotalMandatory - expiredTotalMandatory;
@@ -64,6 +69,6 @@ exports.getTrainingTotals = (workers) => {
       nonMandatory: expiredTotalRecords - expiredTotalMandatory,
       total: expiredTotalRecords,
     },
-    missing: workers.map((worker) => worker.missingMandatoryTrainingCount).reduce((a, b) => a + b, 0),
+    missing: missingRecords,
   };
 };
