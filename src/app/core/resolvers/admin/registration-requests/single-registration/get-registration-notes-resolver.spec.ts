@@ -7,7 +7,7 @@ import { AdminModule } from '@features/admin/admin.module';
 
 import { GetRegistrationNotesResolver } from './get-registration-notes.resolver';
 
-describe('GetRegistrationResolver', () => {
+describe('GetRegistrationNotesResolver', () => {
   let resolver: GetRegistrationNotesResolver;
 
   beforeEach(() => {
