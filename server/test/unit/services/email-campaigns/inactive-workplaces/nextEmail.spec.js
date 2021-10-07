@@ -36,11 +36,6 @@ describe('nextEmailTemplate', () => {
       LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
       NextTemplate: twentyFourMonthTemplateId,
     },
-    {
-      inactiveMonths: 25,
-      LastUpdated: endOfLastMonth.clone().subtract(25, 'months'),
-      NextTemplate: twentyFourMonthTemplateId,
-    },
   ].forEach(({ inactiveMonths, LastUpdated, NextTemplate }) => {
     it(`should return the correct template when ${inactiveMonths} months inactive`, async () => {
       const inactiveWorkplace = {
