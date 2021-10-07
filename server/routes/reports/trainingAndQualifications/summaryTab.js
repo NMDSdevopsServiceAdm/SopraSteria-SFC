@@ -27,14 +27,15 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   let currentLineNumber = 13;
 
   const expiringSoonTable = createExpiringSoonTable(summaryTab, currentLineNumber, trainingRecordTotals.expiringSoon);
+  const expiringSoonTableLength = addRowsToExpiringSoonTable(workerTrainingBreakdowns, expiringSoonTable);
 
-  currentLineNumber = currentLineNumber + workerTrainingBreakdowns.length + 4;
+  currentLineNumber += expiringSoonTableLength + 2;
   const expiredTable = createExpiredTable(summaryTab, currentLineNumber, trainingRecordTotals.expired);
+  const expiredTableLength = addRowsToExpiredTable(workerTrainingBreakdowns, expiredTable);
 
-  currentLineNumber = currentLineNumber + workerTrainingBreakdowns.length + 4;
+  currentLineNumber += expiredTableLength + 2;
   const missingTable = createMissingTable(summaryTab, currentLineNumber, trainingRecordTotals.missing);
-
-  addRowsToTables(workerTrainingBreakdowns, expiringSoonTable, expiredTable, missingTable);
+  addRowsToMissingTable(workerTrainingBreakdowns, missingTable);
 
   setColumnWidths(summaryTab);
   addBordersToAllTables(summaryTab);
@@ -141,25 +142,53 @@ const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
   return missingTable;
 };
 
-const addRowsToTables = (workers, expiringSoonTable, expiredTable, missingTable) => {
+const addRowsToExpiringSoonTable = (workers, expiringSoonTable) => {
+  let tableLength = 2;
+
   for (let worker of workers) {
-    expiringSoonTable.addRow([
-      worker.name,
-      worker.expiringTrainingCount,
-      worker.expiringMandatoryTrainingCount,
-      worker.expiringNonMandatoryTrainingCount,
-    ]);
-    expiredTable.addRow([
-      worker.name,
-      worker.expiredTrainingCount,
-      worker.expiredMandatoryTrainingCount,
-      worker.expiredNonMandatoryTrainingCount,
-    ]);
-    missingTable.addRow([worker.name, worker.missingMandatoryTrainingCount]);
+    if (worker.expiringTrainingCount > 0) {
+      tableLength += 1;
+
+      expiringSoonTable.addRow([
+        worker.name,
+        worker.expiringTrainingCount,
+        worker.expiringMandatoryTrainingCount,
+        worker.expiringNonMandatoryTrainingCount,
+      ]);
+    }
   }
 
   expiringSoonTable.commit();
+  return tableLength;
+};
+
+const addRowsToExpiredTable = (workers, expiredTable) => {
+  let tableLength = 2;
+
+  for (let worker of workers) {
+    if (worker.expiredTrainingCount > 0) {
+      tableLength += 1;
+
+      expiredTable.addRow([
+        worker.name,
+        worker.expiredTrainingCount,
+        worker.expiredMandatoryTrainingCount,
+        worker.expiredNonMandatoryTrainingCount,
+      ]);
+    }
+  }
+
   expiredTable.commit();
+  return tableLength;
+};
+
+const addRowsToMissingTable = (workers, missingTable) => {
+  for (let worker of workers) {
+    if (worker.missingMandatoryTrainingCount > 0) {
+      missingTable.addRow([worker.name, worker.missingMandatoryTrainingCount]);
+    }
+  }
+
   missingTable.commit();
 };
 
