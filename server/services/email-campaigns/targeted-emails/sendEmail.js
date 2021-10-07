@@ -15,7 +15,7 @@ const sendEmail = async (user, templateId) => {
   }
 
   const params = getParams(user);
-  // Change this call to add to the sqs queue
+
   sendToSQSQueue.sendToSQSQueue(
     {
       email: user.get('email'),
@@ -24,14 +24,6 @@ const sendEmail = async (user, templateId) => {
     templateId,
     params,
   );
-  // sendInBlueEmail.sendEmail(
-  //   {
-  //     email: user.get('email'),
-  //     name: user.FullNameValue,
-  //   },
-  //   templateId,
-  //   params,
-  // );
 };
 
 module.exports = {

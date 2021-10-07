@@ -27,9 +27,6 @@ describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => 
       const templateId = 1;
 
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
-
-      // const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
-
       const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
       await sendEmail.sendEmail(user, templateId);
