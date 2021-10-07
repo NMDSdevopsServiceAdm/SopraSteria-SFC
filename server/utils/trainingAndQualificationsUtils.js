@@ -1,14 +1,19 @@
 exports.convertWorkerTrainingBreakdown = (worker) => {
+  const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
+  const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
+  const expiringTrainingCount = parseInt(worker.get('expiringTrainingCount'));
+  const expiringMandatoryTrainingCount = parseInt(worker.get('expiringMandatoryTrainingCount'));
+
   return {
     name: worker.get('NameOrIdValue'),
     trainingCount: parseInt(worker.get('trainingCount')),
     qualificationCount: parseInt(worker.get('qualificationCount')),
-    expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
-    expiredMandatoryTrainingCount: parseInt(worker.get('expiredMandatoryTrainingCount')),
-    expiredNonMandatoryTrainingCount: parseInt(worker.get('expiredNonMandatoryTrainingCount')),
-    expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
-    expiringMandatoryTrainingCount: parseInt(worker.get('expiringMandatoryTrainingCount')),
-    expiringNonMandatoryTrainingCount: parseInt(worker.get('expiringNonMandatoryTrainingCount')),
+    expiredTrainingCount,
+    expiredMandatoryTrainingCount,
+    expiredNonMandatoryTrainingCount: expiredTrainingCount - expiredMandatoryTrainingCount,
+    expiringTrainingCount,
+    expiringMandatoryTrainingCount,
+    expiringNonMandatoryTrainingCount: expiringTrainingCount - expiringMandatoryTrainingCount,
     missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
     mandatoryTrainingCount: parseInt(worker.get('mandatoryTrainingCount')),
   };
