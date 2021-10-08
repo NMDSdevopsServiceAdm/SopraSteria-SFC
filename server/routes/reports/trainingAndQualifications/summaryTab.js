@@ -48,7 +48,11 @@ const addContentToSummaryTab = (summaryTab, workerTrainingBreakdowns, trainingRe
 const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
   setHeadingAndTotalRowStyles(tab, 6, backgroundColours.blue, textColours.white, ['B', 'C', 'D', 'E']);
 
-  const allTrainingRecordsTable = tab.addTable({
+  setCellTextAndBackgroundColour(tab, 'B8', backgroundColours.green, textColours.green);
+  setCellTextAndBackgroundColour(tab, 'B9', backgroundColours.yellow, textColours.yellow);
+  setCellTextAndBackgroundColour(tab, 'B10', backgroundColours.red, textColours.red);
+
+  return tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
     headerRow: true,
@@ -85,12 +89,6 @@ const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
       ],
     ],
   });
-
-  setCellTextAndBackgroundColour(tab, 'B8', backgroundColours.green, textColours.green);
-  setCellTextAndBackgroundColour(tab, 'B9', backgroundColours.yellow, textColours.yellow);
-  setCellTextAndBackgroundColour(tab, 'B10', backgroundColours.red, textColours.red);
-
-  return allTrainingRecordsTable;
 };
 
 const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
@@ -100,7 +98,6 @@ const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
     name: 'expiringSoonTable',
     ref: 'B' + lineNumber,
     headerRow: true,
-
     columns: [
       { name: 'Expiring soon', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -133,7 +130,7 @@ const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
 const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
   setHeadingAndTotalRowStyles(tab, lineNumber, backgroundColours.red, textColours.red, ['B', 'C']);
 
-  const missingTable = tab.addTable({
+  return tab.addTable({
     name: 'missingTable',
     ref: 'B' + lineNumber,
     headerRow: true,
@@ -143,7 +140,6 @@ const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
     ],
     rows: [['Total', totalMissingMandatoryTraining]],
   });
-  return missingTable;
 };
 
 const addRowsToExpiringSoonTable = (workers, expiringSoonTable) => {
