@@ -1,4 +1,3 @@
-// const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
 const isWhitelisted = require('../isWhitelisted');
 const sendToSQSQueue = require('../../../utils/email/sendToSQSQueue');
 

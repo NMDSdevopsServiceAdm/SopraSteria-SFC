@@ -2,7 +2,6 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 
 const sendEmail = require('../../../../../services/email-campaigns/targeted-emails/sendEmail');
-// const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
 const isWhitelisted = require('../../../../../services/email-campaigns/isWhitelisted');
 const sendToSQSQueue = require('../../../../../utils/email/sendToSQSQueue');
 
@@ -43,7 +42,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => 
           FULL_NAME: 'Test Name',
           WORKPLACE_ID: 'J1234567',
         },
-        10
+        10,
       );
     });
   });

@@ -1,7 +1,6 @@
 const moment = require('moment');
 
 const config = require('../../../config/config');
-// const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
 const sendToSQSQueue = require('../../../utils/email/sendToSQSQueue');
 const isWhitelisted = require('../isWhitelisted');
 
