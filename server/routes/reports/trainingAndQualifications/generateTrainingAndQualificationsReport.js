@@ -18,7 +18,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     generateHowToTab(workbook);
     await generateSummaryTab(workbook, establishment.id);
-    await generateTrainingTab(workbook);
+    await generateTrainingTab(workbook, establishment.id);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(

@@ -1396,5 +1396,27 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
+    return this.findAll({
+      attributes: ['id', 'NameOrIdValue', 'LongTermAbsence'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+        {
+          model: sequelize.models.workerTraining,
+          as: 'workerTraining',
+          attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+        },
+      ],
+    });
+  };
+
   return Worker;
 };

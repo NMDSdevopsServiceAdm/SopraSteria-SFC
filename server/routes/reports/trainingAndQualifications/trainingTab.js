@@ -1,3 +1,4 @@
+const { convertWorkersWithTrainingRecords } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
   addLine,
@@ -6,18 +7,23 @@ const {
   setTableHeadingsStyle,
   addBordersToAllFilledCells,
 } = require('../../../utils/excelUtils');
+const models = require('../../../models');
 
-const generateTrainingTab = async (workbook) => {
+const generateTrainingTab = async (workbook, establishmentId) => {
+  const rawWorkersWithTraining = await models.worker.getEstablishmentTrainingRecords(establishmentId);
+  const workersWithTraining = convertWorkersWithTrainingRecords(rawWorkersWithTraining);
+
   const trainingTab = workbook.addWorksheet('Training', { views: [{ showGridLines: false }] });
 
-  addContentToTrainingTab(trainingTab);
+  addContentToTrainingTab(trainingTab, workersWithTraining);
 };
 
-const addContentToTrainingTab = (trainingTab) => {
+const addContentToTrainingTab = (trainingTab, workersWithTraining) => {
   addHeading(trainingTab, 'B2', 'E2', 'Training');
   addLine(trainingTab, 'A4', 'K4');
 
-  createTrainingTable(trainingTab);
+  const trainingTable = createTrainingTable(trainingTab);
+  addRowsToTrainingTable(trainingTable, workersWithTraining);
   addBordersToAllFilledCells(trainingTab, 5);
 };
 
@@ -53,6 +59,31 @@ const createTrainingTable = (trainingTab) => {
     ],
     rows: [],
   });
+};
+
+const addRowsToTrainingTable = (trainingTable, workers) => {
+  for (let worker of workers) {
+    for (let trainingRecord of worker.workerTraining) {
+      addRow(trainingTable, worker, trainingRecord);
+    }
+  }
+
+  trainingTable.commit();
+};
+
+const addRow = (trainingTable, worker, trainingRecord) => {
+  trainingTable.addRow([
+    worker.workerId,
+    worker.jobRole,
+    trainingRecord.get('CategoryFK'),
+    trainingRecord.get('Title'),
+    'Mandatory',
+    'Missing',
+    trainingRecord.get('Expires'),
+    trainingRecord.get('Completed'),
+    worker.longTermAbsence,
+    trainingRecord.get('Accredited'),
+  ]);
 };
 
 module.exports.generateTrainingTab = generateTrainingTab;

@@ -16,13 +16,13 @@ describe('addContentToTrainingTab', () => {
   });
 
   it('should add tab title to cell B2', async () => {
-    addContentToTrainingTab(mockTrainingTab);
+    addContentToTrainingTab(mockTrainingTab, []);
 
     expect(mockTrainingTab.getCell('B2').value).to.equal('Training');
   });
 
   it('should add table headings to row 6', async () => {
-    addContentToTrainingTab(mockTrainingTab);
+    addContentToTrainingTab(mockTrainingTab, []);
 
     expect(mockTrainingTab.getCell('B6').value).to.equal('Worker ID');
     expect(mockTrainingTab.getCell('C6').value).to.equal('Job role');

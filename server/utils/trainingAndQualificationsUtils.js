@@ -27,6 +27,21 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   });
 };
 
+const convertWorkerWithTrainingRecords = (worker) => {
+  return {
+    workerId: worker.get('NameOrIdValue'),
+    jobRole: worker.mainJob.title,
+    longTermAbsence: worker.get('LongTermAbsence'),
+    workerTraining: worker.workerTraining,
+  };
+};
+
+exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
+  return rawWorkersWithTrainingRecords.map((worker) => {
+    return convertWorkerWithTrainingRecords(worker);
+  });
+};
+
 exports.getTrainingTotals = (workers) => {
   let expiredTotalRecords = 0;
   let expiredTotalMandatory = 0;
