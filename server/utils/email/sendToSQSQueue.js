@@ -3,7 +3,7 @@ const appConfig = require('../../config/config');
 
 const QueueUrl = appConfig.get('aws.sqsqueue').toString();
 
-const sendToSQSQueue = async (to, templateId, params) => {
+const sendToSQSQueue = async (to, templateId, params, index) => {
   const sqs = new AWS.SQS({
     region: appConfig.get('aws.region').toString(),
   });
@@ -11,6 +11,8 @@ const sendToSQSQueue = async (to, templateId, params) => {
   try {
     await sqs
       .sendMessage({
+        MessageGroupId: String(templateId),
+        MessageDeduplicationId: String(index),
         MessageBody: JSON.stringify({
           to,
           templateId,

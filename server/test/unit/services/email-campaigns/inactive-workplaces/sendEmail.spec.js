@@ -29,11 +29,12 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
           email: 'test@example.com',
         },
       };
+      const index = 1;
 
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
       const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(inactiveWorkplace);
+      await sendEmail.sendEmail(inactiveWorkplace, index);
 
       sinon.assert.calledWith(isWhitelistedStub, 'test@example.com');
 
@@ -76,11 +77,12 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
           },
         ],
       };
+      const index = 1;
 
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
       const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(parentWorkplace);
+      await sendEmail.sendEmail(parentWorkplace, index);
 
       sinon.assert.calledWith(isWhitelistedStub, 'test@example.com');
 

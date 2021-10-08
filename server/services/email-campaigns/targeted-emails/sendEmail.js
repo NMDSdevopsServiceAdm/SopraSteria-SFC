@@ -9,7 +9,7 @@ const getParams = (user) => {
   };
 };
 
-const sendEmail = async (user, templateId) => {
+const sendEmail = async (user, templateId, index) => {
   if (!isWhitelisted.isWhitelisted(user.get('email'))) {
     return;
   }
@@ -23,6 +23,7 @@ const sendEmail = async (user, templateId) => {
     },
     templateId,
     params,
+    index,
   );
 };
 

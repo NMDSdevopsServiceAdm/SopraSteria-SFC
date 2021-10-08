@@ -46,7 +46,7 @@ const getParams = (workplace) => {
   return params;
 };
 
-const sendEmail = async (workplace) => {
+const sendEmail = async (workplace, index) => {
   if (!isWhitelisted.isWhitelisted(workplace.user.email)) {
     return;
   }
@@ -60,6 +60,7 @@ const sendEmail = async (workplace) => {
     },
     workplace.emailTemplate.id,
     params,
+    index,
   );
 };
 

@@ -9,7 +9,7 @@ const findParentWorkplaces = require('../../../../../../services/email-campaigns
 const sendEmail = require('../../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
-describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
+describe.only('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   afterEach(() => {
     sinon.restore();
   });

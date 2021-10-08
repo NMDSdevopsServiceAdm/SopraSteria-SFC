@@ -1,7 +1,7 @@
 // const axios = require('axios')
 // const url = 'http://checkip.amazonaws.com/';
 const SibApiV3Sdk = require('sib-api-v3-sdk');
-
+const config = require('./config/config');
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -15,7 +15,9 @@ const SibApiV3Sdk = require('sib-api-v3-sdk');
  *
  */
 
-
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = config.get('sendInBlue');
 
 const sendEmail = async (to, templateId, params) => {
   try {
@@ -34,14 +36,10 @@ const sendEmail = async (to, templateId, params) => {
 }
 
 exports.lambdaHandler = async (event, context) => {
-  console.log(event.Records);
-  const messages = JSON.parse(event.Records[0].body);
+  const message = event.Records[0].body;
   try {
-    // const ret = await axios(url);
-    messages.forEach(async (message) => {
-      const { to, templateId, params } = message;
-      await sendEmail(to, templateId, params);
-    });
+    const { to, templateId, params } = JSON.parse(message);
+    await sendEmail(to, templateId, params);
 
     return {
       statusCode: 200,

@@ -25,11 +25,11 @@ describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => 
         },
       };
       const templateId = 1;
-
+      const index = 10;
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
       const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(user, templateId);
+      await sendEmail.sendEmail(user, templateId, index);
 
       sinon.assert.calledWith(isWhitelistedStub, 'test@test.com');
       sinon.assert.calledWith(
@@ -43,6 +43,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails/sendEmail', () => 
           FULL_NAME: 'Test Name',
           WORKPLACE_ID: 'J1234567',
         },
+        10
       );
     });
   });
