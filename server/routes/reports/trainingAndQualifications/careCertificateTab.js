@@ -48,9 +48,9 @@ const createCareCertificateTable = (careCertificateTab) => {
     headerRow: true,
 
     columns: [
-      { name: 'Woker ID', filterButton: false },
-      { name: 'Job role', filterButton: false },
-      { name: 'Status', filterButton: false },
+      { name: 'Woker ID', filterButton: true },
+      { name: 'Job role', filterButton: true },
+      { name: 'Status', filterButton: true },
     ],
     rows: [],
   });
