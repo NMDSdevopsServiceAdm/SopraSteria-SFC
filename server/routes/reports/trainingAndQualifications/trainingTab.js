@@ -6,6 +6,7 @@ const {
   textColours,
   setTableHeadingsStyle,
   addBordersToAllFilledCells,
+  setCellTextAndBackgroundColour,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -29,6 +30,7 @@ const addContentToTrainingTab = (trainingTab, workersWithTraining, mandatoryTrai
   const trainingTable = createTrainingTable(trainingTab);
   addRowsToTrainingTable(trainingTable, workersWithTraining, mandatoryTrainingCategories);
   addBordersToAllFilledCells(trainingTab, 5);
+  addColoursToStatusColumn(trainingTab);
 };
 
 const createTrainingTable = (trainingTab) => {
@@ -82,12 +84,25 @@ const addRow = (trainingTable, worker, trainingRecord, mandatoryTrainingCategori
     trainingRecord.category,
     trainingRecord.trainingName,
     isMandatoryTraining(trainingRecord.categoryFK, mandatoryTrainingCategories) ? 'Mandatory' : 'Not mandatory',
-    'Missing',
+    trainingRecord.status,
     trainingRecord.expiryDate,
     trainingRecord.dateCompleted,
     worker.longTermAbsence,
     trainingRecord.accredited,
   ]);
+};
+
+const addColoursToStatusColumn = (trainingTab) => {
+  trainingTab.eachRow(function (row, rowNumber) {
+    const statusCell = row.getCell('G');
+    if (statusCell.value === 'Up-to-date') {
+      setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.green, textColours.green);
+    } else if (statusCell.value === 'Expiring soon') {
+      setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.yellow, textColours.yellow);
+    } else if (statusCell.value === 'Expired') {
+      setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.red, textColours.red);
+    }
+  });
 };
 
 const isMandatoryTraining = (trainingCategoryFK, mandatoryTrainingCategories) => {

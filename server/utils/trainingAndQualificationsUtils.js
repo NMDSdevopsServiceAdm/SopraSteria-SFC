@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const convertWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
@@ -38,15 +40,32 @@ const convertWorkerWithTrainingRecords = (worker) => {
 
 const convertWorkerTraining = (workerTraining) => {
   return workerTraining.map((trainingRecord) => {
+    const expiryDate = trainingRecord.get('Expires');
+    const status = getTrainingRecordStatus(expiryDate);
+
     return {
       category: trainingRecord.get('category').category,
       categoryFK: trainingRecord.get('CategoryFK'),
       trainingName: trainingRecord.get('Title'),
-      expiryDate: trainingRecord.get('Expires'),
+      expiryDate,
+      status,
       dateCompleted: trainingRecord.get('Completed'),
       accredited: trainingRecord.get('Accredited'),
     };
   });
+};
+
+const getTrainingRecordStatus = (expiryDate) => {
+  const currentDate = moment().toISOString();
+  const expiringSoonDate = moment().add(90, 'days').toISOString();
+
+  if (expiryDate < currentDate) {
+    return 'Expired';
+  }
+  if (expiryDate < expiringSoonDate) {
+    return 'Expiring soon';
+  }
+  return 'Up-to-date';
 };
 
 exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
