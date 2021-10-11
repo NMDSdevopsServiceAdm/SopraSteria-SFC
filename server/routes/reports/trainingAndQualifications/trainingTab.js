@@ -7,6 +7,8 @@ const {
   setTableHeadingsStyle,
   addBordersToAllFilledCells,
   setCellTextAndBackgroundColour,
+  fitColumnsToSize,
+  alignColumnToLeft,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -26,11 +28,15 @@ const generateTrainingTab = async (workbook, establishmentId) => {
 const addContentToTrainingTab = (trainingTab, workersWithTraining, mandatoryTrainingCategories) => {
   addHeading(trainingTab, 'B2', 'E2', 'Training');
   addLine(trainingTab, 'A4', 'K4');
+  alignColumnToLeft(trainingTab, 2);
 
   const trainingTable = createTrainingTable(trainingTab);
   addRowsToTrainingTable(trainingTable, workersWithTraining, mandatoryTrainingCategories);
   addBordersToAllFilledCells(trainingTab, 5);
   addColoursToStatusColumn(trainingTab);
+  fitColumnsToSize(trainingTab, 2);
+
+  trainingTab.autoFilter = 'B6:K6';
 };
 
 const createTrainingTable = (trainingTab) => {
@@ -72,9 +78,34 @@ const addRowsToTrainingTable = (trainingTable, workers, mandatoryTrainingCategor
     for (let trainingRecord of worker.workerTraining) {
       addRow(trainingTable, worker, trainingRecord, mandatoryTrainingCategories);
     }
+
+    addRowsForWorkerMissingTraining(trainingTable, worker, mandatoryTrainingCategories);
   }
 
   trainingTable.commit();
+};
+
+const addRowsForWorkerMissingTraining = (trainingTable, worker, mandatoryTrainingCategories) => {
+  for (let category of mandatoryTrainingCategories) {
+    if (!hasMandatoryTrainingRecord(worker, category.trainingCategoryFK)) {
+      addMissingRow(trainingTable, worker, category.trainingCategoryFK);
+    }
+  }
+};
+
+const addMissingRow = (trainingTable, worker, trainingCategory) => {
+  trainingTable.addRow([
+    worker.workerId,
+    worker.jobRole,
+    trainingCategory,
+    '',
+    'Mandatory',
+    'Missing',
+    '',
+    '',
+    worker.longTermAbsence,
+    '',
+  ]);
 };
 
 const addRow = (trainingTable, worker, trainingRecord, mandatoryTrainingCategories) => {
@@ -99,7 +130,7 @@ const addColoursToStatusColumn = (trainingTab) => {
       setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.green, textColours.green);
     } else if (statusCell.value === 'Expiring soon') {
       setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.yellow, textColours.yellow);
-    } else if (statusCell.value === 'Expired') {
+    } else if (statusCell.value === 'Expired' || statusCell.value === 'Missing') {
       setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.red, textColours.red);
     }
   });
@@ -107,6 +138,10 @@ const addColoursToStatusColumn = (trainingTab) => {
 
 const isMandatoryTraining = (trainingCategoryFK, mandatoryTrainingCategories) => {
   return mandatoryTrainingCategories.find((category) => category.trainingCategoryFK === trainingCategoryFK);
+};
+
+const hasMandatoryTrainingRecord = (worker, trainingCategoryFK) => {
+  return worker.workerTraining.find((record) => record.trainingCategoryFK === trainingCategoryFK);
 };
 
 module.exports.generateTrainingTab = generateTrainingTab;

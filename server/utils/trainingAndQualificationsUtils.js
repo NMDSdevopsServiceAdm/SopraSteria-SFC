@@ -30,8 +30,10 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 };
 
 const convertWorkerWithTrainingRecords = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+
   return {
-    workerId: worker.get('NameOrIdValue'),
+    workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
     longTermAbsence: worker.get('LongTermAbsence'),
     workerTraining: convertWorkerTraining(worker.workerTraining),
@@ -41,14 +43,13 @@ const convertWorkerWithTrainingRecords = (worker) => {
 const convertWorkerTraining = (workerTraining) => {
   return workerTraining.map((trainingRecord) => {
     const expiryDate = trainingRecord.get('Expires');
-    const status = getTrainingRecordStatus(expiryDate);
 
     return {
       category: trainingRecord.get('category').category,
       categoryFK: trainingRecord.get('CategoryFK'),
       trainingName: trainingRecord.get('Title'),
       expiryDate,
-      status,
+      status: getTrainingRecordStatus(expiryDate),
       dateCompleted: trainingRecord.get('Completed'),
       accredited: trainingRecord.get('Accredited'),
     };

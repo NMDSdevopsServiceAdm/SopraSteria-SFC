@@ -67,8 +67,8 @@ exports.autoFitColumns = function (ws, headerRow) {
   });
 };
 
-exports.fitColumnsToSize = function (ws) {
-  eachColumnInRange(ws, 1, ws.columns.length, (column) => {
+exports.fitColumnsToSize = function (ws, startingColumn = 1) {
+  eachColumnInRange(ws, startingColumn, ws.columns.length, (column) => {
     const cellsWidth = [];
     column.eachCell((cell) => {
       if (!cell.isMerged && cell.value) {
