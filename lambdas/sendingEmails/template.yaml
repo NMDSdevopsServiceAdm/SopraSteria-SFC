@@ -3,12 +3,16 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   sendingEmails
 
-  Sample SAM Template for sendingEmails
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
+
+Parameters:
+  SQSQueueName:
+    Type: String
+    Description: Name of the SQS Queue
 
 Resources:
   SendEmailsFunction:
@@ -23,7 +27,7 @@ Resources:
         SQSEvent:
           Type: SQS
           Properties:
-            Queue: arn:aws:sqs:eu-west-2:364648107127:email-queue-dev.fifo
+            Queue: !Sub "arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:${SQSQueueName}"
             BatchSize: 1
             Enabled: true
 
