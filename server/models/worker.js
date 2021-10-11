@@ -1413,6 +1413,13 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.workerTraining,
           as: 'workerTraining',
           attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+          include: [
+            {
+              model: sequelize.models.workerTrainingCategories,
+              as: 'category',
+              attributes: ['category'],
+            },
+          ],
         },
       ],
     });

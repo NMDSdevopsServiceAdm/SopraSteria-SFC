@@ -32,8 +32,21 @@ const convertWorkerWithTrainingRecords = (worker) => {
     workerId: worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
     longTermAbsence: worker.get('LongTermAbsence'),
-    workerTraining: worker.workerTraining,
+    workerTraining: convertWorkerTraining(worker.workerTraining),
   };
+};
+
+const convertWorkerTraining = (workerTraining) => {
+  return workerTraining.map((trainingRecord) => {
+    return {
+      category: trainingRecord.get('category').category,
+      categoryFK: trainingRecord.get('CategoryFK'),
+      trainingName: trainingRecord.get('Title'),
+      expiryDate: trainingRecord.get('Expires'),
+      dateCompleted: trainingRecord.get('Completed'),
+      accredited: trainingRecord.get('Accredited'),
+    };
+  });
 };
 
 exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
