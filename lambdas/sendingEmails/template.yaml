@@ -9,10 +9,6 @@ Globals:
   Function:
     Timeout: 3
 
-Parameters:
-  SQSQueueName:
-    Type: String
-    Description: Name of the SQS Queue
 
 Resources:
   SendEmailsFunction:
@@ -27,9 +23,16 @@ Resources:
         SQSEvent:
           Type: SQS
           Properties:
-            Queue: !Sub "arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:${SQSQueueName}"
+            Queue: !GetAtt SendEmailsQueueSQS.Arn
             BatchSize: 1
             Enabled: true
+
+  SendEmailsQueueSQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      FifoQueue: true
+      KmsMasterKeyId: alias/aws/sqs
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -41,3 +44,7 @@ Outputs:
   SendEmailsFunctionIamRole:
     Description: "Implicit IAM Role created for Send Emails function"
     Value: !GetAtt SendEmailsFunctionRole.Arn
+  SendEmailsQueueSQS:
+    Description: "Send Emails SQS Queue ARN"
+    Value: !GetAtt SendEmailsQueueSQS.Arn
+
