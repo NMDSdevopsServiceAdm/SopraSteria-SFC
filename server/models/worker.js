@@ -1278,6 +1278,23 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.careCertificate = async function (establishmentId) {
+    return this.findAll({
+      attributes: ['NameOrIdValue', 'CareCertificateValue'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+      ],
+    });
+  };
+
   Worker.workersAndTraining = async function (establishmentId, includeMandatoryTrainingBreakdown = false) {
     const currentDate = moment().toISOString();
     const expiresSoon = moment().add(90, 'days').toISOString();

@@ -21,6 +21,20 @@ const convertWorkerTrainingBreakdown = (worker) => {
   };
 };
 
+const convertWorkerWithCareCertificate = (worker) => {
+  return {
+    workerId: worker.get('NameOrIdValue'),
+    jobRole: worker.mainJob.title,
+    status: worker.get('CareCertificateValue'),
+  };
+};
+
+exports.convertWorkerWithCareCertificate = (rawWorkersWithCareCertificate) => {
+  return rawWorkersWithCareCertificate.map((worker) => {
+    return convertWorkerWithCareCertificate(worker);
+  });
+};
+
 exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   return rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
     return convertWorkerTrainingBreakdown(trainingBreakdown);
