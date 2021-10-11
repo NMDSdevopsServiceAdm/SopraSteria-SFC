@@ -19,13 +19,19 @@ const generateCareCertificateTab = async (workbook, establishmentId) => {
 
 const addContentToCareCertificateTab = (careCertificateTab, workersWithCareCertificate) => {
   addHeading(careCertificateTab, 'B2', 'E2', 'Care Certificate');
-  addLine(careCertificateTab, 'A4', 'E4');
-  addHeading(careCertificateTab, 'B6', 'E6', 'Have they started or completed the Care Certificate?');
+  addLine(careCertificateTab, 'A4', 'D4');
+  addHeading(careCertificateTab, 'B6', 'D6', 'Have they started or completed the Care Certificate?');
   careCertificateTab.getCell('B6').font = {
     family: 4,
-    size: 20,
+    size: 19,
     bold: true,
     color: { argb: '000000' },
+  };
+
+  careCertificateTab.autoFilter = 'B9:D9';
+  careCertificateTab.autoFilter = {
+    from: 'B9',
+    to: 'D9',
   };
 
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
