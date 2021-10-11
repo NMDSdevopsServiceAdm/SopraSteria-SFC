@@ -27,6 +27,25 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   });
 };
 
+const convertIndividualWorkerQualifications = (workerQualifications) => {
+  const workerIdAsNumber = parseInt(workerQualifications.worker.get('NameOrIdValue'));
+
+  return {
+    workerName: workerIdAsNumber ? workerIdAsNumber : workerQualifications.worker.get('NameOrIdValue'),
+    jobRole: workerQualifications.worker.mainJob.title,
+    qualificationType: workerQualifications.qualification.group,
+    qualificationName: workerQualifications.qualification.title,
+    qualificationLevel: workerQualifications.qualification.level,
+    yearAchieved: workerQualifications.get('Year'),
+  }
+}
+
+exports.convertWorkerQualifications = (rawWorkerQualifications) => {
+  return rawWorkerQualifications.map((workerQualifications) => {
+    return convertIndividualWorkerQualifications(workerQualifications);
+  })
+}
+
 exports.getTrainingTotals = (workers) => {
   let expiredTotalRecords = 0;
   let expiredTotalMandatory = 0;
