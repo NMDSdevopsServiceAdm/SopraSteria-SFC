@@ -25,7 +25,7 @@ describe('addContentToTrainingTab', () => {
           category: 'Dementia care',
           categoryFK: 10,
           trainingName: 'Mock Training Name',
-          expiryDate: '2025-01-01',
+          expiryDate: '2022-01-01',
           status: 'Expiring soon',
           dateCompleted: '2020-06-01',
           accredited: 'Yes',
@@ -33,28 +33,28 @@ describe('addContentToTrainingTab', () => {
       ],
     },
     {
-      workerId: '1234567',
+      workerId: 'Eric Hatfield',
       jobRole: 'Advice, Guidance and Advocacy',
       longTermAbsence: null,
-      mandatoryTraining: [1],
+      mandatoryTraining: [1, 11],
       trainingRecords: [
         {
           category: 'Emergency Aid awareness',
           categoryFK: 14,
-          trainingName: 'Good',
-          expiryDate: null,
+          trainingName: 'Practice of Emergency Aid',
+          expiryDate: '2025-01-01',
           status: 'Up-to-date',
-          dateCompleted: null,
+          dateCompleted: '2004-03-31',
           accredited: 'Yes',
         },
         {
           category: 'Diabetes',
           categoryFK: 11,
-          trainingName: 'Good',
-          expiryDate: null,
-          status: 'Up-to-date',
-          dateCompleted: '1980-03-31',
-          accredited: 'Yes',
+          trainingName: 'Training for diabetes',
+          expiryDate: '2019-01-01',
+          status: 'Expired',
+          dateCompleted: '2012-03-31',
+          accredited: 'No',
         },
       ],
     },
@@ -97,13 +97,13 @@ describe('addContentToTrainingTab', () => {
   });
 
   it('should add tab title to cell B2', async () => {
-    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords, []);
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
 
     expect(mockTrainingTab.getCell('B2').value).to.equal('Training');
   });
 
   it('should add table headings to row 6', async () => {
-    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords, []);
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
 
     expect(mockTrainingTab.getCell('B6').value).to.equal('Worker ID');
     expect(mockTrainingTab.getCell('C6').value).to.equal('Job role');
@@ -118,7 +118,7 @@ describe('addContentToTrainingTab', () => {
   });
 
   it('should add first training record to top row of table', async () => {
-    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords, []);
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
 
     const expectedLine = 7;
 
@@ -135,7 +135,7 @@ describe('addContentToTrainingTab', () => {
   });
 
   it("should add worker's next training record to next row of table", async () => {
-    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords, []);
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
 
     const expectedLine = 8;
 
@@ -145,9 +145,43 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Mock Training Name');
     expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Not mandatory');
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Expiring soon');
-    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2025-01-01');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2022-01-01');
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2020-06-01');
     expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
+  });
+
+  it("should add next worker's first training record to next row of table when previous worker has no missing training", async () => {
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
+
+    const expectedLine = 9;
+
+    expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Eric Hatfield');
+    expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
+    expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Emergency Aid awareness');
+    expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Practice of Emergency Aid');
+    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Not mandatory');
+    expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Up-to-date');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2025-01-01');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2004-03-31');
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+    expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
+  });
+
+  it("should add worker's next training record to next row", async () => {
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
+
+    const expectedLine = 10;
+
+    expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Eric Hatfield');
+    expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
+    expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Diabetes');
+    expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Training for diabetes');
+    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
+    expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Expired');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2019-01-01');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2012-03-31');
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+    expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('No');
   });
 });
