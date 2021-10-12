@@ -52,3 +52,16 @@ exports.mockWorkerTrainingBreakdowns = [
     mandatoryTrainingCount: 3,
   },
 ];
+
+exports.mockWorkersWithCareCertificateStatus = [
+  {
+    workerId: 'Bob',
+    jobRole: 'Care Worker',
+    status: 'No',
+  },
+  {
+    workerId: 'Mike',
+    jobRole: 'Care Coordinator',
+    status: 'Yes, in progress or partially completed',
+  },
+];
