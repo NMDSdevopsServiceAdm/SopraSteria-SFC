@@ -7,6 +7,7 @@ const {
   textColours,
   addBordersToAllFilledCells,
   fitColumnsToSize,
+  alignColumnToLeft,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -21,6 +22,7 @@ const generateCareCertificateTab = async (workbook, establishmentId) => {
 const addContentToCareCertificateTab = (careCertificateTab, workers) => {
   addHeading(careCertificateTab, 'B2', 'D2', 'Care Certificate');
   addLine(careCertificateTab, 'A4', 'D4');
+  alignColumnToLeft(careCertificateTab, 2);
 
   careCertificateTab.autoFilter = 'B6:D6';
 
