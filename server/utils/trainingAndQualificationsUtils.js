@@ -51,8 +51,8 @@ const convertWorkerTraining = (workerTraining) => {
       category: trainingRecord.get('category').category,
       categoryFK: trainingRecord.get('CategoryFK'),
       trainingName: trainingRecord.get('Title'),
-      expiryDate: trainingRecord.get('Expires') ? expiryDate.format('DD/MM/YYYY') : '',
-      status: trainingRecord.get('Expires') ? getTrainingRecordStatus(expiryDate) : '',
+      expiryDate: expiryDate.isValid() ? expiryDate.format('DD/MM/YYYY') : '',
+      status: getTrainingRecordStatus(expiryDate),
       dateCompleted: trainingRecord.get('Completed')
         ? moment(trainingRecord.get('Completed')).format('DD/MM/YYYY')
         : '',
@@ -62,6 +62,10 @@ const convertWorkerTraining = (workerTraining) => {
 };
 
 const getTrainingRecordStatus = (expiryDate) => {
+  if (!expiryDate.isValid()) {
+    return 'Up-to-date';
+  }
+
   const currentDate = moment();
   const expiringSoonDate = moment().add(90, 'days');
 
