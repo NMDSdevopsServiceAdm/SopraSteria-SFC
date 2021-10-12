@@ -21,6 +21,22 @@ const convertWorkerTrainingBreakdown = (worker) => {
   };
 };
 
+const convertWorkerWithCareCertificateStatus = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+
+  return {
+    workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+    jobRole: worker.mainJob.title,
+    status: worker.get('CareCertificateValue'),
+  };
+};
+
+exports.convertWorkersWithCareCertificateStatus = (rawWorkers) => {
+  return rawWorkers.map((worker) => {
+    return convertWorkerWithCareCertificateStatus(worker);
+  });
+};
+
 exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   return rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
     return convertWorkerTrainingBreakdown(trainingBreakdown);

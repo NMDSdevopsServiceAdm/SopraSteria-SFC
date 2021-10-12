@@ -16,7 +16,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -264,6 +266,7 @@ describe('HomeTabComponent', () => {
       it('should show a dialog to confirm that you want become link to a parent organisation', async () => {
         const { component } = await setup();
 
+        component.fixture.componentInstance.workplace.isParent = false;
         component.fixture.componentInstance.canLinkToParent = true;
         component.fixture.detectChanges();
 
@@ -282,6 +285,7 @@ describe('HomeTabComponent', () => {
       it('should show a dialog to confirm you want to cancel parent request when clicking on link after requesting', async () => {
         const { component } = await setup();
 
+        component.fixture.componentInstance.workplace.isParent = false;
         component.fixture.componentInstance.canLinkToParent = true;
         component.fixture.componentInstance.linkToParentRequestedStatus = true;
         component.fixture.detectChanges();
@@ -301,6 +305,7 @@ describe('HomeTabComponent', () => {
       it('should call cancelRequestToParent() in the establishmentService and set success alert when successful', async () => {
         const { component } = await setup();
 
+        component.fixture.componentInstance.workplace.isParent = false;
         component.fixture.componentInstance.canLinkToParent = true;
         component.fixture.componentInstance.linkToParentRequestedStatus = true;
         component.fixture.detectChanges();
@@ -376,6 +381,11 @@ describe('HomeTabComponent', () => {
       it('should show a dialog to confirm that you want become a parent organisation', async () => {
         const { component } = await setup();
 
+        component.fixture.componentInstance.workplace.isParent = false;
+        component.fixture.componentInstance.canBecomeAParent = true;
+        component.fixture.componentInstance.linkToParentRequestedStatus = false;
+        component.fixture.componentInstance.parentStatusRequested = false;
+        component.fixture.componentInstance.canLinkToParent = true;
         const becomeAParentLink = component.getByText('Become a parent organisation');
         const dialogMessage = 'Become a parent organisation';
 
@@ -390,6 +400,12 @@ describe('HomeTabComponent', () => {
 
       it('should call becomeAParent() in the parentRequestsService and set success alert when successful', async () => {
         const { component } = await setup();
+
+        component.fixture.componentInstance.workplace.isParent = false;
+        component.fixture.componentInstance.canBecomeAParent = true;
+        component.fixture.componentInstance.linkToParentRequestedStatus = false;
+        component.fixture.componentInstance.parentStatusRequested = false;
+        component.fixture.componentInstance.canLinkToParent = true;
 
         const parentsRequestService = TestBed.inject(ParentRequestsService);
         const becomeAParentSpy = spyOn(parentsRequestService, 'becomeParent').and.returnValue(of({}));

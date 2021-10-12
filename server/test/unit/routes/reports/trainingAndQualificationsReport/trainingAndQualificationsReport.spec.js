@@ -37,7 +37,10 @@ describe('generateTrainingAndQualificationsReport', () => {
     });
     sinon.stub(models.workerQualifications, 'getWorkerQualifications').callsFake(() => {
       return [];
-    })
+    });
+    sinon.stub(models.worker, 'getWorkersWithCareCertificateStatus').callsFake(() => {
+      return [];
+    });
   });
 
   afterEach(() => {
