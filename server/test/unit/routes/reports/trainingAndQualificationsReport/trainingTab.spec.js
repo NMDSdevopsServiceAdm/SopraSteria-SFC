@@ -10,7 +10,8 @@ describe('addContentToTrainingTab', () => {
       workerId: 'Bob Test',
       jobRole: 'Activities worker or co-ordinator',
       longTermAbsence: null,
-      workerTraining: [
+      mandatoryTraining: [1],
+      trainingRecords: [
         {
           category: 'Activity provision/Well-being',
           categoryFK: 1,
@@ -35,7 +36,8 @@ describe('addContentToTrainingTab', () => {
       workerId: '1234567',
       jobRole: 'Advice, Guidance and Advocacy',
       longTermAbsence: null,
-      workerTraining: [
+      mandatoryTraining: [1],
+      trainingRecords: [
         {
           category: 'Emergency Aid awareness',
           categoryFK: 14,
@@ -60,7 +62,8 @@ describe('addContentToTrainingTab', () => {
       workerId: 'new staff record',
       jobRole: 'Activities worker or co-ordinator',
       longTermAbsence: null,
-      workerTraining: [
+      mandatoryTraining: [1],
+      trainingRecords: [
         {
           category: 'First Aid',
           categoryFK: 18,
@@ -123,7 +126,7 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
     expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activity provision/Well-being');
     expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Important Training');
-    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Not mandatory');
+    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Up-to-date');
     expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2025-01-01');
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2020-01-01');

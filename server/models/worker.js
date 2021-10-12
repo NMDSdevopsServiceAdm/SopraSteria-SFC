@@ -1398,7 +1398,24 @@ module.exports = function (sequelize, DataTypes) {
 
   Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
     return this.findAll({
-      attributes: ['id', 'NameOrIdValue', 'LongTermAbsence'],
+      attributes: [
+        'id',
+        'NameOrIdValue',
+        'LongTermAbsence',
+        [
+          sequelize.literal(
+            `
+              (
+                SELECT "TrainingCategoryFK"
+                  FROM cqc."MandatoryTraining"
+                  WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                  AND "JobFK" = "worker"."MainJobFKValue"
+              )
+              `,
+          ),
+          'mandatoryTraining',
+        ],
+      ],
       where: {
         establishmentFk: establishmentId,
         archived: false,

@@ -16,22 +16,19 @@ const generateTrainingTab = async (workbook, establishmentId) => {
   const rawWorkersWithTraining = await models.worker.getEstablishmentTrainingRecords(establishmentId);
   const workersWithTraining = convertWorkersWithTrainingRecords(rawWorkersWithTraining);
 
-  const mandatoryTrainingCategories = await models.MandatoryTraining.findMandatoryTrainingCategoriesForEstablishment(
-    establishmentId,
-  );
-
   const trainingTab = workbook.addWorksheet('Training', { views: [{ showGridLines: false }] });
 
-  addContentToTrainingTab(trainingTab, workersWithTraining, mandatoryTrainingCategories);
+  addContentToTrainingTab(trainingTab, workersWithTraining);
 };
 
-const addContentToTrainingTab = (trainingTab, workersWithTraining, mandatoryTrainingCategories) => {
+const addContentToTrainingTab = (trainingTab, workersWithTraining) => {
   addHeading(trainingTab, 'B2', 'E2', 'Training');
   addLine(trainingTab, 'A4', 'K4');
   alignColumnToLeft(trainingTab, 2);
 
   const trainingTable = createTrainingTable(trainingTab);
-  addRowsToTrainingTable(trainingTable, workersWithTraining, mandatoryTrainingCategories);
+  addRowsToTrainingTable(trainingTable, workersWithTraining);
+
   addBordersToAllFilledCells(trainingTab, 5);
   addColoursToStatusColumn(trainingTab);
   fitColumnsToSize(trainingTab, 2);
@@ -73,31 +70,31 @@ const createTrainingTable = (trainingTab) => {
   });
 };
 
-const addRowsToTrainingTable = (trainingTable, workers, mandatoryTrainingCategories) => {
+const addRowsToTrainingTable = (trainingTable, workers) => {
   for (let worker of workers) {
-    for (let trainingRecord of worker.workerTraining) {
-      addRow(trainingTable, worker, trainingRecord, mandatoryTrainingCategories);
+    for (let trainingRecord of worker.trainingRecords) {
+      addRow(trainingTable, worker, trainingRecord);
     }
 
-    addRowsForWorkerMissingTraining(trainingTable, worker, mandatoryTrainingCategories);
+    addRowsForWorkerMissingTraining(trainingTable, worker);
   }
 
   trainingTable.commit();
 };
 
-const addRowsForWorkerMissingTraining = (trainingTable, worker, mandatoryTrainingCategories) => {
-  for (let category of mandatoryTrainingCategories) {
-    if (!hasMandatoryTrainingRecord(worker, category.trainingCategoryFK)) {
-      addMissingRow(trainingTable, worker, category.trainingCategoryFK);
+const addRowsForWorkerMissingTraining = (trainingTable, worker) => {
+  for (let record of worker.mandatoryTraining) {
+    if (!hasTrainingRecord(worker.trainingRecords, record)) {
+      addMissingRow(trainingTable, worker, record);
     }
   }
 };
 
-const addMissingRow = (trainingTable, worker, trainingCategory) => {
+const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord) => {
   trainingTable.addRow([
     worker.workerId,
     worker.jobRole,
-    trainingCategory,
+    missingMandatoryTrainingRecord,
     '',
     'Mandatory',
     'Missing',
@@ -108,13 +105,13 @@ const addMissingRow = (trainingTable, worker, trainingCategory) => {
   ]);
 };
 
-const addRow = (trainingTable, worker, trainingRecord, mandatoryTrainingCategories) => {
+const addRow = (trainingTable, worker, trainingRecord) => {
   trainingTable.addRow([
     worker.workerId,
     worker.jobRole,
     trainingRecord.category,
     trainingRecord.trainingName,
-    isMandatoryTraining(trainingRecord.categoryFK, mandatoryTrainingCategories) ? 'Mandatory' : 'Not mandatory',
+    isMandatoryTraining(trainingRecord.categoryFK, worker.mandatoryTraining) ? 'Mandatory' : 'Not mandatory',
     trainingRecord.status,
     trainingRecord.expiryDate,
     trainingRecord.dateCompleted,
@@ -136,12 +133,13 @@ const addColoursToStatusColumn = (trainingTab) => {
   });
 };
 
-const isMandatoryTraining = (trainingCategoryFK, mandatoryTrainingCategories) => {
-  return mandatoryTrainingCategories.find((category) => category.trainingCategoryFK === trainingCategoryFK);
+const isMandatoryTraining = (trainingCategoryFK, mandatoryTraining) => {
+  //return mandatoryTraining.find((category) => category.trainingCategoryFK === trainingCategoryFK);
+  return mandatoryTraining.includes(trainingCategoryFK);
 };
 
-const hasMandatoryTrainingRecord = (worker, trainingCategoryFK) => {
-  return worker.workerTraining.find((record) => record.trainingCategoryFK === trainingCategoryFK);
+const hasTrainingRecord = (trainingRecords, trainingCategoryFK) => {
+  return trainingRecords.find((record) => record.categoryFK === trainingCategoryFK);
 };
 
 module.exports.generateTrainingTab = generateTrainingTab;
