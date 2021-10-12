@@ -37,7 +37,7 @@ const convertWorkerWithTrainingRecords = (worker) => {
     workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
     jobId: worker.mainJob.id,
-    longTermAbsence: worker.get('LongTermAbsence'),
+    longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
     mandatoryTraining: Array.isArray(mandatoryTraining) ? mandatoryTraining : [mandatoryTraining],
     trainingRecords: convertWorkerTraining(worker.workerTraining),
   };
@@ -45,23 +45,25 @@ const convertWorkerWithTrainingRecords = (worker) => {
 
 const convertWorkerTraining = (workerTraining) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = trainingRecord.get('Expires');
+    const expiryDate = moment(trainingRecord.get('Expires'));
 
     return {
       category: trainingRecord.get('category').category,
       categoryFK: trainingRecord.get('CategoryFK'),
       trainingName: trainingRecord.get('Title'),
-      expiryDate,
-      status: getTrainingRecordStatus(expiryDate),
-      dateCompleted: trainingRecord.get('Completed'),
-      accredited: trainingRecord.get('Accredited'),
+      expiryDate: trainingRecord.get('Expires') ? expiryDate.format('DD/MM/YYYY') : '',
+      status: trainingRecord.get('Expires') ? getTrainingRecordStatus(expiryDate) : '',
+      dateCompleted: trainingRecord.get('Completed')
+        ? moment(trainingRecord.get('Completed')).format('DD/MM/YYYY')
+        : '',
+      accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
     };
   });
 };
 
 const getTrainingRecordStatus = (expiryDate) => {
-  const currentDate = moment().toISOString();
-  const expiringSoonDate = moment().add(90, 'days').toISOString();
+  const currentDate = moment();
+  const expiringSoonDate = moment().add(90, 'days');
 
   if (expiryDate < currentDate) {
     return 'Expired';

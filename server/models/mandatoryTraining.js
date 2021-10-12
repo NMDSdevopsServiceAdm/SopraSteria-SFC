@@ -73,10 +73,17 @@ module.exports = function (sequelize, DataTypes) {
 
   MandatoryTraining.findMandatoryTrainingCategoriesForEstablishment = function (establishmentId) {
     return this.findAll({
-      attributes: [[sequelize.literal('DISTINCT "TrainingCategoryFK"'), 'trainingCategoryFK']],
+      attributes: ['trainingCategoryFK', 'jobFK'],
       where: {
         EstablishmentFK: establishmentId,
       },
+      include: [
+        {
+          model: sequelize.models.workerTrainingCategories,
+          as: 'workerTrainingCategories',
+          attributes: ['category'],
+        },
+      ],
     });
   };
 

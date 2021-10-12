@@ -16,18 +16,18 @@ describe('addContentToTrainingTab', () => {
           category: 'Activity provision/Well-being',
           categoryFK: 1,
           trainingName: 'Important Training',
-          expiryDate: '2025-01-01',
+          expiryDate: '01/01/2025',
           status: 'Up-to-date',
-          dateCompleted: '2020-01-01',
+          dateCompleted: '01/01/2020',
           accredited: 'Yes',
         },
         {
           category: 'Dementia care',
           categoryFK: 10,
           trainingName: 'Mock Training Name',
-          expiryDate: '2022-01-01',
+          expiryDate: '01/01/2022',
           status: 'Expiring soon',
-          dateCompleted: '2020-06-01',
+          dateCompleted: '01/06/2020',
           accredited: 'Yes',
         },
       ],
@@ -42,18 +42,18 @@ describe('addContentToTrainingTab', () => {
           category: 'Emergency Aid awareness',
           categoryFK: 14,
           trainingName: 'Practice of Emergency Aid',
-          expiryDate: '2025-01-01',
+          expiryDate: '01/01/2025',
           status: 'Up-to-date',
-          dateCompleted: '2004-03-31',
+          dateCompleted: '31/03/2004',
           accredited: 'Yes',
         },
         {
           category: 'Diabetes',
           categoryFK: 11,
           trainingName: 'Training for diabetes',
-          expiryDate: '2019-01-01',
+          expiryDate: '01/01/2019',
           status: 'Expired',
-          dateCompleted: '2012-03-31',
+          dateCompleted: '31/03/2012',
           accredited: 'No',
         },
       ],
@@ -128,8 +128,8 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Important Training');
     expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Up-to-date');
-    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2025-01-01');
-    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2020-01-01');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2025');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/01/2020');
     expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
   });
@@ -145,8 +145,8 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Mock Training Name');
     expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Not mandatory');
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Expiring soon');
-    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2022-01-01');
-    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2020-06-01');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2022');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/06/2020');
     expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
   });
@@ -162,8 +162,8 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Practice of Emergency Aid');
     expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Not mandatory');
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Up-to-date');
-    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2025-01-01');
-    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2004-03-31');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2025');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('31/03/2004');
     expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
   });
@@ -179,8 +179,8 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Training for diabetes');
     expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Expired');
-    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('2019-01-01');
-    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('2012-03-31');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2019');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('31/03/2012');
     expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('No');
   });
