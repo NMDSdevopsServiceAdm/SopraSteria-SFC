@@ -1278,7 +1278,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.careCertificate = async function (establishmentId) {
+  Worker.getWorkersWithCareCertificateStatus = async function (establishmentId) {
     return this.findAll({
       attributes: ['NameOrIdValue', 'CareCertificateValue'],
       where: {

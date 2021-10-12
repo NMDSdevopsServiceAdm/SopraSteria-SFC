@@ -21,7 +21,7 @@ const convertWorkerTrainingBreakdown = (worker) => {
   };
 };
 
-const convertWorkerWithCareCertificate = (worker) => {
+const convertWorkerWithCareCertificateStatus = (worker) => {
   return {
     workerId: worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
@@ -29,9 +29,9 @@ const convertWorkerWithCareCertificate = (worker) => {
   };
 };
 
-exports.convertWorkerWithCareCertificate = (rawWorkersWithCareCertificate) => {
-  return rawWorkersWithCareCertificate.map((worker) => {
-    return convertWorkerWithCareCertificate(worker);
+exports.convertWorkersWithCareCertificateStatus = (rawWorkers) => {
+  return rawWorkers.map((worker) => {
+    return convertWorkerWithCareCertificateStatus(worker);
   });
 };
 

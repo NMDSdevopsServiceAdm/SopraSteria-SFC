@@ -5,7 +5,7 @@ const excelJS = require('exceljs');
 const {
   addContentToCareCertificateTab,
 } = require('../../../../../routes/reports/trainingAndQualifications/careCertificateTab');
-const { mockWorkerCareCertificate } = require('../../../mockdata/trainingAndQualifications');
+const { mockWorkersWithCareCertificateStatus } = require('../../../mockdata/trainingAndQualifications');
 
 describe('generateTrainingAndQualificationsReport', () => {
   let mockCareCertificateTab;
@@ -21,26 +21,34 @@ describe('generateTrainingAndQualificationsReport', () => {
   });
 
   it('should add tab title to cell B2', async () => {
-    addContentToCareCertificateTab(mockCareCertificateTab, mockWorkerCareCertificate);
+    addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
 
     expect(mockCareCertificateTab.getCell('B2').value).to.equal('Care Certificate');
   });
 
   describe('Care Certificate table', () => {
     it('should add care certificate  records table headings to row 6', async () => {
-      addContentToCareCertificateTab(mockCareCertificateTab, mockWorkerCareCertificate);
+      addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
 
-      expect(mockCareCertificateTab.getCell('B6').value).to.equal('Woker ID');
+      expect(mockCareCertificateTab.getCell('B6').value).to.equal('Worker ID');
       expect(mockCareCertificateTab.getCell('C6').value).to.equal('Job role');
       expect(mockCareCertificateTab.getCell('D6').value).to.equal('Status');
     });
 
     it('should add first worker with care certificate to care certificate table', async () => {
-      addContentToCareCertificateTab(mockCareCertificateTab, mockWorkerCareCertificate);
+      addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
 
-      expect(mockCareCertificateTab.getCell('B7').value).to.equal(mockWorkerCareCertificate[0].workerId);
-      expect(mockCareCertificateTab.getCell('C7').value).to.equal(mockWorkerCareCertificate[0].jobRole);
-      expect(mockCareCertificateTab.getCell('D7').value).to.equal(mockWorkerCareCertificate[0].status);
+      expect(mockCareCertificateTab.getCell('B7').value).to.equal(mockWorkersWithCareCertificateStatus[0].workerId);
+      expect(mockCareCertificateTab.getCell('C7').value).to.equal(mockWorkersWithCareCertificateStatus[0].jobRole);
+      expect(mockCareCertificateTab.getCell('D7').value).to.equal(mockWorkersWithCareCertificateStatus[0].status);
+    });
+
+    it('should add second worker with care certificate to care certificate table', async () => {
+      addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
+
+      expect(mockCareCertificateTab.getCell('B8').value).to.equal(mockWorkersWithCareCertificateStatus[1].workerId);
+      expect(mockCareCertificateTab.getCell('C8').value).to.equal(mockWorkersWithCareCertificateStatus[1].jobRole);
+      expect(mockCareCertificateTab.getCell('D8').value).to.equal(mockWorkersWithCareCertificateStatus[1].status);
     });
   });
 });
