@@ -7,7 +7,7 @@ const {
 } = require('../../../../../routes/reports/trainingAndQualifications/careCertificateTab');
 const { mockWorkerCareCertificate } = require('../../../mockdata/trainingAndQualifications');
 
-describe.only('generateTrainingAndQualificationsReport', () => {
+describe('generateTrainingAndQualificationsReport', () => {
   let mockCareCertificateTab;
 
   beforeEach(() => {

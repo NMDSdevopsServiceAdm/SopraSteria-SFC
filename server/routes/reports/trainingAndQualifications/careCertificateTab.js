@@ -6,6 +6,7 @@ const {
   backgroundColours,
   textColours,
   addBordersToAllFilledCells,
+  fitColumnsToSize,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -36,6 +37,7 @@ const addContentToCareCertificateTab = (careCertificateTab, workersWithCareCerti
 
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
   addRowsTocareCertificateTable(careCertificateTable, workersWithCareCertificate);
+  fitColumnsToSize(careCertificateTab, 2);
   addBordersToAllFilledCells(careCertificateTab, 8);
 };
 
