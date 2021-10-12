@@ -19,34 +19,27 @@ const generateCareCertificateTab = async (workbook, establishmentId) => {
 };
 
 const addContentToCareCertificateTab = (careCertificateTab, workersWithCareCertificate) => {
-  addHeading(careCertificateTab, 'B2', 'E2', 'Care Certificate');
+  addHeading(careCertificateTab, 'B2', 'D2', 'Care Certificate');
   addLine(careCertificateTab, 'A4', 'D4');
-  addHeading(careCertificateTab, 'B6', 'D6', 'Have they started or completed the Care Certificate?');
-  careCertificateTab.getCell('B6').font = {
-    family: 4,
-    size: 19,
-    bold: true,
-    color: { argb: '000000' },
-  };
 
-  careCertificateTab.autoFilter = 'B9:D9';
+  careCertificateTab.autoFilter = 'B6:D6';
   careCertificateTab.autoFilter = {
-    from: 'B9',
-    to: 'D9',
+    from: 'B6',
+    to: 'D6',
   };
 
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
   addRowsTocareCertificateTable(careCertificateTable, workersWithCareCertificate);
   fitColumnsToSize(careCertificateTab, 2);
-  addBordersToAllFilledCells(careCertificateTab, 8);
+  addBordersToAllFilledCells(careCertificateTab, 5);
 };
 
 const createCareCertificateTable = (careCertificateTab) => {
-  setTableHeadingsStyle(careCertificateTab, 9, backgroundColours.blue, textColours.white, ['B', 'C', 'D']);
+  setTableHeadingsStyle(careCertificateTab, 6, backgroundColours.blue, textColours.white, ['B', 'C', 'D']);
 
   return careCertificateTab.addTable({
     name: 'careCertificate',
-    ref: 'B9',
+    ref: 'B6',
     headerRow: true,
 
     columns: [
