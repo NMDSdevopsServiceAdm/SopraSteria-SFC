@@ -7,7 +7,7 @@ const {
   setTableHeadingsStyle,
   alignColumnToLeft,
   fitColumnsToSize,
-  // addBordersToAllFilledCells,
+  addBordersToAllFilledCells,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -23,13 +23,15 @@ const generateQualificationsTab = async (workbook, establishmentId) => {
 const addContentToQualificationsTab = (qualificationsTab, workerQualifications) => {
   addHeading(qualificationsTab, 'B2', 'E2', 'Qualifications');
   addLine(qualificationsTab, 'A4', 'G4');
-  alignColumnToLeft(qualificationsTab, 2); // ????
+  alignColumnToLeft(qualificationsTab, 2);
+
+  qualificationsTab.autoFilter = 'B6:G6';
 
   const qualificationsTable = createQualificationsTable(qualificationsTab);
   addRowsToQualificationsTable(qualificationsTable, workerQualifications);
 
   fitColumnsToSize(qualificationsTab, 2);
-  // addBordersToAllFilledCells(qualificationsTab, 5);
+  addBordersToAllFilledCells(qualificationsTab, 5);
 };
 
 const createQualificationsTable = (tab) => {
@@ -38,7 +40,7 @@ const createQualificationsTable = (tab) => {
   return tab.addTable({
     name: 'workerQualificationsTable',
     ref: 'B6',
-    // headerRow: true,
+    headerRow: true,
     columns: [
       { name: 'Worker ID', filterButton: true },
       { name: 'Job role', filterButton: true },
@@ -59,7 +61,7 @@ const addRowsToQualificationsTable = (workerQualificationsTable, workers) => {
         worker.qualificationType,
         worker.qualificationName,
         worker.qualificationLevel ? `Level ${worker.qualificationLevel}` : '',
-        worker.yearAchieved,
+        worker.yearAchieved ? worker.yearAchieved : '',
       ]);
     }
 
@@ -67,3 +69,4 @@ const addRowsToQualificationsTable = (workerQualificationsTable, workers) => {
 };
 
 module.exports.generateQualificationsTab = generateQualificationsTab;
+module.exports.addContentToQualificationsTab = addContentToQualificationsTab;

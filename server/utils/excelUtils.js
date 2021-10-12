@@ -95,8 +95,7 @@ exports.fitColumnsToSize = function (ws, startingColumn = 1) {
     });
 
     let endWidth = Math.max(...cellsWidth);
-    endWidth += 0.71; // compensate for observed reduction
-    endWidth += 1.5; // buffer space
+    endWidth += 4;
     column.width = endWidth;
   });
 };
