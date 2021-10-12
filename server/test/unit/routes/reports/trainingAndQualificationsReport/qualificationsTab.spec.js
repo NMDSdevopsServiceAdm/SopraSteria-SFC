@@ -3,35 +3,9 @@ const sinon = require('sinon');
 const excelJS = require('exceljs');
 
 const { addContentToQualificationsTab } = require('../../../../../routes/reports/trainingAndQualifications/qualificationsTab');
+const { mockWorkerQualificationRecords } = require('../../../mockdata/trainingAndQualifications')
 
 describe('addContentToQualificationsTab', () => {
-  const mockWorkerQualificationRecords = [
-    {
-      workerName: 'Helen Jones',
-      jobRole: 'Administrative / office staff not care-providing',
-      qualificationType: 'Degree',
-      qualificationName: 'Health and Social Care degree',
-      qualificationLevel: '6',
-      yearAchieved: 2020,
-    },
-    {
-      workerName: 'Anna Riley',
-      jobRole: 'Care Worker',
-      qualificationType: 'Apprenticeship',
-      qualificationName: 'Adult Care Worker (standard)',
-      qualificationLevel: '3',
-      yearAchieved: 2010,
-    },
-    {
-      workerName: 'Bob Smith',
-      jobRole: 'Activities worker or co-ordinator',
-      qualificationType: 'NVQ',
-      qualificationName: 'Care NVQ',
-      qualificationLevel: null,
-      yearAchieved: null,
-    },
-  ];
-
   let mockQualificationsTab;
 
   beforeEach(() => {
@@ -51,12 +25,14 @@ describe('addContentToQualificationsTab', () => {
   it('should add table headings to row 6', async () => {
     addContentToQualificationsTab(mockQualificationsTab, mockWorkerQualificationRecords, []);
 
-    expect(mockQualificationsTab.getCell('B6').value).to.equal('Worker ID');
-    expect(mockQualificationsTab.getCell('C6').value).to.equal('Job role');
-    expect(mockQualificationsTab.getCell('D6').value).to.equal('Qualification type');
-    expect(mockQualificationsTab.getCell('E6').value).to.equal('Qualification name');
-    expect(mockQualificationsTab.getCell('F6').value).to.equal('Qualification level');
-    expect(mockQualificationsTab.getCell('G6').value).to.equal('Year achieved');
+    const expectedLine = 6;
+
+    expect(mockQualificationsTab.getCell(`B${expectedLine}`).value).to.equal('Worker ID');
+    expect(mockQualificationsTab.getCell(`C${expectedLine}`).value).to.equal('Job role');
+    expect(mockQualificationsTab.getCell(`D${expectedLine}`).value).to.equal('Qualification type');
+    expect(mockQualificationsTab.getCell(`E${expectedLine}`).value).to.equal('Qualification name');
+    expect(mockQualificationsTab.getCell(`F${expectedLine}`).value).to.equal('Qualification level');
+    expect(mockQualificationsTab.getCell(`G${expectedLine}`).value).to.equal('Year achieved');
   });
 
   it('should add first training record to top row of table', async () => {

@@ -52,3 +52,30 @@ exports.mockWorkerTrainingBreakdowns = [
     mandatoryTrainingCount: 3,
   },
 ];
+
+exports.mockWorkerQualificationRecords = [
+  {
+    workerName: 'Helen Jones',
+    jobRole: 'Administrative / office staff not care-providing',
+    qualificationType: 'Degree',
+    qualificationName: 'Health and Social Care degree',
+    qualificationLevel: '6',
+    yearAchieved: 2020,
+  },
+  {
+    workerName: 'Anna Riley',
+    jobRole: 'Care Worker',
+    qualificationType: 'Apprenticeship',
+    qualificationName: 'Adult Care Worker (standard)',
+    qualificationLevel: '3',
+    yearAchieved: 2010,
+  },
+  {
+    workerName: 'Bob Smith',
+    jobRole: 'Activities worker or co-ordinator',
+    qualificationType: 'NVQ',
+    qualificationName: 'Care NVQ',
+    qualificationLevel: null,
+    yearAchieved: null,
+  },
+];

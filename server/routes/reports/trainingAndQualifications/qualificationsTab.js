@@ -30,7 +30,7 @@ const addContentToQualificationsTab = (qualificationsTab, workerQualifications) 
   const qualificationsTable = createQualificationsTable(qualificationsTab);
   addRowsToQualificationsTable(qualificationsTable, workerQualifications);
 
-  fitColumnsToSize(qualificationsTab, 2);
+  fitColumnsToSize(qualificationsTab, 2, 5.5);
   addBordersToAllFilledCells(qualificationsTab, 5);
 };
 
