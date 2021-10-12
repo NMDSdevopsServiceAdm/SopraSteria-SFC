@@ -3,7 +3,6 @@ const { celebrate, Joi, errors, Segments } = require('celebrate');
 const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
 const sendEmail = require('../../../../services/email-campaigns/targeted-emails/sendEmail');
 const models = require('../../../../models/');
-const { limit } = require('../../../../services/email-campaigns/limit');
 
 const router = express.Router();
 
@@ -77,8 +76,8 @@ const createTargetedEmailsCampaign = async (req, res) => {
     const history = getHistory(req, emailCampaign, templateId, users);
     await models.EmailCampaignHistory.bulkCreate(history);
 
-    users.map((user) => {
-      return limit(() => sendEmail.sendEmail(user, templateId));
+    users.map((user, index) => {
+      return sendEmail.sendEmail(user, templateId, index);
     });
 
     return res.status(200).send({ success: true });

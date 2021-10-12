@@ -6,7 +6,6 @@ const models = require('../../../../models');
 const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const findParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
-const { limit } = require('../../../../services/email-campaigns/limit');
 
 const getInactiveWorkplaces = async (_req, res) => {
   try {
@@ -54,8 +53,8 @@ const createCampaign = async (req, res) => {
 
     await models.EmailCampaignHistory.bulkCreate(history);
 
-    totalInactiveWorkplaces.map((inactiveWorkplace) => {
-      return limit(() => sendEmail.sendEmail(inactiveWorkplace));
+    totalInactiveWorkplaces.map((inactiveWorkplace, index) => {
+      return sendEmail.sendEmail(inactiveWorkplace, index)
     });
 
     return res.json({

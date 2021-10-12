@@ -5,6 +5,76 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "sendingEmails:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {},
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "API sendingEmails:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "api",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "api": {
+        "path": "/hello",
+        "httpMethod": "get",
+        "payload": {
+          "json": {}
+        }
+      },
+      "lambda": {
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "lambda-nodejs12.x:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/lambda-nodejs12.x/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {},
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "API lambda-nodejs12.x:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "api",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/lambda-nodejs12.x/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "api": {
+        "path": "/hello",
+        "httpMethod": "get",
+        "payload": {
+          "json": {}
+        }
+      },
+      "lambda": {
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
       "type": "node",
       "request": "attach",
       "name": "localhost",
@@ -53,20 +123,34 @@
       "request": "launch",
       "name": "Mocha All",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--timeout", "999999", "--colors", "${workspaceFolder}/test"],
+      "args": [
+        "--timeout",
+        "999999",
+        "--colors",
+        "${workspaceFolder}/test"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**/*.js"]
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Mocha Current File",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--timeout", "999999", "--colors", "${file}"],
+      "args": [
+        "--timeout",
+        "999999",
+        "--colors",
+        "${file}"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**/*.js"]
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ]
     }
   ]
 }
