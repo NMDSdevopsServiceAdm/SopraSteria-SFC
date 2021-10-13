@@ -67,7 +67,7 @@ exports.autoFitColumns = function (ws, headerRow) {
   });
 };
 
-exports.fitColumnsToSize = function (ws, startingColumn = 1) {
+exports.fitColumnsToSize = function (ws, startingColumn = 1, customWidth = 2.21) {
   eachColumnInRange(ws, startingColumn, ws.columns.length, (column) => {
     const cellsWidth = [];
     column.eachCell((cell) => {
@@ -95,8 +95,7 @@ exports.fitColumnsToSize = function (ws, startingColumn = 1) {
     });
 
     let endWidth = Math.max(...cellsWidth);
-    endWidth += 0.71; // compensate for observed reduction
-    endWidth += 1.5; // buffer space
+    endWidth += customWidth;
     column.width = endWidth;
   });
 };

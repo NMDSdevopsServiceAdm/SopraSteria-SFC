@@ -41,6 +41,12 @@ describe('generateTrainingAndQualificationsReport', () => {
     sinon.stub(models.MandatoryTraining, 'findMandatoryTrainingCategoriesForEstablishment').callsFake(() => {
       return [{ TrainingCategoryFK: 1 }];
     });
+    sinon.stub(models.workerQualifications, 'getWorkerQualifications').callsFake(() => {
+      return [];
+    });
+    sinon.stub(models.worker, 'getWorkersWithCareCertificateStatus').callsFake(() => {
+      return [];
+    });
   });
 
   afterEach(() => {

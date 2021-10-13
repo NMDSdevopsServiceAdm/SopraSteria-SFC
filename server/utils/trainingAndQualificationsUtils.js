@@ -23,6 +23,22 @@ const convertWorkerTrainingBreakdown = (worker) => {
   };
 };
 
+const convertWorkerWithCareCertificateStatus = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+
+  return {
+    workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+    jobRole: worker.mainJob.title,
+    status: worker.get('CareCertificateValue') ? worker.get('CareCertificateValue') : '',
+  };
+};
+
+exports.convertWorkersWithCareCertificateStatus = (rawWorkers) => {
+  return rawWorkers.map((worker) => {
+    return convertWorkerWithCareCertificateStatus(worker);
+  });
+};
+
 exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   return rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
     return convertWorkerTrainingBreakdown(trainingBreakdown);
@@ -81,6 +97,25 @@ exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
   return rawWorkersWithTrainingRecords.map((worker) => {
     return convertWorkerWithTrainingRecords(worker);
   });
+};
+
+const convertIndividualWorkerQualifications = (workerQualifications) => {
+  const workerIdAsNumber = parseInt(workerQualifications.worker.get('NameOrIdValue'));
+
+  return {
+    workerName: workerIdAsNumber ? workerIdAsNumber : workerQualifications.worker.get('NameOrIdValue'),
+    jobRole: workerQualifications.worker.mainJob.title,
+    qualificationType: workerQualifications.qualification.group,
+    qualificationName: workerQualifications.qualification.title,
+    qualificationLevel: workerQualifications.qualification.level,
+    yearAchieved: workerQualifications.get('Year'),
+  }
+};
+
+exports.convertWorkerQualifications = (rawWorkerQualifications) => {
+  return rawWorkerQualifications.map((workerQualifications) => {
+    return convertIndividualWorkerQualifications(workerQualifications);
+  })
 };
 
 exports.getTrainingTotals = (workers) => {

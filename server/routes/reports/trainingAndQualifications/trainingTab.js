@@ -31,24 +31,14 @@ const addContentToTrainingTab = (trainingTab, workersWithTraining) => {
 
   addBordersToAllFilledCells(trainingTab, 5);
   addColoursToStatusColumn(trainingTab);
-  fitColumnsToSize(trainingTab, 2);
+  fitColumnsToSize(trainingTab, 2, 5.5);
 
   trainingTab.autoFilter = 'B6:K6';
 };
 
 const createTrainingTable = (trainingTab) => {
-  setTableHeadingsStyle(trainingTab, 6, backgroundColours.blue, textColours.white, [
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-  ]);
+  const tableColumns = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+  setTableHeadingsStyle(trainingTab, 6, backgroundColours.blue, textColours.white, tableColumns);
 
   return trainingTab.addTable({
     name: 'expiringSoonTable',
