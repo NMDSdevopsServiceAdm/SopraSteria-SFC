@@ -200,6 +200,8 @@ jobs:
           path: ./junit
       - store_artifacts:
           path: ./fecoverage
+      - codecov/upload:
+          file: ./fecoverage/lcov.info
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
