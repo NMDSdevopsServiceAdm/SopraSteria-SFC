@@ -197,7 +197,9 @@ jobs:
       - store_test_results:
           path: ./junit
       - store_artifacts:
-          path: ./junit
+          path:
+            - ./junit
+            - ./fecoverage
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
