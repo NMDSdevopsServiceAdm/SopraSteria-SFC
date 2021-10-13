@@ -77,5 +77,34 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  WorkerQualifications.getWorkerQualifications = async function (establishmentId) {
+    return this.findAll({
+      attributes: ['Year'],
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'worker',
+          attributes: ['NameOrIdValue'],
+          where: {
+            establishmentFk: establishmentId,
+            archived: false,
+          },
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.workerAvailableQualifications,
+          as: 'qualification',
+          attributes: ['group', 'title', 'level'],
+        }
+      ],
+    });
+  };
+
   return WorkerQualifications;
 };
