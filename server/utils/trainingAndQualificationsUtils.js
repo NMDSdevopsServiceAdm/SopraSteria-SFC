@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 const convertWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
@@ -60,29 +58,29 @@ const convertWorkerWithTrainingRecords = (worker) => {
 
 const convertWorkerTraining = (workerTraining) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = moment(trainingRecord.get('Expires'));
+    const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
+    const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
 
     return {
       category: trainingRecord.get('category').category,
       categoryFK: trainingRecord.get('CategoryFK'),
-      trainingName: trainingRecord.get('Title'),
-      expiryDate: expiryDate.isValid() ? expiryDate.format('DD/MM/YYYY') : '',
+      trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
+      expiryDate,
       status: getTrainingRecordStatus(expiryDate),
-      dateCompleted: trainingRecord.get('Completed')
-        ? moment(trainingRecord.get('Completed')).format('DD/MM/YYYY')
-        : '',
+      dateCompleted,
       accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
     };
   });
 };
 
 const getTrainingRecordStatus = (expiryDate) => {
-  if (!expiryDate.isValid()) {
+  if (expiryDate === '') {
     return 'Up-to-date';
   }
 
-  const currentDate = moment();
-  const expiringSoonDate = moment().add(90, 'days');
+  const currentDate = new Date();
+  const expiringSoonDate = new Date();
+  expiringSoonDate.setDate(currentDate.getDate() + 90);
 
   if (expiryDate < currentDate) {
     return 'Expired';
@@ -109,13 +107,13 @@ const convertIndividualWorkerQualifications = (workerQualifications) => {
     qualificationName: workerQualifications.qualification.title,
     qualificationLevel: workerQualifications.qualification.level,
     yearAchieved: workerQualifications.get('Year'),
-  }
+  };
 };
 
 exports.convertWorkerQualifications = (rawWorkerQualifications) => {
   return rawWorkerQualifications.map((workerQualifications) => {
     return convertIndividualWorkerQualifications(workerQualifications);
-  })
+  });
 };
 
 exports.getTrainingTotals = (workers) => {
