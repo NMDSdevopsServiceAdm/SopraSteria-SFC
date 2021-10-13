@@ -197,9 +197,9 @@ jobs:
       - store_test_results:
           path: ./junit
       - store_artifacts:
-          path:
-            - ./junit
-            - ./fecoverage
+          path: ./junit
+      - store_artifacts:
+          path: ./fecoverage
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -217,9 +217,9 @@ jobs:
       - store_test_results:
           path: ./junit
       - store_artifacts:
-          path:
-            - ./junit
-            - ./coverage
+          path: ./junit
+      - store_artifacts:
+          path: ./coverage
       - codecov/upload:
           file: ./coverage/lcov.info
   performance:
