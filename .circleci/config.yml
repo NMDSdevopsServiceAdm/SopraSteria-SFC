@@ -202,7 +202,6 @@ jobs:
           path: ./fecoverage
       - codecov/upload:
           file: ./fecoverage/lcov.info
-          flags: unittests
           flags: frontend
   test_backend:
     docker:
@@ -226,7 +225,6 @@ jobs:
           path: ./coverage
       - codecov/upload:
           file: ./coverage/lcov.info
-          flags: unittests
           flags: backend
   performance:
     docker:
