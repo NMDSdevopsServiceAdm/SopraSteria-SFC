@@ -111,7 +111,7 @@ const addRow = (trainingTable, worker, trainingRecord) => {
     worker.jobRole,
     trainingRecord.category,
     trainingRecord.trainingName,
-    isMandatoryTraining(trainingRecord.categoryFK, worker.mandatoryTraining) ? 'Mandatory' : 'Not mandatory',
+    isMandatoryTraining(trainingRecord.category, worker.mandatoryTraining) ? 'Mandatory' : 'Not mandatory',
     trainingRecord.status,
     trainingRecord.expiryDate,
     trainingRecord.dateCompleted,
@@ -133,13 +133,12 @@ const addColoursToStatusColumn = (trainingTab) => {
   });
 };
 
-const isMandatoryTraining = (trainingCategoryFK, mandatoryTraining) => {
-  //return mandatoryTraining.find((category) => category.trainingCategoryFK === trainingCategoryFK);
-  return mandatoryTraining.includes(trainingCategoryFK);
+const isMandatoryTraining = (trainingCategory, mandatoryTraining) => {
+  return mandatoryTraining.includes(trainingCategory);
 };
 
-const hasTrainingRecord = (trainingRecords, trainingCategoryFK) => {
-  return trainingRecords.find((record) => record.categoryFK === trainingCategoryFK);
+const hasTrainingRecord = (trainingRecords, trainingCategory) => {
+  return trainingRecords.find((record) => record.category === trainingCategory);
 };
 
 module.exports.generateTrainingTab = generateTrainingTab;

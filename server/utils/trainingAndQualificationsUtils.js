@@ -31,14 +31,13 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 
 const convertWorkerWithTrainingRecords = (worker) => {
   const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
-  const mandatoryTraining = worker.get('mandatoryTraining');
 
   return {
     workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
     jobId: worker.mainJob.id,
     longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
-    mandatoryTraining: Array.isArray(mandatoryTraining) ? mandatoryTraining : [mandatoryTraining],
+    mandatoryTraining: worker.get('mandatoryTrainingCategories'),
     trainingRecords: convertWorkerTraining(worker.workerTraining),
   };
 };

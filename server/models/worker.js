@@ -1406,14 +1406,16 @@ module.exports = function (sequelize, DataTypes) {
           sequelize.literal(
             `
               (
-                SELECT "TrainingCategoryFK"
+                SELECT json_agg(cqc."TrainingCategories"."Category")
                   FROM cqc."MandatoryTraining"
+                  RIGHT JOIN cqc."TrainingCategories" ON
+                  "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
                   WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
                   AND "JobFK" = "worker"."MainJobFKValue"
               )
-              `,
+            `,
           ),
-          'mandatoryTraining',
+          'mandatoryTrainingCategories',
         ],
       ],
       where: {

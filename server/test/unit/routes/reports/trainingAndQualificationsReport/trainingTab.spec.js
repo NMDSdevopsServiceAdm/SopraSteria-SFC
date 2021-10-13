@@ -10,7 +10,7 @@ describe('addContentToTrainingTab', () => {
       workerId: 'Bob Test',
       jobRole: 'Activities worker or co-ordinator',
       longTermAbsence: null,
-      mandatoryTraining: [1],
+      mandatoryTraining: ['Activity provision/Well-being'],
       trainingRecords: [
         {
           category: 'Activity provision/Well-being',
@@ -36,7 +36,7 @@ describe('addContentToTrainingTab', () => {
       workerId: 'Eric Hatfield',
       jobRole: 'Advice, Guidance and Advocacy',
       longTermAbsence: null,
-      mandatoryTraining: [1, 11],
+      mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
       trainingRecords: [
         {
           category: 'Emergency Aid awareness',
@@ -62,7 +62,7 @@ describe('addContentToTrainingTab', () => {
       workerId: 'new staff record',
       jobRole: 'Activities worker or co-ordinator',
       longTermAbsence: null,
-      mandatoryTraining: [1],
+      mandatoryTraining: ['Activity provision/Well-being'],
       trainingRecords: [
         {
           category: 'First Aid',
