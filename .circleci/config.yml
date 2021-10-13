@@ -215,8 +215,9 @@ jobs:
       - store_test_results:
           path: ./junit
       - store_artifacts:
-          path: ./junit
-          path: ./coverage
+          path:
+            - ./junit
+            - ./coverage
       - codecov/upload:
           file: ./coverage/lcov.info
   performance:
