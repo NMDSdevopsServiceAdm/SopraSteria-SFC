@@ -141,6 +141,7 @@ commands:
 orbs:
   node: circleci/node@3.0.0
   slack: circleci/slack@4.4.4
+  codecov: codecov/codecov@1.0.2
 
 jobs:
   install:
@@ -215,6 +216,9 @@ jobs:
           path: ./junit
       - store_artifacts:
           path: ./junit
+          path: ./coverage
+      - codecov/upload:
+          file: ./coverage/lcov.info
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
