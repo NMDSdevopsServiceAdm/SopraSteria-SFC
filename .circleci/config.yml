@@ -178,7 +178,7 @@ jobs:
             - dist
       - slack/notify:
           branch_pattern: feat/slackDeploymentNotifications
-          channel: C02HHV34C3F
+          channel: $TEST_SLACK_CHANNEL_ID
           event: pass
           custom: |
             {
