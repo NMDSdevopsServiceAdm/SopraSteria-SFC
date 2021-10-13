@@ -1,99 +1,14 @@
 const expect = require('chai').expect;
-const sinon = require('sinon');
 const excelJS = require('exceljs');
+const { mockWorkerTrainingRecords } = require('../../../mockdata/trainingAndQualifications');
 
 const { addContentToTrainingTab } = require('../../../../../routes/reports/trainingAndQualifications/trainingTab');
 
 describe('addContentToTrainingTab', () => {
-  const mockWorkerTrainingRecords = [
-    {
-      workerId: 'Bob Test',
-      jobRole: 'Activities worker or co-ordinator',
-      longTermAbsence: null,
-      mandatoryTraining: ['Activity provision/Well-being'],
-      trainingRecords: [
-        {
-          category: 'Activity provision/Well-being',
-          categoryFK: 1,
-          trainingName: 'Important Training',
-          expiryDate: '01/01/2025',
-          status: 'Up-to-date',
-          dateCompleted: '01/01/2020',
-          accredited: 'Yes',
-        },
-        {
-          category: 'Dementia care',
-          categoryFK: 10,
-          trainingName: 'Mock Training Name',
-          expiryDate: '01/01/2022',
-          status: 'Expiring soon',
-          dateCompleted: '01/06/2020',
-          accredited: 'Yes',
-        },
-      ],
-    },
-    {
-      workerId: 'Eric Hatfield',
-      jobRole: 'Advice, Guidance and Advocacy',
-      longTermAbsence: null,
-      mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
-      trainingRecords: [
-        {
-          category: 'Emergency Aid awareness',
-          categoryFK: 14,
-          trainingName: 'Practice of Emergency Aid',
-          expiryDate: '01/01/2025',
-          status: 'Up-to-date',
-          dateCompleted: '31/03/2004',
-          accredited: 'Yes',
-        },
-        {
-          category: 'Diabetes',
-          categoryFK: 11,
-          trainingName: 'Training for diabetes',
-          expiryDate: '01/01/2019',
-          status: 'Expired',
-          dateCompleted: '31/03/2012',
-          accredited: 'No',
-        },
-      ],
-    },
-    {
-      workerId: 'new staff record',
-      jobRole: 'Activities worker or co-ordinator',
-      longTermAbsence: null,
-      mandatoryTraining: ['Activity provision/Well-being'],
-      trainingRecords: [
-        {
-          category: 'First Aid',
-          categoryFK: 18,
-          trainingName: 'Great',
-          expiryDate: null,
-          status: 'Up-to-date',
-          dateCompleted: null,
-          accredited: 'Yes',
-        },
-        {
-          category: 'Epilepsy',
-          categoryFK: 15,
-          trainingName: 'Training course',
-          expiryDate: null,
-          status: 'Up-to-date',
-          dateCompleted: null,
-          accredited: 'Yes',
-        },
-      ],
-    },
-  ];
-
   let mockTrainingTab;
 
   beforeEach(() => {
     mockTrainingTab = new excelJS.Workbook().addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
-  });
-
-  afterEach(() => {
-    sinon.restore();
   });
 
   it('should add tab title to cell B2', async () => {
@@ -130,7 +45,7 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Up-to-date');
     expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2025');
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/01/2020');
-    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
   });
 
@@ -147,7 +62,7 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Expiring soon');
     expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2022');
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/06/2020');
-    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
   });
 
@@ -164,7 +79,7 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Up-to-date');
     expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2025');
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('31/03/2004');
-    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Yes');
   });
 
@@ -181,7 +96,58 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Expired');
     expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('01/01/2019');
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('31/03/2012');
-    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('No');
+  });
+
+  it("should add worker's missing training to next row if worker has missing mandatory training", async () => {
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
+
+    const expectedLine = 11;
+
+    expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Eric Hatfield');
+    expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
+    expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activity provision/Well-being');
+    expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
+    expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Missing');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+  });
+
+  it("should add next worker's first missing training to next row if worker only has missing mandatory training and no records", async () => {
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
+
+    const expectedLine = 12;
+
+    expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Terrance Tate');
+    expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+    expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activity provision/Well-being');
+    expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
+    expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Missing');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+  });
+
+  it("should add worker's next missing training when worker has more than one missing mandatory training", async () => {
+    addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
+
+    const expectedLine = 13;
+
+    expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Terrance Tate');
+    expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+    expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Diabetes');
+    expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mandatory');
+    expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Missing');
+    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+    expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
   });
 });
