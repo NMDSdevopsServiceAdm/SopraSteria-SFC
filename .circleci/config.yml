@@ -202,6 +202,9 @@ jobs:
           path: ./fecoverage
       - codecov/upload:
           file: ./fecoverage/lcov.info
+          flags:
+            - unittests
+            - frontend
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -224,6 +227,9 @@ jobs:
           path: ./coverage
       - codecov/upload:
           file: ./coverage/lcov.info
+          flags:
+            - unittests
+            - backend
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
