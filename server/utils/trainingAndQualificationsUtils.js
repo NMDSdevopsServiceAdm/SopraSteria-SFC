@@ -49,7 +49,6 @@ const convertWorkerWithTrainingRecords = (worker) => {
   return {
     workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
-    jobId: worker.mainJob.id,
     longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
     mandatoryTraining: worker.get('mandatoryTrainingCategories'),
     trainingRecords: convertWorkerTraining(worker.workerTraining),

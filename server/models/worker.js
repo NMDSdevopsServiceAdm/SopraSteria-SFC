@@ -1416,7 +1416,6 @@ module.exports = function (sequelize, DataTypes) {
   Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
     return this.findAll({
       attributes: [
-        'id',
         'NameOrIdValue',
         'LongTermAbsence',
         [
@@ -1443,7 +1442,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.job,
           as: 'mainJob',
-          attributes: ['id', 'title'],
+          attributes: ['title'],
         },
         {
           model: sequelize.models.workerTraining,
