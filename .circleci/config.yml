@@ -140,6 +140,7 @@ commands:
 
 orbs:
   node: circleci/node@3.0.0
+  slack: circleci/slack@4.4.4
 
 jobs:
   install:
@@ -175,6 +176,22 @@ jobs:
           root: .
           paths:
             - dist
+      - slack/notify:
+          branch_pattern: feat/slackDeploymentNotifications
+          channel: $TEST_SLACK_CHANNEL_ID
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "New feature by $CIRCLE_USERNAME ready for testing on staging! :tada:"
+                  }
+                }
+              ]
+            }
   test_frontend:
     resource_class: large
     docker:
@@ -346,6 +363,37 @@ jobs:
           appname: <<parameters.appname>>
           live_subdomain: <<parameters.live_subdomain>>
           live_domain: <<parameters.live_domain>>
+      # - slack/notify:
+      #     branch_pattern: test
+      #     channel: $STAGING_SLACK_CHANNEL_ID
+      #     event: pass
+      #     custom: |
+      #       {
+      #         "blocks": [
+      #           {
+      #             "type": "section",
+      #             "text": {
+      #               "type": "mrkdwn",
+      #               "text": "New feature by $CIRCLE_USERNAME ready for testing on staging! :tada:"
+      #             }
+      #           }
+      #         ]
+      #       }
+      # - slack/notify:
+      #     branch_pattern: live
+      #     event: pass
+      #     custom: |
+      #       {
+      #         "blocks": [
+      #           {
+      #             "type": "section",
+      #             "text": {
+      #               "type": "mrkdwn",
+      #               "text": "New feature ready for testing! :tada:"
+      #             }
+      #           }
+      #         ]
+      #       }
   attach_autoscale_policy:
     description: Attach an auto scaling policy
     docker:
@@ -419,6 +467,7 @@ workflows:
   build-test-deploy:
     jobs:
       - install:
+          context: slack-secrets
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
@@ -490,6 +539,7 @@ workflows:
           live_subdomain: sfcstaging
           live_domain: cloudapps.digital
           workspace_path: .
+          # context: slack-secrets
       - blue_green:
           name: preprod_deploy
           appname: sfcpreprod
@@ -513,6 +563,7 @@ workflows:
           live_subdomain: sfcpreprod
           live_domain: cloudapps.digital
           workspace_path: .
+          # context: slack-secrets
       - attach_autoscale_policy:
           appname: sfcpreprod
           requires:
