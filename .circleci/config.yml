@@ -178,6 +178,7 @@ jobs:
             - dist
       - slack/notify:
           branch_pattern: feat/slackDeploymentNotifications
+          channel: C02HHV34C3F
           event: pass
           custom: |
             {
@@ -362,37 +363,38 @@ jobs:
           appname: <<parameters.appname>>
           live_subdomain: <<parameters.live_subdomain>>
           live_domain: <<parameters.live_domain>>
-      # - slack/notify:
-      #     branch_pattern: test
-      #     channel: $STAGING_SLACK_CHANNEL_ID
-      #     event: pass
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "New feature by $CIRCLE_USERNAME ready for testing on staging! :tada:"
-      #             }
-      #           }
-      #         ]
-      #       }
-      # - slack/notify:
-      #     branch_pattern: live
-      #     event: pass
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "New feature ready for testing! :tada:"
-      #             }
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          branch_pattern: test
+          channel: $STAGING_SLACK_CHANNEL_ID
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "New feature by $CIRCLE_USERNAME ready for testing in staging! :tada:"
+                  }
+                }
+              ]
+            }
+      - slack/notify:
+          branch_pattern: live
+          channel: $PREPROD_SLACK_CHANNEL_ID
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "New feature by $CIRCLE_USERNAME ready for testing in pre-prod! :tada:"
+                  }
+                }
+              ]
+            }
   attach_autoscale_policy:
     description: Attach an auto scaling policy
     docker:
