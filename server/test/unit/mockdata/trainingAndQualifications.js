@@ -53,6 +53,68 @@ exports.mockWorkerTrainingBreakdowns = [
   },
 ];
 
+exports.mockWorkerTrainingRecords = [
+  {
+    workerId: 'Bob Test',
+    jobRole: 'Activities worker or co-ordinator',
+    longTermAbsence: '',
+    mandatoryTraining: ['Activity provision/Well-being'],
+    trainingRecords: [
+      {
+        category: 'Activity provision/Well-being',
+        categoryFK: 1,
+        trainingName: 'Important Training',
+        expiryDate: '01/01/2025',
+        status: 'Up-to-date',
+        dateCompleted: '01/01/2020',
+        accredited: 'Yes',
+      },
+      {
+        category: 'Dementia care',
+        categoryFK: 10,
+        trainingName: 'Mock Training Name',
+        expiryDate: '01/01/2022',
+        status: 'Expiring soon',
+        dateCompleted: '01/06/2020',
+        accredited: 'Yes',
+      },
+    ],
+  },
+  {
+    workerId: 'Eric Hatfield',
+    jobRole: 'Advice, Guidance and Advocacy',
+    longTermAbsence: '',
+    mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+    trainingRecords: [
+      {
+        category: 'Emergency Aid awareness',
+        categoryFK: 14,
+        trainingName: 'Practice of Emergency Aid',
+        expiryDate: '01/01/2025',
+        status: 'Up-to-date',
+        dateCompleted: '31/03/2004',
+        accredited: 'Yes',
+      },
+      {
+        category: 'Diabetes',
+        categoryFK: 11,
+        trainingName: 'Training for diabetes',
+        expiryDate: '01/01/2019',
+        status: 'Expired',
+        dateCompleted: '31/03/2012',
+        accredited: 'No',
+      },
+    ],
+  },
+  {
+    workerId: 'Terrance Tate',
+    jobRole: 'Activities worker or co-ordinator',
+    longTermAbsence: '',
+    mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+    trainingRecords: [],
+  }
+];
+
 exports.mockWorkerQualificationRecords = [
   {
     workerName: 'Helen Jones',
