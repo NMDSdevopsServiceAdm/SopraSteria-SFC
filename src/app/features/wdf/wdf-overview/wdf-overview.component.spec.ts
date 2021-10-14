@@ -37,6 +37,16 @@ describe('WdfOverviewComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+      const { component, getByText } = await setup();
+
+      const workplaceName = component.workplace.name;
+      const nmdsId = component.workplace.nmdsId;
+      const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
+
+      expect(getByText(expectedTitleCaption)).toBeTruthy();
+    });
+
     it('should display the correct timeframe for meeting WDF requirements', async () => {
       const { getByText } = await setup();
       const timeframeSentence = 'Your data has met the WDF 2021 to 2022 requirements';
