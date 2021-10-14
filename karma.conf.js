@@ -14,8 +14,6 @@ module.exports = function (config) {
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter'),
       require('karma-junit-reporter'),
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma'),
@@ -27,7 +25,7 @@ module.exports = function (config) {
     coverageReporter: {
       dir: require('path').join(__dirname, '/fecoverage'),
       subdir: '.',
-      reporters: [{ type: 'lcov' }, { type: 'json' }],
+      reporters: [{ type: 'lcov' }, { type: 'text-summary' }],
       check: {
         global: {
           statements: 71,
@@ -37,10 +35,10 @@ module.exports = function (config) {
         },
       },
     },
-    reporters: ['progress', 'kjhtml', 'junit', 'coverage'],
+    reporters: ['progress', 'junit'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
     autoWatch: !isCI,
     singleRun: isCI,
     browsers: ['HeadlessChrome'],
