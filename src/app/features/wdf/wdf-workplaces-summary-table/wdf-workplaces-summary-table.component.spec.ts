@@ -1,13 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { WdfModule } from '../wdf.module.js';
+import { WdfModule } from '../wdf.module';
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table.component';
-import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 describe('WdfWorkplacesSummaryTableComponent', () => {
   const workplaces = [
@@ -72,20 +71,20 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     component.workplaces[0].isParent = false;
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
     component.workplaces[0].dataPermissions = DataPermissions.None;
-    component.workplaces[0].name = "Test Workplace"
+    component.workplaces[0].name = 'Test Workplace';
 
     fixture.detectChanges();
-    expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('<p>');
+    expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('<p>');
   });
   it('should display a link for workplaces with rights to at least workplace', async () => {
     const { component, fixture, getAllByText } = await setup();
 
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
     component.workplaces[0].dataPermissions = DataPermissions.Workplace;
-    component.workplaces[0].name = "Test Workplace"
+    component.workplaces[0].name = 'Test Workplace';
 
     fixture.detectChanges();
-    expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('</a>');
+    expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('</a>');
   });
   it('should display a link for workplaces if parent', async () => {
     const { component, fixture, getAllByText } = await setup();
@@ -93,10 +92,10 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
     component.workplaces[0].dataPermissions = DataPermissions.None;
     component.workplaces[0].isParent = true;
-    component.workplaces[0].name = "Test Workplace";
+    component.workplaces[0].name = 'Test Workplace';
 
     fixture.detectChanges();
-    expect(getAllByText("Test Workplace", { exact: false })[0].outerHTML).toContain('</a>');
+    expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('</a>');
   });
   it('canViewWorkplace should return true if parent', async () => {
     const { component } = await setup();
