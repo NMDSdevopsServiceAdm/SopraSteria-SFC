@@ -18,7 +18,7 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { queryByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
@@ -83,7 +83,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('should update worker if there are auto fields which have not been updated and are eligible', async () => {
       const { component, fixture, workerService } = await setup();
       spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
-      component.wdfNewDesign = true;
+
       component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
 
       fixture.detectChanges();
@@ -95,7 +95,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('should NOT auto update the worker when confirm field is called after all fields are updated and eligible', async () => {
       const { component, fixture, workerService } = await setup();
       spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
-      component.wdfNewDesign = true;
+
       component.worker.wdf.dateOfBirth = eligibleObject;
       fixture.detectChanges();
 
@@ -110,7 +110,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('should update the worker for careCertificate if its Yes, completed and not updated', async () => {
       const { component, fixture, workerService } = await setup();
       spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
-      component.wdfNewDesign = true;
+
       component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
       component.worker.careCertificate = 'Yes, completed';
       fixture.detectChanges();
@@ -125,7 +125,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('should NOT update the worker for careCertificate if it is No and not updated', async () => {
       const { component, fixture, workerService } = await setup();
       spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
-      component.wdfNewDesign = true;
+
       component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
       component.worker.careCertificate = 'No';
       fixture.detectChanges();
@@ -141,7 +141,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('should update the worker for qualificationInSocialCare if it is Yes and not updated', async () => {
       const { component, fixture, workerService } = await setup();
       spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
-      component.wdfNewDesign = true;
+
       component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
       component.worker.qualificationInSocialCare = 'Yes';
       fixture.detectChanges();
@@ -157,7 +157,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('should NOT update the worker for qualificationInSocialCare if it is NO and not updated', async () => {
       const { component, fixture, workerService } = await setup();
       spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
-      component.wdfNewDesign = true;
+
       component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
       component.worker.qualificationInSocialCare = 'NO';
       fixture.detectChanges();
@@ -176,9 +176,7 @@ describe('StaffRecordSummaryComponent', () => {
       const { component, fixture, wdfConfirmFieldsService } = await setup();
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue([]);
 
-      component.wdfNewDesign = true;
       component.worker.wdf.contract = eligibleButNotUpdatedObject;
-
       fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
@@ -188,9 +186,7 @@ describe('StaffRecordSummaryComponent', () => {
       const { component, fixture, wdfConfirmFieldsService } = await setup();
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue([]);
 
-      component.wdfNewDesign = true;
       component.worker.wdf.daysSick = notEligible;
-
       fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
@@ -200,9 +196,7 @@ describe('StaffRecordSummaryComponent', () => {
       const { component, fixture, wdfConfirmFieldsService } = await setup();
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue([]);
 
-      component.wdfNewDesign = true;
       component.worker.wdf.daysSick = notRelevant;
-
       fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
@@ -212,7 +206,6 @@ describe('StaffRecordSummaryComponent', () => {
       const { component, fixture, wdfConfirmFieldsService } = await setup();
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue(['mainJob', 'otherQualification']);
 
-      component.wdfNewDesign = true;
       component.worker.wdf.mainJob = eligibleButNotUpdatedObject;
       component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
       fixture.detectChanges();
@@ -224,7 +217,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Date Started', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
     component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
     component.worker.mainJobStartDate = '2020-01-12';
@@ -237,9 +229,8 @@ describe('StaffRecordSummaryComponent', () => {
   });
 
   it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
-    const { component, queryByText } = await setup();
+    const { queryByText } = await setup();
 
-    component.wdfNewDesign = true;
     expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
     expect(queryByText('Yes, it is')).toBeFalsy();
     expect(queryByText('No, change it')).toBeFalsy();
@@ -251,7 +242,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
     component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
     component.worker.mainJobStartDate = '2020-01-12';
@@ -269,7 +259,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Sickness in last 12 Months', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.daysSick.isEligible = Eligibility.YES;
     component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
     component.worker.contract = Contracts.Permanent;
@@ -292,7 +281,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.daysSick.isEligible = Eligibility.YES;
     component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
     component.worker.contract = Contracts.Permanent;
@@ -315,7 +303,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Zero hours contracts', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.zeroHoursContract.isEligible = Eligibility.YES;
     component.worker.wdf.zeroHoursContract.updatedSinceEffectiveDate = false;
     component.worker.zeroHoursContract = 'Yes';
@@ -333,7 +320,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.zeroHoursContract.isEligible = Eligibility.YES;
     component.worker.wdf.zeroHoursContract.updatedSinceEffectiveDate = false;
     component.worker.zeroHoursContract = 'Yes';
@@ -351,7 +337,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Contracted weekly hours', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
     component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
@@ -370,7 +355,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
     component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
@@ -389,7 +373,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Average weekly working hours', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
     component.worker.zeroHoursContract = 'Yes';
@@ -409,7 +392,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
     component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
     component.worker.zeroHoursContract = 'Yes';
@@ -429,7 +411,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Salary', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
     component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
     component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
@@ -448,7 +429,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
     component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
     component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
@@ -467,7 +447,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Main Job Role', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.mainJob.isEligible = Eligibility.YES;
     component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
     component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
@@ -486,7 +465,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.mainJob.isEligible = Eligibility.YES;
     component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
     component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
@@ -505,7 +483,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Contract', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.contract.isEligible = Eligibility.YES;
     component.worker.wdf.contract.updatedSinceEffectiveDate = false;
     component.worker.contract = Contracts.Permanent;
@@ -523,7 +500,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.contract.isEligible = Eligibility.YES;
     component.worker.wdf.contract.updatedSinceEffectiveDate = false;
     component.worker.contract = Contracts.Permanent;
@@ -541,7 +517,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Highest level of social care qualification', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
     component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
     component.worker.qualificationInSocialCare = 'Yes';
@@ -560,7 +535,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
     component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
     component.worker.qualificationInSocialCare = 'Yes';
@@ -579,7 +553,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should show WdfFieldConfirmation component when is eligible, set to no but needs to be confirmed for Any social care qualification', async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
     component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
     component.worker.qualificationInSocialCare = 'No';
@@ -594,7 +567,6 @@ describe('StaffRecordSummaryComponent', () => {
   it("should show WdfFieldConfirmation component when is eligible, set to Don't know but needs to be confirmed for Any social care qualification", async () => {
     const { component, fixture, getByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
     component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
     component.worker.qualificationInSocialCare = "Don't know";
@@ -609,7 +581,6 @@ describe('StaffRecordSummaryComponent', () => {
   it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Any social care qualification', async () => {
     const { component, fixture, queryByText } = await setup();
 
-    component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
     component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
     component.worker.qualificationInSocialCare = 'Yes';
@@ -627,7 +598,6 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-    component.wdfNewDesign = true;
     component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
     component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
     component.worker.qualificationInSocialCare = "Don't know";
@@ -646,7 +616,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('should show WdfFieldConfirmation component when is eligible(set to No) but needs to be confirmed for Started or completed Care Certificate', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
       component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
       component.worker.careCertificate = 'No';
@@ -661,7 +630,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('should show WdfFieldConfirmation component when is eligible(set to Yes, in progress or partially completed) but needs to be confirmed for Started or completed Care Certificate', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
       component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
       component.worker.careCertificate = 'Yes, in progress or partially completed';
@@ -676,7 +644,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Any social care qualification', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
       component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
       component.worker.careCertificate = 'Yes, completed';
@@ -694,7 +661,6 @@ describe('StaffRecordSummaryComponent', () => {
       const workerService = TestBed.inject(WorkerService);
       spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-      component.wdfNewDesign = true;
       component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
       component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
       component.worker.careCertificate = 'No';
@@ -714,7 +680,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('should show WdfFieldConfirmation component when is eligible(set to No) but needs to be confirmed for Non-social care qualification', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
       component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
       component.worker.otherQualification = 'No';
@@ -729,7 +694,6 @@ describe('StaffRecordSummaryComponent', () => {
     it("should show WdfFieldConfirmation component when is eligible(set to Don't know) but needs to be confirmed for Non-social care qualification", async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
       component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
       component.worker.otherQualification = "Don't know";
@@ -744,7 +708,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Non-social care qualification', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
       component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
       component.worker.otherQualification = 'Yes';
@@ -762,7 +725,6 @@ describe('StaffRecordSummaryComponent', () => {
       const workerService = TestBed.inject(WorkerService);
       spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-      component.wdfNewDesign = true;
       component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
       component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
       component.worker.otherQualification = 'No';
@@ -782,7 +744,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Highest level of non-social care qualification', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.otherQualification = 'Yes';
       component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
       component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
@@ -801,7 +762,6 @@ describe('StaffRecordSummaryComponent', () => {
       const workerService = TestBed.inject(WorkerService);
       spyOn(workerService, 'updateWorker').and.returnValue(of(null));
 
-      component.wdfNewDesign = true;
       component.worker.otherQualification = 'Yes';
       component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
       component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
@@ -822,7 +782,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for basic record fields', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.worker.wdf.mainJob.isEligible = Eligibility.YES;
       component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
       component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
@@ -842,8 +801,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for employment fields', async () => {
       const { component, fixture, queryByText } = await setup();
-
-      component.wdfNewDesign = true;
 
       component.worker.contract = Contracts.Permanent;
       component.worker.wdf.daysSick.isEligible = Eligibility.YES;
@@ -874,8 +831,6 @@ describe('StaffRecordSummaryComponent', () => {
     it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for employment fields with zero hours', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.wdfNewDesign = true;
-
       component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
       component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
       component.worker.zeroHoursContract = 'Yes';
@@ -893,8 +848,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for qualification fields', async () => {
       const { component, fixture, queryByText } = await setup();
-
-      component.wdfNewDesign = true;
 
       component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
       component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
