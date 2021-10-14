@@ -32,8 +32,6 @@ const addContentToTrainingTab = (trainingTab, workersWithTraining) => {
   addBordersToAllFilledCells(trainingTab, 5);
   addColoursToStatusColumn(trainingTab);
   fitColumnsToSize(trainingTab, 2, 5.5);
-
-  trainingTab.autoFilter = 'B6:K6';
 };
 
 const createTrainingTable = (trainingTab) => {
@@ -41,20 +39,19 @@ const createTrainingTable = (trainingTab) => {
   setTableHeadingsStyle(trainingTab, 6, backgroundColours.blue, textColours.white, tableColumns);
 
   return trainingTab.addTable({
-    name: 'expiringSoonTable',
+    name: 'trainingTable',
     ref: 'B6',
-    headerRow: true,
     columns: [
-      { name: 'Worker ID' },
-      { name: 'Job role' },
-      { name: 'Training category' },
-      { name: 'Training name' },
-      { name: 'Mandatory' },
-      { name: 'Status' },
-      { name: 'Expiry date' },
-      { name: 'Date completed' },
-      { name: 'Long-term absence' },
-      { name: 'Accredited' },
+      { name: 'Worker ID', filterButton: true },
+      { name: 'Job role', filterButton: true },
+      { name: 'Training category', filterButton: true },
+      { name: 'Training name', filterButton: true },
+      { name: 'Mandatory', filterButton: true },
+      { name: 'Status', filterButton: true },
+      { name: 'Expiry date', filterButton: true },
+      { name: 'Date completed', filterButton: true },
+      { name: 'Long-term absence', filterButton: true },
+      { name: 'Accredited', filterButton: true },
     ],
     rows: [],
   });

@@ -12,7 +12,7 @@ const {
 const models = require('../../../models');
 
 const generateQualificationsTab = async (workbook, establishmentId) => {
-  const rawWorkerQualifications = await models.workerQualifications.getWorkerQualifications(establishmentId)
+  const rawWorkerQualifications = await models.workerQualifications.getWorkerQualifications(establishmentId);
   const workerQualifications = convertWorkerQualifications(rawWorkerQualifications);
 
   const qualificationsTab = workbook.addWorksheet('Qualifications', { views: [{ showGridLines: false }] });
@@ -24,8 +24,6 @@ const addContentToQualificationsTab = (qualificationsTab, workerQualifications) 
   addHeading(qualificationsTab, 'B2', 'E2', 'Qualifications');
   addLine(qualificationsTab, 'A4', 'G4');
   alignColumnToLeft(qualificationsTab, 2);
-
-  qualificationsTab.autoFilter = 'B6:G6';
 
   const qualificationsTable = createQualificationsTable(qualificationsTab);
   addRowsToQualificationsTable(qualificationsTable, workerQualifications);
@@ -40,7 +38,6 @@ const createQualificationsTable = (tab) => {
   return tab.addTable({
     name: 'workerQualificationsTable',
     ref: 'B6',
-    headerRow: true,
     columns: [
       { name: 'Worker ID', filterButton: true },
       { name: 'Job role', filterButton: true },
@@ -56,14 +53,14 @@ const createQualificationsTable = (tab) => {
 const addRowsToQualificationsTable = (workerQualificationsTable, workers) => {
   for (let worker of workers) {
     workerQualificationsTable.addRow([
-        worker.workerName,
-        worker.jobRole,
-        worker.qualificationType,
-        worker.qualificationName,
-        worker.qualificationLevel ? `Level ${worker.qualificationLevel}` : '',
-        worker.yearAchieved ? worker.yearAchieved : '',
-      ]);
-    }
+      worker.workerName,
+      worker.jobRole,
+      worker.qualificationType,
+      worker.qualificationName,
+      worker.qualificationLevel ? `Level ${worker.qualificationLevel}` : '',
+      worker.yearAchieved ? worker.yearAchieved : '',
+    ]);
+  }
 
   workerQualificationsTable.commit();
 };
