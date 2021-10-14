@@ -27,7 +27,7 @@ const addContentToCareCertificateTab = (careCertificateTab, workers) => {
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
   addRowsToCareCertificateTable(careCertificateTable, workers);
 
-  fitColumnsToSize(careCertificateTab, 2);
+  fitColumnsToSize(careCertificateTab, 2, 5.5);
   addBordersToAllFilledCells(careCertificateTab, 5);
 };
 
