@@ -20,7 +20,6 @@
             "aot": true,
             "outputPath": "dist",
             "sourceMap": true,
-            "extractCss": true,
             "index": "index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
