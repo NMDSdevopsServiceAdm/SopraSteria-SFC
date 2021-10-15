@@ -55,7 +55,6 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
 import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
 import { TrainingComponent } from './training-qualifications-record/training/training.component';
-import { WdfWorkerConfirmationDialogComponent } from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
@@ -108,7 +107,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
-    WdfWorkerConfirmationDialogComponent,
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
