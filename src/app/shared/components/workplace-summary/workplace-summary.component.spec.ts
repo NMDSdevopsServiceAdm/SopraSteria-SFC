@@ -11,12 +11,10 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf.module';
 import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
@@ -40,7 +38,6 @@ describe('WorkplaceSummaryComponent', async () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
         { provide: CqcStatusChangeService, useClass: MockCqcStatusChangeService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       declarations: [
         WorkplaceSummaryComponent,

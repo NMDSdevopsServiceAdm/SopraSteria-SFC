@@ -12,11 +12,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -34,8 +32,6 @@ describe('StaffRecordSummaryComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditWorker']),
           deps: [HttpClient, Router, UserService],
         },
-
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: WorkerService,
           useClass: MockWorkerService,
