@@ -33,7 +33,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.mainJob.isEligible === 'Yes' &&
           !worker.wdf?.mainJob.updatedSinceEffectiveDate
         "
@@ -44,11 +43,7 @@
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          wdfView &&
-          wdfNewDesign &&
-          !(worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate)
-        "
+        *ngIf="wdfView && !(worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate)"
         [explanationText]="' basic record details'"
         [link]="getRoutePath('staff-details')"
         [hasData]="true"
@@ -70,7 +65,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.contract.isEligible === 'Yes' &&
           !worker.wdf?.contract.updatedSinceEffectiveDate
         "
@@ -82,9 +76,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         *ngIf="
-          wdfView &&
-          wdfNewDesign &&
-          !(worker.wdf?.contract.isEligible === 'Yes' && !worker.wdf?.contract.updatedSinceEffectiveDate)
+          wdfView && !(worker.wdf?.contract.isEligible === 'Yes' && !worker.wdf?.contract.updatedSinceEffectiveDate)
         "
         [explanationText]="' basic record details'"
         [link]="getRoutePath('staff-details')"
