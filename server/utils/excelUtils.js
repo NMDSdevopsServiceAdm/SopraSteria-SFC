@@ -67,8 +67,8 @@ exports.autoFitColumns = function (ws, headerRow) {
   });
 };
 
-exports.fitColumnsToSize = function (ws) {
-  eachColumnInRange(ws, 1, ws.columns.length, (column) => {
+exports.fitColumnsToSize = function (ws, startingColumn = 1, customWidth = 2.21) {
+  eachColumnInRange(ws, startingColumn, ws.columns.length, (column) => {
     const cellsWidth = [];
     column.eachCell((cell) => {
       if (!cell.isMerged && cell.value) {
@@ -95,8 +95,7 @@ exports.fitColumnsToSize = function (ws) {
     });
 
     let endWidth = Math.max(...cellsWidth);
-    endWidth += 0.71; // compensate for observed reduction
-    endWidth += 1.5; // buffer space
+    endWidth += customWidth;
     column.width = endWidth;
   });
 };
@@ -108,6 +107,16 @@ const addBorder = (worksheet, cell) => {
   };
 };
 exports.addBorder = addBorder;
+
+exports.addBordersToAllFilledCells = (tab, startingRow) => {
+  tab.eachRow(function (row, rowNumber) {
+    if (rowNumber > startingRow) {
+      row.eachCell((cell) => {
+        cell.border = fullBorder;
+      });
+    }
+  });
+};
 
 exports.addTextBox = (tab, startCell, endCell, content) => {
   tab.mergeCells(`${startCell}:${endCell}`);
@@ -141,3 +150,45 @@ exports.standardFont = standardFont;
 
 const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
 exports.textBoxAlignment = textBoxAlignment;
+
+exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
+  tab.getRow(currentLineNumber).font = { bold: true, color: textColour };
+  tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
+
+  cellColumns.map((key) => {
+    tab.getCell(key + currentLineNumber).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: backgroundColour,
+    };
+  });
+};
+
+exports.setCellTextAndBackgroundColour = (tab, cellCoordinate, backgroundColour, textColour) => {
+  const cell = tab.getCell(cellCoordinate);
+  cell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: backgroundColour,
+  };
+
+  cell.font = { color: textColour };
+};
+
+exports.alignColumnToLeft = (tab, colNumber) => {
+  tab.getColumn(colNumber).alignment = { horizontal: 'left' };
+};
+
+exports.backgroundColours = {
+  yellow: { argb: 'FFEA99' },
+  blue: { argb: '0050AB' },
+  red: { argb: 'FFC0C8' },
+  green: { argb: 'BBEDC9' },
+};
+
+exports.textColours = {
+  yellow: { argb: '945B19' },
+  white: { argb: 'FFFFFF' },
+  red: { argb: '960512' },
+  green: { argb: '005713' },
+};
