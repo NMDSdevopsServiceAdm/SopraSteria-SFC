@@ -162,11 +162,10 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
           useFactory: MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
-
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
         { provide: CqcStatusChangeService, useClass: MockCqcStatusChangeService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       declarations: [
         WorkplaceSummaryComponent,
@@ -187,9 +186,8 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
   };
 
   it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
-    const { component, queryByText } = await setup();
+    const { queryByText } = await setup();
 
-    component.wdfNewDesign = true;
     expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
     expect(queryByText('Yes, it is')).toBeFalsy();
     expect(queryByText('No, change it')).toBeFalsy();
@@ -199,7 +197,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Starters', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.starters.isEligible = Eligibility.YES;
       component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
       component.workplace.starters = [
@@ -220,7 +217,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Starters', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.starters.isEligible = Eligibility.YES;
       component.workplace.wdf.starters.updatedSinceEffectiveDate = false;
       component.workplace.starters = [
@@ -246,7 +242,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Main Service', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.mainService.isEligible = Eligibility.YES;
       component.workplace.wdf.mainService.updatedSinceEffectiveDate = false;
 
@@ -260,7 +255,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Main Service', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.mainService.isEligible = Eligibility.YES;
       component.workplace.wdf.mainService.updatedSinceEffectiveDate = false;
 
@@ -279,7 +273,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Staff Leavers', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.leavers.isEligible = Eligibility.YES;
       component.workplace.wdf.leavers.updatedSinceEffectiveDate = false;
       component.workplace.leavers = [
@@ -300,7 +293,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Staff Leavers', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.leavers.isEligible = Eligibility.YES;
       component.workplace.wdf.leavers.updatedSinceEffectiveDate = false;
       component.workplace.leavers = [
@@ -326,7 +318,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Current Staff Vacancies', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.vacancies.isEligible = Eligibility.YES;
       component.workplace.wdf.vacancies.updatedSinceEffectiveDate = false;
       component.workplace.vacancies = [
@@ -347,7 +338,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Current Staff Vacancies', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.vacancies.isEligible = Eligibility.YES;
       component.workplace.wdf.vacancies.updatedSinceEffectiveDate = false;
       component.workplace.vacancies = [
@@ -373,7 +363,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Service capacity', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.capacities.isEligible = Eligibility.YES;
       component.workplace.wdf.capacities.updatedSinceEffectiveDate = false;
       component.hasCapacity = true;
@@ -396,7 +385,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Service capacity', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.capacities.isEligible = Eligibility.YES;
       component.workplace.wdf.capacities.updatedSinceEffectiveDate = false;
       component.hasCapacity = true;
@@ -424,7 +412,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Service users', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.serviceUsers.isEligible = Eligibility.YES;
       component.workplace.wdf.serviceUsers.updatedSinceEffectiveDate = false;
       component.workplace.serviceUsers = [
@@ -445,7 +432,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Service users', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.serviceUsers.isEligible = Eligibility.YES;
       component.workplace.wdf.serviceUsers.updatedSinceEffectiveDate = false;
       component.workplace.serviceUsers = [
@@ -471,7 +457,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Total Number of Staff', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.numberOfStaff.isEligible = Eligibility.YES;
       component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
       component.workplace.numberOfStaff = 2;
@@ -487,7 +472,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Total Number of Staff', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.numberOfStaff.isEligible = Eligibility.YES;
       component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
       component.workplace.numberOfStaff = 2;
@@ -508,7 +492,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should return false when any required fields not updated since effective date and not confirmed', async () => {
       const { component, fixture } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
       component.workplace.wdf.employerType.updatedSinceEffectiveDate = true;
       component.workplace.wdf.leavers.updatedSinceEffectiveDate = true;
@@ -525,7 +508,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should return false when one required field not confirmed or updated since effective date', async () => {
       const { component, fixture } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = false;
       component.workplace.wdf.employerType.updatedSinceEffectiveDate = false;
       component.workplace.wdf.leavers.updatedSinceEffectiveDate = false;
@@ -542,7 +524,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
     it('should return true when two fields added to confirmedFields and all other required fields updated since effective date', async () => {
       const { component, fixture } = await setup();
 
-      component.wdfNewDesign = true;
       component.workplace.wdf.numberOfStaff.updatedSinceEffectiveDate = true;
       component.workplace.wdf.employerType.updatedSinceEffectiveDate = true;
       component.workplace.wdf.leavers.updatedSinceEffectiveDate = true;
@@ -566,8 +547,6 @@ describe('WDF Field Confirmation for WorkplaceSummaryComponent', async () => {
         component,
         'updateEmployerTypeIfNotUpdatedSinceEffectiveDate',
       );
-
-      component.wdfNewDesign = true;
 
       await component.ngOnInit();
 
