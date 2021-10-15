@@ -7,9 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { within } from '@testing-library/angular';
 
@@ -33,7 +31,6 @@ describe('WorkplaceTabComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     }).compileComponents();
   }));
