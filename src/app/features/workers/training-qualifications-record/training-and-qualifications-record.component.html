@@ -23,7 +23,11 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l">Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})</h1>
+      <h1 class="govuk-heading-l">
+        Training and qualifications ({{
+          this.mandatoryTrainingCount + this.nonMandatoryTrainingCount + this.qualificationsCount
+        }})
+      </h1>
       <a
         *ngIf="canEditWorker"
         class="govuk-list govuk-list--inline govuk-!-padding-left-0"
@@ -65,24 +69,18 @@
       </div>
     </div>
   </div>
-  <app-tabs>
-    <app-tab
-      [alert]="trainingAlert === trainingStatusService.EXPIRING"
-      [redAlert]="trainingAlert === trainingStatusService.EXPIRED || trainingAlert == trainingStatusService.MISSING"
-      [title]="'Training'"
-    >
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
       <app-training
         [workplace]="workplace"
         [worker]="worker"
+        [trainingRecords]="nonMandatoryTraining"
         (trainingChanged)="trainingAndQualificationsChangedHandler($event)"
       ></app-training>
-    </app-tab>
-    <app-tab [title]="'Qualifications'">
-      <app-qualifications
-        [workplace]="workplace"
-        [worker]="worker"
-        (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"
-      ></app-qualifications>
-    </app-tab>
-  </app-tabs>
+    </div>
+  </div>
 </ng-container>

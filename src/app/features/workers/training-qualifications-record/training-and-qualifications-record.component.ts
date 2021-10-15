@@ -23,7 +23,10 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public trainingAndQualsCount: number;
   public trainingAlert: number;
   public qualificationsCount: number;
-  public trainingCount: number;
+  public mandatoryTrainingCount: number;
+  public nonMandatoryTrainingCount: number;
+  public nonMandatoryTraining = [];
+  public mandatoryTraining = [];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -59,10 +62,33 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   // This method is used to set training & qualifications list and their counts and alert flag
   public setTrainingAndQualifications() {
     this.qualificationsCount = this.route.snapshot.data.qualifications.count;
-    this.trainingCount = this.route.snapshot.data.trainingRecords.count;
-    this.trainingAlert = this.trainingStatusService.getAggregatedStatus(
-      this.route.snapshot.data.trainingRecords.training,
-    );
+    const trainingRecords = this.route.snapshot.data.trainingRecords;
+    this.mandatoryTraining = trainingRecords.mandatory;
+    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
+    this.getStatus(this.mandatoryTraining);
+    this.nonMandatoryTraining = trainingRecords.nonMandatory;
+    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
+    this.getStatus(this.nonMandatoryTraining);
+    this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
+  }
+
+  private getTrainingCount(training): number {
+    let count = 0;
+    training.forEach((category) => {
+      count += category.trainingRecords.length;
+    });
+    return count;
+  }
+
+  private getStatus(categories): void {
+    categories.forEach((category) => {
+      category.trainingRecords.forEach((trainingRecord) => {
+        trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
+          trainingRecord.expires,
+          trainingRecord.missing,
+        );
+      });
+    });
   }
 
   //event handler from training and qualification component.

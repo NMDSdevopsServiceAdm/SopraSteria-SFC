@@ -21,7 +21,9 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
   let missingMandatoryTraining = [];
   try {
     let allTrainingRecords = await Training.fetch(establishmentId, workerUid);
+
     const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
+
     if (allTrainingRecords.count === 0) {
       missingMandatoryTraining = mandatoryTrainingforWorker;
     } else if (mandatoryTrainingforWorker.length > 0) {
@@ -55,6 +57,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
         updatedBy: thisRecord.updatedBy,
       });
     });
+
     res.status(200);
     return res.json(allTrainingRecords);
   } catch (err) {
@@ -63,6 +66,70 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
     return res.send(`Failed to get Training Records for Worker having uid: ${escape(workerUid)}`);
   }
 };
+
+
+const getAllTraining = async (req, res) => {
+
+  const mandatoryTrainingRecords = [];
+  const nonMandatoryTrainingRecords = [];
+
+  const establishmentId = req.establishmentId;
+  const workerUid = req.params.workerId;
+
+  try {
+    const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
+    const mandatoryTrainingForWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
+    console.log('**********here');
+    allTrainingRecords.training.forEach((training) => {
+      if (mandatoryTrainingForWorker.length === 0) {
+        nonMandatoryTrainingRecords.push(training);
+      } else {
+        // This doesn't work !!!!!!
+        mandatoryTrainingForWorker.forEach((mandatoryTraining) => {
+          // {mandatory: [], nonMandatory: [{cosh: [cosh1, cosh2]}, {care: [care1, care2]}] }
+         if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
+           mandatoryTrainingRecords.push(training);
+         } else {
+           nonMandatoryTrainingRecords.push(training);
+         }
+       });
+      }
+    });
+
+    const nonMandatoryUniqCategories =
+    nonMandatoryTrainingRecords.reduce(
+      (accumulator, current) => {
+        if(!accumulator.some(x => x.id === current.trainingCategory.id)) {
+          accumulator.push(current.trainingCategory)
+        }
+        return accumulator;
+      }, []
+    )
+    const nonMandatoryCategorites = nonMandatoryUniqCategories.map(x =>{
+      return {
+        category: x.category,
+        id: x.id,
+        trainingRecords: []
+      }
+    });
+
+    nonMandatoryCategorites.forEach(category => {
+      category.trainingRecords = nonMandatoryTrainingRecords.filter(t => t.trainingCategory.id === category.id);
+    });
+
+    const formattedTrainingRecords = {
+      mandatory: mandatoryTrainingRecords,
+      nonMandatory: nonMandatoryCategorites
+    };
+
+    res.status(200);
+    return res.json(formattedTrainingRecords);
+  } catch (error) {
+    console.error('Training::root - failed', error);
+    res.status(500);
+    return res.send(`Failed to get TrainingRecords for Worker having uid: ${escape(workerUid)}`);
+  }
+}
 
 // gets requested training record using the training uid
 const viewTrainingRecord = async (req, res) => {
@@ -182,12 +249,14 @@ const deleteTrainingRecord = async (req, res) => {
   }
 };
 
-router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
+// router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
+router.route('/').get(hasPermission('canEditWorker'), getAllTraining);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
 
 module.exports = router;
-module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
+// module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
 module.exports.createSingleTrainingRecord = createSingleTrainingRecord;
+module.exports.getAllTraining = getAllTraining;

@@ -18,10 +18,10 @@ import { take } from 'rxjs/operators';
 export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
+  @Input() trainingRecords;
   @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
-  public trainingRecords: TrainingRecord[] = [];
   public trainingDetails = [];
   public trainingDetailsLabel = [];
   public trainingCount = 0;
@@ -35,7 +35,6 @@ export class TrainingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.fetchAllRecords();
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
@@ -66,14 +65,18 @@ export class TrainingComponent implements OnInit {
       .subscribe(
         (training) => {
           this.lastUpdated = moment(training.lastUpdated);
+          this.nonMandatoryRecords = training.nonMandatory;
+          this.mandatoryRecords = training.mandatory;
           this.trainingRecords = training.training;
-          this.trainingCount = training.count;
+          this.trainingCount = this.nonMandatoryRecords.length + this.mandatoryRecords.length;
+
           this.trainingRecords.map((trainingRecord) => {
             trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
               trainingRecord.expires,
               trainingRecord.missing,
             );
           });
+
           this.trainingRecords.sort((record1, record2) => {
             if (record1.trainingStatus > record2.trainingStatus) {
               return -1;
