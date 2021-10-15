@@ -75,12 +75,17 @@
       <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
     </div>
     <div class="govuk-grid-column-full">
-      <app-training
-        [workplace]="workplace"
-        [worker]="worker"
-        [trainingRecords]="nonMandatoryTraining"
-        (trainingChanged)="trainingAndQualificationsChangedHandler($event)"
-      ></app-training>
+      <p *ngIf="nonMandatoryTrainingCount === 0; else nonMandatoryTrainingTable">
+        No non-mandatory training records have been added for this person yet
+      </p>
+      <ng-template #nonMandatoryTrainingTable>
+        <app-training
+          [workplace]="workplace"
+          [worker]="worker"
+          [trainingRecords]="nonMandatoryTraining"
+          data-testid="non-mandatory-training"
+        ></app-training>
+      </ng-template>
     </div>
   </div>
 </ng-container>

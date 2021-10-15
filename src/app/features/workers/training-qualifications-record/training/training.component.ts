@@ -1,15 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteTrainingDialogComponent } from '@features/workers/delete-training-dialog/delete-training-dialog.component';
 import * as moment from 'moment';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training',
@@ -19,7 +16,7 @@ export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
   @Input() trainingRecords;
-  @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
+  // @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
   public lastUpdated: moment.Moment;
   public trainingDetails = [];
@@ -38,79 +35,37 @@ export class TrainingComponent implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
-  deleteTrainingRecord(trainingRecord: TrainingRecord, event) {
-    event.preventDefault();
-    const dialog = this.dialogService.open(DeleteTrainingDialogComponent, {
-      nameOrId: this.worker.nameOrId,
-      trainingRecord,
-    });
-    dialog.afterClosed.pipe(take(1)).subscribe((confirm) => {
-      if (confirm) {
-        this.workerService
-          .deleteTrainingRecord(this.workplace.uid, this.worker.uid, trainingRecord.uid)
-          .subscribe(() => {
-            this.workerService.alert = { type: 'success', message: 'Training has been deleted.' };
-            this.fetchAllRecords();
-            this.trainingChanged.emit(true);
-          });
-      }
-    });
-  }
-
-  // to get all training records
-  fetchAllRecords() {
-    this.workerService
-      .getTrainingRecords(this.workplace.uid, this.worker.uid)
-      .pipe(take(1))
-      .subscribe(
-        (training) => {
-          this.lastUpdated = moment(training.lastUpdated);
-          this.nonMandatoryRecords = training.nonMandatory;
-          this.mandatoryRecords = training.mandatory;
-          this.trainingRecords = training.training;
-          this.trainingCount = this.nonMandatoryRecords.length + this.mandatoryRecords.length;
-
-          this.trainingRecords.map((trainingRecord) => {
-            trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
-              trainingRecord.expires,
-              trainingRecord.missing,
-            );
-          });
-
-          this.trainingRecords.sort((record1, record2) => {
-            if (record1.trainingStatus > record2.trainingStatus) {
-              return -1;
-            }
-            if (record1.trainingStatus < record2.trainingStatus) {
-              return 1;
-            }
-            if (record1.trainingCategory.category > record2.trainingCategory.category) {
-              return 1;
-            }
-            if (record1.trainingCategory.category < record2.trainingCategory.category) {
-              return -1;
-            }
-            return 0;
-          });
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      );
-  }
+  // deleteTrainingRecord(trainingRecord: TrainingRecord, event) {
+  //   event.preventDefault();
+  //   const dialog = this.dialogService.open(DeleteTrainingDialogComponent, {
+  //     nameOrId: this.worker.nameOrId,
+  //     trainingRecord,
+  //   });
+  //   dialog.afterClosed.pipe(take(1)).subscribe((confirm) => {
+  //     if (confirm) {
+  //       this.workerService
+  //         .deleteTrainingRecord(this.workplace.uid, this.worker.uid, trainingRecord.uid)
+  //         .subscribe(() => {
+  //           this.workerService.alert = { type: 'success', message: 'Training has been deleted.' };
+  //           this.fetchAllRecords();
+  //           this.trainingChanged.emit(true);
+  //         });
+  //     }
+  //   });
+  // }
 
   /**
    * Function used to hadle toggle for traing details view and change training details lable
    * @param {string} training uid of clicked row
    * @param {event} reference of event handler
    */
-  public toggleDetails(uid: string, event) {
-    event.preventDefault();
-    this.trainingDetails[uid] = !this.trainingDetails[uid];
-    this.trainingDetailsLabel[uid] = this.trainingDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
-  }
+  // public toggleDetails(uid: string, event) {
+  //   event.preventDefault();
+  //   this.trainingDetails[uid] = !this.trainingDetails[uid];
+  //   this.trainingDetailsLabel[uid] = this.trainingDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
+  // }
 
-  public getRoute() {
-    this.workerService.getRoute$.next(this.router.url);
-  }
+  // public getRoute() {
+  //   this.workerService.getRoute$.next(this.router.url);
+  // }
 }

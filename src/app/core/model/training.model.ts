@@ -43,6 +43,17 @@ export interface TrainingRecord {
   missing?: boolean;
 }
 
+export interface TrainingRecordCategory {
+  category: string;
+  id: number;
+  trainingRecords: TrainingRecord[];
+}
+
+export interface TrainingRecords {
+  mandatory: TrainingRecordCategory[];
+  nonMandatory: TrainingRecordCategory[];
+}
+
 export interface MultipleTrainingResponse {
   savedRecords: number;
 }

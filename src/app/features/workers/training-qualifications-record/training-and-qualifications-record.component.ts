@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -25,8 +26,8 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public qualificationsCount: number;
   public mandatoryTrainingCount: number;
   public nonMandatoryTrainingCount: number;
-  public nonMandatoryTraining = [];
-  public mandatoryTraining = [];
+  public nonMandatoryTraining: TrainingRecordCategory[];
+  public mandatoryTraining: TrainingRecordCategory[];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -63,13 +64,13 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public setTrainingAndQualifications() {
     this.qualificationsCount = this.route.snapshot.data.qualifications.count;
     const trainingRecords = this.route.snapshot.data.trainingRecords;
-    this.mandatoryTraining = trainingRecords.mandatory;
+    this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
     this.getStatus(this.mandatoryTraining);
-    this.nonMandatoryTraining = trainingRecords.nonMandatory;
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
-    this.getStatus(this.nonMandatoryTraining);
-    this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
+
+    // this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
   }
 
   private getTrainingCount(training): number {
@@ -91,12 +92,19 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     });
   }
 
-  //event handler from training and qualification component.
-  public trainingAndQualificationsChangedHandler(refresh) {
-    if (refresh) {
-      this.setTrainingAndQualifications();
-    }
+  private sortTrainingAlphabetically(training) {
+    return training.sort((categoryA, categoryB) =>
+      categoryA.category !== categoryB.category ? (categoryA.category < categoryB.category ? -1 : 1) : 0,
+    );
   }
+
+  //event handler from training and qualification component.
+  // public trainingAndQualificationsChangedHandler(refresh) {
+  //   console.log("training and qualification change handler");
+  //   if (refresh) {
+  //     this.setTrainingAndQualifications();
+  //   }
+  // }
 
   private setReturnTo(): void {
     const returnToRecord = {
