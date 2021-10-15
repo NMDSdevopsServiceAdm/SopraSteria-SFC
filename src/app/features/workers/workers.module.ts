@@ -7,7 +7,6 @@ import { QualificationsResolver } from '@core/resolvers/qualifications.resolver'
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
@@ -48,21 +47,15 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
-import {
-  TrainingAndQualificationsRecordComponent,
-} from './training-qualifications-record/training-and-qualifications-record.component';
+import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
 import { TrainingComponent } from './training-qualifications-record/training/training.component';
-import {
-  WdfWorkerConfirmationDialogComponent,
-} from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
+import { WdfWorkerConfirmationDialogComponent } from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
@@ -115,7 +108,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
-    WdfStaffSummaryComponent,
     WdfWorkerConfirmationDialogComponent,
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
