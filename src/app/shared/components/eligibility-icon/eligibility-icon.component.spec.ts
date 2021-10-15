@@ -1,8 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -12,7 +10,6 @@ describe('EligibilityIconComponent', () => {
   const setup = async (overallEligibility: boolean, currentRowEligible: boolean) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(EligibilityIconComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
-      providers: [{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }],
       componentProperties: { overallEligibility: overallEligibility, eligible: currentRowEligible },
     });
     const component = fixture.componentInstance;
@@ -28,7 +25,7 @@ describe('EligibilityIconComponent', () => {
   it('should not display a message when user meets WDF requirements overall and the current row is eligible', async () => {
     const { component, fixture } = await setup(true, true);
 
-    component.displayCorrectIcon(true);
+    component.displayCorrectIcon();
     fixture.detectChanges();
 
     expect(component.label).toEqual('');
@@ -40,7 +37,7 @@ describe('EligibilityIconComponent', () => {
     const expectedMessage = 'You need to add this information';
     const orangeFlagIcon = 'flag-orange';
 
-    component.displayCorrectIcon(true);
+    component.displayCorrectIcon();
     fixture.detectChanges();
 
     expect(component.label).toEqual(expectedMessage);
@@ -52,7 +49,7 @@ describe('EligibilityIconComponent', () => {
     const expectedMessage = 'You need to add this information';
     const redCrossIcon = 'cross-icon';
 
-    component.displayCorrectIcon(true);
+    component.displayCorrectIcon();
     fixture.detectChanges();
 
     expect(component.label).toEqual(expectedMessage);
