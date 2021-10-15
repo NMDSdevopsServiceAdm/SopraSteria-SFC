@@ -189,7 +189,7 @@ jobs:
       - run:
           command: sudo apt-get install -yq libxss1
       - run:
-          command: npm run test
+          command: npm run test-headless
           environment:
             JUNIT_REPORT_PATH: ./junit/
             JUNIT_REPORT_NAME: test-results.xml
