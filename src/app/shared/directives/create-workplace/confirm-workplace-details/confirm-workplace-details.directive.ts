@@ -3,7 +3,6 @@ import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -11,19 +10,14 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public flow: string;
   public locationAddress: LocationAddress;
   public workplace: Service;
-  public createAccountNewDesign: boolean;
   public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
   public nameAndAddress: string;
   protected subscriptions: Subscription = new Subscription();
 
-  constructor(protected backService: BackService, protected featureFlagsService: FeatureFlagsService) {}
+  constructor(protected backService: BackService) {}
 
   ngOnInit(): void {
-    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
-      this.createAccountNewDesign = value;
-      this.setBackLink();
-    });
     this.init();
     this.setNameAndAddress();
     this.setWorkplaceDetails();
@@ -34,9 +28,6 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected getWorkplaceData(): void {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public setBackLink(): void {}
 
   public setWorkplaceDetails(): void {
     if (this.workplace.isCQC && this.locationAddress.locationId) {

@@ -7,10 +7,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
@@ -43,7 +41,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
             provide: UserService,
             useClass: MockUserService,
           },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         ],
       },
     );
