@@ -3,8 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -19,10 +17,6 @@ describe('CreateAccountComponent', () => {
           provide: RegistrationService,
           useClass: RegistrationService,
           deps: [HttpClient],
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
       ],
     });
@@ -43,7 +37,7 @@ describe('CreateAccountComponent', () => {
   it('should navigate to regulated by CQC page when Start now button is clicked', async () => {
     const { getByText } = await setup();
     const startNowButton = getByText('Start now');
-    expect(startNowButton.getAttribute('href')).toBe('/registration/regulated-by-cqc');
+    expect(startNowButton.getAttribute('href')).toBe('/registration/new-regulated-by-cqc');
   });
 
   it('should navigate to About ASC-WDS page when view our about ASC-WDS link is clicked', async () => {
