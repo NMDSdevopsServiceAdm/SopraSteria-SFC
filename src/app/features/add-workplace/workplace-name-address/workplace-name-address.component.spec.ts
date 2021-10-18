@@ -4,11 +4,9 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceModule } from '@features/workplace/workplace.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
@@ -28,10 +26,6 @@ describe('WorkplaceNameAddressComponent', () => {
         {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
         {
           provide: ActivatedRoute,
@@ -149,7 +143,6 @@ describe('WorkplaceNameAddressComponent', () => {
       form.controls['county'].setValue('Greater London');
       form.controls['postcode'].setValue('SE1 1AA');
 
-      component.createAccountNewDesign = true;
       fixture.detectChanges();
 
       const continueButton = getByText('Continue');
@@ -169,7 +162,6 @@ describe('WorkplaceNameAddressComponent', () => {
       form.controls['county'].setValue('Greater London');
       form.controls['postcode'].setValue('SE1 1AA');
 
-      component.createAccountNewDesign = false;
       fixture.detectChanges();
 
       const continueButton = getByText('Continue');
@@ -189,7 +181,6 @@ describe('WorkplaceNameAddressComponent', () => {
       form.controls['county'].setValue('Greater London');
       form.controls['postcode'].setValue('SE1 1AA');
 
-      component.createAccountNewDesign = true;
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       fixture.detectChanges();
 
@@ -221,7 +212,6 @@ describe('WorkplaceNameAddressComponent', () => {
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.returnTo$.next({ url: ['add-workplace', 'confirm-details'] });
-      component.createAccountNewDesign = true;
 
       component.ngOnInit();
 
@@ -240,7 +230,6 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.workplaceService.workplaceNotFound$.next(true);
       component.workplaceService.isCqcRegulated$.next(true);
-      component.createAccountNewDesign = true;
 
       component.ngOnInit();
 
@@ -259,7 +248,6 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.workplaceService.workplaceNotFound$.next(true);
       component.workplaceService.isCqcRegulated$.next(false);
-      component.createAccountNewDesign = true;
 
       component.ngOnInit();
 
@@ -278,7 +266,6 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.workplaceService.workplaceNotFound$.next(false);
       component.workplaceService.isCqcRegulated$.next(true);
-      component.createAccountNewDesign = true;
 
       component.ngOnInit();
 
@@ -297,7 +284,6 @@ describe('WorkplaceNameAddressComponent', () => {
 
       component.workplaceService.workplaceNotFound$.next(false);
       component.workplaceService.isCqcRegulated$.next(false);
-      component.createAccountNewDesign = true;
 
       component.ngOnInit();
 

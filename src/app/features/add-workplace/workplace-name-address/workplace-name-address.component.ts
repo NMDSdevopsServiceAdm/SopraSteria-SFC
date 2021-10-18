@@ -5,7 +5,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-name-address',
@@ -13,11 +12,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
     '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
-  public isCqcRegulated: boolean;
-  public createAccountNewDesign: boolean;
-
   constructor(
-    protected featureFlagsService: FeatureFlagsService,
     public workplaceService: WorkplaceService,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -25,7 +20,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     protected route: ActivatedRoute,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router, featureFlagsService, workplaceService);
+    super(backService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {
@@ -50,9 +45,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected getNextRoute(): string {
-    if (this.createAccountNewDesign) {
-      return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
-    }
-    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
   }
 }
