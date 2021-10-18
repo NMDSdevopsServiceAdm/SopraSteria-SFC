@@ -9,7 +9,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -25,7 +24,6 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public serverError: string;
   public returnToWorkplaceNotFound: boolean;
   public returnToConfirmDetails: URLStructure;
-  public createAccountNewDesign: boolean;
   public postcodeOrLocationId: string;
 
   constructor(
@@ -36,7 +34,6 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     protected formBuilder: FormBuilder,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected locationService: LocationService,
-    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
   public ngOnInit(): void {
@@ -47,14 +44,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefillForm();
-    this.setFeatureFlag();
-  }
-
-  protected setFeatureFlag(): void {
-    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
-      this.createAccountNewDesign = value;
-      this.setBackLink();
-    });
+    this.setBackLink();
   }
 
   public ngAfterViewInit(): void {
