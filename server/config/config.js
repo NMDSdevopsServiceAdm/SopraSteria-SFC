@@ -270,8 +270,8 @@ const config = convict({
       doc: 'SQS queue to send email requests',
       format: '*',
       default: '',
-      env: 'SEND_EMAILS_SQS_QUEUE'
-    }
+      env: 'SEND_EMAILS_SQS_QUEUE',
+    },
   },
   bulkupload: {
     region: {
@@ -577,11 +577,12 @@ if (config.get('aws.secrets.use')) {
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
     config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
 
-
     // Send in Blue
     config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
     config.set('sendInBlue.whitelist', AWSSecrets.sendInBlueWhitelist());
 
+    // sqs queue
+    config.set('aws.sqsqueue', AWSSecrets.sendEmailsToSQSQueue());
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
 
