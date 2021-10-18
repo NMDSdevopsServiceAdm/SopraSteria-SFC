@@ -24,12 +24,10 @@ const addContentToCareCertificateTab = (careCertificateTab, workers) => {
   addLine(careCertificateTab, 'A4', 'D4');
   alignColumnToLeft(careCertificateTab, 2);
 
-  careCertificateTab.autoFilter = 'B6:D6';
-
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
   addRowsToCareCertificateTable(careCertificateTable, workers);
 
-  fitColumnsToSize(careCertificateTab, 2);
+  fitColumnsToSize(careCertificateTab, 2, 5.5);
   addBordersToAllFilledCells(careCertificateTab, 5);
 };
 
@@ -37,10 +35,8 @@ const createCareCertificateTable = (careCertificateTab) => {
   setTableHeadingsStyle(careCertificateTab, 6, backgroundColours.blue, textColours.white, ['B', 'C', 'D']);
 
   return careCertificateTab.addTable({
-    name: 'careCertificate',
+    name: 'careCertificateTable',
     ref: 'B6',
-    headerRow: true,
-
     columns: [
       { name: 'Worker ID', filterButton: true },
       { name: 'Job role', filterButton: true },

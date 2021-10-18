@@ -1413,5 +1413,52 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
+    return this.findAll({
+      attributes: [
+        'NameOrIdValue',
+        'LongTermAbsence',
+        [
+          sequelize.literal(
+            `
+              (
+                SELECT json_agg(cqc."TrainingCategories"."Category")
+                  FROM cqc."MandatoryTraining"
+                  RIGHT JOIN cqc."TrainingCategories" ON
+                  "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
+                  WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                  AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            `,
+          ),
+          'mandatoryTrainingCategories',
+        ],
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+        },
+        {
+          model: sequelize.models.workerTraining,
+          as: 'workerTraining',
+          attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+          include: [
+            {
+              model: sequelize.models.workerTrainingCategories,
+              as: 'category',
+              attributes: ['category'],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
   return Worker;
 };

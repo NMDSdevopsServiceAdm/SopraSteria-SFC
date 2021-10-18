@@ -55,7 +55,6 @@ const createAllTrainingRecordsTable = (tab, trainingRecordTotals) => {
   return tab.addTable({
     name: 'allTrainingRecordsTable',
     ref: 'B6',
-    headerRow: true,
     columns: [
       { name: 'All training records', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -97,7 +96,6 @@ const createExpiringSoonTable = (tab, lineNumber, expiringTrainingTotals) => {
   return tab.addTable({
     name: 'expiringSoonTable',
     ref: 'B' + lineNumber,
-    headerRow: true,
     columns: [
       { name: 'Expiring soon', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -116,7 +114,6 @@ const createExpiredTable = (tab, lineNumber, expiredTrainingTotals) => {
   return tab.addTable({
     name: 'expiredTable',
     ref: 'B' + lineNumber,
-    headerRow: true,
     columns: [
       { name: 'Expired', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -133,7 +130,6 @@ const createMissingTable = (tab, lineNumber, totalMissingMandatoryTraining) => {
   return tab.addTable({
     name: 'missingTable',
     ref: 'B' + lineNumber,
-    headerRow: true,
     columns: [
       { name: 'Missing', filterButton: false },
       { name: 'Total', filterButton: false },

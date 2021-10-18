@@ -42,11 +42,6 @@ export const mockConfigCatClient = {
   },
 
   getValueAsync: (flagName, defaultSetting) => {
-    if (flagName === 'wdfNewDesign') {
-      return new Promise((resolve) => {
-        return resolve(true);
-      });
-    }
     if (flagName === 'createAccountNewDesign') {
       return new Promise((resolve) => {
         return resolve(false);

@@ -7,9 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
@@ -26,7 +24,6 @@ describe('WdfStaffRecordComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {

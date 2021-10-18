@@ -6,7 +6,7 @@ const { addContentToSummaryTab } = require('../../../../../routes/reports/traini
 const { getTrainingTotals } = require('../../../../../utils/trainingAndQualificationsUtils');
 const { mockWorkerTrainingBreakdowns } = require('../../../mockdata/trainingAndQualifications');
 
-describe('generateTrainingAndQualificationsReport', () => {
+describe('addContentToSummaryTab', () => {
   let mockSummaryTab;
 
   const mockTrainingRecordTotals = getTrainingTotals(mockWorkerTrainingBreakdowns);

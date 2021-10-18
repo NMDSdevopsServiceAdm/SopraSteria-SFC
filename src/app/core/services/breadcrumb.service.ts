@@ -25,7 +25,6 @@ import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_tra
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
-import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -103,12 +102,8 @@ export class BreadcrumbService {
   }
 
   private getPath(url: string, segments: UrlSegment[]) {
-    const reportUrl = url;
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
-        if (reportUrl === '/reports/workplace/:workplaceUid/wdf') {
-          return segments[index - 1] ? segments[index - 1].path : part;
-        }
         return segments[index] ? segments[index].path : part;
       }
       return part;
@@ -159,14 +154,6 @@ export class BreadcrumbService {
       }
       case JourneyType.ADMIN_REJECTED_REGISTRATIONS: {
         routes = adminRejectedRegistrationJourney;
-        break;
-      }
-      case JourneyType.REPORTS: {
-        routes = reportJourney;
-        break;
-      }
-      case JourneyType.SUBSIDIARY_REPORTS: {
-        routes = subsidiaryReportJourney;
         break;
       }
       case JourneyType.MY_WORKPLACE: {
