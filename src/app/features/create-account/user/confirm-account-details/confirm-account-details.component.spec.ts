@@ -5,13 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, queryByText, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
 
@@ -37,7 +35,6 @@ describe('ConfirmAccountDetailsComponent', () => {
             provide: UserService,
             useClass: MockUserService,
           },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
           {
             provide: ActivatedRoute,
             useValue: {
