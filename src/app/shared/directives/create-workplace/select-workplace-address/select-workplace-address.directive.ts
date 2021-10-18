@@ -7,7 +7,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { compact, isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -20,7 +19,6 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public formErrorsMap: Array<ErrorDetails>;
   public locationAddresses: Array<LocationAddress>;
   public submitted = false;
-  public createAccountNewDesign: boolean;
   public returnToConfirmDetails: URLStructure;
   public selectedLocationAddress: LocationAddress;
   public title: string;
@@ -32,7 +30,6 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
@@ -50,10 +47,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.setLocationAddresses();
     this.setSelectedLocationAddress();
     this.prefillForm();
-    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
-      this.createAccountNewDesign = value;
-      this.setBackLink();
-    });
+    this.setBackLink();
     this.resetServiceVariables();
   }
 
@@ -64,8 +58,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   protected setFlow(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected setBackLink(): void {
-    const backLink = this.createAccountNewDesign ? 'find-workplace-address' : 'regulated-by-cqc';
-    this.backService.setBackLink({ url: [this.flow, backLink] });
+    this.backService.setBackLink({ url: [this.flow, 'find-workplace-address'] });
   }
 
   protected setupForm(): void {
@@ -154,18 +147,10 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
       return;
     }
 
-    if (this.createAccountNewDesign) {
-      if (locationName?.length) {
-        this.router.navigate([`${this.flow}/new-select-main-service`]);
-      } else {
-        this.router.navigate([`${this.flow}/workplace-name`]);
-      }
+    if (locationName?.length) {
+      this.router.navigate([`${this.flow}/new-select-main-service`]);
     } else {
-      if (locationName?.length) {
-        this.router.navigate([`${this.flow}/select-main-service`]);
-      } else {
-        this.router.navigate([`${this.flow}/workplace-name-address`]);
-      }
+      this.router.navigate([`${this.flow}/workplace-name`]);
     }
   }
 

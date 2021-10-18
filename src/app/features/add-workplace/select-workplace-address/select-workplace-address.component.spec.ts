@@ -4,13 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import {
-  SelectWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
@@ -34,7 +30,6 @@ describe('SelectWorkplaceAddressComponent', () => {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
         },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -148,9 +143,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
   describe('Navigation', () => {
     it('should navigate back to the find-workplace-address url in add-workplace flow when Change clicked', async () => {
-      const { component, fixture, getByText } = await setup();
-      component.createAccountNewDesign = true;
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       const changeButton = getByText('Change');
 
@@ -158,10 +151,7 @@ describe('SelectWorkplaceAddressComponent', () => {
     });
 
     it('should navigate to workplace-name-address url in add-workplace flow when workplace not listed button clicked', async () => {
-      const { component, fixture, getByText } = await setup();
-      component.createAccountNewDesign = true;
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       const notDisplayedButton = getByText('Workplace address is not listed or is not correct');
 
@@ -187,7 +177,6 @@ describe('SelectWorkplaceAddressComponent', () => {
     it('should navigate to the confirm-workplace-details page in add-workplace flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {
       const { component, spy, getByText } = await setup();
 
-      component.createAccountNewDesign = true;
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
 
       const form = component.form;

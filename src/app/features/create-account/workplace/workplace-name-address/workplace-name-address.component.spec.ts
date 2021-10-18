@@ -133,7 +133,7 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to new-select-main-service page on success if feature flag is on', async () => {
+    it('should navigate to new-select-main-service page on success', async () => {
       const { component, fixture, getByText, spy } = await setup();
       const form = component.form;
 
@@ -150,25 +150,6 @@ describe('WorkplaceNameAddressComponent', () => {
 
       expect(form.invalid).toBeFalsy();
       expect(spy).toHaveBeenCalledWith(['/registration', 'new-select-main-service']);
-    });
-
-    it('should navigate to select-main-service page on success if feature flag is off', async () => {
-      const { component, fixture, getByText, spy } = await setup();
-      const form = component.form;
-
-      form.controls['workplaceName'].setValue('Workplace');
-      form.controls['address1'].setValue('1 Main Street');
-      form.controls['townOrCity'].setValue('London');
-      form.controls['county'].setValue('Greater London');
-      form.controls['postcode'].setValue('SE1 1AA');
-
-      fixture.detectChanges();
-
-      const continueButton = getByText('Continue');
-      fireEvent.click(continueButton);
-
-      expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
     });
 
     it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
