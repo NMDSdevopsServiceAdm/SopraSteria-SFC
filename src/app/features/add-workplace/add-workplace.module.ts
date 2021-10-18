@@ -23,7 +23,6 @@ import { SelectWorkplaceAddressComponent } from './select-workplace-address/sele
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you/workplace-added-thank-you.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 @NgModule({
   imports: [CommonModule, AddWorkplaceRoutingModule, ReactiveFormsModule, SharedModule],
@@ -39,7 +38,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     StartComponent,
-    WorkplaceNotFoundComponent,
     WorkplaceNameAddressComponent,
     NameOfWorkplaceComponent,
     NewWorkplaceNotFoundComponent,
