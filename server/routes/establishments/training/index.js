@@ -79,14 +79,13 @@ const getAllTraining = async (req, res) => {
   try {
     const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
     const mandatoryTrainingForWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
-    console.log('**********here');
+
     allTrainingRecords.training.forEach((training) => {
       if (mandatoryTrainingForWorker.length === 0) {
         nonMandatoryTrainingRecords.push(training);
       } else {
-        // This doesn't work !!!!!!
+        // This doesn't work. Will be done in mandatory training ticket
         mandatoryTrainingForWorker.forEach((mandatoryTraining) => {
-          // {mandatory: [], nonMandatory: [{cosh: [cosh1, cosh2]}, {care: [care1, care2]}] }
          if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
            mandatoryTrainingRecords.push(training);
          } else {
@@ -99,27 +98,28 @@ const getAllTraining = async (req, res) => {
     const nonMandatoryUniqCategories =
     nonMandatoryTrainingRecords.reduce(
       (accumulator, current) => {
-        if(!accumulator.some(x => x.id === current.trainingCategory.id)) {
+        if(!accumulator.some(training => training.id === current.trainingCategory.id)) {
           accumulator.push(current.trainingCategory)
         }
         return accumulator;
       }, []
     )
-    const nonMandatoryCategorites = nonMandatoryUniqCategories.map(x =>{
+
+    const nonMandatoryCategories = nonMandatoryUniqCategories.map(category =>{
       return {
-        category: x.category,
-        id: x.id,
+        category: category.category,
+        id: category.id,
         trainingRecords: []
       }
     });
 
-    nonMandatoryCategorites.forEach(category => {
-      category.trainingRecords = nonMandatoryTrainingRecords.filter(t => t.trainingCategory.id === category.id);
+    nonMandatoryCategories.forEach(category => {
+      category.trainingRecords = nonMandatoryTrainingRecords.filter(trainingRecord => trainingRecord.trainingCategory.id === category.id);
     });
 
     const formattedTrainingRecords = {
       mandatory: mandatoryTrainingRecords,
-      nonMandatory: nonMandatoryCategorites
+      nonMandatory: nonMandatoryCategories
     };
 
     res.status(200);

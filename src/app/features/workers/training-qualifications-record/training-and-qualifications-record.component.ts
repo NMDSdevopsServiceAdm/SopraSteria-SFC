@@ -69,7 +69,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.getStatus(this.mandatoryTraining);
     this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
-
+    this.getStatus(this.nonMandatoryTraining);
     // this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
   }
 
