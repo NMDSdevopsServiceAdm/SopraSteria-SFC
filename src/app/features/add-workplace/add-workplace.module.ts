@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddWorkplaceRoutingModule } from '@features/add-workplace/add-workplace-routing.module';
-import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { StartComponent } from '@features/add-workplace/start/start.component';
 import { SharedModule } from '@shared/shared.module';
 
@@ -35,7 +34,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     ConfirmWorkplaceDetailsComponent,
     CreateUserAccountComponent,
     FindWorkplaceAddressComponent,
-    RegulatedByCqcComponent,
     NewRegulatedByCqcComponent,
     SelectMainServiceComponent,
     SelectWorkplaceAddressComponent,
