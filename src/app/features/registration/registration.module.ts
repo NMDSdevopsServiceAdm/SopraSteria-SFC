@@ -18,7 +18,6 @@ import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
-import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { FindWorkplaceAddressComponent } from '../create-account/workplace/find-workplace-address/find-workplace-address.component';
@@ -40,7 +39,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     RegistrationCompleteComponent,
     ThankYouComponent,
     SecurityQuestionComponent,
-    SelectMainServiceComponent,
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     YourDetailsComponent,
