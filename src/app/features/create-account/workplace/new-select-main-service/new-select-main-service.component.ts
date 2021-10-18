@@ -7,7 +7,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-new-select-main-service',
@@ -15,7 +14,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
-  public createAccountNewDesign: boolean;
 
   constructor(
     public registrationService: RegistrationService,
@@ -24,21 +22,17 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
-    private featureFlagsService: FeatureFlagsService,
     private route: ActivatedRoute,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
-  protected async init(): Promise<void> {
+  protected init(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.isRegulated = this.registrationService.isRegulated();
     this.isParent = false;
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
-    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
-      'createAccountNewDesign',
-      false,
-    );
+
     this.setBackLink();
   }
 
@@ -67,14 +61,12 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   public setBackLink(): void {
-    let route: string;
     if (this.returnToConfirmDetails) {
-      route = this.createAccountNewDesign ? 'confirm-details' : 'confirm-workplace-details';
-      this.backService.setBackLink({ url: [this.flow, route] });
+      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
       return;
     }
 
-    route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
+    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
     this.backService.setBackLink({ url: [this.flow, route] });
   }
 

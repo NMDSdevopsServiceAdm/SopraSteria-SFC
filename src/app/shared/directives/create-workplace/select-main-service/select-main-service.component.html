@@ -15,7 +15,7 @@
             <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'its' : 'your' }} main service</h1>
           </legend>
           <div *ngIf="displayIntro">
-            <ng-container *ngIf="isRegulated; else notRegulated">
+            <ng-container *ngIf="isRegulated">
               <ng-container *ngIf="isParent; else notParent">
                 <p>
                   Because you said the main service it provides is regulated by the Care Quality Commission (CQC),
@@ -29,12 +29,6 @@
                 </p>
               </ng-template>
             </ng-container>
-            <ng-template #notRegulated>
-              <p *ngIf="!createAccountNewDesign">
-                We need some details about where you work. You need to answer these questions before we can create your
-                account.
-              </p>
-            </ng-template>
           </div>
 
           <span
