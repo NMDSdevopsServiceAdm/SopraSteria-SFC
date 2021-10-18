@@ -26,7 +26,6 @@ import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-thi
 import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule, PagesModule],
@@ -42,7 +41,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     YourDetailsComponent,
-    WorkplaceNotFoundComponent,
     AboutUsRegistrationComponent,
     CreateAccountComponent,
     FindYourWorkplaceComponent,

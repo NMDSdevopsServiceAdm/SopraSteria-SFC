@@ -25,7 +25,6 @@ import { NewRegulatedByCqcComponent } from '../create-account/workplace/new-regu
 import { NewWorkplaceNotFoundComponent } from '../create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const routes: Routes = [
   {
@@ -60,12 +59,6 @@ const routes: Routes = [
     path: 'new-regulated-by-cqc',
     component: NewRegulatedByCqcComponent,
     data: { title: 'Service regulated by CQC?' },
-  },
-  {
-    path: 'workplace-not-found',
-    component: WorkplaceNotFoundComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Workplace Not Found' },
   },
   {
     path: 'new-workplace-not-found',
