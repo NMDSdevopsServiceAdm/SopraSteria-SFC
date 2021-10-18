@@ -11,12 +11,9 @@ import { FindYourWorkplaceComponent } from '@features/add-workplace/find-your-wo
 import { IsThisYourWorkplaceComponent } from '@features/add-workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { NewRegulatedByCqcComponent } from '@features/add-workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { NewSelectMainServiceComponent } from '@features/add-workplace/new-select-main-service/new-select-main-service.component';
-import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
-import { SelectMainServiceComponent } from '@features/add-workplace/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/add-workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/add-workplace/select-workplace/select-workplace.component';
 import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
-import { WorkplaceNotFoundComponent } from '@features/add-workplace/workplace-not-found/workplace-not-found.component';
 
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
@@ -29,18 +26,6 @@ const routes: Routes = [
     path: 'start',
     component: StartComponent,
     data: { title: 'Add Workplace' },
-  },
-  {
-    path: 'regulated-by-cqc',
-    component: RegulatedByCqcComponent,
-    data: { title: 'Regulated by CQC' },
-    canActivate: [AddWorkplaceInProgressGuard],
-  },
-  {
-    path: 'workplace-not-found',
-    component: WorkplaceNotFoundComponent,
-    data: { title: 'Workplace Not Found' },
-    canActivate: [AddWorkplaceInProgressGuard],
   },
   {
     path: 'new-workplace-not-found',
@@ -100,12 +85,6 @@ const routes: Routes = [
     path: 'confirm-account-details',
     component: ConfirmAccountDetailsComponent,
     data: { title: 'Confirm Account Details' },
-    canActivate: [AddWorkplaceInProgressGuard],
-  },
-  {
-    path: 'select-main-service',
-    component: SelectMainServiceComponent,
-    data: { title: 'Select Main Service' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {

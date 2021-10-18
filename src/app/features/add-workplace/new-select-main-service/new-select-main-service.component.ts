@@ -8,7 +8,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-new-select-main-service',
@@ -17,7 +16,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
   public workplace: Establishment;
-  public createAccountNewDesign: boolean;
 
   constructor(
     public backService: BackService,
@@ -26,23 +24,19 @@ export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
     protected router: Router,
     public workplaceService: WorkplaceService,
     private establishmentService: EstablishmentService,
-    private featureFlagsService: FeatureFlagsService,
     private route: ActivatedRoute,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
-  protected async init(): Promise<void> {
+  protected init(): void {
     this.flow = 'add-workplace';
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
+
     this.setBackLink();
-    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
-      'createAccountNewDesign',
-      false,
-    );
   }
 
   protected getServiceCategories(): void {

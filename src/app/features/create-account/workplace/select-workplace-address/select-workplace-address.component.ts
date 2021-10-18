@@ -4,10 +4,7 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import {
-  SelectWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -21,9 +18,8 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
+    super(backService, errorSummaryService, formBuilder, router, registrationService);
   }
 
   protected setFlow(): void {

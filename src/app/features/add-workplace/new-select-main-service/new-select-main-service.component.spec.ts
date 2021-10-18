@@ -6,9 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -37,7 +35,6 @@ describe('NewSelectMainServiceComponent', () => {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
           },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
           {
             provide: ActivatedRoute,
             useValue: {
@@ -94,24 +91,9 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeTruthy();
   });
 
-  it('should show standard text when following the not CQC regulated flow and feature flag is off', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.createAccountNewDesign = false;
-    component.isRegulated = false;
-
-    fixture.detectChanges();
-    const cqcText = getByText(
-      'We need some details about where you work. You need to answer these questions before we can create your account.',
-    );
-
-    expect(cqcText).toBeTruthy();
-  });
-
-  it('should show no description text when following the not CQC regulated flow and feature flag is on', async () => {
+  it('should show no description text when following the not CQC regulated flow', async () => {
     const { component, fixture, queryByText } = await setup();
 
-    component.createAccountNewDesign = true;
     component.isRegulated = false;
 
     fixture.detectChanges();
@@ -283,12 +265,11 @@ describe('NewSelectMainServiceComponent', () => {
       });
     });
 
-    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null and feature flag is on', async () => {
+    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null', async () => {
       const { component } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
-      component.createAccountNewDesign = true;
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       component.setBackLink();
 

@@ -2,9 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -19,7 +17,6 @@ describe('StartComponent', () => {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
         },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         BackService,
       ],
     });
@@ -39,9 +36,7 @@ describe('StartComponent', () => {
   });
 
   it('should navigate to new-regulated-by-cqc url in add-workplace flow when Continue button clicked', async () => {
-    const { component, fixture, getByText } = await setup();
-    component.createAccountNewDesign = true;
-    fixture.detectChanges();
+    const { getByText } = await setup();
 
     const continueButton = getByText('Continue');
 

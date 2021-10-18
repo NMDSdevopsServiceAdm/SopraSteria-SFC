@@ -4,9 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { UserService } from '@core/services/user.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserServiceWithNoUserDetails } from '@core/test-utils/MockUserService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -19,10 +17,6 @@ describe('YourDetailsComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
         BackService,
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
         {
           provide: UserService,
           useClass: MockUserServiceWithNoUserDetails,
@@ -276,7 +270,6 @@ describe('YourDetailsComponent', () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
 
-    component.fixture.componentInstance.createAccountNewDesign = true;
     component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
 
     form.controls['fullname'].setValue('name');
@@ -292,7 +285,7 @@ describe('YourDetailsComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to new-select-main-service if the feature flag is on and return url is null', async () => {
+    it('should set the back link to new-select-main-service if return url is null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -304,7 +297,7 @@ describe('YourDetailsComponent', () => {
       });
     });
 
-    it('should set the back link to new-select-main-service if the feature flag is on and return url is not null', async () => {
+    it('should set the back link to new-select-main-service if return url is not null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 

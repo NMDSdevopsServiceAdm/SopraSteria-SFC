@@ -41,7 +41,6 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   protected back: URLStructure;
   protected formErrorsMap: Array<ErrorDetails>;
   protected subscriptions: Subscription = new Subscription();
-  protected createAccountNewDesign: boolean;
 
   constructor(
     protected backService: BackService,
@@ -66,15 +65,15 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    await this.init();
+    this.init();
     this.setBackLink();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected init() {}
+  protected init(): void {}
 
   protected setUserDetails(): UserDetails {
     return {
@@ -164,7 +163,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -197,7 +196,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
 
   protected setBackLink(): void {}
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }

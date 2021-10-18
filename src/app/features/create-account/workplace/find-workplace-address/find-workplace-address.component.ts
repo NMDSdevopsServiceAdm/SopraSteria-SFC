@@ -6,7 +6,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { FindWorkplaceAddressDirective } from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-find-workplace-address',
@@ -20,18 +19,9 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     public registrationService: RegistrationService,
   ) {
-    super(
-      backService,
-      errorSummaryService,
-      formBuilder,
-      locationService,
-      router,
-      featureFlagsService,
-      registrationService,
-    );
+    super(backService, errorSummaryService, formBuilder, locationService, router, registrationService);
   }
 
   protected setFlow(): void {

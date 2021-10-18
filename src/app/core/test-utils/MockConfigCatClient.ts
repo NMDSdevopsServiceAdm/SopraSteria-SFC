@@ -42,11 +42,6 @@ export const mockConfigCatClient = {
   },
 
   getValueAsync: (flagName, defaultSetting) => {
-    if (flagName === 'createAccountNewDesign') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
     if (flagName === 'newTrainingAndQualificationsReport') {
       return new Promise((resolve) => {
         return resolve(false);

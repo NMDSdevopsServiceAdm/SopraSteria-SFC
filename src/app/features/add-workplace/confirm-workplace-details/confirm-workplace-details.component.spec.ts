@@ -7,10 +7,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
@@ -43,7 +41,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
             provide: UserService,
             useClass: MockUserService,
           },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         ],
       },
     );
@@ -80,7 +77,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = '123';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -96,7 +92,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = null;
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -111,7 +106,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = '123';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -124,7 +118,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = '123';
 
-    component.createAccountNewDesign = true;
     component.setNameAndAddress();
     fixture.detectChanges();
 
@@ -137,7 +130,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = false;
     component.locationAddress.locationId = null;
 
-    component.createAccountNewDesign = true;
     component.setNameAndAddress();
     fixture.detectChanges();
 
@@ -155,7 +147,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     const expectedPostalCode = 'ABC 123';
     const expectedCounty = 'Greater Manchester';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -173,7 +164,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     const expectedMainService = 'Shared lives';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -181,9 +171,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should navigate to thank-you page when you click Submit details', async () => {
-    const { component, fixture, spy, getByText } = await setup();
+    const { fixture, spy, getByText } = await setup();
 
-    component.createAccountNewDesign = true;
     fixture.detectChanges();
 
     const submitButton = getByText('Submit details');
@@ -193,11 +182,10 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   describe('Back link', () => {
-    it('should set the back link to `new-select-main-service` when feature flag is on', async () => {
+    it('should set the back link to new-select-main-service', async () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
-      component.createAccountNewDesign = true;
       fixture.detectChanges();
 
       component.setBackLink();
@@ -205,20 +193,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/add-workplace', 'new-select-main-service'],
       });
-    });
-  });
-
-  it('should set the back link to `select-main-service` when feature flag is off', async () => {
-    const { component, fixture } = await setup();
-    const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-    component.createAccountNewDesign = false;
-    fixture.detectChanges();
-
-    component.setBackLink();
-
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['/add-workplace', 'select-main-service'],
     });
   });
 
@@ -236,7 +210,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       component.workplace.isCQC = true;
       component.locationAddress.locationId = '123';
-      component.createAccountNewDesign = true;
+
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
@@ -251,7 +225,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       component.workplace.isCQC = true;
       component.locationAddress.locationId = null;
-      component.createAccountNewDesign = true;
+
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
@@ -266,7 +240,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       component.workplace.isCQC = false;
       component.locationAddress.locationId = null;
-      component.createAccountNewDesign = true;
+
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
@@ -279,7 +253,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     it('should set the change link for main service to `select-main-service`', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.createAccountNewDesign = true;
       component.setWorkplaceDetails();
       fixture.detectChanges();
 

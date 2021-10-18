@@ -9,7 +9,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -26,7 +25,6 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   public returnToConfirmDetails: URLStructure;
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
-  public createAccountNewDesign: boolean;
   public manuallyEnteredWorkplace: boolean;
   protected flow: string;
   protected workplaceNameMaxLength = 120;
@@ -40,7 +38,6 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
@@ -72,21 +69,18 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     return this.form.get('postcode');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setupForm();
     this.setupFormControlsMap();
     this.setFlow();
     this.setTitle();
     this.setErrorMessage();
-    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
-      this.createAccountNewDesign = value;
-      this.init();
-      this.setBackLink();
-      this.setupFormErrorsMap();
-    });
+    this.init();
+    this.setBackLink();
+    this.setupFormErrorsMap();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -124,12 +118,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   public setupPreFillForm(): void {
     const selectedLocation = this.workplaceInterfaceService.selectedLocationAddress$.value;
-    if (this.createAccountNewDesign) {
-      if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
-        this.preFillForm(selectedLocation);
-      }
-    }
-    if (!this.createAccountNewDesign && selectedLocation) {
+
+    if (this.manuallyEnteredWorkplace || this.returnToConfirmDetails) {
       this.preFillForm(selectedLocation);
     }
   }
@@ -335,18 +325,14 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
       this.setConfirmDetailsBackLink();
       return;
     }
-
-    if (this.createAccountNewDesign) {
-      if (this.isCqcRegulatedAndWorkplaceNotFound()) {
-        this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
-        return;
-      }
-      if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
-        this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
-        return;
-      }
+    if (this.isCqcRegulatedAndWorkplaceNotFound()) {
+      this.backService.setBackLink({ url: [this.flow, 'new-workplace-not-found'] });
+      return;
     }
-
+    if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
+      this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
+      return;
+    }
     if (this.isCqcRegulated) {
       this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
       return;
