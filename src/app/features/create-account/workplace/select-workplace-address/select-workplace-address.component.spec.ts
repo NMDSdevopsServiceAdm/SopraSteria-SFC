@@ -171,7 +171,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       expect(form.valid).toBeTruthy();
 
-      expect(spy).toHaveBeenCalledWith(['/registration/new-select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/registration/select-main-service']);
     });
 
     it('should navigate to the confirm-details page in registration flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {

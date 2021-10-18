@@ -40,7 +40,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
   }
 
   public setBackLink(): void {
-    const backLinkUrl = 'new-select-main-service';
+    const backLinkUrl = 'select-main-service';
     this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
   }
 

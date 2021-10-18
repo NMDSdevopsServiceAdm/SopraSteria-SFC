@@ -211,7 +211,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('mainService'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/new-select-main-service');
+      expect(changeLink.getAttribute('href')).toBe('/registration/select-main-service');
     });
   });
 });

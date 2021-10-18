@@ -171,7 +171,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       expect(form.valid).toBeTruthy();
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace/new-select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace/select-main-service']);
     });
 
     it('should navigate to the confirm-workplace-details page in add-workplace flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {

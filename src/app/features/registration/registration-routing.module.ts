@@ -11,7 +11,7 @@ import { ConfirmWorkplaceDetailsComponent } from '@features/create-account/workp
 import { CouldNotFindWorkplaceAddressComponent } from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { FindWorkplaceAddressComponent } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
-import { NewSelectMainServiceComponent } from '@features/create-account/workplace/new-select-main-service/new-select-main-service.component';
+import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
@@ -145,8 +145,8 @@ const routes: Routes = [
     data: { title: 'Select Workplace Address' },
   },
   {
-    path: 'new-select-main-service',
-    component: NewSelectMainServiceComponent,
+    path: 'select-main-service',
+    component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
   },

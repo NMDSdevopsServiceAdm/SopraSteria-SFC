@@ -4,29 +4,38 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  MockRegistrationService,
+  MockRegistrationServiceWithMainService,
+} from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
+import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { AddWorkplaceModule } from '../add-workplace.module';
-import { NewSelectMainServiceComponent } from './new-select-main-service.component';
+import { SelectMainServiceComponent } from './select-main-service.component';
 
-describe('NewSelectMainServiceComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
-      NewSelectMainServiceComponent,
+describe('SelectMainServiceComponent', () => {
+  async function setup(mainServicePrefilled = false) {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
+      SelectMainServiceComponent,
       {
         imports: [
           SharedModule,
-          AddWorkplaceModule,
+          RegistrationModule,
           RouterTestingModule,
           HttpClientTestingModule,
           FormsModule,
           ReactiveFormsModule,
         ],
         providers: [
+          {
+            provide: RegistrationService,
+            useClass: mainServicePrefilled ? MockRegistrationServiceWithMainService : MockRegistrationService,
+          },
           {
             provide: WorkplaceService,
             useClass: MockWorkplaceService,
@@ -42,7 +51,7 @@ describe('NewSelectMainServiceComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'add-workplace',
+                      path: 'registration',
                     },
                   ],
                 },
@@ -70,10 +79,11 @@ describe('NewSelectMainServiceComponent', () => {
       queryByText,
       getByText,
       getByLabelText,
+      getByTestId,
     };
   }
 
-  it('should show NewSelectMainServiceComponent component', async () => {
+  it('should render SelectMainServiceComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
@@ -104,36 +114,36 @@ describe('NewSelectMainServiceComponent', () => {
     expect(cqcText).toBeNull();
   });
 
-  it('should see "Select its main service"', async () => {
+  it("should see 'Select your main service' when is not a parent", async () => {
     const { component, fixture, queryByText } = await setup();
 
-    component.isParent = true;
+    component.isParent = false;
     component.isRegulated = false;
     fixture.detectChanges();
 
-    expect(queryByText('Select its main service')).toBeTruthy();
+    expect(queryByText('Select your main service')).toBeTruthy();
   });
 
-  it('should show add-workplace error message when nothing has been selected', async () => {
+  it('should show registration error message when nothing has been selected(plus title with same wording)', async () => {
     const { component, fixture, getByText, getAllByText } = await setup();
     component.isRegulated = true;
     const form = component.form;
 
     fixture.detectChanges();
 
-    const errorMessage = 'Select the main service it provides';
+    const errorMessage = 'Select your main service';
 
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(form.invalid).toBeTruthy();
-    expect(getAllByText(errorMessage).length).toBe(2);
+    expect(getAllByText(errorMessage).length).toBe(3);
   });
 
-  it('should submit and go to the add-workplace/confirm-workplace-details url when option selected', async () => {
+  it('should submit and go to the registration/add-user-details url when option selected and is not parent', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
-    component.isParent = true;
+    component.isParent = false;
     component.isRegulated = true;
     fixture.detectChanges();
 
@@ -143,7 +153,52 @@ describe('NewSelectMainServiceComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
+  });
+
+  it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is not null', async () => {
+    const { component, fixture, getByText, getByLabelText, spy } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+    fixture.detectChanges();
+
+    const radioButton = getByLabelText('Name');
+    fireEvent.click(radioButton);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
+  it('should show the other input box when an other option is selected', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.isParent = false;
+    component.isRegulated = true;
+    fixture.detectChanges();
+    const otherDrop = getByTestId('workplaceServiceOther-123');
+
+    expect(otherDrop.getAttribute('class')).toContain('govuk-radios__conditional--hidden');
+
+    const otherOption = getByTestId('workplaceService-123');
+    fireEvent.click(otherOption);
+
+    expect(otherDrop.getAttribute('class')).not.toContain('govuk-radios__conditional--hidden');
+  });
+
+  it('should prefill the other input box with the correct value', async () => {
+    const { component, fixture } = await setup(true);
+
+    component.isParent = false;
+    component.isRegulated = true;
+
+    fixture.detectChanges();
+    const form = component.form;
+
+    expect(form.get('otherWorkplaceService123').value).toEqual('Hello!');
   });
 
   describe('setBackLink()', () => {
@@ -151,24 +206,24 @@ describe('NewSelectMainServiceComponent', () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.workplaceService.isRegulated$.next(true);
-      component.workplaceService.manuallyEnteredWorkplace$.next(true);
+      component.registrationService.isRegulated$.next(true);
+      component.registrationService.manuallyEnteredWorkplace$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'workplace-name-address'],
+        url: ['registration', 'workplace-name-address'],
       });
     });
 
-    it('should set back link to your-workplace when is regulated and there is one address in locationAddresses in workplace service', async () => {
+    it('should set back link to your-workplace when is regulated and there is one address in locationAddresses in registration service', async () => {
       const { component } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = true;
-      component.workplaceService.manuallyEnteredWorkplace$.next(false);
-      component.workplaceService.locationAddresses$.next([
+      component.registrationService.manuallyEnteredWorkplace$.next(false);
+      component.registrationService.locationAddresses$.next([
         {
           postalCode: 'ABC 123',
           addressLine1: '1 Street',
@@ -182,17 +237,17 @@ describe('NewSelectMainServiceComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'your-workplace'],
+        url: ['registration', 'your-workplace'],
       });
     });
 
-    it('should set back link to select-workplace when is regulated and there is more than one address in locationAddresses in workplace service', async () => {
+    it('should set back link to select-workplace when is regulated and there is more than one address in locationAddresses in registration service', async () => {
       const { component } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = true;
-      component.workplaceService.manuallyEnteredWorkplace$.next(false);
-      component.workplaceService.locationAddresses$.next([
+      component.registrationService.manuallyEnteredWorkplace$.next(false);
+      component.registrationService.locationAddresses$.next([
         {
           postalCode: 'ABC 123',
           addressLine1: '1 Street',
@@ -214,7 +269,7 @@ describe('NewSelectMainServiceComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'select-workplace'],
+        url: ['registration', 'select-workplace'],
       });
     });
 
@@ -223,13 +278,13 @@ describe('NewSelectMainServiceComponent', () => {
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
-      component.workplaceService.manuallyEnteredWorkplace$.next(true);
+      component.registrationService.manuallyEnteredWorkplace$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'workplace-name-address'],
+        url: ['registration', 'workplace-name-address'],
       });
     });
 
@@ -238,14 +293,14 @@ describe('NewSelectMainServiceComponent', () => {
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
-      component.workplaceService.manuallyEnteredWorkplace$.next(false);
-      component.workplaceService.manuallyEnteredWorkplaceName$.next(false);
+      component.registrationService.manuallyEnteredWorkplace$.next(false);
+      component.registrationService.manuallyEnteredWorkplaceName$.next(false);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'select-workplace-address'],
+        url: ['registration', 'select-workplace-address'],
       });
     });
 
@@ -254,27 +309,29 @@ describe('NewSelectMainServiceComponent', () => {
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
-      component.workplaceService.manuallyEnteredWorkplace$.next(false);
-      component.workplaceService.manuallyEnteredWorkplaceName$.next(true);
+      component.registrationService.manuallyEnteredWorkplace$.next(false);
+      component.registrationService.manuallyEnteredWorkplaceName$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'workplace-name'],
+        url: ['registration', 'workplace-name'],
       });
     });
 
-    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup();
+    it('should set back link to confirm-details when returnToConfirmDetails is not null', async () => {
+      const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
-      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+
       component.setBackLink();
+      fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'confirm-workplace-details'],
+        url: ['registration', 'confirm-details'],
       });
     });
   });

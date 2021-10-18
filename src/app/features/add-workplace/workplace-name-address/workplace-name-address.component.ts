@@ -45,6 +45,6 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected getNextRoute(): string {
-    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'new-select-main-service';
+    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
   }
 }
