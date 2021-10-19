@@ -7,10 +7,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, throwError } from 'rxjs';
@@ -38,10 +36,6 @@ describe('FindYourWorkplaceComponent', () => {
         {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
         {
           provide: ActivatedRoute,
@@ -201,7 +195,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-workplace-not-found']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'workplace-not-found']);
   });
 
   it("should show error if server 500's", async () => {
@@ -236,7 +230,7 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'new-regulated-by-cqc'],
+        url: ['add-workplace', 'regulated-by-cqc'],
       });
     });
 
@@ -249,7 +243,7 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'new-workplace-not-found'],
+        url: ['add-workplace', 'workplace-not-found'],
       });
     });
 
@@ -257,7 +251,6 @@ describe('FindYourWorkplaceComponent', () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
-      component.fixture.componentInstance.createAccountNewDesign = true;
       component.fixture.componentInstance.returnToConfirmDetails = {
         url: ['add-workplace', 'confirm-workplace-details'],
       };

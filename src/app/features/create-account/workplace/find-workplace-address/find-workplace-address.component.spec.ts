@@ -6,11 +6,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, throwError } from 'rxjs';
@@ -30,10 +28,6 @@ describe('FindWorkplaceAddressComponent', () => {
         {
           provide: RegistrationService,
           useClass: MockRegistrationService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
       ],
     });
@@ -205,7 +199,7 @@ describe('FindWorkplaceAddressComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to `new-regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
+    it('should set the back link to `regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -216,7 +210,7 @@ describe('FindWorkplaceAddressComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-regulated-by-cqc'],
+        url: ['registration', 'regulated-by-cqc'],
       });
     });
 

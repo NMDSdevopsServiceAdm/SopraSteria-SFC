@@ -8,7 +8,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-name-address',
@@ -24,10 +23,9 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router, featureFlagsService, workplaceService);
+    super(backService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {

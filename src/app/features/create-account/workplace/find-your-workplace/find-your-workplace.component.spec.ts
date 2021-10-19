@@ -6,11 +6,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, throwError } from 'rxjs';
@@ -30,10 +28,6 @@ describe('FindYourWorkplaceComponent', () => {
         {
           provide: RegistrationService,
           useClass: MockRegistrationService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
         {
           provide: ActivatedRoute,
@@ -228,7 +222,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'new-workplace-not-found']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'workplace-not-found']);
   });
 
   it("should show error if server 500's", async () => {
@@ -263,7 +257,7 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-regulated-by-cqc'],
+        url: ['registration', 'regulated-by-cqc'],
       });
     });
 
@@ -276,15 +270,14 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-workplace-not-found'],
+        url: ['registration', 'workplace-not-found'],
       });
     });
 
-    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null and feature flag is on', async () => {
+    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
-      component.fixture.componentInstance.createAccountNewDesign = true;
       component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       component.fixture.componentInstance.setBackLink();
 

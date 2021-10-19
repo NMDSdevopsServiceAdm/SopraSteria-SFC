@@ -1,11 +1,10 @@
 const AWS = require('aws-sdk');
-const appConfig = require('../../config/config');
-
-const QueueUrl = appConfig.get('aws.sqsqueue').toString();
+const config = require('../../config/config');
 
 const sendToSQSQueue = async (to, templateId, params, index) => {
+  const queueUrl = config.get('aws.sqsqueue').toString();
   const sqs = new AWS.SQS({
-    region: appConfig.get('aws.region').toString(),
+    region: config.get('aws.region').toString(),
   });
 
   try {
@@ -18,7 +17,7 @@ const sendToSQSQueue = async (to, templateId, params, index) => {
           templateId,
           params,
         }),
-        QueueUrl,
+        queueUrl,
       })
       .promise();
   } catch (error) {

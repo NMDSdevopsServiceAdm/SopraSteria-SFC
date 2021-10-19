@@ -14,7 +14,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.careCertificate.isEligible === 'Yes' &&
           !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
           worker.careCertificate !== 'Yes, completed'
@@ -30,7 +29,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.careCertificate.isEligible === 'Yes' &&
             !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
             worker.careCertificate !== 'Yes, completed'
@@ -58,7 +56,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
           !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
           worker.qualificationInSocialCare !== 'Yes'
@@ -74,7 +71,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
             !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
             worker.qualificationInSocialCare !== 'Yes'
@@ -102,7 +98,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
           !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
         "
@@ -119,7 +114,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
             !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
           )
@@ -146,7 +140,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.otherQualification.isEligible === 'Yes' &&
           !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
           worker.otherQualification !== 'Yes'
@@ -181,7 +174,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.highestQualification.isEligible === 'Yes' &&
           !worker.wdf?.highestQualification.updatedSinceEffectiveDate
         "
@@ -196,7 +188,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.highestQualification.isEligible === 'Yes' &&
             !worker.wdf?.highestQualification.updatedSinceEffectiveDate
           )

@@ -11,9 +11,7 @@
           <div class="govuk-!-margin-bottom-5">
             <p>
               Postcode entered: <strong>{{ enteredPostcode }}</strong>
-              <a *ngIf="createAccountNewDesign" [routerLink]="[flow, 'find-workplace']" class="govuk-!-margin-left-9"
-                >Change</a
-              >
+              <a [routerLink]="[flow, 'find-workplace']" class="govuk-!-margin-left-9">Change</a>
             </p>
           </div>
         </ng-container>

@@ -1283,6 +1283,7 @@ module.exports = function (sequelize, DataTypes) {
       attributes: ['NameOrIdValue', 'CareCertificateValue'],
       where: {
         establishmentFk: establishmentId,
+        CareCertificateValue: { [Op.ne]: null },
         archived: false,
       },
       include: [
@@ -1290,6 +1291,7 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.job,
           as: 'mainJob',
           attributes: ['id', 'title'],
+          require: true,
         },
       ],
     });

@@ -11,7 +11,6 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
-  @Input() wdfNewDesign: boolean;
   @Input() canViewNinoDob: boolean;
 
   public ninoHidden = true;
