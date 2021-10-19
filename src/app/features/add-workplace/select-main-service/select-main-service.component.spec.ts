@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { SelectMainServiceComponent } from './select-main-service.component';
 
-describe('NewSelectMainServiceComponent', () => {
+describe('SelectMainServiceComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(SelectMainServiceComponent, {
       imports: [
