@@ -140,7 +140,7 @@ describe('TrainingComponent', () => {
         By.css('[data-testid="Status-someHealthUid"]'),
       ).nativeElement;
 
-      expect(autismTrainingStatus.textContent).toContain('Expiring soon');
+      expect(autismTrainingStatus.textContent).toContain('Expires soon');
       expect(autismTraining2Status.textContent).toContain('Missing');
       expect(communicationTrainingStatus.textContent).toContain('Expired');
       expect(healthTrainingStatus.textContent).toContain('OK');

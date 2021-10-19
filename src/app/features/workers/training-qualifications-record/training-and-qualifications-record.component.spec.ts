@@ -217,7 +217,7 @@ describe('TrainingAndQualificationsRecordComponent', () => {
       component.nonMandatoryTrainingCount = 0;
       fixture.detectChanges();
 
-      const expectedText = 'No non-mandatory training records have been added for this person yet';
+      const expectedText = 'No non-mandatory training records have been added for this person yet.';
       expect(getByText(expectedText)).toBeTruthy();
     });
   });

@@ -257,6 +257,6 @@ router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTraining
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
 
 module.exports = router;
-// module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
+module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
 module.exports.createSingleTrainingRecord = createSingleTrainingRecord;
 module.exports.getAllTraining = getAllTraining;
