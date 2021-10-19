@@ -25,7 +25,7 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   }
 
   public setBackLink(): void {
-    const url = this.return ? 'confirm-details' : 'new-select-main-service';
+    const url = this.return ? 'confirm-details' : 'select-main-service';
     this.backService.setBackLink({ url: ['registration', url] });
   }
 

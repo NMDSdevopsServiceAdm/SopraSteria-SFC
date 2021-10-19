@@ -285,7 +285,7 @@ describe('YourDetailsComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to new-select-main-service if return url is null', async () => {
+    it('should set the back link to select-main-service if return url is null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -293,11 +293,11 @@ describe('YourDetailsComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-select-main-service'],
+        url: ['registration', 'select-main-service'],
       });
     });
 
-    it('should set the back link to new-select-main-service if return url is not null', async () => {
+    it('should set the back link to confirm-details if return url is not null', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 

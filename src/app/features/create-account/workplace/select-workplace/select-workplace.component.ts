@@ -28,6 +28,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   public setNextRoute(): void {
-    this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
+    this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
   }
 }

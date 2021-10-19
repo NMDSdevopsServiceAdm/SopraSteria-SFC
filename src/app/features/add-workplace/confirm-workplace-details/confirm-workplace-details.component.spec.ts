@@ -182,7 +182,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   describe('Back link', () => {
-    it('should set the back link to new-select-main-service', async () => {
+    it('should set the back link to select-main-service', async () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
@@ -191,7 +191,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'new-select-main-service'],
+        url: ['/add-workplace', 'select-main-service'],
       });
     });
   });
@@ -259,7 +259,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('mainService'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/new-select-main-service');
+      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/select-main-service');
     });
   });
 });

@@ -95,7 +95,7 @@ describe('NameOfWorkplaceComponent', () => {
     expect(component.getAllByText(errorMessage).length).toBe(2);
   });
 
-  it('should navigate to new-select-main-service url when continue button is clicked and a workplace name is given', async () => {
+  it('should navigate to select-main-service url when continue button is clicked and a workplace name is given', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
@@ -104,7 +104,7 @@ describe('NameOfWorkplaceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['registration', 'new-select-main-service']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'select-main-service']);
   });
 
   it('should set locationName in registration service when continue button is clicked and a workplace name is given', async () => {

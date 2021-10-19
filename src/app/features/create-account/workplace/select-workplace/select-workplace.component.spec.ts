@@ -131,7 +131,7 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to the new-select-main-service url in registration flow when workplace selected and feature flag is on', async () => {
+    it('should navigate to the select-main-service url in registration flow when workplace selected', async () => {
       const { getByText, fixture, spy } = await setup();
 
       const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
@@ -140,7 +140,7 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'new-select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
     });
 
     it('should navigate to the confirm-details page in registration flow when returnToConfirmDetails is not null', async () => {
