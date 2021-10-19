@@ -583,6 +583,7 @@ if (config.get('aws.secrets.use')) {
 
     // sqs queue
     config.set('aws.sqsqueue', AWSSecrets.sendEmailsToSQSQueue());
+
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
 
