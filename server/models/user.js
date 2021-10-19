@@ -395,7 +395,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  User.allPrimaryUsers = async function () {
+  User.allPrimaryUsers = async function (where = {}) {
     return await this.findAll({
       attributes: [
         [sequelize.literal('DISTINCT ON ("user"."EmailValue") "user"."EmailValue"'), 'email'],
@@ -410,6 +410,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.establishment,
           attributes: ['id', 'nmdsId', 'NameValue'],
+          where,
         },
       ],
     });
