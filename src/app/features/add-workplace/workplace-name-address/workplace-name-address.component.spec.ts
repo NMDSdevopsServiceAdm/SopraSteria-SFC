@@ -218,7 +218,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'new-workplace-not-found'],
+          url: ['/add-workplace', 'workplace-not-found'],
         });
       });
     });

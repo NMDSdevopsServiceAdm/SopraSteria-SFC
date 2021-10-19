@@ -57,7 +57,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
       return;
     }
 
-    const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'regulated-by-cqc';
+    const backLink = this.returnToWorkplaceNotFound ? 'workplace-not-found' : 'regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
@@ -147,7 +147,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
       this.workplaceInterfaceService.searchMethod$.next(error.error.searchmethod);
-      this.router.navigate([this.flow, 'new-workplace-not-found']);
+      this.router.navigate([this.flow, 'workplace-not-found']);
       return;
     }
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
