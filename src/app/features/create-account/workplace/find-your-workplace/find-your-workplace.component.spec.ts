@@ -222,7 +222,7 @@ describe('FindYourWorkplaceComponent', () => {
 
     fireEvent.click(findWorkplaceButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'new-workplace-not-found']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'workplace-not-found']);
   });
 
   it("should show error if server 500's", async () => {
@@ -270,7 +270,7 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-workplace-not-found'],
+        url: ['registration', 'workplace-not-found'],
       });
     });
 

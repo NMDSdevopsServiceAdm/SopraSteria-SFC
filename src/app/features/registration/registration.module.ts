@@ -9,11 +9,11 @@ import { ConfirmDetailsComponent } from '@features/create-account/workplace/conf
 import { ConfirmWorkplaceDetailsComponent } from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
 import { CouldNotFindWorkplaceAddressComponent } from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
-import { NewWorkplaceNotFoundComponent } from '@features/create-account/workplace/new-workplace-not-found/new-workplace-not-found.component';
 import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
 import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNotFoundComponent } from '@features/create-account/workplace/workplace-not-found/workplace-not-found.component';
 import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
@@ -46,7 +46,7 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     FindYourWorkplaceComponent,
     IsThisYourWorkplaceComponent,
     RegulatedByCqcComponent,
-    NewWorkplaceNotFoundComponent,
+    WorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
     UsernamePasswordComponent,
     CouldNotFindWorkplaceAddressComponent,

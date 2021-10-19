@@ -5,27 +5,27 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { RegistrationModule } from '../../../registration/registration.module';
-import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found.component';
+import { AddWorkplaceModule } from '../add-workplace.module';
+import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
 
-describe('NewWorkplaceNotFoundComponent', () => {
+describe('WorkplaceNotFoundComponent', () => {
   async function setup(
     postcodeOrLocationId = '',
     searchMethod = '',
     workplaceNotFound = false,
     useDifferentLocationIdOrPostcode = null,
   ) {
-    const component = await render(NewWorkplaceNotFoundComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+    const component = await render(WorkplaceNotFoundComponent, {
+      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: RegistrationService,
+          provide: WorkplaceService,
+          useClass: WorkplaceService,
           useValue: {
             postcodeOrLocationId$: {
               value: postcodeOrLocationId,
@@ -52,7 +52,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
           provide: EstablishmentService,
           useValue: {
             primaryWorkplace: {
-              isParent: false,
+              isParent: true,
             },
           },
         },
@@ -63,7 +63,7 @@ describe('NewWorkplaceNotFoundComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -97,30 +97,30 @@ describe('NewWorkplaceNotFoundComponent', () => {
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
   });
 
-  describe('Registration messages', () => {
-    it('should display registration version of heading', async () => {
+  describe('Parent messages', () => {
+    it('should display add workplace version of heading', async () => {
       const { component } = await setup();
-      const expectedHeading = 'We could not find your workplace';
+      const expectedHeading = 'We could not find the workplace';
 
       expect(component.getByText(expectedHeading)).toBeTruthy();
     });
 
-    it('should display registration version of question', async () => {
+    it('should display add workplace version of question', async () => {
       const { component } = await setup();
-      const expectedQuestion = 'Do you want to try find your workplace with a different CQC location ID or postcode?';
+      const expectedQuestion = 'Do you want to try find the workplace with a different CQC location ID or postcode?';
 
       expect(component.getByText(expectedQuestion)).toBeTruthy();
     });
 
-    it('should display registration version of No answer', async () => {
+    it('should display add workplace version of No answer', async () => {
       const { component } = await setup();
-      const expectedNoAnswer = "No, I'll enter our workplace details myself";
+      const expectedNoAnswer = "No, I'll enter the workplace details myself";
 
       expect(component.getByText(expectedNoAnswer)).toBeTruthy();
     });
   });
 
-  describe('Registration journey', () => {
+  describe('Parent journey', () => {
     it('should navigate to the find workplace page when selecting yes', async () => {
       const { component, spy } = await setup();
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -129,10 +129,10 @@ describe('NewWorkplaceNotFoundComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
     });
 
-    it('should navigate to the workplace name and address page when selecting no', async () => {
+    it('should navigate to the workplace name page when selecting no', async () => {
       const { component, spy } = await setup();
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
@@ -140,22 +140,14 @@ describe('NewWorkplaceNotFoundComponent', () => {
       const continueButton = component.getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'workplace-name-address']);
-    });
-
-    it('should display an error message when not selecting anything', async () => {
-      const { component } = await setup();
-
-      const continueButton = component.getByText('Continue');
-      fireEvent.click(continueButton);
-
-      const errorMessage = component.getByTestId('errorMessage');
-      expect(errorMessage.innerText).toContain('Select yes if you want to try a different location ID or postcode');
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name-address']);
     });
 
     it('should display the correct heading', async () => {
       const { component } = await setup();
-      const expectedHeading = 'We could not find your workplace';
+      const expectedHeading = 'We could not find the workplace';
+      component.fixture.componentInstance.isParent = true;
+      component.fixture.detectChanges();
 
       expect(component.getByText(expectedHeading)).toBeTruthy();
     });

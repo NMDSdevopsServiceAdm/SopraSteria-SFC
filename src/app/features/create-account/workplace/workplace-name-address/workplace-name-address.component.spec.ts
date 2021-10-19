@@ -371,7 +371,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'new-workplace-not-found'],
+          url: ['/registration', 'workplace-not-found'],
         });
       });
     });
