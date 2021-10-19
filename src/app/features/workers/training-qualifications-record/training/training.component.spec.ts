@@ -8,7 +8,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { Establishment } from '../../../../../mockdata/establishment';
 import { TrainingComponent } from './training.component';
 
-fdescribe('TrainingComponent', () => {
+describe('TrainingComponent', () => {
   let component: TrainingComponent;
   let fixture: ComponentFixture<TrainingComponent>;
 

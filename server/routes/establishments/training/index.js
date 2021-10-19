@@ -125,7 +125,7 @@ const getAllTraining = async (req, res) => {
     res.status(200);
     return res.json(formattedTrainingRecords);
   } catch (error) {
-    console.error('Training::root - failed', error);
+    console.error('Training::root getAllTraining - failed', error);
     res.status(500);
     return res.send(`Failed to get TrainingRecords for Worker having uid: ${escape(workerUid)}`);
   }

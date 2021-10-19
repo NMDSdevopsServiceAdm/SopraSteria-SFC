@@ -98,14 +98,6 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     );
   }
 
-  //event handler from training and qualification component.
-  // public trainingAndQualificationsChangedHandler(refresh) {
-  //   console.log("training and qualification change handler");
-  //   if (refresh) {
-  //     this.setTrainingAndQualifications();
-  //   }
-  // }
-
   private setReturnTo(): void {
     const returnToRecord = {
       url: ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'],
