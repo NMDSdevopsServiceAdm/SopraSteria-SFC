@@ -157,7 +157,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   public setBackLink(): void {
     const returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
 
-    const backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'new-regulated-by-cqc';
+    const backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'regulated-by-cqc';
 
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);

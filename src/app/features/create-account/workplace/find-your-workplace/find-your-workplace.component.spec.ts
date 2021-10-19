@@ -257,7 +257,7 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-regulated-by-cqc'],
+        url: ['registration', 'regulated-by-cqc'],
       });
     });
 

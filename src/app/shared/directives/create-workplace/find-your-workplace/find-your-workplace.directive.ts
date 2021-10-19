@@ -57,7 +57,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
       return;
     }
 
-    const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
+    const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }

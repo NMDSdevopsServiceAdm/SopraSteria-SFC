@@ -230,7 +230,7 @@ describe('FindYourWorkplaceComponent', () => {
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'new-regulated-by-cqc'],
+        url: ['add-workplace', 'regulated-by-cqc'],
       });
     });
 

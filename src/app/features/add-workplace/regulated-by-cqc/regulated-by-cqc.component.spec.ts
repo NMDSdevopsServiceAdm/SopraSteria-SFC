@@ -9,11 +9,11 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
-import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
-describe('NewRegulatedByCqcComponent', () => {
+describe('RegulatedByCqcComponent', () => {
   async function setup() {
-    const component = await render(NewRegulatedByCqcComponent, {
+    const component = await render(RegulatedByCqcComponent, {
       imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {

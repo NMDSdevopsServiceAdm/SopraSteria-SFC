@@ -35,12 +35,12 @@ describe('StartComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to new-regulated-by-cqc url in add-workplace flow when Continue button clicked', async () => {
+  it('should navigate to regulated-by-cqc url in add-workplace flow when Continue button clicked', async () => {
     const { getByText } = await setup();
 
     const continueButton = getByText('Continue');
 
-    expect(continueButton.getAttribute('href')).toBe('/add-workplace/new-regulated-by-cqc');
+    expect(continueButton.getAttribute('href')).toBe('/add-workplace/regulated-by-cqc');
   });
 
   describe('setBackLink()', () => {

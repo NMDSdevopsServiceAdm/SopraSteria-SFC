@@ -199,7 +199,7 @@ describe('FindWorkplaceAddressComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to `new-regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
+    it('should set the back link to `regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -210,7 +210,7 @@ describe('FindWorkplaceAddressComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'new-regulated-by-cqc'],
+        url: ['registration', 'regulated-by-cqc'],
       });
     });
 
