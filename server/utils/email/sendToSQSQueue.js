@@ -1,14 +1,14 @@
 const AWS = require('aws-sdk');
 const config = require('../../config/config');
 
-const QueueUrl = config.get('aws.sqsqueue').toString();
-
 const sendToSQSQueue = async (to, templateId, params, index) => {
+  const QueueUrl = config.get('aws.sqsqueue').toString();
   const sqs = new AWS.SQS({
     region: config.get('aws.region').toString(),
   });
+
   console.log('***********************');
-  console.log(QueueUrl);
+  console.log('QueueUrl:', QueueUrl);
   try {
     await sqs
       .sendMessage({
