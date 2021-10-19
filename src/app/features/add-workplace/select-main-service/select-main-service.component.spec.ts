@@ -11,48 +11,45 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
-import { NewSelectMainServiceComponent } from './new-select-main-service.component';
+import { SelectMainServiceComponent } from './select-main-service.component';
 
-describe('NewSelectMainServiceComponent', () => {
+describe('SelectMainServiceComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
-      NewSelectMainServiceComponent,
-      {
-        imports: [
-          SharedModule,
-          AddWorkplaceModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
-        providers: [
-          {
-            provide: WorkplaceService,
-            useClass: MockWorkplaceService,
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                parent: {
-                  url: [
-                    {
-                      path: 'add-workplace',
-                    },
-                  ],
-                },
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(SelectMainServiceComponent, {
+      imports: [
+        SharedModule,
+        AddWorkplaceModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        FormsModule,
+        ReactiveFormsModule,
+      ],
+      providers: [
+        {
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: 'add-workplace',
+                  },
+                ],
               },
             },
           },
-          FormBuilder,
-        ],
-      },
-    );
+        },
+        FormBuilder,
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -73,7 +70,7 @@ describe('NewSelectMainServiceComponent', () => {
     };
   }
 
-  it('should show NewSelectMainServiceComponent component', async () => {
+  it('should show SelectMainServiceComponent component', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();

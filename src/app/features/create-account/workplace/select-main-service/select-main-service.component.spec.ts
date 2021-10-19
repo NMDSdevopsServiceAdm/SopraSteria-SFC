@@ -16,12 +16,12 @@ import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { NewSelectMainServiceComponent } from './new-select-main-service.component';
+import { SelectMainServiceComponent } from './select-main-service.component';
 
-describe('NewSelectMainServiceComponent', () => {
+describe('SelectMainServiceComponent', () => {
   async function setup(mainServicePrefilled = false) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
-      NewSelectMainServiceComponent,
+      SelectMainServiceComponent,
       {
         imports: [
           SharedModule,
@@ -83,7 +83,7 @@ describe('NewSelectMainServiceComponent', () => {
     };
   }
 
-  it('should show NewSelectMainServiceComponent component', async () => {
+  it('should render SelectMainServiceComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();

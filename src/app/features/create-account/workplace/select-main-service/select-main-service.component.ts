@@ -9,10 +9,10 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
-  selector: 'app-new-select-main-service',
+  selector: 'app-select-main-service',
   templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
-export class NewSelectMainServiceComponent extends SelectMainServiceDirective {
+export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
 
   constructor(
