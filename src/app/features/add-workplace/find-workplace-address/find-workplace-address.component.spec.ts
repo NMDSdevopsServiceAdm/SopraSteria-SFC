@@ -16,7 +16,7 @@ import { BehaviorSubject, throwError } from 'rxjs';
 
 import { FindWorkplaceAddressComponent } from './find-workplace-address.component';
 
-describe('FindWorkplaceComponent', () => {
+describe('FindWorkplaceAddressComponent', () => {
   async function setup() {
     const component = await render(FindWorkplaceAddressComponent, {
       imports: [
@@ -208,7 +208,7 @@ describe('FindWorkplaceComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to `new-regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
+    it('should set the back link to `regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -219,7 +219,7 @@ describe('FindWorkplaceComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'new-regulated-by-cqc'],
+        url: ['add-workplace', 'regulated-by-cqc'],
       });
     });
 

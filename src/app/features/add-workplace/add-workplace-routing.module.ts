@@ -9,8 +9,8 @@ import { CreateUserAccountComponent } from '@features/add-workplace/create-user-
 import { FindWorkplaceAddressComponent } from '@features/add-workplace/find-workplace-address/find-workplace-address.component';
 import { FindYourWorkplaceComponent } from '@features/add-workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '@features/add-workplace/is-this-your-workplace/is-this-your-workplace.component';
-import { NewRegulatedByCqcComponent } from '@features/add-workplace/new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { NewSelectMainServiceComponent } from '@features/add-workplace/new-select-main-service/new-select-main-service.component';
+import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectWorkplaceAddressComponent } from '@features/add-workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/add-workplace/select-workplace/select-workplace.component';
 import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
@@ -106,14 +106,14 @@ const routes: Routes = [
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
-    path: 'new-regulated-by-cqc',
-    component: NewRegulatedByCqcComponent,
+    path: 'regulated-by-cqc',
+    component: RegulatedByCqcComponent,
     data: { title: 'Service regulated by CQC?' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
     path: 'find-workplace',
-    component: NewRegulatedByCqcComponent,
+    component: RegulatedByCqcComponent,
     data: { title: 'Find your workplace' },
     canActivate: [AddWorkplaceInProgressGuard],
   },

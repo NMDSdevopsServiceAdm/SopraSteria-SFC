@@ -15,9 +15,9 @@ import { FindWorkplaceAddressComponent } from './find-workplace-address/find-wor
 import { FindYourWorkplaceComponent } from './find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace/is-this-your-workplace.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
-import { NewRegulatedByCqcComponent } from './new-regulated-by-cqc/new-regulated-by-cqc.component';
 import { NewSelectMainServiceComponent } from './new-select-main-service/new-select-main-service.component';
 import { NewWorkplaceNotFoundComponent } from './new-workplace-not-found/new-workplace-not-found.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you/workplace-added-thank-you.component';
@@ -32,7 +32,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
     ConfirmWorkplaceDetailsComponent,
     CreateUserAccountComponent,
     FindWorkplaceAddressComponent,
-    NewRegulatedByCqcComponent,
+    RegulatedByCqcComponent,
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     StartComponent,

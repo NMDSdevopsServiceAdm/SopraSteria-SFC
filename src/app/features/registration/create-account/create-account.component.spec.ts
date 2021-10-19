@@ -37,7 +37,7 @@ describe('CreateAccountComponent', () => {
   it('should navigate to regulated by CQC page when Start now button is clicked', async () => {
     const { getByText } = await setup();
     const startNowButton = getByText('Start now');
-    expect(startNowButton.getAttribute('href')).toBe('/registration/new-regulated-by-cqc');
+    expect(startNowButton.getAttribute('href')).toBe('/registration/regulated-by-cqc');
   });
 
   it('should navigate to About ASC-WDS page when view our about ASC-WDS link is clicked', async () => {
