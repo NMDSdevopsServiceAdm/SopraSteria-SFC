@@ -9,6 +9,7 @@ import { ContactUsComponent } from './contact-us/contact-us.component';
 import { CookiePolicyComponent } from './cookie-policy/cookie-policy.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { PrivacyNoticeComponent } from './privacy-notice/privacy-notice.component';
+import { PublicPageComponent } from './public-page/public-page.component';
 import { PublicRoutingModule } from './public-routing.module';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 import { ThankYouComponent } from './thank-you/thank-you.component';
@@ -24,6 +25,7 @@ import { ThankYouComponent } from './thank-you/thank-you.component';
     TermsConditionsComponent,
     ContactUsOrLeaveFeedbackComponent,
     ThankYouComponent,
+    PublicPageComponent,
   ],
 })
 export class PublicModule {}
