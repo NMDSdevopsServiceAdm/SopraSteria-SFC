@@ -1,23 +1,10 @@
-// default route for Workers' training endpoint
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 
-// all user functionality is encapsulated
 const Training = require('../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
-
+const { formatTrainingRecords } = require('../../../utils/trainingRecordsUtils');
 const { hasPermission } = require('../../../utils/security/hasPermission');
-
-const getTrainingCategories = (trainingRecords) => {
- return trainingRecords.reduce(
-    (accumulator, current) => {
-      if(!accumulator.some(training => training.id === current.trainingCategory.id)) {
-        accumulator.push(current.trainingCategory)
-      }
-      return accumulator;
-    }, []
-  );
-};
 
 
 const getAllTraining = async (req, res) => {
@@ -32,42 +19,10 @@ const getAllTraining = async (req, res) => {
     const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
     const mandatoryTrainingForWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
 
-    allTrainingRecords.training.forEach((training) => {
-      if (mandatoryTrainingForWorker.length === 0) {
-        nonMandatoryTrainingRecords.push(training);
-      } else {
-        // This doesn't work. Will be done in mandatory training ticket
-        mandatoryTrainingForWorker.forEach((mandatoryTraining) => {
-         if (mandatoryTraining.trainingCategoryFK === training.trainingCategory.id) {
-           mandatoryTrainingRecords.push(training);
-         } else {
-           nonMandatoryTrainingRecords.push(training);
-         }
-       });
-      }
-    });
-
-    const nonMandatoryUniqCategories = getTrainingCategories(nonMandatoryTrainingRecords);
-
-    const nonMandatoryCategories = nonMandatoryUniqCategories.map(category =>{
-      return {
-        category: category.category,
-        id: category.id,
-        trainingRecords: []
-      }
-    });
-
-    nonMandatoryCategories.forEach(category => {
-      category.trainingRecords = nonMandatoryTrainingRecords.filter(trainingRecord => trainingRecord.trainingCategory.id === category.id);
-    });
-
-    const formattedTrainingRecords = {
-      mandatory: mandatoryTrainingRecords,
-      nonMandatory: nonMandatoryCategories
-    };
+    const formattedTraining = formatTrainingRecords(allTrainingRecords, mandatoryTrainingForWorker);
 
     res.status(200);
-    return res.json(formattedTrainingRecords);
+    return res.json(formattedTraining);
   } catch (error) {
     console.error('Training::root getAllTraining - failed', error);
     res.status(500);
@@ -79,4 +34,4 @@ router.route('/').get(hasPermission('canEditWorker'), getAllTraining);
 
 module.exports = router;
 module.exports.getAllTraining = getAllTraining;
-module.exports.getTrainingCategories = getTrainingCategories;
+

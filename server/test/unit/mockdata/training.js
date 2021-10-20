@@ -9,6 +9,20 @@ exports.knownHeaders = [
   'NOTES',
 ];
 
+exports.mockTrainingRecord = {
+  id: 10,
+  uid: 'someuid',
+  workerUid: '6787fgfghfghghjjg',
+  created: '01/02/2020',
+  updated: '01/02/2020',
+  updatedBy: 'admin',
+  trainingCategory: { id: 1, category: 'Communication'},
+  title: 'Communication Training 1',
+  accredited: true,
+  completed: '01/02/2020',
+  expires: '01/02/2021'
+},
+
 exports.mockTrainingRecords = [
   {
     id: 10,
@@ -48,10 +62,23 @@ exports.mockTrainingRecords = [
     accredited: true,
     completed: '01/02/2020',
     expires: '01/02/2021'
+  },
+  {
+    id: 13,
+    uid: 'someHazardUid',
+    workerUid: '9087fgfghfghghjjg',
+    created: '01/02/2020',
+    updated: '01/02/2020',
+    updatedBy: 'admin',
+    trainingCategory: { id: 3, category: 'Hazards'},
+    title: 'Hazard Training 1',
+    accredited: true,
+    completed: '01/02/2020',
+    expires: '01/02/2021'
   }
 ];
 
-exports.mockNonMandatoryTraining = [
+exports.mockFormattedTraining = [
   {
     id: 1,
     category: 'Communication',
@@ -100,5 +127,22 @@ exports.mockNonMandatoryTraining = [
         expires: '01/02/2021',
       }
     ]
+  },
+  {
+    id: 3,
+    category: 'Hazards',
+    trainingRecords: [{
+      uid: 'someHazardUid',
+      id: 13,
+      workerUid: '9087fgfghfghghjjg',
+      created: '01/02/2020',
+      updated: '01/02/2020',
+      updatedBy: 'admin',
+      trainingCategory: { id: 3, category: 'Hazards' },
+      title: 'Hazard Training 1',
+      accredited: true,
+      completed: '01/02/2020',
+      expires: '01/02/2021',
+    }]
   },
 ];

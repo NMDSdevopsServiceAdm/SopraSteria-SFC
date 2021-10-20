@@ -7,7 +7,7 @@ const { getAllTraining, getTrainingCategories } = require('../../../../../routes
 const buildUser = require('../../../../factories/user');
 const Training = require('../../../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
-const { mockNonMandatoryTraining, mockTrainingRecords } = require('../../../mockdata/training');
+const { mockFormattedTraining, mockTrainingRecords } = require('../../../mockdata/training');
 
 describe('server/routes/establishments/training/getAllTraining.js', () => {
   const user = buildUser();
@@ -34,24 +34,50 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
       sinon.stub(Training, 'fetch').returns(
         { training: mockTrainingRecords }
       )
-
-      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
     });
 
     it('should reply with a status of 200', async () => {
+      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
       await getAllTraining(req, res);
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return the data formatted', async () => {
+    it('should return the data formatted with no training in the mandatory array', async () => {
+      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
       await getAllTraining(req, res);
       const formattedTraining = await res._getJSONData();
 
       expect(formattedTraining.mandatory.length).to.equal(0);
-      expect(formattedTraining.nonMandatory.length).to.equal(2);
+      expect(formattedTraining.nonMandatory.length).to.equal(3);
       expect(formattedTraining).to.deep.equal({
         mandatory: [],
-        nonMandatory: mockNonMandatoryTraining
+        nonMandatory: mockFormattedTraining
+      });
+    });
+
+    it('should return the data formatted with training in both the mandatory array and non-mandatory array', async () => {
+      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 3 }]);
+      await getAllTraining(req, res);
+      const formattedTraining = await res._getJSONData();
+
+      expect(formattedTraining.mandatory.length).to.equal(2);
+      expect(formattedTraining.nonMandatory.length).to.equal(1);
+      expect(formattedTraining).to.deep.equal({
+        mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
+        nonMandatory: [mockFormattedTraining[1]]
+      });
+    });
+
+    it('should return the data formatted with no training in the non-mandatory array', async () => {
+      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([{ trainingCategoryFK: 1 },  { trainingCategoryFK: 2 }, { trainingCategoryFK: 3 }]);
+      await getAllTraining(req, res);
+      const formattedTraining = await res._getJSONData();
+
+      expect(formattedTraining.mandatory.length).to.equal(3);
+      expect(formattedTraining.nonMandatory.length).to.equal(0);
+      expect(formattedTraining).to.deep.equal({
+        mandatory: mockFormattedTraining,
+        nonMandatory: []
       });
     });
 
@@ -59,25 +85,13 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
       sinon.restore();
 
       sinon.stub(Training, 'fetch').throws()
+      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
 
       await getAllTraining(req, res);
       const error = res._getData();
 
       expect(res.statusCode).to.deep.equal(500);
       expect(error).to.contain('Failed to get TrainingRecords for Worker having uid:');
-    });
-  });
-
-  describe('getTrainingCategories', () => {
-    it('returns the categories in the training array', () => {
-      const trainingRecords = mockTrainingRecords;
-      const trainingCategories = getTrainingCategories(mockTrainingRecords);
-
-      expect(trainingCategories.length).to.equal(2);
-      expect(trainingCategories).to.deep.equal([
-        { id: 1, category: 'Communication' },
-        { id: 2, category: 'Coshh' }
-      ]);
     });
   });
 });
