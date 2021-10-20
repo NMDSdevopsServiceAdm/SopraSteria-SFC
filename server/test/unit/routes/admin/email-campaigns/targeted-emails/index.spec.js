@@ -88,7 +88,34 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
 
       expect(response.totalEmails).to.deep.equal(2);
     });
-  })
+  });
+
+  describe('Single accounts only targeted emails', () => {
+    beforeEach(() => {
+      sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: false, dataOwner: 'Workplace' }).returns([user, user, user, user]);
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return the total number of single workplace only users', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/targeted-emails/total',
+      });
+
+      req.role = 'Admin';
+      req.query.groupType = 'singleAccountsOnly';
+
+      const res = httpMocks.createResponse();
+      await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+
+      const response = res._getData();
+
+      expect(response.totalEmails).to.deep.equal(4);
+    });
+  });
 
   describe('getTargetedEmailTemplates()', () => {
     beforeEach(() => {
