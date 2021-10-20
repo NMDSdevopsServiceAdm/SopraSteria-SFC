@@ -9,6 +9,7 @@ const {
   setCellTextAndBackgroundColour,
   fitColumnsToSize,
   alignColumnToLeft,
+  addBlankRowIfTableEmpty,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -65,6 +66,8 @@ const addRowsToTrainingTable = (trainingTable, workers) => {
 
     addRowsForWorkerMissingTraining(trainingTable, worker);
   }
+
+  addBlankRowIfTableEmpty(trainingTable, 10);
 
   trainingTable.commit();
 };
