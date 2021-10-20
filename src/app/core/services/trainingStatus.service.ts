@@ -16,36 +16,32 @@ export class TrainingStatusService {
     let missing = false;
     let trainingStatus = 0;
 
-    const keys = Object.keys(trainingRecords);
-
-    keys.forEach((trainingType) => {
-      trainingRecords[trainingType].forEach((training) => {
-        trainingStatus = this.getTrainingStatus(training.expires, training.missing);
-        switch (trainingStatus) {
-          case this.MISSING: {
-            missing = true;
-            break;
-          }
-          case this.EXPIRING: {
-            expiring = true;
-            break;
-          }
-          case this.EXPIRED: {
-            expired = true;
-            break;
-          }
+    trainingRecords.forEach((training) => {
+      trainingStatus = this.getTrainingStatus(training.expires, training.missing);
+      switch (trainingStatus) {
+        case this.MISSING: {
+          missing = true;
+          break;
         }
-      });
-      if (expired) {
-        return this.EXPIRED;
-      } else if (missing) {
-        return this.MISSING;
-      } else if (expiring) {
-        return this.EXPIRING;
-      } else {
-        return this.ACTIVE;
+        case this.EXPIRING: {
+          expiring = true;
+          break;
+        }
+        case this.EXPIRED: {
+          expired = true;
+          break;
+        }
       }
     });
+    if (expired) {
+      return this.EXPIRED;
+    } else if (missing) {
+      return this.MISSING;
+    } else if (expiring) {
+      return this.EXPIRING;
+    } else {
+      return this.ACTIVE;
+    }
   }
 
   public getTrainingStatus(expires, missing) {

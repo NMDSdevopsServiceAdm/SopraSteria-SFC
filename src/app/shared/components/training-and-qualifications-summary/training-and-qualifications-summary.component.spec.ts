@@ -3,6 +3,7 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import {
   longTermAbsentWorker,
   workerWithExpiredTraining,
@@ -10,6 +11,7 @@ import {
   workerWithMissingTraining,
   workerWithUpToDateTraining,
 } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
@@ -41,7 +43,10 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   async function setup() {
     const { fixture, getAllByText } = await render(TrainingAndQualificationsSummaryComponent, {
       imports: [HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         workers,

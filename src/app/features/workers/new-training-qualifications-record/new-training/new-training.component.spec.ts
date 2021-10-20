@@ -6,11 +6,11 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 
 import { Establishment } from '../../../../../mockdata/establishment';
-import { TrainingComponent } from './training.component';
+import { NewTrainingComponent } from './new-training.component';
 
-describe('TrainingComponent', () => {
-  let component: TrainingComponent;
-  let fixture: ComponentFixture<TrainingComponent>;
+describe('NewTrainingComponent', () => {
+  let component: NewTrainingComponent;
+  let fixture: ComponentFixture<NewTrainingComponent>;
 
   const trainingRecords = [
     {
@@ -102,7 +102,7 @@ describe('TrainingComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TrainingComponent);
+    fixture = TestBed.createComponent(NewTrainingComponent);
     component = fixture.componentInstance;
     component.workplace = Establishment;
     component.trainingRecords = trainingRecords;
@@ -116,6 +116,7 @@ describe('TrainingComponent', () => {
   describe('training record table contents', () => {
     it('should render a category heading name for each training record category', async () => {
       const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
+      console.log(fixture.debugElement.query(By.css('[data-testid="category-Autism"]')));
       const communicationCategory = fixture.debugElement.query(
         By.css('[data-testid="category-Communication"]'),
       ).nativeElement;

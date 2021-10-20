@@ -198,6 +198,12 @@ export class WorkerService {
     return this.http.get<TrainingResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/training`);
   }
 
+  getAllTrainingRecords(workplaceUid: string, workerId: string) {
+    return this.http.get<TrainingResponse>(
+      `/api/establishment/${workplaceUid}/worker/${workerId}/training/getAllTraining`,
+    );
+  }
+
   getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
     return this.http.get<any>(`/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
   }

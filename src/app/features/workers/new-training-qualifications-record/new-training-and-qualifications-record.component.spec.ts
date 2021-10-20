@@ -18,14 +18,14 @@ import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
-import { TrainingAndQualificationsRecordComponent } from './training-and-qualifications-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
-describe('TrainingAndQualificationsRecordComponent', () => {
+describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
-      TrainingAndQualificationsRecordComponent,
+      NewTrainingAndQualificationsRecordComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
@@ -48,8 +48,37 @@ describe('TrainingAndQualificationsRecordComponent', () => {
                     nameOrId: 'John',
                   },
                   trainingRecords: {
-                    count: 1,
-                    training: [],
+                    mandatory: [],
+                    nonMandatory: [
+                      {
+                        category: 'Health',
+                        id: 1,
+                        trainingRecords: [
+                          {
+                            accredited: true,
+                            completed: new Date('10/20/2021'),
+                            expires: new Date('10/20/2022'),
+                            title: 'Health training',
+                            trainingCategory: { id: 1, category: 'Health' },
+                            uid: 'someuid',
+                          },
+                        ],
+                      },
+                      {
+                        category: 'Autism',
+                        id: 2,
+                        trainingRecords: [
+                          {
+                            accredited: true,
+                            completed: new Date('10/20/2021'),
+                            expires: new Date('10/20/2022'),
+                            title: 'Autism training',
+                            trainingCategory: { id: 2, category: 'Autism' },
+                            uid: 'someuid',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   qualifications: {
                     count: 2,
@@ -108,6 +137,11 @@ describe('TrainingAndQualificationsRecordComponent', () => {
     expect(getByText(component.worker.nameOrId)).toBeTruthy();
   });
 
+  it('should display number of training records in the title', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Training and qualifications (4)')).toBeTruthy();
+  });
+
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
     const { component, workerSpy, workplaceUid, workerUid } = await setup();
 
@@ -164,6 +198,27 @@ describe('TrainingAndQualificationsRecordComponent', () => {
       expect(flagLongTermAbsenceLink.getAttribute('href')).toBe(
         `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
       );
+    });
+  });
+
+  describe('Non mandatory training', () => {
+    it('should have non mandatory count of 2', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Non-mandatory training records (2)')).toBeTruthy();
+    });
+
+    it('should render non-mandatory training component', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('non-mandatory-training')).toBeTruthy();
+    });
+
+    it('should render message wihen there is no non-mandatory training', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.nonMandatoryTrainingCount = 0;
+      fixture.detectChanges();
+
+      const expectedText = 'No non-mandatory training records have been added for this person yet.';
+      expect(getByText(expectedText)).toBeTruthy();
     });
   });
 });

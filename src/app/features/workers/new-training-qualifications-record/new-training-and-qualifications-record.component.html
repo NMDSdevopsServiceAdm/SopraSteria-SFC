@@ -23,7 +23,11 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l">Training and qualifications ({{ this.trainingCount + this.qualificationsCount }})</h1>
+      <h1 class="govuk-heading-l">
+        Training and qualifications ({{
+          this.mandatoryTrainingCount + this.nonMandatoryTrainingCount + this.qualificationsCount
+        }})
+      </h1>
       <a
         *ngIf="canEditWorker"
         class="govuk-list govuk-list--inline govuk-!-padding-left-0"
@@ -65,24 +69,22 @@
       </div>
     </div>
   </div>
-  <app-tabs>
-    <app-tab
-      [alert]="trainingAlert === trainingStatusService.EXPIRING"
-      [redAlert]="trainingAlert === trainingStatusService.EXPIRED || trainingAlert == trainingStatusService.MISSING"
-      [title]="'Training'"
-    >
-      <app-training
-        [workplace]="workplace"
-        [worker]="worker"
-        (trainingChanged)="trainingAndQualificationsChangedHandler($event)"
-      ></app-training>
-    </app-tab>
-    <app-tab [title]="'Qualifications'">
-      <app-qualifications
-        [workplace]="workplace"
-        [worker]="worker"
-        (qualificationsChanged)="trainingAndQualificationsChangedHandler($event)"
-      ></app-qualifications>
-    </app-tab>
-  </app-tabs>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <p *ngIf="nonMandatoryTrainingCount === 0; else nonMandatoryTrainingTable">
+        No non-mandatory training records have been added for this person yet.
+      </p>
+      <ng-template #nonMandatoryTrainingTable>
+        <app-new-training
+          [workplace]="workplace"
+          [trainingRecords]="nonMandatoryTraining"
+          data-testid="non-mandatory-training"
+        ></app-new-training>
+      </ng-template>
+    </div>
+  </div>
 </ng-container>
