@@ -1,0 +1,25 @@
+.asc-cms-content {
+  ul {
+    @extend .govuk-list;
+    @extend .govuk-list--bullet;
+  }
+
+  ol {
+    @extend .govuk-list;
+    @extend .govuk-list--number;
+  }
+
+  table {
+    @extend .govuk-table;
+
+    tr {
+      @extend .govuk-table__row;
+    }
+    th {
+      @extend .govuk-table__header;
+    }
+    td {
+      @extend .govuk-table__cell;
+    }
+  }
+}
