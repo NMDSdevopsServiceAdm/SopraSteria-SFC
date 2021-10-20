@@ -22,30 +22,13 @@ const user = build('User', {
 
 describe('server/routes/admin/email-campaigns/targeted-emails', () => {
   describe('getTargetedTotalEmails()', () => {
-    beforeEach(() => {
-      sinon.stub(models.user, 'allPrimaryUsers').returns([user, user, user]);
-    });
-
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should return 200', async () => {
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-      });
+    it('should return a 200 and the total number of primary users', async () => {
+      sinon.stub(models.user, 'allPrimaryUsers').returns([user, user, user]);
 
-      req.role = 'Admin';
-      req.query.groupType = 'primaryUsers';
-
-      const res = httpMocks.createResponse();
-      await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
-
-      expect(res.statusCode).to.deep.equal(200);
-    });
-
-    it('should return the total number of primary users', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/admin/email-campaigns/targeted-emails/total',
@@ -59,20 +42,13 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
 
       const response = res._getData();
 
+      expect(res.statusCode).to.deep.equal(200);
       expect(response.totalEmails).to.deep.equal(3);
     });
-  });
 
-  describe('Parent only targeted emails', () => {
-    beforeEach(() => {
+    it('should return a 200 and the total number of parent users', async () => {
       sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: true }).returns([user, user]);
-    });
 
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should return the total number of parent users', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/admin/email-campaigns/targeted-emails/total',
@@ -86,20 +62,13 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
 
       const response = res._getData();
 
+      expect(res.statusCode).to.deep.equal(200);
       expect(response.totalEmails).to.deep.equal(2);
     });
-  });
 
-  describe('Single accounts only targeted emails', () => {
-    beforeEach(() => {
+    it('should return a 200 and the total number of single workplace only users', async () => {
       sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: false, dataOwner: 'Workplace' }).returns([user, user, user, user]);
-    });
 
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should return the total number of single workplace only users', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/admin/email-campaigns/targeted-emails/total',
@@ -113,6 +82,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
 
       const response = res._getData();
 
+      expect(res.statusCode).to.deep.equal(200);
       expect(response.totalEmails).to.deep.equal(4);
     });
   });
