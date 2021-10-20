@@ -35,16 +35,6 @@ describe('generateTrainingAndQualificationsReport', () => {
       expect(mockCareCertificateTab.getCell('D6').value).to.equal('Status');
     });
 
-    it('should add empty row to table when no data', async () => {
-      addContentToCareCertificateTab(mockCareCertificateTab, []);
-
-      const expectedLine = 7;
-
-      expect(mockCareCertificateTab.getCell(`B${expectedLine}`).value).to.equal('');
-      expect(mockCareCertificateTab.getCell(`C${expectedLine}`).value).to.equal('');
-      expect(mockCareCertificateTab.getCell(`D${expectedLine}`).value).to.equal('');
-    });
-
     it('should add first worker with care certificate to care certificate table', async () => {
       addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
 
@@ -59,6 +49,28 @@ describe('generateTrainingAndQualificationsReport', () => {
       expect(mockCareCertificateTab.getCell('B8').value).to.equal(mockWorkersWithCareCertificateStatus[1].workerId);
       expect(mockCareCertificateTab.getCell('C8').value).to.equal(mockWorkersWithCareCertificateStatus[1].jobRole);
       expect(mockCareCertificateTab.getCell('D8').value).to.equal(mockWorkersWithCareCertificateStatus[1].status);
+    });
+
+    describe('Adding blank row to empty table', async () => {
+      it('should not add empty row to end of table when there is data', async () => {
+        addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
+
+        const expectedLine = 9;
+
+        expect(mockCareCertificateTab.getCell(`B${expectedLine}`).value).to.equal(null);
+        expect(mockCareCertificateTab.getCell(`C${expectedLine}`).value).to.equal(null);
+        expect(mockCareCertificateTab.getCell(`D${expectedLine}`).value).to.equal(null);
+      });
+
+      it('should add empty row to table when no data', async () => {
+        addContentToCareCertificateTab(mockCareCertificateTab, []);
+
+        const expectedLine = 7;
+
+        expect(mockCareCertificateTab.getCell(`B${expectedLine}`).value).to.equal('');
+        expect(mockCareCertificateTab.getCell(`C${expectedLine}`).value).to.equal('');
+        expect(mockCareCertificateTab.getCell(`D${expectedLine}`).value).to.equal('');
+      });
     });
   });
 });

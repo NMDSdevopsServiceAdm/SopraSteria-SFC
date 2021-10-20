@@ -34,23 +34,6 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Accredited');
   });
 
-  it('should add empty row to table when no data', async () => {
-    addContentToTrainingTab(mockTrainingTab, []);
-
-    const expectedLine = 7;
-
-    expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
-    expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
-  });
-
   it('should add first training record to top row of table', async () => {
     addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
 
@@ -168,5 +151,41 @@ describe('addContentToTrainingTab', () => {
     expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
     expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
     expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+  });
+
+  describe('Adding blank row to empty table', async () => {
+    it('should not add empty row to end of table when there is data', async () => {
+      addContentToTrainingTab(mockTrainingTab, mockWorkerTrainingRecords);
+
+      const expectedLine = 14;
+
+      expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+      expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal(null);
+    });
+
+    it('should add empty row to table when no data', async () => {
+      addContentToTrainingTab(mockTrainingTab, []);
+
+      const expectedLine = 7;
+
+      expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+      expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+    });
   });
 });
