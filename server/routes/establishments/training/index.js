@@ -21,7 +21,9 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
   let missingMandatoryTraining = [];
   try {
     let allTrainingRecords = await Training.fetch(establishmentId, workerUid);
+
     const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
+
     if (allTrainingRecords.count === 0) {
       missingMandatoryTraining = mandatoryTrainingforWorker;
     } else if (mandatoryTrainingforWorker.length > 0) {
@@ -55,6 +57,7 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
         updatedBy: thisRecord.updatedBy,
       });
     });
+
     res.status(200);
     return res.json(allTrainingRecords);
   } catch (err) {
@@ -184,6 +187,7 @@ const deleteTrainingRecord = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
+router.use('/getAllTraining', require('./getAllTraining'));
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);

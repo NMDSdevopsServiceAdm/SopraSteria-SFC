@@ -5,57 +5,98 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
-import { StaffRecordComponent } from './staff-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
-describe('StaffRecordComponent', () => {
+describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
-      providers: [
-        AlertService,
-        WindowRef,
-        DialogService,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
+      NewTrainingAndQualificationsRecordComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+        providers: [
+          AlertService,
+          WindowRef,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: workplace,
+                  },
+                },
+              },
               snapshot: {
                 data: {
-                  establishment: workplace,
+                  worker: {
+                    uid: 123,
+                    nameOrId: 'John',
+                  },
+                  trainingRecords: {
+                    mandatory: [],
+                    nonMandatory: [
+                      {
+                        category: 'Health',
+                        id: 1,
+                        trainingRecords: [
+                          {
+                            accredited: true,
+                            completed: new Date('10/20/2021'),
+                            expires: new Date('10/20/2022'),
+                            title: 'Health training',
+                            trainingCategory: { id: 1, category: 'Health' },
+                            uid: 'someuid',
+                          },
+                        ],
+                      },
+                      {
+                        category: 'Autism',
+                        id: 2,
+                        trainingRecords: [
+                          {
+                            accredited: true,
+                            completed: new Date('10/20/2021'),
+                            expires: new Date('10/20/2022'),
+                            title: 'Autism training',
+                            trainingCategory: { id: 2, category: 'Autism' },
+                            uid: 'someuid',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  qualifications: {
+                    count: 2,
+                  },
                 },
               },
             },
-            snapshot: {},
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
-        },
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: PermissionsService, useClass: MockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useClass: MockWorkerService,
+          },
+          { provide: EstablishmentService, useClass: MockEstablishmentService },
+          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+          { provide: PermissionsService, useClass: MockPermissionsService },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -85,25 +126,29 @@ describe('StaffRecordComponent', () => {
     };
   }
 
-  it('should render a StaffRecordComponent', async () => {
+  it('should render a TrainingAndQualificationsRecordComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should display the worker name', async () => {
-    const { component, getAllByText } = await setup();
+    const { component, getByText } = await setup();
 
-    expect(getAllByText(component.worker.nameOrId).length).toBe(2);
+    expect(getByText(component.worker.nameOrId)).toBeTruthy();
+  });
+
+  it('should display number of training records in the title', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Training and qualifications (4)')).toBeTruthy();
   });
 
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
     const { component, workerSpy, workplaceUid, workerUid } = await setup();
 
-    component.setReturnTo();
+    component.ngOnInit();
 
     expect(workerSpy).toHaveBeenCalledWith({
-      url: ['/workplace', workplaceUid, 'staff-record', workerUid],
-      fragment: 'staff-record',
+      url: ['/workplace', workplaceUid, 'training-and-qualifications-record', workerUid, 'training'],
     });
   });
 
@@ -118,7 +163,7 @@ describe('StaffRecordComponent', () => {
       expect(queryByText('Flag long-term absence')).toBeFalsy();
     });
 
-    it('should navigate to `long-term-absence` when pressing the "view" button', async () => {
+    it('should navigate to `/long-term-absence` when pressing the "view" button', async () => {
       const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
 
       component.worker.longTermAbsence = 'Illness';
@@ -142,7 +187,7 @@ describe('StaffRecordComponent', () => {
       expect(getByText('Flag long-term absence')).toBeTruthy();
     });
 
-    it('should navigate to `./long-term-absence` when pressing the "Flag long-term absence" button', async () => {
+    it('should navigate to `/long-term-absence` when pressing the "Flag long-term absence" button', async () => {
       const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
 
       component.worker.longTermAbsence = null;
@@ -153,6 +198,27 @@ describe('StaffRecordComponent', () => {
       expect(flagLongTermAbsenceLink.getAttribute('href')).toBe(
         `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
       );
+    });
+  });
+
+  describe('Non mandatory training', () => {
+    it('should have non mandatory count of 2', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Non-mandatory training records (2)')).toBeTruthy();
+    });
+
+    it('should render non-mandatory training component', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('non-mandatory-training')).toBeTruthy();
+    });
+
+    it('should render message wihen there is no non-mandatory training', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.nonMandatoryTrainingCount = 0;
+      fixture.detectChanges();
+
+      const expectedText = 'No non-mandatory training records have been added for this person yet.';
+      expect(getByText(expectedText)).toBeTruthy();
     });
   });
 });

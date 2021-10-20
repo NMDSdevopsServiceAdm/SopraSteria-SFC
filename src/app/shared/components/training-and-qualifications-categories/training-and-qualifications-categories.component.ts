@@ -4,6 +4,7 @@ import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/estab
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import orderBy from 'lodash/orderBy';
 
 @Component({
@@ -22,22 +23,33 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public filterValue: string;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
+  public newTrainingAndQualsFlag: boolean;
+  public trainingAndQualsRoute: string;
 
   constructor(
     private permissionsService: PermissionsService,
     protected trainingStatusService: TrainingStatusService,
     private workerService: WorkerService,
-    private router: Router
+    private router: Router,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.filterByDefault = 'all';
     this.filterValue = 'all';
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
     this.sortByDefault = '0_expired';
     this.orderTrainingCategories(this.sortByDefault);
+
+    this.newTrainingAndQualsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsReport',
+      false,
+    );
+
+    this.trainingAndQualsRoute = this.newTrainingAndQualsFlag ? 'new-training' : 'training';
   }
+
   public toggleFilter(filterValue) {
     this.filterValue = filterValue;
   }
@@ -52,13 +64,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       sortValue = this.trainingStatusService.EXPIRING;
     }
     if (dropdownValue === 'category') {
-      this.trainingCategories = orderBy(
-        this.trainingCategories,
-        [
-          (tc) => tc.category.toLowerCase(),
-        ],
-        ['asc'],
-      );
+      this.trainingCategories = orderBy(this.trainingCategories, [(tc) => tc.category.toLowerCase()], ['asc']);
     } else {
       this.trainingCategories = orderBy(
         this.trainingCategories,
@@ -96,7 +102,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     );
   }
 
-  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training)
+  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training);
 
   public updateTrainingRecord(event, training) {
     event.preventDefault();
@@ -108,7 +114,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       'training-and-qualifications-record',
       training.worker.uid,
       'training',
-      training.uid
+      training.uid,
     ]);
   }
 }

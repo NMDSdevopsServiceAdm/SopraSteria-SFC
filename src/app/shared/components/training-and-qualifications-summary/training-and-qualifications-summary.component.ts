@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import orderBy from 'lodash/orderBy';
 
 @Component({
@@ -20,18 +21,24 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  constructor(
-    private permissionsService: PermissionsService,
-  ) {}
+  public newTrainingAndQualsFlag: boolean;
+  constructor(private permissionsService: PermissionsService, private featureFlagsService: FeatureFlagsService) {}
+
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
+    const trainingPath = this.newTrainingAndQualsFlag ? 'new-training' : 'training';
+    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, trainingPath];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
-  ngOnInit() {
+  async ngOnInit() {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByDefault = '0_expired';
     this.orderWorkers(this.sortByDefault);
+
+    this.newTrainingAndQualsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsReport',
+      false,
+    );
   }
 
   public orderWorkers(dropdownValue) {
@@ -45,17 +52,9 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     }
 
     if (dropdownValue === 'worker') {
-      this.workers = orderBy(
-      this.workers,
-      [ worker => worker.nameOrId.toLowerCase()],
-      [ 'desc'],
-    );
+      this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['desc']);
     } else {
-      this.workers = orderBy(
-        this.workers,
-        [sortValue,  worker => worker.nameOrId.toLowerCase()],
-        ['desc', 'asc'],
-      );
+      this.workers = orderBy(this.workers, [sortValue, (worker) => worker.nameOrId.toLowerCase()], ['desc', 'asc']);
     }
   }
 }

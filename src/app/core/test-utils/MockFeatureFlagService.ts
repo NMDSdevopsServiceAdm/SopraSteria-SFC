@@ -10,6 +10,11 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
   constructor() {
     super();
     this.configCatClient.getValueAsync = (flagName, defaultSetting) => {
+      if (flagName === 'newTrainingAndQualificationsRecords') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
       if (flagName === 'newTrainingAndQualificationsReport') {
         return new Promise((resolve) => {
           return resolve(true);

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { NewTrainingRecordsResolver } from '@core/resolvers/new-training-records.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
@@ -39,6 +40,10 @@ import { MentalHealthProfessionalComponent } from './mental-health-professional/
 import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dialog.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
+import {
+  NewTrainingAndQualificationsRecordComponent,
+} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { NewTrainingComponent } from './new-training-qualifications-record/new-training/new-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -112,7 +117,16 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     MoveWorkerDialogComponent,
     MandatoryDetailsComponent,
     LongTermAbsenceComponent,
+    NewTrainingAndQualificationsRecordComponent,
+    NewTrainingComponent,
   ],
-  providers: [DialogService, WorkerResolver, LongTermAbsenceResolver, QualificationsResolver, TrainingRecordsResolver],
+  providers: [
+    DialogService,
+    WorkerResolver,
+    LongTermAbsenceResolver,
+    QualificationsResolver,
+    TrainingRecordsResolver,
+    NewTrainingRecordsResolver,
+  ],
 })
 export class WorkersModule {}
