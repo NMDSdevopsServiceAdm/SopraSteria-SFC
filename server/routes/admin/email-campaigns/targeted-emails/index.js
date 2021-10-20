@@ -9,6 +9,8 @@ const router = express.Router();
 const getGroup = async (type) => {
   const groups = {
     primaryUsers: await models.user.allPrimaryUsers(),
+    parentOnly: await models.user.allPrimaryUsers({ isParent: true }),
+    singleAccountsOnly: await models.user.allPrimaryUsers({ isParent: false, dataOwner: 'Workplace' }),
   };
   return groups[type];
 };
@@ -90,7 +92,7 @@ const createTargetedEmailsCampaign = async (req, res) => {
 router.route('/total').get(
   celebrate({
     [Segments.QUERY]: {
-      groupType: Joi.string().valid('primaryUsers'),
+      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly'),
     },
   }),
   getTargetedTotalEmails,
@@ -104,7 +106,7 @@ router.route('/').post(
   celebrate({
     [Segments.BODY]: {
       templateId: Joi.string().required(),
-      groupType: Joi.string().valid('primaryUsers'),
+      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly'),
     },
   }),
   createTargetedEmailsCampaign,
