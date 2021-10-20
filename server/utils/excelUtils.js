@@ -179,6 +179,15 @@ exports.alignColumnToLeft = (tab, colNumber) => {
   tab.getColumn(colNumber).alignment = { horizontal: 'left' };
 };
 
+exports.addBlankRowIfTableEmpty = (tableObject, noOfColumns) => {
+  const rowCells = [];
+  for (let i = 0; i < noOfColumns; i++) rowCells.push('');
+
+  if (tableObject.table.rows.length == 0) {
+    tableObject.addRow(rowCells);
+  }
+};
+
 exports.backgroundColours = {
   yellow: { argb: 'FFEA99' },
   blue: { argb: '0050AB' },
