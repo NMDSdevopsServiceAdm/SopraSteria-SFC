@@ -8,6 +8,7 @@ const {
   alignColumnToLeft,
   fitColumnsToSize,
   addBordersToAllFilledCells,
+  addBlankRowIfTableEmpty,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -61,6 +62,8 @@ const addRowsToQualificationsTable = (workerQualificationsTable, workers) => {
       worker.yearAchieved ? worker.yearAchieved : '',
     ]);
   }
+
+  addBlankRowIfTableEmpty(workerQualificationsTable, 6);
 
   workerQualificationsTable.commit();
 };

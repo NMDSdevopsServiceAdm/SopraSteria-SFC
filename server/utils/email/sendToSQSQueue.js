@@ -17,7 +17,7 @@ const sendToSQSQueue = async (to, templateId, params, index) => {
           templateId,
           params,
         }),
-        queueUrl,
+        QueueUrl: queueUrl,
       })
       .promise();
   } catch (error) {
