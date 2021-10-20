@@ -35,6 +35,16 @@ describe('generateTrainingAndQualificationsReport', () => {
       expect(mockCareCertificateTab.getCell('D6').value).to.equal('Status');
     });
 
+    it('should add empty row to table when no data', async () => {
+      addContentToCareCertificateTab(mockCareCertificateTab, []);
+
+      const expectedLine = 7;
+
+      expect(mockCareCertificateTab.getCell(`B${expectedLine}`).value).to.equal('');
+      expect(mockCareCertificateTab.getCell(`C${expectedLine}`).value).to.equal('');
+      expect(mockCareCertificateTab.getCell(`D${expectedLine}`).value).to.equal('');
+    });
+
     it('should add first worker with care certificate to care certificate table', async () => {
       addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
 

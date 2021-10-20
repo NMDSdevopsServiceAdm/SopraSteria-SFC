@@ -8,6 +8,7 @@ const {
   addBordersToAllFilledCells,
   fitColumnsToSize,
   alignColumnToLeft,
+  addBlankRowIfTableEmpty,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -50,6 +51,8 @@ const addRowsToCareCertificateTable = (careCertificateTable, workers) => {
   for (let worker of workers) {
     careCertificateTable.addRow([worker.workerId, worker.jobRole, worker.status]);
   }
+
+  addBlankRowIfTableEmpty(careCertificateTable, 3);
 
   careCertificateTable.commit();
 };
