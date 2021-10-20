@@ -70,6 +70,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
+
+    // NOTE: this function will be required for the summary component, but will need altering due
+    // to the new format of the trainingRecords
     // this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
   }
 
