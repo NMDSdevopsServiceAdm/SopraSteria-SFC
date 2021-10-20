@@ -1,32 +1,28 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
-            Are you regulated by the Care Quality Commission (CQC)?
+            Is the main service it provides regulated by the Care Quality Commission?
           </h1>
         </legend>
-
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+        <app-details [title]="'Not sure if its main service is regulated?'">
+          <p>
+            Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
+            <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+          </p>
+        </app-details>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span *ngIf="submitted" id="regulated-error" class="govuk-error-message">
-            <span *ngIf="regulatedByCQC.errors" id="regulatedByCQC-error">{{
-              getFirstErrorMessage('regulatedByCQC')
+            <span *ngIf="this.form.get('regulatedByCQC').errors" data-testid="errorMessage" id="regulatedByCQC-error">{{
+              getErrorMessage('regulatedByCQC')
             }}</span>
-            <span *ngIf="group.errors" id="group-error"> {{ getFirstErrorMessage('group') }}</span>
           </span>
-
           <div class="govuk-radios govuk-radios--conditional">
-            <!-- regulated -->
-            <div class="govuk-radios__item" (click)="onRegulatedByCQCTruthy()">
+            <div class="govuk-radios__item">
               <input
                 aria-controls="regulatedByCQC-conditional-1"
                 class="govuk-radios__input"
@@ -36,70 +32,9 @@
                 value="yes"
                 [formControlName]="'regulatedByCQC'"
               />
-              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
-                Yes
-              </label>
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1"> Yes </label>
             </div>
-
-            <!-- group & conditional content -->
-            <div
-              class="govuk-radios__conditional"
-              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'yes'"
-              id="regulatedByCQC-conditional-1"
-              [formGroupName]="'group'"
-            >
-              <div id="group-error">
-                <!-- regulated postcode -->
-                <div class="govuk-form-group govuk-!-margin-bottom-2">
-                  <label class="govuk-label" for="regulatedPostcode">
-                    Enter your postcode
-                  </label>
-                  <span
-                    id="group-regulatedPostcode-error"
-                    class="govuk-error-message"
-                    *ngIf="submitted && regulatedPostcode.errors"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFirstErrorMessage('group.regulatedPostcode') }}
-                  </span>
-                  <input
-                    class="govuk-input govuk-!-width-one-third"
-                    id="regulatedPostcode"
-                    name="regulatedPostcode"
-                    type="text"
-                    [formControlName]="'regulatedPostcode'"
-                    [class.govuk-input--error]="submitted && (regulatedPostcode.errors || group.errors)"
-                    spellcheck="false"
-                  />
-                </div>
-
-                <!-- divider -->
-                <div class="govuk-radios__divider govuk-!-margin-top-4">or</div>
-
-                <!-- location Id -->
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="locationId">
-                    Enter your location ID number
-                  </label>
-                  <span id="group-locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFirstErrorMessage('group.locationId') }}
-                  </span>
-                  <input
-                    class="govuk-input govuk-!-width-one-third"
-                    id="locationId"
-                    name="locationId"
-                    type="text"
-                    [formControlName]="'locationId'"
-                    [class.govuk-input--error]="submitted && (locationId.errors || group.errors)"
-                    spellcheck="false"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Non regulated -->
-            <div class="govuk-radios__item" (click)="onRegulatedByCQCFalsy()">
+            <div class="govuk-radios__item">
               <input
                 aria-controls="regulatedByCQC-conditional-2"
                 class="govuk-radios__input"
@@ -109,40 +44,7 @@
                 value="no"
                 [formControlName]="'regulatedByCQC'"
               />
-              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
-                No
-              </label>
-            </div>
-
-            <!-- conditional content -->
-            <div
-              class="govuk-radios__conditional"
-              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'no'"
-              id="regulatedByCQC-conditional-2"
-            >
-              <!-- non regulated postcode -->
-              <div class="govuk-form-group govuk-!-margin-bottom-2">
-                <label class="govuk-label" for="nonRegulatedPostcode">
-                  What is your postcode
-                </label>
-                <span
-                  id="nonRegulatedPostcode-error"
-                  class="govuk-error-message"
-                  *ngIf="submitted && nonRegulatedPostcode.errors"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getFirstErrorMessage('nonRegulatedPostcode') }}
-                </span>
-                <input
-                  class="govuk-input govuk-!-width-one-third"
-                  id="nonRegulatedPostcode"
-                  name="nonRegulatedPostcode"
-                  type="text"
-                  [formControlName]="'nonRegulatedPostcode'"
-                  [class.govuk-input--error]="submitted && nonRegulatedPostcode.errors"
-                  spellcheck="false"
-                />
-              </div>
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2"> No </label>
             </div>
           </div>
         </div>

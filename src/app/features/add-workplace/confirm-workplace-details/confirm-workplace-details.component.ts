@@ -8,7 +8,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-confirm-workplace-details',
@@ -24,13 +23,13 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     protected router: Router,
     protected workplaceService: WorkplaceService,
     public backService: BackService,
-    protected featureFlagsService: FeatureFlagsService,
   ) {
-    super(backService, featureFlagsService);
+    super(backService);
   }
 
   protected init(): void {
     this.flow = '/add-workplace';
+    this.setBackLink();
     this.resetReturnTo();
     this.getWorkplaceData();
   }
@@ -41,7 +40,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
   }
 
   public setBackLink(): void {
-    const backLinkUrl = this.createAccountNewDesign ? 'new-select-main-service' : 'select-main-service';
+    const backLinkUrl = 'select-main-service';
     this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
   }
 

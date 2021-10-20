@@ -9,7 +9,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -25,7 +24,6 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public serverError: string;
   public returnToWorkplaceNotFound: boolean;
   public returnToConfirmDetails: URLStructure;
-  public createAccountNewDesign: boolean;
   public postcodeOrLocationId: string;
 
   constructor(
@@ -36,7 +34,6 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     protected formBuilder: FormBuilder,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected locationService: LocationService,
-    protected featureFlagsService: FeatureFlagsService,
   ) {}
 
   public ngOnInit(): void {
@@ -47,14 +44,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefillForm();
-    this.setFeatureFlag();
-  }
-
-  protected setFeatureFlag(): void {
-    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
-      this.createAccountNewDesign = value;
-      this.setBackLink();
-    });
+    this.setBackLink();
   }
 
   public ngAfterViewInit(): void {
@@ -67,7 +57,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
       return;
     }
 
-    const backLink = this.returnToWorkplaceNotFound ? 'new-workplace-not-found' : 'new-regulated-by-cqc';
+    const backLink = this.returnToWorkplaceNotFound ? 'workplace-not-found' : 'regulated-by-cqc';
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
@@ -157,7 +147,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   private onError(error: HttpErrorResponse): void {
     if (error.status === 404) {
       this.workplaceInterfaceService.searchMethod$.next(error.error.searchmethod);
-      this.router.navigate([this.flow, 'new-workplace-not-found']);
+      this.router.navigate([this.flow, 'workplace-not-found']);
       return;
     }
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

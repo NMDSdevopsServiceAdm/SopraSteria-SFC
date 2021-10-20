@@ -5,7 +5,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SelectWorkplaceDirective } from '@shared/directives/create-workplace/select-workplace/select-workplace.directive';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-workplace',
@@ -17,10 +16,9 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     public registrationService: RegistrationService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, featureFlagsService, registrationService);
+    super(backService, errorSummaryService, formBuilder, router, registrationService);
   }
 
   protected init(): void {
@@ -30,10 +28,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   public setNextRoute(): void {
-    if (this.createAccountNewDesign) {
-      this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'new-select-main-service';
-    } else {
-      this.nextRoute = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
-    }
+    this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
   }
 }

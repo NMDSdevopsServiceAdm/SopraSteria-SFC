@@ -6,7 +6,6 @@ import { NewTrainingRecordsResolver } from '@core/resolvers/new-training-records
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -44,16 +43,12 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import {
-  TrainingAndQualificationsRecordComponent,
-} from './training-qualifications-record/training-and-qualifications-record.component';
+import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -99,12 +94,6 @@ const routes: Routes = [
         path: '',
         component: StaffRecordComponent,
         data: { title: 'Staff Record' },
-      },
-      {
-        path: 'wdf-summary',
-        canActivate: [CheckPermissionsGuard],
-        component: WdfStaffSummaryComponent,
-        data: { permissions: ['canViewWdfReport'], title: 'Staff Record' },
       },
       {
         path: 'staff-details',

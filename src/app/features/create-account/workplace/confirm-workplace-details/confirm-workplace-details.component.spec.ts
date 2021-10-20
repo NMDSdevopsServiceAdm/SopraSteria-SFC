@@ -5,13 +5,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { getByTestId, render, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
@@ -41,7 +39,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
             provide: UserService,
             useClass: MockUserService,
           },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         ],
       },
     );
@@ -71,7 +68,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = '123';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -87,7 +83,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = null;
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -101,7 +96,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = true;
     component.locationAddress.locationId = '123';
 
-    component.createAccountNewDesign = true;
     component.setNameAndAddress();
     fixture.detectChanges();
 
@@ -114,7 +108,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.workplace.isCQC = false;
     component.locationAddress.locationId = null;
 
-    component.createAccountNewDesign = true;
     component.setNameAndAddress();
     fixture.detectChanges();
 
@@ -132,7 +125,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     const expectedPostalCode = 'ABC 123';
     const expectedCounty = 'Greater Manchester';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -150,7 +142,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
     const expectedMainService = 'Name of service';
 
-    component.createAccountNewDesign = true;
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
@@ -171,7 +162,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       component.workplace.isCQC = true;
       component.locationAddress.locationId = '123';
-      component.createAccountNewDesign = true;
+
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
@@ -186,7 +177,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       component.workplace.isCQC = true;
       component.locationAddress.locationId = null;
-      component.createAccountNewDesign = true;
+
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
@@ -201,7 +192,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       component.workplace.isCQC = false;
       component.locationAddress.locationId = null;
-      component.createAccountNewDesign = true;
+
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
@@ -214,14 +205,13 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     it('should set the change link for main service to `select-main-service`', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.createAccountNewDesign = true;
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
       const workplaceNameAddressSummaryList = within(getByTestId('mainService'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/new-select-main-service');
+      expect(changeLink.getAttribute('href')).toBe('/registration/select-main-service');
     });
   });
 });

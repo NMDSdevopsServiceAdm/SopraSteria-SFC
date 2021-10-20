@@ -7,7 +7,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -20,7 +19,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public isCQCLocationUpdate: boolean;
-  public createAccountNewDesign: boolean;
   public enteredPostcode: string;
   public returnToConfirmDetails: URLStructure;
   public title: string;
@@ -33,7 +31,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
@@ -45,11 +42,8 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.setupSubscription();
     this.setTitle();
     this.enteredPostcode = this.locationAddresses[0].postalCode;
-    this.featureFlagsService.configCatClient.getValueAsync('createAccountNewDesign', false).then((value) => {
-      this.createAccountNewDesign = value;
-      this.setBackLink();
-      this.setNextRoute();
-    });
+    this.setBackLink();
+    this.setNextRoute();
   }
 
   ngAfterViewInit(): void {
@@ -65,8 +59,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   }
 
   protected setBackLink(): void {
-    const backLink = this.createAccountNewDesign ? 'find-workplace' : 'regulated-by-cqc';
-    this.backService.setBackLink({ url: [`${this.flow}/${backLink}`] });
+    this.backService.setBackLink({ url: [`${this.flow}/find-workplace`] });
   }
 
   protected setErrorMessage(): void {
@@ -113,7 +106,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
-  public prefillForm() {
+  public prefillForm(): void {
     if (this.workplaceInterfaceService.selectedLocationAddress$.value) {
       this.form.patchValue({
         workplace: this.workplaceInterfaceService.selectedLocationAddress$.value.locationId,
