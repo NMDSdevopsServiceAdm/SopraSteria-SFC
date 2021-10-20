@@ -27,7 +27,7 @@ const convertWorkerWithCareCertificateStatus = (worker) => {
   return {
     workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,
-    status: worker.get('CareCertificateValue'),
+    status: worker.get('CareCertificateValue') ? worker.get('CareCertificateValue') : '',
   };
 };
 
@@ -43,6 +43,59 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   });
 };
 
+const convertWorkerWithTrainingRecords = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+
+  return {
+    workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+    jobRole: worker.mainJob.title,
+    longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
+    mandatoryTraining: worker.get('mandatoryTrainingCategories'),
+    trainingRecords: convertWorkerTraining(worker.workerTraining),
+  };
+};
+
+const convertWorkerTraining = (workerTraining) => {
+  return workerTraining.map((trainingRecord) => {
+    const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
+    const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+
+    return {
+      category: trainingRecord.get('category').category,
+      categoryFK: trainingRecord.get('CategoryFK'),
+      trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
+      expiryDate,
+      status: getTrainingRecordStatus(expiryDate),
+      dateCompleted,
+      accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
+    };
+  });
+};
+
+const getTrainingRecordStatus = (expiryDate) => {
+  if (expiryDate === '') {
+    return 'Up-to-date';
+  }
+
+  const currentDate = new Date();
+  const expiringSoonDate = new Date();
+  expiringSoonDate.setDate(currentDate.getDate() + 90);
+
+  if (expiryDate < currentDate) {
+    return 'Expired';
+  }
+  if (expiryDate < expiringSoonDate) {
+    return 'Expiring soon';
+  }
+  return 'Up-to-date';
+};
+
+exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
+  return rawWorkersWithTrainingRecords.map((worker) => {
+    return convertWorkerWithTrainingRecords(worker);
+  });
+};
+
 const convertIndividualWorkerQualifications = (workerQualifications) => {
   const workerIdAsNumber = parseInt(workerQualifications.worker.get('NameOrIdValue'));
 
@@ -53,14 +106,14 @@ const convertIndividualWorkerQualifications = (workerQualifications) => {
     qualificationName: workerQualifications.qualification.title,
     qualificationLevel: workerQualifications.qualification.level,
     yearAchieved: workerQualifications.get('Year'),
-  }
-}
+  };
+};
 
 exports.convertWorkerQualifications = (rawWorkerQualifications) => {
   return rawWorkerQualifications.map((workerQualifications) => {
     return convertIndividualWorkerQualifications(workerQualifications);
-  })
-}
+  });
+};
 
 exports.getTrainingTotals = (workers) => {
   let expiredTotalRecords = 0;

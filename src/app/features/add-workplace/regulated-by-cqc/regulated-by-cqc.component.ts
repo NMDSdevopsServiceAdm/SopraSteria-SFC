@@ -1,49 +1,28 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
+import { NewRegulatedByCqcDirective } from '@shared/directives/create-workplace/new-regulated-by-cqc/new-regulated-by-cqc.directive';
 
 @Component({
   selector: 'app-regulated-by-cqc',
   templateUrl: './regulated-by-cqc.component.html',
 })
-export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
+export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {
   constructor(
-    private workplaceService: WorkplaceService,
-    protected backService: BackService,
-    protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected locationService: LocationService,
+    protected errorSummaryService: ErrorSummaryService,
+    public workplaceService: WorkplaceService,
+    public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, route, router);
+    super(formBuilder, errorSummaryService, workplaceService, backService, route, router);
   }
 
-  protected init() {
-    this.flow = '/add-workplace';
-    this.setBackLink();
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'start'] });
-  }
-
-  protected onSuccess(data: LocationSearchResponse): void {
-    this.workplaceService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
-    if (data.success === 1) {
-      this.workplaceService.locationAddresses$.next(data.locationdata || data.postcodedata);
-      this.navigateToNextRoute(data);
-    }
-  }
-
-  protected onLocationFailure() {
-    this.workplaceService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
-    this.navigateToWorkplaceNotFoundRoute();
+  protected setFlowToInProgress(): void {
+    this.workplaceService.addWorkplaceInProgress$.next(true);
   }
 }

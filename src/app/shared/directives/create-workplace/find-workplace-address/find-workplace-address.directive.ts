@@ -9,7 +9,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -22,7 +21,6 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
-  public createAccountNewDesign: boolean;
 
   constructor(
     public backService: BackService,
@@ -30,11 +28,10 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected router: Router,
-    protected featureFlagsService: FeatureFlagsService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.setFlow();
 
     this.setupForm();
@@ -42,20 +39,11 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     this.setupServerErrorsMap();
     this.prefillForm();
 
-    await this.getFeatureFlag();
     this.setBackLink();
   }
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
-  }
-
-  async getFeatureFlag(): Promise<void> {
-    await this.featureFlagsService.configCatClient.forceRefreshAsync();
-    this.createAccountNewDesign = await this.featureFlagsService.configCatClient.getValueAsync(
-      'createAccountNewDesign',
-      false,
-    );
   }
 
   get getPostcode(): AbstractControl {
@@ -169,12 +157,8 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   public setBackLink(): void {
     const returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
 
-    let backLink: string;
-    if (this.createAccountNewDesign) {
-      backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'new-regulated-by-cqc';
-    } else {
-      backLink = 'select-workplace-address';
-    }
+    const backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'regulated-by-cqc';
+
     this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }

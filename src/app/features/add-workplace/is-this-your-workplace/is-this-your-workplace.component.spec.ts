@@ -179,7 +179,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'new-select-main-service']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
   });
 
   it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null', async () => {

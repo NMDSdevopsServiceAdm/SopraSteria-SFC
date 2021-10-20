@@ -7,18 +7,16 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, throwError } from 'rxjs';
 
 import { FindWorkplaceAddressComponent } from './find-workplace-address.component';
 
-describe('FindWorkplaceComponent', () => {
+describe('FindWorkplaceAddressComponent', () => {
   async function setup() {
     const component = await render(FindWorkplaceAddressComponent, {
       imports: [
@@ -38,10 +36,6 @@ describe('FindWorkplaceComponent', () => {
         {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
       ],
     });
@@ -214,7 +208,7 @@ describe('FindWorkplaceComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the back link to `new-regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
+    it('should set the back link to `regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
@@ -225,7 +219,7 @@ describe('FindWorkplaceComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'new-regulated-by-cqc'],
+        url: ['add-workplace', 'regulated-by-cqc'],
       });
     });
 

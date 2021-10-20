@@ -6,7 +6,6 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -26,7 +25,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   public requestedServiceName: string;
   public requestedServiceOtherName: string;
   public canViewListOfWorkers = false;
-  public wdfNewDesign: boolean;
   public confirmedFields: Array<string> = [];
   public showTotalStaffWarning: boolean;
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
@@ -86,7 +84,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
-    private featureFlagsService: FeatureFlagsService,
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
       '=1': '# bed available',
@@ -110,14 +107,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     };
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
 
-    this.wdfNewDesign = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
-
     this.setTotalStaffWarning();
-    if (this.canEditEstablishment && this.wdfView && this.wdfNewDesign) {
+    if (this.canEditEstablishment && this.wdfView) {
       this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
     }
 
@@ -142,20 +137,15 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-  public setTotalStaffWarning(): boolean {
-    if (this.wdfNewDesign) {
-      if (this.workplace.workerCount === null && this.workerCount === null) {
-        return (this.showTotalStaffWarning = false);
-      }
-
-      return (this.showTotalStaffWarning =
+  public setTotalStaffWarning(): void {
+    if (this.workplace.workerCount === null && this.workerCount === null) {
+      this.showTotalStaffWarning = false;
+    } else {
+      this.showTotalStaffWarning =
         this.workplace.numberOfStaff !== undefined &&
         (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
-        this.workplace.numberOfStaff !== this.workerCount);
+        this.workplace.numberOfStaff !== this.workerCount;
     }
-    this.showTotalStaffWarning =
-      (this.workplace.numberOfStaff >= 0 || this.workplace.totalWorkers > 0) &&
-      this.workplace.numberOfStaff !== this.workplace.totalWorkers;
   }
 
   public filterAndSortOtherServices(services: Service[]): Service[] {
