@@ -8,6 +8,7 @@ import {
   workerWithExpiredTraining,
   workerWithExpiringTraining,
   workerWithMissingTraining,
+  workerWithOneExpiringTraining,
   workerWithUpToDateTraining,
 } from '@core/test-utils/MockWorkerService';
 import { render } from '@testing-library/angular';
@@ -15,7 +16,7 @@ import { render } from '@testing-library/angular';
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
 const sinon = require('sinon');
-const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -26,11 +27,12 @@ const establishmentBuilder = build('Establishment', {
 });
 
 const workers = [
-  workerWithExpiredTraining,
-  workerWithExpiringTraining,
-  workerWithUpToDateTraining,
-  workerWithMissingTraining,
-  longTermAbsentWorker,
+  workerWithExpiringTraining, // Alice
+  workerWithExpiredTraining, // Ben
+  workerWithOneExpiringTraining, // Carl
+  workerWithMissingTraining, // Darlyn
+  workerWithUpToDateTraining, // Ellie
+  longTermAbsentWorker, // John
 ];
 
 describe('TrainingAndQualificationsSummaryComponent', () => {
@@ -62,44 +64,59 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should list by Expired as default', async () => {
+  it('should list by expired as default', async () => {
     const { fixture } = await setup();
 
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
-    expect(rows.length).toBe(5);
-    expect(rows[0].innerHTML).toContain('3 Expired');
+    expect(rows.length).toBe(6);
+    expect(rows[0].innerHTML).toContain('3 expired');
+    expect(rows[0].innerHTML).toContain('Ben');
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Carl');
     expect(rows[3].innerHTML).toContain('Darlyn');
-    expect(rows[4].innerHTML).toContain('John');
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[5].innerHTML).toContain('John');
   });
 
-  it('should list by Expired as default', async () => {
+  it('should sort by expiring soon', async () => {
     const { fixture } = await setup();
 
     const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingStaff')).nativeElement;
     select.value = select.options[1].value; // Expiring Soon
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    let rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
-    expect(rows.length).toBe(5);
+    expect(rows.length).toBe(6);
+    expect(rows[0].innerHTML).toContain('2 expire soon');
     expect(rows[0].innerHTML).toContain('Alice');
+    expect(rows[1].innerHTML).toContain('1 expires soon');
     expect(rows[1].innerHTML).toContain('Carl');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Darlyn');
-    expect(rows[4].innerHTML).toContain('John');
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[5].innerHTML).toContain('John');
+  });
 
+  it('should sort by missing', async () => {
+    const { fixture } = await setup();
+
+    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingStaff')).nativeElement;
     select.value = select.options[2].value; // Missing
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+
+    expect(rows.length).toBe(6);
+    expect(rows[0].innerHTML).toContain('2 missing');
     expect(rows[0].innerHTML).toContain('Darlyn');
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Carl');
-    expect(rows[4].innerHTML).toContain('John');
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[5].innerHTML).toContain('John');
   });
 
   it('should display the "Long-term absent" tag if the worker is long term absent', async () => {
