@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { Qualification } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -28,6 +29,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
+  public qualificationType: Qualification;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -56,8 +58,15 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       }),
     );
 
+    this.subscriptions.add(
+      this.workerService.getAllQualificationRecords(this.workplace.uid, this.worker.uid).subscribe((data) => {
+        console.log(data);
+      }),
+    );
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
+
+    console.log(this.qualificationType);
   }
 
   // This method is used to set training & qualifications list and their counts and alert flag
