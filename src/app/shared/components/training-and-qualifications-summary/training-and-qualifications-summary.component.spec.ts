@@ -47,7 +47,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,

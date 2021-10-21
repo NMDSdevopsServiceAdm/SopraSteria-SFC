@@ -28,7 +28,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
-  public newTrainingAndQualsFlag: boolean;
+  public newTrainingAndQualificationsRecordsFlag: boolean;
   public trainingAndQualsRoute: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -44,7 +44,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -67,19 +67,19 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
-    this.newTrainingAndQualsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsReport',
+    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsRecords',
       false,
     );
 
-    this.trainingAndQualsRoute = this.newTrainingAndQualsFlag ? 'new-training' : 'training';
+    this.trainingAndQualsRoute = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  deleteWorker(event) {
+  deleteWorker(event): void {
     event.preventDefault();
     this.dialogService.open(DeleteWorkerDialogComponent, {
       worker: this.worker,
@@ -90,7 +90,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  public moveWorker(event) {
+  public moveWorker(event): void {
     event.preventDefault();
     this.dialogService.open(MoveWorkerDialogComponent, {
       worker: this.worker,
