@@ -119,6 +119,15 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(rows[5].innerHTML).toContain('John');
   });
 
+  it('should display the "OK" message if training is up to date', async () => {
+    const { fixture } = await setup();
+
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[4].innerHTML).toContain('OK');
+  });
+
   it('should display the "Long-term absent" tag if the worker is long term absent', async () => {
     const { getAllByText } = await setup();
 
