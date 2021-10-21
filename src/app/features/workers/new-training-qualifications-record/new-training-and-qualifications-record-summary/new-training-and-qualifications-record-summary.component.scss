@@ -4,20 +4,27 @@
   border: 1px solid $govuk-border-colour;
   background-color: govuk-colour('light-grey');
   display: flex;
-  padding: 30px;
+  padding: 30px 40px;
 }
 
 .column {
-  flex: 1;
   margin-top: 20px;
 
   &:first-of-type {
     margin-top: 0px;
+    width: 30%;
   }
 
-  &:nth-child(2) {
+  &:last-of-type {
     border-left: 2px solid $govuk-border-colour;
+    flex: 1;
+    display: flex;
   }
+}
+
+.individualTrainingColumns {
+  flex: 1;
+  padding-left: 60px;
 }
 
 .totalRecords {

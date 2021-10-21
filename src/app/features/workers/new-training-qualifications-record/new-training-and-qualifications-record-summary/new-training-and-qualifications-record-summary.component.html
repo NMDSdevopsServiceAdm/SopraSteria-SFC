@@ -6,16 +6,18 @@
         <span class="totalRecords__count">{{ trainingCount + qualificationsCount }}</span>
       </div>
       <div class="column">
-        <p class="records">
-          <span class="records__count">{{ trainingCount }}</span>
-          <span class="records__text">training records</span>
-        </p>
-      </div>
-      <div class="column">
-        <p class="records">
-          <span class="records__count">{{ qualificationsCount }}</span>
-          <span class="records__text">qualifications records</span>
-        </p>
+        <div class="individualTrainingColumns">
+          <p class="records">
+            <span class="records__count">{{ trainingCount }}</span>
+            <span class="records__text">training records</span>
+          </p>
+        </div>
+        <div class="individualTrainingColumns">
+          <p class="records">
+            <span class="records__count">{{ qualificationsCount }}</span>
+            <span class="records__text">qualifications records</span>
+          </p>
+        </div>
       </div>
     </div>
   </div>
