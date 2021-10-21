@@ -111,4 +111,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
+
+  printPage($event: Event): void {
+    $event.preventDefault();
+    window.print();
+  }
 }

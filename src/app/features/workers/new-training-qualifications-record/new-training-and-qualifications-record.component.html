@@ -1,17 +1,16 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-full">
-      <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds">
       <div class="govuk-list--inline govuk-list govuk__flex">
-          <span class="govuk-caption-xl govuk-!-margin-right-3">
-            {{ worker.nameOrId }}:
-            <ng-container *ngIf="worker.mainJob.other; else title">
-              <span>{{ worker.mainJob.other }}</span>
-            </ng-container>
-            <ng-template #title>
-              <span>{{ worker.mainJob.title }}</span>
-            </ng-template>
-          </span>
+        <span class="govuk-caption-xl govuk-!-margin-right-3">
+          {{ worker.nameOrId }}:
+          <ng-container *ngIf="worker.mainJob.other; else title">
+            <span>{{ worker.mainJob.other }}</span>
+          </ng-container>
+          <ng-template #title>
+            <span>{{ worker.mainJob.title }}</span>
+          </ng-template>
+        </span>
         <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1 asc-tag">
           Long-term absent
           <a
@@ -24,11 +23,16 @@
             ]"
             data-testid="longTermAbsence"
             class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
-            >View</a
           >
+            View
+          </a>
         </p>
       </div>
     </div>
+    <div class="govuk-grid-column-one-third">
+      <p class="govuk-util__float-right govuk-!-margin-top-0 govuk-!-text-align-right">
+        <a href="#" class="govuk-link" role="button" (click)="printPage($event)"> Print this page </a>
+      </p>
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -49,7 +53,7 @@
       </a>
     </div>
     <div class="govuk-grid-column-one-half">
-      <div class="govuk-grid-row govuk-!-margin-bottom-3">
+      <div class="govuk-!-margin-bottom-3">
         <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-0">
           <a
             class="govuk-list govuk-list--inline govuk-!-margin-left-5"
