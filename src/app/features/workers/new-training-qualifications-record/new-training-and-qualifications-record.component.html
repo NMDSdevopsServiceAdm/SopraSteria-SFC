@@ -37,11 +37,14 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
         Training and qualifications ({{
           this.mandatoryTrainingCount + this.nonMandatoryTrainingCount + this.qualificationsCount
         }})
       </h1>
+      <span *ngIf="lastUpdatedDate" class="govuk-caption-m govuk-!-margin-bottom-3">
+        Last updated {{ lastUpdatedDate | date: 'dd MMMM yyyy' }}
+      </span>
       <a
         *ngIf="canEditWorker"
         class="govuk-list govuk-list--inline govuk-!-padding-left-0"
