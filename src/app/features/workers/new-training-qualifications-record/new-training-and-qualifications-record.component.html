@@ -21,7 +21,7 @@
       </div>
     </div>
   </div>
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-one-half">
       <h1 class="govuk-heading-l">
         Training and qualifications ({{
@@ -69,6 +69,13 @@
       </div>
     </div>
   </div>
+
+  <app-new-training-and-qualifications-record-summary
+    [trainingCount]="mandatoryTrainingCount + nonMandatoryTrainingCount"
+    [qualificationsCount]="qualificationsCount"
+    [expiresSoonTrainingCount]="expiresSoonTraining"
+    [expiredTrainingCount]="expiredTraining"
+  ></app-new-training-and-qualifications-record-summary>
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">

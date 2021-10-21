@@ -28,6 +28,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
+  public expiredTraining: number;
+  public expiresSoonTraining: number;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -61,7 +63,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   // This method is used to set training & qualifications list and their counts and alert flag
-  public setTrainingAndQualifications() {
+  public setTrainingAndQualifications(): void {
     this.qualificationsCount = this.route.snapshot.data.qualifications.count;
     const trainingRecords = this.route.snapshot.data.trainingRecords;
     this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
@@ -70,10 +72,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
-
-    // NOTE: this function will be required for the summary component, but will need altering due
-    // to the new format of the trainingRecords
-    // this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
+    this.expiredTraining = this.trainingStatusService.getTrainingStatusCount(trainingRecords, 'EXPIRED');
+    this.expiresSoonTraining = this.trainingStatusService.getTrainingStatusCount(trainingRecords, 'EXPIRING');
+    console.log('Expired training:', this.expiredTraining);
+    console.log('Expires soon training:', this.expiresSoonTraining);
   }
 
   private getTrainingCount(training): number {
