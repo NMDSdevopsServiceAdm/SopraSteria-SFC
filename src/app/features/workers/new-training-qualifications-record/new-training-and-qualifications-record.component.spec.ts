@@ -14,16 +14,16 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
-describe('NewTrainingAndQualificationsRecordComponent', () => {
+fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup() {
+  async function setup(otherJob = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -46,8 +46,13 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   worker: {
                     uid: 123,
                     nameOrId: 'John',
+                    mainJob: {
+                      title: 'Care Worker',
+                      other: otherJob ? 'Care taker' : undefined,
+                    },
                   },
                   trainingRecords: {
+                    lastUpdated: new Date('2020-01-01'),
                     mandatory: [],
                     nonMandatory: [
                       {
@@ -82,6 +87,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   },
                   qualifications: {
                     count: 2,
+                    lastUpdated: new Date('2020-01-02'),
                   },
                 },
               },
@@ -109,6 +115,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
 
+    const windowService = injector.inject(WindowRef) as WindowRef;
+    const windowSpy = spyOnProperty(windowService, 'nativeWindow');
+    windowSpy.and.callThrough();
+
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
@@ -117,6 +127,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       fixture,
       routerSpy,
       workerSpy,
+      windowSpy,
       getByText,
       getAllByText,
       getByTestId,
@@ -134,7 +145,75 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   it('should display the worker name', async () => {
     const { component, getByText } = await setup();
 
-    expect(getByText(component.worker.nameOrId)).toBeTruthy();
+    expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the worker job role', async () => {
+    const { component, getByText } = await setup();
+
+    expect(getByText(component.worker.mainJob.title, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the other worker job role', async () => {
+    const { component, getByText } = await setup(true);
+
+    expect(getByText(component.worker.mainJob.other, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the Print this page button', async () => {
+    const { component, getByText } = await setup();
+
+    expect(getByText('Print this page')).toBeTruthy();
+  });
+
+  it('should run printPage when the Print this page button is clicked', async () => {
+    const { component, getByText, windowSpy } = await setup();
+
+    const printButton = getByText('Print this page');
+
+    fireEvent.click(printButton);
+
+    expect(windowSpy).toHaveBeenCalled();
+  });
+
+  it('should display the last updated date in the correct format', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    component.lastUpdatedDate = new Date('2020-01-01');
+
+    fixture.detectChanges();
+
+    expect(getByText('Last updated 1 January 2020', { exact: false })).toBeTruthy();
+  });
+
+  it('should display the View staff record button', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    component.canEditWorker = true;
+
+    fixture.detectChanges();
+
+    expect(getByText('View staff record', { exact: false })).toBeTruthy();
+  });
+
+  it('should have correct href on the View staff record button', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    component.canEditWorker = true;
+
+    fixture.detectChanges();
+
+    const viewStaffRecordButton = getByText('View staff record', { exact: false });
+
+    expect(viewStaffRecordButton.getAttribute('href')).toEqual(
+      `/workplace/${component.workplace.uid}/staff-record/123`,
+    );
+  });
+
+  it('should get the latest update date', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    expect(component.lastUpdatedDate).toEqual(new Date('2020-01-02'));
   });
 
   it('should display number of training records in the title', async () => {
