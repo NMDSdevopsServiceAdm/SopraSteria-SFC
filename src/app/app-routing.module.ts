@@ -13,6 +13,7 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
+import { AdminComponent } from '@features/admin/admin.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
@@ -102,11 +103,6 @@ const routes: Routes = [
         data: { title: 'Workplace' },
       },
       {
-        path: 'reports',
-        loadChildren: () => import('@features/reports/reports.module').then((m) => m.ReportsModule),
-        data: { title: 'Reports' },
-      },
-      {
         path: 'add-workplace',
         loadChildren: () => import('@features/add-workplace/add-workplace.module').then((m) => m.AddWorkplaceModule),
         canActivate: [CheckPermissionsGuard],
@@ -133,6 +129,16 @@ const routes: Routes = [
         path: 'bulk-upload',
         loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
         data: { title: 'Bulk Upload' },
+      },
+      {
+        path: 'sfcadmin',
+        loadChildren: () => import('@features/admin/admin.module').then((m) => m.AdminModule),
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Admin',
+        },
+        component: AdminComponent,
       },
       {
         path: 'search-users',

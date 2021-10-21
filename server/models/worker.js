@@ -1013,6 +1013,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"FluJabChangedBy"',
       },
+      LastYearFluJabValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"LastYearFluJabValue"',
+      },
+      LastYearFluJabSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"LastYearFluJabSavedAt"',
+      },
+      LastYearFluJabChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"LastYearFluJabChangedAt"',
+      },
+      LastYearFluJabSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"LastYearFluJabSavedBy"',
+      },
+      LastYearFluJabChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"LastYearFluJabChangedBy"',
+      },
       created: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -1047,6 +1073,12 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
         field: 'MainJobFkOther',
+      },
+      LongTermAbsence: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
+        field: '"LongTermAbsence"',
       },
       source: {
         type: DataTypes.ENUM,
@@ -1246,62 +1278,162 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.workersAndTraining = async function (establishmentId) {
+  Worker.getWorkersWithCareCertificateStatus = async function (establishmentId) {
+    return this.findAll({
+      attributes: ['NameOrIdValue', 'CareCertificateValue'],
+      where: {
+        establishmentFk: establishmentId,
+        CareCertificateValue: { [Op.ne]: null },
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+          require: true,
+        },
+      ],
+    });
+  };
+
+  Worker.workersAndTraining = async function (establishmentId, includeMandatoryTrainingBreakdown = false) {
     const currentDate = moment().toISOString();
     const expiresSoon = moment().add(90, 'days').toISOString();
 
+    let attributes = [
+      'id',
+      'uid',
+      'LocalIdentifierValue',
+      'NameOrIdValue',
+      'ContractValue',
+      'CompletedValue',
+      'created',
+      'updated',
+      'updatedBy',
+      'lastWdfEligibility',
+      'wdfEligible',
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
+        'trainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "worker"."ID")'),
+        'qualificationCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}')`,
+        ),
+        'expiredTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+        ),
+        'expiringTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT
+                  COUNT(0)
+                FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+                AND "TrainingCategoryFK" NOT IN (
+                  SELECT
+                    DISTINCT "CategoryFK"
+                  FROM cqc."WorkerTraining"
+                  WHERE "WorkerFK" = "worker"."ID"
+                )
+            )
+            `,
+        ),
+        'missingMandatoryTrainingCount',
+      ],
+      'LongTermAbsence',
+    ];
+
+    if (includeMandatoryTrainingBreakdown) {
+      const mandatoryTrainingAttributes = [
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiredMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID"  AND "CategoryFK"  IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'mandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiringMandatoryTrainingCount',
+        ],
+      ];
+
+      attributes = [...attributes, ...mandatoryTrainingAttributes];
+    }
+
+    return this.findAll({
+      attributes,
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+      ],
+    });
+  };
+
+  Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
     return this.findAll({
       attributes: [
-        'id',
-        'uid',
-        'LocalIdentifierValue',
         'NameOrIdValue',
-        'ContractValue',
-        'CompletedValue',
-        'created',
-        'updated',
-        'updatedBy',
-        'lastWdfEligibility',
-        'wdfEligible',
-        [
-          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID")'),
-          'trainingCount',
-        ],
-        [
-          sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "worker"."ID")'),
-          'qualificationCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" < '${currentDate}')`,
-          ),
-          'expiredTrainingCount',
-        ],
-        [
-          sequelize.literal(
-            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "worker"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
-          ),
-          'expiringTrainingCount',
-        ],
+        'LongTermAbsence',
         [
           sequelize.literal(
             `
               (
-                SELECT
-                    COUNT(0)
+                SELECT json_agg(cqc."TrainingCategories"."Category")
                   FROM cqc."MandatoryTraining"
+                  RIGHT JOIN cqc."TrainingCategories" ON
+                  "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
                   WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
                   AND "JobFK" = "worker"."MainJobFKValue"
-                  AND "TrainingCategoryFK" NOT IN (
-                    SELECT
-                      DISTINCT "CategoryFK"
-                    FROM cqc."WorkerTraining"
-                    WHERE "WorkerFK" = "worker"."ID"
-                  )
               )
-              `,
+            `,
           ),
-          'missingMandatoryTrainingCount',
+          'mandatoryTrainingCategories',
         ],
       ],
       where: {
@@ -1312,7 +1444,19 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.job,
           as: 'mainJob',
-          attributes: ['id', 'title'],
+          attributes: ['title'],
+        },
+        {
+          model: sequelize.models.workerTraining,
+          as: 'workerTraining',
+          attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+          include: [
+            {
+              model: sequelize.models.workerTrainingCategories,
+              as: 'category',
+              attributes: ['category'],
+            },
+          ],
         },
       ],
     });

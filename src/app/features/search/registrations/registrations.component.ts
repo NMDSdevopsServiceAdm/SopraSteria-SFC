@@ -15,7 +15,7 @@ export class RegistrationsComponent implements OnInit {
   }
 
   public getRegistrations() {
-    this.registrationsService.getRegistrations().subscribe(
+    this.registrationsService.getAllRegistrations().subscribe(
       (data) => {
         this.registrations = data;
       },

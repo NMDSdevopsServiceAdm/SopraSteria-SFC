@@ -1251,7 +1251,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.RESOURCE_ERROR,
+        errCode: Worker.RECSOURCE_ERROR,
         errType: 'RECSOURCE_ERROR',
         error: 'The code you have entered for RECSOURCE is incorrect',
         source: this._currentLine.RECSOURCE,
@@ -1983,10 +1983,11 @@ class Worker {
     const listOfOtherJobs = this._currentLine.OTHERJOBROLE.split(';');
     const listOfOtherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
     const localValidationErrors = [];
-    const isValid = listOfOtherJobs.every((job) => !Number.isNaN(parseInt(job, 10)));
+    const listOfJobsWithoutNo = listOfOtherJobs.filter((item) => item !== '0');
+    const isValid = listOfJobsWithoutNo.every((job) => !Number.isNaN(parseInt(job, 10)));
 
     if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
-      if (!isValid) {
+      if (listOfJobsWithoutNo.length > 0 && !isValid) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2007,6 +2008,17 @@ class Worker {
           error: 'OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
           column: 'OTHERJOBROLE/OTHERJRDESC',
+        });
+      } else if (listOfOtherJobs.includes('0') && listOfOtherJobs.length > 1) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: 'OTHER_JOB_ROLE_ERROR',
+          error: 'OTHERJOBROLE is 0 (none) but contains other job roles',
+          source: this._currentLine.OTHERJOBROLE,
+          column: 'OTHERJOBROLE',
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         });
       } else {
         const myJobDescriptions = [];
@@ -2704,9 +2716,9 @@ class Worker {
       const mappedJobs = [];
 
       this._otherJobs.forEach((thisJob) => {
-        const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, thisJob);
+        const myValidatedJobRole = thisJob !== 0 ? BUDI.jobRoles(BUDI.TO_ASC, thisJob) : 0;
 
-        if (!myValidatedJobRole) {
+        if (myValidatedJobRole !== 0 && !myValidatedJobRole) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
@@ -3259,6 +3271,27 @@ class Worker {
   }
 
   toAPI() {
+    let otherJobs;
+
+    if (this._otherJobs) {
+      if (this._otherJobs.includes(0)) {
+        otherJobs = {
+          value: 'No',
+        };
+      } else {
+        otherJobs = {
+          value: 'Yes',
+          jobs:
+            this._mappedOtherJobs !== null
+              ? this._mappedOtherJobs.map((thisJob, index) => ({
+                  jobId: thisJob,
+                  other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined,
+                }))
+              : undefined,
+        };
+      }
+    }
+
     const changeProperties = {
       // the minimum to create a new worker
       localIdentifier: this._uniqueWorkerId,
@@ -3269,13 +3302,7 @@ class Worker {
         jobId: this._mainJobRole,
         other: this._mainJobDesc,
       },
-      otherJobs:
-        this._mappedOtherJobs !== null
-          ? this._mappedOtherJobs.map((thisJob, index) => ({
-              jobId: thisJob,
-              other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined,
-            }))
-          : undefined,
+      otherJobs,
       mainJobStartDate: this._startDate ? this._startDate.format('YYYY-MM-DD') : undefined,
       nationalInsuranceNumber: this._NINumber ? this._NINumber : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('YYYY-MM-DD') : undefined,

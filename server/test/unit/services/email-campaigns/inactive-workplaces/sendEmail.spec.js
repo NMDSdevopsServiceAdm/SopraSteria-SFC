@@ -3,8 +3,8 @@ const moment = require('moment');
 const sinon = require('sinon');
 
 const sendEmail = require('../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
-const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
 const isWhitelisted = require('../../../../../services/email-campaigns/isWhitelisted');
+const sendToSQSQueue = require('../../../../../utils/email/sendToSQSQueue');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', () => {
   afterEach(() => {
@@ -29,19 +29,17 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
           email: 'test@example.com',
         },
       };
+      const index = 1;
 
-      const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
+      const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(inactiveWorkplace);
+      await sendEmail.sendEmail(inactiveWorkplace, index);
 
-      sinon.assert.calledWith(
-        isWhitelistedStub,
-        'test@example.com'
-      );
+      sinon.assert.calledWith(isWhitelistedStub, 'test@example.com');
 
       sinon.assert.calledWith(
-        sendEmailStub,
+        sendToSQSQueueStub,
         {
           email: 'test@example.com',
           name: 'Test Name',
@@ -79,19 +77,17 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
           },
         ],
       };
+      const index = 1;
 
-      const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
       const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
+      const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(parentWorkplace);
+      await sendEmail.sendEmail(parentWorkplace, index);
 
-      sinon.assert.calledWith(
-        isWhitelistedStub,
-        'test@example.com'
-      );
+      sinon.assert.calledWith(isWhitelistedStub, 'test@example.com');
 
       sinon.assert.calledWith(
-        sendEmailStub,
+        sendToSQSQueueStub,
         {
           email: 'test@example.com',
           name: 'Test Person',

@@ -6,9 +6,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockReportService } from '@core/test-utils/MockReportService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import * as moment from 'moment';
@@ -23,7 +21,6 @@ describe('WdfOverviewComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ReportService, useClass: MockReportService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     });
     const component = fixture.componentInstance;
@@ -35,6 +32,16 @@ describe('WdfOverviewComponent', () => {
     it('should render a WdfOverviewComponent', async () => {
       const { component } = await setup();
       expect(component).toBeTruthy();
+    });
+
+    it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+      const { component, getByText } = await setup();
+
+      const workplaceName = component.workplace.name;
+      const nmdsId = component.workplace.nmdsId;
+      const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
+
+      expect(getByText(expectedTitleCaption)).toBeTruthy();
     });
 
     it('should display the correct timeframe for meeting WDF requirements', async () => {

@@ -315,9 +315,10 @@ class Establishment extends EntityValidator {
   }
 
   get key() {
-    return (this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
-      ? this.localIdentifier.replace(/\s/g, '')
-      : this.name
+    return (
+      this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
+        ? this.localIdentifier.replace(/\s/g, '')
+        : this.name
     ).replace(/\s/g, '');
   }
 
@@ -1609,8 +1610,8 @@ class Establishment extends EntityValidator {
       } else {
         externalTransaction.rollback();
       }
-      console.log('throwing error');
-      console.log(err);
+      console.error('throwing error');
+      console.error(err);
       const nameId = this._properties.get('NameOrId');
       throw new EstablishmentExceptions.EstablishmentDeleteException(
         null,

@@ -33,6 +33,7 @@ import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
+import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
@@ -76,6 +77,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
+    SelectMainServiceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

@@ -221,7 +221,7 @@ const addEstablishment = async (req, res) => {
       });
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     console.error('Add establishment: rolling back all changes because: ', err.errCode, err.errMessage);
     if (err.errCode > -99) {
       console.error('Add establishment: original error: ', err.err);
@@ -229,7 +229,7 @@ const addEstablishment = async (req, res) => {
 
     if (err.errCode > -99) {
       // we have an unexpected error
-      res.status(503);
+      res.status(500);
     } else {
       // we have an expected error owing to given establishment data
       res.status(400);
@@ -299,7 +299,7 @@ const getEstablishment = async (req, res) => {
     );
 
     console.error('establishment::GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -327,7 +327,7 @@ const deleteEstablishment = async (req, res) => {
     );
 
     console.error('establishment::DELETE/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -362,7 +362,7 @@ const updateEstablishment = async (req, res) => {
     }
   } catch (err) {
     console.error('Worker PUT: ', err);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 };
 

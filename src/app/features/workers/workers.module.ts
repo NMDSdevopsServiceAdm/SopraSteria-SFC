@@ -1,10 +1,12 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
+import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
@@ -30,6 +32,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
@@ -44,28 +47,21 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { QualificationsComponent } from './training-qualifications-record/qualifications/qualifications.component';
-import {
-  TrainingAndQualificationsRecordComponent,
-} from './training-qualifications-record/training-and-qualifications-record.component';
+import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
 import { TrainingComponent } from './training-qualifications-record/training/training.component';
-import {
-  WdfWorkerConfirmationDialogComponent,
-} from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
+  imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
@@ -111,13 +107,12 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
-    WdfStaffSummaryComponent,
-    WdfWorkerConfirmationDialogComponent,
     TrainingAndQualificationsRecordComponent,
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
-    MandatoryDetailsComponent
+    MandatoryDetailsComponent,
+    LongTermAbsenceComponent,
   ],
-  providers: [DialogService, WorkerResolver],
+  providers: [DialogService, WorkerResolver, LongTermAbsenceResolver, QualificationsResolver, TrainingRecordsResolver],
 })
 export class WorkersModule {}

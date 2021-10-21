@@ -64,11 +64,6 @@ const putStringTemplate = (sheetDoc, stringsDoc, sst, sharedStringsUniqueCount, 
 // for database
 const models = require('../../../models');
 
-// for report dates/formatting
-const config = require('../../../config/config');
-const fromDate = config.get('app.reports.localAuthority.fromDate');
-const toDate = config.get('app.reports.localAuthority.toDate');
-
 // for establishment entity
 const Establishment = require('../../../models/classes/establishment').Establishment;
 
@@ -124,7 +119,7 @@ const identifyLocalAuthority = async (postcode) => {
 };
 
 const LAReport = {
-  run: async (date, thisEstablishment) => {
+  run: async (date, thisEstablishment, fromDate, toDate) => {
     // for the report
     const establishmentId = thisEstablishment.id;
 
@@ -515,7 +510,15 @@ const basicValidationUpdate = (putString, cellToChange, value, columnText, rowTy
   setStyle(cellToChange, columnText, rowType, isRed);
 };
 
-const updateWorkplacesSheet = (workplacesSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
+const updateWorkplacesSheet = (
+  workplacesSheet,
+  reportData,
+  sharedStrings,
+  sst,
+  sharedStringsUniqueCount,
+  fromDate,
+  toDate,
+) => {
   const putString = putStringTemplate.bind(null, workplacesSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   //set headers
@@ -1035,7 +1038,15 @@ const redIifMissing = (putString, cellToChange, value, columnText, rowType, colu
   setStyle(cellToChange, columnText, rowType, isRed);
 };
 
-const updateStaffRecordsSheet = (staffRecordsSheet, reportData, sharedStrings, sst, sharedStringsUniqueCount) => {
+const updateStaffRecordsSheet = (
+  staffRecordsSheet,
+  reportData,
+  sharedStrings,
+  sst,
+  sharedStringsUniqueCount,
+  fromDate,
+  toDate,
+) => {
   const putString = putStringTemplate.bind(null, staffRecordsSheet, sharedStrings, sst, sharedStringsUniqueCount);
 
   putString(staffRecordsSheet("c[r='B5']"), moment(reportData.date).format('DD/MM/YYYY'));
@@ -1255,7 +1266,13 @@ const updateStaffRecordsSheet = (staffRecordsSheet, reportData, sharedStrings, s
 };
 
 const getReport = async (date, thisEstablishment) => {
-  let reportData = await LAReport.run(date, thisEstablishment);
+  const laReturnStartDate = await models.AdminSettings.getValue('laReturnStartDate');
+  const laReturnEndDate = await models.AdminSettings.getValue('laReturnEndDate');
+
+  const fromDate = new Date(laReturnStartDate.Data.value);
+  const toDate = new Date(laReturnEndDate.Data.value);
+
+  let reportData = await LAReport.run(date, thisEstablishment, fromDate, toDate);
   if (reportData === null) {
     return null;
   }
@@ -1321,6 +1338,8 @@ const getReport = async (date, thisEstablishment) => {
             sharedStrings,
             sst,
             sharedStringsUniqueCount, //pass unique count by reference rather than by value
+            fromDate,
+            toDate,
           ).xml(),
         );
 
@@ -1333,6 +1352,8 @@ const getReport = async (date, thisEstablishment) => {
             sharedStrings,
             sst,
             sharedStringsUniqueCount, //pass unique count by reference rather than by value
+            fromDate,
+            toDate,
           ).xml(),
         );
 
@@ -1379,8 +1400,8 @@ const reportGet = async (req, res) => {
         } else {
           // only allow on those establishments being a parent
 
-          console.error('report/localAuthority/user 503 response');
-          await reportLock.saveResponse(req, res, 503, {});
+          console.error('report/localAuthority/user 500 response');
+          await reportLock.saveResponse(req, res, 500, {});
         }
       } else {
         console.error('report/localAuthority/user 403 response');
@@ -1390,11 +1411,11 @@ const reportGet = async (req, res) => {
       // only allow on those establishments being a local authority
 
       console.error('report/localAuthority/user - failed restoring establishment');
-      await reportLock.saveResponse(req, res, 503, {});
+      await reportLock.saveResponse(req, res, 500, {});
     }
   } catch (err) {
     console.error('report/localAuthority/user - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
+    return res.status(500).send('ERR: Failed to retrieve report');
   }
 };
 

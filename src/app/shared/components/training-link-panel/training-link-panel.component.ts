@@ -3,7 +3,9 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { saveAs } from 'file-saver';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
@@ -17,18 +19,32 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   @Input() workers: Worker[];
 
   public establishmentUid: string;
+  public canEditEstablishment: boolean;
   public url: string;
   public fromStaffRecord: boolean;
   public lastUpdated: string;
   public now = moment.now();
   private subscriptions: Subscription = new Subscription();
+  private newTrainingAndQualificationsReport: boolean;
 
-  constructor(private reportService: ReportService, private router: Router) {}
+  constructor(
+    private reportService: ReportService,
+    private router: Router,
+    private permissionsService: PermissionsService,
+    private featureFlagsService: FeatureFlagsService,
+  ) {}
 
   ngOnInit() {
     this.url = this.router.url;
 
     this.establishmentUid = this.workplace.uid;
+    this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
+
+    this.featureFlagsService.configCatClient
+      .getValueAsync('newTrainingAndQualificationsReport', false)
+      .then((value) => {
+        this.newTrainingAndQualificationsReport = value;
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -38,7 +54,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   public lastUpdatedCheck(): void {
-    if(this.workers) {
+    if (this.workers) {
       this.workers.forEach((worker: Worker) => {
         if (worker.trainingCount > 0) {
           if (this.lastUpdated === undefined || new Date(this.lastUpdated) < new Date(worker.trainingLastUpdated)) {
@@ -52,16 +68,26 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   //Download Training Report
   public downloadTrainingReport(event: Event): void {
     event.preventDefault();
-    this.subscriptions.add(
-      this.reportService.getTrainingReport(this.establishmentUid).subscribe(
-        (response) => this.saveFile(response),
-        (error) => console.error(error),
-      ),
-    );
+
+    if (this.newTrainingAndQualificationsReport) {
+      this.subscriptions.add(
+        this.reportService.getTrainingAndQualificationsReport(this.establishmentUid).subscribe(
+          (response) => this.saveFile(response),
+          (error) => console.error(error),
+        ),
+      );
+    } else {
+      this.subscriptions.add(
+        this.reportService.getTrainingReport(this.establishmentUid).subscribe(
+          (response) => this.saveFile(response),
+          (error) => console.error(error),
+        ),
+      );
+    }
   }
 
   //set content type and save file
-  private saveFile(response: HttpResponse<Blob>) {
+  public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');
     const filenameMatches = header && header.match(filenameRegEx);

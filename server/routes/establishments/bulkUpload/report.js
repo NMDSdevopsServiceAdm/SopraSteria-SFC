@@ -193,14 +193,14 @@ const reportGet = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING));
+router.route('/:reportType').get(acquireLock.bind(null, reportGet, buStates.DOWNLOADING, true));
 
 module.exports = router;
 module.exports.printLine = printLine;

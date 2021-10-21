@@ -1,0 +1,47 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            Find {{ flow === 'registration' ? 'your workplace' : 'the workplace' }}
+          </h1>
+        </legend>
+
+        <p>
+          We'll use {{ flow === 'registration' ? 'your' : 'its' }} CQC location ID or workplace postcode to find
+          {{ flow === 'registration' ? 'your' : 'the' }} workplace in the Care Quality Commision database.
+        </p>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+          <label class="govuk-label" for="postcodeOrLocationID"> CQC location ID or postcode </label>
+          <span
+            *ngIf="submitted && form.get('postcodeOrLocationID').errors"
+            id="postcodeOrLocationID-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getErrorMessage('postcodeOrLocationID') }}
+          </span>
+          <input
+            class="govuk-input govuk-input--width-10"
+            [formControlName]="'postcodeOrLocationID'"
+            id="postcodeOrLocationID"
+            name="postcodeOrLocationID"
+            [class.govuk-input--error]="submitted && (form.invalid || serverError)"
+            type="text"
+          />
+        </div>
+      </fieldset>
+      <button class="govuk-button" type="submit">Find workplace</button>
+    </form>
+  </div>
+</div>

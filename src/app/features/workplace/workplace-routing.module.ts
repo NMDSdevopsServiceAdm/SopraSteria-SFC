@@ -29,12 +29,14 @@ import {
   DataSharingWithLocalAuthoritiesComponent,
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
+import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
-import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
+import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
+import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
@@ -47,6 +49,7 @@ import {
   UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
+import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 // eslint-disable-next-line max-len
@@ -112,7 +115,7 @@ const routes: Routes = [
       },
       {
         path: 'update-workplace-details',
-        component: EnterWorkplaceAddressComponent,
+        component: WorkplaceNameAddressComponent,
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin, Roles.Edit],
@@ -321,6 +324,26 @@ const routes: Routes = [
             },
           },
           {
+            path: 'select-primary-user',
+            component: SelectPrimaryUserComponent,
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Select primary user',
+            },
+          },
+          {
+            path: 'select-primary-user-delete',
+            component: SelectPrimaryUserDeleteComponent,
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Select primary user to delete',
+            },
+          },
+          {
             path: 'edit-details',
             component: UserAccountEditDetailsComponent,
             canActivate: [RoleGuard],
@@ -328,6 +351,16 @@ const routes: Routes = [
             data: {
               roles: [Roles.Admin],
               title: 'Edit User Details',
+            },
+          },
+          {
+            path: 'delete-user',
+            component: DeleteUserAccountComponent,
+            canActivate: [RoleGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              roles: [Roles.Edit, Roles.Admin],
+              title: 'Delete User',
             },
           },
         ],
@@ -370,6 +403,14 @@ const routes: Routes = [
           permissions: ['canAddEstablishment'],
           title: 'Add Mandatory Training',
         },
+      },
+      {
+        path: 'add-multiple-training',
+        loadChildren: () =>
+          import('@features/add-multiple-training/add-multiple-training.module').then(
+            (m) => m.AddMultipleTrainingModule,
+          ),
+        data: { title: 'Add Multiple Training' },
       },
     ],
   },

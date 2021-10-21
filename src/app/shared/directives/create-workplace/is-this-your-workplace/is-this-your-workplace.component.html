@@ -1,0 +1,77 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 *ngIf="isParent" class="govuk-fieldset__heading">Is this the workplace you want to add?</h1>
+          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Is this your workplace?</h1>
+        </legend>
+        <div *ngIf="locationData">
+          <p *ngIf="searchMethod === 'locationID'">
+            CQC location ID entered: <strong>{{ locationData.locationId }}</strong>
+          </p>
+          <p *ngIf="searchMethod === 'postcode'">
+            Postcode entered: <strong>{{ locationData.postalCode }}</strong>
+          </p>
+          <address class="govuk-util__font-style-normal">
+            <p>
+              <span *ngIf="locationData.locationName">{{ locationData.locationName }}<br /></span>
+              <span *ngIf="locationData.addressLine1">{{ locationData.addressLine1 }}<br /></span>
+              <span *ngIf="locationData.addressLine2">{{ locationData.addressLine2 }}<br /></span>
+              <span *ngIf="locationData.townCity">{{ locationData.townCity }}<br /></span>
+              <span *ngIf="locationData.county">{{ locationData.county }}<br /></span>
+              <span *ngIf="locationData.postalCode">{{ locationData.postalCode }}</span>
+            </p>
+          </address>
+        </div>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+          <span
+            *ngIf="submitted && this.form.get('yourWorkplace').errors"
+            id="yourWorkplace-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getErrorMessage('yourWorkplace') }}
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="yourWorkplace-conditional-1"
+                class="govuk-radios__input"
+                id="yourWorkplace-1"
+                name="yourWorkplace"
+                type="radio"
+                value="yes"
+                [formControlName]="'yourWorkplace'"
+              />
+              <label for="yourWorkplace-1" class="govuk-label govuk-radios__label">Yes</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="yourWorkplace-conditional-2"
+                class="govuk-radios__input"
+                id="yourWorkplace-2"
+                name="yourWorkplace"
+                type="radio"
+                value="no"
+                [formControlName]="'yourWorkplace'"
+              />
+              <label for="yourWorkplace-2" class="govuk-label govuk-radios__label">No</label>
+            </div>
+          </div>
+        </div>
+        <div class="govuk-!-margin-top-8">
+          <app-details [title]="revealTitle">
+            <p>
+              Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
+              <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+            </p>
+          </app-details>
+        </div>
+      </fieldset>
+      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

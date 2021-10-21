@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         message: 'User not found.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'Unable to authenticate user.',
       },
       {

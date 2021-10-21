@@ -18,7 +18,6 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 // Inheirts the "workerUid" parameter declared in the Worker route for qualification.
 
 const viewQualifications = async (req, res) => {
-
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
@@ -28,7 +27,7 @@ const viewQualifications = async (req, res) => {
     return res.status(200).json(allQualificationRecords);
   } catch (err) {
     console.error('Qualification::root - failed', err);
-    return res.status(503).send(`Failed to get Qualification Records for Worker having uid: ${escape(workerUid)}`);
+    return res.status(500).send(`Failed to get Qualification Records for Worker having uid: ${escape(workerUid)}`);
   }
 };
 
@@ -58,7 +57,7 @@ const availableQualifications = async (req, res) => {
   } catch (err) {
     console.error('Qualification::root - failed', err);
     return res
-      .status(503)
+      .status(500)
       .send(`Failed to get available Qualification (Types) for Worker having uid: ${escape(workerUid)}`);
   }
 };
@@ -80,7 +79,7 @@ const viewQualification = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -112,7 +111,7 @@ const createQualification = async (req, res) => {
       return res.status(400).send();
     }
 
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -155,7 +154,7 @@ const updateQualification = async (req, res) => {
       return res.status(400).send();
     }
 
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -188,7 +187,7 @@ const deleteQualification = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

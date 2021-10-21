@@ -14,7 +14,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.careCertificate.isEligible === 'Yes' &&
           !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
           worker.careCertificate !== 'Yes, completed'
@@ -22,6 +21,7 @@
         [changeLink]="getRoutePath('care-certificate')"
         (fieldConfirmation)="this.confirmField('careCertificate')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -29,7 +29,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.careCertificate.isEligible === 'Yes' &&
             !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
             worker.careCertificate !== 'Yes, completed'
@@ -57,7 +56,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
           !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
           worker.qualificationInSocialCare !== 'Yes'
@@ -65,6 +63,7 @@
         [changeLink]="getRoutePath('social-care-qualification')"
         (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -72,7 +71,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
             !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
             worker.qualificationInSocialCare !== 'Yes'
@@ -100,7 +98,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
           !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
         "
@@ -109,6 +106,7 @@
           this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
         "
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -116,7 +114,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
             !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
           )
@@ -143,7 +140,6 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.otherQualification.isEligible === 'Yes' &&
           !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
           worker.otherQualification !== 'Yes'
@@ -151,6 +147,7 @@
         [changeLink]="getRoutePath('other-qualifications')"
         (fieldConfirmation)="this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -177,13 +174,13 @@
         *ngIf="
           canEditWorker &&
           wdfView &&
-          wdfNewDesign &&
           worker.wdf?.highestQualification.isEligible === 'Yes' &&
           !worker.wdf?.highestQualification.updatedSinceEffectiveDate
         "
         [changeLink]="getRoutePath('other-qualifications-level')"
         (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -191,7 +188,6 @@
         *ngIf="
           !(
             wdfView &&
-            wdfNewDesign &&
             worker.wdf?.highestQualification.isEligible === 'Yes' &&
             !worker.wdf?.highestQualification.updatedSinceEffectiveDate
           )

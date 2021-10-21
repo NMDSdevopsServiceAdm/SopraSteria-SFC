@@ -1,0 +1,46 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">{{ title }}</h1>
+        </legend>
+
+        <div class="govuk-!-margin-bottom-5">
+          <p>
+            Postcode entered: <strong>{{ enteredPostcode }}</strong>
+            <a [routerLink]="[flow, 'find-workplace-address']" class="govuk-!-margin-left-9"
+              >Change<span class="govuk-visually-hidden"> postcode</span>
+            </a>
+          </p>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
+          <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('address', 'required') }}
+          </span>
+          <select
+            class="govuk-select"
+            [class.govuk-select--error]="submitted && getAddress.errors"
+            [formControlName]="'address'"
+            id="address"
+            name="address"
+            (change)="onLocationChange($event.target.value)"
+          >
+            <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
+            <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
+              {{ getLocationName(location) }}
+            </option>
+          </select>
+        </div>
+
+        <p><a [routerLink]="[flow, 'workplace-name-address']">Workplace address is not listed or is not correct</a></p>
+      </fieldset>
+
+      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

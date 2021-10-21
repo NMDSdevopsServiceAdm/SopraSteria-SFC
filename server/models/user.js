@@ -306,6 +306,13 @@ module.exports = function (sequelize, DataTypes) {
     return this.findOne({ where: { uid: uuId } });
   };
 
+  User.findByLoginId = function (loginId) {
+    return this.findOne({
+      where: { id: loginId },
+      attributes: ['id'],
+    });
+  };
+
   User.closeLock = async function (LockHeldTitle, userUid) {
     return await this.update(
       {
@@ -319,6 +326,7 @@ module.exports = function (sequelize, DataTypes) {
       },
     );
   };
+
   User.openLock = async function (LockHeldTitle, userId) {
     return await this.update(
       {
@@ -387,7 +395,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  User.allPrimaryUsers = async function() {
+  User.allPrimaryUsers = async function (where = {}) {
     return await this.findAll({
       attributes: [
         [sequelize.literal('DISTINCT ON ("user"."EmailValue") "user"."EmailValue"'), 'email'],
@@ -401,15 +409,12 @@ module.exports = function (sequelize, DataTypes) {
       include: [
         {
           model: sequelize.models.establishment,
-          attributes: [
-            'id',
-            'nmdsId',
-            'NameValue',
-          ],
-        }
+          attributes: ['id', 'nmdsId', 'NameValue'],
+          where,
+        },
       ],
-    })
-  }
+    });
+  };
 
   return User;
 };

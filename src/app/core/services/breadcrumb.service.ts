@@ -4,6 +4,11 @@ import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/rout
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import {
+  adminJourney,
+  adminPendingRegistrationJourney,
+  adminRejectedRegistrationJourney,
+} from '@core/breadcrumb/journey.admin';
+import {
   benchmarksPayJourney,
   benchmarksQualificationsJourney,
   benchmarksSicknessJourney,
@@ -20,7 +25,6 @@ import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_tra
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
-import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -98,12 +102,8 @@ export class BreadcrumbService {
   }
 
   private getPath(url: string, segments: UrlSegment[]) {
-    const reportUrl = url;
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
-        if (reportUrl === '/reports/workplace/:workplaceUid/wdf') {
-          return segments[index - 1] ? segments[index - 1].path : part;
-        }
         return segments[index] ? segments[index].path : part;
       }
       return part;
@@ -144,12 +144,16 @@ export class BreadcrumbService {
   private getRoutesConfig(journey: JourneyType) {
     let routes: JourneyRoute;
     switch (journey) {
-      case JourneyType.REPORTS: {
-        routes = reportJourney;
+      case JourneyType.ADMIN: {
+        routes = adminJourney;
         break;
       }
-      case JourneyType.SUBSIDIARY_REPORTS: {
-        routes = subsidiaryReportJourney;
+      case JourneyType.ADMIN_PENDING_REGISTRATIONS: {
+        routes = adminPendingRegistrationJourney;
+        break;
+      }
+      case JourneyType.ADMIN_REJECTED_REGISTRATIONS: {
+        routes = adminRejectedRegistrationJourney;
         break;
       }
       case JourneyType.MY_WORKPLACE: {

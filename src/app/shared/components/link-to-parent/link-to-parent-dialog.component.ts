@@ -117,7 +117,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'We could not send request to parent. You can try again or contact us.',
       },
       {

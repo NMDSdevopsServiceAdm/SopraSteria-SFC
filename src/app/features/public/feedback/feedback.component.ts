@@ -85,7 +85,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'We could not submit your feedback. You can try again or contact us',
       },
     ];

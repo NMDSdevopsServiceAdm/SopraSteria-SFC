@@ -102,9 +102,9 @@ const viewBenchmarks = async (req, res) => {
     return res.status(200).json(reply);
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
-}
+};
 
 router.use('/', hasPermission('canViewBenchmarks'));
 router.route('/').get(viewBenchmarks);

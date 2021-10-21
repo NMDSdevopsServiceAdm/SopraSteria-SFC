@@ -22,13 +22,13 @@ const signedUrlGet = async (req, res) => {
     });
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING, true));
 
 module.exports = router;

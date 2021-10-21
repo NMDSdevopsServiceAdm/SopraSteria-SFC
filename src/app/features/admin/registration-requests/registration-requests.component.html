@@ -1,0 +1,20 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">Registration requests</h2>
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <ul class="govuk-list">
+      <li routerLinkActive="active" data-testid="pendingLink">
+        <a routerLink="/sfcadmin/registrations/pending" class="govuk-link" data-testid="pendingLinkAnchor">
+          Pending ({{ pendingRegistrationsCount }})
+        </a>
+      </li>
+      <li routerLinkActive="active" data-testid="rejectedLink">
+        <a routerLink="/sfcadmin/registrations/rejected" class="govuk-link" data-testid="rejectedLinkAnchor">
+          Rejected
+        </a>
+      </li>
+    </ul>
+  </div>
+  <router-outlet></router-outlet>
+</div>

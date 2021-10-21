@@ -1,12 +1,9 @@
-import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -31,15 +28,11 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   private workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
-  public wdfNewDesign: boolean;
   public canViewNinoDob: boolean;
 
   constructor(
-    private location: Location,
     private permissionsService: PermissionsService,
-    private route: ActivatedRoute,
     public workerService: WorkerService,
-    private featureFlagsService: FeatureFlagsService,
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 
@@ -49,20 +42,15 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
 
-    this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false).then((value) => {
-      this.wdfNewDesign = value;
-      if (this.wdfNewDesign && this.wdfView) {
-        if (this.allRequiredFieldsUpdatedAndEligible()) {
-          this.updateFieldsWhichDontRequireConfirmation();
-        }
-      } else {
-        const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-        const returnTo = this.wdfView
-          ? { url: [...staffRecordPath, ...['wdf-summary']] }
-          : { url: [...staffRecordPath, ...['check-answers']] };
-        this.workerService.setReturnTo(returnTo);
+    if (this.canEditWorker && this.wdfView) {
+      if (this.allRequiredFieldsUpdatedAndEligible()) {
+        this.updateFieldsWhichDontRequireConfirmation();
       }
-    });
+    } else {
+      const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+      const returnTo = { url: [...staffRecordPath, ...['check-answers']] };
+      this.workerService.setReturnTo(returnTo);
+    }
   }
 
   ngOnDestroy(): void {

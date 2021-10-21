@@ -1,13 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Worker } from '@core/model/worker.model';
+import { MultipleTrainingResponse } from '@core/model/training.model';
+import { URLStructure } from '@core/model/url.model';
+import { Worker, WorkerEditResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { URLStructure } from '@core/model/url.model';
 
 const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 
-export const  workerBuilder = build('Worker', {
+export const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.random.uuid()),
@@ -15,19 +16,19 @@ export const  workerBuilder = build('Worker', {
     mainJob: {
       id: sequence(),
       title: fake((f) => f.lorem.sentence()),
-      other: null
+      other: null,
     },
     contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'),
     localIdentifier: fake((f) => f.name.findName()),
-    zeroHoursContract: oneOf('Yes', 'No', 'Don\'t know'),
+    zeroHoursContract: oneOf('Yes', 'No', "Don't know"),
     weeklyHoursAverage: null,
     weeklyHoursContracted: {
       value: 'Yes',
-      hours: fake((f) => f.random.number())
+      hours: fake((f) => f.random.number()),
     },
     annualHourlyPay: {
       value: 'Hourly',
-      rate: 8.98
+      rate: 8.98,
     },
     careCertificate: 'Yes',
     apprenticeshipTraining: null,
@@ -45,11 +46,100 @@ export const  workerBuilder = build('Worker', {
     expiringTrainingCount: 0,
     missingMandatoryTrainingCount: 0,
     qualificationCount: 0,
-    fluJab: null
-  }
+    fluJab: null,
+    longTermAbsence: null,
+  },
 });
 
 const worker = workerBuilder();
+
+export const workerWithExpiringTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Alice',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 2,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 0,
+    trainingCount: 1,
+  },
+});
+
+export const workerWithExpiredTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Ben',
+    expiredTrainingCount: 3,
+    expiringTrainingCount: 0,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 0,
+    trainingCount: 0,
+  },
+});
+
+export const workerWithUpToDateTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Carl',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 1,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 1,
+    trainingCount: 3,
+  },
+});
+
+export const workerWithMissingTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Darlyn',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 0,
+    missingMandatoryTrainingCount: 2,
+    qualificationCount: 0,
+    trainingAlert: 2,
+    trainingCount: 0,
+  },
+});
+
+export const longTermAbsentWorker = workerBuilder({
+  overrides: {
+    nameOrId: 'John',
+    longTermAbsence: 'Illness',
+  },
+});
+
+export const AllWorkers = [
+  {
+    nameOrId: worker.nameOrId,
+    uid: '1234',
+    trainingCount: 1,
+    trainingLastUpdated: '2020-01-01T00:00:00Z',
+    mainJob: {
+      jobId: 8,
+      other: null,
+    },
+  },
+  {
+    nameOrId: worker.nameOrId,
+    uid: '5678',
+    trainingCount: 1,
+    trainingLastUpdated: '2020-01-01T00:00:00Z',
+    mainJob: {
+      jobId: 8,
+      other: null,
+    },
+  },
+  {
+    nameOrId: worker.nameOrId,
+    uid: '4321',
+    trainingCount: 1,
+    trainingLastUpdated: '2020-01-01T00:00:00Z',
+    mainJob: {
+      jobId: 8,
+      other: null,
+    },
+  },
+] as Worker[];
 
 @Injectable()
 export class MockWorkerService extends WorkerService {
@@ -77,11 +167,12 @@ export class MockWorkerService extends WorkerService {
   public get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
-      fragment: 'workplace'
+      fragment: 'workplace',
     };
   }
 
   public worker$ = of(worker as Worker);
+
   public workers$ = of([
     {
       nameOrId: worker.nameOrId,
@@ -89,22 +180,27 @@ export class MockWorkerService extends WorkerService {
       trainingLastUpdated: '2020-01-01T00:00:00Z',
       mainJob: {
         jobId: 8,
-        other: null
-      }
-    }
+        other: null,
+      },
+    },
   ] as Worker[]);
 
   getAllWorkers(establishmentUid: string): Observable<Worker[]> {
-    return of([
-      {
-        nameOrId: worker.nameOrId,
-        trainingCount: 1,
-        trainingLastUpdated: '2020-01-01T00:00:00Z',
-        mainJob: {
-          jobId: 8,
-          other: null
-        }
-      }
-    ] as Worker[]);
+    return of(AllWorkers);
+  }
+
+  createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {
+    return of({ savedRecords: 1 } as MultipleTrainingResponse);
+  }
+
+  getLongTermAbsenceReasons(): Observable<Array<string>> {
+    return of(['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other']);
+  }
+}
+
+@Injectable()
+export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
+  updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
+    return of({ uid: '1' } as WorkerEditResponse);
   }
 }

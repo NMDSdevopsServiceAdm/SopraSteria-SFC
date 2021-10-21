@@ -61,7 +61,7 @@ const updateWorkers = async (req, res) => {
       res.status(400);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
       console.error('Worker PUT: ', err.message);
-      res.status(503);
+      res.status(500);
     }
     return res.send();
   }

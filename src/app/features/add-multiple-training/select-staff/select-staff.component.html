@@ -1,0 +1,58 @@
+<app-error-summary *ngIf="submitted && form?.invalid" [formErrorsMap]="formErrorsMap" [form]="form">
+</app-error-summary>
+
+<form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="govuk-grid-row">
+    <fieldset class="govuk-fieldset">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <h1 class="govuk-fieldset__heading">Select the staff who have completed the training</h1>
+        </legend>
+      </div>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <span *ngIf="submitted && form?.invalid" id="selectStaff-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFirstErrorMessage('selectStaff') }}
+        </span>
+        <div class="govuk-checkboxes">
+          <div class="govuk-grid-column-full">
+            <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
+              <input
+                class="govuk-checkboxes__input"
+                type="checkbox"
+                id="selectAll"
+                name="selectAll"
+                [(ngModel)]="selectAll"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="selectAllWorkers($event)"
+              />
+              <label for="selectAll" class="govuk-label govuk-checkboxes__label"> Select all </label>
+            </div>
+          </div>
+          <ng-container *ngFor="let worker of selectStaff.controls; let i = index" formArrayName="selectStaff">
+            <div class="govuk-grid-column-one-third-from-desktop">
+              <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
+                <input
+                  class="govuk-checkboxes__input"
+                  type="checkbox"
+                  id="selectStaff-{{ i }}"
+                  name="selectStaff-{{ i }}"
+                  (change)="selectWorker(worker)"
+                  [checked]="worker.value.checked"
+                  [value]="worker.value.name"
+                />
+                <label for="selectStaff-{{ i }}" class="govuk-label govuk-checkboxes__label">
+                  {{ worker.value.name }}
+                </label>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Continue</button>
+        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
+      </div>
+    </fieldset>
+  </div>
+</form>

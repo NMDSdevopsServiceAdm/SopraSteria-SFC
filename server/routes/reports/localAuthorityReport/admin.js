@@ -1,5 +1,4 @@
 // Local Authority admin report
-// Local Authority admin report
 const express = require('express');
 const UserAgentParser = require('ua-parser-js');
 const router = express.Router();
@@ -27,28 +26,20 @@ const _csvNoNull = (toCsv) => {
     return '';
   }
 };
-const _fromDateToCsvDate = (convertThis) => {
-  if (convertThis) {
-    const datePart = convertThis.toISOString().substring(0, 10);
-    const dateParts = datePart.split('-');
-
-    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-  } else {
-    return '';
-  }
-};
 
 // gets report
-const reportGet = async (req, res) => {
+const adminReportGet = async (req, res) => {
   req.setTimeout(config.get('app.reports.localAuthority.timeout') * 1000);
 
   const userAgent = UserAgentParser(req.headers['user-agent']);
   const windowsTest = /windows/i;
   const NEWLINE = windowsTest.test(userAgent.os.name) ? '\r\n' : '\n';
-  const fromDate = config.get('app.reports.localAuthority.fromDate');
-  const toDate = config.get('app.reports.localAuthority.toDate');
-
   try {
+    const laReturnStartDate = await models.AdminSettings.getValue('laReturnStartDate');
+    const laReturnEndDate = await models.AdminSettings.getValue('laReturnEndDate');
+
+    const fromDate = new Date(laReturnStartDate.Data.value);
+    const toDate = new Date(laReturnEndDate.Data.value);
     const date = new Date().toISOString().split('T')[0];
 
     // write the report header
@@ -90,11 +81,12 @@ Contracted/Average hours,\
 Sickness,\
 Pay,\
 Qualifications,\
-Last Years confirmed numbers' +
+Last Years confirmed numbers,\
+Notes' +
       NEWLINE;
 
     const runReport = await models.sequelize.query(
-      `select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate);`,
+      'select * from cqc.localAuthorityReportAdmin(:givenFromDate, :givenToDate) ORDER BY "LocalAuthority" ASC;',
       {
         replacements: {
           givenFromDate: fromDate,
@@ -103,46 +95,6 @@ Last Years confirmed numbers' +
         type: models.sequelize.QueryTypes.SELECT,
       },
     );
-
-    /*
-    		"LocalAuthority" TEXT,
-		"WorkplaceName" TEXT,
-		"WorkplaceID" TEXT,
-	 	"PrimaryEstablishmentID" INTEGER,
-		"LastYearsConfirmedNumbers" INTEGER,
-		"LatestUpdate" DATE,
-		"WorkplacesCompleted" BIGINT,
-		"StaffCompleted" BIGINT,
-		"NumberOfWorkplaces" BIGINT,
-    "NumberOfWorkplacesCompleted" BIGINT,
-		"CountEstablishmentType" BIGINT,
-		"CountMainService" BIGINT,
-		"CountServiceUserGroups" BIGINT,
-		"CountCapacity" BIGINT,
-    "CountUiltisation" BIGINT,
-		"CountNumberOfStaff" BIGINT,
-		"CountVacancies" BIGINT,
-		"CountStarters" BIGINT,
-		"CountLeavers" BIGINT,
-    "SumStaff" BIGINT,
-		"CountIndividualStaffRecords" BIGINT,
-		"CountOfIndividualStaffRecordsNotAgency" BIGINT,
-		"CountOfIndividualStaffRecordsNotAgencyComplete" BIGINT,
-		"PercentageNotAgencyComplete" DECIMAL(4,1),
-		"CountOfIndividualStaffRecordsAgency" BIGINT,
-		"CountOfIndividualStaffRecordsAgencyComplete" BIGINT,
-    "PercentageAgencyComplete" DECIMAL(4,1),
-
-		"CountOfGender" BIGINT,
-		"CountOfDateOfBirth" BIGINT,
-		"CountOfEthnicity" BIGINT,
-		"CountOfMainJobRole" BIGINT,
-		"CountOfEmploymentStatus" BIGINT,
-		"CountOfContractedAverageHours" BIGINT,
-		"CountOfSickness" BIGINT,
-		"CountOfPay" BIGINT,
-		"CountOfQualification" BIGINT
-    */
 
     if (runReport && Array.isArray(runReport)) {
       runReport.forEach((thisPrimaryLaEstablishment) => {
@@ -153,8 +105,8 @@ ${thisPrimaryLaEstablishment.WorkplaceID},\
 1,\
 ${_csvQuote(thisPrimaryLaEstablishment.WorkplaceName)},\
 ${thisPrimaryLaEstablishment.LatestUpdate},\
-,\
-,\
+${_csvQuote(thisPrimaryLaEstablishment.Status)},\
+${thisPrimaryLaEstablishment.ThisYearsConfirmedNumbers},\
 ${thisPrimaryLaEstablishment.WorkplacesCompleted},\
 ${thisPrimaryLaEstablishment.StaffCompleted},\
 ${thisPrimaryLaEstablishment.NumberOfWorkplaces},\
@@ -203,7 +155,8 @@ ${thisPrimaryLaEstablishment.CountOfContractedAverageHours},\
 ${thisPrimaryLaEstablishment.CountOfSickness},\
 ${thisPrimaryLaEstablishment.CountOfPay},\
 ${thisPrimaryLaEstablishment.CountOfQualification},\
-${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers}` +
+${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers},\
+${_csvQuote(_csvNoNull(thisPrimaryLaEstablishment.Notes))}` +
           NEWLINE;
       });
     }
@@ -215,12 +168,16 @@ ${thisPrimaryLaEstablishment.LastYearsConfirmedNumbers}` +
     });
   } catch (err) {
     console.error('report/localAuthority/admin - failed', err);
-    return res.status(503).send('ERR: Failed to retrieve report');
+    return res.status(500).send('ERR: Failed to retrieve report');
   }
 };
 
-router.route('/report').get(reportLock.acquireLock.bind(null, 'la', reportGet, true));
+router.route('/report').get(reportLock.acquireLock.bind(null, 'la', adminReportGet, true));
 router.route('/lockstatus').get(reportLock.lockStatusGet.bind(null, 'la', true));
 router.route('/unlock').get(reportLock.releaseLock.bind(null, 'la', true));
 router.route('/response/:buRequestId').get(reportLock.responseGet);
+
 module.exports = router;
+module.exports.adminReportGet = adminReportGet;
+module.exports._csvQuote = _csvQuote;
+module.exports._csvNoNull = _csvNoNull;

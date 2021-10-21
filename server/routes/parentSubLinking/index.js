@@ -17,7 +17,7 @@ const listParents = async (req, res) => {
     }
   } catch (e) {
     console.error('/parentLinkingDetails/parents: ERR: ', e.message);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 };
 

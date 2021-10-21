@@ -1,5 +1,5 @@
-const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
 const isWhitelisted = require('../isWhitelisted');
+const sendToSQSQueue = require('../../../utils/email/sendToSQSQueue');
 
 const getParams = (user) => {
   return {
@@ -8,20 +8,21 @@ const getParams = (user) => {
   };
 };
 
-const sendEmail = async (user, templateId) => {
+const sendEmail = async (user, templateId, index) => {
   if (!isWhitelisted.isWhitelisted(user.get('email'))) {
     return;
   }
 
   const params = getParams(user);
 
-  sendInBlueEmail.sendEmail(
+  sendToSQSQueue.sendToSQSQueue(
     {
       email: user.get('email'),
       name: user.FullNameValue,
     },
     templateId,
     params,
+    index,
   );
 };
 

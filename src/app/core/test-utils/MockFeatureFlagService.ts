@@ -1,52 +1,26 @@
 import { Injectable } from '@angular/core';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { IConfigCatClient, SettingKeyValue } from 'configcat-common/lib/ConfigCatClient';
+
+import { mockConfigCatClient } from './MockConfigCatClient';
 
 @Injectable()
 export class MockFeatureFlagsService extends FeatureFlagsService {
-  public configCatClient = {
-    dispose: () => {},
-    getValue: () => {},
-    forceRefresh: () => {},
-    forceRefreshAsync: () => {
+  public configCatClient = mockConfigCatClient;
+
+  constructor() {
+    super();
+    this.configCatClient.getValueAsync = (flagName, defaultSetting) => {
+      if (flagName === 'newTrainingAndQualificationsReport') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
       return new Promise((resolve) => {
-        return '';
+        return resolve(defaultSetting);
       });
-    },
-    getAllKeys: () => {},
-    getAllKeysAsync: () => {
-      return new Promise((resolve) => {
-        return [];
-      });
-    },
-    getVariationId: () => {},
-    getVariationIdAsync: () => {
-      return new Promise((resolve) => {
-        return '';
-      });
-    },
-    getAllVariationIds: () => {},
-    getAllVariationIdsAsync: () => {
-      return new Promise((resolve) => {
-        return '';
-      });
-    },
-    getKeyAndValue: () => {},
-    getKeyAndValueAsync: () => {
-      return new Promise((resolve) => {
-        return new SettingKeyValue();
-      });
-    },
-    getAllValues: () => {},
-    getAllValuesAsync: () => {
-      return new Promise((resolve) => {
-        return new SettingKeyValue();
-      });
-    },
-    getValueAsync: () => {
-      return new Promise((resolve) => {
-        return false;
-      });
-    },
-  } as IConfigCatClient;
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public start(): void {}
 }

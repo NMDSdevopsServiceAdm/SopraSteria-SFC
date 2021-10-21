@@ -7,10 +7,9 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
   selector: 'app-training-and-qualifications-record',
@@ -39,16 +38,18 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.worker = this.route.snapshot.data.worker;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
+    this.setReturnTo();
     this.subscriptions.add(
-      this.workerService.alert$.subscribe(alert => {
+      this.workerService.alert$.subscribe((alert) => {
         if (alert) {
           this.alertService.addAlert(alert);
           this.workerService.alert = null;
         }
-      })
+      }),
     );
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -57,40 +58,10 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
 
   // This method is used to set training & qualifications list and their counts and alert flag
   public setTrainingAndQualifications() {
-    this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe(
-        worker => {
-          this.worker = worker;
-          this.qualificationsCount = 0;
-          this.trainingCount = 0;
-          this.trainingAndQualsCount = 0;
-          // get qualification count
-          this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe(
-            qual => {
-              this.qualificationsCount = qual.qualifications.length;
-            },
-            error => {
-              console.error(error.error);
-            }
-          );
-          // get training count and flag
-          this.workerService
-            .getTrainingRecords(this.workplace.uid, this.worker.uid)
-            .pipe(take(1))
-            .subscribe(
-              training => {
-                this.trainingCount = training.count;
-                this.trainingAlert = this.trainingStatusService.getAggregatedStatus(training.training);
-              },
-              error => {
-                console.error(error.error);
-              }
-            );
-          },
-        error => {
-          console.error(error.error);
-        }
-      )
+    this.qualificationsCount = this.route.snapshot.data.qualifications.count;
+    this.trainingCount = this.route.snapshot.data.trainingRecords.count;
+    this.trainingAlert = this.trainingStatusService.getAggregatedStatus(
+      this.route.snapshot.data.trainingRecords.training,
     );
   }
 
@@ -99,6 +70,13 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     if (refresh) {
       this.setTrainingAndQualifications();
     }
+  }
+
+  private setReturnTo(): void {
+    const returnToRecord = {
+      url: ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'],
+    };
+    this.workerService.setReturnTo(returnToRecord);
   }
 
   ngOnDestroy() {

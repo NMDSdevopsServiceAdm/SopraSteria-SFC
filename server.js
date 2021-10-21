@@ -1,7 +1,9 @@
 const Sqreen = process.env.SQREEN_APP_NAME ? require('sqreen') : require('./server/utils/middleware/sqreen.mock');
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
-const { Integrations } = require('@sentry/tracing');
+const Tracing = require('@sentry/tracing');
+const Integrations = require('@sentry/integrations');
+
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: 'sfc',
@@ -26,6 +28,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy'); // for service public/download content
 var compression = require('compression');
+var toobusy = require('toobusy-js');
 
 // app config
 var AppConfig = require('./server/config/appConfig');
@@ -65,6 +68,7 @@ var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
+var longTermAbsence = require('./server/routes/longTermAbsence')
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -89,10 +93,19 @@ if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
     integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
       // enable Express.js middleware tracing
-      new Integrations.Express({ app }),
+      new Tracing.Integrations.Express({ app }),
+      new Integrations.CaptureConsole({
+        levels: ['error'],
+      }),
+      new Tracing.Integrations.Postgres({
+        usePgNative: false,
+      }),
     ],
     environment: config.get('env'),
+    tracesSampleRate: config.get('sentry.sample_rate'),
+    serverName: process.env.CF_INSTANCE_INDEX,
   });
 }
 app.use(
@@ -100,7 +113,18 @@ app.use(
     user: ['id'],
   }),
 );
+app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
+
+// middleware which blocks requests when we're too busy
+app.use(function (req, res, next) {
+  if (toobusy()) {
+    res.setHeader('Retry-After', '1');
+    res.send(503, 'Server busy, try again later');
+  } else {
+    next();
+  }
+});
 
 /* public/download - proxy interception */
 const publicDownloadBaseUrl = config.get('public.download.baseurl');
@@ -233,6 +257,7 @@ app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', workingTrainingCategories);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
+app.use('/api/longTermAbsence', [refCacheMiddleware.refcache, longTermAbsence]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
