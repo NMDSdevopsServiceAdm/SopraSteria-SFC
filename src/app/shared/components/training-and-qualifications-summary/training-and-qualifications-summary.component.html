@@ -77,7 +77,6 @@
             class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
           />
           <ng-container [ngPlural]="worker.expiringTrainingCount">
-            <ng-template ngPluralCase="=0"></ng-template>
             <ng-template ngPluralCase="=1">{{ worker.expiringTrainingCount }} expires soon</ng-template>
             <ng-template ngPluralCase="other">{{ worker.expiringTrainingCount }} expire soon</ng-template>
           </ng-container>
