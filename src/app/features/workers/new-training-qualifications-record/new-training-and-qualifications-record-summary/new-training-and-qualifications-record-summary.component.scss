@@ -5,6 +5,14 @@
   background-color: govuk-colour('light-grey');
   display: flex;
   padding: 30px 40px;
+
+  @media only screen and (max-width: 825px) {
+    padding: 15px 20px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    flex-direction: column;
+  }
 }
 
 .column {
@@ -16,15 +24,23 @@
   }
 
   &:last-of-type {
-    border-left: 2px solid $govuk-border-colour;
+    border-left: 1px solid $govuk-border-colour;
     flex: 1;
     display: flex;
+  }
+
+  @media only screen and (max-width: 680px) {
+    flex-direction: column;
   }
 }
 
 .individualTrainingColumns {
   flex: 1;
   padding-left: 60px;
+
+  @media only screen and (max-width: 910px) {
+    padding-left: 30px;
+  }
 }
 
 .totalRecords {
@@ -46,6 +62,9 @@
 .records {
   font-weight: bold;
   display: flex;
+  margin-bottom: 5px;
+  font-size: 19px;
+  color: $govuk-text-colour;
 
   &__text {
     align-self: center;
@@ -55,5 +74,41 @@
   &__count {
     font-size: 50px;
     color: govuk-colour('turquoise');
+  }
+}
+
+.recordStatus {
+  display: flex;
+  font-size: 19px;
+  color: $govuk-text-colour;
+
+  &__imageContainer {
+    display: flex;
+    align-items: center;
+  }
+
+  &__textContainer {
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.recordStatusText {
+  margin-left: 5px;
+}
+
+.recordStatusCount {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+hr {
+  visibility: hidden;
+  color: $govuk-border-colour;
+  margin: 10px 80px 0 0;
+
+  @media only screen and (max-width: 680px) {
+    visibility: visible;
   }
 }

@@ -7,16 +7,35 @@
       </div>
       <div class="column">
         <div class="individualTrainingColumns">
-          <p class="records">
+          <div class="records">
             <span class="records__count">{{ trainingCount }}</span>
             <span class="records__text">training records</span>
-          </p>
+          </div>
+          <div class="recordStatus">
+            <div class="recordStatus__imageContainer">
+              <img src="/assets/images/flag-red.svg" alt="" />
+            </div>
+            <div class="recordStatus__textContainer">
+              <span class="recordStatusCount">{{ expiredTrainingCount }}</span>
+              <span class="recordStatusText">records have expired</span>
+            </div>
+          </div>
+          <div class="recordStatus">
+            <div class="recordStatus__imageContainer">
+              <img src="/assets/images/flag-orange.svg" alt="" />
+            </div>
+            <div class="recordStatus__textContainer">
+              <span class="recordStatusCount">{{ expiresSoonTrainingCount }}</span>
+              <span class="recordStatusText">records expire soon</span>
+            </div>
+          </div>
+          <hr />
         </div>
         <div class="individualTrainingColumns">
-          <p class="records">
+          <div class="records">
             <span class="records__count">{{ qualificationsCount }}</span>
             <span class="records__text">qualifications records</span>
-          </p>
+          </div>
         </div>
       </div>
     </div>
