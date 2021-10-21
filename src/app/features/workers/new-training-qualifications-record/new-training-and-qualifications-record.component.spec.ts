@@ -23,7 +23,7 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup(otherJob = false) {
+  async function setup(otherJob = false, careCert = true) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -50,6 +50,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                       title: 'Care Worker',
                       other: otherJob ? 'Care taker' : undefined,
                     },
+                    careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingRecords: {
                     lastUpdated: new Date('2020-01-01'),
@@ -214,6 +215,20 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const { component, getByText, fixture } = await setup();
 
     expect(component.lastUpdatedDate).toEqual(new Date('2020-01-02'));
+  });
+
+  it('should show the care certificate value', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
+    expect(getByText('Yes, in progress or partially completed', { exact: false })).toBeTruthy();
+  });
+
+  it('should show not answered if no care certificate value', async () => {
+    const { getByText } = await setup(false, false);
+
+    expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
+    expect(getByText('Not answered', { exact: false })).toBeTruthy();
   });
 
   it('should display number of training records in the title', async () => {
