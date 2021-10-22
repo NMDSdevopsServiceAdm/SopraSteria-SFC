@@ -60,22 +60,6 @@ export class TrainingStatusService {
     return this.ACTIVE;
   }
 
-  public getTrainingStatusCount(training, status): number {
-    let count = 0;
-    const statusNumber = status === 'EXPIRED' ? this.EXPIRED : this.EXPIRING;
-    const keys = Object.keys(training);
-    keys.forEach((key) => {
-      training[key].forEach((category) => {
-        category.trainingRecords.forEach((trainingRecord) => {
-          if (trainingRecord.trainingStatus === statusNumber) {
-            count += 1;
-          }
-        });
-      });
-    });
-    return count;
-  }
-
   public trainingStatusForRecord(trainingRecord) {
     return this.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
   }

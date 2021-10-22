@@ -116,7 +116,6 @@ describe('NewTrainingComponent', () => {
   describe('training record table contents', () => {
     it('should render a category heading name for each training record category', async () => {
       const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
-      console.log(fixture.debugElement.query(By.css('[data-testid="category-Autism"]')));
       const communicationCategory = fixture.debugElement.query(
         By.css('[data-testid="category-Communication"]'),
       ).nativeElement;

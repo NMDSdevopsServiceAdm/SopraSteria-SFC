@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -17,6 +17,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './new-training-and-qualifications-record.component.html',
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
+  readonly EXPIRED = 3;
+  readonly EXPIRING = 1;
+
   public canEditWorker: boolean;
   public canViewWorker: boolean;
   public worker: Worker;
@@ -42,7 +45,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private trainingStatusService: TrainingStatusService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -66,19 +69,26 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public setTrainingAndQualifications(): void {
     this.qualificationsCount = this.route.snapshot.data.qualifications.count;
     const trainingRecords = this.route.snapshot.data.trainingRecords;
-    this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
-    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
-    this.getStatus(this.mandatoryTraining);
-    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
-    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
-    this.getStatus(this.nonMandatoryTraining);
-    this.expiredTraining = this.trainingStatusService.getTrainingStatusCount(trainingRecords, 'EXPIRED');
-    this.expiresSoonTraining = this.trainingStatusService.getTrainingStatusCount(trainingRecords, 'EXPIRING');
-    console.log('Expired training:', this.expiredTraining);
-    console.log('Expires soon training:', this.expiresSoonTraining);
+
+    this.setMandatoryTraining(trainingRecords.mandatory);
+    this.setNonMandatoryTraining(trainingRecords.nonMandatory);
+    this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.EXPIRED);
+    this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.EXPIRING);
   }
 
-  private getTrainingCount(training): number {
+  private setMandatoryTraining = (mandatoryTrainingRecords: TrainingRecordCategory[]) => {
+    this.mandatoryTraining = this.sortTrainingAlphabetically(mandatoryTrainingRecords);
+    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
+    this.getStatus(this.mandatoryTraining);
+  };
+
+  private setNonMandatoryTraining = (nonMandatoryTrainingRecords: TrainingRecordCategory[]) => {
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(nonMandatoryTrainingRecords);
+    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
+    this.getStatus(this.nonMandatoryTraining);
+  };
+
+  private getTrainingCount(training: TrainingRecordCategory[]): number {
     let count = 0;
     training.forEach((category) => {
       count += category.trainingRecords.length;
@@ -86,7 +96,23 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return count;
   }
 
-  private getStatus(categories): void {
+  public getTrainingStatusCount(training: TrainingRecords, status: number): number {
+    let count = 0;
+
+    const trainingTypes = Object.keys(training);
+    trainingTypes.forEach((type) => {
+      training[type].forEach((category) => {
+        category.trainingRecords.forEach((trainingRecord) => {
+          if (trainingRecord.trainingStatus === status) {
+            count += 1;
+          }
+        });
+      });
+    });
+    return count;
+  }
+
+  private getStatus(categories: TrainingRecordCategory[]): void {
     categories.forEach((category) => {
       category.trainingRecords.forEach((trainingRecord) => {
         trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
@@ -97,7 +123,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     });
   }
 
-  private sortTrainingAlphabetically(training) {
+  private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
     return training.sort((categoryA, categoryB) =>
       categoryA.category !== categoryB.category ? (categoryA.category < categoryB.category ? -1 : 1) : 0,
     );
@@ -110,7 +136,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workerService.setReturnTo(returnToRecord);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }
