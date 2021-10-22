@@ -23,7 +23,7 @@
     margin-top: 0px;
     width: 30%;
 
-    @media only screen and (max-width: 680px) {
+    @media only screen and (max-width: 690px) {
       width: 40%;
     }
 
@@ -44,7 +44,7 @@
     }
   }
 
-  @media only screen and (max-width: 680px) {
+  @media only screen and (max-width: 690px) {
     flex-direction: column;
   }
 }
@@ -57,7 +57,7 @@
     padding-left: 30px;
   }
 
-  @media only screen and (max-width: 680px) {
+  @media only screen and (max-width: 690px) {
     padding-left: 0;
     width: 80%;
     align-self: center;
@@ -72,7 +72,7 @@
     font-size: 22px;
     margin-bottom: 0px;
 
-    @media only screen and (max-width: 680px) {
+    @media only screen and (max-width: 690px) {
       padding-top: 20px;
     }
   }
@@ -82,56 +82,10 @@
     font-size: 100px;
     padding-left: 50px;
 
-    @media only screen and (max-width: 680px) {
-      padding-left: 0;
+    @media only screen and (max-width: 690px) {
       display: block;
-      text-align: center;
     }
   }
-}
-
-.records {
-  font-weight: bold;
-  display: flex;
-  margin-bottom: 5px;
-  font-size: 19px;
-  color: $govuk-text-colour;
-
-  &__text {
-    align-self: center;
-    padding-left: 5px;
-  }
-
-  &__count {
-    font-size: 50px;
-    color: govuk-colour('turquoise');
-  }
-}
-
-.recordStatus {
-  display: flex;
-  font-size: 19px;
-  color: $govuk-text-colour;
-
-  &__imageContainer {
-    display: flex;
-    align-items: center;
-  }
-
-  &__textContainer {
-    padding-left: 5px;
-    display: flex;
-    align-items: center;
-  }
-}
-
-.recordStatusText {
-  margin-left: 5px;
-}
-
-.recordStatusCount {
-  font-size: 30px;
-  font-weight: bold;
 }
 
 hr {
@@ -149,7 +103,7 @@ hr {
   &.bottomLine {
     margin: 20px 80px;
 
-    @media only screen and (max-width: 680px) {
+    @media only screen and (max-width: 690px) {
       display: block;
     }
 
@@ -157,4 +111,46 @@ hr {
       margin: 40px 100px;
     }
   }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 20% 80%;
+  grid-column-gap: 8px;
+}
+
+.recordsCount {
+  justify-self: end;
+  font-weight: bold;
+
+  &__count {
+    font-size: 50px;
+    color: govuk-colour('turquoise');
+  }
+}
+
+.recordsText {
+  font-weight: bold;
+  font-size: 19px;
+  color: $govuk-text-colour;
+  align-self: center;
+}
+
+.recordStatus {
+  justify-self: end;
+
+  &__imageContainer {
+    display: flex;
+    align-items: center;
+  }
+
+  &__count {
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 8px;
+  }
+}
+
+.recordStatusText {
+  align-self: center;
 }

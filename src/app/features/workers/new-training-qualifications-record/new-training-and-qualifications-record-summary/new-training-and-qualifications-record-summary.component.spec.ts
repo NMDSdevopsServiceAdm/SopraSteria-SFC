@@ -42,9 +42,10 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 1;
       fixture.detectChanges();
 
-      const totalTrainingText = fixture.debugElement.query(By.css('[data-testid="training"]')).nativeElement;
+      const totalTrainingCount = fixture.debugElement.query(By.css('[data-testid="trainingCount"]')).nativeElement;
+      const totalTrainingText = fixture.debugElement.query(By.css('[data-testid="trainingText"]')).nativeElement;
 
-      expect(totalTrainingText.textContent).toContain('1');
+      expect(totalTrainingCount.textContent).toContain('1');
       expect(totalTrainingText.textContent).toContain('training record');
     });
 
@@ -53,9 +54,10 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 1;
       fixture.detectChanges();
 
-      const totalTrainingText = fixture.debugElement.query(By.css('[data-testid="training"]')).nativeElement;
+      const totalTrainingCount = fixture.debugElement.query(By.css('[data-testid="trainingCount"]')).nativeElement;
+      const totalTrainingText = fixture.debugElement.query(By.css('[data-testid="trainingText"]')).nativeElement;
 
-      expect(totalTrainingText.textContent).toContain('2');
+      expect(totalTrainingCount.textContent).toContain('2');
       expect(totalTrainingText.textContent).toContain('training records');
     });
   });
@@ -66,11 +68,14 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 1;
       fixture.detectChanges();
 
+      const totalQualificationsCount = fixture.debugElement.query(
+        By.css('[data-testid="qualificationsCount"]'),
+      ).nativeElement;
       const totalQualificationsText = fixture.debugElement.query(
-        By.css('[data-testid="qualifications"]'),
+        By.css('[data-testid="qualificationsText"]'),
       ).nativeElement;
 
-      expect(totalQualificationsText.textContent).toContain('1');
+      expect(totalQualificationsCount.textContent).toContain('1');
       expect(totalQualificationsText.textContent).toContain('qualification record');
     });
 
@@ -79,11 +84,14 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
+      const totalQualificationsCount = fixture.debugElement.query(
+        By.css('[data-testid="qualificationsCount"]'),
+      ).nativeElement;
       const totalQualificationsText = fixture.debugElement.query(
-        By.css('[data-testid="qualifications"]'),
+        By.css('[data-testid="qualificationsText"]'),
       ).nativeElement;
 
-      expect(totalQualificationsText.textContent).toContain('2');
+      expect(totalQualificationsCount.textContent).toContain('2');
       expect(totalQualificationsText.textContent).toContain('qualification records');
     });
   });
@@ -95,9 +103,14 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
-      const expiredTrainingText = fixture.debugElement.query(By.css('[data-testid="expiredTraining"]')).nativeElement;
+      const expiredTrainingCount = fixture.debugElement.query(
+        By.css('[data-testid="expiredTrainingCount"]'),
+      ).nativeElement;
+      const expiredTrainingText = fixture.debugElement.query(
+        By.css('[data-testid="expiredTrainingText"]'),
+      ).nativeElement;
 
-      expect(expiredTrainingText.textContent).toContain('1');
+      expect(expiredTrainingCount.textContent).toContain('1');
       expect(expiredTrainingText.textContent).toContain('record has expired');
     });
 
@@ -107,9 +120,14 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
-      const expiredTrainingText = fixture.debugElement.query(By.css('[data-testid="expiredTraining"]')).nativeElement;
+      const expiredTrainingCount = fixture.debugElement.query(
+        By.css('[data-testid="expiredTrainingCount"]'),
+      ).nativeElement;
+      const expiredTrainingText = fixture.debugElement.query(
+        By.css('[data-testid="expiredTrainingText"]'),
+      ).nativeElement;
 
-      expect(expiredTrainingText.textContent).toContain('2');
+      expect(expiredTrainingCount.textContent).toContain('2');
       expect(expiredTrainingText.textContent).toContain('records have expired');
     });
 
@@ -119,7 +137,8 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
-      expect(fixture.debugElement.query(By.css('[data-testid="expiredTraining"]'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('[data-testid="expiredTrainingCount"]'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('[data-testid="expiredTrainingText"]'))).toBeFalsy();
     });
   });
 
@@ -130,11 +149,14 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
+      const expiresSoonTrainingCount = fixture.debugElement.query(
+        By.css('[data-testid="expiresSoonTrainingCount"]'),
+      ).nativeElement;
       const expiresSoonTrainingText = fixture.debugElement.query(
-        By.css('[data-testid="expiresSoonTraining"]'),
+        By.css('[data-testid="expiresSoonTrainingText"]'),
       ).nativeElement;
 
-      expect(expiresSoonTrainingText.textContent).toContain('1');
+      expect(expiresSoonTrainingCount.textContent).toContain('1');
       expect(expiresSoonTrainingText.textContent).toContain('record expires soon');
     });
 
@@ -144,11 +166,14 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
+      const expiresSoonTrainingCount = fixture.debugElement.query(
+        By.css('[data-testid="expiresSoonTrainingCount"]'),
+      ).nativeElement;
       const expiresSoonTrainingText = fixture.debugElement.query(
-        By.css('[data-testid="expiresSoonTraining"]'),
+        By.css('[data-testid="expiresSoonTrainingText"]'),
       ).nativeElement;
 
-      expect(expiresSoonTrainingText.textContent).toContain('2');
+      expect(expiresSoonTrainingCount.textContent).toContain('2');
       expect(expiresSoonTrainingText.textContent).toContain('records expire soon');
     });
 
@@ -158,7 +183,8 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       component.qualificationsCount = 2;
       fixture.detectChanges();
 
-      expect(fixture.debugElement.query(By.css('[data-testid="expiresSoonTraining"]'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('[data-testid="expiresSoonTrainingCount"]'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('[data-testid="expiresSoonTrainingText"]'))).toBeFalsy();
     });
   });
 });
