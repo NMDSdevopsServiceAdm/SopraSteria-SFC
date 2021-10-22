@@ -9,7 +9,6 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -40,7 +39,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
-    private windowRef: WindowRef,
   ) {}
 
   ngOnInit() {
@@ -120,10 +118,5 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-  }
-
-  printPage($event: Event): void {
-    $event.preventDefault();
-    this.windowRef.nativeWindow.print();
   }
 }

@@ -7,14 +7,13 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -30,7 +29,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
           AlertService,
-          WindowRef,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -116,10 +114,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
 
-    const windowService = injector.inject(WindowRef) as WindowRef;
-    const windowSpy = spyOnProperty(windowService, 'nativeWindow');
-    windowSpy.and.callThrough();
-
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
@@ -128,7 +122,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       fixture,
       routerSpy,
       workerSpy,
-      windowSpy,
       getByText,
       getAllByText,
       getByTestId,
@@ -159,22 +152,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const { component, getByText } = await setup(true);
 
     expect(getByText(component.worker.mainJob.other, { exact: false })).toBeTruthy();
-  });
-
-  it('should display the Print this page button', async () => {
-    const { component, getByText } = await setup();
-
-    expect(getByText('Print this page')).toBeTruthy();
-  });
-
-  it('should run printPage when the Print this page button is clicked', async () => {
-    const { component, getByText, windowSpy } = await setup();
-
-    const printButton = getByText('Print this page');
-
-    fireEvent.click(printButton);
-
-    expect(windowSpy).toHaveBeenCalled();
   });
 
   it('should display the last updated date in the correct format', async () => {
