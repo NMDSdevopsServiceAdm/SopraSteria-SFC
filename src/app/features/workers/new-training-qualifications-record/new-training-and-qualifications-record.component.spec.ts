@@ -23,7 +23,7 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup() {
+  async function setup(otherJob = false, careCert = true) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -46,8 +46,14 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   worker: {
                     uid: 123,
                     nameOrId: 'John',
+                    mainJob: {
+                      title: 'Care Worker',
+                      other: otherJob ? 'Care taker' : undefined,
+                    },
+                    careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingRecords: {
+                    lastUpdated: new Date('2020-01-01'),
                     mandatory: [],
                     nonMandatory: [
                       {
@@ -82,6 +88,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   },
                   qualifications: {
                     count: 2,
+                    lastUpdated: new Date('2020-01-02'),
                   },
                 },
               },
@@ -134,7 +141,73 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   it('should display the worker name', async () => {
     const { component, getByText } = await setup();
 
-    expect(getByText(component.worker.nameOrId)).toBeTruthy();
+    expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the worker job role', async () => {
+    const { component, getByText } = await setup();
+
+    expect(getByText(component.worker.mainJob.title, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the other worker job role', async () => {
+    const { component, getByText } = await setup(true);
+
+    expect(getByText(component.worker.mainJob.other, { exact: false })).toBeTruthy();
+  });
+
+  it('should display the last updated date in the correct format', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    component.lastUpdatedDate = new Date('2020-01-01');
+
+    fixture.detectChanges();
+
+    expect(getByText('Last updated 1 January 2020', { exact: false })).toBeTruthy();
+  });
+
+  it('should display the View staff record button', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    component.canEditWorker = true;
+
+    fixture.detectChanges();
+
+    expect(getByText('View staff record', { exact: false })).toBeTruthy();
+  });
+
+  it('should have correct href on the View staff record button', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    component.canEditWorker = true;
+
+    fixture.detectChanges();
+
+    const viewStaffRecordButton = getByText('View staff record', { exact: false });
+
+    expect(viewStaffRecordButton.getAttribute('href')).toEqual(
+      `/workplace/${component.workplace.uid}/staff-record/123`,
+    );
+  });
+
+  it('should get the latest update date', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    expect(component.lastUpdatedDate).toEqual(new Date('2020-01-02'));
+  });
+
+  it('should show the care certificate value', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
+    expect(getByText('Yes, in progress or partially completed', { exact: false })).toBeTruthy();
+  });
+
+  it('should show not answered if no care certificate value', async () => {
+    const { getByText } = await setup(false, false);
+
+    expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
+    expect(getByText('Not answered', { exact: false })).toBeTruthy();
   });
 
   it('should display number of training records in the title', async () => {

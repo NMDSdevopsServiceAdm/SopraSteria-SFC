@@ -1,9 +1,8 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
-const models = require('../../../../../models');
 
-const { getAllTraining, getTrainingCategories } = require('../../../../../routes/establishments/training/getAllTraining');
+const { getAllTraining } = require('../../../../../routes/establishments/training/getAllTraining');
 const buildUser = require('../../../../factories/user');
 const Training = require('../../../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
@@ -31,9 +30,7 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
       req = httpMocks.createRequest(request);
       res = httpMocks.createResponse();
 
-      sinon.stub(Training, 'fetch').returns(
-        { training: mockTrainingRecords }
-      )
+      sinon.stub(Training, 'fetch').returns({ lastUpdated: '2021-09-14T10:23:33.069Z', training: mockTrainingRecords });
     });
 
     it('should reply with a status of 200', async () => {
@@ -51,12 +48,15 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
       expect(formattedTraining.nonMandatory.length).to.equal(3);
       expect(formattedTraining).to.deep.equal({
         mandatory: [],
-        nonMandatory: mockFormattedTraining
+        nonMandatory: mockFormattedTraining,
+        lastUpdated: '2021-09-14T10:23:33.069Z',
       });
     });
 
     it('should return the data formatted with training in both the mandatory array and non-mandatory array', async () => {
-      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 3 }]);
+      sinon
+        .stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker')
+        .returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 3 }]);
       await getAllTraining(req, res);
       const formattedTraining = await res._getJSONData();
 
@@ -64,12 +64,15 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
       expect(formattedTraining.nonMandatory.length).to.equal(1);
       expect(formattedTraining).to.deep.equal({
         mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
-        nonMandatory: [mockFormattedTraining[1]]
+        nonMandatory: [mockFormattedTraining[1]],
+        lastUpdated: '2021-09-14T10:23:33.069Z',
       });
     });
 
     it('should return the data formatted with no training in the non-mandatory array', async () => {
-      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([{ trainingCategoryFK: 1 },  { trainingCategoryFK: 2 }, { trainingCategoryFK: 3 }]);
+      sinon
+        .stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker')
+        .returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 2 }, { trainingCategoryFK: 3 }]);
       await getAllTraining(req, res);
       const formattedTraining = await res._getJSONData();
 
@@ -77,14 +80,15 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
       expect(formattedTraining.nonMandatory.length).to.equal(0);
       expect(formattedTraining).to.deep.equal({
         mandatory: mockFormattedTraining,
-        nonMandatory: []
+        nonMandatory: [],
+        lastUpdated: '2021-09-14T10:23:33.069Z',
       });
     });
 
     it('should return a 500 error code if an exception is thrown', async () => {
       sinon.restore();
 
-      sinon.stub(Training, 'fetch').throws()
+      sinon.stub(Training, 'fetch').throws();
       sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
 
       await getAllTraining(req, res);
