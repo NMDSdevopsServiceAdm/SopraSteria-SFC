@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { Qualification } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -29,7 +28,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
-  public qualificationType: Qualification;
+  public qualificationsByType: any;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -48,6 +47,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
+    this.setQualificationRecords();
     this.setReturnTo();
     this.subscriptions.add(
       this.workerService.alert$.subscribe((alert) => {
@@ -57,16 +57,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         }
       }),
     );
-
-    this.subscriptions.add(
-      this.workerService.getAllQualificationRecords(this.workplace.uid, this.worker.uid).subscribe((data) => {
-        console.log(data);
-      }),
-    );
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
-
-    console.log(this.qualificationType);
   }
 
   // This method is used to set training & qualifications list and their counts and alert flag
@@ -83,6 +75,16 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     // NOTE: this function will be required for the summary component, but will need altering due
     // to the new format of the trainingRecords
     // this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
+  }
+
+  public setQualificationRecords() {
+    this.subscriptions.add(
+      this.workerService.getAllQualificationRecords(this.workplace.uid, this.worker.uid).subscribe((data) => {
+        this.qualificationsByType = data;
+        console.log('Inside setQualificationRecords');
+        console.log(this.qualificationsByType);
+      }),
+    );
   }
 
   private getTrainingCount(training): number {

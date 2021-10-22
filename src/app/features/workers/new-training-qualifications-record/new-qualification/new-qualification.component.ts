@@ -1,6 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
-import { Qualification } from '@core/model/qualification.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -17,9 +15,10 @@ import { WorkerService } from '@core/services/worker.service';
   templateUrl: './new-qualification.component.html',
 })
 export class NewQualificationsComponent implements OnInit {
-  @Input() workplace: Establishment;
-  public canEditWorker: boolean;
-  public qualifications: Qualification[];
+  //   @Input() workplace: Establishment;
+  //   public canEditWorker: boolean;
+  @Input() qualificationsByType: any;
+
   //   @Output() qualificationsChanged: EventEmitter<boolean> = new EventEmitter();
   //   public lastUpdated: moment.Moment;
   //   public qualificationDetails = [];
@@ -32,8 +31,8 @@ export class NewQualificationsComponent implements OnInit {
 
   ngOnInit() {
     // this.fetchAllRecords();
-
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    console.log('hi');
+    console.log(this.qualificationsByType);
   }
 
   //   deleteQualification(record, event) {

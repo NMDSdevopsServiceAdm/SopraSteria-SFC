@@ -70,7 +70,7 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
     </div>
@@ -84,6 +84,20 @@
           [trainingRecords]="nonMandatoryTraining"
           data-testid="non-mandatory-training"
         ></app-new-training>
+      </ng-template>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Qualification records ({{ qualificationsByType.count }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <p *ngIf="qualificationsByType.count === 0; else qualificationTable">
+        No qualification records have been added for this person yet.
+      </p>
+      <ng-template #qualificationTable>
+        <app-new-qualification [qualificationsByType]="qualificationsByType" data-testid="qualification">
+        </app-new-qualification>
       </ng-template>
     </div>
   </div>
