@@ -7,6 +7,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -29,6 +30,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
           AlertService,
+          WindowRef,
           {
             provide: ActivatedRoute,
             useValue: {
