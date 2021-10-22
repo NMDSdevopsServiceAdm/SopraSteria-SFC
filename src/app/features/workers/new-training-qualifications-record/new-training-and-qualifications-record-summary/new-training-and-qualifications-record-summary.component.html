@@ -8,34 +8,62 @@
       <hr class="topLine" />
       <div class="column">
         <div class="individualTrainingColumns">
-          <div class="records">
+          <div class="records" data-testid="training">
             <span class="records__count">{{ trainingCount }}</span>
-            <span class="records__text">training records</span>
+            <ng-container [ngPlural]="trainingCount">
+              <ng-template ngPluralCase="=1">
+                <span class="records__text">training record</span>
+              </ng-template>
+              <ng-template ngPluralCase="other">
+                <span class="records__text">training records</span>
+              </ng-template>
+            </ng-container>
           </div>
-          <div class="recordStatus">
+          <div class="recordStatus" *ngIf="expiredTrainingCount" data-testid="expiredTraining">
             <div class="recordStatus__imageContainer">
               <img src="/assets/images/flag-red.svg" alt="" />
             </div>
             <div class="recordStatus__textContainer">
               <span class="recordStatusCount">{{ expiredTrainingCount }}</span>
-              <span class="recordStatusText">records have expired</span>
+              <ng-container [ngPlural]="expiredTrainingCount">
+                <ng-template ngPluralCase="=1">
+                  <span class="recordStatusText">record has expired</span>
+                </ng-template>
+                <ng-template ngPluralCase="other">
+                  <span class="recordStatusText">records have expired</span>
+                </ng-template>
+              </ng-container>
             </div>
           </div>
-          <div class="recordStatus">
+          <div class="recordStatus" *ngIf="expiresSoonTrainingCount" data-testid="expiresSoonTraining">
             <div class="recordStatus__imageContainer">
               <img src="/assets/images/flag-orange.svg" alt="" />
             </div>
             <div class="recordStatus__textContainer">
               <span class="recordStatusCount">{{ expiresSoonTrainingCount }}</span>
-              <span class="recordStatusText">records expire soon</span>
+              <ng-container [ngPlural]="expiresSoonTrainingCount">
+                <ng-template ngPluralCase="=1">
+                  <span class="recordStatusText">record expires soon</span>
+                </ng-template>
+                <ng-template ngPluralCase="other">
+                  <span class="recordStatusText">records expire soon</span>
+                </ng-template>
+              </ng-container>
             </div>
           </div>
         </div>
         <hr class="bottomLine" />
         <div class="individualTrainingColumns">
-          <div class="records">
+          <div class="records" data-testid="qualifications">
             <span class="records__count">{{ qualificationsCount }}</span>
-            <span class="records__text">qualifications records</span>
+            <ng-container [ngPlural]="qualificationsCount">
+              <ng-template ngPluralCase="=1">
+                <span class="records__text">qualification record</span>
+              </ng-template>
+              <ng-template ngPluralCase="other">
+                <span class="records__text">qualification records</span>
+              </ng-template>
+            </ng-container>
           </div>
         </div>
       </div>
