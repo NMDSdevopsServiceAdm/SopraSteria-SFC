@@ -6,12 +6,13 @@
   display: flex;
   padding: 30px 40px;
 
-  @media only screen and (max-width: 825px) {
+  @media only screen and (max-width: 830px) {
     padding: 15px 20px;
   }
 
   @media only screen and (max-width: 500px) {
     flex-direction: column;
+    padding: 30px 20px;
   }
 }
 
@@ -21,12 +22,26 @@
   &:first-of-type {
     margin-top: 0px;
     width: 30%;
+
+    @media only screen and (max-width: 680px) {
+      width: 40%;
+    }
+
+    @media only screen and (max-width: 500px) {
+      width: 80%;
+      align-self: center;
+    }
   }
 
   &:last-of-type {
     border-left: 1px solid $govuk-border-colour;
     flex: 1;
     display: flex;
+
+    @media only screen and (max-width: 500px) {
+      border-left: 0px;
+      margin-top: 0px;
+    }
   }
 
   @media only screen and (max-width: 680px) {
@@ -38,8 +53,14 @@
   flex: 1;
   padding-left: 60px;
 
-  @media only screen and (max-width: 910px) {
+  @media only screen and (max-width: 920px) {
     padding-left: 30px;
+  }
+
+  @media only screen and (max-width: 680px) {
+    padding-left: 0;
+    width: 80%;
+    align-self: center;
   }
 }
 
@@ -50,12 +71,22 @@
     font-weight: inherit;
     font-size: 22px;
     margin-bottom: 0px;
+
+    @media only screen and (max-width: 680px) {
+      padding-top: 20px;
+    }
   }
 
   &__count {
     color: govuk-colour('turquoise');
-    font-size: 80px;
+    font-size: 100px;
     padding-left: 50px;
+
+    @media only screen and (max-width: 680px) {
+      padding-left: 0;
+      display: block;
+      text-align: center;
+    }
   }
 }
 
@@ -104,11 +135,26 @@
 }
 
 hr {
-  visibility: hidden;
   color: $govuk-border-colour;
-  margin: 10px 80px 0 0;
+  display: none;
 
-  @media only screen and (max-width: 680px) {
-    visibility: visible;
+  &.topLine {
+    margin: 30px 50px 40px 50px;
+
+    @media only screen and (max-width: 500px) {
+      display: block;
+    }
+  }
+
+  &.bottomLine {
+    margin: 20px 80px;
+
+    @media only screen and (max-width: 680px) {
+      display: block;
+    }
+
+    @media only screen and (max-width: 500px) {
+      margin: 40px 100px;
+    }
   }
 }
