@@ -17,18 +17,21 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <ng-container *ngFor="let group of qualificationType.records">
+        <ng-container *ngFor="let record of qualificationType.records">
           <tr class="govuk-table__row">
             <td class="govuk-table__cell govuk-!-font-weight-regular">
-              <a class="govuk-link--no-visited-state" [routerLink]="['../qualification', group.uid]">{{
-                group.title
-              }}</a>
+              <a
+                class="govuk-link--no-visited-state"
+                [attr.data-testid]="'Title-' + record.uid"
+                [routerLink]="['/qualification', record.uid]"
+                >{{ record.title }}</a
+              >
             </td>
             <td class="govuk-table__cell">
-              {{ group.year }}
+              {{ record.year }}
             </td>
             <td class="govuk-table__cell">
-              {{ group.notes ? group.notes : 'None' }}
+              {{ record.notes ? record.notes : 'None' }}
             </td>
           </tr>
         </ng-container>
