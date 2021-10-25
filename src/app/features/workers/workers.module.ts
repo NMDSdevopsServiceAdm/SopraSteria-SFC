@@ -42,7 +42,7 @@ import { NationalInsuranceNumberComponent } from './national-insurance-number/na
 import { NationalityComponent } from './nationality/nationality.component';
 import {
   NewQualificationsComponent,
-} from './new-training-qualifications-record/new-qualification/new-qualification.component';
+} from './new-training-qualifications-record/new-qualifications/new-qualifications.component';
 import {
   NewTrainingAndQualificationsRecordComponent,
 } from './new-training-qualifications-record/new-training-and-qualifications-record.component';

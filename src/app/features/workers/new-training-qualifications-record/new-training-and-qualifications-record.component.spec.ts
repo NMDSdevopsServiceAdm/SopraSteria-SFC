@@ -80,6 +80,37 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                       },
                     ],
                   },
+                  qualificationsByType: {
+                    count: 2,
+                    qualifications: [
+                      {
+                        group: 'Health',
+                        id: 1,
+                        records: [
+                          {
+                            year: '2022',
+                            notes: '',
+                            title: 'Health training',
+                            groups: { id: 1, group: 'Health' },
+                            uid: 'someuid',
+                          },
+                        ],
+                      },
+                      {
+                        group: 'Autism',
+                        id: 2,
+                        records: [
+                          {
+                            year: '2021',
+                            notes: 'test',
+                            title: 'Autism training',
+                            groups: { id: 2, group: 'Autism' },
+                            uid: 'someuid',
+                          },
+                        ],
+                      },
+                    ],
+                  },
                   qualifications: {
                     count: 2,
                   },
