@@ -1,11 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AccessibilityStatementComponent } from '@features/public/accessibility-statement/accessibility-statement.component';
-import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
-import { CookiePolicyComponent } from '@features/public/cookie-policy/cookie-policy.component';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { FeedbackComponent } from '@features/public/feedback/feedback.component';
-import { PrivacyNoticeComponent } from '@features/public/privacy-notice/privacy-notice.component';
-import { TermsConditionsComponent } from '@features/public/terms-conditions/terms-conditions.component';
+import { PublicPageComponent } from '@features/public/public-page/public-page.component';
 
 import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback/contact-us-or-leave-feedback.component';
 import { ThankYouComponent } from './thank-you/thank-you.component';
@@ -18,8 +15,11 @@ const routes: Routes = [
   },
   {
     path: 'contact-us',
-    component: ContactUsComponent,
-    data: { title: 'Contact us' },
+    component: PublicPageComponent,
+    data: { title: 'Contact us', returnToHomeButton: true },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'feedback',
@@ -33,23 +33,35 @@ const routes: Routes = [
   },
   {
     path: 'terms-and-conditions',
-    component: TermsConditionsComponent,
+    component: PublicPageComponent,
     data: { title: 'Terms and conditions' },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'cookie-policy',
-    component: CookiePolicyComponent,
+    component: PublicPageComponent,
     data: { title: 'Cookie policy' },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'accessibility-statement',
-    component: AccessibilityStatementComponent,
+    component: PublicPageComponent,
     data: { title: 'Accessibility statement' },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'privacy-notice',
-    component: PrivacyNoticeComponent,
+    component: PublicPageComponent,
     data: { title: 'Privacy notice' },
+    resolve: {
+      pages: PageResolver,
+    },
   },
 ];
 

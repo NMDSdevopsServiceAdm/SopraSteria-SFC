@@ -21,27 +21,23 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  public newTrainingAndQualsFlag: boolean;
+  public newTrainingAndQualificationsRecordsFlag: boolean;
+
   constructor(private permissionsService: PermissionsService, private featureFlagsService: FeatureFlagsService) {}
 
-  public getWorkerTrainingAndQualificationsPath(worker: Worker) {
-    const trainingPath = this.newTrainingAndQualsFlag ? 'new-training' : 'training';
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, trainingPath];
-    return this.wdfView ? [...path, ...['wdf-summary']] : path;
-  }
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByDefault = '0_expired';
     this.orderWorkers(this.sortByDefault);
 
-    this.newTrainingAndQualsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsReport',
+    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsRecords',
       false,
     );
   }
 
-  public orderWorkers(dropdownValue) {
+  public orderWorkers(dropdownValue): void {
     let sortValue: string;
     if (dropdownValue.includes('missing')) {
       sortValue = 'missingMandatoryTrainingCount';
@@ -56,5 +52,11 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     } else {
       this.workers = orderBy(this.workers, [sortValue, (worker) => worker.nameOrId.toLowerCase()], ['desc', 'asc']);
     }
+  }
+
+  public getWorkerTrainingAndQualificationsPath(worker: Worker) {
+    const trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
+    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, trainingPath];
+    return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
 }

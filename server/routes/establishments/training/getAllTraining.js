@@ -6,9 +6,7 @@ const MandatoryTraining = require('../../../models/classes/mandatoryTraining').M
 const { formatTrainingRecords } = require('../../../utils/trainingRecordsUtils');
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
-
 const getAllTraining = async (req, res) => {
-
   const mandatoryTrainingRecords = [];
   const nonMandatoryTrainingRecords = [];
 
@@ -22,16 +20,18 @@ const getAllTraining = async (req, res) => {
     const formattedTraining = formatTrainingRecords(allTrainingRecords, mandatoryTrainingForWorker);
 
     res.status(200);
-    return res.json(formattedTraining);
+    return res.json({
+      ...formattedTraining,
+      lastUpdated: allTrainingRecords.lastUpdated,
+    });
   } catch (error) {
     console.error('Training::root getAllTraining - failed', error);
     res.status(500);
     return res.send(`Failed to get TrainingRecords for Worker having uid: ${escape(workerUid)}`);
   }
-}
+};
 
 router.route('/').get(hasPermission('canEditWorker'), getAllTraining);
 
 module.exports = router;
 module.exports.getAllTraining = getAllTraining;
-
