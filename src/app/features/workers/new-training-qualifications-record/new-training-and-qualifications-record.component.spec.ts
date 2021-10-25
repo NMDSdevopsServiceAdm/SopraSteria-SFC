@@ -23,7 +23,7 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup() {
+  async function setup(noQualifications = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -79,37 +79,43 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                         ],
                       },
                     ],
-                    qualifications: {
-                      count: 2,
-                      groups: [
-                        {
-                          group: 'Health',
-                          id: 1,
-                          records: [
+                    qualifications: noQualifications
+                      ? { count: 0, groups: [] }
+                      : {
+                          count: 2,
+                          groups: [
                             {
-                              year: '2022',
-                              notes: '',
-                              title: 'Health training',
-                              groups: { id: 1, group: 'Health' },
-                              uid: 'someuid',
+                              group: 'Health',
+                              id: 1,
+                              records: [
+                                {
+                                  year: '2020',
+                                  notes: 'This is a test note for the first row in the Health group',
+                                  title: 'Health qualification',
+                                  uid: 'someuid',
+                                },
+                              ],
+                            },
+                            {
+                              group: 'Certificate',
+                              id: 2,
+                              records: [
+                                {
+                                  year: '2021',
+                                  notes: 'Test notes needed',
+                                  title: 'Cert qualification',
+                                  uid: 'someuid',
+                                },
+                                {
+                                  year: '2012',
+                                  notes: 'These are some more notes in the second row of the cert table',
+                                  title: 'Another name for qual',
+                                  uid: 'qualUid',
+                                },
+                              ],
                             },
                           ],
                         },
-                        {
-                          group: 'Autism',
-                          id: 2,
-                          records: [
-                            {
-                              year: '2021',
-                              notes: 'test',
-                              title: 'Autism training',
-                              groups: { id: 2, group: 'Autism' },
-                              uid: 'someuid',
-                            },
-                          ],
-                        },
-                      ],
-                    },
                   },
                 },
               },
@@ -247,6 +253,62 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       const expectedText = 'No non-mandatory training records have been added for this person yet.';
       expect(getByText(expectedText)).toBeTruthy();
+    });
+  });
+
+  describe('Qualifications', () => {
+    describe('No qualification records', () => {
+      it('should show qualification record count as 0 when no qualification records', async () => {
+        const { getByText } = await setup(true);
+        expect(getByText('Qualification records (0)')).toBeTruthy();
+      });
+
+      it('should show 0 qualifications message when no qualification records', async () => {
+        const { getByText } = await setup(true);
+        expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
+      });
+    });
+
+    it('should show qualification record count', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Qualification records (2)')).toBeTruthy();
+    });
+
+    it('should show type heading (Health) with number of records', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Type: Health (1)')).toBeTruthy();
+    });
+
+    it('should show qualification table headings for each type with records (2)', async () => {
+      const { getAllByText } = await setup();
+
+      expect(getAllByText('Qualification name').length).toBe(2);
+      expect(getAllByText('Year achieved').length).toBe(2);
+      expect(getAllByText('Notes').length).toBe(2);
+    });
+
+    it('should show Health table row with details of record', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Health qualification')).toBeTruthy();
+      expect(getByText('2020')).toBeTruthy();
+      expect(getByText('This is a test note for the first row in the Health group')).toBeTruthy();
+    });
+
+    it('should show Certificate table first row with details of record', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Cert qualification')).toBeTruthy();
+      expect(getByText('2021')).toBeTruthy();
+      expect(getByText('Test notes needed')).toBeTruthy();
+    });
+
+    it('should show Certificate table second row with details of record', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Another name for qual')).toBeTruthy();
+      expect(getByText('2012')).toBeTruthy();
+      expect(getByText('These are some more notes in the second row of the cert table')).toBeTruthy();
     });
   });
 });
