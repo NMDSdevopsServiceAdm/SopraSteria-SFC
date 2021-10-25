@@ -158,12 +158,6 @@ export class WorkerService {
     return this.http.get<QualificationsResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/qualification`);
   }
 
-  // getAllQualificationRecords(workplaceUid: string, workerId: string) {
-  //   return this.http.get<QualificationsResponse>(
-  //     `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/getAllQualification`,
-  //   );
-  // }
-
   getQualification(workplaceUid: string, workerId: string, qualificationId: string) {
     return this.http.get<QualificationResponse>(
       `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
@@ -204,7 +198,7 @@ export class WorkerService {
     return this.http.get<TrainingResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/training`);
   }
 
-  getAllTrainingRecords(workplaceUid: string, workerId: string) {
+  getAllTrainingAndQualificationRecords(workplaceUid: string, workerId: string) {
     return this.http.get<TrainingResponse>(
       `/api/establishment/${workplaceUid}/worker/${workerId}/trainingAndQualifications/getAllTrainingAndQualifications`,
     );
