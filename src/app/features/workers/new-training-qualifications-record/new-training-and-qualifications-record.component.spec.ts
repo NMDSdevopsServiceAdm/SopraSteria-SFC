@@ -47,7 +47,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     uid: 123,
                     nameOrId: 'John',
                   },
-                  trainingRecords: {
+                  trainingAndQualificationRecords: {
                     mandatory: [],
                     nonMandatory: [
                       {
@@ -82,7 +82,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     qualifications: noQualifications
                       ? { count: 0, groups: [] }
                       : {
-                          count: 2,
+                          count: 3,
                           groups: [
                             {
                               group: 'Health',
@@ -173,7 +173,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   it('should display number of training records in the title', async () => {
     const { getByText } = await setup();
-    expect(getByText('Training and qualifications (4)')).toBeTruthy();
+    expect(getByText('Training and qualifications (5)')).toBeTruthy();
   });
 
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
@@ -271,7 +271,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     it('should show qualification record count', async () => {
       const { getByText } = await setup();
-      expect(getByText('Qualification records (2)')).toBeTruthy();
+      expect(getByText('Qualification records (3)')).toBeTruthy();
     });
   });
 });

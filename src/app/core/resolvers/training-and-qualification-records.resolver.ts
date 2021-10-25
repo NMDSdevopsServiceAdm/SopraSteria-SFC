@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class NewTrainingRecordsResolver implements Resolve<any> {
+export class TrainingAndQualificationRecordsResolver implements Resolve<any> {
   constructor(private router: Router, private workerService: WorkerService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
