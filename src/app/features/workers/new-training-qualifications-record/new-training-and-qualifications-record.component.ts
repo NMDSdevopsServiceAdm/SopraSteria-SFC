@@ -47,7 +47,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
-    this.setQualificationRecords();
     this.setReturnTo();
     this.subscriptions.add(
       this.workerService.alert$.subscribe((alert) => {
@@ -71,20 +70,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
-
-    // NOTE: this function will be required for the summary component, but will need altering due
-    // to the new format of the trainingRecords
-    // this.trainingAlert = this.trainingStatusService.getAggregatedStatus(trainingRecords);
-  }
-
-  public setQualificationRecords() {
-    this.subscriptions.add(
-      this.workerService.getAllQualificationRecords(this.workplace.uid, this.worker.uid).subscribe((data) => {
-        this.qualificationsByType = data;
-        console.log('Inside setQualificationRecords');
-        console.log(this.qualificationsByType);
-      }),
-    );
   }
 
   private getTrainingCount(training): number {

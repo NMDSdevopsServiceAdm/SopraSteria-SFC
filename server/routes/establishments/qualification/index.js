@@ -193,7 +193,6 @@ const deleteQualification = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewWorker'), viewQualifications);
 router.route('/').post(hasPermission('canEditWorker'), createQualification);
-router.use('/getAllQualification', require('./getAllQualification'));
 router.route('/available').get(hasPermission('canViewWorker'), availableQualifications);
 router.route('/:qualificationUid').get(hasPermission('canViewWorker'), viewQualification);
 router.route('/:qualificationUid').put(hasPermission('canEditWorker'), updateQualification);
