@@ -17,9 +17,6 @@ import { Subscription } from 'rxjs';
   templateUrl: './new-training-and-qualifications-record.component.html',
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
-  readonly EXPIRED = 3;
-  readonly EXPIRING = 1;
-
   public canEditWorker: boolean;
   public canViewWorker: boolean;
   public worker: Worker;
@@ -72,8 +69,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     this.setMandatoryTraining(trainingRecords.mandatory);
     this.setNonMandatoryTraining(trainingRecords.nonMandatory);
-    this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.EXPIRED);
-    this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.EXPIRING);
+    this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
+    this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
   }
 
   private setMandatoryTraining = (mandatoryTrainingRecords: TrainingRecordCategory[]) => {
