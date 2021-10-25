@@ -76,6 +76,15 @@
     </div>
   </div>
 
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body govuk-!-font-size-24 govuk-!-margin-bottom-4 govuk-!-margin-top-4">
+        <span class="govuk-!-font-weight-bold">Care Certificate:</span>
+        {{ worker.careCertificate ? worker.careCertificate : 'Not answered' }}
+      </p>
+    </div>
+  </div>
+
   <app-new-training-and-qualifications-record-summary
     [trainingCount]="mandatoryTrainingCount + nonMandatoryTrainingCount"
     [qualificationsCount]="qualificationsCount"

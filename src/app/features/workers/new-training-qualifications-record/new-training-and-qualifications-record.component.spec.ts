@@ -29,7 +29,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   yesterday.setDate(yesterday.getDate() - 1);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  async function setup() {
+  async function setup(otherJob = false, careCert = true) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {

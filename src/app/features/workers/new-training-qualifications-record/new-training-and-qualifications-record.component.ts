@@ -30,6 +30,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public mandatoryTraining: TrainingRecordCategory[];
   public expiredTraining: number;
   public expiresSoonTraining: number;
+  public lastUpdatedDate: Date;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -71,6 +72,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setNonMandatoryTraining(trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
+    this.getLastUpdatedDate([
+      this.route.snapshot.data.qualifications?.lastUpdated,
+      this.route.snapshot.data.trainingRecords?.lastUpdated,
+    ]);
   }
 
   private setMandatoryTraining = (mandatoryTrainingRecords: TrainingRecordCategory[]) => {
@@ -85,6 +90,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getStatus(this.nonMandatoryTraining);
   };
 
+  private getLastUpdatedDate(lastUpdatedDates: Date[]): void {
+    this.lastUpdatedDate = lastUpdatedDates.reduce((a, b) => (a > b ? a : b));
+  }
+
   private getTrainingCount(training: TrainingRecordCategory[]): number {
     let count = 0;
     training.forEach((category) => {
@@ -98,13 +107,15 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const trainingTypes = Object.keys(training);
     trainingTypes.forEach((type) => {
-      training[type].forEach((category) => {
-        category.trainingRecords.forEach((trainingRecord) => {
-          if (trainingRecord.trainingStatus === status) {
-            count += 1;
-          }
+      if (type !== 'lastUpdated') {
+        training[type].forEach((category) => {
+          category.trainingRecords.forEach((trainingRecord) => {
+            if (trainingRecord.trainingStatus === status) {
+              count += 1;
+            }
+          });
         });
-      });
+      }
     });
     return count;
   }
