@@ -1,8 +1,10 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
       <div class="govuk-list--inline govuk-list govuk__flex">
-        <span class="govuk-caption-xl govuk-!-margin-right-3">{{ worker.nameOrId }}</span>
+        <span class="govuk-caption-xl govuk-!-margin-right-3">
+          {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
+        </span>
         <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1 asc-tag">
           Long-term absent
           <a
@@ -15,19 +17,23 @@
             ]"
             data-testid="longTermAbsence"
             class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
-            >View</a
           >
+            View
+          </a>
         </p>
       </div>
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
         Training and qualifications ({{
           this.mandatoryTrainingCount + this.nonMandatoryTrainingCount + this.qualificationsCount
         }})
       </h1>
+      <span *ngIf="lastUpdatedDate" class="govuk-caption-m govuk-!-margin-bottom-3">
+        Last updated {{ lastUpdatedDate | date: 'd MMMM yyyy' }}
+      </span>
       <a
         *ngIf="canEditWorker"
         class="govuk-list govuk-list--inline govuk-!-padding-left-0"
@@ -35,11 +41,11 @@
         draggable="false"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]"
       >
-        Staff record
+        View staff record
       </a>
     </div>
     <div class="govuk-grid-column-one-half">
-      <div class="govuk-grid-row govuk-!-margin-bottom-3">
+      <div class="govuk-!-margin-bottom-3">
         <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-0">
           <a
             class="govuk-list govuk-list--inline govuk-!-margin-left-5"
