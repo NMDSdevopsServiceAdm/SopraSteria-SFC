@@ -60,9 +60,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
   }
 
-  // This method is used to set training & qualifications list and their counts and alert flag
-  public setTrainingAndQualifications() {
-    this.qualificationsCount = this.route.snapshot.data.qualifications.count;
+  public setTrainingAndQualifications(): void {
+    this.qualificationsByType = this.route.snapshot.data.trainingRecords.qualifications;
+    this.qualificationsCount = this.qualificationsByType.count;
     const trainingRecords = this.route.snapshot.data.trainingRecords;
     this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);

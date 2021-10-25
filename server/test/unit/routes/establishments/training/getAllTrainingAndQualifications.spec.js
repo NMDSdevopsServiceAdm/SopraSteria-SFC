@@ -100,7 +100,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
       const error = res._getData();
 
       expect(res.statusCode).to.deep.equal(500);
-      expect(error).to.contain('Failed to get TrainingRecords for Worker having uid:');
+      expect(error).to.contain('Failed to get training and qualification records for Worker with uid:');
     });
   });
 });
