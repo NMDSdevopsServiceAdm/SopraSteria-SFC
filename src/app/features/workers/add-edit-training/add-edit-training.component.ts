@@ -6,6 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import * as moment from 'moment';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
@@ -15,6 +16,9 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
+  private newTrainingAndQualificationsReportFlag: boolean;
+  private trainingPath: string;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
@@ -23,11 +27,18 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
   }
 
-  protected init(): void {
+  protected async init(): Promise<void> {
+    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsReport',
+      false,
+    );
+
+    this.trainingPath = this.newTrainingAndQualificationsReportFlag ? 'new-training' : 'training';
     this.worker = this.workerService.worker;
 
     this.workerService.getRoute$.subscribe((route) => {
@@ -35,7 +46,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         this.previousUrl = [route];
       } else {
         this.previousUrl = [
-          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`,
+          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`,
         ];
       }
     });
@@ -129,7 +140,9 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.previousUrl.indexOf('dashboard') > -1) {
       url = this.previousUrl;
     } else {
-      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
+      url = [
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`,
+      ];
     }
     this.router.navigate(url).then(() => {
       if (this.trainingRecordId) {

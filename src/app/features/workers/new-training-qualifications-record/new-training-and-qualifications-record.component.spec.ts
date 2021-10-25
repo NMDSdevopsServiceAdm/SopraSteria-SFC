@@ -23,6 +23,12 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
+  const yesterday = new Date();
+  const tomorrow = new Date();
+
+  yesterday.setDate(yesterday.getDate() - 1);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   async function setup(otherJob = false, careCert = true) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
@@ -66,7 +72,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                             expires: new Date('10/20/2022'),
                             title: 'Health training',
                             trainingCategory: { id: 1, category: 'Health' },
-                            uid: 'someuid',
+                            uid: 'someHealthuid',
                           },
                         ],
                       },
@@ -77,10 +83,24 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                           {
                             accredited: true,
                             completed: new Date('10/20/2021'),
-                            expires: new Date('10/20/2022'),
+                            expires: yesterday,
                             title: 'Autism training',
                             trainingCategory: { id: 2, category: 'Autism' },
-                            uid: 'someuid',
+                            uid: 'someAutismuid',
+                          },
+                        ],
+                      },
+                      {
+                        category: 'Coshh',
+                        id: 3,
+                        trainingRecords: [
+                          {
+                            accredited: true,
+                            completed: new Date('01/01/2010'),
+                            expires: tomorrow,
+                            title: 'Coshh training',
+                            trainingCategory: { id: 3, category: 'Coshh' },
+                            uid: 'someCoshhuid',
                           },
                         ],
                       },
@@ -212,7 +232,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   it('should display number of training records in the title', async () => {
     const { getByText } = await setup();
-    expect(getByText('Training and qualifications (4)')).toBeTruthy();
+    expect(getByText('Training and qualifications (5)')).toBeTruthy();
   });
 
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
@@ -277,7 +297,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   describe('Non mandatory training', () => {
     it('should have non mandatory count of 2', async () => {
       const { getByText } = await setup();
-      expect(getByText('Non-mandatory training records (2)')).toBeTruthy();
+      expect(getByText('Non-mandatory training records (3)')).toBeTruthy();
     });
 
     it('should render non-mandatory training component', async () => {
@@ -292,6 +312,20 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       const expectedText = 'No non-mandatory training records have been added for this person yet.';
       expect(getByText(expectedText)).toBeTruthy();
+    });
+  });
+
+  describe('getTrainingStatusCount', () => {
+    it('should return the number of expired records', async () => {
+      const { component } = await setup();
+
+      expect(component.expiredTraining).toEqual(1);
+    });
+
+    it('should return the number of expiring soon records', async () => {
+      const { component } = await setup();
+
+      expect(component.expiresSoonTraining).toEqual(1);
     });
   });
 });

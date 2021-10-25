@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -93,13 +93,13 @@ describe('NewTrainingComponent', () => {
     },
   ];
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [{ provide: PermissionsService, useClass: MockPermissionsService }],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewTrainingComponent);
@@ -116,7 +116,6 @@ describe('NewTrainingComponent', () => {
   describe('training record table contents', () => {
     it('should render a category heading name for each training record category', async () => {
       const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
-      console.log(fixture.debugElement.query(By.css('[data-testid="category-Autism"]')));
       const communicationCategory = fixture.debugElement.query(
         By.css('[data-testid="category-Communication"]'),
       ).nativeElement;

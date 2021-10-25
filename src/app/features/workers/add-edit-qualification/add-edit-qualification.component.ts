@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -29,6 +30,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: string;
+  private newTrainingAndQualificationsReportFlag: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,11 +39,12 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     this.yearValidators = [Validators.max(moment().year()), Validators.min(moment().subtract(100, 'years').year())];
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.form = this.formBuilder.group({
       type: [null, Validators.required],
     });
@@ -130,6 +133,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     });
 
     this.setupFormErrorsMap();
+
+    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsReport',
+      false,
+    );
   }
 
   ngOnDestroy(): void {
@@ -249,8 +257,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   private onSuccess() {
+    const trainingPath = this.newTrainingAndQualificationsReportFlag ? 'new-training' : 'training';
     this.router
-      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
+      .navigate([
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${trainingPath}`,
+      ])
       .then(() => {
         if (this.qualificationId) {
           this.workerService.alert = { type: 'success', message: 'Qualification has been saved.' };

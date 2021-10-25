@@ -8,10 +8,12 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { getByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
@@ -42,6 +44,7 @@ describe('AddEditTrainingComponent', () => {
         ErrorSummaryService,
         { provide: TrainingService, useClass: MockTrainingService },
         { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     });
 
