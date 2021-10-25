@@ -63,7 +63,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public setTrainingAndQualifications(): void {
     this.qualificationsByType = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
     this.qualificationsCount = this.qualificationsByType.count;
-    const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords;
+    const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
     this.getStatus(this.mandatoryTraining);

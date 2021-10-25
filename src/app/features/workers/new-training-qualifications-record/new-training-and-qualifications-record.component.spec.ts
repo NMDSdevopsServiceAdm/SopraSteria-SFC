@@ -48,37 +48,39 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     nameOrId: 'John',
                   },
                   trainingAndQualificationRecords: {
-                    mandatory: [],
-                    nonMandatory: [
-                      {
-                        category: 'Health',
-                        id: 1,
-                        trainingRecords: [
-                          {
-                            accredited: true,
-                            completed: new Date('10/20/2021'),
-                            expires: new Date('10/20/2022'),
-                            title: 'Health training',
-                            trainingCategory: { id: 1, category: 'Health' },
-                            uid: 'someuid',
-                          },
-                        ],
-                      },
-                      {
-                        category: 'Autism',
-                        id: 2,
-                        trainingRecords: [
-                          {
-                            accredited: true,
-                            completed: new Date('10/20/2021'),
-                            expires: new Date('10/20/2022'),
-                            title: 'Autism training',
-                            trainingCategory: { id: 2, category: 'Autism' },
-                            uid: 'someuid',
-                          },
-                        ],
-                      },
-                    ],
+                    training: {
+                      mandatory: [],
+                      nonMandatory: [
+                        {
+                          category: 'Health',
+                          id: 1,
+                          trainingRecords: [
+                            {
+                              accredited: true,
+                              completed: new Date('10/20/2021'),
+                              expires: new Date('10/20/2022'),
+                              title: 'Health training',
+                              trainingCategory: { id: 1, category: 'Health' },
+                              uid: 'someuid',
+                            },
+                          ],
+                        },
+                        {
+                          category: 'Autism',
+                          id: 2,
+                          trainingRecords: [
+                            {
+                              accredited: true,
+                              completed: new Date('10/20/2021'),
+                              expires: new Date('10/20/2022'),
+                              title: 'Autism training',
+                              trainingCategory: { id: 2, category: 'Autism' },
+                              uid: 'someuid',
+                            },
+                          ],
+                        },
+                      ],
+                    },
                     qualifications: noQualifications
                       ? { count: 0, groups: [] }
                       : {

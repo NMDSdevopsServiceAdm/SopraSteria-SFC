@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
-const models = require('../../../../../models');
 
-const { getAllTrainingAndQualifications } = require('../../../../../routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications');
-const { getAllTraining, getTrainingCategories } = require('../../../../../routes/establishments/training/getAllTraining');
+const {
+  getAllTrainingAndQualifications,
+} = require('../../../../../routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications');
 const buildUser = require('../../../../factories/user');
 const Training = require('../../../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
@@ -33,12 +33,8 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
       req = httpMocks.createRequest(request);
       res = httpMocks.createResponse();
 
-      sinon.stub(Training, 'fetch').returns(
-        { training: mockTrainingRecords }
-      )
-      sinon.stub(Qualification, 'fetch').returns(
-        null,
-      )
+      sinon.stub(Training, 'fetch').returns({ training: mockTrainingRecords });
+      sinon.stub(Qualification, 'fetch').returns(null);
     });
 
     it('should reply with a status of 200', async () => {
@@ -51,41 +47,51 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
     it('should return the data formatted with no training in the mandatory array', async () => {
       sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
       await getAllTrainingAndQualifications(req, res);
-      const formattedTraining = await res._getJSONData();
+      const formattedTrainingAndQualifications = await res._getJSONData();
 
-      expect(formattedTraining.mandatory.length).to.equal(0);
-      expect(formattedTraining.nonMandatory.length).to.equal(3);
-      expect(formattedTraining).to.deep.equal({
-        mandatory: [],
-        nonMandatory: mockFormattedTraining,
+      expect(formattedTrainingAndQualifications.training.mandatory.length).to.equal(0);
+      expect(formattedTrainingAndQualifications.training.nonMandatory.length).to.equal(3);
+      expect(formattedTrainingAndQualifications).to.deep.equal({
+        training: {
+          mandatory: [],
+          nonMandatory: mockFormattedTraining,
+        },
         qualifications: { count: 0, groups: [] },
       });
     });
 
     it('should return the data formatted with training in both the mandatory array and non-mandatory array', async () => {
-      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 3 }]);
+      sinon
+        .stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker')
+        .returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 3 }]);
       await getAllTrainingAndQualifications(req, res);
-      const formattedTraining = await res._getJSONData();
+      const formattedTrainingAndQualifications = await res._getJSONData();
 
-      expect(formattedTraining.mandatory.length).to.equal(2);
-      expect(formattedTraining.nonMandatory.length).to.equal(1);
-      expect(formattedTraining).to.deep.equal({
-        mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
-        nonMandatory: [mockFormattedTraining[1]],
+      expect(formattedTrainingAndQualifications.training.mandatory.length).to.equal(2);
+      expect(formattedTrainingAndQualifications.training.nonMandatory.length).to.equal(1);
+      expect(formattedTrainingAndQualifications).to.deep.equal({
+        training: {
+          mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
+          nonMandatory: [mockFormattedTraining[1]],
+        },
         qualifications: { count: 0, groups: [] },
       });
     });
 
     it('should return the data formatted with no training in the non-mandatory array', async () => {
-      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([{ trainingCategoryFK: 1 },  { trainingCategoryFK: 2 }, { trainingCategoryFK: 3 }]);
+      sinon
+        .stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker')
+        .returns([{ trainingCategoryFK: 1 }, { trainingCategoryFK: 2 }, { trainingCategoryFK: 3 }]);
       await getAllTrainingAndQualifications(req, res);
-      const formattedTraining = await res._getJSONData();
+      const formattedTrainingAndQualifications = await res._getJSONData();
 
-      expect(formattedTraining.mandatory.length).to.equal(3);
-      expect(formattedTraining.nonMandatory.length).to.equal(0);
-      expect(formattedTraining).to.deep.equal({
-        mandatory: mockFormattedTraining,
-        nonMandatory: [],
+      expect(formattedTrainingAndQualifications.training.mandatory.length).to.equal(3);
+      expect(formattedTrainingAndQualifications.training.nonMandatory.length).to.equal(0);
+      expect(formattedTrainingAndQualifications).to.deep.equal({
+        training: {
+          mandatory: mockFormattedTraining,
+          nonMandatory: [],
+        },
         qualifications: { count: 0, groups: [] },
       });
     });
