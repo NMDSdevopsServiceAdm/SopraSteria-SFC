@@ -29,8 +29,8 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     component.qualificationsCount = 1;
     fixture.detectChanges();
 
-    const totalTrainingAndQualsText = fixture.debugElement.query(By.css('.totalRecords__text')).nativeElement;
-    const totalTrainingAndQualsCount = fixture.debugElement.query(By.css('.totalRecords__count')).nativeElement;
+    const totalTrainingAndQualsText = fixture.debugElement.query(By.css('.asc-total-records--text')).nativeElement;
+    const totalTrainingAndQualsCount = fixture.debugElement.query(By.css('.asc-total-records--count')).nativeElement;
 
     expect(totalTrainingAndQualsText.textContent).toContain('Number of records added:');
     expect(totalTrainingAndQualsCount.textContent).toContain('7');

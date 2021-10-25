@@ -1,6 +1,6 @@
 @import '~govuk-frontend/govuk/base';
 
-.summary-box {
+.asc-summary-box {
   border: 1px solid $govuk-border-colour;
   background-color: govuk-colour('light-grey');
   display: flex;
@@ -10,13 +10,13 @@
     padding: 15px 20px;
   }
 
-  @media only screen and (max-width: 500px) {
+  @media only screen and (max-width: 510px) {
     flex-direction: column;
     padding: 30px 20px;
   }
 }
 
-.column {
+.asc-column {
   margin-top: 20px;
 
   &:first-of-type {
@@ -27,7 +27,7 @@
       width: 40%;
     }
 
-    @media only screen and (max-width: 500px) {
+    @media only screen and (max-width: 510px) {
       width: 80%;
       align-self: center;
     }
@@ -38,7 +38,7 @@
     flex: 1;
     display: flex;
 
-    @media only screen and (max-width: 500px) {
+    @media only screen and (max-width: 510px) {
       border-left: 0px;
       margin-top: 0px;
     }
@@ -49,11 +49,11 @@
   }
 }
 
-.individualTrainingColumns {
+.asc-individual-training-columns {
   flex: 1;
   padding-left: 60px;
 
-  @media only screen and (max-width: 920px) {
+  @media only screen and (max-width: 950px) {
     padding-left: 30px;
   }
 
@@ -62,12 +62,18 @@
     width: 80%;
     align-self: center;
   }
+
+  &:last-of-type {
+    @media only screen and (max-width: 865px) {
+      padding-left: 0;
+    }
+  }
 }
 
-.totalRecords {
+.asc-total-records {
   font-weight: bold;
 
-  &__text {
+  &--text {
     font-weight: inherit;
     font-size: 22px;
     margin-bottom: 0px;
@@ -77,7 +83,7 @@
     }
   }
 
-  &__count {
+  &--count {
     color: govuk-colour('turquoise');
     font-size: 100px;
     padding-left: 50px;
@@ -92,65 +98,65 @@ hr {
   color: $govuk-border-colour;
   display: none;
 
-  &.topLine {
+  &.asc-top-line {
     margin: 30px 50px 40px 50px;
 
-    @media only screen and (max-width: 500px) {
+    @media only screen and (max-width: 510px) {
       display: block;
     }
   }
 
-  &.bottomLine {
+  &.asc-bottom-line {
     margin: 20px 80px;
 
     @media only screen and (max-width: 690px) {
       display: block;
     }
 
-    @media only screen and (max-width: 500px) {
+    @media only screen and (max-width: 510px) {
       margin: 40px 100px;
     }
   }
 }
 
-.grid-container {
+.asc-grid-container {
   display: grid;
-  grid-template-columns: 20% 80%;
   grid-column-gap: 8px;
+  grid-template-columns: 20% 80%;
 }
 
-.recordsCount {
+.asc-records-count {
   justify-self: end;
   font-weight: bold;
 
-  &__count {
+  &--count {
     font-size: 50px;
     color: govuk-colour('turquoise');
   }
 }
 
-.recordsText {
+.asc-records-text {
   font-weight: bold;
   font-size: 19px;
   color: $govuk-text-colour;
   align-self: center;
 }
 
-.recordStatus {
+.asc-record-status {
   justify-self: end;
 
-  &__imageContainer {
+  &--image-container {
     display: flex;
     align-items: center;
   }
 
-  &__count {
+  &--count {
     font-size: 30px;
     font-weight: bold;
     margin-left: 8px;
   }
 }
 
-.recordStatusText {
+.asc-record-status-text {
   align-self: center;
 }

@@ -68,8 +68,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.qualificationsCount = this.route.snapshot.data.qualifications.count;
     const trainingRecords = this.route.snapshot.data.trainingRecords;
 
-    this.setMandatoryTraining(trainingRecords.mandatory);
-    this.setNonMandatoryTraining(trainingRecords.nonMandatory);
+    this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
     this.getLastUpdatedDate([
@@ -78,17 +77,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     ]);
   }
 
-  private setMandatoryTraining = (mandatoryTrainingRecords: TrainingRecordCategory[]) => {
+  private setTraining(
+    mandatoryTrainingRecords: TrainingRecordCategory[],
+    nonMandatoryTrainingRecords: TrainingRecordCategory[],
+  ): void {
     this.mandatoryTraining = this.sortTrainingAlphabetically(mandatoryTrainingRecords);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
     this.getStatus(this.mandatoryTraining);
-  };
-
-  private setNonMandatoryTraining = (nonMandatoryTrainingRecords: TrainingRecordCategory[]) => {
     this.nonMandatoryTraining = this.sortTrainingAlphabetically(nonMandatoryTrainingRecords);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
-  };
+  }
 
   private getLastUpdatedDate(lastUpdatedDates: Date[]): void {
     this.lastUpdatedDate = lastUpdatedDates.reduce((a, b) => (a > b ? a : b));
