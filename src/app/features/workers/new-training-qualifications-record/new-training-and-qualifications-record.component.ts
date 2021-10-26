@@ -88,7 +88,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   private getLastUpdatedDate(lastUpdatedDates: Date[]): void {
-    this.lastUpdatedDate = lastUpdatedDates.reduce((a, b) => (a > b ? a : b));
+    const filteredDates = lastUpdatedDates.filter((date) => date);
+    this.lastUpdatedDate = filteredDates.reduce((a, b) => (a > b ? a : b));
   }
 
   private getTrainingCount(training: TrainingRecordCategory[]): number {
