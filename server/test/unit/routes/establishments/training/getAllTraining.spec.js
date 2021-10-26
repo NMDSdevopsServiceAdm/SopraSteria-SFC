@@ -8,7 +8,7 @@ const Training = require('../../../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
 const { mockFormattedTraining, mockTrainingRecords } = require('../../../mockdata/training');
 
-describe('server/routes/establishments/training/getAllTraining.js', () => {
+describe.only('server/routes/establishments/training/getAllTraining.js', () => {
   const user = buildUser();
 
   afterEach(() => {
@@ -50,6 +50,7 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
         mandatory: [],
         nonMandatory: mockFormattedTraining,
         lastUpdated: '2021-09-14T10:23:33.069Z',
+        jobRoleMandatoryTrainingCount: 0,
       });
     });
 
@@ -66,6 +67,7 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
         mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
         nonMandatory: [mockFormattedTraining[1]],
         lastUpdated: '2021-09-14T10:23:33.069Z',
+        jobRoleMandatoryTrainingCount: 2,
       });
     });
 
@@ -82,6 +84,7 @@ describe('server/routes/establishments/training/getAllTraining.js', () => {
         mandatory: mockFormattedTraining,
         nonMandatory: [],
         lastUpdated: '2021-09-14T10:23:33.069Z',
+        jobRoleMandatoryTrainingCount: 3,
       });
     });
 

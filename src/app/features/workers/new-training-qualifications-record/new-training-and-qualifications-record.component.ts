@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
@@ -40,6 +40,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
+    private router: Router,
     private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
   ) {}
@@ -144,6 +145,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workerService.setReturnTo(returnToRecord);
   }
 
+  public setReturnRoute(): void {
+    this.workerService.getRoute$.next(this.router.url);
+  }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

@@ -135,6 +135,7 @@
             role="button"
             [routerLink]="['../add-training']"
             [state]="{ training: 'mandatory' }"
+            (click)="setReturnRoute()"
           >
             Add mandatory training record
           </a>
