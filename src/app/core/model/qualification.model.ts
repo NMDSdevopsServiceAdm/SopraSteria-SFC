@@ -65,3 +65,20 @@ export interface Qualification {
     group?: string;
   };
 }
+
+export interface QualificationsByGroup {
+  count: number;
+  groups: QualificationGroup[];
+}
+
+export interface QualificationGroup {
+  group: string;
+  records: BasicQualificationRecord[];
+}
+
+export interface BasicQualificationRecord {
+  notes: string;
+  title: string;
+  uid: string;
+  year: number;
+}

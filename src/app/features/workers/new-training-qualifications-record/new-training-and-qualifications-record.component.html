@@ -89,14 +89,14 @@
   </div>
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-m">Qualification records ({{ qualificationsByType.count }})</h2>
+      <h2 class="govuk-heading-m">Qualification records ({{ qualificationsByGroup.count }})</h2>
     </div>
     <div class="govuk-grid-column-full">
-      <p *ngIf="qualificationsByType.count === 0; else qualificationTable">
+      <p *ngIf="qualificationsByGroup.count === 0; else qualificationTable">
         No qualification records have been added for this person yet.
       </p>
       <ng-template #qualificationTable>
-        <app-new-qualifications [qualificationsByType]="qualificationsByType" data-testid="qualification">
+        <app-new-qualifications [qualificationsByGroup]="qualificationsByGroup" data-testid="qualification">
         </app-new-qualifications>
       </ng-template>
     </div>

@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -28,7 +29,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
-  public qualificationsByType: any;
+  public qualificationsByGroup: QualificationsByGroup;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -41,7 +42,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private trainingStatusService: TrainingStatusService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -61,8 +62,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public setTrainingAndQualifications(): void {
-    this.qualificationsByType = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
-    this.qualificationsCount = this.qualificationsByType.count;
+    this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.qualificationsCount = this.qualificationsByGroup.count;
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
@@ -104,7 +105,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workerService.setReturnTo(returnToRecord);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }

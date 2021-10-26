@@ -1,52 +1,53 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
 
 describe('NewQualificationsComponent', () => {
+  const qualificationsByGroup: QualificationsByGroup = {
+    count: 3,
+    groups: [
+      {
+        group: 'Health',
+        records: [
+          {
+            year: 2020,
+            notes: 'This is a test note for the first row in the Health group',
+            title: 'Health qualification',
+            uid: 'firstHealthQualUid',
+          },
+        ],
+      },
+      {
+        group: 'Certificate',
+        records: [
+          {
+            year: 2021,
+            notes: 'Test notes needed',
+            title: 'Cert qualification',
+            uid: 'firstCertificateUid',
+          },
+          {
+            year: 2012,
+            notes: 'These are some more notes in the second row of the cert table',
+            title: 'Another name for qual',
+            uid: 'secondCertificateUid',
+          },
+        ],
+      },
+    ],
+  };
+
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [],
       componentProperties: {
-        qualificationsByType: {
-          count: 3,
-          groups: [
-            {
-              group: 'Health',
-              id: 1,
-              records: [
-                {
-                  year: '2020',
-                  notes: 'This is a test note for the first row in the Health group',
-                  title: 'Health qualification',
-                  uid: 'firstHealthQualUid',
-                },
-              ],
-            },
-            {
-              group: 'Certificate',
-              id: 2,
-              records: [
-                {
-                  year: '2021',
-                  notes: 'Test notes needed',
-                  title: 'Cert qualification',
-                  uid: 'firstCertificateUid',
-                },
-                {
-                  year: '2012',
-                  notes: 'These are some more notes in the second row of the cert table',
-                  title: 'Another name for qual',
-                  uid: 'secondCertificateUid',
-                },
-              ],
-            },
-          ],
-        },
+        qualificationsByGroup,
       },
     });
 
