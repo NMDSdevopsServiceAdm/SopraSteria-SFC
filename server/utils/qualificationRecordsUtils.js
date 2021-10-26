@@ -1,5 +1,5 @@
-exports.sortQualificationsByGroup = (qualifications, count) => {
-  return qualifications.reduce(
+exports.sortQualificationsByGroup = (allQualificationRecords) => {
+  return allQualificationRecords.qualifications.reduce(
     (sortedQualifications, record) => {
       const qualification = {
         title: record.qualification.title,
@@ -20,6 +20,6 @@ exports.sortQualificationsByGroup = (qualifications, count) => {
       }
       return sortedQualifications;
     },
-    { count, groups: [] },
+    { count: allQualificationRecords.count, lastUpdated: allQualificationRecords.lastUpdated, groups: [] },
   );
 };

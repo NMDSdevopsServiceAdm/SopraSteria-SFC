@@ -156,6 +156,7 @@ export const AllWorkers = [
 
 export const qualificationsByGroup = {
   count: 3,
+  lastUpdated: new Date('2020-01-02'),
   groups: [
     {
       group: 'Health',

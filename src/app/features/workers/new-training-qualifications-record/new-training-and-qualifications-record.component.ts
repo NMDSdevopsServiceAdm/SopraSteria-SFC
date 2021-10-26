@@ -72,10 +72,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
-    this.getLastUpdatedDate([
-      this.route.snapshot.data.qualifications?.lastUpdated,
-      this.route.snapshot.data.trainingRecords?.lastUpdated,
-    ]);
+    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
   }
 
   private setTraining(

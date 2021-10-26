@@ -60,6 +60,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   },
                   trainingAndQualificationRecords: {
                     training: {
+                      lastUpdated: new Date('2020-01-01'),
                       mandatory: [],
                       nonMandatory: [
                         {
@@ -72,7 +73,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: new Date('10/20/2022'),
                               title: 'Health training',
                               trainingCategory: { id: 1, category: 'Health' },
-                              uid: 'someuid',
+                              uid: 'someHealthuid',
                             },
                           ],
                         },
@@ -83,16 +84,32 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                             {
                               accredited: true,
                               completed: new Date('10/20/2021'),
-                              expires: new Date('10/20/2022'),
+                              expires: yesterday,
                               title: 'Autism training',
                               trainingCategory: { id: 2, category: 'Autism' },
-                              uid: 'someuid',
+                              uid: 'someAutismuid',
+                            },
+                          ],
+                        },
+                        {
+                          category: 'Coshh',
+                          id: 3,
+                          trainingRecords: [
+                            {
+                              accredited: true,
+                              completed: new Date('01/01/2010'),
+                              expires: tomorrow,
+                              title: 'Coshh training',
+                              trainingCategory: { id: 3, category: 'Coshh' },
+                              uid: 'someCoshhuid',
                             },
                           ],
                         },
                       ],
                     },
-                    qualifications: noQualifications ? { count: 0, groups: [] } : qualificationsByGroup,
+                    qualifications: noQualifications
+                      ? { count: 0, groups: [], lastUpdated: null }
+                      : qualificationsByGroup,
                   },
                 },
               },
@@ -195,7 +212,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   });
 
   it('should get the latest update date', async () => {
-    const { component, getByText, fixture } = await setup();
+    const { component } = await setup();
 
     expect(component.lastUpdatedDate).toEqual(new Date('2020-01-02'));
   });
@@ -216,7 +233,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   it('should display number of training records in the title', async () => {
     const { getByText } = await setup();
-    expect(getByText('Training and qualifications (5)')).toBeTruthy();
+    expect(getByText('Training and qualifications (6)')).toBeTruthy();
   });
 
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
@@ -302,12 +319,12 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   describe('Qualifications', () => {
     describe('No qualification records', () => {
       it('should show qualification record count as 0 when no qualification records', async () => {
-        const { getByText } = await setup(true);
+        const { getByText } = await setup(false, true, true);
         expect(getByText('Qualification records (0)')).toBeTruthy();
       });
 
       it('should show 0 qualifications message when no qualification records', async () => {
-        const { getByText } = await setup(true);
+        const { getByText } = await setup(false, false, true);
         expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
       });
     });

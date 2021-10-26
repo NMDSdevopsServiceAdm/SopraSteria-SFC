@@ -68,6 +68,7 @@ export interface Qualification {
 
 export interface QualificationsByGroup {
   count: number;
+  lastUpdated: Date;
   groups: QualificationGroup[];
 }
 

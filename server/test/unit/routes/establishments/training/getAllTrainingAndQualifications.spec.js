@@ -33,7 +33,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
       req = httpMocks.createRequest(request);
       res = httpMocks.createResponse();
 
-      sinon.stub(Training, 'fetch').returns({ training: mockTrainingRecords });
+      sinon.stub(Training, 'fetch').returns({ lastUpdated: '2021-09-14T10:23:33.069Z', training: mockTrainingRecords });
       sinon.stub(Qualification, 'fetch').returns(null);
     });
 
@@ -55,8 +55,9 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
         training: {
           mandatory: [],
           nonMandatory: mockFormattedTraining,
+          lastUpdated: '2021-09-14T10:23:33.069Z',
         },
-        qualifications: { count: 0, groups: [] },
+        qualifications: { count: 0, groups: [], lastUpdated: null },
       });
     });
 
@@ -73,8 +74,9 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
         training: {
           mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
           nonMandatory: [mockFormattedTraining[1]],
+          lastUpdated: '2021-09-14T10:23:33.069Z',
         },
-        qualifications: { count: 0, groups: [] },
+        qualifications: { count: 0, groups: [], lastUpdated: null },
       });
     });
 
@@ -91,8 +93,9 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
         training: {
           mandatory: mockFormattedTraining,
           nonMandatory: [],
+          lastUpdated: '2021-09-14T10:23:33.069Z',
         },
-        qualifications: { count: 0, groups: [] },
+        qualifications: { count: 0, groups: [], lastUpdated: null },
       });
     });
 

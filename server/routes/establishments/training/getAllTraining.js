@@ -6,7 +6,12 @@ const getAllTraining = async (establishmentId,workerUid) => {
   const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
   const mandatoryTrainingForWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
 
-  return formatTrainingRecords(allTrainingRecords, mandatoryTrainingForWorker);
+  const formattedTraining = formatTrainingRecords(allTrainingRecords, mandatoryTrainingForWorker);
+
+  return {
+    ...formattedTraining,
+    lastUpdated: allTrainingRecords.lastUpdated,
+  }
 }
 
 module.exports.getAllTraining = getAllTraining;

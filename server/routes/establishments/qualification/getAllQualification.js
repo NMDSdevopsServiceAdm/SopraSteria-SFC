@@ -6,12 +6,9 @@ const getAllQualifications = async (establishmentId, workerUid) => {
 
 
   if (allQualificationRecords) {
-    return sortQualificationsByGroup(
-      allQualificationRecords.qualifications,
-      allQualificationRecords.count,
-    );
+    return sortQualificationsByGroup(allQualificationRecords);
   }
-  return { count: 0, groups: [] };
+  return { count: 0, groups: [], lastUpdated: null };
 }
 
 module.exports.getAllQualifications = getAllQualifications;
