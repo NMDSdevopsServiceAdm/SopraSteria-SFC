@@ -12,7 +12,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -81,43 +81,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                         },
                       ],
                     },
-                    qualifications: noQualifications
-                      ? { count: 0, groups: [] }
-                      : {
-                          count: 3,
-                          groups: [
-                            {
-                              group: 'Health',
-                              id: 1,
-                              records: [
-                                {
-                                  year: '2020',
-                                  notes: 'This is a test note for the first row in the Health group',
-                                  title: 'Health qualification',
-                                  uid: 'firstHealthQualUid',
-                                },
-                              ],
-                            },
-                            {
-                              group: 'Certificate',
-                              id: 2,
-                              records: [
-                                {
-                                  year: '2021',
-                                  notes: 'Test notes needed',
-                                  title: 'Cert qualification',
-                                  uid: 'firstCertificateUid',
-                                },
-                                {
-                                  year: '2012',
-                                  notes: 'These are some more notes in the second row of the cert table',
-                                  title: 'Another name for qual',
-                                  uid: 'secondCertificateUid',
-                                },
-                              ],
-                            },
-                          ],
-                        },
+                    qualifications: noQualifications ? { count: 0, groups: [] } : qualificationsByGroup,
                   },
                 },
               },

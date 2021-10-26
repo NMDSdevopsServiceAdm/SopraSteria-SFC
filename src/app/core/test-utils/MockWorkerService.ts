@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse } from '@core/model/worker.model';
@@ -140,6 +141,40 @@ export const AllWorkers = [
     },
   },
 ] as Worker[];
+
+export const qualificationsByGroup = {
+  count: 3,
+  groups: [
+    {
+      group: 'Health',
+      records: [
+        {
+          year: 2020,
+          notes: 'This is a test note for the first row in the Health group',
+          title: 'Health qualification',
+          uid: 'firstHealthQualUid',
+        },
+      ],
+    },
+    {
+      group: 'Certificate',
+      records: [
+        {
+          year: 2021,
+          notes: 'Test notes needed',
+          title: 'Cert qualification',
+          uid: 'firstCertificateUid',
+        },
+        {
+          year: 2012,
+          notes: 'These are some more notes in the second row of the cert table',
+          title: 'Another name for qual',
+          uid: 'secondCertificateUid',
+        },
+      ],
+    },
+  ],
+} as QualificationsByGroup;
 
 @Injectable()
 export class MockWorkerService extends WorkerService {
