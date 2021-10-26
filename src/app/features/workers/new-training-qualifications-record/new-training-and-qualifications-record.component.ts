@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -30,6 +30,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
   public qualificationsByGroup: QualificationsByGroup;
+  public expiredTraining: number;
+  public expiresSoonTraining: number;
+  public lastUpdatedDate: Date;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -65,15 +68,33 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
     this.qualificationsCount = this.qualificationsByGroup.count;
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-    this.mandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.mandatory);
+
+    this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
+    this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
+    this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
+    this.getLastUpdatedDate([
+      this.route.snapshot.data.qualifications?.lastUpdated,
+      this.route.snapshot.data.trainingRecords?.lastUpdated,
+    ]);
+  }
+
+  private setTraining(
+    mandatoryTrainingRecords: TrainingRecordCategory[],
+    nonMandatoryTrainingRecords: TrainingRecordCategory[],
+  ): void {
+    this.mandatoryTraining = this.sortTrainingAlphabetically(mandatoryTrainingRecords);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
     this.getStatus(this.mandatoryTraining);
-    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(nonMandatoryTrainingRecords);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
   }
 
-  private getTrainingCount(training): number {
+  private getLastUpdatedDate(lastUpdatedDates: Date[]): void {
+    this.lastUpdatedDate = lastUpdatedDates.reduce((a, b) => (a > b ? a : b));
+  }
+
+  private getTrainingCount(training: TrainingRecordCategory[]): number {
     let count = 0;
     training.forEach((category) => {
       count += category.trainingRecords.length;
@@ -81,7 +102,25 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return count;
   }
 
-  private getStatus(categories): void {
+  public getTrainingStatusCount(training: TrainingRecords, status: number): number {
+    let count = 0;
+
+    const trainingTypes = Object.keys(training);
+    trainingTypes.forEach((type) => {
+      if (type !== 'lastUpdated') {
+        training[type].forEach((category) => {
+          category.trainingRecords.forEach((trainingRecord) => {
+            if (trainingRecord.trainingStatus === status) {
+              count += 1;
+            }
+          });
+        });
+      }
+    });
+    return count;
+  }
+
+  private getStatus(categories: TrainingRecordCategory[]): void {
     categories.forEach((category) => {
       category.trainingRecords.forEach((trainingRecord) => {
         trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
@@ -92,7 +131,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     });
   }
 
-  private sortTrainingAlphabetically(training) {
+  private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
     return training.sort((categoryA, categoryB) =>
       categoryA.category !== categoryB.category ? (categoryA.category < categoryB.category ? -1 : 1) : 0,
     );

@@ -79,7 +79,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
@@ -101,7 +101,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
@@ -136,7 +136,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
@@ -171,7 +171,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
@@ -245,7 +245,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace,
@@ -323,7 +323,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useValue: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
       componentProperties: {
         workplace,

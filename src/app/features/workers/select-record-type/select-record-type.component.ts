@@ -1,12 +1,13 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SelectRecordTypes } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Location } from '@angular/common';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-record-type',
@@ -14,6 +15,7 @@ import { Location } from '@angular/common';
 })
 export class SelectRecordTypeComponent implements OnInit {
   formgroup: any;
+  private newTrainingAndQualificationsReportFlag: boolean;
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -21,7 +23,8 @@ export class SelectRecordTypeComponent implements OnInit {
     protected route: ActivatedRoute,
     private workerService: WorkerService,
     protected router: Router,
-    private location: Location
+    private location: Location,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
   public formErrorsMap: ErrorDetails[];
   public form: FormGroup;
@@ -33,8 +36,13 @@ export class SelectRecordTypeComponent implements OnInit {
   public id: string;
   public navigateUrl: string;
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
+  async ngOnInit(): Promise<void> {
+    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsReport',
+      false,
+    );
+
+    this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
         this.id = params.id;
@@ -80,7 +88,8 @@ export class SelectRecordTypeComponent implements OnInit {
     }
   }
   protected setBackLink(): void {
-    this.url = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/training`;
+    const trainingPath = this.newTrainingAndQualificationsReportFlag ? 'new-training' : 'training';
+    this.url = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/${trainingPath}`;
     this.backService.setBackLink({ url: [this.url] });
   }
 

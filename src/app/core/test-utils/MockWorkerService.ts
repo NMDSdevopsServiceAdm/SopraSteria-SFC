@@ -78,7 +78,7 @@ export const workerWithExpiredTraining = workerBuilder({
   },
 });
 
-export const workerWithUpToDateTraining = workerBuilder({
+export const workerWithOneExpiringTraining = workerBuilder({
   overrides: {
     nameOrId: 'Carl',
     expiredTrainingCount: 0,
@@ -99,6 +99,18 @@ export const workerWithMissingTraining = workerBuilder({
     qualificationCount: 0,
     trainingAlert: 2,
     trainingCount: 0,
+  },
+});
+
+export const workerWithUpToDateTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Ellie',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 0,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 0,
+    trainingCount: 1,
   },
 });
 
