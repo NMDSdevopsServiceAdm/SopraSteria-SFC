@@ -7,9 +7,6 @@ const { formatTrainingRecords } = require('../../../utils/trainingRecordsUtils')
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const getAllTraining = async (req, res) => {
-  const mandatoryTrainingRecords = [];
-  const nonMandatoryTrainingRecords = [];
-
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
@@ -23,6 +20,7 @@ const getAllTraining = async (req, res) => {
     return res.json({
       ...formattedTraining,
       lastUpdated: allTrainingRecords.lastUpdated,
+      jobRoleMandatoryTrainingCount: mandatoryTrainingForWorker.length,
     });
   } catch (error) {
     console.error('Training::root getAllTraining - failed', error);

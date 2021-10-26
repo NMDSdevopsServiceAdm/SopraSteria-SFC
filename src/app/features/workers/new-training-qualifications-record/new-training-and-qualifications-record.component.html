@@ -94,6 +94,65 @@
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Mandatory training records ({{ mandatoryTrainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <div *ngIf="jobRoleMandatoryTrainingCount === 0">
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+          <p>
+            No mandatory training has been set for the
+            {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }} job role yet.
+          </p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <a
+            class="govuk-list"
+            *ngIf="canEditWorker"
+            draggable="false"
+            role="button"
+            [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
+          >
+            Manage mandatory training
+          </a>
+        </div>
+      </div>
+
+      <div *ngIf="jobRoleMandatoryTrainingCount > 0 && mandatoryTrainingCount < jobRoleMandatoryTrainingCount">
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+          <p>
+            {{ jobRoleMandatoryTrainingCount - mandatoryTrainingCount }}
+            <ng-container [ngPlural]="jobRoleMandatoryTrainingCount - mandatoryTrainingCount">
+              <ng-template ngPluralCase="=1"> mandatory training record is missing. </ng-template>
+              <ng-template ngPluralCase="other"> mandatory training records are missing. </ng-template>
+            </ng-container>
+          </p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <a
+            class="govuk-list"
+            *ngIf="canEditWorker"
+            draggable="false"
+            role="button"
+            [routerLink]="['../add-training']"
+            [state]="{ training: 'mandatory' }"
+          >
+            Add mandatory training record
+          </a>
+        </div>
+      </div>
+
+      <div *ngIf="mandatoryTrainingCount > 0">
+        <app-new-training
+          [workplace]="workplace"
+          [trainingRecords]="mandatoryTraining"
+          data-testid="mandatory-training"
+        ></app-new-training>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
     </div>
     <div class="govuk-grid-column-full">

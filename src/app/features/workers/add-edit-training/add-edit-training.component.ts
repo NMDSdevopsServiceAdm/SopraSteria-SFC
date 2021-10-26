@@ -58,7 +58,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected setTitle(): void {
-    this.title = this.trainingRecordId ? 'Edit training details' : 'Enter training details';
+    if (history.state?.training === 'mandatory') {
+      this.title = this.trainingRecordId ? 'Edit mandatory training record' : 'Add mandatory training record';
+    } else {
+      this.title = this.trainingRecordId ? 'Edit training details' : 'Enter training details';
+    }
   }
 
   protected setButtonText(): void {

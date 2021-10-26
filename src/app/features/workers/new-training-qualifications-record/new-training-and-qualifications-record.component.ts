@@ -31,6 +31,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public expiredTraining: number;
   public expiresSoonTraining: number;
   public lastUpdatedDate: Date;
+  public jobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -67,7 +68,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public setTrainingAndQualifications(): void {
     this.qualificationsCount = this.route.snapshot.data.qualifications.count;
     const trainingRecords = this.route.snapshot.data.trainingRecords;
-
     this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
@@ -75,6 +75,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       this.route.snapshot.data.qualifications?.lastUpdated,
       this.route.snapshot.data.trainingRecords?.lastUpdated,
     ]);
+    this.jobRoleMandatoryTrainingCount = trainingRecords.jobRoleMandatoryTrainingCount;
   }
 
   private setTraining(
@@ -106,7 +107,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const trainingTypes = Object.keys(training);
     trainingTypes.forEach((type) => {
-      if (type !== 'lastUpdated') {
+      if (typeof training[type] === 'object') {
         training[type].forEach((category) => {
           category.trainingRecords.forEach((trainingRecord) => {
             if (trainingRecord.trainingStatus === status) {
