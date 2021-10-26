@@ -10,6 +10,7 @@ const Training = require('../../../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
 const Qualification = require('../../../../../models/classes/qualification').Qualification;
 const { mockFormattedTraining, mockTrainingRecords } = require('../../../mockdata/training');
+const { mockQualificationRecords, expectedQualificationsSortedByGroup } = require('../../../mockdata/qualifications');
 
 describe('server/routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications.js', () => {
   const user = buildUser();
@@ -96,6 +97,26 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
           lastUpdated: '2021-09-14T10:23:33.069Z',
         },
         qualifications: { count: 0, groups: [], lastUpdated: null },
+      });
+    });
+
+    it('should return the qualifications data formatted when qualifications returned from endpoint', async () => {
+      sinon.restore();
+
+      sinon.stub(Training, 'fetch').returns({ lastUpdated: '2021-09-14T10:23:33.069Z', training: [] });
+      sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
+      sinon.stub(Qualification, 'fetch').returns(mockQualificationRecords);
+
+      await getAllTrainingAndQualifications(req, res);
+      const formattedTrainingAndQualifications = await res._getJSONData();
+
+      expect(formattedTrainingAndQualifications).to.deep.equal({
+        training: {
+          mandatory: [],
+          nonMandatory: [],
+          lastUpdated: '2021-09-14T10:23:33.069Z',
+        },
+        qualifications: expectedQualificationsSortedByGroup,
       });
     });
 

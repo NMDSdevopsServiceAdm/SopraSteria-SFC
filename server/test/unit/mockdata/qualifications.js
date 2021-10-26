@@ -62,7 +62,7 @@ exports.mockQualificationRecords = {
         level: '2',
       },
       year: 2011,
-      notes: undefined,
+      notes: '',
       created: '2021-10-13T13:04:26.628Z',
       updated: '2021-10-13T13:04:26.628Z',
       updatedBy: 'greenj',
@@ -72,6 +72,7 @@ exports.mockQualificationRecords = {
 
 exports.expectedQualificationsSortedByGroup = {
   count: 5,
+  lastUpdated: '01/01/2020',
   groups: [
     {
       group: 'Diploma',
@@ -118,7 +119,7 @@ exports.expectedQualificationsSortedByGroup = {
         {
           title: 'Award in Stroke Awareness',
           year: 2011,
-          notes: undefined,
+          notes: '',
           uid: '8e34ac81-7fae-4a3b-afd7-18aa85d09b10',
         },
       ],
