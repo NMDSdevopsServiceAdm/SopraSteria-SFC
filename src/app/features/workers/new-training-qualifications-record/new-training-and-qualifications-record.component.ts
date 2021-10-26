@@ -87,7 +87,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getStatus(this.nonMandatoryTraining);
   }
 
-  private getLastUpdatedDate(lastUpdatedDates: Date[]): void {
+  public getLastUpdatedDate(lastUpdatedDates: Date[]): void {
     const filteredDates = lastUpdatedDates.filter((date) => date);
     this.lastUpdatedDate = filteredDates.reduce((a, b) => (a > b ? a : b), null);
   }

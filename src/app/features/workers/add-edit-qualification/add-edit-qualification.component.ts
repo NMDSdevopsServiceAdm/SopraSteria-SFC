@@ -30,7 +30,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: string;
-  private newTrainingAndQualificationsReportFlag: boolean;
+  private newTrainingAndQualificationsRecordsFlag: boolean;
+  private trainingPath: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -52,15 +53,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.worker = this.workerService.worker;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
-
-    this.workerService.getRoute$.subscribe((route) => {
-      if (route) {
-        this.previousUrl = route;
-      }
-    });
-    this.backService.setBackLink({
-      url: [this.previousUrl],
-    });
 
     Object.keys(QualificationType).forEach((key) => {
       this.qualificationTypes[key] = QualificationType[key];
@@ -134,10 +126,12 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
 
-    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsReport',
+    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsRecords',
       false,
     );
+
+    this.setTrainingPathAndBackLink();
   }
 
   ngOnDestroy(): void {
@@ -214,7 +208,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -256,11 +250,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     }
   }
 
-  private onSuccess() {
-    const trainingPath = this.newTrainingAndQualificationsReportFlag ? 'new-training' : 'training';
+  private onSuccess(): void {
     this.router
       .navigate([
-        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${trainingPath}`,
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`,
       ])
       .then(() => {
         if (this.qualificationId) {
@@ -271,10 +264,25 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       });
   }
 
-  private onError(error) {
+  private onError(error): void {
     console.log(error);
   }
-  public navigateToPreviousPage() {
+  public navigateToPreviousPage(): void {
     this.router.navigate([this.previousUrl]);
+  }
+
+  private setTrainingPathAndBackLink(): void {
+    this.trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
+
+    this.workerService.getRoute$.subscribe((route) => {
+      if (route) {
+        this.previousUrl = route;
+      } else {
+        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`;
+      }
+    });
+    this.backService.setBackLink({
+      url: [this.previousUrl],
+    });
   }
 }

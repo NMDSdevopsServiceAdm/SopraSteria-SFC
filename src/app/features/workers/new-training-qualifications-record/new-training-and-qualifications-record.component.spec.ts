@@ -348,4 +348,32 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(component.expiresSoonTraining).toEqual(1);
     });
   });
+
+  describe('getLastUpdatedDate', () => {
+    it('should set last updated date to valid date when null passed in (in case of no qualification records)', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.getLastUpdatedDate([new Date('2021/01/01'), null]);
+      fixture.detectChanges();
+
+      expect(getByText('Last updated 1 January 2021', { exact: false })).toBeTruthy();
+    });
+
+    it('should set last updated date to valid date when null passed in (in case of no training records)', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.getLastUpdatedDate([null, new Date('2021/05/01')]);
+      fixture.detectChanges();
+
+      expect(getByText('Last updated 1 May 2021', { exact: false })).toBeTruthy();
+    });
+
+    it('should set last updated date to null when there is no lastUpdated date for training or quals', async () => {
+      const { component } = await setup();
+
+      component.getLastUpdatedDate([null, null]);
+
+      expect(component.lastUpdatedDate).toBe(null);
+    });
+  });
 });
