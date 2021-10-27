@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 })
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
+  public workplaceId: string;
   public revealTitle = "What's the ASC-WDS Benefits Bundle?";
   public benefits = [
     {
@@ -44,6 +45,7 @@ export class BenefitsBundleComponent implements OnInit {
 
   public ngOnInit(): void {
     this.workplaceName = this.establishmentService.primaryWorkplace.name;
+    this.workplaceId = this.establishmentService.primaryWorkplace.nmdsId;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
 }
