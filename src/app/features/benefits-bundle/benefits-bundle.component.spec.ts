@@ -68,4 +68,18 @@ describe('BenefitsBundleComponent', () => {
     expect(reveal).toBeTruthy();
     expect(revealContent).toBeTruthy();
   });
+
+  describe('Accordions', () => {
+    it('should display accordion headings', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
+      expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
+      expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
+      expect(getByText('10% off off registered manager membership')).toBeTruthy();
+      expect(getByText('10% off digital learning for managers modules')).toBeTruthy();
+      expect(getByText('Funded essential training')).toBeTruthy();
+      expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
+    });
+  });
 });

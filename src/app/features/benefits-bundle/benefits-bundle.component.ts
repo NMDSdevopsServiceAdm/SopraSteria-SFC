@@ -10,6 +10,35 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
   public revealTitle = "What's the ASC-WDS Benefits Bundle?";
+  public benefits = [
+    {
+      name: '10% off all publications in the Skills for Care bookshop',
+      open: false,
+    },
+    {
+      name: '10% off values-based interviewing seminars',
+      open: false,
+    },
+    {
+      name: '10% off valuable conversations online seminars',
+      open: false,
+    },
+    {
+      name: '10% off off registered manager membership',
+      open: false,
+    },
+    {
+      name: '10% off digital learning for managers modules',
+    },
+    {
+      name: 'Funded essential training',
+      open: false,
+    },
+    {
+      name: '5 of our top FREE digital downloads',
+      open: false,
+    },
+  ];
 
   constructor(private establishmentService: EstablishmentService, private breadcrumbService: BreadcrumbService) {}
 
