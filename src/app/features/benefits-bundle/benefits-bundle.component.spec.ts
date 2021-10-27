@@ -49,4 +49,17 @@ describe('BenefitsBundleComponent', () => {
     const workplaceName = getByText('Test Workplace');
     expect(workplaceName).toBeTruthy();
   });
+
+  it(`should display the "What's the ASC-WDS Benefits Bundle?" reveal and its contents`, async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText("What's the ASC-WDS Benefits Bundle?");
+    const revealContent = getByText(
+      'The ASC-WDS Benefits Bundle is our way of saying thank you for using the Adult Social Care Workforce Data Set (ASC-WDS).',
+      { exact: false },
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealContent).toBeTruthy();
+  });
 });

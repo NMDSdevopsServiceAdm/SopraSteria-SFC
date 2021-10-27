@@ -7,6 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 })
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
+  public revealTitle = "What's the ASC-WDS Benefits Bundle?";
 
   constructor(private establishmentService: EstablishmentService) {}
 
