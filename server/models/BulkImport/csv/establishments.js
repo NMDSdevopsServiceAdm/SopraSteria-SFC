@@ -2932,7 +2932,7 @@ class Establishment {
       } else if (value === null) {
         return '';
       } else if (value === 'None') {
-        return 0;
+        return uniqueJobs.map(() => 0).join(';');
       } else {
         return counts.join(';');
       }

@@ -984,6 +984,14 @@ describe('Bulk Upload - Establishment CSV', () => {
       it(`should show 999 if "Don't know" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
         const column = 25 + index;
         const establishment = apiEstablishmentBuilder();
+        establishment.jobs = [
+          {
+            jobId: 7,
+          },
+          {
+            jobId: 16,
+          },
+        ];
         establishment[`${slv}Value`] = "Don't know";
 
         const csv = establishmentCsv.toCSV(establishment);
@@ -1003,15 +1011,23 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(csvAsArray[column]).to.deep.equal('');
       });
 
-      it(`should show 0 if "None" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
+      it(`should show 0 for each job if "None" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
         const column = 25 + index;
         const establishment = apiEstablishmentBuilder();
+        establishment.jobs = [
+          {
+            jobId: 7,
+          },
+          {
+            jobId: 16,
+          },
+        ];
         establishment[`${slv}Value`] = 'None';
 
         const csv = establishmentCsv.toCSV(establishment);
         const csvAsArray = csv.split(',');
 
-        expect(csvAsArray[column]).to.include('0');
+        expect(csvAsArray[column]).to.deep.equal('0;0');
       });
     });
 
