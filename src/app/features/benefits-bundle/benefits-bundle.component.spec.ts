@@ -5,7 +5,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, queryByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { BenefitsBundleComponent } from './benefits-bundle.component';
 
@@ -82,7 +82,7 @@ describe('BenefitsBundleComponent', () => {
       expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
     });
 
-    it('should drop down when clicking on the heading', async () => {
+    it('should drop down when clicking on funded essential training heading and include content', async () => {
       const { component, getByTestId, getByText } = await setup();
 
       const fundedEssentialTrainingDrop = getByText('Funded essential training');
@@ -90,10 +90,11 @@ describe('BenefitsBundleComponent', () => {
 
       const droppedDiv = getByTestId('accordion-drop-5');
 
-      console.log(component.workplaceId);
-
       expect(getByTestId('accordion-5').getAttribute('class')).toContain('govuk-accordion__section--expanded');
       expect(droppedDiv.innerText).toContain('This free training comes as 3 individual packages for your staff.');
+      expect(droppedDiv.innerText).toContain(
+        `Your chosen training provider will need your Workplace ID (${component.workplaceId}) when you register`,
+      );
     });
   });
 });
