@@ -12,7 +12,7 @@ const Qualification = require('../../../../../models/classes/qualification').Qua
 const { mockFormattedTraining, mockTrainingRecords } = require('../../../mockdata/training');
 const { mockQualificationRecords, expectedQualificationsSortedByGroup } = require('../../../mockdata/qualifications');
 
-describe.only('server/routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications.js', () => {
+describe('server/routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications.js', () => {
   const user = buildUser();
 
   afterEach(() => {
