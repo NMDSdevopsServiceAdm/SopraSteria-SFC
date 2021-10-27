@@ -187,7 +187,6 @@ const deleteTrainingRecord = async (req, res) => {
 
 router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissingMandatoryTraining);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
-router.use('/getAllTraining', require('./getAllTraining'));
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);

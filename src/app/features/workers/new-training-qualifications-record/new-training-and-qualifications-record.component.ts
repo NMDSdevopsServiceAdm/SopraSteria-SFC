@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -28,6 +29,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
+  public qualificationsByGroup: QualificationsByGroup;
   public expiredTraining: number;
   public expiresSoonTraining: number;
   public lastUpdatedDate: Date;
@@ -58,23 +60,19 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         }
       }),
     );
-
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
   }
 
-  // This method is used to set training & qualifications list and their counts and alert flag
   public setTrainingAndQualifications(): void {
-    this.qualificationsCount = this.route.snapshot.data.qualifications.count;
-    const trainingRecords = this.route.snapshot.data.trainingRecords;
+    this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.qualificationsCount = this.qualificationsByGroup.count;
+    const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
 
     this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
-    this.getLastUpdatedDate([
-      this.route.snapshot.data.qualifications?.lastUpdated,
-      this.route.snapshot.data.trainingRecords?.lastUpdated,
-    ]);
+    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
   }
 
   private setTraining(
@@ -89,8 +87,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getStatus(this.nonMandatoryTraining);
   }
 
-  private getLastUpdatedDate(lastUpdatedDates: Date[]): void {
-    this.lastUpdatedDate = lastUpdatedDates.reduce((a, b) => (a > b ? a : b));
+  public getLastUpdatedDate(lastUpdatedDates: Date[]): void {
+    const filteredDates = lastUpdatedDates.filter((date) => date);
+    this.lastUpdatedDate = filteredDates.reduce((a, b) => (a > b ? a : b), null);
   }
 
   private getTrainingCount(training: TrainingRecordCategory[]): number {

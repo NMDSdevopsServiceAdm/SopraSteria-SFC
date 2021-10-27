@@ -92,7 +92,7 @@
     [expiredTrainingCount]="expiredTraining"
   ></app-new-training-and-qualifications-record-summary>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
     </div>
@@ -106,6 +106,20 @@
           [trainingRecords]="nonMandatoryTraining"
           data-testid="non-mandatory-training"
         ></app-new-training>
+      </ng-template>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Qualification records ({{ qualificationsByGroup.count }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <p *ngIf="qualificationsByGroup.count === 0; else qualificationTable">
+        No qualification records have been added for this person yet.
+      </p>
+      <ng-template #qualificationTable>
+        <app-new-qualifications [qualificationsByGroup]="qualificationsByGroup" data-testid="qualification">
+        </app-new-qualifications>
       </ng-template>
     </div>
   </div>

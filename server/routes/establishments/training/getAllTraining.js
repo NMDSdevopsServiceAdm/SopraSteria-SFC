@@ -1,37 +1,17 @@
-const express = require('express');
-const router = express.Router({ mergeParams: true });
-
 const Training = require('../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
 const { formatTrainingRecords } = require('../../../utils/trainingRecordsUtils');
-const { hasPermission } = require('../../../utils/security/hasPermission');
 
-const getAllTraining = async (req, res) => {
-  const mandatoryTrainingRecords = [];
-  const nonMandatoryTrainingRecords = [];
+const getAllTraining = async (establishmentId,workerUid) => {
+  const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
+  const mandatoryTrainingForWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
 
-  const establishmentId = req.establishmentId;
-  const workerUid = req.params.workerId;
+  const formattedTraining = formatTrainingRecords(allTrainingRecords, mandatoryTrainingForWorker);
 
-  try {
-    const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
-    const mandatoryTrainingForWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
-
-    const formattedTraining = formatTrainingRecords(allTrainingRecords, mandatoryTrainingForWorker);
-
-    res.status(200);
-    return res.json({
-      ...formattedTraining,
-      lastUpdated: allTrainingRecords.lastUpdated,
-    });
-  } catch (error) {
-    console.error('Training::root getAllTraining - failed', error);
-    res.status(500);
-    return res.send(`Failed to get TrainingRecords for Worker having uid: ${escape(workerUid)}`);
+  return {
+    ...formattedTraining,
+    lastUpdated: allTrainingRecords.lastUpdated,
   }
-};
+}
 
-router.route('/').get(hasPermission('canEditWorker'), getAllTraining);
-
-module.exports = router;
 module.exports.getAllTraining = getAllTraining;
