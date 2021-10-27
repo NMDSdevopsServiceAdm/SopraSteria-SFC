@@ -52,6 +52,8 @@ export interface TrainingRecordCategory {
 export interface TrainingRecords {
   mandatory: TrainingRecordCategory[];
   nonMandatory: TrainingRecordCategory[];
+  lastUpdated?: Date;
+  jobRoleMandatoryTrainingCount: number;
 }
 
 export interface MultipleTrainingResponse {

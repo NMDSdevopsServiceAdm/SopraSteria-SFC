@@ -18,6 +18,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   private newTrainingAndQualificationsRecordsFlag: boolean;
   private trainingPath: string;
+  public mandatoryTraining: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -32,13 +33,9 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
   }
 
-  protected async init(): Promise<void> {
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
-
+  protected init(): void {
     this.trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
+    this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
 
     this.workerService.getRoute$.subscribe((route) => {
@@ -57,8 +54,20 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     }
   }
 
-  protected setTitle(): void {
-    this.title = this.trainingRecordId ? 'Edit training details' : 'Enter training details';
+  protected async setFeatureFlag(): Promise<void> {
+    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsRecords',
+      false,
+    );
+    this.init();
+  }
+
+  public setTitle(): void {
+    if (this.mandatoryTraining) {
+      this.title = this.trainingRecordId ? 'Edit mandatory training record' : 'Add mandatory training record';
+    } else {
+      this.title = this.trainingRecordId ? 'Edit training details' : 'Enter training details';
+    }
   }
 
   protected setButtonText(): void {

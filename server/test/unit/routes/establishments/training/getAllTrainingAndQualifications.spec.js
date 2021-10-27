@@ -57,6 +57,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
           mandatory: [],
           nonMandatory: mockFormattedTraining,
           lastUpdated: '2021-09-14T10:23:33.069Z',
+          jobRoleMandatoryTrainingCount: 0,
         },
         qualifications: { count: 0, groups: [], lastUpdated: null },
       });
@@ -76,6 +77,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
           mandatory: [mockFormattedTraining[0], mockFormattedTraining[2]],
           nonMandatory: [mockFormattedTraining[1]],
           lastUpdated: '2021-09-14T10:23:33.069Z',
+          jobRoleMandatoryTrainingCount: 2,
         },
         qualifications: { count: 0, groups: [], lastUpdated: null },
       });
@@ -95,6 +97,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
           mandatory: mockFormattedTraining,
           nonMandatory: [],
           lastUpdated: '2021-09-14T10:23:33.069Z',
+          jobRoleMandatoryTrainingCount: 3,
         },
         qualifications: { count: 0, groups: [], lastUpdated: null },
       });
@@ -115,6 +118,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
           mandatory: [],
           nonMandatory: [],
           lastUpdated: '2021-09-14T10:23:33.069Z',
+          jobRoleMandatoryTrainingCount: 0,
         },
         qualifications: expectedQualificationsSortedByGroup,
       });
