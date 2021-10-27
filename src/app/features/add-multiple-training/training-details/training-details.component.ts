@@ -34,7 +34,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
   }
 
-  protected async init(): Promise<void> {
+  protected init(): void {
     this.previousUrl =
       this.establishmentService.primaryWorkplace?.uid === this.workplace.uid
         ? ['/dashboard']

@@ -33,6 +33,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public lastUpdatedDate: Date;
   public jobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
+  private currentUrl: string;
 
   constructor(
     private alertService: AlertService,
@@ -51,7 +52,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
-    this.setReturnTo();
     this.subscriptions.add(
       this.workerService.alert$.subscribe((alert) => {
         if (alert) {
@@ -60,7 +60,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         }
       }),
     );
-
+    this.currentUrl = this.router.url;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
   }
@@ -108,7 +108,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const trainingTypes = Object.keys(training);
     trainingTypes.forEach((type) => {
-      if (typeof training[type] === 'object') {
+      if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTrainingCount') {
         training[type].forEach((category) => {
           category.trainingRecords.forEach((trainingRecord) => {
             if (trainingRecord.trainingStatus === status) {
@@ -138,16 +138,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  private setReturnTo(): void {
-    const returnToRecord = {
-      url: ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'],
-    };
-    this.workerService.setReturnTo(returnToRecord);
+  public setReturnRoute(): void {
+    this.workerService.getRoute$.next(this.currentUrl);
   }
 
-  public setReturnRoute(): void {
-    this.workerService.getRoute$.next(this.router.url);
-  }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
