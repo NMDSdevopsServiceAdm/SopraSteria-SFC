@@ -16,7 +16,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
-  private newTrainingAndQualificationsReportFlag: boolean;
+  private newTrainingAndQualificationsRecordsFlag: boolean;
   private trainingPath: string;
   public mandatoryTraining: boolean;
 
@@ -34,7 +34,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected init(): void {
-    this.trainingPath = this.newTrainingAndQualificationsReportFlag ? 'new-training' : 'training';
+    this.trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
 
@@ -55,8 +55,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected async setFeatureFlag(): Promise<void> {
-    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsReport',
+    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsRecords',
       false,
     );
     this.init();

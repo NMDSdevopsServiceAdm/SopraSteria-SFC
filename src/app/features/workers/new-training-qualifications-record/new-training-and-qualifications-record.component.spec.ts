@@ -12,7 +12,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -29,7 +29,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   yesterday.setDate(yesterday.getDate() - 1);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  async function setup(otherJob = false, careCert = true, mandatoryTraining = []) {
+  async function setup(otherJob = false, careCert = true, mandatoryTraining = [], noQualifications = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -58,58 +58,59 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     },
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
-                  trainingRecords: {
-                    lastUpdated: new Date('2020-01-01'),
-                    jobRoleMandatoryTrainingCount: mandatoryTraining.length,
-                    mandatory: mandatoryTraining,
-                    nonMandatory: [
-                      {
-                        category: 'Health',
-                        id: 1,
-                        trainingRecords: [
-                          {
-                            accredited: true,
-                            completed: new Date('10/20/2021'),
-                            expires: new Date('10/20/2022'),
-                            title: 'Health training',
-                            trainingCategory: { id: 1, category: 'Health' },
-                            uid: 'someHealthuid',
-                          },
-                        ],
-                      },
-                      {
-                        category: 'Autism',
-                        id: 2,
-                        trainingRecords: [
-                          {
-                            accredited: true,
-                            completed: new Date('10/20/2021'),
-                            expires: yesterday,
-                            title: 'Autism training',
-                            trainingCategory: { id: 2, category: 'Autism' },
-                            uid: 'someAutismuid',
-                          },
-                        ],
-                      },
-                      {
-                        category: 'Coshh',
-                        id: 3,
-                        trainingRecords: [
-                          {
-                            accredited: true,
-                            completed: new Date('01/01/2010'),
-                            expires: tomorrow,
-                            title: 'Coshh training',
-                            trainingCategory: { id: 3, category: 'Coshh' },
-                            uid: 'someCoshhuid',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  qualifications: {
-                    count: 2,
-                    lastUpdated: new Date('2020-01-02'),
+                  trainingAndQualificationRecords: {
+                    training: {
+                      lastUpdated: new Date('2020-01-01'),
+                      jobRoleMandatoryTrainingCount: mandatoryTraining.length,
+                      mandatory: mandatoryTraining,
+                      nonMandatory: [
+                        {
+                          category: 'Health',
+                          id: 1,
+                          trainingRecords: [
+                            {
+                              accredited: true,
+                              completed: new Date('10/20/2021'),
+                              expires: new Date('10/20/2022'),
+                              title: 'Health training',
+                              trainingCategory: { id: 1, category: 'Health' },
+                              uid: 'someHealthuid',
+                            },
+                          ],
+                        },
+                        {
+                          category: 'Autism',
+                          id: 2,
+                          trainingRecords: [
+                            {
+                              accredited: true,
+                              completed: new Date('10/20/2021'),
+                              expires: yesterday,
+                              title: 'Autism training',
+                              trainingCategory: { id: 2, category: 'Autism' },
+                              uid: 'someAutismuid',
+                            },
+                          ],
+                        },
+                        {
+                          category: 'Coshh',
+                          id: 3,
+                          trainingRecords: [
+                            {
+                              accredited: true,
+                              completed: new Date('01/01/2010'),
+                              expires: tomorrow,
+                              title: 'Coshh training',
+                              trainingCategory: { id: 3, category: 'Coshh' },
+                              uid: 'someCoshhuid',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    qualifications: noQualifications
+                      ? { count: 0, groups: [], lastUpdated: null }
+                      : qualificationsByGroup,
                   },
                 },
               },
@@ -234,7 +235,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   it('should display number of training records in the title', async () => {
     const { getByText } = await setup();
-    expect(getByText('Training and qualifications (5)')).toBeTruthy();
+    expect(getByText('Training and qualifications (6)')).toBeTruthy();
   });
 
   describe('Long-Term Absence', () => {
@@ -439,6 +440,25 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
+  describe('Qualifications', () => {
+    describe('No qualification records', () => {
+      it('should show qualification record count as 0 when no qualification records', async () => {
+        const { getByText } = await setup(false, true, [], true);
+        expect(getByText('Qualification records (0)')).toBeTruthy();
+      });
+
+      it('should show 0 qualifications message when no qualification records', async () => {
+        const { getByText } = await setup(false, false, [], true);
+        expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
+      });
+    });
+
+    it('should show qualification record count', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Qualification records (3)')).toBeTruthy();
+    });
+  });
+
   describe('getTrainingStatusCount', () => {
     it('should return the number of expired records', async () => {
       const { component } = await setup();
@@ -450,6 +470,34 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component } = await setup();
 
       expect(component.expiresSoonTraining).toEqual(1);
+    });
+  });
+
+  describe('getLastUpdatedDate', () => {
+    it('should set last updated date to valid date when null passed in (in case of no qualification records)', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.getLastUpdatedDate([new Date('2021/01/01'), null]);
+      fixture.detectChanges();
+
+      expect(getByText('Last updated 1 January 2021', { exact: false })).toBeTruthy();
+    });
+
+    it('should set last updated date to valid date when null passed in (in case of no training records)', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.getLastUpdatedDate([null, new Date('2021/05/01')]);
+      fixture.detectChanges();
+
+      expect(getByText('Last updated 1 May 2021', { exact: false })).toBeTruthy();
+    });
+
+    it('should set last updated date to null when there is no lastUpdated date for training or quals', async () => {
+      const { component } = await setup();
+
+      component.getLastUpdatedDate([null, null]);
+
+      expect(component.lastUpdatedDate).toBe(null);
     });
   });
 });

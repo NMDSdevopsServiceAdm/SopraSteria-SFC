@@ -8,7 +8,7 @@ const Training = require('../../../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
 const { mockFormattedTraining, mockTrainingRecords } = require('../../../mockdata/training');
 
-describe.only('server/routes/establishments/training/getAllTraining.js', () => {
+describe('server/routes/establishments/training/getAllTraining.js', () => {
   const user = buildUser();
 
   afterEach(() => {

@@ -21,6 +21,7 @@ const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 const MandatoryTrainingRoutes = require('./mandatoryTraining');
 const MutipleTrainingRecordsRoute = require('./training/multiple');
+const TrainingAndQualificationsRoutes = require('./trainingAndQualifications');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
 
@@ -352,6 +353,8 @@ router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker
 router.use('/:workerId/training', TrainingRoutes);
 router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
+router.use('/:workerId/trainingAndQualifications', TrainingAndQualificationsRoutes);
+
 
 module.exports = router;
 module.exports.editWorker = editWorker;
