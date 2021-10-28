@@ -106,16 +106,6 @@ describe('BenefitsBundleComponent', () => {
       );
     });
 
-    it('should display the essential training link in the funded essential training content', async () => {
-      const { getByText } = await setup();
-
-      const essentialTrainingLink = getByText('Read more about funded essential training');
-
-      expect(essentialTrainingLink.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
-      );
-    });
-
     describe('Open all/Close all', () => {
       it('should show an open all button', async () => {
         const { getByText } = await setup();
@@ -213,6 +203,127 @@ describe('BenefitsBundleComponent', () => {
 
         expect(getByText('Open all')).toBeTruthy();
       });
+    });
+  });
+
+  describe('Links', () => {
+    it('should display the SfC bookshop link in the bookshop content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Visit the Skills for Care bookshop');
+
+      expect(link.getAttribute('href')).toBe('https://bookshop.skillsforcare.org.uk/Shop');
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the interviewing seminar link in the interviewing content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Read more about values-based interviewing');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Values-based-interviewing-seminar.aspx',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the valuable conversations seminar link in the valuable conversations content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Read more about values-based conversations');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Valuable-conversations-online-seminar.aspx',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the registered manager membership link in the manager membership content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Read more about registered manager membership');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Leadership-management/support-for-registered-managers/membership/membership.aspx',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the essential training link in the funded essential training content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Read more about funded essential training');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the Recommendations for CQC link in the learning for managers content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Recommendations for CQC providers');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Recommendations-for-CQC-providers.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the leadership link in the 5 free downloads content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Leadership qualities framework');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Documents/Leadership-and-management/Leadership-Qualities-Framework/Leadership-Qualities-Framework.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the care guide link in the 5 free downloads content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Good and outstanding care guide');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Good-and-outstanding-care-guide.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the leadership link in the 5 free downloads content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Leadership qualities framework');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Documents/Leadership-and-management/Leadership-Qualities-Framework/Leadership-Qualities-Framework.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the supervision link in the 5 free downloads content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Effective supervision guide');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Documents/Learning-and-development/Effective-supervision/Effective-supervision-guide-ONLINE.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the management toolkit link in the 5 free downloads content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('The people performance management toolkit');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/Documents/Leadership-and-management/People-Performance-Management-Toolkit/People-Performance-Management-Toolkit.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
     });
   });
 });
