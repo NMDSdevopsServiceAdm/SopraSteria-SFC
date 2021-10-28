@@ -59,4 +59,9 @@ export class BenefitsBundleComponent implements OnInit {
     const allAccordionsOpen = this.benefits.every((benefit) => benefit.open === true);
     this.allOpen = allAccordionsOpen ? true : false;
   }
+
+  public toggleAccordion(index: number): void {
+    this.benefits[index].open = !this.benefits[index].open;
+    this.updateOpenCloseAll();
+  }
 }
