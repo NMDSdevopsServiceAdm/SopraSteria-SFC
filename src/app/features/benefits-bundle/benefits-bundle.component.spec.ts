@@ -149,6 +149,42 @@ describe('BenefitsBundleComponent', () => {
 
         expect(getByText('Open all')).toBeTruthy();
       });
+
+      it('should drop all when clicking on the open all link', async () => {
+        const { component, getByTestId, getByText } = await setup();
+
+        component.benefits.map((_, index) => {
+          expect(getByTestId('accordion-' + index).getAttribute('class')).not.toContain(
+            'govuk-accordion__section--expanded',
+          );
+        });
+
+        const openAllButton = getByText('Open all');
+        fireEvent.click(openAllButton);
+
+        component.benefits.map((benefit, index) => {
+          expect(getByTestId('accordion-' + index).getAttribute('class')).toContain(
+            'govuk-accordion__section--expanded',
+          );
+        });
+      });
+
+      it('should close all when clicking on the close all link', async () => {
+        const { component, getByTestId, getByText, fixture } = await setup();
+
+        const openAllButton = getByText('Open all');
+        fireEvent.click(openAllButton);
+        fixture.detectChanges();
+
+        const closeAllButton = getByText('Close all');
+        fireEvent.click(closeAllButton);
+
+        component.benefits.map((_, index) => {
+          expect(getByTestId('accordion-' + index).getAttribute('class')).not.toContain(
+            'govuk-accordion__section--expanded',
+          );
+        });
+      });
     });
   });
 });
