@@ -32,7 +32,9 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(0)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 0">{{ benefits[0].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 0"
+              >{{ benefits[0].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
@@ -55,7 +57,9 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(1)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 1">{{ benefits[1].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 1"
+              >{{ benefits[1].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
@@ -78,8 +82,9 @@
             <a
               href="https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Values-based-interviewing-seminar.aspx"
               target="_blank"
-              >Read more about values-based interviewing on the Skills for Care website.</a
+              >Read more about values-based interviewing</a
             >
+            on the Skills for Care website.
           </p>
         </div>
       </div>
@@ -91,7 +96,9 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(2)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 2">{{ benefits[2].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 2"
+              >{{ benefits[2].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
@@ -129,7 +136,9 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(3)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 3">{{ benefits[3].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 3"
+              >{{ benefits[3].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
@@ -158,7 +167,9 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(4)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 4">{{ benefits[4].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 4"
+              >{{ benefits[4].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
@@ -196,13 +207,15 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(5)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 5">{{ benefits[5].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 5"
+              >{{ benefits[5].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
         <div
           [id]="'accordion-default-content-' + 5"
-          class="govuk-accordion__section-content"
+          class="govuk-accordion__section-content govuk-!-margin-bottom-3"
           [attr.data-testid]="'accordion-drop-' + 5"
         >
           <p>
@@ -226,7 +239,9 @@
       >
         <div class="govuk-accordion__section-header" (click)="toggleAccordion(6)">
           <h2 class="govuk-accordion__section-heading">
-            <span class="asc-accordion-heading" [id]="'accordion-default-heading-' + 6">{{ benefits[6].name }} </span>
+            <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + 6"
+              >{{ benefits[6].title }}
+            </span>
           </h2>
           <span class="govuk-accordion__icon" aria-hidden="true"></span>
         </div>
