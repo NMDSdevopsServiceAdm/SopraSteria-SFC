@@ -19,10 +19,10 @@
 
     <div class="govuk-accordion" data-module="govuk-accordion">
       <div class="govuk-accordion__controls">
-        <button type="button" (click)="toggleAll()" class="govuk-accordion__open-all" aria-expanded="false">
+        <a role="button" href="#" (click)="toggleAll($event)" class="govuk-accordion__open-all" aria-expanded="false">
           {{ !allOpen ? 'Open all' : 'Close all' }}
           <span class="govuk-visually-hidden"> sections</span>
-        </button>
+        </a>
       </div>
 
       <div

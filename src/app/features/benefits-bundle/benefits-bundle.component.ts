@@ -50,7 +50,8 @@ export class BenefitsBundleComponent implements OnInit {
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
 
-  public toggleAll(): void {
+  public toggleAll(event: Event): void {
+    event.preventDefault();
     this.allOpen = !this.allOpen;
     this.benefits.forEach((benefit) => (benefit.open = this.allOpen));
   }
