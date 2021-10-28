@@ -115,5 +115,40 @@ describe('BenefitsBundleComponent', () => {
         'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
       );
     });
+
+    describe('Open all/Close all', () => {
+      it('should show an open all button', async () => {
+        const { getByText } = await setup();
+
+        expect(getByText('Open all')).toBeTruthy();
+      });
+
+      it('should change to close all button when clicked', async () => {
+        const { getByText, fixture } = await setup();
+
+        const openAllButton = getByText('Open all');
+        fireEvent.click(openAllButton);
+
+        fixture.detectChanges();
+
+        expect(getByText('Close all')).toBeTruthy();
+      });
+
+      it('should change back to open all button when clicked twice', async () => {
+        const { getByText, fixture } = await setup();
+
+        const openAllButton = getByText('Open all');
+        fireEvent.click(openAllButton);
+
+        fixture.detectChanges();
+
+        const closeAllButton = getByText('Close all');
+        fireEvent.click(closeAllButton);
+
+        fixture.detectChanges();
+
+        expect(getByText('Open all')).toBeTruthy();
+      });
+    });
   });
 });

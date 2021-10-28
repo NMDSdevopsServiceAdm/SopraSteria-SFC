@@ -11,6 +11,7 @@ export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
   public workplaceId: string;
   public revealTitle = "What's the ASC-WDS Benefits Bundle?";
+  public allOpen = false;
   public benefits = [
     {
       name: '10% off all publications in the Skills for Care bookshop',
@@ -47,5 +48,10 @@ export class BenefitsBundleComponent implements OnInit {
     this.workplaceName = this.establishmentService.primaryWorkplace.name;
     this.workplaceId = this.establishmentService.primaryWorkplace.nmdsId;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
+  }
+
+  public toggleAll(): void {
+    this.allOpen = !this.allOpen;
+    this.benefits.forEach((benefit) => (benefit.open = this.allOpen));
   }
 }

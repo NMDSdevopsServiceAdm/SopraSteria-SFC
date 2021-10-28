@@ -15,9 +15,16 @@
       Codes must be applied before you make a purchase though, as discounts cannot be given afterwards.
     </p>
     <p>Be sure to check back often, as more offers will be added in the future.</p>
-    <h3 class="govuk-heading-s govuk-!-margin-top-6">Benefits Bundle discounts and services</h3>
+    <h3 class="govuk-heading-s govuk-!-margin-top-6 govuk-!-margin-bottom-0">Benefits Bundle discounts and services</h3>
 
     <div class="govuk-accordion" data-module="govuk-accordion">
+      <div class="govuk-accordion__controls">
+        <button type="button" (click)="toggleAll()" class="govuk-accordion__open-all" aria-expanded="false">
+          {{ !allOpen ? 'Open all' : 'Close all' }}
+          <span class="govuk-visually-hidden"> sections</span>
+        </button>
+      </div>
+
       <div
         class="govuk-accordion__section"
         [class]="{ 'govuk-accordion__section--expanded': benefits[0].open }"
