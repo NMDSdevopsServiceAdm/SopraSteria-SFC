@@ -54,4 +54,9 @@ export class BenefitsBundleComponent implements OnInit {
     this.allOpen = !this.allOpen;
     this.benefits.forEach((benefit) => (benefit.open = this.allOpen));
   }
+
+  public updateOpenCloseAll(): void {
+    const allAccordionsOpen = this.benefits.every((benefit) => benefit.open === true);
+    this.allOpen = allAccordionsOpen ? true : false;
+  }
 }

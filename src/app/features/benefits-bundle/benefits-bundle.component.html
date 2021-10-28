@@ -30,7 +30,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[0].open }"
         [attr.data-testid]="'accordion-' + 0"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[0].open = !benefits[0].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[0].open = !benefits[0].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 0"
               >{{ benefits[0].name }}
@@ -55,7 +58,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[1].open }"
         [attr.data-testid]="'accordion-' + 1"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[1].open = !benefits[1].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[1].open = !benefits[1].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 1"
               >{{ benefits[1].name }}
@@ -93,7 +99,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[2].open }"
         [attr.data-testid]="'accordion-' + 2"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[2].open = !benefits[2].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[2].open = !benefits[2].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 2"
               >{{ benefits[2].name }}
@@ -133,7 +142,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[3].open }"
         [attr.data-testid]="'accordion-' + 3"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[3].open = !benefits[3].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[3].open = !benefits[3].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 3"
               >{{ benefits[3].name }}
@@ -164,7 +176,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[4].open }"
         [attr.data-testid]="'accordion-' + 4"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[4].open = !benefits[4].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[4].open = !benefits[4].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 4"
               >{{ benefits[4].name }}
@@ -204,7 +219,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[5].open }"
         [attr.data-testid]="'accordion-' + 5"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[5].open = !benefits[5].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[5].open = !benefits[5].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 5"
               >{{ benefits[5].name }}
@@ -236,7 +254,10 @@
         [class]="{ 'govuk-accordion__section--expanded': benefits[6].open }"
         [attr.data-testid]="'accordion-' + 6"
       >
-        <div class="govuk-accordion__section-header" (click)="benefits[6].open = !benefits[6].open">
+        <div
+          class="govuk-accordion__section-header"
+          (click)="benefits[6].open = !benefits[6].open; updateOpenCloseAll()"
+        >
           <h2 class="govuk-accordion__section-heading">
             <span class="govuk-accordion__section-button" [id]="'accordion-default-heading-' + 6"
               >{{ benefits[6].name }}

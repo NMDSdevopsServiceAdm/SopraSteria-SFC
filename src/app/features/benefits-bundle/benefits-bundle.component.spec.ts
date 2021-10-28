@@ -185,6 +185,34 @@ describe('BenefitsBundleComponent', () => {
           );
         });
       });
+
+      it('should toggle button to Close all when all accordions opened individually', async () => {
+        const { getByText, fixture } = await setup();
+
+        fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
+        fireEvent.click(getByText('10% off values-based interviewing seminars'));
+        fireEvent.click(getByText('10% off valuable conversations online seminars'));
+        fireEvent.click(getByText('10% off off registered manager membership'));
+        fireEvent.click(getByText('10% off digital learning for managers modules'));
+        fireEvent.click(getByText('Funded essential training'));
+        fireEvent.click(getByText('5 of our top FREE digital downloads'));
+
+        fixture.detectChanges();
+
+        expect(getByText('Close all')).toBeTruthy();
+      });
+
+      it('should toggle button back to Open all when all accordions opened and then one closed', async () => {
+        const { getByText, fixture } = await setup();
+
+        fireEvent.click(getByText('Open all'));
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('10% off off registered manager membership'));
+        fixture.detectChanges();
+
+        expect(getByText('Open all')).toBeTruthy();
+      });
     });
   });
 });
