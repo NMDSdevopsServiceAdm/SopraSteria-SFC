@@ -231,7 +231,7 @@ describe('HomeTabComponent', () => {
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
-  fdescribe('View the ASC-WDS Benefits Bundle', async () => {
+  describe('View the ASC-WDS Benefits Bundle', async () => {
     it('should navigate to `/benefits-bundle` when pressing the "Benefite Bundle and NEW link" button', async () => {
       const { component } = await setup();
 
