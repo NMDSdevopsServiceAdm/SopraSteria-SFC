@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
@@ -33,7 +33,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public expiredTraining: number;
   public expiresSoonTraining: number;
   public lastUpdatedDate: Date;
+  public jobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
+  private currentUrl: string;
 
   constructor(
     private alertService: AlertService,
@@ -41,6 +43,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
+    private router: Router,
     private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
   ) {}
@@ -51,7 +54,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
-    this.setReturnTo();
     this.subscriptions.add(
       this.workerService.alert$.subscribe((alert) => {
         if (alert) {
@@ -60,6 +62,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         }
       }),
     );
+    this.currentUrl = this.router.url;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
   }
@@ -73,6 +76,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
+    this.jobRoleMandatoryTrainingCount = trainingRecords.jobRoleMandatoryTrainingCount;
   }
 
   private setTraining(
@@ -105,7 +109,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const trainingTypes = Object.keys(training);
     trainingTypes.forEach((type) => {
-      if (type !== 'lastUpdated') {
+      if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTrainingCount') {
         training[type].forEach((category) => {
           category.trainingRecords.forEach((trainingRecord) => {
             if (trainingRecord.trainingStatus === status) {
@@ -135,11 +139,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  private setReturnTo(): void {
-    const returnToRecord = {
-      url: ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'],
-    };
-    this.workerService.setReturnTo(returnToRecord);
+  public setReturnRoute(): void {
+    this.workerService.getRoute$.next(this.currentUrl);
   }
 
   ngOnDestroy(): void {

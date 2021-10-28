@@ -14,7 +14,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -29,7 +29,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   yesterday.setDate(yesterday.getDate() - 1);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  async function setup(otherJob = false, careCert = true, noQualifications = false) {
+  async function setup(otherJob = false, careCert = true, mandatoryTraining = [], noQualifications = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -61,7 +61,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   trainingAndQualificationRecords: {
                     training: {
                       lastUpdated: new Date('2020-01-01'),
-                      mandatory: [],
+                      jobRoleMandatoryTrainingCount: mandatoryTraining.length,
+                      mandatory: mandatoryTraining,
                       nonMandatory: [
                         {
                           category: 'Health',
@@ -145,6 +146,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       fixture,
       routerSpy,
       workerSpy,
+      workerService,
       getByText,
       getAllByText,
       getByTestId,
@@ -166,15 +168,15 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   });
 
   it('should display the worker job role', async () => {
-    const { component, getByText } = await setup();
+    const { component, getByTestId } = await setup();
 
-    expect(getByText(component.worker.mainJob.title, { exact: false })).toBeTruthy();
+    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
   });
 
   it('should display the other worker job role', async () => {
-    const { component, getByText } = await setup(true);
+    const { component, getByTestId } = await setup(true);
 
-    expect(getByText(component.worker.mainJob.other, { exact: false })).toBeTruthy();
+    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.other);
   });
 
   it('should display the last updated date in the correct format', async () => {
@@ -236,16 +238,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     expect(getByText('Training and qualifications (6)')).toBeTruthy();
   });
 
-  it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
-    const { component, workerSpy, workplaceUid, workerUid } = await setup();
-
-    component.ngOnInit();
-
-    expect(workerSpy).toHaveBeenCalledWith({
-      url: ['/workplace', workplaceUid, 'training-and-qualifications-record', workerUid, 'training'],
-    });
-  });
-
   describe('Long-Term Absence', () => {
     it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
@@ -295,8 +287,140 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
+  describe('Mandatory training', () => {
+    it('should display the mandatory training count', async () => {
+      const mandatoryTraining = [
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('10/20/2022'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              uid: 'someManagementuid',
+            },
+          ],
+        },
+      ];
+      const { getByText } = await setup(false, true, mandatoryTraining);
+      expect(getByText('Mandatory training records (1)')).toBeTruthy();
+    });
+
+    it('should display the message and link if no mandatory training has been set', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      const message = `No mandatory training has been set for the ${component.worker.mainJob.title} job role yet.`;
+
+      expect(getByText(message)).toBeTruthy();
+      expect(getByText('Manage mandatory training')).toBeTruthy();
+    });
+
+    it('should render the manage mandatory training link the correct href', async () => {
+      const { component, fixture, getByText, workplaceUid } = await setup();
+
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      const link = getByText('Manage mandatory training');
+      expect(link.getAttribute('href')).toBe(`/workplace/${workplaceUid}/add-mandatory-training`);
+    });
+
+    it('should display the message and link if mandatory training has been set, but no training found', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.canEditWorker = true;
+      component.jobRoleMandatoryTrainingCount = 1;
+      fixture.detectChanges();
+
+      expect(getByText('1 mandatory training record is missing.')).toBeTruthy();
+      expect(getByText('Add mandatory training record')).toBeTruthy();
+    });
+
+    it('should call the setReturnRoute function when the add mandatory record link is clicked', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const spy = spyOn(component, 'setReturnRoute').and.callThrough();
+
+      component.canEditWorker = true;
+      component.jobRoleMandatoryTrainingCount = 1;
+      fixture.detectChanges();
+
+      const link = getByText('Add mandatory training record');
+      fireEvent.click(link);
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should display the message pluralised and link if multiple mandatory training has been set, but no training found', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.canEditWorker = true;
+      component.jobRoleMandatoryTrainingCount = 2;
+      fixture.detectChanges();
+
+      expect(getByText('2 mandatory training records are missing.')).toBeTruthy();
+      expect(getByText('Add mandatory training record')).toBeTruthy();
+    });
+
+    it('should display the mandatory training table when training exists', async () => {
+      const mandatoryTraining = [
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('10/20/2022'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              uid: 'someManagementuid',
+            },
+          ],
+        },
+      ];
+      const { getByTestId } = await setup(false, true, mandatoryTraining);
+
+      expect(getByTestId('mandatory-training')).toBeTruthy();
+    });
+
+    it('shoud display the mandatory training that exists and text and link when other mandatory training is missing', async () => {
+      const mandatoryTraining = [
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('10/20/2022'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              uid: 'someManagementuid',
+            },
+          ],
+        },
+      ];
+      const { component, fixture, getByText, getByTestId } = await setup(false, true, mandatoryTraining);
+
+      component.canEditWorker = true;
+      component.jobRoleMandatoryTrainingCount = 2;
+      fixture.detectChanges();
+
+      expect(getByText('1 mandatory training record is missing.')).toBeTruthy();
+      expect(getByText('Add mandatory training record')).toBeTruthy();
+      expect(getByTestId('mandatory-training')).toBeTruthy();
+    });
+  });
+
   describe('Non mandatory training', () => {
-    it('should have non mandatory count of 2', async () => {
+    it('should display the non mandatory count', async () => {
       const { getByText } = await setup();
       expect(getByText('Non-mandatory training records (3)')).toBeTruthy();
     });
@@ -319,12 +443,12 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   describe('Qualifications', () => {
     describe('No qualification records', () => {
       it('should show qualification record count as 0 when no qualification records', async () => {
-        const { getByText } = await setup(false, true, true);
+        const { getByText } = await setup(false, true, [], true);
         expect(getByText('Qualification records (0)')).toBeTruthy();
       });
 
       it('should show 0 qualifications message when no qualification records', async () => {
-        const { getByText } = await setup(false, false, true);
+        const { getByText } = await setup(false, false, [], true);
         expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
       });
     });

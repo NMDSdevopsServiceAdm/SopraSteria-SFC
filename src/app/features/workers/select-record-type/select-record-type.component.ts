@@ -37,11 +37,6 @@ export class SelectRecordTypeComponent implements OnInit {
   public navigateUrl: string;
 
   async ngOnInit(): Promise<void> {
-    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsReport',
-      false,
-    );
-
     this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
@@ -49,9 +44,14 @@ export class SelectRecordTypeComponent implements OnInit {
       }
     });
     this.selectRecordTypes = [SelectRecordTypes.Training, SelectRecordTypes.Qualification];
-    this.setBackLink();
     this.setupForm();
     this.setupFormErrorsMap();
+
+    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'newTrainingAndQualificationsReport',
+      false,
+    );
+    this.setBackLink();
   }
 
   private setupForm(): void {

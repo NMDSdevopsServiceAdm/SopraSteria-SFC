@@ -11,6 +11,7 @@ const getAllTraining = async (establishmentId,workerUid) => {
   return {
     ...formattedTraining,
     lastUpdated: allTrainingRecords.lastUpdated,
+    jobRoleMandatoryTrainingCount: mandatoryTrainingForWorker.length,
   }
 }
 
