@@ -231,23 +231,13 @@ describe('HomeTabComponent', () => {
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
-  describe('View the ASC-WDS Benefits Bundle', async () => {
+  fdescribe('View the ASC-WDS Benefits Bundle', async () => {
     it('should navigate to `/benefits-bundle` when pressing the "Benefite Bundle and NEW link" button', async () => {
       const { component } = await setup();
-      component.fixture.detectChanges();
 
-      const benefiteBundleRoute = component.fixture.debugElement.query(
-        By.css('[data-testid="benefitBundleLink"]'),
-      ).nativeElement;
+      const benefiteBundleRoute = component.queryByText('View the ASC-WDS Benefits Bundle');
 
       expect(benefiteBundleRoute.getAttribute('href')).toBe('/benefits-bundle');
-    });
-
-    it('should navigate to `/benefits-bundle` when pressing the "Benefite Bundle and NEW link" button', async () => {
-      const { component } = await setup();
-      component.fixture.detectChanges();
-
-      expect(component.queryByText('View the ASC-WDS Benefits Bundle')).toBeTruthy();
     });
   });
   describe('Other links', () => {
