@@ -83,7 +83,9 @@ describe('BenefitsBundleComponent', () => {
     });
 
     it('should drop down when clicking on funded essential training heading and include content', async () => {
-      const { component, getByTestId, getByText } = await setup();
+      const { getByTestId, getByText } = await setup();
+
+      expect(getByTestId('accordion-5').getAttribute('class')).not.toContain('govuk-accordion__section--expanded');
 
       const fundedEssentialTrainingDrop = getByText('Funded essential training');
       fireEvent.click(fundedEssentialTrainingDrop);
@@ -92,11 +94,23 @@ describe('BenefitsBundleComponent', () => {
 
       expect(getByTestId('accordion-5').getAttribute('class')).toContain('govuk-accordion__section--expanded');
       expect(droppedDiv.innerText).toContain('This free training comes as 3 individual packages for your staff.');
-      expect(droppedDiv.innerText).toContain(
+    });
+
+    it('should display the workplace ID in the funded essential training content', async () => {
+      const { component, getByTestId } = await setup();
+
+      const fundedEssentialTrainingContent = getByTestId('accordion-drop-5');
+
+      expect(fundedEssentialTrainingContent.innerText).toContain(
         `Your chosen training provider will need your Workplace ID (${component.workplaceId}) when you register`,
       );
+    });
+
+    it('should display the essential training link in the funded essential training content', async () => {
+      const { getByText } = await setup();
 
       const essentialTrainingLink = getByText('Read more about funded essential training');
+
       expect(essentialTrainingLink.getAttribute('href')).toBe(
         'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
       );
