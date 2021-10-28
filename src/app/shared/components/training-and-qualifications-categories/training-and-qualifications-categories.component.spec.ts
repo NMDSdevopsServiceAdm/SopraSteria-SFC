@@ -3,6 +3,8 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render, RenderResult, within } from '@testing-library/angular';
 import * as moment from 'moment';
 
@@ -75,7 +77,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     component = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [],
@@ -94,7 +99,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -126,7 +134,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -158,7 +169,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -229,7 +243,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace,
         trainingCategories,
@@ -304,7 +321,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace,
         trainingCategories,

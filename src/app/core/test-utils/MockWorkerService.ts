@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse } from '@core/model/worker.model';
@@ -77,7 +78,7 @@ export const workerWithExpiredTraining = workerBuilder({
   },
 });
 
-export const workerWithUpToDateTraining = workerBuilder({
+export const workerWithOneExpiringTraining = workerBuilder({
   overrides: {
     nameOrId: 'Carl',
     expiredTrainingCount: 0,
@@ -98,6 +99,18 @@ export const workerWithMissingTraining = workerBuilder({
     qualificationCount: 0,
     trainingAlert: 2,
     trainingCount: 0,
+  },
+});
+
+export const workerWithUpToDateTraining = workerBuilder({
+  overrides: {
+    nameOrId: 'Ellie',
+    expiredTrainingCount: 0,
+    expiringTrainingCount: 0,
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+    trainingAlert: 0,
+    trainingCount: 1,
   },
 });
 
@@ -140,6 +153,41 @@ export const AllWorkers = [
     },
   },
 ] as Worker[];
+
+export const qualificationsByGroup = {
+  count: 3,
+  lastUpdated: new Date('2020-01-02'),
+  groups: [
+    {
+      group: 'Health',
+      records: [
+        {
+          year: 2020,
+          notes: 'This is a test note for the first row in the Health group',
+          title: 'Health qualification',
+          uid: 'firstHealthQualUid',
+        },
+      ],
+    },
+    {
+      group: 'Certificate',
+      records: [
+        {
+          year: 2021,
+          notes: 'Test notes needed',
+          title: 'Cert qualification',
+          uid: 'firstCertificateUid',
+        },
+        {
+          year: 2012,
+          notes: 'These are some more notes in the second row of the cert table',
+          title: 'Another name for qual',
+          uid: 'secondCertificateUid',
+        },
+      ],
+    },
+  ],
+} as QualificationsByGroup;
 
 @Injectable()
 export class MockWorkerService extends WorkerService {

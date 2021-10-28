@@ -31,16 +31,29 @@ export interface TrainingRecord {
     id: number;
     category: string;
   };
-  completed?: string;
-  created: string;
-  expires?: string;
+  completed?: Date;
+  created: Date;
+  expires?: Date;
   notes?: string;
   title: string;
   uid: string;
-  updated: string;
+  updated: Date;
   updatedBy: string;
   trainingStatus?: number;
   missing?: boolean;
+}
+
+export interface TrainingRecordCategory {
+  category: string;
+  id: number;
+  trainingRecords: TrainingRecord[];
+}
+
+export interface TrainingRecords {
+  mandatory: TrainingRecordCategory[];
+  nonMandatory: TrainingRecordCategory[];
+  lastUpdated?: Date;
+  jobRoleMandatoryTrainingCount: number;
 }
 
 export interface MultipleTrainingResponse {

@@ -406,6 +406,7 @@ describe('HomeTabComponent', () => {
         component.fixture.componentInstance.linkToParentRequestedStatus = false;
         component.fixture.componentInstance.parentStatusRequested = false;
         component.fixture.componentInstance.canLinkToParent = true;
+        component.fixture.detectChanges();
 
         const parentsRequestService = TestBed.inject(ParentRequestsService);
         const becomeAParentSpy = spyOn(parentsRequestService, 'becomeParent').and.returnValue(of({}));

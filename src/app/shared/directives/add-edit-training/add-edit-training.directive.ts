@@ -44,16 +44,17 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected workerService: WorkerService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.workplace = this.route.parent.snapshot.data.establishment;
 
     this.init();
-    this.setBackLink();
     this.setupForm();
-    this.getCategories();
-    this.setupFormErrorsMap();
     this.setTitle();
     this.setButtonText();
+    await this.setFeatureFlag();
+    this.setBackLink();
+    this.getCategories();
+    this.setupFormErrorsMap();
   }
 
   ngAfterViewInit(): void {
@@ -69,6 +70,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   protected setTitle(): void {}
 
   protected setButtonText(): void {}
+
+  protected async setFeatureFlag(): Promise<void> {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group(

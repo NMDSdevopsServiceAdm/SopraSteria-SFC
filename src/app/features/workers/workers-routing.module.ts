@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
+import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 
@@ -31,6 +32,7 @@ import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -292,6 +294,15 @@ const routes: Routes = [
           worker: WorkerResolver,
           qualifications: QualificationsResolver,
           trainingRecords: TrainingRecordsResolver,
+        },
+        data: { title: 'Training and qualification record' },
+      },
+      {
+        path: 'new-training',
+        component: NewTrainingAndQualificationsRecordComponent,
+        resolve: {
+          worker: WorkerResolver,
+          trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
         },
         data: { title: 'Training and qualification record' },
       },
