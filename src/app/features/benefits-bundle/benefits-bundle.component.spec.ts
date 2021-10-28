@@ -95,6 +95,11 @@ describe('BenefitsBundleComponent', () => {
       expect(droppedDiv.innerText).toContain(
         `Your chosen training provider will need your Workplace ID (${component.workplaceId}) when you register`,
       );
+
+      const essentialTrainingLink = getByText('Read more about funded essential training');
+      expect(essentialTrainingLink.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
+      );
     });
   });
 });
