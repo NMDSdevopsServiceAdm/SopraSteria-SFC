@@ -11,9 +11,9 @@ export class BenefitAccordionComponent {
     open: boolean;
   };
 
-  @Output() toggleIndex: EventEmitter<Event> = new EventEmitter();
+  @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
 
   public emitToggle(): void {
-    this.toggleIndex.emit();
+    this.toggleEmitter.emit();
   }
 }
