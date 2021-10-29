@@ -12,6 +12,12 @@ const {
 const models = require('../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
+  const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTrainingTest(
+    [establishmentId, 2321],
+    true,
+  );
+  console.log(rawEstablishmentTrainingBreakdowns[0].workers);
+
   const rawWorkerTrainingBreakdowns = await models.worker.workersAndTraining(establishmentId, true);
   const workerTrainingBreakdowns = convertWorkerTrainingBreakdowns(rawWorkerTrainingBreakdowns);
   const trainingRecordTotals = getTrainingTotals(workerTrainingBreakdowns);
