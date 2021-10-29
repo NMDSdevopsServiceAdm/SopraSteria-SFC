@@ -78,7 +78,7 @@ describe('BenefitsBundleComponent', () => {
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
       expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
-      expect(getByText('10% off off registered manager membership')).toBeTruthy();
+      expect(getByText('10% off registered manager membership')).toBeTruthy();
       expect(getByText('10% off digital learning for managers modules')).toBeTruthy();
       expect(getByText('Funded essential training')).toBeTruthy();
       expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
@@ -184,7 +184,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fireEvent.click(getByText('10% off values-based interviewing seminars'));
         fireEvent.click(getByText('10% off valuable conversations online seminars'));
-        fireEvent.click(getByText('10% off off registered manager membership'));
+        fireEvent.click(getByText('10% off registered manager membership'));
         fireEvent.click(getByText('10% off digital learning for managers modules'));
         fireEvent.click(getByText('Funded essential training'));
         fireEvent.click(getByText('5 of our top FREE digital downloads'));
@@ -200,7 +200,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText('Open all'));
         fixture.detectChanges();
 
-        fireEvent.click(getByText('10% off off registered manager membership'));
+        fireEvent.click(getByText('10% off registered manager membership'));
         fixture.detectChanges();
 
         expect(getByText('Open all')).toBeTruthy();
@@ -232,7 +232,7 @@ describe('BenefitsBundleComponent', () => {
     it('should display the valuable conversations seminar link in the valuable conversations content', async () => {
       const { getByText } = await setup();
 
-      const link = getByText('Read more about values-based conversations');
+      const link = getByText('Read more about valuable conversations');
 
       expect(link.getAttribute('href')).toBe(
         'https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Valuable-conversations-online-seminar.aspx',
