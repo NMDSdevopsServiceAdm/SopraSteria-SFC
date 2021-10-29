@@ -205,24 +205,6 @@ describe('RegistrationRequestComponent', () => {
       });
     });
 
-    it('should call getSingleRegistration in registrationService to get updated registration after successfully updating workplace ID', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(of({}));
-      const updateRegistrationCall = spyOn(component.registrationsService, 'getSingleRegistration');
-      TestBed.inject(AlertService);
-
-      const form = component.workplaceIdForm;
-
-      form.controls['nmdsId'].setValue('A1234567');
-      form.controls['nmdsId'].markAsDirty();
-
-      fireEvent.click(getByText('Save this ID'));
-      fixture.detectChanges();
-
-      expect(updateRegistrationCall).toHaveBeenCalled();
-    });
-
     describe('Workplace ID validation', () => {
       it('displays enter a valid workplace ID message when box is empty', async () => {
         const { component, fixture, getByText } = await setup();
