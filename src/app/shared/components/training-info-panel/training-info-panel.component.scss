@@ -41,7 +41,11 @@
     }
 
     &:first-of-type {
-      min-width: 250px;
+      min-width: 340px;
+
+      @media only screen and (max-width: 850px) {
+        min-width: 250px;
+      }
     }
 
     &:not(:first-of-type) {
@@ -53,6 +57,19 @@
     }
   }
 }
+
+// .asc-missing-column {
+//   min-width: 250px;
+
+//   @media only screen and (max-width: 850px) {
+//     flex: 1;
+//   }
+// }
+
+// .asc-expired-column,
+// .asc-expiring-column {
+//   flex: 1;
+// }
 
 .asc-title {
   font-weight: bold;
@@ -74,16 +91,9 @@
 hr {
   color: $govuk-border-colour;
   display: none;
+  margin: 40px 50px 50px 50px;
 
   @media only screen and (max-width: 680px) {
     display: block;
-  }
-
-  &.asc-top-line {
-    margin: 40px 50px 50px 50px;
-  }
-
-  &.asc-bottom-line {
-    margin: 50px 50px;
   }
 }
