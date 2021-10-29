@@ -20,6 +20,7 @@ import {
   benchmarksSubsidiariesSicknessJourney,
   benchmarksSubsidiariesTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_subsidiaries';
+import { benefitsBundleJourney } from '@core/breadcrumb/journey.benefits-bundle';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -230,6 +231,10 @@ export class BreadcrumbService {
       }
       case JourneyType.PAGES_ARTICLES: {
         routes = pagesArticlesJourney;
+        break;
+      }
+      case JourneyType.BENEFITS_BUNDLE: {
+        routes = benefitsBundleJourney;
         break;
       }
       default: {
