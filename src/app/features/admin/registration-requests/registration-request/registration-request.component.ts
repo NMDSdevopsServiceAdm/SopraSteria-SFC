@@ -11,9 +11,7 @@ import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
 
-import {
-  RegistrationApprovalOrRejectionDialogComponent,
-} from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
+import { RegistrationApprovalOrRejectionDialogComponent } from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -72,6 +70,7 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
 
     this.registrationsService.updateWorkplaceId(body).subscribe(
       () => {
+        this.getUpdatedRegistration();
         this.showWorkplaceIdUpdatedAlert();
       },
       (err) => {
