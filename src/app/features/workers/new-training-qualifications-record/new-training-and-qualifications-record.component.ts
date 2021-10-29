@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, filterTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
@@ -36,6 +36,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public jobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
   private currentUrl: string;
+  public filterTrainingByStatus;
+  public filterTrainingByDefault: string;
 
   constructor(
     private alertService: AlertService,
@@ -65,18 +67,21 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.currentUrl = this.router.url;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
+
+    this.filterTrainingByDefault = '0_showall';
+    this.filterTrainingByStatus = filterTrainingAndQualsOptions;
   }
 
   public setTrainingAndQualifications(): void {
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
     this.qualificationsCount = this.qualificationsByGroup.count;
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-
     this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
     this.jobRoleMandatoryTrainingCount = trainingRecords.jobRoleMandatoryTrainingCount;
+    this.getFilterByStatus(this.filterTrainingByDefault);
   }
 
   private setTraining(
@@ -131,6 +136,26 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         );
       });
     });
+  }
+
+  getFilterByStatus(dropdownValue) {
+    console.log(dropdownValue);
+
+    // const trainingTypes = Object.keys(training);
+    // // console.log(trainingTypes);
+    // trainingTypes.forEach((type) => {
+    //   // if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTrainingCount') {
+    //   training[type].forEach((category) => {
+    //     // console.log(category);
+    //     category.trainingRecords.forEach((trainingRecord) => {
+    //       // console.log(trainingRecord);
+    //       if (trainingRecord.trainingStatus === status) {
+    //         // console.log(trainingRecord.trainingStatus);
+    //       }
+    //     });
+    //   });
+    //   // }
+    // });
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
