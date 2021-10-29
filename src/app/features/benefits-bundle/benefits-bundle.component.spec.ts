@@ -7,12 +7,14 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
+import { BenefitAccordionComponent } from './benefit-accordion/benefit-accordion.component';
 import { BenefitsBundleComponent } from './benefits-bundle.component';
 
 describe('BenefitsBundleComponent', () => {
   async function setup() {
     const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(BenefitsBundleComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [BenefitAccordionComponent],
       providers: [
         {
           provide: EstablishmentService,

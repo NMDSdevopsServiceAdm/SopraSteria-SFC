@@ -1,0 +1,19 @@
+<div
+  class="govuk-accordion__section"
+  [attr.data-testid]="'accordion-' + index"
+  [class]="{ 'govuk-accordion__section--expanded': benefit.open }"
+>
+  <div class="govuk-accordion__section-header" (click)="emitToggle()">
+    <h2 class="govuk-accordion__section-heading">
+      <span class="asc-small-accordion-heading" [id]="'accordion-default-heading-' + index">{{ benefit.title }} </span>
+    </h2>
+    <span class="govuk-accordion__icon" aria-hidden="true"></span>
+  </div>
+  <div
+    [id]="'accordion-default-content-' + index"
+    class="govuk-accordion__section-content"
+    [attr.data-testid]="'accordion-drop-' + index"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>
