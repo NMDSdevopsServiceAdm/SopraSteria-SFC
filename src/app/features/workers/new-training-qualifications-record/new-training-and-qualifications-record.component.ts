@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment, filterTrainingAndQualsOptions } from '@core/model/establishment.model';
+import { Establishment, FilterTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
@@ -38,7 +38,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   private currentUrl: string;
   public filterTrainingByStatus;
   public filterTrainingByDefault: string;
-
+  public filterTraining;
+  public allTrainings;
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
@@ -69,19 +70,20 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
 
     this.filterTrainingByDefault = '0_showall';
-    this.filterTrainingByStatus = filterTrainingAndQualsOptions;
+    this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
+    this.getFilterByStatus(this.filterTrainingByDefault);
   }
 
   public setTrainingAndQualifications(): void {
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
     this.qualificationsCount = this.qualificationsByGroup.count;
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
+    this.filterTraining = this.allTrainings = trainingRecords;
     this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
     this.jobRoleMandatoryTrainingCount = trainingRecords.jobRoleMandatoryTrainingCount;
-    this.getFilterByStatus(this.filterTrainingByDefault);
   }
 
   private setTraining(
@@ -139,23 +141,37 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   getFilterByStatus(dropdownValue) {
-    console.log(dropdownValue);
+    if (dropdownValue.toLowerCase() === '0_showall') {
+      this.nonMandatoryTraining = this.allTrainings.nonMandatory;
+      return;
+    }
+    const filterValue = dropdownValue.toLowerCase() === '1_expired' ? 3 : 1;
+    const nonMandatory = [];
+    const mandatory = [];
+    this.filterTraining = this.allTrainings;
+    this.filterTraining.nonMandatory.filter((t) => {
+      const f = t.trainingRecords.filter((s) => s.trainingStatus === filterValue);
+      if (f && f.length) {
+        nonMandatory.push({
+          category: t.category,
+          id: t.id,
+          trainingRecords: f,
+        });
+      }
+    });
 
-    // const trainingTypes = Object.keys(training);
-    // // console.log(trainingTypes);
-    // trainingTypes.forEach((type) => {
-    //   // if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTrainingCount') {
-    //   training[type].forEach((category) => {
-    //     // console.log(category);
-    //     category.trainingRecords.forEach((trainingRecord) => {
-    //       // console.log(trainingRecord);
-    //       if (trainingRecord.trainingStatus === status) {
-    //         // console.log(trainingRecord.trainingStatus);
-    //       }
-    //     });
-    //   });
-    //   // }
-    // });
+    this.filterTraining.mandatory.filter((t) => {
+      const f = t.trainingRecords.filter((s) => s.trainingStatus === filterValue);
+      if (f && f.length) {
+        mandatory.push({
+          category: t.category,
+          id: t.id,
+          trainingRecords: f,
+        });
+      }
+    });
+    this.filterTraining = { mandatory, nonMandatory };
+    this.nonMandatoryTraining = nonMandatory;
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {

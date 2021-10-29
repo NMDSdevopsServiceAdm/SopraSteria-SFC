@@ -244,7 +244,7 @@ export enum SortTrainingAndQualsOptionsCat {
   '3_category' = 'Category',
 }
 
-export enum filterTrainingAndQualsOptions {
+export enum FilterTrainingAndQualsOptions {
   '0_showall' = 'Show All',
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
