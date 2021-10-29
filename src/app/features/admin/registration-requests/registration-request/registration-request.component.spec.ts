@@ -183,7 +183,7 @@ describe('RegistrationRequestComponent', () => {
   });
 
   describe('Updating workplace ID', () => {
-    it('should have a success alert when delete is successful', async () => {
+    it('should have a success alert when workplace ID is successfully updated', async () => {
       const { component, fixture, getByText } = await setup();
 
       spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(of({}));
@@ -209,8 +209,9 @@ describe('RegistrationRequestComponent', () => {
       const { component, fixture, getByText } = await setup();
 
       spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(of({}));
-      const updateRegistrationCall = spyOn(component.registrationsService, 'getSingleRegistration');
-      TestBed.inject(AlertService);
+      const updateRegistrationCall = spyOn(component.registrationsService, 'getSingleRegistration').and.returnValue(
+        of(PendingRegistration() as Registration),
+      );
 
       const form = component.workplaceIdForm;
 
