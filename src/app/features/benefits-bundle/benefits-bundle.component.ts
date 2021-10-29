@@ -26,7 +26,7 @@ export class BenefitsBundleComponent implements OnInit {
       open: false,
     },
     {
-      title: '10% off off registered manager membership',
+      title: '10% off registered manager membership',
       open: false,
     },
     {
