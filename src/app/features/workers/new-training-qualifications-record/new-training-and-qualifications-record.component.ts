@@ -141,37 +141,40 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   getFilterByStatus(dropdownValue) {
-    if (dropdownValue.toLowerCase() === '0_showall') {
+    if (dropdownValue === '0_showall') {
       this.nonMandatoryTraining = this.allTrainings.nonMandatory;
+      this.mandatoryTraining = this.allTrainings.mandatory;
       return;
     }
-    const filterValue = dropdownValue.toLowerCase() === '1_expired' ? 3 : 1;
+    const filterValue = dropdownValue === '1_expired' ? 3 : 1;
     const nonMandatory = [];
     const mandatory = [];
     this.filterTraining = this.allTrainings;
-    this.filterTraining.nonMandatory.filter((t) => {
-      const f = t.trainingRecords.filter((s) => s.trainingStatus === filterValue);
-      if (f && f.length) {
+
+    this.filterTraining.nonMandatory.filter((training) => {
+      const filteredStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
+      if (filteredStatus && filteredStatus.length) {
         nonMandatory.push({
-          category: t.category,
-          id: t.id,
-          trainingRecords: f,
+          category: training.category,
+          id: training.id,
+          trainingRecords: filteredStatus,
         });
       }
     });
 
-    this.filterTraining.mandatory.filter((t) => {
-      const f = t.trainingRecords.filter((s) => s.trainingStatus === filterValue);
-      if (f && f.length) {
+    this.filterTraining.mandatory.filter((training) => {
+      const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
+      if (filterdStatus && filterdStatus.length) {
         mandatory.push({
-          category: t.category,
-          id: t.id,
-          trainingRecords: f,
+          category: training.category,
+          id: training.id,
+          trainingRecords: filterdStatus,
         });
       }
     });
     this.filterTraining = { mandatory, nonMandatory };
     this.nonMandatoryTraining = nonMandatory;
+    this.mandatoryTraining = mandatory;
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
