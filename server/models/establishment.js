@@ -1471,7 +1471,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.workersAndTrainingTest = async function (establishmentIds, includeMandatoryTrainingBreakdown = false) {
+  Establishment.workersAndTraining = async function (establishmentIds, includeMandatoryTrainingBreakdown = false) {
     const currentDate = moment().toISOString();
     const expiresSoon = moment().add(90, 'days').toISOString();
 
