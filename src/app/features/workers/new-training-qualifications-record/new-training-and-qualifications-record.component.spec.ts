@@ -74,7 +74,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: new Date('10/20/2022'),
                               title: 'Health training',
                               trainingCategory: { id: 1, category: 'Health' },
-                              trainingStatus: 1,
+                              trainingStatus: 3,
                               uid: 'someHealthuid',
                             },
                           ],
@@ -104,7 +104,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: tomorrow,
                               title: 'Coshh training',
                               trainingCategory: { id: 3, category: 'Coshh' },
-                              trainingStatus: 3,
+                              trainingStatus: 1,
                               uid: 'someCoshhuid',
                             },
                           ],
@@ -508,8 +508,81 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture } = await setup();
       component.getFilterByStatus('0_showall');
       fixture.detectChanges();
+
       expect(component.mandatoryTraining).toEqual(component.allTrainings.mandatory);
       expect(component.nonMandatoryTraining).toEqual(component.allTrainings.nonMandatory);
+    });
+
+    it('should show return  training records with expired status', async () => {
+      const mandatoryTraining = [
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('10/21/2021'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              trainingStatus: 3,
+              uid: 'someManagementuid',
+            },
+          ],
+        },
+      ];
+
+      const { component, fixture } = await setup(false, false, mandatoryTraining);
+
+      component.getFilterByStatus('1_expired');
+      fixture.detectChanges();
+
+      const expiredStatusNonMandatory = component.filterTraining.nonMandatory.every((record) =>
+        record.trainingRecords.every((status) => status.trainingStatus === 3),
+      );
+
+      const expiredStatusMandatory = component.filterTraining.nonMandatory.every((record) =>
+        record.trainingRecords.every((status) => status.trainingStatus === 3),
+      );
+
+      expect(expiredStatusNonMandatory).toBeTruthy();
+      expect(expiredStatusMandatory).toBeTruthy();
+    });
+
+    it('should show training records expires soon status', async () => {
+      const mandatoryTraining = [
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('11/10/2021'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              trainingStatus: 1,
+              uid: 'someManagementuid',
+            },
+          ],
+        },
+      ];
+
+      const { component, fixture } = await setup(false, false, mandatoryTraining);
+
+      component.getFilterByStatus('2_expires_soon');
+      fixture.detectChanges();
+
+      const expiresSoonStatusNonMandatory = component.filterTraining.nonMandatory.every((record) =>
+        record.trainingRecords.every((status) => status.trainingStatus === 1),
+      );
+
+      const expiresSoonStatusMandatory = component.filterTraining.nonMandatory.every((record) =>
+        record.trainingRecords.every((status) => status.trainingStatus === 1),
+      );
+
+      expect(expiresSoonStatusNonMandatory).toBeTruthy();
+      expect(expiresSoonStatusMandatory).toBeTruthy();
     });
   });
 });

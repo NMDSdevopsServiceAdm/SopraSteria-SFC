@@ -245,7 +245,7 @@ export enum SortTrainingAndQualsOptionsCat {
 }
 
 export enum FilterTrainingAndQualsOptions {
-  '0_showall' = 'Show All',
+  '0_showall' = 'Show all',
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
 }
