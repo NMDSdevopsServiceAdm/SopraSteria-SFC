@@ -6,7 +6,7 @@ const models = require('../../../../../../models');
 
 const parentTrainingAndQualificationsReport = require('../../../../../../routes/reports/trainingAndQualifications/parentReport/generateParentTrainingAndQualificationsReport');
 
-describe('generateTrainingAndQualificationsReport', () => {
+describe('generateParentTrainingAndQualificationsReport', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findByUid').callsFake(() => {
       return { id: 1234 };

@@ -2,7 +2,7 @@ const excelJS = require('exceljs');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
-// const { generateHowToTab } = require('../howToTab');
+const { generateHowToTab } = require('../howToTab');
 // const models = require('../../../models');
 
 const generateParentTrainingAndQualificationsReport = async (req, res) => {
@@ -14,7 +14,7 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
-    // generateHowToTab(workbook);
+    generateHowToTab(workbook, true);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
