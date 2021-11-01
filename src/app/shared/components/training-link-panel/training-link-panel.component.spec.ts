@@ -104,4 +104,24 @@ describe('TrainingLinkPanelComponent', () => {
     expect(reportServiceSpy).toHaveBeenCalledWith(componentInstance.establishmentUid);
     expect(saveFileSpy).toHaveBeenCalled();
   });
+
+  describe('Parent training and quals report', () => {
+    it('should call getParentTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
+      const { component, componentInstance, fixture } = await setup();
+
+      const reportService = TestBed.inject(ReportService);
+      const reportServiceSpy = spyOn(reportService, 'getParentTrainingAndQualificationsReport').and.returnValue(
+        of(null),
+      );
+      const saveFileSpy = spyOn(componentInstance, 'saveFile').and.returnValue(null);
+
+      const downloadTrainingButton = component.getByText('Download parent training report');
+
+      downloadTrainingButton.click();
+      fixture.detectChanges();
+
+      expect(reportServiceSpy).toHaveBeenCalledWith(componentInstance.establishmentUid);
+      expect(saveFileSpy).toHaveBeenCalled();
+    });
+  });
 });
