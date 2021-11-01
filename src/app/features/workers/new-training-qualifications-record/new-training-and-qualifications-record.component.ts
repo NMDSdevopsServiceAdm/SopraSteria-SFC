@@ -147,34 +147,42 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       return;
     }
     const filterValue = dropdownValue === '1_expired' ? 3 : 1;
-    const nonMandatory = [];
-    const mandatory = [];
+
     this.filterTraining = this.allTrainings;
 
-    this.filterTraining.nonMandatory.filter((training) => {
-      const filteredStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
-      if (filteredStatus && filteredStatus.length) {
-        nonMandatory.push({
-          category: training.category,
-          id: training.id,
-          trainingRecords: filteredStatus,
-        });
-      }
-    });
+    const nonMandatory = this.filterNonMandaroryByStatus(filterValue);
+    const mandatory = this.filterMandatoryByStatus(filterValue);
 
-    this.filterTraining.mandatory.filter((training) => {
-      const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
-      if (filterdStatus && filterdStatus.length) {
-        mandatory.push({
-          category: training.category,
-          id: training.id,
-          trainingRecords: filterdStatus,
-        });
-      }
-    });
     this.filterTraining = { mandatory, nonMandatory };
     this.nonMandatoryTraining = nonMandatory;
     this.mandatoryTraining = mandatory;
+  }
+
+  private filterNonMandaroryByStatus(filterValue) {
+    const nonMandatory = [];
+    this.filterTraining.nonMandatory.filter((training) => {
+      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, nonMandatory);
+    });
+    return nonMandatory;
+  }
+
+  private pushMandatoryAndNonMandatoryInArray(training, filterValue, arrayTraining) {
+    const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
+    if (filterdStatus && filterdStatus.length) {
+      arrayTraining.push({
+        category: training.category,
+        id: training.id,
+        trainingRecords: filterdStatus,
+      });
+    }
+  }
+
+  private filterMandatoryByStatus(filterValue) {
+    const mandatory = [];
+    this.filterTraining.mandatory.filter((training) => {
+      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, mandatory);
+    });
+    return mandatory;
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
