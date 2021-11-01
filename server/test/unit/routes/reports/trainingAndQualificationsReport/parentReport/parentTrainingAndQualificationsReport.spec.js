@@ -11,6 +11,13 @@ describe('generateParentTrainingAndQualificationsReport', () => {
     sinon.stub(models.establishment, 'findByUid').callsFake(() => {
       return { id: 1234 };
     });
+    sinon.stub(models.establishment, 'workersAndTraining').returns(
+      [
+        {
+          workers: [],
+        }
+      ]
+    );
   });
 
   afterEach(() => {
