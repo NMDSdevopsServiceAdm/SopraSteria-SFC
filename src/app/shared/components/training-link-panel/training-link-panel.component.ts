@@ -86,6 +86,26 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
+  public downloadParentTrainingReport(event: Event): void {
+    event.preventDefault();
+
+    if (this.newTrainingAndQualificationsReport) {
+      this.subscriptions.add(
+        this.reportService.getParentTrainingAndQualificationsReport(this.establishmentUid).subscribe(
+          (response) => this.saveFile(response),
+          (error) => console.error(error),
+        ),
+      );
+    } else {
+      this.subscriptions.add(
+        this.reportService.getTrainingReport(this.establishmentUid).subscribe(
+          (response) => this.saveFile(response),
+          (error) => console.error(error),
+        ),
+      );
+    }
+  }
+
   //set content type and save file
   public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
