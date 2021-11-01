@@ -74,6 +74,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: new Date('10/20/2022'),
                               title: 'Health training',
                               trainingCategory: { id: 1, category: 'Health' },
+                              trainingStatus: 1,
                               uid: 'someHealthuid',
                             },
                           ],
@@ -88,6 +89,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: yesterday,
                               title: 'Autism training',
                               trainingCategory: { id: 2, category: 'Autism' },
+                              trainingStatus: 3,
                               uid: 'someAutismuid',
                             },
                           ],
@@ -102,6 +104,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: tomorrow,
                               title: 'Coshh training',
                               trainingCategory: { id: 3, category: 'Coshh' },
+                              trainingStatus: 3,
                               uid: 'someCoshhuid',
                             },
                           ],
@@ -498,6 +501,15 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       component.getLastUpdatedDate([null, null]);
 
       expect(component.lastUpdatedDate).toBe(null);
+    });
+  });
+  describe('getFilterByStatus', () => {
+    it('should showAll records when no filter is selected', async () => {
+      const { component, fixture } = await setup();
+      component.getFilterByStatus('0_showall');
+      fixture.detectChanges();
+      expect(component.mandatoryTraining).toEqual(component.allTrainings.mandatory);
+      expect(component.nonMandatoryTraining).toEqual(component.allTrainings.nonMandatory);
     });
   });
 });
