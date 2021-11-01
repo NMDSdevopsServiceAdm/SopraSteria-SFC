@@ -25,14 +25,14 @@ describe('addContentToSummaryTab', () => {
     expect(mockSummaryTab.getCell('B2').value).to.equal('Training (summary)');
   });
 
-  // describe('All training records table', () => {
-  //   it('should add all training records table headings to row 6', async () => {
-  //     addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+  describe('Training records table', () => {
+    it('should add all training record status types to row 6', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
 
-  //     expect(mockSummaryTab.getCell('B6').value).to.equal('All training records');
-  //     expect(mockSummaryTab.getCell('C6').value).to.equal('Total');
-  //     expect(mockSummaryTab.getCell('D6').value).to.equal('Mandatory');
-  //     expect(mockSummaryTab.getCell('E6').value).to.equal('Non-mandatory');
-  //   });
-  // });
+      expect(mockSummaryTab.getCell('C6').value).to.equal('Up to date');
+      expect(mockSummaryTab.getCell('F6').value).to.equal('Expiring soon');
+      expect(mockSummaryTab.getCell('I6').value).to.equal('Expired');
+      expect(mockSummaryTab.getCell('L6').value).to.equal('Missing');
+    });
+  });
 });
