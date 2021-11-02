@@ -146,24 +146,23 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       this.mandatoryTraining = this.allTrainings.mandatory;
       return;
     }
+
     const filterValue = dropdownValue === '1_expired' ? 3 : 1;
-
     this.filterTraining = this.allTrainings;
-
-    const nonMandatory = this.filterNonMandaroryByStatus(filterValue);
-    const mandatory = this.filterMandatoryByStatus(filterValue);
+    const mandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.mandatory);
+    const nonMandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.nonMandatory);
 
     this.filterTraining = { mandatory, nonMandatory };
     this.nonMandatoryTraining = nonMandatory;
     this.mandatoryTraining = mandatory;
   }
 
-  private filterNonMandaroryByStatus(filterValue) {
-    const nonMandatory = [];
-    this.filterTraining.nonMandatory.filter((training) => {
-      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, nonMandatory);
+  private filterNonMandatoryAndMandatoryByStatus(filterValue, trainings) {
+    const filteredTrainings = [];
+    trainings.filter((training) => {
+      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, filteredTrainings);
     });
-    return nonMandatory;
+    return filteredTrainings;
   }
 
   private pushMandatoryAndNonMandatoryInArray(training, filterValue, arrayTraining) {
@@ -175,14 +174,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         trainingRecords: filterdStatus,
       });
     }
-  }
-
-  private filterMandatoryByStatus(filterValue) {
-    const mandatory = [];
-    this.filterTraining.mandatory.filter((training) => {
-      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, mandatory);
-    });
-    return mandatory;
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {

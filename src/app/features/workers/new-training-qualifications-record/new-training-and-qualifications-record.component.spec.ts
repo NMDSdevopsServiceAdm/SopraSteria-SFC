@@ -530,6 +530,21 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
             },
           ],
         },
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('11/21/2021'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              trainingStatus: 1,
+              uid: 'someManagementuid',
+            },
+          ],
+        },
       ];
 
       const { component, fixture } = await setup(false, false, mandatoryTraining);
@@ -562,6 +577,21 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
               title: 'Management training',
               trainingCategory: { id: 1, category: 'Management' },
               trainingStatus: 1,
+              uid: 'someManagementuid',
+            },
+          ],
+        },
+        {
+          category: 'Management',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: new Date('10/10/2021'),
+              title: 'Management training',
+              trainingCategory: { id: 1, category: 'Management' },
+              trainingStatus: 3,
               uid: 'someManagementuid',
             },
           ],
