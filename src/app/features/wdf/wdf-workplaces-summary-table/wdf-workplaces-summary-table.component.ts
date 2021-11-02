@@ -56,7 +56,7 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
     );
   }
 
-  private orderWorkplaces(order: string): Array<any> {
+  private orderWorkplaces(order: boolean | 'asc' | 'desc'): Array<any> {
     return orderBy(
       this.workplaces,
       [
