@@ -1,7 +1,11 @@
-<div class="asc-summary-box" *ngIf="totalMissingMandatoryTraining || totalExpiredTraining || totalExpiringTraining">
+<div
+  class="asc-summary-box {{ summaryColumns === 3 ? 'asc-full-width' : 'asc-partial-width' }}"
+  *ngIf="summaryColumns !== 0"
+  data-testid="summary-box"
+>
   <div class="asc-container">
     <div
-      class="asc-container--column asc-missing-column"
+      class="asc-container--column {{ summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width' }}"
       *ngIf="totalMissingMandatoryTraining"
       data-testid="missing-column"
     >
@@ -24,7 +28,11 @@
       </div>
     </div>
     <hr *ngIf="totalExpiredTraining && totalMissingMandatoryTraining" />
-    <div class="asc-container--column asc-expired-column" *ngIf="totalExpiredTraining" data-testid="expired-column">
+    <div
+      class="asc-container--column {{ summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width' }}"
+      *ngIf="totalExpiredTraining"
+      data-testid="expired-column"
+    >
       <div class="asc-title" *ngIf="!totalMissingMandatoryTraining">Summary</div>
       <div class="asc-content">
         <div class="asc-content--image">
@@ -44,7 +52,11 @@
       </div>
     </div>
     <hr *ngIf="totalExpiringTraining && (totalExpiredTraining || totalMissingMandatoryTraining)" />
-    <div class="asc-container--column asc-expiring-column" *ngIf="totalExpiringTraining" data-testid="expiring-column">
+    <div
+      class="asc-container--column {{ summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width' }}"
+      *ngIf="totalExpiringTraining"
+      data-testid="expiring-column"
+    >
       <div class="asc-title" *ngIf="!totalMissingMandatoryTraining && !totalExpiredTraining">Summary</div>
       <div class="asc-content">
         <div class="asc-content--image">

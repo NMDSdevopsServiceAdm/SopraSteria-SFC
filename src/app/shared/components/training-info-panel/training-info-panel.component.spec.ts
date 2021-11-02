@@ -117,4 +117,28 @@ describe('TrainingInfoPanelComponent', () => {
     expect(queryByTestId('missing-column')).toBeFalsy();
     expect(queryByTestId('expired-column')).toBeFalsy();
   });
+
+  it('should render full width conditional class if there each training parameter is not 0', async () => {
+    const { getByTestId } = await setup(1, 1, 1);
+
+    expect(getByTestId('summary-box').getAttribute('class')).toContain('asc-full-width');
+    expect(getByTestId('missing-column').getAttribute('class')).toContain('asc-columns-full-width');
+    expect(getByTestId('expired-column').getAttribute('class')).toContain('asc-columns-full-width');
+    expect(getByTestId('expiring-column').getAttribute('class')).toContain('asc-columns-full-width');
+  });
+
+  it('should render partial width conditional class if one training parameter is 0', async () => {
+    const { getByTestId } = await setup(1, 1, 0);
+
+    expect(getByTestId('summary-box').getAttribute('class')).toContain('asc-partial-width');
+    expect(getByTestId('missing-column').getAttribute('class')).toContain('asc-columns-partial-width');
+    expect(getByTestId('expired-column').getAttribute('class')).toContain('asc-columns-partial-width');
+  });
+
+  it('should render partial width conditional class if two training parameters are 0', async () => {
+    const { getByTestId } = await setup(1, 0, 0);
+
+    expect(getByTestId('summary-box').getAttribute('class')).toContain('asc-partial-width');
+    expect(getByTestId('missing-column').getAttribute('class')).toContain('asc-columns-partial-width');
+  });
 });
