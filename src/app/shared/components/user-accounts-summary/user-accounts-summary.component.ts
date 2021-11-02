@@ -4,7 +4,7 @@ import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({

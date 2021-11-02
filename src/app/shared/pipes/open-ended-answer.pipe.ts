@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { isNull } from 'lodash';
+import isNull from 'lodash/isNull';
 
 /**
  * This pipe transforms an unknown state of an 'open-ended' question

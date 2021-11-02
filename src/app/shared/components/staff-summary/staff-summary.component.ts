@@ -2,8 +2,7 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { orderBy } from 'lodash';
-import * as moment from 'moment';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-staff-summary',

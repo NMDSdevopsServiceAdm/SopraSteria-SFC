@@ -13,7 +13,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 
@@ -71,7 +71,8 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
         [(worker: Worker) => worker.localIdentifier !== null, (worker: Worker) => worker.nameOrId.toLowerCase()],
         ['asc'],
       );
-      this.establishmentsWithMissingReferences = this.activatedRoute.snapshot.data.workplaceReferences.establishmentList;
+      this.establishmentsWithMissingReferences =
+        this.activatedRoute.snapshot.data.workplaceReferences.establishmentList;
       this.getWorkplaceName();
       this.setupForm();
       this.setWorkerServerErrors();
