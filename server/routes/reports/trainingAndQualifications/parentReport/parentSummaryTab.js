@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 const { convertWorkerTrainingBreakdowns, getTrainingTotals } = require('../../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
@@ -11,8 +13,29 @@ const {
 const models = require('../../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
+  const parentAndSubsidiaries = await models.establishment.searchEstablishments({
+    [Op.or]: [
+      {
+        id: establishmentId,
+      },
+      {
+        parentId: establishmentId,
+        dataOwner: 'Parent',
+      },
+      {
+        parentId: establishmentId,
+        dataOwner: 'Workplace',
+        dataPermissions: 'Workplace and Staff'
+      },
+    ],
+  });
+
+  const object = parentAndSubsidiaries.map((workplace) => {
+    return workplace.id;
+  });
+
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
-    [establishmentId],
+    object,
     true,
   );
 
