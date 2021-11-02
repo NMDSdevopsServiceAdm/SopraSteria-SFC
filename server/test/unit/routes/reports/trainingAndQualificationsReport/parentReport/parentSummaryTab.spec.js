@@ -9,7 +9,14 @@ const { mockWorkerTrainingBreakdowns } = require('../../../../mockdata/trainingA
 describe('addContentToSummaryTab', () => {
   let mockSummaryTab;
 
-  const mockTrainingRecordTotals = getTrainingTotals(mockWorkerTrainingBreakdowns);
+  const mockEstablishmentTrainingTotals = [
+    {
+      establishmentId: 2320,
+      totals: {
+        ...getTrainingTotals(mockWorkerTrainingBreakdowns)
+      }
+    }
+  ]
 
   beforeEach(() => {
     mockSummaryTab = new excelJS.Workbook().addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
@@ -20,14 +27,14 @@ describe('addContentToSummaryTab', () => {
   });
 
   it('should add tab title to cell B2', async () => {
-    addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+    addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
 
     expect(mockSummaryTab.getCell('B2').value).to.equal('Training (summary)');
   });
 
   describe('Training records table', () => {
     it('should add all training record status types to row 6', async () => {
-      addContentToSummaryTab(mockSummaryTab, mockWorkerTrainingBreakdowns, mockTrainingRecordTotals);
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
 
       expect(mockSummaryTab.getCell('C6').value).to.equal('Up to date');
       expect(mockSummaryTab.getCell('F6').value).to.equal('Expiring soon');

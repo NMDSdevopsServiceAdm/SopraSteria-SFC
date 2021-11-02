@@ -15,32 +15,22 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     [establishmentId],
     true,
   );
-  const establishmentTrainingBreakdowns = [];
+
   const establishmentRecordTotals = [];
-
   rawEstablishmentTrainingBreakdowns.forEach((establishment) => {
-    establishmentTrainingBreakdowns.push({
-      establishmentId: establishment.id,
-      workers: convertWorkerTrainingBreakdowns(establishment.workers)
-    });
-  });
+    const trainingBreakdowns = convertWorkerTrainingBreakdowns(establishment.workers);
 
-  establishmentTrainingBreakdowns.forEach((establishmentTrainingBreakdown) => {
     establishmentRecordTotals.push({
-      establishmentId: establishmentTrainingBreakdown.establishmentId,
-      trainingTotals: getTrainingTotals(establishmentTrainingBreakdown.workers),
+      establishmentId: establishment.id,
+      totals: getTrainingTotals(trainingBreakdowns),
     });
   });
-
-  console.log(establishmentTrainingBreakdowns)
-  console.log(establishmentRecordTotals)
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
-
-  addContentToSummaryTab(summaryTab, establishmentTrainingBreakdowns, establishmentRecordTotals);
+  addContentToSummaryTab(summaryTab, establishmentRecordTotals);
 };
 
-const addContentToSummaryTab = (summaryTab, establishmentTrainingBreakdowns, establishmentRecordTotals) => {
+const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'L4');
   alignColumnToLeft(summaryTab, 2);
@@ -65,9 +55,17 @@ const addContentToSummaryTab = (summaryTab, establishmentTrainingBreakdowns, est
   setTableHeadingsStyle(summaryTab, 6, backgroundColours.red, textColours.red, ['L'])
   setTableHeadingsStyle(summaryTab, 7, backgroundColours.red, textColours.red, ['L']);
 
-  summaryTab.addTable({
+  const summaryTable = createSummaryTable(summaryTab);
+  addRowsToTable(establishmentRecordTotals, summaryTable)
+
+  addBordersToAllFilledCells(summaryTab, 5);
+  setColumnWidths(summaryTab);
+};
+
+const createSummaryTable = (summaryTab) => {
+  return summaryTab.addTable({
     name: 'summaryTable',
-    ref: 'B' + 7,
+    ref: 'B7',
     columns: [
       { name: 'Workplace', filterButton: false },
       { name: 'Total', filterButton: false },
@@ -85,9 +83,26 @@ const addContentToSummaryTab = (summaryTab, establishmentTrainingBreakdowns, est
       ['Total', 1, 2, 3, 1, 2, 3, 1, 2, 3, 4],
     ],
   });
+}
 
-  addBordersToAllFilledCells(summaryTab, 5);
-  setColumnWidths(summaryTab);
+const addRowsToTable = (establishments, summaryTable) => {
+  establishments.forEach((establishment) => {
+    summaryTable.addRow([
+      establishment.establishmentId,
+      establishment.totals.upToDate.total,
+      establishment.totals.upToDate.mandatory,
+      establishment.totals.upToDate.nonMandatory,
+      establishment.totals.expiringSoon.total,
+      establishment.totals.expiringSoon.mandatory,
+      establishment.totals.expiringSoon.nonMandatory,
+      establishment.totals.expired.total,
+      establishment.totals.expired.mandatory,
+      establishment.totals.expired.nonMandatory,
+      establishment.totals.missing,
+    ]);
+  })
+
+  summaryTable.commit();
 };
 
 const setColumnWidths = (tab) => {
