@@ -6,7 +6,7 @@ const { addContentToSummaryTab } = require('../../../../../../routes/reports/tra
 const { getTrainingTotals } = require('../../../../../../utils/trainingAndQualificationsUtils');
 const { mockWorkerTrainingBreakdowns, secondMockWorkerTrainingBreakdowns } = require('../../../../mockdata/trainingAndQualifications');
 
-describe.only('addContentToSummaryTab', () => {
+describe('addContentToSummaryTab', () => {
   let mockSummaryTab;
 
   const mockEstablishmentTrainingTotals = [
@@ -38,44 +38,112 @@ describe.only('addContentToSummaryTab', () => {
     expect(mockSummaryTab.getCell('B2').value).to.equal('Training (summary)');
   });
 
-  describe('Training records table', () => {
-    it('should add all training record status types to row 6', async () => {
+  it('should add all training record status types to row 6', async () => {
+    addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+    expect(mockSummaryTab.getCell('C6').value).to.equal('Up to date');
+    expect(mockSummaryTab.getCell('F6').value).to.equal('Expiring soon');
+    expect(mockSummaryTab.getCell('I6').value).to.equal('Expired');
+    expect(mockSummaryTab.getCell('L6').value).to.equal('Missing');
+  });
+
+  describe('Up to date training', () => {
+    it('should add up to date training totals for the first workplace to row 9', async () => {
       addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
 
-      expect(mockSummaryTab.getCell('C6').value).to.equal('Up to date');
-      expect(mockSummaryTab.getCell('F6').value).to.equal('Expiring soon');
-      expect(mockSummaryTab.getCell('I6').value).to.equal('Expired');
-      expect(mockSummaryTab.getCell('L6').value).to.equal('Missing');
+      expect(mockSummaryTab.getCell('C7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('C9').value).to.equal(15);
+
+      expect(mockSummaryTab.getCell('D7').value).to.equal('Mandatory')
+      expect(mockSummaryTab.getCell('D9').value).to.equal(5);
+
+      expect(mockSummaryTab.getCell('E7').value).to.equal('Non-mandatory')
+      expect(mockSummaryTab.getCell('E9').value).to.equal(10);
     });
 
-    it('should add training totals for the first workplace to row 9', async () => {
+    it('should add up to date training totals for the second workplace to row 10', async () => {
       addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
 
-      expect(mockSummaryTab.getCell('C9').value).to.equal(15); // up to date - total
-      expect(mockSummaryTab.getCell('D9').value).to.equal(5); // up to date - mandatory
-      expect(mockSummaryTab.getCell('E9').value).to.equal(10); // up to date - non-mandatory
-      expect(mockSummaryTab.getCell('F9').value).to.equal(8); // expiring soon - total
-      expect(mockSummaryTab.getCell('G9').value).to.equal(2); // expiring soon - mandatory
-      expect(mockSummaryTab.getCell('H9').value).to.equal(6); // expiring soon - non-mandatory
-      expect(mockSummaryTab.getCell('I9').value).to.equal(12); // expired - total
-      expect(mockSummaryTab.getCell('J9').value).to.equal(4); // expired - mandatory
-      expect(mockSummaryTab.getCell('K9').value).to.equal(8); // expired - non-mandatory
-      expect(mockSummaryTab.getCell('L9').value).to.equal(5); // missing
+      expect(mockSummaryTab.getCell('C7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('C10').value).to.equal(13);
+
+      expect(mockSummaryTab.getCell('D7').value).to.equal('Mandatory')
+      expect(mockSummaryTab.getCell('D10').value).to.equal(5);
+
+      expect(mockSummaryTab.getCell('E7').value).to.equal('Non-mandatory')
+      expect(mockSummaryTab.getCell('E10').value).to.equal(8);
+    });
+  });
+
+  describe('Expiring soon training', () => {
+    it('should add expiring soon training totals for the first workplace to row 9', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+      expect(mockSummaryTab.getCell('F7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('F9').value).to.equal(8);
+
+      expect(mockSummaryTab.getCell('G7').value).to.equal('Mandatory')
+      expect(mockSummaryTab.getCell('G9').value).to.equal(2);
+
+      expect(mockSummaryTab.getCell('H7').value).to.equal('Non-mandatory')
+      expect(mockSummaryTab.getCell('H9').value).to.equal(6);
     });
 
-    it('should add training totals for the first workplace to row 10', async () => {
+    it('should add expiring soon training totals for the second workplace to row 10', async () => {
       addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
 
-      expect(mockSummaryTab.getCell('C10').value).to.equal(13); // up to date - total
-      expect(mockSummaryTab.getCell('D10').value).to.equal(5); // up to date - mandatory
-      expect(mockSummaryTab.getCell('E10').value).to.equal(8); // up to date - non-mandatory
-      expect(mockSummaryTab.getCell('F10').value).to.equal(6); // expiring soon - total
-      expect(mockSummaryTab.getCell('G10').value).to.equal(2); // expiring soon - mandatory
-      expect(mockSummaryTab.getCell('H10').value).to.equal(4); // expiring soon - non-mandatory
-      expect(mockSummaryTab.getCell('I10').value).to.equal(4); // expired - total
-      expect(mockSummaryTab.getCell('J10').value).to.equal(0); // expired - mandatory
-      expect(mockSummaryTab.getCell('K10').value).to.equal(4); // expired - non-mandatory
-      expect(mockSummaryTab.getCell('L10').value).to.equal(2); // missing
+      expect(mockSummaryTab.getCell('F7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('F10').value).to.equal(6);
+
+      expect(mockSummaryTab.getCell('G7').value).to.equal('Mandatory')
+      expect(mockSummaryTab.getCell('G10').value).to.equal(2);
+
+      expect(mockSummaryTab.getCell('H7').value).to.equal('Non-mandatory')
+      expect(mockSummaryTab.getCell('H10').value).to.equal(4);
+    });
+  });
+
+  describe('Expired training', () => {
+    it('should add expired training totals for the first workplace to row 9', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+      expect(mockSummaryTab.getCell('I7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('I9').value).to.equal(12);
+
+      expect(mockSummaryTab.getCell('J7').value).to.equal('Mandatory')
+      expect(mockSummaryTab.getCell('J9').value).to.equal(4);
+
+      expect(mockSummaryTab.getCell('K7').value).to.equal('Non-mandatory')
+      expect(mockSummaryTab.getCell('K9').value).to.equal(8);
+    });
+
+    it('should add expired training totals for the second workplace to row 10', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+      expect(mockSummaryTab.getCell('I7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('I10').value).to.equal(4);
+
+      expect(mockSummaryTab.getCell('J7').value).to.equal('Mandatory')
+      expect(mockSummaryTab.getCell('J10').value).to.equal(0);
+
+      expect(mockSummaryTab.getCell('K7').value).to.equal('Non-mandatory')
+      expect(mockSummaryTab.getCell('K10').value).to.equal(4);
+    });
+  });
+
+  describe('Missing training', () => {
+    it('should add missing training totals for the first workplace to row 9', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+      expect(mockSummaryTab.getCell('L7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('L9').value).to.equal(5);
+    });
+
+    it('should add missing training totals for the second workplace to row 10', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+      expect(mockSummaryTab.getCell('L7').value).to.equal('Total')
+      expect(mockSummaryTab.getCell('L10').value).to.equal(2);
     });
   });
 });
