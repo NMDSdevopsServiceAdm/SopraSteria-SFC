@@ -135,42 +135,20 @@ const setColumnWidths = (tab) => {
 };
 
 const getTotalsForAllWorkplaces = (establishments) => {
-  let upToDateTotal = 0;
-  let upToDateTotalMandatory = 0;
-  let upToDateTotalNonMandatory = 0;
-  let expiringSoonTotal = 0;
-  let expiringSoonTotalMandatory = 0;
-  let expiringSoonTotalNonMandatory = 0;
-  let expiredTotal = 0;
-  let expiredTotalMandatory = 0;
-  let expiredTotalNonMandatory = 0;
-  let totalMissing = 0;
-
-  establishments.forEach((establishment) => {
-    upToDateTotal += establishment.totals.upToDate.total;
-    upToDateTotalMandatory += establishment.totals.upToDate.mandatory;
-    upToDateTotalNonMandatory += establishment.totals.upToDate.nonMandatory;
-    expiringSoonTotal += establishment.totals.expiringSoon.total;
-    expiringSoonTotalMandatory += establishment.totals.expiringSoon.mandatory;
-    expiringSoonTotalNonMandatory += establishment.totals.expiringSoon.nonMandatory;
-    expiredTotal += establishment.totals.expired.total;
-    expiredTotalMandatory += establishment.totals.expired.mandatory;
-    expiredTotalNonMandatory += establishment.totals.expired.nonMandatory;
-    totalMissing += establishment.totals.missing;
+  return establishments.reduce((a, b) => {
+    return {
+      upToDateTotal: a.totals.upToDate.total+b.totals.upToDate.total,
+      upToDateTotalMandatory: a.totals.upToDate.mandatory+b.totals.upToDate.mandatory,
+      upToDateTotalNonMandatory: a.totals.upToDate.nonMandatory + b.totals.upToDate.nonMandatory,
+      expiringSoonTotal: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
+      expiringSoonTotalMandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
+      expiringSoonTotalNonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory,
+      expiredTotal: a.totals.expired.total + b.totals.expired.total,
+      expiredTotalMandatory: a.totals.expired.mandatory + b.totals.expired.mandatory,
+      expiredTotalNonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
+      totalMissing: a.totals.missing + b.totals.missing,
+    }
   });
-
-  return {
-    upToDateTotal,
-    upToDateTotalMandatory,
-    upToDateTotalNonMandatory,
-    expiringSoonTotal,
-    expiringSoonTotalMandatory,
-    expiringSoonTotalNonMandatory,
-    expiredTotal,
-    expiredTotalMandatory,
-    expiredTotalNonMandatory,
-    totalMissing,
-  }
 }
 
 addStylingToTotalsRow = (tab) => {
