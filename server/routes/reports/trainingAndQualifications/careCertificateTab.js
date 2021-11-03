@@ -13,8 +13,8 @@ const {
 const models = require('../../../models');
 
 const generateCareCertificateTab = async (workbook, establishmentId) => {
-  const rawWorkers = await models.worker.getWorkersWithCareCertificateStatus(establishmentId);
-  const workers = convertWorkersWithCareCertificateStatus(rawWorkers);
+  const rawWorkers = await models.establishment.getWorkersWithCareCertificateStatus([establishmentId]);
+  const workers = convertWorkersWithCareCertificateStatus(rawWorkers[0].workers);
 
   const careCertificateTab = workbook.addWorksheet('Care Certificate', { views: [{ showGridLines: false }] });
   addContentToCareCertificateTab(careCertificateTab, workers);
