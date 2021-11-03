@@ -1,4 +1,4 @@
-const { convertWorkerTrainingBreakdowns, getTrainingTotals } = require('../../../../utils/trainingAndQualificationsUtils');
+const { convertWorkerTrainingBreakdowns, getTrainingTotals, getTotalsForAllWorkplaces } = require('../../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
   addLine,
@@ -7,6 +7,7 @@ const {
   setTableHeadingsStyle,
   alignColumnToLeft,
   addBordersToAllFilledCells,
+  makeRowBold,
 } = require('../../../../utils/excelUtils');
 const models = require('../../../../models');
 
@@ -55,7 +56,7 @@ const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   addRowsToTable(establishmentRecordTotals, summaryTable)
 
   alignColumnToLeft(summaryTab, 2);
-  addStylingToTotalsRow(summaryTab);
+  makeRowBold(summaryTab, 8);
   addBordersToAllFilledCells(summaryTab, 5);
   setColumnWidths(summaryTab);
 };
@@ -130,36 +131,6 @@ const setColumnWidths = (tab) => {
     tab.getColumn(i).width = 15;
   }
 };
-
-const getTotalsForAllWorkplaces = (establishments) => {
-  return establishments.reduce((a, b) => {
-    return {
-      totals: {
-        upToDate: {
-          total: a.totals.upToDate.total + b.totals.upToDate.total,
-          mandatory: a.totals.upToDate.mandatory + b.totals.upToDate.mandatory,
-          nonMandatory: a.totals.upToDate.nonMandatory + b.totals.upToDate.nonMandatory,
-        },
-        expiringSoon: {
-          total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
-          mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
-          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
-        },
-        expired: {
-          total: a.totals.expired.total + b.totals.expired.total,
-          mandatory: a.totals.expired.mandatory + b.totals.expired.mandatory,
-          nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
-        },
-        missing: a.totals.missing + b.totals.missing,
-      }
-    }
-  });
-}
-
-addStylingToTotalsRow = (tab) => {
-  tab.getRow(8).font = { bold: true };
-}
-
 
 module.exports.generateSummaryTab = generateSummaryTab;
 module.exports.addContentToSummaryTab = addContentToSummaryTab;
