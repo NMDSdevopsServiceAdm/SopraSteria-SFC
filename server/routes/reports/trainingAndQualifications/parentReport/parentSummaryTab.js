@@ -10,6 +10,17 @@ const {
 } = require('../../../../utils/excelUtils');
 const models = require('../../../../models');
 
+let upToDateTotal = 0;
+let upToDateTotalMandatory = 0;
+let upToDateTotalNonMandatory = 0;
+let expiringSoonTotal = 0;
+let expiringSoonTotalMandatory = 0;
+let expiringSoonTotalNonMandatory = 0;
+let expiredTotal = 0;
+let expiredTotalMandatory = 0;
+let expiredTotalNonMandatory = 0;
+let totalMissing = 0;
+
 const generateSummaryTab = async (workbook, establishmentId) => {
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
     establishmentId,
@@ -57,8 +68,10 @@ const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   setTableHeadingsStyle(summaryTab, 7, backgroundColours.red, textColours.red, ['L']);
 
   const summaryTable = createSummaryTable(summaryTab);
+  addTotalsToSummaryTable(establishmentRecordTotals, summaryTable)
   addRowsToTable(establishmentRecordTotals, summaryTable)
 
+  addStylingToTotalsRow(summaryTab);
   addBordersToAllFilledCells(summaryTab, 5);
   setColumnWidths(summaryTab);
 };
@@ -80,10 +93,27 @@ const createSummaryTable = (summaryTab) => {
       { name: 'Non-mandatory', filterButton: false },
       { name: 'Total', filterButton: false },
     ],
-    rows: [
-      ['Total', 1, 2, 3, 1, 2, 3, 1, 2, 3, 4],
-    ],
+    rows: [],
   });
+}
+
+const addTotalsToSummaryTable = (establishments, summaryTable) => {
+  getTotalsForAllWorkplaces(establishments);
+  summaryTable.addRow([
+    'Total',
+    upToDateTotal,
+    upToDateTotalMandatory,
+    upToDateTotalNonMandatory,
+    expiringSoonTotal,
+    expiringSoonTotalMandatory,
+    expiringSoonTotalNonMandatory,
+    expiredTotal,
+    expiredTotalMandatory,
+    expiredTotalNonMandatory,
+    totalMissing,
+  ]);
+
+  summaryTable.commit();
 }
 
 const addRowsToTable = (establishments, summaryTable) => {
@@ -110,10 +140,29 @@ const setColumnWidths = (tab) => {
   const firstColumn = tab.getColumn(2);
 
   firstColumn.width = 30;
-  for (let i = 2; i < 13; i++) {
+  for (let i = 3; i < 13; i++) {
     tab.getColumn(i).width = 15;
   }
 };
+
+const getTotalsForAllWorkplaces = (establishments) => {
+  establishments.forEach((establishment) => {
+    upToDateTotal += establishment.totals.upToDate.total;
+    upToDateTotalMandatory += establishment.totals.upToDate.mandatory;
+    upToDateTotalNonMandatory += establishment.totals.upToDate.nonMandatory;
+    expiringSoonTotal += establishment.totals.expiringSoon.total;
+    expiringSoonTotalMandatory += establishment.totals.expiringSoon.mandatory;
+    expiringSoonTotalNonMandatory += establishment.totals.expiringSoon.nonMandatory;
+    expiredTotal += establishment.totals.expired.total;
+    expiredTotalMandatory += establishment.totals.expired.mandatory;
+    expiredTotalNonMandatory += establishment.totals.expired.nonMandatory;
+    totalMissing += establishment.totals.missing;
+  });
+}
+
+addStylingToTotalsRow = (tab) => {
+  tab.getRow(8).font = { bold: true };
+}
 
 
 module.exports.generateSummaryTab = generateSummaryTab;

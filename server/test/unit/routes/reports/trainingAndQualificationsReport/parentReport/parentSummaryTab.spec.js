@@ -153,4 +153,28 @@ describe('addContentToSummaryTab', () => {
       expect(mockSummaryTab.getCell('L10').value).to.equal(2);
     });
   });
+
+  describe('addTotalsToSummaryTable()', () => {
+    it('should calculate the totals for all workplaces', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+      // Up to date training
+      expect(mockSummaryTab.getCell('C8').value).to.equal(28)
+      expect(mockSummaryTab.getCell('D8').value).to.equal(10)
+      expect(mockSummaryTab.getCell('E8').value).to.equal(18)
+
+      // Expiring soon training
+      expect(mockSummaryTab.getCell('F8').value).to.equal(14)
+      expect(mockSummaryTab.getCell('G8').value).to.equal(4)
+      expect(mockSummaryTab.getCell('H8').value).to.equal(10)
+
+      // Expired training
+      expect(mockSummaryTab.getCell('I8').value).to.equal(16)
+      expect(mockSummaryTab.getCell('J8').value).to.equal(4)
+      expect(mockSummaryTab.getCell('K8').value).to.equal(12)
+
+      // Missing training
+      expect(mockSummaryTab.getCell('L8').value).to.equal(7)
+    })
+  })
 });
