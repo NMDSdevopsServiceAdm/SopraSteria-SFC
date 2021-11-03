@@ -3,6 +3,7 @@ import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/mode
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import orderBy from 'lodash/orderBy';
+import moment from 'moment';
 
 @Component({
   selector: 'app-staff-summary',

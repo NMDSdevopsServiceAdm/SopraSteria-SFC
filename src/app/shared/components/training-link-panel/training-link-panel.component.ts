@@ -7,7 +7,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { ReportService } from '@core/services/report.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { saveAs } from 'file-saver';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -10,6 +10,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
 import sortBy from 'lodash/sortBy';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 

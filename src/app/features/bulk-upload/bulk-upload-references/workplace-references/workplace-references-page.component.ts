@@ -63,6 +63,8 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
               const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
               return {
                 ...workplace,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 ...{ localIdentifier: updated.value },
               };
             }) as Workplace[];

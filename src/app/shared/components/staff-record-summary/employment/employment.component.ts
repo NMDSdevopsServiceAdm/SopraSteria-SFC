@@ -6,6 +6,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import isNumber from 'lodash/isNumber';
+import moment from 'moment';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 

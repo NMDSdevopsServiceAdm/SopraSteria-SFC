@@ -6,7 +6,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render, RenderResult, within } from '@testing-library/angular';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
 
