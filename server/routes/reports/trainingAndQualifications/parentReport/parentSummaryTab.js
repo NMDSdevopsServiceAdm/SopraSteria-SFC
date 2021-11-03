@@ -31,35 +31,30 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   addContentToSummaryTab(summaryTab, establishmentRecordTotals);
 };
 
+const setHeadingWithStyling = (tab, cols, colour, text) => {
+  addHeading(tab, cols[0] + '6', cols[cols.length - 1] + '6', text);
+  setTableHeadingsStyle(tab, 6, backgroundColours[colour], textColours[colour], cols);
+  setTableHeadingsStyle(tab, 7, backgroundColours[colour], textColours[colour], cols);
+}
+
 const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'L4');
-  alignColumnToLeft(summaryTab, 2);
 
   summaryTab.mergeCells('B6:B7')
   setTableHeadingsStyle(summaryTab, 6, backgroundColours.blue, textColours.white, ['B'])
   setTableHeadingsStyle(summaryTab, 7, backgroundColours.blue, textColours.white, ['B'])
 
-  addHeading(summaryTab, 'C6', 'E6', 'Up to date');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.green, textColours.green, ['C', 'D', 'E']);
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.green, textColours.green, ['C', 'D', 'E']);
-
-  addHeading(summaryTab, 'F6', 'H6', 'Expiring soon');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.yellow, textColours.yellow, ['F', 'G', 'H']);
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.yellow, textColours.yellow, ['F', 'G', 'H']);
-
-  addHeading(summaryTab, 'I6', 'K6', 'Expired');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.red, textColours.red, ['I', 'J', 'K']);
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.red, textColours.red, ['I', 'J', 'K']);
-
-  addHeading(summaryTab, 'L6', 'L6', 'Missing');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.red, textColours.red, ['L'])
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.red, textColours.red, ['L']);
+  setHeadingWithStyling(summaryTab, ['C', 'D', 'E'], 'green', 'Up to date');
+  setHeadingWithStyling(summaryTab, ['F', 'G', 'H'], 'yellow', 'Expiring soon');
+  setHeadingWithStyling(summaryTab, ['I', 'J', 'K'], 'red', 'Expired');
+  setHeadingWithStyling(summaryTab, ['L'], 'red', 'Missing');
 
   const summaryTable = createSummaryTable(summaryTab);
   addTotalsToSummaryTable(establishmentRecordTotals, summaryTable)
   addRowsToTable(establishmentRecordTotals, summaryTable)
 
+  alignColumnToLeft(summaryTab, 2);
   addStylingToTotalsRow(summaryTab);
   addBordersToAllFilledCells(summaryTab, 5);
   setColumnWidths(summaryTab);
@@ -126,10 +121,12 @@ const addRowsToTable = (establishments, summaryTable) => {
 };
 
 const setColumnWidths = (tab) => {
-  const firstColumn = tab.getColumn(2);
+  const startingColumn = 2;
+  const firstColumn = tab.getColumn(startingColumn);
+  const totalColumns = tab.getRow(8).actualCellCount + startingColumn;
 
   firstColumn.width = 30;
-  for (let i = 3; i < 13; i++) {
+  for (var i = startingColumn + 1; i < totalColumns; i++) {
     tab.getColumn(i).width = 15;
   }
 };
