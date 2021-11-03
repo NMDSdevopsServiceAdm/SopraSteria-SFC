@@ -115,13 +115,35 @@ describe('TrainingLinkPanelComponent', () => {
       );
       const saveFileSpy = spyOn(componentInstance, 'saveFile').and.returnValue(null);
 
-      const downloadTrainingButton = component.getByText('Download parent training report');
+      componentInstance.isParent = true;
+      fixture.detectChanges();
 
+      const downloadTrainingButton = component.getByText('Download parent training report');
       downloadTrainingButton.click();
       fixture.detectChanges();
 
       expect(reportServiceSpy).toHaveBeenCalledWith(componentInstance.establishmentUid);
       expect(saveFileSpy).toHaveBeenCalled();
+    });
+
+    it('should only be visible for parents', async () => {
+      const { component, componentInstance, fixture } = await setup();
+
+      componentInstance.isParent = true;
+      fixture.detectChanges();
+
+      const downloadTrainingButton = component.getByText('Download parent training report');
+      expect(downloadTrainingButton).toBeTruthy();
+    });
+
+    it('should not be visible for standalone workplaces', async () => {
+      const { component, componentInstance, fixture } = await setup();
+
+      componentInstance.isParent = false;
+      fixture.detectChanges();
+
+      const downloadTrainingButton = component.queryByText('Download parent training report');
+      expect(downloadTrainingButton).toBeFalsy();
     });
   });
 });
