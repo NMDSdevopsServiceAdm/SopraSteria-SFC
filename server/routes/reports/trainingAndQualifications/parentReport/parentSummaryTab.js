@@ -13,29 +13,9 @@ const {
 const models = require('../../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
-  const parentAndSubsidiaries = await models.establishment.searchEstablishments({
-    [Op.or]: [
-      {
-        id: establishmentId,
-      },
-      {
-        parentId: establishmentId,
-        dataOwner: 'Parent',
-      },
-      {
-        parentId: establishmentId,
-        dataOwner: 'Workplace',
-        dataPermissions: 'Workplace and Staff'
-      },
-    ],
-  });
-
-  const object = parentAndSubsidiaries.map((workplace) => {
-    return workplace.id;
-  });
-
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
-    object,
+    establishmentId,
+    true,
     true,
   );
 
@@ -44,7 +24,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     const trainingBreakdowns = convertWorkerTrainingBreakdowns(establishment.workers);
 
     establishmentRecordTotals.push({
-      establishmentId: establishment.id,
+      establishmentName: establishment.get('NameValue'),
       totals: getTrainingTotals(trainingBreakdowns),
     });
   });
@@ -111,7 +91,7 @@ const createSummaryTable = (summaryTab) => {
 const addRowsToTable = (establishments, summaryTable) => {
   establishments.forEach((establishment) => {
     summaryTable.addRow([
-      establishment.establishmentId,
+      establishment.establishmentName,
       establishment.totals.upToDate.total,
       establishment.totals.upToDate.mandatory,
       establishment.totals.upToDate.nonMandatory,
@@ -131,7 +111,7 @@ const addRowsToTable = (establishments, summaryTable) => {
 const setColumnWidths = (tab) => {
   const firstColumn = tab.getColumn(2);
 
-  firstColumn.width = 24;
+  firstColumn.width = 30;
   for (let i = 2; i < 13; i++) {
     tab.getColumn(i).width = 15;
   }
