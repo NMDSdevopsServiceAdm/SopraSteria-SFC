@@ -82,19 +82,19 @@ const createSummaryTable = (summaryTab) => {
 }
 
 const addTotalsToSummaryTable = (establishments, summaryTable) => {
-  const totals = getTotalsForAllWorkplaces(establishments);
+  const totals = getTotalsForAllWorkplaces(establishments).totals;
   summaryTable.addRow([
     'Total',
-    totals.upToDateTotal,
-    totals.upToDateTotalMandatory,
-    totals.upToDateTotalNonMandatory,
-    totals.expiringSoonTotal,
-    totals.expiringSoonTotalMandatory,
-    totals.expiringSoonTotalNonMandatory,
-    totals.expiredTotal,
-    totals.expiredTotalMandatory,
-    totals.expiredTotalNonMandatory,
-    totals.totalMissing,
+    totals.upToDate.total,
+    totals.upToDate.mandatory,
+    totals.upToDate.nonMandatory,
+    totals.expiringSoon.total,
+    totals.expiringSoon.mandatory,
+    totals.expiringSoon.nonMandatory,
+    totals.expired.total,
+    totals.expired.mandatory,
+    totals.expired.nonMandatory,
+    totals.missing,
   ]);
 
   summaryTable.commit();
@@ -134,16 +134,24 @@ const setColumnWidths = (tab) => {
 const getTotalsForAllWorkplaces = (establishments) => {
   return establishments.reduce((a, b) => {
     return {
-      upToDateTotal: a.totals.upToDate.total+b.totals.upToDate.total,
-      upToDateTotalMandatory: a.totals.upToDate.mandatory+b.totals.upToDate.mandatory,
-      upToDateTotalNonMandatory: a.totals.upToDate.nonMandatory + b.totals.upToDate.nonMandatory,
-      expiringSoonTotal: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
-      expiringSoonTotalMandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
-      expiringSoonTotalNonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory,
-      expiredTotal: a.totals.expired.total + b.totals.expired.total,
-      expiredTotalMandatory: a.totals.expired.mandatory + b.totals.expired.mandatory,
-      expiredTotalNonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
-      totalMissing: a.totals.missing + b.totals.missing,
+      totals: {
+        upToDate: {
+          total: a.totals.upToDate.total + b.totals.upToDate.total,
+          mandatory: a.totals.upToDate.mandatory + b.totals.upToDate.mandatory,
+          nonMandatory: a.totals.upToDate.nonMandatory + b.totals.upToDate.nonMandatory,
+        },
+        expiringSoon: {
+          total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
+          mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
+          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
+        },
+        expired: {
+          total: a.totals.expired.total + b.totals.expired.total,
+          mandatory: a.totals.expired.mandatory + b.totals.expired.mandatory,
+          nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
+        },
+        missing: a.totals.missing + b.totals.missing,
+      }
     }
   });
 }
