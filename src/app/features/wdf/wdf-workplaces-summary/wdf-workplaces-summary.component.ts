@@ -8,8 +8,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
+import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
-import moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -77,8 +77,8 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   }
 
   private setDates(report: WDFReport): void {
-    this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
-    this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
   }
 
   public downloadWdfParentReport(event: Event) {

@@ -6,7 +6,7 @@ import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -45,8 +45,8 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
             .get('year')
             .setValidators([
               Validators.required,
-              Validators.min(moment().subtract(100, 'years').year()),
-              Validators.max(moment().year()),
+              Validators.min(dayjs().subtract(100, 'years').year()),
+              Validators.max(dayjs().year()),
             ]);
         }
 

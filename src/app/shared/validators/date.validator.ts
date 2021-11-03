@@ -1,7 +1,14 @@
 import { FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { FormatUtil } from '@core/utils/format-util';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isBetween);
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
@@ -30,7 +37,7 @@ export abstract class DateValidator {
         return { dateValid: true };
       }
 
-      return moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT).isValid()
+      return dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT).isValid()
         ? null
         : { dateValid: true };
     };
@@ -44,7 +51,7 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
           if (before) {
@@ -63,10 +70,10 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
-          return date.isBefore(moment(), 'day') ? null : { beforeToday: true };
+          return date.isBefore(dayjs(), 'day') ? null : { beforeToday: true };
         }
       }
 
@@ -79,10 +86,10 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
-          return date.isSameOrBefore(moment(), 'day') ? null : { todayOrBefore: true };
+          return date.isSameOrBefore(dayjs(), 'day') ? null : { todayOrBefore: true };
         }
       }
 
@@ -95,10 +102,10 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
-          return date.isAfter(moment(), 'day') ? null : { afterToday: true };
+          return date.isAfter(dayjs(), 'day') ? null : { afterToday: true };
         }
       }
 
@@ -111,10 +118,10 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
-          return date.isSameOrAfter(moment(), 'day') ? null : { todayOrAfter: true };
+          return date.isSameOrAfter(dayjs(), 'day') ? null : { todayOrAfter: true };
         }
       }
 
@@ -122,12 +129,12 @@ export abstract class DateValidator {
     };
   }
 
-  static between(min: moment.Moment, max: moment.Moment): ValidatorFn {
+  static between(min: dayjs.Dayjs, max: dayjs.Dayjs): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
           return date.isBetween(min, max) ? null : { dateBetween: { min, max, actual: date } };
@@ -138,12 +145,12 @@ export abstract class DateValidator {
     };
   }
 
-  static min(min: moment.Moment): ValidatorFn {
+  static min(min: dayjs.Dayjs): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = moment(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
+        const date = dayjs(`${year.value}-${month.value}-${day.value}`, DATE_PARSE_FORMAT);
 
         if (date.isValid()) {
           return date.isAfter(min) ? null : { dateMin: { min, actual: date } };

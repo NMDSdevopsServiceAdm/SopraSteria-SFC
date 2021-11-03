@@ -7,7 +7,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 
@@ -91,9 +91,9 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
             this.trainingRecord = trainingRecord;
 
             const completed = this.trainingRecord.completed
-              ? moment(this.trainingRecord.completed, DATE_PARSE_FORMAT)
+              ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
               : null;
-            const expires = this.trainingRecord.expires ? moment(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
+            const expires = this.trainingRecord.expires ? dayjs(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
 
             this.form.patchValue({
               title: this.trainingRecord.title,

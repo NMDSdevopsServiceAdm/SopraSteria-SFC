@@ -2,8 +2,8 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
-import moment from 'moment';
 
 @Component({
   selector: 'app-staff-summary',
@@ -21,8 +21,8 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   constructor(private permissionsService: PermissionsService) {}
 
   public lastUpdated(timestamp: string): string {
-    const lastUpdated: moment.Moment = moment(timestamp);
-    const isToday: boolean = moment().isSame(lastUpdated, 'day');
+    const lastUpdated: dayjs.Dayjs = dayjs(timestamp);
+    const isToday: boolean = dayjs().isSame(lastUpdated, 'day');
     return isToday ? 'Today' : lastUpdated.format('D MMMM YYYY');
   }
 

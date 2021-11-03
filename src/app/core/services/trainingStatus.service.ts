@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root',
@@ -48,8 +48,8 @@ export class TrainingStatusService {
     if (missing) {
       return this.MISSING;
     } else if (expires) {
-      const expiringDate = moment(expires);
-      const currentDate = moment();
+      const expiringDate = dayjs(expires);
+      const currentDate = dayjs();
       const daysDifference = expiringDate.diff(currentDate, 'days');
       if (daysDifference < 0) {
         return this.EXPIRED;

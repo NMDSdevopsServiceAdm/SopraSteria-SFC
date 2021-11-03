@@ -9,7 +9,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -42,7 +42,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private featureFlagsService: FeatureFlagsService,
   ) {
-    this.yearValidators = [Validators.max(moment().year()), Validators.min(moment().subtract(100, 'years').year())];
+    this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
 
   async ngOnInit(): Promise<void> {
