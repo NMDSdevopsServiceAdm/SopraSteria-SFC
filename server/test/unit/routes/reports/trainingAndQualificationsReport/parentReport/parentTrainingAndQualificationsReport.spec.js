@@ -12,7 +12,10 @@ describe('generateParentTrainingAndQualificationsReport', () => {
     sinon.stub(models.establishment, 'workersAndTraining').returns(
       [
         {
+          id: 1234,
+          name: 'Test',
           workers: [],
+          get: () => {},
         }
       ]
     );

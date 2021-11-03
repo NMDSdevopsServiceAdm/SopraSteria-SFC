@@ -1,5 +1,3 @@
-const { Op } = require('sequelize');
-
 const { convertWorkerTrainingBreakdowns, getTrainingTotals } = require('../../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
