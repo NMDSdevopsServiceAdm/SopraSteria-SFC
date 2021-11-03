@@ -11,13 +11,13 @@ describe('addContentToSummaryTab', () => {
 
   const mockEstablishmentTrainingTotals = [
     {
-      establishmentId: 2320,
+      establishmentName: 'Test Name',
       totals: {
         ...getTrainingTotals(mockWorkerTrainingBreakdowns)
       }
     },
     {
-      establishmentId: 2321,
+      establishmentName: 'Care Home',
       totals: {
         ...getTrainingTotals(secondMockWorkerTrainingBreakdowns)
       }
@@ -46,6 +46,13 @@ describe('addContentToSummaryTab', () => {
     expect(mockSummaryTab.getCell('I6').value).to.equal('Expired');
     expect(mockSummaryTab.getCell('L6').value).to.equal('Missing');
   });
+
+  it('should display the workplace name', () => {
+    addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
+    expect(mockSummaryTab.getCell('B9').value).to.equal('Test Name');
+    expect(mockSummaryTab.getCell('B10').value).to.equal('Care Home');
+  })
 
   describe('Up to date training', () => {
     it('should add up to date training totals for the first workplace to row 9', async () => {
