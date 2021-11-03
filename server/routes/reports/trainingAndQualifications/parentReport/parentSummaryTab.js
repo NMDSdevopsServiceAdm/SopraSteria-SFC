@@ -10,17 +10,6 @@ const {
 } = require('../../../../utils/excelUtils');
 const models = require('../../../../models');
 
-let upToDateTotal = 0;
-let upToDateTotalMandatory = 0;
-let upToDateTotalNonMandatory = 0;
-let expiringSoonTotal = 0;
-let expiringSoonTotalMandatory = 0;
-let expiringSoonTotalNonMandatory = 0;
-let expiredTotal = 0;
-let expiredTotalMandatory = 0;
-let expiredTotalNonMandatory = 0;
-let totalMissing = 0;
-
 const generateSummaryTab = async (workbook, establishmentId) => {
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
     establishmentId,
@@ -98,19 +87,19 @@ const createSummaryTable = (summaryTab) => {
 }
 
 const addTotalsToSummaryTable = (establishments, summaryTable) => {
-  getTotalsForAllWorkplaces(establishments);
+  const totals = getTotalsForAllWorkplaces(establishments);
   summaryTable.addRow([
     'Total',
-    upToDateTotal,
-    upToDateTotalMandatory,
-    upToDateTotalNonMandatory,
-    expiringSoonTotal,
-    expiringSoonTotalMandatory,
-    expiringSoonTotalNonMandatory,
-    expiredTotal,
-    expiredTotalMandatory,
-    expiredTotalNonMandatory,
-    totalMissing,
+    totals.upToDateTotal,
+    totals.upToDateTotalMandatory,
+    totals.upToDateTotalNonMandatory,
+    totals.expiringSoonTotal,
+    totals.expiringSoonTotalMandatory,
+    totals.expiringSoonTotalNonMandatory,
+    totals.expiredTotal,
+    totals.expiredTotalMandatory,
+    totals.expiredTotalNonMandatory,
+    totals.totalMissing,
   ]);
 
   summaryTable.commit();
@@ -146,6 +135,17 @@ const setColumnWidths = (tab) => {
 };
 
 const getTotalsForAllWorkplaces = (establishments) => {
+  let upToDateTotal = 0;
+  let upToDateTotalMandatory = 0;
+  let upToDateTotalNonMandatory = 0;
+  let expiringSoonTotal = 0;
+  let expiringSoonTotalMandatory = 0;
+  let expiringSoonTotalNonMandatory = 0;
+  let expiredTotal = 0;
+  let expiredTotalMandatory = 0;
+  let expiredTotalNonMandatory = 0;
+  let totalMissing = 0;
+
   establishments.forEach((establishment) => {
     upToDateTotal += establishment.totals.upToDate.total;
     upToDateTotalMandatory += establishment.totals.upToDate.mandatory;
@@ -158,6 +158,19 @@ const getTotalsForAllWorkplaces = (establishments) => {
     expiredTotalNonMandatory += establishment.totals.expired.nonMandatory;
     totalMissing += establishment.totals.missing;
   });
+
+  return {
+    upToDateTotal,
+    upToDateTotalMandatory,
+    upToDateTotalNonMandatory,
+    expiringSoonTotal,
+    expiringSoonTotalMandatory,
+    expiringSoonTotalNonMandatory,
+    expiredTotal,
+    expiredTotalMandatory,
+    expiredTotalNonMandatory,
+    totalMissing,
+  }
 }
 
 addStylingToTotalsRow = (tab) => {
