@@ -35,17 +35,11 @@
             <td class="govuk-table__cell">{{ records.expires ? (records.expires | date: 'dd MMM y') : '-' }}</td>
             <td class="govuk-table__cell" [attr.data-testid]="'Status-' + records.uid">
               <span *ngIf="!records.expires">-</span>
-              <div
-                *ngIf="records.trainingStatus === trainingStatusService.MISSING && records.expires"
-                class="govuk-!-margin-bottom-1"
-              >
+              <div *ngIf="records.trainingStatus === trainingStatusService.MISSING && records.expires">
                 <img src="/assets/images/flag-red.svg" alt="" class="govuk-util__vertical-align-top" />
                 Missing
               </div>
-              <div
-                *ngIf="records.trainingStatus === trainingStatusService.EXPIRED && records.expires"
-                class="govuk-!-margin-bottom-1"
-              >
+              <div *ngIf="records.trainingStatus === trainingStatusService.EXPIRED && records.expires">
                 <img src="/assets/images/flag-red.svg" alt="" class="govuk-util__vertical-align-top" />
                 Expired
               </div>
