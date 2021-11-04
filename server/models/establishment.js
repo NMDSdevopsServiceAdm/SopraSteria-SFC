@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -1467,6 +1468,153 @@ module.exports = function (sequelize, DataTypes) {
         },
       },
       attributes: ['locationId'],
+    });
+  };
+
+  Establishment.workersAndTraining = async function (establishmentId, includeMandatoryTrainingBreakdown = false, isParent = false) {
+    const currentDate = moment().toISOString();
+    const expiresSoon = moment().add(90, 'days').toISOString();
+
+    let attributes = [
+      'id',
+      'uid',
+      'LocalIdentifierValue',
+      'NameOrIdValue',
+      'ContractValue',
+      'CompletedValue',
+      'created',
+      'updated',
+      'updatedBy',
+      'lastWdfEligibility',
+      'wdfEligible',
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
+        'trainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
+        ),
+        'expiredTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+        ),
+        'expiringTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT
+                  COUNT(0)
+                FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+                AND "TrainingCategoryFK" NOT IN (
+                  SELECT
+                    DISTINCT "CategoryFK"
+                  FROM cqc."WorkerTraining"
+                  WHERE "WorkerFK" = "workers"."ID"
+                )
+            )
+            `,
+        ),
+        'missingMandatoryTrainingCount',
+      ],
+      'LongTermAbsence',
+    ];
+
+    if (includeMandatoryTrainingBreakdown) {
+      const mandatoryTrainingAttributes = [
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiredMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID"  AND "CategoryFK"  IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'mandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiringMandatoryTrainingCount',
+        ],
+      ];
+
+      attributes = [...attributes, ...mandatoryTrainingAttributes];
+    }
+
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff'
+        },
+      ];
+    };
+
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+            ...subsidiaries,
+        ]
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes,
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+            },
+          ],
+        },
+      ],
     });
   };
 

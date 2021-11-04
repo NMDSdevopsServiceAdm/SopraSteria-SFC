@@ -253,7 +253,8 @@ const viewAllWorkers = async (req, res) => {
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
   try {
-    const allWorkers = await models.worker.workersAndTraining(establishmentId);
+    const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(establishmentId);
+    const allWorkers = establishmentWorkersAndTraining[0].workers;
 
     res.status(200).send({
       workers: allWorkers

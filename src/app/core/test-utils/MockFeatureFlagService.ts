@@ -20,6 +20,11 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
           return resolve(true);
         });
       }
+      if (flagName === 'parentTrainingAndQualificationsReport') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
       if (flagName === 'benefitsBundle') {
         return new Promise((resolve) => {
           return resolve(true);
