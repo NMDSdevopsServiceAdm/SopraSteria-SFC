@@ -1575,8 +1575,7 @@ module.exports = function (sequelize, DataTypes) {
 
     let subsidiaries;
     if (isParent) {
-      subsidiaries = {
-        [Op.or]: [
+      subsidiaries = [
           {
             parentId: establishmentId,
             dataOwner: 'Parent',
@@ -1586,18 +1585,19 @@ module.exports = function (sequelize, DataTypes) {
             dataOwner: 'Workplace',
             dataPermissions: 'Workplace and Staff'
           },
-        ],
-      }
+        ];
 
     }
 
     return this.findAll({
       attributes: ['id', 'NameValue'],
       where: {
-        [Op.or]: {
-          id: establishmentId,
-          ...subsidiaries,
-        }
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+            ...subsidiaries,
+        ]
       },
       include: [
         {
