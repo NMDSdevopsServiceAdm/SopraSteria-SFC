@@ -1576,18 +1576,17 @@ module.exports = function (sequelize, DataTypes) {
     let subsidiaries = [];
     if (isParent) {
       subsidiaries = [
-          {
-            parentId: establishmentId,
-            dataOwner: 'Parent',
-          },
-          {
-            parentId: establishmentId,
-            dataOwner: 'Workplace',
-            dataPermissions: 'Workplace and Staff'
-          },
-        ];
-
-    }
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff'
+        },
+      ];
+    };
 
     return this.findAll({
       attributes: ['id', 'NameValue'],
