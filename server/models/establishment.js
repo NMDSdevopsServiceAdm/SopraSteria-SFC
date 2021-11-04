@@ -1600,63 +1600,85 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getEstablishmentTrainingRecords = async function (establishmentId) {
-    return this.findAll({
-      attributes: [
-        'DataOwner',
-        [
-          sequelize.literal(
-            `
-              (
-                select json_agg(cqc."TrainingCategories"."Category")
-                from cqc."Establishment"
-                inner join cqc."Worker" on "EstablishmentID" = cqc."Worker"."EstablishmentFK"
-                inner join cqc."MandatoryTraining" on "EstablishmentID" = cqc."MandatoryTraining"."EstablishmentFK"
+  Establishment.getEstablishmentTrainingRecords = async function (establishmentId, isParent = false) {
+    let attributes = [
+      'id',
+      'NameOrIdValue',
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT json_agg(cqc."TrainingCategories"."Category")
+                FROM cqc."MandatoryTraining"
                 RIGHT JOIN cqc."TrainingCategories" ON
                 "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
-				        And "JobFK" = cqc."Worker"."MainJobFKValue"
-              )
-            `,
-          ),
-          'mandatoryTrainingCategories',
-        ],
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+            )
+          `,
+        ),
+        'mandatoryTrainingCategories',
       ],
+      'LongTermAbsence',
+    ];
+    let subsidiaries;
+    if (isParent) {
+      subsidiaries = [
+        {
+          [Op.or]: [
+            {
+              parentId: establishmentId,
+              dataOwner: 'Parent',
+            },
+            {
+              parentId: establishmentId,
+              dataOwner: 'Workplace',
+              dataPermissions: 'Workplace and Staff',
+            },
+          ],
+        },
+      ];
+    }
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
       where: {
-        archived: false,
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
       },
       include: [
         {
           model: sequelize.models.worker,
           as: 'workers',
-          attributes: ['NameOrIdValue','LongTermAbsence'],
+          attributes,
           where: {
-                establishmentFk: establishmentId,
+            establishmentFk: establishmentId,
+            archived: false,
           },
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
-              attributes: ['title'],
-
+              attributes: ['id', 'title'],
             },
-          ],
-       include:[
-        {
-          model: sequelize.models.workerTraining,
-          as: 'workerTraining',
-          attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
-          include: [
             {
-              model: sequelize.models.workerTrainingCategories,
-              as: 'category',
-              attributes: ['category'],
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                  attributes: ['category'],
+                },
+              ],
             },
           ],
         },
-      ]
-    },
       ],
-
     });
   };
 
