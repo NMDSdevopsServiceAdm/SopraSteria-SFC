@@ -87,6 +87,10 @@
 .asc-content {
   display: flex;
 
+  &--phrase {
+    margin-top: 1px;
+  }
+
   &--image {
     margin-right: 5px;
   }
