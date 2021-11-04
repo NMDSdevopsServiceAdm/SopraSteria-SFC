@@ -12,15 +12,11 @@ describe('addContentToSummaryTab', () => {
   const mockEstablishmentTrainingTotals = [
     {
       establishmentName: 'Test Name',
-      totals: {
-        ...getTrainingTotals(mockWorkerTrainingBreakdowns)
-      }
+      totals: getTrainingTotals(mockWorkerTrainingBreakdowns),
     },
     {
       establishmentName: 'Care Home',
-      totals: {
-        ...getTrainingTotals(secondMockWorkerTrainingBreakdowns)
-      }
+      totals: getTrainingTotals(secondMockWorkerTrainingBreakdowns),
     },
   ]
 
@@ -155,26 +151,34 @@ describe('addContentToSummaryTab', () => {
   });
 
   describe('addTotalsToSummaryTable()', () => {
-    it('should calculate the totals for all workplaces', async () => {
+    it('should calculate the totals for all workplaces for up to date training', async () => {
       addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
 
-      // Up to date training
-      expect(mockSummaryTab.getCell('C8').value).to.equal(28)
-      expect(mockSummaryTab.getCell('D8').value).to.equal(10)
-      expect(mockSummaryTab.getCell('E8').value).to.equal(18)
+      expect(mockSummaryTab.getCell('C8').value).to.equal(28);
+      expect(mockSummaryTab.getCell('D8').value).to.equal(10);
+      expect(mockSummaryTab.getCell('E8').value).to.equal(18);
+    });
 
-      // Expiring soon training
+    it('should calculate the totals for all workplaces for expiring soon training', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
       expect(mockSummaryTab.getCell('F8').value).to.equal(14)
       expect(mockSummaryTab.getCell('G8').value).to.equal(4)
       expect(mockSummaryTab.getCell('H8').value).to.equal(10)
+    });
 
-      // Expired training
+    it('should calculate the totals for all workplaces for expired training', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
       expect(mockSummaryTab.getCell('I8').value).to.equal(16)
       expect(mockSummaryTab.getCell('J8').value).to.equal(4)
       expect(mockSummaryTab.getCell('K8').value).to.equal(12)
+    });
 
-      // Missing training
+    it('should calculate the totals for all workplaces for missing training', async () => {
+      addContentToSummaryTab(mockSummaryTab, mockEstablishmentTrainingTotals);
+
       expect(mockSummaryTab.getCell('L8').value).to.equal(7)
-    })
-  })
+    });
+  });
 });

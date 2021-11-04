@@ -18,14 +18,12 @@ const generateSummaryTab = async (workbook, establishmentId) => {
     true,
   );
 
-  const establishmentRecordTotals = [];
-  rawEstablishmentTrainingBreakdowns.forEach((establishment) => {
+  const establishmentRecordTotals = rawEstablishmentTrainingBreakdowns.map((establishment) => {
     const trainingBreakdowns = convertWorkerTrainingBreakdowns(establishment.workers);
-
-    establishmentRecordTotals.push({
+    return {
       establishmentName: establishment.get('NameValue'),
       totals: getTrainingTotals(trainingBreakdowns),
-    });
+    };
   });
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
