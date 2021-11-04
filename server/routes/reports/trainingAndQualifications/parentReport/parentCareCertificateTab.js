@@ -1,5 +1,14 @@
 const models = require('../../../../models');
-const { addHeading, addLine, alignColumnToLeft, addQuestion, backgroundColours, textColours, setTableHeadingsStyle } = require('../../../../utils/excelUtils');
+const {
+  addHeading,
+  addLine,
+  alignColumnToLeft,
+  addQuestion,
+  backgroundColours,
+  textColours,
+  setTableHeadingsStyle,
+  addBlankRowIfTableEmpty,
+} = require('../../../../utils/excelUtils');
 const { convertWorkersWithCareCertificateStatus } = require('../../../../utils/trainingAndQualificationsUtils');
 
 const generateCareCertificateTab = async (workbook, establishmentId) => {
@@ -10,16 +19,17 @@ const generateCareCertificateTab = async (workbook, establishmentId) => {
   addContentToCareCertificateTab(careCertificateTab, workers);
 };
 
-const addContentToCareCertificateTab = (careCertificateTab, workers) => {
+const addContentToCareCertificateTab = (careCertificateTab, establishments) => {
   addHeading(careCertificateTab, 'B2', 'E2', 'Care Certificate');
   addLine(careCertificateTab, 'A4', 'E4');
   alignColumnToLeft(careCertificateTab, 2);
   addQuestion(careCertificateTab, 'B6', 'E6', 'Have they started or completed the Care Certificate?');
 
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
+  addRowsToCareCertificateTable(careCertificateTable, establishments);
 };
 
-const createCareCertificateTable = careCertificateTab => {
+const createCareCertificateTable = (careCertificateTab) => {
   setTableHeadingsStyle(careCertificateTab, 6, backgroundColours.blue, textColours.white, ['B', 'C', 'D', 'E']);
 
   return careCertificateTab.addTable({
@@ -33,7 +43,19 @@ const createCareCertificateTable = careCertificateTab => {
     ],
     rows: [],
   });
-}
+};
 
+const addRowsToCareCertificateTable = (careCertificateTable, establishments) => {
+  establishments.forEach((establishment) => {
+    const { workers, establishmentName } = establishment;
+    workers.forEach((worker) => {
+      const { workerId, jobRole, status } = worker;
+      careCertificateTable.addRow([establishmentName, workerId, jobRole, status]);
+    });
+  });
+
+  addBlankRowIfTableEmpty(careCertificateTable, 3);
+  careCertificateTable.commit();
+};
 module.exports.generateCareCertificateTab = generateCareCertificateTab;
 module.exports.addContentToCareCertificateTab = addContentToCareCertificateTab;

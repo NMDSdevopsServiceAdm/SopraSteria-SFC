@@ -141,7 +141,7 @@ exports.mockWorkerTrainingRecords = [
     longTermAbsence: '',
     mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
     trainingRecords: [],
-  }
+  },
 ];
 
 exports.mockWorkerQualificationRecords = [
@@ -181,5 +181,18 @@ exports.mockWorkersWithCareCertificateStatus = [
     workerId: 'Mike',
     jobRole: 'Care Coordinator',
     status: 'Yes, in progress or partially completed',
+  },
+];
+
+exports.secondMockWorkersWithCareCertificateStatus = [
+  {
+    workerId: 'Bill',
+    jobRole: 'Care Worker',
+    status: 'Yes, completed',
+  },
+  {
+    workerId: 'Jenny',
+    jobRole: 'Care Worker',
+    status: 'No',
   },
 ];
