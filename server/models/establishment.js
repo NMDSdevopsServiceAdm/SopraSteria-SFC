@@ -1600,11 +1600,32 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId) {
+  Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId, isParent = false) {
+    let childEstablishments = [];
+
+    if (isParent) {
+      childEstablishments = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
     return this.findAll({
-      attributes: ['id'],
+      attributes: ['id', 'NameValue'],
       where: {
-        id: { [Op.or]: establishmentId },
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...childEstablishments,
+        ],
       },
       include: [
         {

@@ -16,11 +16,11 @@ describe('generateParentTrainingAndQualificationsReportCareCertificate', () => {
   const mockParentAllWorkersWithCareCerticateStatus = [
     {
       establishmentName: 'Care Home 1',
-      workers: [...mockWorkersWithCareCertificateStatus],
+      workers: mockWorkersWithCareCertificateStatus,
     },
     {
       establishmentName: 'Care Home 2',
-      workers: [...secondMockWorkersWithCareCertificateStatus],
+      workers: secondMockWorkersWithCareCertificateStatus,
     },
   ];
 

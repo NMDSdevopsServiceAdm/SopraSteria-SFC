@@ -23,8 +23,7 @@ const convertWorkerTrainingBreakdown = (worker) => {
 
 const convertWorkerWithCareCertificateStatus = (worker) => {
   const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
-  // console.log("***** worker.mainJob ********");
-  // console.log(worker);
+
   return {
     workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
     jobRole: worker.mainJob.title,

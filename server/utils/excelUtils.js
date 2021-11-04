@@ -145,9 +145,8 @@ exports.addQuestion = (tab, startCell, endCell, content) => {
     family: 4,
     size: 25,
     bold: true,
-    color: { argb: '0050ab' },
-  }
-}
+  };
+};
 
 exports.addLine = (worksheet, startCell, endCell) => {
   worksheet.mergeCells(`${startCell}:${endCell}`);

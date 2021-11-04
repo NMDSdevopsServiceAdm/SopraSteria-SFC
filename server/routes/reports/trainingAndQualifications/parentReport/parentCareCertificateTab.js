@@ -8,15 +8,26 @@ const {
   textColours,
   setTableHeadingsStyle,
   addBlankRowIfTableEmpty,
+  fitColumnsToSize,
+  addBordersToAllFilledCells,
 } = require('../../../../utils/excelUtils');
 const { convertWorkersWithCareCertificateStatus } = require('../../../../utils/trainingAndQualificationsUtils');
 
 const generateCareCertificateTab = async (workbook, establishmentId) => {
-  const rawWorkers = await models.establishment.getWorkersWithCareCertificateStatus([establishmentId]);
-  const workers = convertWorkersWithCareCertificateStatus(rawWorkers[0].workers);
+  const rawEstablishmentWorkersCareCertificates = await models.establishment.getWorkersWithCareCertificateStatus([
+    establishmentId,
+  ]);
+
+  const establishmentWorkerCareCertificates = rawEstablishmentWorkersCareCertificates.map((establishment) => {
+    const workersWithCareCertificates = convertWorkersWithCareCertificateStatus(establishment.workers);
+    return {
+      establishmentName: establishment.get('NameValue'),
+      workers: workersWithCareCertificates,
+    };
+  });
 
   const careCertificateTab = workbook.addWorksheet('Care Certificate', { views: [{ showGridLines: false }] });
-  addContentToCareCertificateTab(careCertificateTab, workers);
+  addContentToCareCertificateTab(careCertificateTab, establishmentWorkerCareCertificates);
 };
 
 const addContentToCareCertificateTab = (careCertificateTab, establishments) => {
@@ -27,10 +38,13 @@ const addContentToCareCertificateTab = (careCertificateTab, establishments) => {
 
   const careCertificateTable = createCareCertificateTable(careCertificateTab);
   addRowsToCareCertificateTable(careCertificateTable, establishments);
+
+  fitColumnsToSize(careCertificateTab, 2, 5.5);
+  addBordersToAllFilledCells(careCertificateTab, 9);
 };
 
 const createCareCertificateTable = (careCertificateTab) => {
-  setTableHeadingsStyle(careCertificateTab, 6, backgroundColours.blue, textColours.white, ['B', 'C', 'D', 'E']);
+  setTableHeadingsStyle(careCertificateTab, 9, backgroundColours.blue, textColours.white, ['B', 'C', 'D', 'E']);
 
   return careCertificateTab.addTable({
     name: 'careCertificateTable',
@@ -54,7 +68,7 @@ const addRowsToCareCertificateTable = (careCertificateTable, establishments) => 
     });
   });
 
-  addBlankRowIfTableEmpty(careCertificateTable, 3);
+  addBlankRowIfTableEmpty(careCertificateTable, 4);
   careCertificateTable.commit();
 };
 module.exports.generateCareCertificateTab = generateCareCertificateTab;
