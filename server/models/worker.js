@@ -1,5 +1,4 @@
 const { Op } = require('sequelize');
-const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
