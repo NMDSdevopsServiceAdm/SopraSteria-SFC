@@ -1573,7 +1573,7 @@ module.exports = function (sequelize, DataTypes) {
       attributes = [...attributes, ...mandatoryTrainingAttributes];
     }
 
-    let subsidiaries;
+    let subsidiaries = [];
     if (isParent) {
       subsidiaries = [
           {
