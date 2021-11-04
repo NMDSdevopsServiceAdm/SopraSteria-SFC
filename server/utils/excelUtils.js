@@ -138,6 +138,17 @@ exports.addHeading = (tab, startCell, endCell, content) => {
   };
 };
 
+exports.addQuestion = (tab, startCell, endCell, content) => {
+  tab.mergeCells(`${startCell}:${endCell}`);
+  tab.getCell(startCell).value = content;
+  tab.getCell(startCell).font = {
+    family: 4,
+    size: 25,
+    bold: true,
+    color: { argb: '0050ab' },
+  }
+}
+
 exports.addLine = (worksheet, startCell, endCell) => {
   worksheet.mergeCells(`${startCell}:${endCell}`);
   worksheet.getCell(startCell).border = {
