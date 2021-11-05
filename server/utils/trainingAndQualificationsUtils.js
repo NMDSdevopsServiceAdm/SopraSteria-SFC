@@ -96,23 +96,41 @@ exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
   });
 };
 
-const convertIndividualWorkerQualifications = (workerQualifications) => {
-  const workerIdAsNumber = parseInt(workerQualifications.worker.get('NameOrIdValue'));
+// const convertIndividualWorkerQualifications = (worker) => {
+//   console.log(worker);
+//   const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
 
-  return {
-    workerName: workerIdAsNumber ? workerIdAsNumber : workerQualifications.worker.get('NameOrIdValue'),
-    jobRole: workerQualifications.worker.mainJob.title,
-    qualificationType: workerQualifications.qualification.group,
-    qualificationName: workerQualifications.qualification.title,
-    qualificationLevel: workerQualifications.qualification.level,
-    yearAchieved: workerQualifications.get('Year'),
-  };
+//   return {
+//     workerName: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+//     jobRole: worker.mainJob.title,
+//     qualificationType: worker.qualifications.qualification.group,
+//     qualificationName: worker.qualifications.qualification.title,
+//     qualificationLevel: worker.qualifications.qualification.level,
+//     yearAchieved: worker.get('Year'),
+//   };
+// };
+
+const convertIndividualWorkerQualifications = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+  return worker.qualifications.map((qualification) => {
+    return {
+      workerName: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+      jobRole: worker.mainJob.title,
+      qualificationType: qualification.qualification.group,
+      qualificationName: qualification.qualification.title,
+      qualificationLevel: qualification.qualification.level,
+      yearAchieved: qualification.get('Year'),
+    };
+  });
 };
 
 exports.convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications.map((workerQualifications) => {
-    return convertIndividualWorkerQualifications(workerQualifications);
+  const convertedWorkerQualifications = [];
+  rawWorkerQualifications[0].workers.map((worker) => {
+    convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
   });
+
+  return convertedWorkerQualifications;
 };
 
 exports.getTrainingTotals = (workers) => {
