@@ -9,6 +9,7 @@ const {
   alignColumnToLeft,
   addBordersToAllFilledCells,
   setCellTextAndBackgroundColour,
+  addBlankRowIfTableEmpty,
 } = require('../../../../utils/excelUtils');
 const models = require('../../../../models');
 const generateTrainingTab = async (workbook, establishmentId) => {
@@ -23,6 +24,7 @@ const addContentToTrainingTab = (trainingTab, workersWithTraining) => {
   addHeading(trainingTab, 'B2', 'E2', 'Training');
   addLine(trainingTab, 'A4', 'L4');
   alignColumnToLeft(trainingTab, 2);
+  alignColumnToLeft(trainingTab, 3);
 
   const trainingTable = createTrainingTable(trainingTab, workersWithTraining);
   addRowsToTrainingTable(trainingTable, workersWithTraining);
@@ -63,9 +65,37 @@ const addRowsToTrainingTable = (trainingTable, establishment) => {
         addRow(trainingTable, workers, workerRecord, trainingRecord);
       }
     }
+    addRowsForWorkerMissingTraining(trainingTable, workers);
   }
+  addBlankRowIfTableEmpty(trainingTable, 11);
 
   trainingTable.commit();
+};
+
+const addRowsForWorkerMissingTraining = (trainingTable, worker) => {
+  for (let workerRecord of worker.workerRecords) {
+    for (let record of workerRecord.mandatoryTraining) {
+      if (!hasTrainingRecord(workerRecord.trainingRecords, record)) {
+        addMissingRow(trainingTable, worker, workerRecord, record);
+      }
+    }
+  }
+};
+
+const addMissingRow = (trainingTable, worker, workerRecord, missingMandatoryTrainingRecord) => {
+  trainingTable.addRow([
+    worker.workPlace,
+    workerRecord.workerId,
+    workerRecord.jobRole,
+    missingMandatoryTrainingRecord,
+    '',
+    'Mandatory',
+    'Missing',
+    '',
+    '',
+    workerRecord.longTermAbsence,
+    '',
+  ]);
 };
 
 const addRow = (trainingTable, workers, workerRecord, trainingRecord) => {
@@ -101,5 +131,8 @@ const isMandatoryTraining = (trainingCategory, mandatoryTraining) => {
   return mandatoryTraining.includes(trainingCategory);
 };
 
+const hasTrainingRecord = (trainingRecords, trainingCategory) => {
+  return trainingRecords.find((record) => record.category === trainingCategory);
+};
 module.exports.generateTrainingTab = generateTrainingTab;
 module.exports.addContentToTrainingTab = addContentToTrainingTab;
