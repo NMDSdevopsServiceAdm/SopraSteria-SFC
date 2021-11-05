@@ -187,7 +187,7 @@ exports.mockWorkersWithCareCertificateStatus = [
 
 exports.mockParentWorkerTrainingRecords = [
   {
-    workPlace: 'Zuhal workplace',
+    workPlace: 'AAPNES East Area Business Support',
     workerRecords: [
       {
         workerId: 'Bob Test',
@@ -218,7 +218,7 @@ exports.mockParentWorkerTrainingRecords = [
     ]
   },
   {
-    workPlace: 'Zuhal workplace',
+    workPlace: 'AAPNES East Area Business Support',
     workerRecords: [
       {
         workerId: 'Eric Hatfield',
@@ -249,7 +249,7 @@ exports.mockParentWorkerTrainingRecords = [
     ]
   },
   {
-    workPlace: 'Zuhal workplace',
+    workPlace: 'AAPNES East Area Business Support',
     workerRecords: [
       {
         workerId: 'Terrance Tate',

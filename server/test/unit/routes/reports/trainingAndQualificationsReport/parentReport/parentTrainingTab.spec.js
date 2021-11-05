@@ -6,7 +6,7 @@ const { addContentToTrainingTab } = require('../../../../../../routes/reports/tr
 
 const { mockParentWorkerTrainingRecords } = require('../../../../mockdata/trainingAndQualifications');
 
-describe.only('addContentToTrainingTab', () => {
+describe('addContentToTrainingTab', () => {
     let mockTrainingTab;
 
     beforeEach(() => {
@@ -36,4 +36,59 @@ describe.only('addContentToTrainingTab', () => {
       expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('Long-term absence');
       expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Accredited');
     });
+
+    it('should add first training record to top row of table', async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 7;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Bob Test');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Activity provision/Well-being');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Important Training');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Up-to-date');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/01/2025');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('01/01/2020');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Yes');
+      });
+
+      it("should add worker's next training record to next row of table", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 8;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Bob Test');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Dementia care');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Mock Training Name');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Not mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Expiring soon');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/01/2022');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('01/06/2020');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Yes');
+      });
+
+      it("should add next worker's first training record to next row of table when previous worker has no missing training", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 9;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Eric Hatfield');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Emergency Aid awareness');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Practice of Emergency Aid');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Not mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Up-to-date');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/01/2025');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('31/03/2004');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Yes');
+      });
+
 });
