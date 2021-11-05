@@ -40,7 +40,6 @@ const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'L4');
 
-  summaryTab.mergeCells('B6:B7')
   setTableHeadingsStyle(summaryTab, 6, backgroundColours.blue, textColours.white, ['B'])
   setTableHeadingsStyle(summaryTab, 7, backgroundColours.blue, textColours.white, ['B'])
 
@@ -56,6 +55,7 @@ const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   alignColumnToLeft(summaryTab, 2);
   makeRowBold(summaryTab, 8);
   addBordersToAllFilledCells(summaryTab, 5);
+  setBordersForWorkplaceHeading(summaryTab);
   setColumnWidths(summaryTab);
 };
 
@@ -68,13 +68,13 @@ const createSummaryTable = (summaryTab) => {
       { name: 'Total', filterButton: false },
       { name: 'Mandatory', filterButton: false },
       { name: 'Non-mandatory', filterButton: false },
-      { name: 'Total', filterButton: false },
-      { name: 'Mandatory', filterButton: false },
-      { name: 'Non-mandatory', filterButton: false },
-      { name: 'Total', filterButton: false },
-      { name: 'Mandatory', filterButton: false },
-      { name: 'Non-mandatory', filterButton: false },
-      { name: 'Total', filterButton: false },
+      { name: ' Total ', filterButton: false },
+      { name: ' Mandatory ', filterButton: false },
+      { name: ' Non-mandatory ', filterButton: false },
+      { name: '  Total  ', filterButton: false },
+      { name: '  Mandatory  ', filterButton: false },
+      { name: '  Non-mandatory  ', filterButton: false },
+      { name: '   Total   ', filterButton: false },
     ],
     rows: [],
   });
@@ -129,6 +129,14 @@ const setColumnWidths = (tab) => {
     tab.getColumn(i).width = 15;
   }
 };
+
+const setBordersForWorkplaceHeading = (summaryTab) => {
+  summaryTab.getCell('B6').border = {
+    top: { style:'thin' },
+    left: { style: 'thin' },
+  }
+  summaryTab.getCell('B7').border.top = { style: 'thin', color: backgroundColours.blue };
+}
 
 module.exports.generateSummaryTab = generateSummaryTab;
 module.exports.addContentToSummaryTab = addContentToSummaryTab;
