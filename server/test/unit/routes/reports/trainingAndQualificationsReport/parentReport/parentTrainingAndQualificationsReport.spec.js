@@ -16,6 +16,10 @@ describe('generateParentTrainingAndQualificationsReport', () => {
         }
       ]
     );
+
+    sinon.stub(models.worker, 'getEstablishmentTrainingRecords').callsFake(() => {
+      return [];
+    });
   });
 
   afterEach(() => {

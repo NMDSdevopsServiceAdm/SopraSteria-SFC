@@ -91,4 +91,115 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Yes');
       });
 
+      it("should add worker's next training record to next row", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 10;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Eric Hatfield');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Diabetes');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('Training for diabetes');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Expired');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('01/01/2019');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('31/03/2012');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('No');
+      });
+
+
+      it("should add worker's missing training to next row if worker has missing mandatory training", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 11;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Eric Hatfield');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Activity provision/Well-being');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Missing');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
+      });
+
+      it("should add next worker's first missing training to next row if worker only has missing mandatory training and no records", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 12;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Terrance Tate');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Activity provision/Well-being');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Missing');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
+      });
+
+      it("should add worker's next missing training when worker has more than one missing mandatory training", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 13;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Terrance Tate');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Diabetes');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Missing');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
+      });
+
+      describe('Adding blank row to empty table', async () => {
+        it('should not add empty row to end of table when there is data', async () => {
+          addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+          const expectedLine = 14;
+
+          expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal(null);
+          expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal(null);
+        });
+
+        it('should add empty row to table when no data', async () => {
+          addContentToTrainingTab(mockTrainingTab, []);
+
+          const expectedLine = 7;
+
+          expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+          expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
+        });
+      });
+
 });
