@@ -96,20 +96,6 @@ exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
   });
 };
 
-// const convertIndividualWorkerQualifications = (worker) => {
-//   console.log(worker);
-//   const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
-
-//   return {
-//     workerName: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
-//     jobRole: worker.mainJob.title,
-//     qualificationType: worker.qualifications.qualification.group,
-//     qualificationName: worker.qualifications.qualification.title,
-//     qualificationLevel: worker.qualifications.qualification.level,
-//     yearAchieved: worker.get('Year'),
-//   };
-// };
-
 const convertIndividualWorkerQualifications = (worker) => {
   const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
   return worker.qualifications.map((qualification) => {
@@ -125,12 +111,9 @@ const convertIndividualWorkerQualifications = (worker) => {
 };
 
 exports.convertWorkerQualifications = (rawWorkerQualifications) => {
-  const convertedWorkerQualifications = [];
-  rawWorkerQualifications[0].workers.map((worker) => {
-    convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
-  });
-
-  return convertedWorkerQualifications;
+  return rawWorkerQualifications[0].workers.reduce((convertedWorkerQualifications, worker) => {
+    return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
+  }, []);
 };
 
 exports.getTrainingTotals = (workers) => {
