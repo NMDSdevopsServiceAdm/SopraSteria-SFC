@@ -21,7 +21,6 @@ describe('generateTrainingAndQualificationsReport', () => {
   });
 
   it('should add tab title to cell B2', async () => {
-    console.log(mockWorkersWithCareCertificateStatus);
     addContentToCareCertificateTab(mockCareCertificateTab, mockWorkersWithCareCertificateStatus);
 
     expect(mockCareCertificateTab.getCell('B2').value).to.equal('Care Certificate');

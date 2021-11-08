@@ -15,7 +15,7 @@ const { convertWorkersWithCareCertificateStatus } = require('../../../../utils/t
 
 const generateCareCertificateTab = async (workbook, establishmentId) => {
   const rawEstablishmentWorkersCareCertificates = await models.establishment.getWorkersWithCareCertificateStatus(
-    [establishmentId],
+    establishmentId,
     true,
   );
 

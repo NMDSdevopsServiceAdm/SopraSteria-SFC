@@ -6,7 +6,7 @@ const models = require('../../../../../models');
 
 const trainingAndQualificationsReport = require('../../../../../routes/reports/trainingAndQualifications/generateTrainingAndQualificationsReport');
 
-describe.only('generateTrainingAndQualificationsReport', () => {
+describe('generateTrainingAndQualificationsReport', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findByUid').callsFake(() => {
       return { id: 1234 };
@@ -22,9 +22,11 @@ describe.only('generateTrainingAndQualificationsReport', () => {
     sinon.stub(models.workerQualifications, 'getWorkerQualifications').callsFake(() => {
       return [];
     });
-    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').callsFake(() => {
-      return [];
-    });
+    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
+      {
+        workers: [],
+      },
+    ]);
   });
 
   afterEach(() => {
