@@ -111,7 +111,7 @@ const convertIndividualWorkerQualifications = (worker) => {
 };
 
 exports.convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications[0].workers.reduce((convertedWorkerQualifications, worker) => {
+  return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
     return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
   }, []);
 };
@@ -176,7 +176,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
         expiringSoon: {
           total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
           mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
-          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
+          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory,
         },
         expired: {
           total: a.totals.expired.total + b.totals.expired.total,
@@ -184,8 +184,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
           nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
         },
         missing: a.totals.missing + b.totals.missing,
-      }
-    }
+      },
+    };
   });
-}
-
+};

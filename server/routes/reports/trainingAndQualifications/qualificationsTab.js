@@ -14,7 +14,7 @@ const models = require('../../../models');
 
 const generateQualificationsTab = async (workbook, establishmentId) => {
   const rawWorkerQualifications = await models.establishment.getWorkerQualifications(establishmentId, false);
-  const workerQualifications = convertWorkerQualifications(rawWorkerQualifications);
+  const workerQualifications = convertWorkerQualifications(rawWorkerQualifications[0]);
 
   const qualificationsTab = workbook.addWorksheet('Qualifications', { views: [{ showGridLines: false }] });
 

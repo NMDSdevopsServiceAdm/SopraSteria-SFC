@@ -141,10 +141,10 @@ exports.mockWorkerTrainingRecords = [
     longTermAbsence: '',
     mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
     trainingRecords: [],
-  }
+  },
 ];
 
-exports.mockWorkerQualificationRecords = [
+const mockWorkerQualificationRecords = [
   {
     workerName: 'Helen Jones',
     jobRole: 'Administrative / office staff not care-providing',
@@ -168,6 +168,15 @@ exports.mockWorkerQualificationRecords = [
     qualificationName: 'Care NVQ',
     qualificationLevel: null,
     yearAchieved: null,
+  },
+];
+
+exports.mockWorkerQualificationRecords = mockWorkerQualificationRecords;
+
+exports.mockWorkerQualificationRecordsForParent = [
+  {
+    name: 'Test Workplace 1',
+    qualifications: mockWorkerQualificationRecords,
   },
 ];
 
