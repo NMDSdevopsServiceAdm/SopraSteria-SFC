@@ -6,19 +6,24 @@ const models = require('../../../../../../models');
 
 const parentTrainingAndQualificationsReport = require('../../../../../../routes/reports/trainingAndQualifications/parentReport/generateParentTrainingAndQualificationsReport');
 
-describe('generateParentTrainingAndQualificationsReport', () => {
+describe.only('generateParentTrainingAndQualificationsReport', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findByUid').returns({ id: 1234 });
-    sinon.stub(models.establishment, 'workersAndTraining').returns(
-      [
-        {
-          id: 1234,
-          name: 'Test',
-          workers: [],
-          get: () => {},
-        }
-      ]
-    );
+    sinon.stub(models.establishment, 'workersAndTraining').returns([
+      {
+        id: 1234,
+        name: 'Test',
+        workers: [],
+        get: () => {},
+      },
+    ]);
+
+    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
+      {
+        workers: [],
+        get: () => {},
+      },
+    ]);
   });
 
   afterEach(() => {
