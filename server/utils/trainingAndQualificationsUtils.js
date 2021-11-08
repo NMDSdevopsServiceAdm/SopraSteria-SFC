@@ -118,8 +118,10 @@ const convertWorkerQualifications = (rawWorkerQualifications) => {
 
 exports.convertQualificationsForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
+    const workplaceNameAsNumber = parseInt(establishment.NameValue);
+
     return {
-      name: establishment.NameValue,
+      name: workplaceNameAsNumber ? workplaceNameAsNumber : establishment.NameValue,
       qualifications: convertWorkerQualifications(establishment),
     };
   });
