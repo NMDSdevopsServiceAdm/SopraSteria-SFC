@@ -30,28 +30,19 @@ const generateSummaryTab = async (workbook, establishmentId) => {
   addContentToSummaryTab(summaryTab, establishmentRecordTotals);
 };
 
-const setHeadingWithStyling = (tab, cols, colour, text) => {
-  addHeading(tab, cols[0] + '6', cols[cols.length - 1] + '6', text);
-  setTableHeadingsStyle(tab, 6, backgroundColours[colour], textColours[colour], cols);
-  setTableHeadingsStyle(tab, 7, backgroundColours[colour], textColours[colour], cols);
-}
-
 const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'L4');
 
-  summaryTab.mergeCells('B6:B7')
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.blue, textColours.white, ['B'])
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.blue, textColours.white, ['B'])
+  addTrainingStatusHeadings(summaryTab);
+  addMandatoryBreakdownHeadings(summaryTab);
+  addTotalsRow(establishmentRecordTotals, summaryTab);
+  addTrainingSummaryRows(establishmentRecordTotals, summaryTab);
 
-  setHeadingWithStyling(summaryTab, ['C', 'D', 'E'], 'green', 'Up to date');
-  setHeadingWithStyling(summaryTab, ['F', 'G', 'H'], 'yellow', 'Expiring soon');
-  setHeadingWithStyling(summaryTab, ['I', 'J', 'K'], 'red', 'Expired');
-  setHeadingWithStyling(summaryTab, ['L'], 'red', 'Missing');
+  addHeading(summaryTab, 'B6', 'B7', 'Workplace');
+  setTableHeadingsStyle(summaryTab, 6, backgroundColours.blue, textColours.white, ['B']);
 
-  const summaryTable = createSummaryTable(summaryTab);
-  addTotalsToSummaryTable(establishmentRecordTotals, summaryTable)
-  addRowsToTable(establishmentRecordTotals, summaryTable)
+  setHeadingsStyling(summaryTab);
 
   alignColumnToLeft(summaryTab, 2);
   makeRowBold(summaryTab, 8);
@@ -59,30 +50,33 @@ const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   setColumnWidths(summaryTab);
 };
 
-const createSummaryTable = (summaryTab) => {
-  return summaryTab.addTable({
-    name: 'summaryTable',
-    ref: 'B7',
-    columns: [
-      { name: 'Workplace', filterButton: false },
-      { name: 'Total', filterButton: false },
-      { name: 'Mandatory', filterButton: false },
-      { name: 'Non-mandatory', filterButton: false },
-      { name: 'Total', filterButton: false },
-      { name: 'Mandatory', filterButton: false },
-      { name: 'Non-mandatory', filterButton: false },
-      { name: 'Total', filterButton: false },
-      { name: 'Mandatory', filterButton: false },
-      { name: 'Non-mandatory', filterButton: false },
-      { name: 'Total', filterButton: false },
-    ],
-    rows: [],
-  });
-}
+const addTrainingStatusHeadings = (summaryTab) => {
+  addHeading(summaryTab, 'C6', 'E6', 'Up to date');
+  addHeading(summaryTab, 'F6', 'H6', 'Expiring soon');
+  addHeading(summaryTab, 'I6', 'K6', 'Expired');
+  addHeading(summaryTab, 'L6', 'L6', 'Missing');
+};
 
-const addTotalsToSummaryTable = (establishments, summaryTable) => {
+const addMandatoryBreakdownHeadings = (summaryTab) => {
+  summaryTab.addRow([
+    null,
+    'Workplace',
+    'Total',
+    'Mandatory',
+    'Non-mandatory',
+    'Total',
+    'Mandatory',
+    'Non-mandatory',
+    'Total', 'Mandatory',
+    'Non-mandatory',
+    'Total'
+  ]);
+};
+
+const addTotalsRow = (establishments, summaryTab) => {
   const totals = getTotalsForAllWorkplaces(establishments).totals;
-  summaryTable.addRow([
+  summaryTab.addRow([
+    null,
     'Total',
     totals.upToDate.total,
     totals.upToDate.mandatory,
@@ -95,13 +89,12 @@ const addTotalsToSummaryTable = (establishments, summaryTable) => {
     totals.expired.nonMandatory,
     totals.missing,
   ]);
+};
 
-  summaryTable.commit();
-}
-
-const addRowsToTable = (establishments, summaryTable) => {
+const addTrainingSummaryRows = (establishments, summaryTab) => {
   establishments.forEach((establishment) => {
-    summaryTable.addRow([
+    summaryTab.addRow([
+      null,
       establishment.establishmentName,
       establishment.totals.upToDate.total,
       establishment.totals.upToDate.mandatory,
@@ -114,9 +107,7 @@ const addRowsToTable = (establishments, summaryTable) => {
       establishment.totals.expired.nonMandatory,
       establishment.totals.missing,
     ]);
-  })
-
-  summaryTable.commit();
+  });
 };
 
 const setColumnWidths = (tab) => {
@@ -127,7 +118,19 @@ const setColumnWidths = (tab) => {
   firstColumn.width = 30;
   for (var i = startingColumn + 1; i < totalColumns; i++) {
     tab.getColumn(i).width = 15;
-  }
+  };
+};
+
+const setHeadingsStyling = (summaryTab) => {
+  setStyling(summaryTab, ['C', 'D', 'E'], 'green');
+  setStyling(summaryTab, ['F', 'G', 'H'], 'yellow');
+  setStyling(summaryTab, ['I', 'J', 'K'], 'red');
+  setStyling(summaryTab, ['L'], 'red');
+};
+
+const setStyling = (tab, cols, colour) => {
+  setTableHeadingsStyle(tab, 6, backgroundColours[colour], textColours[colour], cols);
+  setTableHeadingsStyle(tab, 7, backgroundColours[colour], textColours[colour], cols);
 };
 
 module.exports.generateSummaryTab = generateSummaryTab;
