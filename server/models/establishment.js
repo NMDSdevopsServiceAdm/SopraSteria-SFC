@@ -1658,21 +1658,25 @@ module.exports = function (sequelize, DataTypes) {
             establishmentFk: establishmentId,
             archived: false,
           },
+          required: false,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['id', 'title'],
+              required: false,
             },
             {
               model: sequelize.models.workerTraining,
               as: 'workerTraining',
               attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              required: false,
               include: [
                 {
                   model: sequelize.models.workerTrainingCategories,
                   as: 'category',
                   attributes: ['category'],
+                  required: false,
                 },
               ],
             },
