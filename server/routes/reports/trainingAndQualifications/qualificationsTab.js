@@ -1,4 +1,4 @@
-const { convertWorkerQualifications } = require('../../../utils/trainingAndQualificationsUtils');
+const { convertQualificationsForEstablishments } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
   addLine,
@@ -13,13 +13,8 @@ const {
 const models = require('../../../models');
 
 const generateQualificationsTab = async (workbook, establishmentId, isParent = false) => {
-  const rawWorkerQualifications = await models.establishment.getWorkerQualifications(establishmentId, false);
-  const establishments = rawWorkerQualifications.map((establishment) => {
-    return {
-      name: establishment.NameValue,
-      qualifications: convertWorkerQualifications(establishment),
-    };
-  });
+  const rawEstablishments = await models.establishment.getWorkerQualifications(establishmentId, false);
+  const establishments = convertQualificationsForEstablishments(rawEstablishments);
 
   const qualificationsTab = workbook.addWorksheet('Qualifications', { views: [{ showGridLines: false }] });
 

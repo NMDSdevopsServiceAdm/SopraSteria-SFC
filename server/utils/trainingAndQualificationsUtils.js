@@ -110,10 +110,19 @@ const convertIndividualWorkerQualifications = (worker) => {
   });
 };
 
-exports.convertWorkerQualifications = (rawWorkerQualifications) => {
+const convertWorkerQualifications = (rawWorkerQualifications) => {
   return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
     return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
   }, []);
+};
+
+exports.convertQualificationsForEstablishments = (rawEstablishments) => {
+  return rawEstablishments.map((establishment) => {
+    return {
+      name: establishment.NameValue,
+      qualifications: convertWorkerQualifications(establishment),
+    };
+  });
 };
 
 exports.getTrainingTotals = (workers) => {
