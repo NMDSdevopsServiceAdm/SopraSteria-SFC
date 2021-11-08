@@ -171,7 +171,12 @@ const mockWorkerQualificationRecords = [
   },
 ];
 
-exports.mockWorkerQualificationRecords = mockWorkerQualificationRecords;
+exports.mockWorkerQualificationRecordsForSingleWorkplace = [
+  {
+    name: 'Test Workplace 1',
+    qualifications: mockWorkerQualificationRecords,
+  },
+];
 
 exports.mockWorkerQualificationRecordsForParent = [
   {
