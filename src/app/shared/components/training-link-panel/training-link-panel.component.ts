@@ -24,6 +24,8 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   public fromStaffRecord: boolean;
   public lastUpdated: string;
   public now = dayjs();
+  public isParent: boolean;
+  public parentTrainingAndQualificationsReport: boolean;
   private subscriptions: Subscription = new Subscription();
   private newTrainingAndQualificationsReport: boolean;
 
@@ -38,12 +40,19 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     this.url = this.router.url;
 
     this.establishmentUid = this.workplace.uid;
+    this.isParent = this.workplace.isParent;
     this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
 
     this.featureFlagsService.configCatClient
       .getValueAsync('newTrainingAndQualificationsReport', false)
       .then((value) => {
         this.newTrainingAndQualificationsReport = value;
+      });
+
+    this.featureFlagsService.configCatClient
+      .getValueAsync('parentTrainingAndQualificationsReport', false)
+      .then((value) => {
+        this.parentTrainingAndQualificationsReport = value;
       });
   }
 
@@ -84,6 +93,16 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
         ),
       );
     }
+  }
+
+  public downloadParentTrainingReport(event: Event): void {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportService.getParentTrainingAndQualificationsReport(this.establishmentUid).subscribe(
+        (response) => this.saveFile(response),
+        (error) => console.error(error),
+      ),
+    );
   }
 
   //set content type and save file
