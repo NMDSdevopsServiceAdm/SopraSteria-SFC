@@ -218,7 +218,7 @@ exports.mockParentWorkerTrainingRecords = [
     ]
   },
   {
-    workPlace: 'AAPNES East Area Business Support',
+    workPlace: 'Area Business Support',
     workerRecords: [
       {
         workerId: 'Eric Hatfield',
@@ -250,6 +250,18 @@ exports.mockParentWorkerTrainingRecords = [
   },
   {
     workPlace: 'AAPNES East Area Business Support',
+    workerRecords: [
+      {
+        workerId: 'Terrance Tate',
+        jobRole: 'Activities worker or co-ordinator',
+        longTermAbsence: '',
+        mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        trainingRecords: [],
+      }
+    ]
+  },
+  {
+    workPlace: 'Area Business Support',
     workerRecords: [
       {
         workerId: 'Terrance Tate',

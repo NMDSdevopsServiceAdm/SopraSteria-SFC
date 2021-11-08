@@ -73,12 +73,12 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Yes');
       });
 
-      it("should add next worker's first training record to next row of table when previous worker has no missing training", async () => {
+      it("should add next workplace with worker's first training record to next row of table when previous worker has no missing training", async () => {
         addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
 
         const expectedLine = 9;
 
-        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Area Business Support');
         expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Eric Hatfield');
         expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
         expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Emergency Aid awareness');
@@ -91,12 +91,12 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('Yes');
       });
 
-      it("should add worker's next training record to next row", async () => {
+      it("should add workplace with worker's next training record to next row", async () => {
         addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
 
         const expectedLine = 10;
 
-        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Area Business Support');
         expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Eric Hatfield');
         expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
         expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Diabetes');
@@ -109,13 +109,11 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('No');
       });
 
-
-      it("should add worker's missing training to next row if worker has missing mandatory training", async () => {
+      it("should add workplace with worker's missing training to next row if worker has missing mandatory training", async () => {
         addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
 
         const expectedLine = 11;
-
-        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('AAPNES East Area Business Support');
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Area Business Support');
         expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Eric Hatfield');
         expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Advice, Guidance and Advocacy');
         expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Activity provision/Well-being');
@@ -128,7 +126,7 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
       });
 
-      it("should add next worker's first missing training to next row if worker only has missing mandatory training and no records", async () => {
+        it("should add workplace with next worker's first missing training to next row if worker only has missing mandatory training and no records", async () => {
         addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
 
         const expectedLine = 12;
@@ -146,7 +144,7 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
       });
 
-      it("should add worker's next missing training when worker has more than one missing mandatory training", async () => {
+       it("should add workplace with worker's missing training when worker has missing mandatory training", async () => {
         addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
 
         const expectedLine = 13;
@@ -164,11 +162,48 @@ describe('addContentToTrainingTab', () => {
         expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
       });
 
+
+      it("should add next workplace with next worker's first missing training to next row if worker only has missing mandatory training and no records", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 14;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Terrance Tate');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Activity provision/Well-being');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Missing');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
+      });
+
+       it("should add workplace with worker's missing training when worker has missing mandatory training", async () => {
+        addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
+
+        const expectedLine = 15;
+
+        expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal('Area Business Support');
+        expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal('Terrance Tate');
+        expect(mockTrainingTab.getCell(`D${expectedLine}`).value).to.equal('Activities worker or co-ordinator');
+        expect(mockTrainingTab.getCell(`E${expectedLine}`).value).to.equal('Diabetes');
+        expect(mockTrainingTab.getCell(`F${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`G${expectedLine}`).value).to.equal('Mandatory');
+        expect(mockTrainingTab.getCell(`H${expectedLine}`).value).to.equal('Missing');
+        expect(mockTrainingTab.getCell(`I${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`J${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`K${expectedLine}`).value).to.equal('');
+        expect(mockTrainingTab.getCell(`L${expectedLine}`).value).to.equal('');
+      });
+
       describe('Adding blank row to empty table', async () => {
         it('should not add empty row to end of table when there is data', async () => {
           addContentToTrainingTab(mockTrainingTab, mockParentWorkerTrainingRecords);
 
-          const expectedLine = 14;
+          const expectedLine = 16;
 
           expect(mockTrainingTab.getCell(`B${expectedLine}`).value).to.equal(null);
           expect(mockTrainingTab.getCell(`C${expectedLine}`).value).to.equal(null);
