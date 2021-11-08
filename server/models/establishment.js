@@ -1471,7 +1471,11 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.workersAndTraining = async function (establishmentId, includeMandatoryTrainingBreakdown = false, isParent = false) {
+  Establishment.workersAndTraining = async function (
+    establishmentId,
+    includeMandatoryTrainingBreakdown = false,
+    isParent = false,
+  ) {
     const currentDate = moment().toISOString();
     const expiresSoon = moment().add(90, 'days').toISOString();
 
@@ -1583,10 +1587,10 @@ module.exports = function (sequelize, DataTypes) {
         {
           parentId: establishmentId,
           dataOwner: 'Workplace',
-          dataPermissions: 'Workplace and Staff'
+          dataPermissions: 'Workplace and Staff',
         },
       ];
-    };
+    }
 
     return this.findAll({
       attributes: ['id', 'NameValue'],
@@ -1595,8 +1599,8 @@ module.exports = function (sequelize, DataTypes) {
           {
             id: establishmentId,
           },
-            ...subsidiaries,
-        ]
+          ...subsidiaries,
+        ],
       },
       include: [
         {
@@ -1606,11 +1610,13 @@ module.exports = function (sequelize, DataTypes) {
           where: {
             archived: false,
           },
+          required: false,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['id', 'title'],
+              required: false,
             },
           ],
         },
@@ -1619,37 +1625,46 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getWorkerQualifications = async function (establishmentId, isParent = false) {
-    // let subsidiaries = [];
-    // if (isParent) {
-    //   subsidiaries = [
-    //     {
-    //       parentId: establishmentId,
-    //       dataOwner: 'Parent',
-    //     },
-    //     {
-    //       parentId: establishmentId,
-    //       dataOwner: 'Workplace',
-    //       dataPermissions: 'Workplace and Staff'
-    //     },
-    //   ];
-    // };
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
 
     return this.findAll({
       attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
       include: [
         {
           model: sequelize.models.worker,
           as: 'workers',
           attributes: ['NameOrIdValue'],
           where: {
-            establishmentFk: establishmentId,
             archived: false,
           },
+          required: false,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['id', 'title'],
+              required: false,
             },
             {
               model: sequelize.models.workerQualifications,
@@ -1660,6 +1675,7 @@ module.exports = function (sequelize, DataTypes) {
                   model: sequelize.models.workerAvailableQualifications,
                   as: 'qualification',
                   attributes: ['group', 'title', 'level'],
+                  required: false,
                 },
               ],
             },
