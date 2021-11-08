@@ -53,6 +53,35 @@ exports.mockWorkerTrainingBreakdowns = [
   },
 ];
 
+exports.secondMockWorkerTrainingBreakdowns = [
+  {
+    name: 'Jane Test',
+    trainingCount: 13,
+    qualificationCount: 0,
+    expiredTrainingCount: 0,
+    expiredMandatoryTrainingCount: 0,
+    expiredNonMandatoryTrainingCount: 0,
+    expiringTrainingCount: 2,
+    expiringMandatoryTrainingCount: 0,
+    expiringNonMandatoryTrainingCount: 2,
+    missingMandatoryTrainingCount: 2,
+    mandatoryTrainingCount: 3,
+  },
+  {
+    name: 'John Test',
+    trainingCount: 10,
+    qualificationCount: 2,
+    expiredTrainingCount: 4,
+    expiredMandatoryTrainingCount: 0,
+    expiredNonMandatoryTrainingCount: 2,
+    expiringTrainingCount: 4,
+    expiringMandatoryTrainingCount: 2,
+    expiringNonMandatoryTrainingCount: 2,
+    missingMandatoryTrainingCount: 0,
+    mandatoryTrainingCount: 4,
+  },
+];
+
 exports.mockWorkerTrainingRecords = [
   {
     workerId: 'Bob Test',

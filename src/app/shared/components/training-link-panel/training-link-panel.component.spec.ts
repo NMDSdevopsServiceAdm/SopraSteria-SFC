@@ -104,4 +104,46 @@ describe('TrainingLinkPanelComponent', () => {
     expect(reportServiceSpy).toHaveBeenCalledWith(componentInstance.establishmentUid);
     expect(saveFileSpy).toHaveBeenCalled();
   });
+
+  describe('Parent training and quals report', () => {
+    it('should call getParentTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
+      const { component, componentInstance, fixture } = await setup();
+
+      const reportService = TestBed.inject(ReportService);
+      const reportServiceSpy = spyOn(reportService, 'getParentTrainingAndQualificationsReport').and.returnValue(
+        of(null),
+      );
+      const saveFileSpy = spyOn(componentInstance, 'saveFile').and.returnValue(null);
+
+      componentInstance.isParent = true;
+      fixture.detectChanges();
+
+      const downloadTrainingButton = component.getByText('Download parent training report');
+      downloadTrainingButton.click();
+      fixture.detectChanges();
+
+      expect(reportServiceSpy).toHaveBeenCalledWith(componentInstance.establishmentUid);
+      expect(saveFileSpy).toHaveBeenCalled();
+    });
+
+    it('should only be visible for parents', async () => {
+      const { component, componentInstance, fixture } = await setup();
+
+      componentInstance.isParent = true;
+      fixture.detectChanges();
+
+      const downloadTrainingButton = component.getByText('Download parent training report');
+      expect(downloadTrainingButton).toBeTruthy();
+    });
+
+    it('should not be visible for standalone workplaces', async () => {
+      const { component, componentInstance, fixture } = await setup();
+
+      componentInstance.isParent = false;
+      fixture.detectChanges();
+
+      const downloadTrainingButton = component.queryByText('Download parent training report');
+      expect(downloadTrainingButton).toBeFalsy();
+    });
+  });
 });
