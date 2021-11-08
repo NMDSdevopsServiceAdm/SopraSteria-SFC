@@ -5,8 +5,8 @@ import { Contracts } from '@core/model/contracts.enum';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
+import dayjs from 'dayjs';
 import isNumber from 'lodash/isNumber';
-import moment from 'moment';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
@@ -60,6 +60,6 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   }
 
   get mainStartDate() {
-    return moment(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
+    return dayjs(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
   }
 }

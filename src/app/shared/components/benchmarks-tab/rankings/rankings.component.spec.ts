@@ -17,7 +17,7 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { of } from 'rxjs';
 
 const payTileData = {
@@ -96,7 +96,7 @@ describe('BenchmarksRankingsComponent', () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
     fixture.componentInstance.metaDataAvailable = true;
-    fixture.componentInstance.lastUpdated = moment('2020-11-24').toDate();
+    fixture.componentInstance.lastUpdated = dayjs('2020-11-24').toDate();
     fixture.detectChanges();
 
     const comparisonGroupText = getByText('Your comparison group');

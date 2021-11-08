@@ -10,7 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
@@ -87,8 +87,8 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.overallWdfEligibility = report.wdf.overall;
-        this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
-        this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+        this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+        this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
       }),
     );
   }

@@ -9,7 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import {
   DeleteQualificationDialogComponent,
 } from '@features/workers/delete-qualification-dialog/delete-qualification-dialog.component';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -21,7 +21,7 @@ export class QualificationsComponent implements OnInit {
   @Input() workplace: Establishment;
   @Output() qualificationsChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
-  public lastUpdated: moment.Moment;
+  public lastUpdated: dayjs.Dayjs;
   public qualifications: Qualification[];
   public qualificationDetails = [];
   public qualificationDetailsLabel = [];
@@ -58,7 +58,7 @@ export class QualificationsComponent implements OnInit {
 
   fetchAllRecords() {
     this.workerService.getQualifications(this.workplace.uid, this.worker.uid).subscribe((data) => {
-      this.lastUpdated = moment(data.lastUpdated);
+      this.lastUpdated = dayjs(data.lastUpdated);
       this.qualifications = data.qualifications;
     });
   }

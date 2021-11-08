@@ -5,8 +5,8 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
+import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
-import moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -33,8 +33,8 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   ) {}
 
   public lastUpdated(timestamp: string): string {
-    const lastUpdated: moment.Moment = moment(timestamp);
-    const isToday: boolean = moment().isSame(lastUpdated, 'day');
+    const lastUpdated = dayjs(timestamp);
+    const isToday: boolean = dayjs().isSame(lastUpdated, 'day');
     return isToday ? 'Today' : lastUpdated.format('D MMMM YYYY');
   }
 

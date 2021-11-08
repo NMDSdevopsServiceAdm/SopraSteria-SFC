@@ -9,7 +9,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
 
@@ -112,7 +112,7 @@ describe('WdfOverviewComponent', () => {
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
-      component.parentOverallEligibilityDate = moment('2021-07-31').format('D MMMM YYYY');
+      component.parentOverallEligibilityDate = dayjs('2021-07-31').format('D MMMM YYYY');
       fixture.detectChanges();
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
