@@ -41,14 +41,14 @@ export abstract class DateValidator {
         return { dateValid: true };
       }
 
-      return this.validate(
-        `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-          month.value,
-        )}-${FormatUtil.formatSingleDigit(day.value)}`,
-        DATE_PARSE_FORMAT,
-      )
-        ? null
-        : { dateValid: true };
+      const formattedDate =
+        FormatUtil.formatSingleDigit(year.value) +
+        '-' +
+        FormatUtil.formatSingleDigit(month.value) +
+        '-' +
+        FormatUtil.formatSingleDigit(day.value);
+
+      return this.validate(formattedDate, DATE_PARSE_FORMAT) ? null : { dateValid: true };
     };
   }
 
@@ -60,21 +60,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           if (before) {
             return date.isAfter(comparisonDate) ? null : { beforeStartDate: true };
           }
@@ -91,21 +85,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           return date.isBefore(dayjs(), 'day') ? null : { beforeToday: true };
         }
       }
@@ -119,21 +107,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           return date.isSameOrBefore(dayjs(), 'day') ? null : { todayOrBefore: true };
         }
       }
@@ -147,21 +129,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           return date.isAfter(dayjs(), 'day') ? null : { afterToday: true };
         }
       }
@@ -175,21 +151,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           return date.isSameOrAfter(dayjs(), 'day') ? null : { todayOrAfter: true };
         }
       }
@@ -203,21 +173,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           return date.isBetween(min, max) ? null : { dateBetween: { min, max, actual: date } };
         }
       }
@@ -231,21 +195,15 @@ export abstract class DateValidator {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
-        const date = dayjs(
-          `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-            month.value,
-          )}-${FormatUtil.formatSingleDigit(day.value)}`,
-          DATE_PARSE_FORMAT,
-        );
+        const formattedDate =
+          FormatUtil.formatSingleDigit(year.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(month.value) +
+          '-' +
+          FormatUtil.formatSingleDigit(day.value);
+        const date = dayjs(formattedDate, DATE_PARSE_FORMAT);
 
-        if (
-          this.validate(
-            `${FormatUtil.formatSingleDigit(year.value)}-${FormatUtil.formatSingleDigit(
-              month.value,
-            )}-${FormatUtil.formatSingleDigit(day.value)}`,
-            DATE_PARSE_FORMAT,
-          )
-        ) {
+        if (this.validate(formattedDate, DATE_PARSE_FORMAT)) {
           return date.isAfter(min) ? null : { dateMin: { min, actual: date } };
         }
       }
