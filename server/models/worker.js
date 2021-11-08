@@ -1277,25 +1277,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.getWorkersWithCareCertificateStatus = async function (establishmentId) {
-    return this.findAll({
-      attributes: ['NameOrIdValue', 'CareCertificateValue'],
-      where: {
-        establishmentFk: establishmentId,
-        CareCertificateValue: { [Op.ne]: null },
-        archived: false,
-      },
-      include: [
-        {
-          model: sequelize.models.job,
-          as: 'mainJob',
-          attributes: ['id', 'title'],
-          require: true,
-        },
-      ],
-    });
-  };
-
   Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
     return this.findAll({
       attributes: [
