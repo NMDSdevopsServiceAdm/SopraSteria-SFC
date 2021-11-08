@@ -9,15 +9,20 @@ const parentTrainingAndQualificationsReport = require('../../../../../../routes/
 describe('generateParentTrainingAndQualificationsReport', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findByUid').returns({ id: 1234 });
-    sinon.stub(models.establishment, 'workersAndTraining').returns([
-      {
-        workers: [],
-      },
-    ]);
 
     sinon.stub(models.establishment, 'getEstablishmentTrainingRecords').callsFake(() => {
       return [];
     });
+    sinon.stub(models.establishment, 'workersAndTraining').returns(
+      [
+        {
+          id: 1234,
+          name: 'Test',
+          workers: [],
+          get: () => {},
+        }
+      ]
+    );
   });
 
   afterEach(() => {

@@ -166,50 +166,75 @@ exports.getTrainingTotals = (workers) => {
   };
 };
 
-
 exports.convertParentWorkersWithTrainingRecords = (rawParentWorkersWithTrainingRecords) =>{
   return rawParentWorkersWithTrainingRecords.map((establishment) =>{
      return convertParentWorkplace(establishment);
     });
   };
 
-  const convertParentWorkplace = (establishment) => {
-    const workerPlaceIdIsNumber= parseInt(establishment.get('NameValue'));
+const convertParentWorkplace = (establishment) => {
+  const workerPlaceIdIsNumber= parseInt(establishment.get('NameValue'));
+
+  return {
+    workPlace: workerPlaceIdIsNumber ? workerPlaceIdIsNumber : establishment.get('NameValue'),
+    workerRecords: convertParentWorkerWithTrainingRecords(establishment.workers),
+  };
+};
+
+const convertParentWorkerWithTrainingRecords = (workers) => {
+  return workers.map((workerRecord) => {
+  const workerIdAsNumber = parseInt(workerRecord.get('NameOrIdValue'));
 
     return {
-      workPlace: workerPlaceIdIsNumber ? workerPlaceIdIsNumber : establishment.get('NameValue'),
-     workerRecords: convertParentWorkerWithTrainingRecords(establishment.workers),
+    workerId: workerIdAsNumber ? workerIdAsNumber : workerRecord.get('NameOrIdValue'),
+    jobRole: workerRecord.mainJob.title,
+    longTermAbsence: workerRecord.get('LongTermAbsence') ? workerRecord.get('LongTermAbsence') : '',
+    mandatoryTraining: workerRecord.get('mandatoryTrainingCategories') ? workerRecord.get('mandatoryTrainingCategories') : [],
+    trainingRecords: convertParentWorkerTraining(workerRecord.workerTraining),
     };
-  };
+  });
+};
 
-  const convertParentWorkerWithTrainingRecords = (workers) => {
-    return workers.map((workerRecord) => {
-    const workerIdAsNumber = parseInt(workerRecord.get('NameOrIdValue'));
+const convertParentWorkerTraining = (workerTraining) => {
 
-     return {
-      workerId: workerIdAsNumber ? workerIdAsNumber : workerRecord.get('NameOrIdValue'),
-      jobRole: workerRecord.mainJob.title,
-      longTermAbsence: workerRecord.get('LongTermAbsence') ? workerRecord.get('LongTermAbsence') : '',
-      mandatoryTraining: workerRecord.get('mandatoryTrainingCategories') ? workerRecord.get('mandatoryTrainingCategories') : [],
-      trainingRecords: convertParentWorkerTraining(workerRecord.workerTraining),
-     };
-   });
-  };
+  return workerTraining.map((trainingRecord) => {
+    const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
+    const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
 
-  const convertParentWorkerTraining = (workerTraining) => {
+    return {
+      category: trainingRecord.get('category').category,
+      categoryFK: trainingRecord.get('CategoryFK'),
+      trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
+      expiryDate,
+      status: getTrainingRecordStatus(expiryDate),
+      dateCompleted,
+      accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
+    };
+  });
+};
 
-    return workerTraining.map((trainingRecord) => {
-      const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
-      const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+exports.getTotalsForAllWorkplaces = (establishments) => {
+  return establishments.reduce((a, b) => {
+    return {
+      totals: {
+        upToDate: {
+          total: a.totals.upToDate.total + b.totals.upToDate.total,
+          mandatory: a.totals.upToDate.mandatory + b.totals.upToDate.mandatory,
+          nonMandatory: a.totals.upToDate.nonMandatory + b.totals.upToDate.nonMandatory,
+        },
+        expiringSoon: {
+          total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
+          mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
+          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
+        },
+        expired: {
+          total: a.totals.expired.total + b.totals.expired.total,
+          mandatory: a.totals.expired.mandatory + b.totals.expired.mandatory,
+          nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
+        },
+        missing: a.totals.missing + b.totals.missing,
+      }
+    }
+  });
+}
 
-      return {
-        category: trainingRecord.get('category').category,
-        categoryFK: trainingRecord.get('CategoryFK'),
-        trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
-        expiryDate,
-        status: getTrainingRecordStatus(expiryDate),
-        dateCompleted,
-        accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
-      };
-    });
-  };

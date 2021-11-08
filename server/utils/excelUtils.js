@@ -201,3 +201,7 @@ exports.textColours = {
   red: { argb: '960512' },
   green: { argb: '005713' },
 };
+
+exports.makeRowBold = (tab, rowNumber) => {
+  tab.getRow(rowNumber).font = { bold: true };
+}
