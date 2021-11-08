@@ -1645,21 +1645,17 @@ module.exports = function (sequelize, DataTypes) {
       ],
       'LongTermAbsence',
     ];
-    let subsidiaries;
+    let subsidiaries = [];
     if (isParent) {
       subsidiaries = [
         {
-          [Op.or]: [
-            {
-              parentId: establishmentId,
-              dataOwner: 'Parent',
-            },
-            {
-              parentId: establishmentId,
-              dataOwner: 'Workplace',
-              dataPermissions: 'Workplace and Staff',
-            },
-          ],
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
         },
       ];
     }
