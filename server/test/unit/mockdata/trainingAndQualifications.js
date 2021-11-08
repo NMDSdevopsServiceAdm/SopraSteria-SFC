@@ -178,6 +178,23 @@ exports.mockWorkerQualificationRecordsForParent = [
     name: 'Test Workplace 1',
     qualifications: mockWorkerQualificationRecords,
   },
+  {
+    name: 'Test Workplace 2',
+    qualifications: [],
+  },
+  {
+    name: 'Test Workplace 3',
+    qualifications: [
+      {
+        workerName: 'Lionel Ritchie',
+        jobRole: 'Administrator',
+        qualificationType: 'Big Hit',
+        qualificationName: 'Dancing on the Ceiling',
+        qualificationLevel: '2',
+        yearAchieved: 2017,
+      },
+    ],
+  },
 ];
 
 exports.mockWorkersWithCareCertificateStatus = [

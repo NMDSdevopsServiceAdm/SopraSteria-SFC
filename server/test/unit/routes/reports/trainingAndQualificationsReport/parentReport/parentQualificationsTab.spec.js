@@ -40,7 +40,7 @@ describe('addContentToQualificationsTab', () => {
     expect(mockQualificationsTab.getCell(`H${expectedLine}`).value).to.equal('Year achieved');
   });
 
-  it('should add first training record to top row of table', async () => {
+  it('should add first qualification to top row of table', async () => {
     addContentToQualificationsTab(mockQualificationsTab, mockWorkerQualificationRecordsForParent);
 
     const expectedLine = 7;
@@ -56,7 +56,7 @@ describe('addContentToQualificationsTab', () => {
     expect(mockQualificationsTab.getCell(`H${expectedLine}`).value).to.equal(2020);
   });
 
-  it("should add worker's next training record to next row of table", async () => {
+  it("should add worker's next qualification to next row of table", async () => {
     addContentToQualificationsTab(mockQualificationsTab, mockWorkerQualificationRecordsForParent);
 
     const expectedLine = 8;
@@ -84,11 +84,25 @@ describe('addContentToQualificationsTab', () => {
     expect(mockQualificationsTab.getCell(`H${expectedLine}`).value).to.equal('');
   });
 
+  it('should skip workplace with no qualifications and add qualification from next workplace to next row of table', async () => {
+    addContentToQualificationsTab(mockQualificationsTab, mockWorkerQualificationRecordsForParent);
+
+    const expectedLine = 10;
+
+    expect(mockQualificationsTab.getCell(`B${expectedLine}`).value).to.equal('Test Workplace 3');
+    expect(mockQualificationsTab.getCell(`C${expectedLine}`).value).to.equal('Lionel Ritchie');
+    expect(mockQualificationsTab.getCell(`D${expectedLine}`).value).to.equal('Administrator');
+    expect(mockQualificationsTab.getCell(`E${expectedLine}`).value).to.equal('Big Hit');
+    expect(mockQualificationsTab.getCell(`F${expectedLine}`).value).to.equal('Dancing on the Ceiling');
+    expect(mockQualificationsTab.getCell(`G${expectedLine}`).value).to.equal('Level 2');
+    expect(mockQualificationsTab.getCell(`H${expectedLine}`).value).to.equal(2017);
+  });
+
   describe('Adding blank row to empty table', async () => {
     it('should not add empty row to end of table when there is data', async () => {
       addContentToQualificationsTab(mockQualificationsTab, mockWorkerQualificationRecordsForParent);
 
-      const expectedLine = 10;
+      const expectedLine = 11;
 
       expect(mockQualificationsTab.getCell(`B${expectedLine}`).value).to.equal(null);
       expect(mockQualificationsTab.getCell(`C${expectedLine}`).value).to.equal(null);
