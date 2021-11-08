@@ -17,7 +17,7 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
-import * as moment from 'moment';
+import moment from 'moment';
 import { of } from 'rxjs';
 
 const payTileData = {

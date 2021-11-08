@@ -5,8 +5,8 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
-import { orderBy } from 'lodash';
-import * as moment from 'moment';
+import orderBy from 'lodash/orderBy';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({

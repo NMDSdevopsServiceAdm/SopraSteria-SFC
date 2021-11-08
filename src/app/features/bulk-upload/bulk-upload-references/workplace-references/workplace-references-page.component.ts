@@ -13,7 +13,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { find } from 'lodash';
+import find from 'lodash/find';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -63,6 +63,8 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
               const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
               return {
                 ...workplace,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 ...{ localIdentifier: updated.value },
               };
             }) as Workplace[];

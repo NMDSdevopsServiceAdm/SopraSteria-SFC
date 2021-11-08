@@ -8,8 +8,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
-import { orderBy } from 'lodash';
-import * as moment from 'moment';
+import orderBy from 'lodash/orderBy';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({

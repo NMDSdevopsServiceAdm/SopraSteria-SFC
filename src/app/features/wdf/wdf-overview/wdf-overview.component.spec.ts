@@ -9,7 +9,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
 

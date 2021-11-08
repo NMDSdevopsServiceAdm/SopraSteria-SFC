@@ -6,7 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { QuestionComponent } from '../question/question.component';
 

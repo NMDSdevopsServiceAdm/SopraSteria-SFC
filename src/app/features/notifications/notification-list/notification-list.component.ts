@@ -5,7 +5,7 @@ import { Notification } from '@core/model/notifications.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-notification-list',
@@ -18,13 +18,13 @@ export class NotificationListComponent implements OnInit {
   constructor(
     private establishmentService: EstablishmentService,
     private notificationService: NotificationsService,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.notifications = orderBy(this.notificationService.notifications, notification => notification.created, [
+    this.notifications = orderBy(this.notificationService.notifications, (notification) => notification.created, [
       'desc',
     ]);
   }

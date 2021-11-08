@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { isNumber } from 'lodash';
+import isNumber from 'lodash/isNumber';
 
 @Pipe({
   name: 'numericAnswer',

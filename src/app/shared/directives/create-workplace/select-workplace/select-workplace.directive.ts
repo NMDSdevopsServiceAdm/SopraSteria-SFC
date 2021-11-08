@@ -7,7 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import { filter } from 'lodash';
+import filter from 'lodash/filter';
 import { Subscription } from 'rxjs';
 
 @Directive()

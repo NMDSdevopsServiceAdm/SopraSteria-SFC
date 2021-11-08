@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { build } from '@jackfranklin/test-data-bot';
-import * as moment from 'moment';
+import moment from 'moment';
 
 export const mockRegistration = {
   created: moment.utc('20210101').format('D/M/YYYY h:mma'),

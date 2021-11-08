@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Notification, NotificationRequest } from '@core/model/notifications.model';
-import { filter } from 'lodash';
+import filter from 'lodash/filter';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({

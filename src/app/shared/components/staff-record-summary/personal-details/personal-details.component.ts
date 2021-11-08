@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 

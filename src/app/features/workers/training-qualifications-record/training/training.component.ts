@@ -8,7 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DeleteTrainingDialogComponent } from '@features/workers/delete-training-dialog/delete-training-dialog.component';
-import * as moment from 'moment';
+import moment from 'moment';
 import { take } from 'rxjs/operators';
 
 @Component({

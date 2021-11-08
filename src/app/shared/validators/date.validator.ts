@@ -1,7 +1,7 @@
 import { FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { FormatUtil } from '@core/utils/format-util';
-import * as moment from 'moment';
+import moment from 'moment';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
