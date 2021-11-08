@@ -6,7 +6,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render, RenderResult, within } from '@testing-library/angular';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
 
@@ -125,7 +125,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
         training: [
           trainingBuilder({
             overrides: {
-              expires: moment().subtract(1, 'month').toISOString(),
+              expires: dayjs().subtract(1, 'month').toISOString(),
             },
           }),
         ],
@@ -160,7 +160,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
         training: [
           trainingBuilder({
             overrides: {
-              expires: moment().subtract(1, 'month').toISOString(),
+              expires: dayjs().subtract(1, 'month').toISOString(),
             },
           }),
         ],
@@ -200,7 +200,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().subtract(1, 'month').toISOString(),
+                expires: dayjs().subtract(1, 'month').toISOString(),
               },
             }),
           ],
@@ -213,7 +213,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'month').toISOString(),
+                expires: dayjs().add(1, 'month').toISOString(),
               },
             }),
           ],
@@ -226,7 +226,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'year').toISOString(),
+                expires: dayjs().add(1, 'year').toISOString(),
               },
             }),
           ],
@@ -278,7 +278,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().subtract(1, 'month').toISOString(),
+                expires: dayjs().subtract(1, 'month').toISOString(),
               },
             }),
           ],
@@ -291,7 +291,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'month').toISOString(),
+                expires: dayjs().add(1, 'month').toISOString(),
               },
             }),
           ],
@@ -304,7 +304,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'year').toISOString(),
+                expires: dayjs().add(1, 'year').toISOString(),
               },
             }),
           ],

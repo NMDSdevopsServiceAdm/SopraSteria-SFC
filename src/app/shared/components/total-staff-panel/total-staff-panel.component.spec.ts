@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { within } from '@testing-library/angular';
@@ -13,7 +13,7 @@ describe('TotalStaffPanelComponent', () => {
   let fixture: ComponentFixture<TotalStaffPanelComponent>;
   let permissionsService: PermissionsService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [TotalStaffPanelComponent],

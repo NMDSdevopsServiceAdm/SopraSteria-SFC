@@ -6,8 +6,8 @@ import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
-import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,7 +23,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   public url: string;
   public fromStaffRecord: boolean;
   public lastUpdated: string;
-  public now = moment.now();
+  public now = dayjs();
   public isParent: boolean;
   public parentTrainingAndQualificationsReport: boolean;
   private subscriptions: Subscription = new Subscription();
