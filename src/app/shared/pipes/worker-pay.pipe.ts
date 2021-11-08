@@ -1,12 +1,11 @@
 import { DecimalPipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
-import { WorkerPay } from '@core/model/worker.model';
 
 @Pipe({
   name: 'workerPay',
 })
 export class WorkerPayPipe extends DecimalPipe implements PipeTransform {
-  transform(workerPay: WorkerPay) {
+  transform(workerPay: any): any {
     if (!workerPay) {
       return null;
     }
