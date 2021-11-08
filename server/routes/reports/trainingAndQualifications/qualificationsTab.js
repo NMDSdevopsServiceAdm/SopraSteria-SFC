@@ -13,7 +13,7 @@ const {
 const models = require('../../../models');
 
 const generateQualificationsTab = async (workbook, establishmentId, isParent = false) => {
-  const rawEstablishments = await models.establishment.getWorkerQualifications(establishmentId, false);
+  const rawEstablishments = await models.establishment.getWorkerQualifications(establishmentId, isParent);
   const establishments = convertQualificationsForEstablishments(rawEstablishments);
 
   const qualificationsTab = workbook.addWorksheet('Qualifications', { views: [{ showGridLines: false }] });
@@ -34,10 +34,7 @@ const addContentToQualificationsTab = (qualificationsTab, establishments, isPare
 };
 
 const createQualificationsTable = (tab, isParent) => {
-  const headingColumns = ['B', 'C', 'D', 'E', 'F', 'G'];
-  if (isParent) headingColumns.push('H');
-
-  setTableHeadingsStyle(tab, 6, backgroundColours.blue, textColours.white, headingColumns);
+  setStylesForQualificationsTableHeadings(tab, isParent);
 
   const columns = [
     { name: 'Worker ID', filterButton: true },
@@ -62,27 +59,37 @@ const createQualificationsTable = (tab, isParent) => {
 
 const addRowsToQualificationsTable = (workerQualificationsTable, establishments, isParent) => {
   for (let establishment of establishments) {
-    for (let worker of establishment.qualifications) {
-      const row = [
-        worker.workerName,
-        worker.jobRole,
-        worker.qualificationType,
-        worker.qualificationName,
-        worker.qualificationLevel ? `Level ${worker.qualificationLevel}` : '',
-        worker.yearAchieved ? worker.yearAchieved : '',
-      ];
-
-      if (isParent) {
-        row.unshift(establishment.name);
-      }
-
-      workerQualificationsTable.addRow(row);
-    }
+    addQualificationRowsForEstablishment(workerQualificationsTable, establishment, isParent);
   }
 
   addBlankRowIfTableEmpty(workerQualificationsTable, isParent ? 7 : 6);
-
   workerQualificationsTable.commit();
+};
+
+const addQualificationRowsForEstablishment = (workerQualificationsTable, establishment, isParent) => {
+  for (let qualification of establishment.qualifications) {
+    const row = [
+      qualification.workerName,
+      qualification.jobRole,
+      qualification.qualificationType,
+      qualification.qualificationName,
+      qualification.qualificationLevel ? `Level ${qualification.qualificationLevel}` : '',
+      qualification.yearAchieved ? qualification.yearAchieved : '',
+    ];
+
+    if (isParent) {
+      row.unshift(establishment.name);
+    }
+
+    workerQualificationsTable.addRow(row);
+  }
+};
+
+const setStylesForQualificationsTableHeadings = (tab, isParent) => {
+  const headingColumns = ['B', 'C', 'D', 'E', 'F', 'G'];
+  if (isParent) headingColumns.push('H');
+
+  setTableHeadingsStyle(tab, 6, backgroundColours.blue, textColours.white, headingColumns);
 };
 
 module.exports.generateQualificationsTab = generateQualificationsTab;
