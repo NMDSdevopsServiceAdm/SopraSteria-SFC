@@ -14,9 +14,10 @@ const {
 const { convertWorkersWithCareCertificateStatus } = require('../../../../utils/trainingAndQualificationsUtils');
 
 const generateCareCertificateTab = async (workbook, establishmentId) => {
-  const rawEstablishmentWorkersCareCertificates = await models.establishment.getWorkersWithCareCertificateStatus([
-    establishmentId,
-  ]);
+  const rawEstablishmentWorkersCareCertificates = await models.establishment.getWorkersWithCareCertificateStatus(
+    [establishmentId],
+    true,
+  );
 
   const establishmentWorkerCareCertificates = rawEstablishmentWorkersCareCertificates.map((establishment) => {
     const workersWithCareCertificates = convertWorkersWithCareCertificateStatus(establishment.workers);

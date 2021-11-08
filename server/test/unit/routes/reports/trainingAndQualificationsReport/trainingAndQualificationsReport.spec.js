@@ -6,25 +6,23 @@ const models = require('../../../../../models');
 
 const trainingAndQualificationsReport = require('../../../../../routes/reports/trainingAndQualifications/generateTrainingAndQualificationsReport');
 
-describe('generateTrainingAndQualificationsReport', () => {
+describe.only('generateTrainingAndQualificationsReport', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findByUid').callsFake(() => {
       return { id: 1234 };
     });
-    sinon.stub(models.establishment, 'workersAndTraining').returns(
-      [
-        {
-          workers: [],
-        }
-      ]
-    );
+    sinon.stub(models.establishment, 'workersAndTraining').returns([
+      {
+        workers: [],
+      },
+    ]);
     sinon.stub(models.worker, 'getEstablishmentTrainingRecords').callsFake(() => {
       return [];
     });
     sinon.stub(models.workerQualifications, 'getWorkerQualifications').callsFake(() => {
       return [];
     });
-    sinon.stub(models.worker, 'getWorkersWithCareCertificateStatus').callsFake(() => {
+    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').callsFake(() => {
       return [];
     });
   });
