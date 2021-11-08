@@ -47,6 +47,11 @@ export const mockConfigCatClient = {
         return resolve(true);
       });
     }
+    if (flagName === 'parentTrainingAndQualificationsReport') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
     if (flagName === 'newTrainingAndQualificationsRecords') {
       return new Promise((resolve) => {
         return resolve(false);

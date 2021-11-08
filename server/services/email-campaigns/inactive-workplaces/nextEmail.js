@@ -1,4 +1,5 @@
 const moment = require('moment');
+
 const config = require('../../../config/config');
 
 const lastMonth = moment().subtract(1, 'months');
@@ -29,7 +30,7 @@ const templates = {
     lastUpdated: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
     matches: function (lastUpdated) {
-      return lastUpdated.isSameOrBefore(this.lastUpdated, 'month');
+      return lastUpdated.isSame(this.lastUpdated, 'month');
     },
   },
 };
@@ -39,7 +40,8 @@ const getTemplate = (inactiveWorkplace) => {
 
   for (const [, month] of Object.entries(templates)) {
     const nextTemplate = month.template;
-    const notReceivedTemplate = inactiveWorkplace.LastTemplate !== nextTemplate.id;
+    const lastTemplate = inactiveWorkplace.LastTemplate ? parseInt(inactiveWorkplace.LastTemplate) : null;
+    const notReceivedTemplate = lastTemplate !== nextTemplate.id;
 
     if (month.matches(lastUpdated) && notReceivedTemplate) {
       return nextTemplate;

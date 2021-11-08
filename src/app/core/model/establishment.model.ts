@@ -243,3 +243,9 @@ export enum SortTrainingAndQualsOptionsCat {
   '2_missing' = 'Missing',
   '3_category' = 'Category',
 }
+
+export enum FilterTrainingAndQualsOptions {
+  '0_showall' = 'Show all',
+  '1_expired' = 'Expired',
+  '2_expires_soon' = 'Expires soon',
+}

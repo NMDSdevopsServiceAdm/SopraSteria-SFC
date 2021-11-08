@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, FilterTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
@@ -36,7 +36,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public jobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
   private currentUrl: string;
-
+  public filterTrainingByStatus;
+  public filterTrainingByDefault: string;
+  public filterTraining;
+  public allTrainings;
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
@@ -65,13 +68,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.currentUrl = this.router.url;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
+
+    this.filterTrainingByDefault = '0_showall';
+    this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
+    this.getFilterByStatus(this.filterTrainingByDefault);
   }
 
   public setTrainingAndQualifications(): void {
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
     this.qualificationsCount = this.qualificationsByGroup.count;
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-
+    this.filterTraining = this.allTrainings = trainingRecords;
     this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
@@ -131,6 +138,42 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         );
       });
     });
+  }
+
+  getFilterByStatus(dropdownValue) {
+    if (dropdownValue === '0_showall') {
+      this.nonMandatoryTraining = this.allTrainings.nonMandatory;
+      this.mandatoryTraining = this.allTrainings.mandatory;
+      return;
+    }
+
+    const filterValue = dropdownValue === '1_expired' ? 3 : 1;
+    this.filterTraining = this.allTrainings;
+    const mandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.mandatory);
+    const nonMandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.nonMandatory);
+
+    this.filterTraining = { mandatory, nonMandatory };
+    this.nonMandatoryTraining = nonMandatory;
+    this.mandatoryTraining = mandatory;
+  }
+
+  private filterNonMandatoryAndMandatoryByStatus(filterValue, trainings) {
+    const filteredTrainings = [];
+    trainings.filter((training) => {
+      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, filteredTrainings);
+    });
+    return filteredTrainings;
+  }
+
+  private pushMandatoryAndNonMandatoryInArray(training, filterValue, arrayTraining) {
+    const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
+    if (filterdStatus && filterdStatus.length) {
+      arrayTraining.push({
+        category: training.category,
+        id: training.id,
+        trainingRecords: filterdStatus,
+      });
+    }
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {

@@ -1,4 +1,4 @@
-const { convertWorkerTrainingBreakdowns, getTrainingTotals } = require('../../../../utils/trainingAndQualificationsUtils');
+const { convertWorkerTrainingBreakdowns, getTrainingTotals, getTotalsForAllWorkplaces } = require('../../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
   addLine,
@@ -7,57 +7,54 @@ const {
   setTableHeadingsStyle,
   alignColumnToLeft,
   addBordersToAllFilledCells,
+  makeRowBold,
 } = require('../../../../utils/excelUtils');
 const models = require('../../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
-    [establishmentId],
+    establishmentId,
+    true,
     true,
   );
 
-  const establishmentRecordTotals = [];
-  rawEstablishmentTrainingBreakdowns.forEach((establishment) => {
+  const establishmentRecordTotals = rawEstablishmentTrainingBreakdowns.map((establishment) => {
     const trainingBreakdowns = convertWorkerTrainingBreakdowns(establishment.workers);
-
-    establishmentRecordTotals.push({
-      establishmentId: establishment.id,
+    return {
+      establishmentName: establishment.get('NameValue'),
       totals: getTrainingTotals(trainingBreakdowns),
-    });
+    };
   });
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });
   addContentToSummaryTab(summaryTab, establishmentRecordTotals);
 };
 
+const setHeadingWithStyling = (tab, cols, colour, text) => {
+  addHeading(tab, cols[0] + '6', cols[cols.length - 1] + '6', text);
+  setTableHeadingsStyle(tab, 6, backgroundColours[colour], textColours[colour], cols);
+  setTableHeadingsStyle(tab, 7, backgroundColours[colour], textColours[colour], cols);
+}
+
 const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
   addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'L4');
-  alignColumnToLeft(summaryTab, 2);
 
   summaryTab.mergeCells('B6:B7')
   setTableHeadingsStyle(summaryTab, 6, backgroundColours.blue, textColours.white, ['B'])
   setTableHeadingsStyle(summaryTab, 7, backgroundColours.blue, textColours.white, ['B'])
 
-  addHeading(summaryTab, 'C6', 'E6', 'Up to date');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.green, textColours.green, ['C', 'D', 'E']);
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.green, textColours.green, ['C', 'D', 'E']);
-
-  addHeading(summaryTab, 'F6', 'H6', 'Expiring soon');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.yellow, textColours.yellow, ['F', 'G', 'H']);
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.yellow, textColours.yellow, ['F', 'G', 'H']);
-
-  addHeading(summaryTab, 'I6', 'K6', 'Expired');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.red, textColours.red, ['I', 'J', 'K']);
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.red, textColours.red, ['I', 'J', 'K']);
-
-  addHeading(summaryTab, 'L6', 'L6', 'Missing');
-  setTableHeadingsStyle(summaryTab, 6, backgroundColours.red, textColours.red, ['L'])
-  setTableHeadingsStyle(summaryTab, 7, backgroundColours.red, textColours.red, ['L']);
+  setHeadingWithStyling(summaryTab, ['C', 'D', 'E'], 'green', 'Up to date');
+  setHeadingWithStyling(summaryTab, ['F', 'G', 'H'], 'yellow', 'Expiring soon');
+  setHeadingWithStyling(summaryTab, ['I', 'J', 'K'], 'red', 'Expired');
+  setHeadingWithStyling(summaryTab, ['L'], 'red', 'Missing');
 
   const summaryTable = createSummaryTable(summaryTab);
+  addTotalsToSummaryTable(establishmentRecordTotals, summaryTable)
   addRowsToTable(establishmentRecordTotals, summaryTable)
 
+  alignColumnToLeft(summaryTab, 2);
+  makeRowBold(summaryTab, 8);
   addBordersToAllFilledCells(summaryTab, 5);
   setColumnWidths(summaryTab);
 };
@@ -79,16 +76,33 @@ const createSummaryTable = (summaryTab) => {
       { name: 'Non-mandatory', filterButton: false },
       { name: 'Total', filterButton: false },
     ],
-    rows: [
-      ['Total', 1, 2, 3, 1, 2, 3, 1, 2, 3, 4],
-    ],
+    rows: [],
   });
+}
+
+const addTotalsToSummaryTable = (establishments, summaryTable) => {
+  const totals = getTotalsForAllWorkplaces(establishments).totals;
+  summaryTable.addRow([
+    'Total',
+    totals.upToDate.total,
+    totals.upToDate.mandatory,
+    totals.upToDate.nonMandatory,
+    totals.expiringSoon.total,
+    totals.expiringSoon.mandatory,
+    totals.expiringSoon.nonMandatory,
+    totals.expired.total,
+    totals.expired.mandatory,
+    totals.expired.nonMandatory,
+    totals.missing,
+  ]);
+
+  summaryTable.commit();
 }
 
 const addRowsToTable = (establishments, summaryTable) => {
   establishments.forEach((establishment) => {
     summaryTable.addRow([
-      establishment.establishmentId,
+      establishment.establishmentName,
       establishment.totals.upToDate.total,
       establishment.totals.upToDate.mandatory,
       establishment.totals.upToDate.nonMandatory,
@@ -106,14 +120,15 @@ const addRowsToTable = (establishments, summaryTable) => {
 };
 
 const setColumnWidths = (tab) => {
-  const firstColumn = tab.getColumn(2);
+  const startingColumn = 2;
+  const firstColumn = tab.getColumn(startingColumn);
+  const totalColumns = tab.getRow(8).actualCellCount + startingColumn;
 
-  firstColumn.width = 24;
-  for (let i = 2; i < 13; i++) {
+  firstColumn.width = 30;
+  for (var i = startingColumn + 1; i < totalColumns; i++) {
     tab.getColumn(i).width = 15;
   }
 };
-
 
 module.exports.generateSummaryTab = generateSummaryTab;
 module.exports.addContentToSummaryTab = addContentToSummaryTab;
