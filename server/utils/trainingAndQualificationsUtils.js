@@ -96,22 +96,34 @@ exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
   });
 };
 
-const convertIndividualWorkerQualifications = (workerQualifications) => {
-  const workerIdAsNumber = parseInt(workerQualifications.worker.get('NameOrIdValue'));
-
-  return {
-    workerName: workerIdAsNumber ? workerIdAsNumber : workerQualifications.worker.get('NameOrIdValue'),
-    jobRole: workerQualifications.worker.mainJob.title,
-    qualificationType: workerQualifications.qualification.group,
-    qualificationName: workerQualifications.qualification.title,
-    qualificationLevel: workerQualifications.qualification.level,
-    yearAchieved: workerQualifications.get('Year'),
-  };
+const convertIndividualWorkerQualifications = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+  return worker.qualifications.map((qualification) => {
+    return {
+      workerName: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+      jobRole: worker.mainJob.title,
+      qualificationType: qualification.qualification.group,
+      qualificationName: qualification.qualification.title,
+      qualificationLevel: qualification.qualification.level,
+      yearAchieved: qualification.get('Year'),
+    };
+  });
 };
 
-exports.convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications.map((workerQualifications) => {
-    return convertIndividualWorkerQualifications(workerQualifications);
+const convertWorkerQualifications = (rawWorkerQualifications) => {
+  return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
+    return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
+  }, []);
+};
+
+exports.convertQualificationsForEstablishments = (rawEstablishments) => {
+  return rawEstablishments.map((establishment) => {
+    const workplaceNameAsNumber = parseInt(establishment.NameValue);
+
+    return {
+      name: workplaceNameAsNumber ? workplaceNameAsNumber : establishment.NameValue,
+      qualifications: convertWorkerQualifications(establishment),
+    };
   });
 };
 
@@ -175,7 +187,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
         expiringSoon: {
           total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
           mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
-          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
+          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory,
         },
         expired: {
           total: a.totals.expired.total + b.totals.expired.total,
@@ -183,8 +195,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
           nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
         },
         missing: a.totals.missing + b.totals.missing,
-      }
-    }
+      },
+    };
   });
-}
-
+};
