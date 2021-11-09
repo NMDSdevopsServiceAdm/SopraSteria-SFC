@@ -79,7 +79,7 @@ const addRowsToTrainingTable = (trainingTable, establishments, isParent) => {
     }
   }
 
-  addBlankRowIfTableEmpty(trainingTable, 11);
+  addBlankRowIfTableEmpty(trainingTable, isParent ? 11 : 10);
 
   trainingTable.commit();
 };
