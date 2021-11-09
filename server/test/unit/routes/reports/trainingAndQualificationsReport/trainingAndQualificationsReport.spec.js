@@ -25,6 +25,7 @@ describe('generateTrainingAndQualificationsReport', () => {
     sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
       {
         workers: [],
+        get: () => {},
       },
     ]);
   });
