@@ -31,9 +31,14 @@ const convertWorkerWithCareCertificateStatus = (worker) => {
   };
 };
 
-exports.convertWorkersWithCareCertificateStatus = (rawWorkers) => {
-  return rawWorkers.map((worker) => {
-    return convertWorkerWithCareCertificateStatus(worker);
+exports.convertWorkersWithCareCertificateStatus = (establishments) => {
+  return establishments.map((establishment) => {
+    return {
+      establishmentName: establishment.get('NameValue'),
+      workers: establishment.workers.map((worker) => {
+        return convertWorkerWithCareCertificateStatus(worker);
+      }),
+    };
   });
 };
 

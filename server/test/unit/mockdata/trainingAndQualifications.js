@@ -215,6 +215,19 @@ exports.mockWorkersWithCareCertificateStatus = [
   },
 ];
 
+exports.secondMockWorkersWithCareCertificateStatus = [
+  {
+    workerId: 'Bill',
+    jobRole: 'Care Worker',
+    status: 'Yes, completed',
+  },
+  {
+    workerId: 'Jenny',
+    jobRole: 'Care Worker',
+    status: 'No',
+  },
+];
+
 exports.mockEstablishmentsQualificationsResponse = [
   {
     NameValue: 'Workplace Name',
@@ -296,6 +309,59 @@ exports.mockEstablishmentsQualificationsResponse = [
             },
           },
         ],
+      },
+    ],
+  },
+];
+
+exports.mockEstablishmentsCareCertificateResponse = [
+  {
+    get() {
+      return 'Care Home 1';
+    },
+    workers: [
+      {
+        get(property) {
+          return property === 'NameOrIdValue' ? 'Bob Ross' : 'No';
+        },
+        mainJob: {
+          id: 1,
+          title: 'Care Worker',
+        },
+      },
+      {
+        get(property) {
+          return property === 'NameOrIdValue' ? 'Mike Mill' : 'Yes, in progress or partially completed';
+        },
+        mainJob: {
+          id: 2,
+          title: 'Care Coordinator',
+        },
+      },
+    ],
+  },
+  {
+    get() {
+      return 'Care Home 2';
+    },
+    workers: [
+      {
+        get(property) {
+          return property === 'NameOrIdValue' ? 'Bill Bailey' : 'Yes, completed';
+        },
+        mainJob: {
+          id: 1,
+          title: 'Care Worker',
+        },
+      },
+      {
+        get(property) {
+          return property === 'NameOrIdValue' ? 'Jenny Jones' : 'No';
+        },
+        mainJob: {
+          id: 1,
+          title: 'Care Worker',
+        },
       },
     ],
   },

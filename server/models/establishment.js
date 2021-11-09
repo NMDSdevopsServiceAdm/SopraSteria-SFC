@@ -1685,5 +1685,54 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId, isParent = false) {
+    let subsidiaries = [];
+
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['NameOrIdValue', 'CareCertificateValue'],
+          where: {
+            CareCertificateValue: { [Op.ne]: null },
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  };
   return Establishment;
 };

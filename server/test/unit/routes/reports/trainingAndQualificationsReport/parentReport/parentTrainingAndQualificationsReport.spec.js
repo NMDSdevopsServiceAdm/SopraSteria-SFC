@@ -17,6 +17,14 @@ describe('generateParentTrainingAndQualificationsReport', () => {
         get: () => {},
       },
     ]);
+
+    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
+      {
+        workers: [],
+        get: () => {},
+      },
+    ]);
+
     sinon.stub(models.establishment, 'getWorkerQualifications').returns([{ workers: [] }]);
   });
 
