@@ -14,7 +14,7 @@ const {
 const models = require('../../../models');
 
 const generateTrainingTab = async (workbook, establishmentId, isParent = false) => {
-  const rawEstablishments = await models.establishment.getEstablishmentTrainingRecords(establishmentId, false);
+  const rawEstablishments = await models.establishment.getEstablishmentTrainingRecords(establishmentId, isParent);
   const establishments = convertTrainingForEstablishments(rawEstablishments);
 
   const trainingTab = workbook.addWorksheet('Training', { views: [{ showGridLines: false }] });
@@ -75,7 +75,7 @@ const addRowsToTrainingTable = (trainingTable, establishments, isParent) => {
       for (let trainingRecord of workerRecord.trainingRecords) {
         addRow(trainingTable, establishment, workerRecord, trainingRecord, isParent);
       }
-      addRowsForWorkerMissingTraining(trainingTable, workerRecord);
+      addRowsForWorkerMissingTraining(trainingTable, workerRecord, establishment, isParent);
     }
   }
 
@@ -84,16 +84,16 @@ const addRowsToTrainingTable = (trainingTable, establishments, isParent) => {
   trainingTable.commit();
 };
 
-const addRowsForWorkerMissingTraining = (trainingTable, worker) => {
+const addRowsForWorkerMissingTraining = (trainingTable, worker, establishment, isParent) => {
   for (let record of worker.mandatoryTraining) {
     if (!hasTrainingRecord(worker.trainingRecords, record)) {
-      addMissingRow(trainingTable, worker, record);
+      addMissingRow(trainingTable, worker, record, establishment, isParent);
     }
   }
 };
 
-const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord) => {
-  trainingTable.addRow([
+const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord, establishment, isParent) => {
+  const row = [
     worker.workerId,
     worker.jobRole,
     missingMandatoryTrainingRecord,
@@ -104,7 +104,13 @@ const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord) =>
     '',
     worker.longTermAbsence,
     '',
-  ]);
+  ];
+
+  if (isParent) {
+    row.unshift(establishment.name);
+  }
+
+  trainingTable.addRow(row);
 };
 
 const addRow = (trainingTable, establishment, workerRecord, trainingRecord,isParent) => {
