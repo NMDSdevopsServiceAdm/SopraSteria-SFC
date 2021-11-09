@@ -31,9 +31,14 @@ const convertWorkerWithCareCertificateStatus = (worker) => {
   };
 };
 
-exports.convertWorkersWithCareCertificateStatus = (rawWorkers) => {
-  return rawWorkers.map((worker) => {
-    return convertWorkerWithCareCertificateStatus(worker);
+exports.convertWorkersWithCareCertificateStatus = (establishments) => {
+  return establishments.map((establishment) => {
+    return {
+      establishmentName: establishment.get('NameValue'),
+      workers: establishment.workers.map((worker) => {
+        return convertWorkerWithCareCertificateStatus(worker);
+      }),
+    };
   });
 };
 
@@ -175,7 +180,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
         expiringSoon: {
           total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
           mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
-          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
+          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory,
         },
         expired: {
           total: a.totals.expired.total + b.totals.expired.total,
@@ -183,8 +188,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
           nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
         },
         missing: a.totals.missing + b.totals.missing,
-      }
-    }
+      },
+    };
   });
-}
-
+};

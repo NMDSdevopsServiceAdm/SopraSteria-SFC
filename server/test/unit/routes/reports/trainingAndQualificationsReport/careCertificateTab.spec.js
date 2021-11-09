@@ -10,7 +10,7 @@ const {
   secondMockWorkersWithCareCertificateStatus,
 } = require('../../../mockdata/trainingAndQualifications');
 
-describe('generateTrainingAndQualificationsReport', () => {
+describe.only('generateTrainingAndQualificationsReport', () => {
   let mockCareCertificateTab;
 
   beforeEach(() => {

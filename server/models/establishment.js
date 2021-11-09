@@ -1623,10 +1623,10 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId, isParent = false) {
-    let childEstablishments = [];
+    let subsidiaries = [];
 
     if (isParent) {
-      childEstablishments = [
+      subsidiaries = [
         {
           parentId: establishmentId,
           dataOwner: 'Parent',
@@ -1646,7 +1646,7 @@ module.exports = function (sequelize, DataTypes) {
           {
             id: establishmentId,
           },
-          ...childEstablishments,
+          ...subsidiaries,
         ],
       },
       include: [
