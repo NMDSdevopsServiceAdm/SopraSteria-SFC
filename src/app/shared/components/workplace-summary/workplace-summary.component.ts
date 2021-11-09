@@ -6,7 +6,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import { Subscription } from 'rxjs';
 
 @Component({

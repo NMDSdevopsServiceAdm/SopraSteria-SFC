@@ -144,7 +144,7 @@ exports.mockWorkerTrainingRecords = [
   },
 ];
 
-exports.mockWorkerQualificationRecords = [
+const mockWorkerQualificationRecords = [
   {
     workerName: 'Helen Jones',
     jobRole: 'Administrative / office staff not care-providing',
@@ -171,6 +171,37 @@ exports.mockWorkerQualificationRecords = [
   },
 ];
 
+exports.mockWorkerQualificationRecordsForSingleWorkplace = [
+  {
+    name: 'Test Workplace 1',
+    qualifications: mockWorkerQualificationRecords,
+  },
+];
+
+exports.mockWorkerQualificationRecordsForParent = [
+  {
+    name: 'Test Workplace 1',
+    qualifications: mockWorkerQualificationRecords,
+  },
+  {
+    name: 'Test Workplace 2',
+    qualifications: [],
+  },
+  {
+    name: 'Test Workplace 3',
+    qualifications: [
+      {
+        workerName: 'Lionel Ritchie',
+        jobRole: 'Administrator',
+        qualificationType: 'Big Hit',
+        qualificationName: 'Dancing on the Ceiling',
+        qualificationLevel: '2',
+        yearAchieved: 2017,
+      },
+    ],
+  },
+];
+
 exports.mockWorkersWithCareCertificateStatus = [
   {
     workerId: 'Bob',
@@ -194,5 +225,91 @@ exports.secondMockWorkersWithCareCertificateStatus = [
     workerId: 'Jenny',
     jobRole: 'Care Worker',
     status: 'No',
+  }
+];
+
+exports.mockEstablishmentsQualificationsResponse = [
+  {
+    NameValue: 'Workplace Name',
+    workers: [
+      {
+        get() {
+          return 'Bob Ross';
+        },
+        mainJob: {
+          id: 1,
+          title: 'Activities worker or co-ordinator',
+        },
+        qualifications: [
+          {
+            get() {
+              return 2020;
+            },
+            qualification: {
+              group: 'NVQ',
+              title: 'Care NVQ',
+              level: '3',
+            },
+          },
+        ],
+      },
+      {
+        get() {
+          return 'Martin Mill';
+        },
+        mainJob: {
+          id: 2,
+          title: 'Care Giver',
+        },
+        qualifications: [
+          {
+            get() {
+              return 2018;
+            },
+            qualification: {
+              group: 'Award',
+              title: 'Good Name Award',
+              level: '2',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    NameValue: 'Subsidiary Workplace Name',
+    workers: [
+      {
+        get() {
+          return 'Roly Poly';
+        },
+        mainJob: {
+          id: 3,
+          title: 'Roll Connoisseur',
+        },
+        qualifications: [
+          {
+            get() {
+              return 2020;
+            },
+            qualification: {
+              group: 'Degree',
+              title: 'Rolling',
+              level: '6',
+            },
+          },
+          {
+            get() {
+              return 2021;
+            },
+            qualification: {
+              group: 'Degree',
+              title: 'Rolling Masters',
+              level: '7',
+            },
+          },
+        ],
+      },
+    ],
   },
 ];

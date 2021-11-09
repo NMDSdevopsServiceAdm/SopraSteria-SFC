@@ -8,7 +8,8 @@ import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { filter, find } from 'lodash';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
 import { Subscription } from 'rxjs';
 
 @Directive()

@@ -1610,11 +1610,74 @@ module.exports = function (sequelize, DataTypes) {
           where: {
             archived: false,
           },
+          required: false,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['id', 'title'],
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getWorkerQualifications = async function (establishmentId, isParent = false) {
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['NameOrIdValue'],
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+            {
+              model: sequelize.models.workerQualifications,
+              as: 'qualifications',
+              attributes: ['Year'],
+              include: [
+                {
+                  model: sequelize.models.workerAvailableQualifications,
+                  as: 'qualification',
+                  attributes: ['group', 'title', 'level'],
+                  required: false,
+                },
+              ],
             },
           ],
         },

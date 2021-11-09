@@ -24,6 +24,8 @@ describe('generateParentTrainingAndQualificationsReport', () => {
         get: () => {},
       },
     ]);
+
+    sinon.stub(models.establishment, 'getWorkerQualifications').returns([{ workers: [] }]);
   });
 
   afterEach(() => {
