@@ -107,7 +107,7 @@
     "sqreen": "^1.64.2",
     "text-encoding-utf-8": "^1.0.2",
     "toobusy-js": "^0.5.1",
-    "tslib": "^2.0.0",
+    "tslib": "^2.3.1",
     "typescript": "^4.3.5",
     "ua-parser-js": "^0.7.28",
     "url-parse": "^1.4.7",
