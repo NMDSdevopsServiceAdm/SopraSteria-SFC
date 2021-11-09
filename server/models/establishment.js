@@ -1471,7 +1471,11 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.workersAndTraining = async function (establishmentId, includeMandatoryTrainingBreakdown = false, isParent = false) {
+  Establishment.workersAndTraining = async function (
+    establishmentId,
+    includeMandatoryTrainingBreakdown = false,
+    isParent = false,
+  ) {
     const currentDate = moment().toISOString();
     const expiresSoon = moment().add(90, 'days').toISOString();
 
@@ -1583,10 +1587,10 @@ module.exports = function (sequelize, DataTypes) {
         {
           parentId: establishmentId,
           dataOwner: 'Workplace',
-          dataPermissions: 'Workplace and Staff'
+          dataPermissions: 'Workplace and Staff',
         },
       ];
-    };
+    }
 
     return this.findAll({
       attributes: ['id', 'NameValue'],
@@ -1595,8 +1599,8 @@ module.exports = function (sequelize, DataTypes) {
           {
             id: establishmentId,
           },
-            ...subsidiaries,
-        ]
+          ...subsidiaries,
+        ],
       },
       include: [
         {
@@ -1654,12 +1658,13 @@ module.exports = function (sequelize, DataTypes) {
             CareCertificateValue: { [Op.ne]: null },
             archived: false,
           },
+          required: false,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['id', 'title'],
-              require: true,
+              required: false,
             },
           ],
         },
