@@ -118,7 +118,7 @@ describe('trainingRecordsUtils', () => {
     });
   });
 
-  describe.only('formatJobRoleMandatoryTraining', () => {
+  describe('formatJobRoleMandatoryTraining', () => {
     it('should return an array with the mandatory training for a role formatted', async () => {
       const formattedMandatoryTraining = formatJobRoleMandatoryTraining(mockMandatoryTraining);
 
