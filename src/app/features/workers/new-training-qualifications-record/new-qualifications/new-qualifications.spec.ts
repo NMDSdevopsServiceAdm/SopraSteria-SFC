@@ -1,18 +1,27 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { Establishment } from '../../../../../mockdata/establishment';
 import { NewQualificationsComponent } from './new-qualifications.component';
 
 describe('NewQualificationsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      providers: [
+        {
+          provide: PermissionsService,
+          useClass: MockPermissionsService,
+        },
+      ],
       componentProperties: {
+        workplace: Establishment,
         qualificationsByGroup,
       },
     });
@@ -54,7 +63,10 @@ describe('NewQualificationsComponent', () => {
   });
 
   it('should contain link in qualification name in first Health table row', async () => {
-    const { fixture } = await setup();
+    const { component, fixture } = await setup();
+
+    component.canEditWorker = true;
+    fixture.detectChanges();
 
     const healthQualificationTitle = fixture.debugElement.query(
       By.css('[data-testid="Title-firstHealthQualUid"]'),
@@ -71,16 +83,6 @@ describe('NewQualificationsComponent', () => {
     expect(getByText('Test notes needed')).toBeTruthy();
   });
 
-  it('should contain link in qualification name in first certificate table row', async () => {
-    const { fixture } = await setup();
-
-    const firstCertificateTitle = fixture.debugElement.query(
-      By.css('[data-testid="Title-firstCertificateUid"]'),
-    ).nativeElement;
-
-    expect(firstCertificateTitle.getAttribute('href')).toBe('/qualification/firstCertificateUid');
-  });
-
   it('should show Certificate table second row with details of record', async () => {
     const { getByText } = await setup();
 
@@ -90,12 +92,43 @@ describe('NewQualificationsComponent', () => {
   });
 
   it('should contain link in qualification name in second certificate table row', async () => {
-    const { fixture } = await setup();
+    const { component, fixture } = await setup();
+
+    component.canEditWorker = true;
+    fixture.detectChanges();
 
     const secondCertificateTitle = fixture.debugElement.query(
       By.css('[data-testid="Title-secondCertificateUid"]'),
     ).nativeElement;
 
     expect(secondCertificateTitle.getAttribute('href')).toBe('/qualification/secondCertificateUid');
+  });
+
+  describe('Link titles', () => {
+    it('should contain link in qualification name in first certificate table row', async () => {
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      const firstCertificateTitle = fixture.debugElement.query(
+        By.css('[data-testid="Title-firstCertificateUid"]'),
+      ).nativeElement;
+
+      expect(firstCertificateTitle.getAttribute('href')).toBe('/qualification/firstCertificateUid');
+    });
+
+    it('should not contain a link in qualification name if canEditWorker is false', async () => {
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
+      const firstCertificateTitle = fixture.debugElement.query(
+        By.css('[data-testid="Title-no-link-firstCertificateUid"]'),
+      );
+
+      expect(firstCertificateTitle).toBeTruthy();
+    });
   });
 });

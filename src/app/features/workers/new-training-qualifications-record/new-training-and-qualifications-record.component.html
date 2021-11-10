@@ -205,7 +205,11 @@
         No qualification records have been added for this person yet.
       </p>
       <ng-template #qualificationTable>
-        <app-new-qualifications [qualificationsByGroup]="qualificationsByGroup" data-testid="qualification">
+        <app-new-qualifications
+          [workplace]="workplace"
+          [qualificationsByGroup]="qualificationsByGroup"
+          data-testid="qualification"
+        >
         </app-new-qualifications>
       </ng-template>
     </div>

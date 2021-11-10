@@ -19,12 +19,17 @@
       <ng-container *ngFor="let record of qualificationType.records">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <a
-              class="govuk-link--no-visited-state"
-              [attr.data-testid]="'Title-' + record.uid"
-              [routerLink]="['../qualification', record.uid]"
-              >{{ record.title }}</a
-            >
+            <ng-container *ngIf="canEditWorker; else viewOnly">
+              <a
+                class="govuk-link--no-visited-state"
+                [attr.data-testid]="'Title-' + record.uid"
+                [routerLink]="['../qualification', record.uid]"
+                >{{ record.title }}</a
+              >
+            </ng-container>
+            <ng-template #viewOnly>
+              <span [attr.data-testid]="'Title-no-link-' + record.uid">{{ record.title }}</span>
+            </ng-template>
           </td>
           <td class="govuk-table__cell">
             {{ record.year }}
