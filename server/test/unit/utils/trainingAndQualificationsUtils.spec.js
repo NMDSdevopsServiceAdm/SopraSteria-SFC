@@ -3,6 +3,7 @@ const {
   getTrainingTotals,
   convertQualificationsForEstablishments,
   convertWorkersWithCareCertificateStatus,
+  convertTrainingForEstablishments,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -166,6 +167,203 @@ describe('trainingAndQualificationsUtils', () => {
           workerId: 'Jenny Jones',
           jobRole: 'Care Worker',
           status: 'No',
+        });
+      });
+    });
+  });
+
+  const establishments =
+  [
+    {
+      id: 2320,
+      NameValue: 'Nursing Home',
+      workers: [
+        {
+          id: 11169,
+          mainJob: { id: 1, title: 'Activities worker or co-ordinator' },
+          get(property) {
+            if (property === 'NameOrIdValue') return 'New staff record';
+            if (property === 'mandatoryTrainingCategories') return [ 'Communication skills' ];
+            if (property === 'LongTermAbsence') return null;
+          },
+          workerTraining: [
+            {
+              get(property) {
+                if (property === 'category') return { category: 'Dementia care' };
+                if (property === 'Expires') return '2021-10-08';
+                if (property === 'Completed') return '2020-01-01';
+                if (property === 'CategoryFK') return 10;
+                if (property === 'Title') return 'Great';
+                if (property === 'Accredited') return 'No';
+              },
+            },
+            {
+              get(property) {
+                if (property === 'category') return { category: 'Old age care' };
+                if (property === 'Expires') return '2022-10-08';
+                if (property === 'Completed') return '2020-01-01';
+                if (property === 'CategoryFK') return 5;
+                if (property === 'Title') return 'Old age care training';
+                if (property === 'Accredited') return 'Yes';
+              },
+            },
+          ],
+        },
+        {
+          id: 1131,
+          mainJob: { id: 3, title: 'Care giver' },
+          get(property) {
+            if (property === 'NameOrIdValue') return 'Another staff record';
+            if (property === 'mandatoryTrainingCategories') return [ 'Learning' ];
+            if (property === 'LongTermAbsence') return 'Yes';
+          },
+          workerTraining: [
+            {
+              get(property) {
+                if (property === 'category') return { category: 'Learning' };
+                if (property === 'Expires') return '2023-10-08';
+                if (property === 'Completed') return '2020-01-01';
+                if (property === 'CategoryFK') return 10;
+                if (property === 'Title') return 'Test Training';
+                if (property === 'Accredited') return 'No';
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 2320,
+      NameValue: 'Care Home',
+      workers: [
+        {
+          id: 11169,
+          mainJob: { id: 1, title: 'Activities worker and care' },
+          get(property) {
+            if (property === 'NameOrIdValue') return 'Test staff record';
+            if (property === 'mandatoryTrainingCategories') return [ 'Autism' ];
+            if (property === 'LongTermAbsence') return null;
+          },
+          workerTraining: [
+            {
+              get(property) {
+                if (property === 'category') return { category: 'Dementia care' };
+                if (property === 'Expires') return '2019-10-05';
+                if (property === 'Completed') return '2014-01-01';
+                if (property === 'CategoryFK') return 3;
+                if (property === 'Title') return 'Helen';
+                if (property === 'Accredited') return 'No';
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  describe('convertTrainingForEstablishments', () => {
+    describe('First establishment', async () => {
+      it('should return array with first establishment name', () => {
+        const result = convertTrainingForEstablishments(establishments);
+
+        expect(result[0].name).to.equal('Nursing Home');
+      });
+
+      it('should return worker details formatted as expected for first worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorker = result[0].workerRecords[0];
+
+        expect(firstWorker.workerId).to.equal('New staff record');
+        expect(firstWorker.jobRole).to.equal('Activities worker or co-ordinator');
+        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.mandatoryTraining).to.deep.equal([ 'Communication skills' ]);
+      });
+
+      it('should return first training record formatted as expected for first worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
+
+        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+          category: 'Dementia care',
+          categoryFK: 10,
+          trainingName: 'Great',
+          expiryDate: new Date('2021-10-08T00:00:00.000Z'),
+          status: 'Expired',
+          dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
+          accredited: 'No'
+        });
+      });
+
+      it('should return second training record formatted as expected for first worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
+
+        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+          category: 'Old age care',
+          categoryFK: 5,
+          trainingName: 'Old age care training',
+          expiryDate: new Date('2022-10-08T00:00:00.000Z'),
+          status: 'Up-to-date',
+          dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
+          accredited: 'Yes'
+        });
+      });
+
+      it('should return worker details formatted as expected for second worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorker = result[0].workerRecords[1];
+
+        expect(firstWorker.workerId).to.equal('Another staff record');
+        expect(firstWorker.jobRole).to.equal('Care giver');
+        expect(firstWorker.longTermAbsence).to.equal('Yes');
+        expect(firstWorker.mandatoryTraining).to.deep.equal([ 'Learning' ]);
+      });
+
+      it('should return first training record formatted as expected for second worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
+
+        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+          category: 'Learning',
+          categoryFK: 10,
+          trainingName: 'Test Training',
+          expiryDate: new Date('2023-10-08T00:00:00.000Z'),
+          status: 'Up-to-date',
+          dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
+          accredited: 'No'
+        });
+      });
+    });
+
+    describe('Second establishment', async () => {
+      it('should return array with second establishment name', () => {
+        const result = convertTrainingForEstablishments(establishments);
+
+        expect(result[1].name).to.equal('Care Home');
+      });
+
+      it('should return worker details formatted as expected for first worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorker = result[1].workerRecords[0];
+
+        expect(firstWorker.workerId).to.equal('Test staff record');
+        expect(firstWorker.jobRole).to.equal('Activities worker and care');
+        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.mandatoryTraining).to.deep.equal([ 'Autism' ]);
+      });
+
+      it('should return first training record formatted as expected for first worker', () => {
+        const result = convertTrainingForEstablishments(establishments);
+        const firstWorkerFirstTrainingRecord = result[1].workerRecords[0].trainingRecords[0];
+
+        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+          category: 'Dementia care',
+          categoryFK: 3,
+          trainingName: 'Helen',
+          expiryDate: new Date('2019-10-05T00:00:00.000Z'),
+          status: 'Expired',
+          dateCompleted: new Date('2014-01-01T00:00:00.000Z'),
+          accredited: 'No'
         });
       });
     });
