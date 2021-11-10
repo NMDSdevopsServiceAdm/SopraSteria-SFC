@@ -34,12 +34,14 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public expiresSoonTraining: number;
   public lastUpdatedDate: Date;
   public jobRoleMandatoryTraining: MandatoryTraining[];
+  public missingJobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
   private currentUrl: string;
   public filterTrainingByStatus;
   public filterTrainingByDefault: string;
   public filterTraining;
   public allTrainings;
+
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
@@ -84,7 +86,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
     this.jobRoleMandatoryTraining = trainingRecords.jobRoleMandatoryTraining;
-    console.log(this.jobRoleMandatoryTraining);
+    this.missingJobRoleMandatoryTrainingCount = this.getMissingMandatoryTrainingCount();
   }
 
   private setTraining(
@@ -139,6 +141,19 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         );
       });
     });
+  }
+
+  private getMissingMandatoryTrainingCount(): number {
+    let count = this.jobRoleMandatoryTraining.length;
+
+    if (this.mandatoryTraining.length > 0) {
+      this.jobRoleMandatoryTraining.forEach((jobRoleTraining) => {
+        this.mandatoryTraining.some((training) => {
+          jobRoleTraining.category === training.category && count--;
+        });
+      });
+    }
+    return count;
   }
 
   getFilterByStatus(dropdownValue) {

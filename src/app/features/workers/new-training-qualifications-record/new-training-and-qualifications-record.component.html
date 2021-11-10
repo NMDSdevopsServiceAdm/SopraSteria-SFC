@@ -120,7 +120,7 @@
       <h2 class="govuk-heading-m">Mandatory training records ({{ mandatoryTrainingCount }})</h2>
     </div>
     <div class="govuk-grid-column-full">
-      <div *ngIf="jobRoleMandatoryTrainingCount === 0">
+      <div *ngIf="jobRoleMandatoryTraining.length === 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
           <p>
             No mandatory training has been set for the
@@ -140,11 +140,11 @@
         </div>
       </div>
 
-      <div *ngIf="jobRoleMandatoryTrainingCount > 0 && mandatoryTrainingCount < jobRoleMandatoryTrainingCount">
+      <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
           <p>
-            {{ jobRoleMandatoryTrainingCount - mandatoryTrainingCount }}
-            <ng-container [ngPlural]="jobRoleMandatoryTrainingCount - mandatoryTrainingCount">
+            {{ missingJobRoleMandatoryTrainingCount }}
+            <ng-container [ngPlural]="missingJobRoleMandatoryTrainingCount">
               <ng-template ngPluralCase="=1"> mandatory training record is missing. </ng-template>
               <ng-template ngPluralCase="other"> mandatory training records are missing. </ng-template>
             </ng-container>
