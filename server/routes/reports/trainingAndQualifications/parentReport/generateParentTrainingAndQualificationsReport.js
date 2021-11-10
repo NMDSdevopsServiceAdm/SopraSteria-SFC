@@ -4,6 +4,7 @@ const router = express.Router({ mergeParams: true });
 const moment = require('moment');
 const { generateHowToTab } = require('../howToTab');
 const { generateSummaryTab } = require('./parentSummaryTab');
+const { generateTrainingTab } = require('../trainingTab');
 const { generateQualificationsTab } = require('../qualificationsTab');
 const { generateCareCertificateTab } = require('../careCertificateTab');
 const models = require('../../../../models');
@@ -19,6 +20,7 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
 
     generateHowToTab(workbook, true);
     await generateSummaryTab(workbook, establishment.id);
+    await generateTrainingTab(workbook, establishment.id, true);
     await generateQualificationsTab(workbook, establishment.id, true);
     await generateCareCertificateTab(workbook, establishment.id, true);
 

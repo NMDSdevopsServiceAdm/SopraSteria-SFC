@@ -25,6 +25,7 @@ const addContentToCareCertificateTab = (careCertificateTab, establishments, isPa
   addHeading(careCertificateTab, 'B2', 'D2', 'Care Certificate');
   addLine(careCertificateTab, 'A4', isParent ? 'E4' : 'D4');
   alignColumnToLeft(careCertificateTab, 2);
+  if (isParent) alignColumnToLeft(careCertificateTab, 3);
 
   isParent && addQuestion(careCertificateTab, 'B6', 'E6', 'Have they started or completed the Care Certificate?');
 

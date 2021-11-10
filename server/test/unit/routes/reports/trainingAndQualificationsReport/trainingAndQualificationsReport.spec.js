@@ -8,15 +8,17 @@ const trainingAndQualificationsReport = require('../../../../../routes/reports/t
 
 describe('generateTrainingAndQualificationsReport', () => {
   beforeEach(() => {
-    sinon.stub(models.establishment, 'findByUid').callsFake(() => {
-      return { id: 1234 };
-    });
+    sinon.stub(models.establishment, 'findByUid').returns({ id: 1234 });
+
     sinon.stub(models.establishment, 'workersAndTraining').returns([
       {
+        id: 1234,
+        name: 'Test',
         workers: [],
+        get: () => {},
       },
     ]);
-    sinon.stub(models.worker, 'getEstablishmentTrainingRecords').callsFake(() => {
+    sinon.stub(models.establishment, 'getEstablishmentTrainingRecords').callsFake(() => {
       return [];
     });
     sinon.stub(models.establishment, 'getWorkerQualifications').returns([{ workers: [] }]);

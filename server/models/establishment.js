@@ -1624,6 +1624,87 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getEstablishmentTrainingRecords = async function (establishmentId, isParent = false) {
+    let attributes = [
+      'id',
+      'NameOrIdValue',
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT json_agg(cqc."TrainingCategories"."Category")
+                FROM cqc."MandatoryTraining"
+                RIGHT JOIN cqc."TrainingCategories" ON
+                "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+            )
+          `,
+        ),
+        'mandatoryTrainingCategories',
+      ],
+      'LongTermAbsence',
+    ];
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes,
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+            {
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              required: false,
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                  attributes: ['category'],
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
   Establishment.getWorkerQualifications = async function (establishmentId, isParent = false) {
     let subsidiaries = [];
     if (isParent) {
