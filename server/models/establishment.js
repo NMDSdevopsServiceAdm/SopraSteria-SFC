@@ -1675,7 +1675,6 @@ module.exports = function (sequelize, DataTypes) {
           as: 'workers',
           attributes,
           where: {
-            establishmentFk: establishmentId,
             archived: false,
           },
           required: false,
