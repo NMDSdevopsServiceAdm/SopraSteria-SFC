@@ -28,10 +28,8 @@ const addContentToTrainingTab = (trainingTab, establishments, isParent) => {
   alignColumnToLeft(trainingTab, 2);
   if (isParent) alignColumnToLeft(trainingTab, 3);
 
-
   const trainingTable = createTrainingTable(trainingTab, isParent);
   addRowsToTrainingTable(trainingTable, establishments, isParent);
-
 
   addBordersToAllFilledCells(trainingTab, 5);
   addColoursToStatusColumn(trainingTab, isParent);
