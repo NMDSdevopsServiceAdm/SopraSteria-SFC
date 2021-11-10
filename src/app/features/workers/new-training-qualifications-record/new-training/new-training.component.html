@@ -21,14 +21,21 @@
         <ng-container>
           <tr class="govuk-table__row govuk-util__vertical-align-top">
             <td class="govuk-table__cell">
-              <a
-                class="govuk-link--no-visited-state"
-                [routerLink]="['../training', records.uid]"
-                [attr.data-testid]="'Title-' + records.uid"
-                [state]="trainingType === 'mandatory' && { training: 'mandatory' }"
-                (click)="setReturnRoute()"
-                >{{ records.title ? records.title : 'Missing training name - Add' }}</a
-              >
+              <ng-container *ngIf="canEditWorker; else viewOnly">
+                <a
+                  class="govuk-link--no-visited-state"
+                  [routerLink]="['../training', records.uid]"
+                  [attr.data-testid]="'Title-' + records.uid"
+                  [state]="trainingType === 'mandatory' && { training: 'mandatory' }"
+                  (click)="setReturnRoute()"
+                  >{{ records.title ? records.title : 'Missing training name - Add' }}</a
+                >
+              </ng-container>
+              <ng-template #viewOnly>
+                <span [attr.data-testid]="'Title-no-link-' + records.uid">{{
+                  records.title ? records.title : 'Missing training name - Add'
+                }}</span>
+              </ng-template>
             </td>
             <td class="govuk-table__cell">{{ records.accredited ? records.accredited : '-' }}</td>
             <td class="govuk-table__cell">{{ records.completed ? (records.completed | date: 'dd MMM y') : '-' }}</td>

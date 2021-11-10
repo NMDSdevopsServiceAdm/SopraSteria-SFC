@@ -147,6 +147,9 @@ describe('NewTrainingComponent', () => {
     });
 
     it('should render missing training name when there is no title for a training record', async () => {
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
       const healthTrainingTitle = fixture.debugElement.query(
         By.css('[data-testid="Title-someHealthUid"]'),
       ).nativeElement;
@@ -160,7 +163,10 @@ describe('NewTrainingComponent', () => {
   });
 
   describe('training record links', () => {
-    it('training title should have link to training records', () => {
+    it('training title should have link to training records if you are an edit user', () => {
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
       const autismTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someAutismUid"]'),
       ).nativeElement;
@@ -182,6 +188,30 @@ describe('NewTrainingComponent', () => {
       expect(communicationTrainingTitleLink.getAttribute('href')).toBe('/training/someCommunicationUid');
       expect(healthTrainingTitleLink.getAttribute('href')).toBe('/training/someHealthUid');
       expect(healthTraining2TitleLink.getAttribute('href')).toBe('/training/someHealthUid2');
+    });
+
+    it('training title should not link to training records if you are a read only user', () => {
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
+      const autismTrainingTitleLink = fixture.debugElement.query(By.css('[data-testid="Title-no-link-someAutismUid"]'));
+      const autismTraining2TitleLink = fixture.debugElement.query(
+        By.css('[data-testid="Title-no-link-someAutismUid2"]'),
+      );
+      const communicationTrainingTitleLink = fixture.debugElement.query(
+        By.css('[data-testid="Title-no-link-someCommunicationUid"]'),
+      );
+      const healthTrainingTitleLink = fixture.debugElement.query(By.css('[data-testid="Title-no-link-someHealthUid"]'));
+      const healthTraining2TitleLink = fixture.debugElement.query(
+        By.css('[data-testid="Title-no-link-someHealthUid2"]'),
+      );
+
+      expect(autismTrainingTitleLink).toBeTruthy();
+      expect(autismTrainingTitleLink).toBeTruthy();
+      expect(autismTraining2TitleLink).toBeTruthy();
+      expect(communicationTrainingTitleLink).toBeTruthy();
+      expect(healthTrainingTitleLink).toBeTruthy();
+      expect(healthTraining2TitleLink).toBeTruthy();
     });
   });
 });
