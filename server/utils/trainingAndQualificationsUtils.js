@@ -1,6 +1,3 @@
-const establishment = require("../models/establishment");
-const worker = require("../models/worker");
-
 const convertWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
