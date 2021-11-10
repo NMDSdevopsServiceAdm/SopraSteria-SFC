@@ -120,16 +120,16 @@
       <h2 class="govuk-heading-m">Mandatory training records ({{ mandatoryTrainingCount }})</h2>
     </div>
     <div class="govuk-grid-column-full">
-      <div *ngIf="jobRoleMandatoryTrainingCount === 0">
+      <div *ngIf="jobRoleMandatoryTraining.length === 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
           <p>
             No mandatory training has been set for the
             {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }} job role yet.
           </p>
         </div>
-        <div class="govuk-grid-column-one-third">
+        <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
           <a
-            class="govuk-list"
+            class="govuk-list govuk-util__float-right"
             *ngIf="canEditWorker"
             draggable="false"
             role="button"
@@ -140,19 +140,19 @@
         </div>
       </div>
 
-      <div *ngIf="jobRoleMandatoryTrainingCount > 0 && mandatoryTrainingCount < jobRoleMandatoryTrainingCount">
+      <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
           <p>
-            {{ jobRoleMandatoryTrainingCount - mandatoryTrainingCount }}
-            <ng-container [ngPlural]="jobRoleMandatoryTrainingCount - mandatoryTrainingCount">
+            {{ missingJobRoleMandatoryTrainingCount }}
+            <ng-container [ngPlural]="missingJobRoleMandatoryTrainingCount">
               <ng-template ngPluralCase="=1"> mandatory training record is missing. </ng-template>
               <ng-template ngPluralCase="other"> mandatory training records are missing. </ng-template>
             </ng-container>
           </p>
         </div>
-        <div class="govuk-grid-column-one-third">
+        <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
           <a
-            class="govuk-list"
+            class="govuk-list govuk-util__float-right"
             *ngIf="canEditWorker"
             draggable="false"
             role="button"
