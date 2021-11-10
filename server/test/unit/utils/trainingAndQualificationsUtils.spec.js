@@ -188,36 +188,38 @@ describe('trainingAndQualificationsUtils', () => {
         expect(firstWorker.workerId).to.equal('New staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker or co-ordinator');
         expect(firstWorker.longTermAbsence).to.equal('');
-        expect(firstWorker.mandatoryTraining).to.deep.equal([ 'Communication skills' ]);
+        expect(firstWorker.mandatoryTraining).to.deep.equal(['Communication skills']);
       });
 
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
+        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 10,
           trainingName: 'Great',
-          expiryDate: new Date('2021-10-08T00:00:00.000Z'),
+          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() - 1)),
           status: 'Expired',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
-          accredited: 'No'
+          accredited: 'No',
         });
       });
 
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
+        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Old age care',
           categoryFK: 5,
           trainingName: 'Old age care training',
-          expiryDate: new Date('2022-10-08T00:00:00.000Z'),
+          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 90)),
           status: 'Up-to-date',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
-          accredited: 'Yes'
+          accredited: 'Yes',
         });
       });
 
@@ -228,21 +230,22 @@ describe('trainingAndQualificationsUtils', () => {
         expect(firstWorker.workerId).to.equal('Another staff record');
         expect(firstWorker.jobRole).to.equal('Care giver');
         expect(firstWorker.longTermAbsence).to.equal('Yes');
-        expect(firstWorker.mandatoryTraining).to.deep.equal([ 'Learning' ]);
+        expect(firstWorker.mandatoryTraining).to.deep.equal(['Learning']);
       });
 
       it('should return first training record formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
+        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Learning',
           categoryFK: 10,
           trainingName: 'Test Training',
-          expiryDate: new Date('2023-10-08T00:00:00.000Z'),
-          status: 'Up-to-date',
+          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 89)),
+          status: 'Expiring soon',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
-          accredited: 'No'
+          accredited: 'No',
         });
       });
     });
@@ -261,21 +264,22 @@ describe('trainingAndQualificationsUtils', () => {
         expect(firstWorker.workerId).to.equal('Test staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker and care');
         expect(firstWorker.longTermAbsence).to.equal('');
-        expect(firstWorker.mandatoryTraining).to.deep.equal([ 'Autism' ]);
+        expect(firstWorker.mandatoryTraining).to.deep.equal(['Autism']);
       });
 
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[1].workerRecords[0].trainingRecords[0];
+        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 3,
           trainingName: 'Helen',
-          expiryDate: new Date('2019-10-05T00:00:00.000Z'),
-          status: 'Expired',
+          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate())),
+          status: 'Expiring soon',
           dateCompleted: new Date('2014-01-01T00:00:00.000Z'),
-          accredited: 'No'
+          accredited: 'No',
         });
       });
     });
