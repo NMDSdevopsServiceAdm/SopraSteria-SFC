@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 $error_border_size: $govuk-border-width-form-element-error;
 $error_row_indent: 8px;
 $error_row_padding: $govuk-gutter-half;
@@ -8,7 +10,7 @@ $error_row_padding: $govuk-gutter-half;
   }
 
   .govuk-table__cell:last-of-type {
-    padding-right: $error_row_padding / 2;
+    padding-right: math.div($error-row-padding, 2);
   }
 }
 

@@ -17,7 +17,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { WdfModule } from '../wdf.module.js';
+import { WdfModule } from '../wdf.module';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
 describe('WdfWorkplacesSummaryComponent', () => {

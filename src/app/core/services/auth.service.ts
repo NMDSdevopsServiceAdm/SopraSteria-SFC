@@ -4,14 +4,14 @@ import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { UserToken } from '@core/model/auth.model';
 import * as Sentry from '@sentry/browser';
-import { isNull } from 'lodash';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import isNull from 'lodash/isNull';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +30,7 @@ export class AuthService {
     private establishmentService: EstablishmentService,
     private userService: UserService,
     private permissionsService: PermissionsService,
-    private featureFlagsService: FeatureFlagsService
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   public get isAutheticated$(): Observable<boolean> {

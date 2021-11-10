@@ -8,7 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DeleteTrainingDialogComponent } from '@features/workers/delete-training-dialog/delete-training-dialog.component';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -20,7 +20,7 @@ export class TrainingComponent implements OnInit {
   @Input() workplace: Establishment;
   @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
   public canEditWorker: boolean;
-  public lastUpdated: moment.Moment;
+  public lastUpdated: dayjs.Dayjs;
   public trainingRecords: TrainingRecord[] = [];
   public trainingDetails = [];
   public trainingDetailsLabel = [];
@@ -65,7 +65,7 @@ export class TrainingComponent implements OnInit {
       .pipe(take(1))
       .subscribe(
         (training) => {
-          this.lastUpdated = moment(training.lastUpdated);
+          this.lastUpdated = dayjs(training.lastUpdated);
           this.trainingRecords = training.training;
           this.trainingCount = training.count;
           this.trainingRecords.map((trainingRecord) => {

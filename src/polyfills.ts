@@ -28,7 +28,7 @@ import 'core-js/es/string';
 import 'core-js/es/symbol';
 import 'core-js/es/weak-map';
 import 'details-element-polyfill/dist/details-element-polyfill';
-import 'zone.js/dist/zone';
+import 'zone.js';
 
 /***************************************************************************************************
  * BROWSER POLYFILLS
@@ -76,3 +76,5 @@ import 'zone.js/dist/zone';
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+(window as any).process = { env: { DEBUG: undefined } };

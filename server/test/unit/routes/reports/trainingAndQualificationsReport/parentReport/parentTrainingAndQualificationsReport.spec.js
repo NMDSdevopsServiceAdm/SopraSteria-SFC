@@ -13,16 +13,24 @@ describe('generateParentTrainingAndQualificationsReport', () => {
     sinon.stub(models.establishment, 'getEstablishmentTrainingRecords').callsFake(() => {
       return [];
     });
-    sinon.stub(models.establishment, 'workersAndTraining').returns(
-      [
-        {
-          id: 1234,
-          name: 'Test',
-          workers: [],
-          get: () => {},
-        }
-      ]
-    );
+
+    sinon.stub(models.establishment, 'workersAndTraining').returns([
+      {
+        id: 1234,
+        name: 'Test',
+        workers: [],
+        get: () => {},
+      },
+    ]);
+
+    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
+      {
+        workers: [],
+        get: () => {},
+      },
+    ]);
+
+    sinon.stub(models.establishment, 'getWorkerQualifications').returns([{ workers: [] }]);
   });
 
   afterEach(() => {

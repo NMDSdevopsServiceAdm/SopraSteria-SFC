@@ -11,22 +11,21 @@ describe('generateTrainingAndQualificationsReport', () => {
     sinon.stub(models.establishment, 'findByUid').callsFake(() => {
       return { id: 1234 };
     });
-    sinon.stub(models.establishment, 'workersAndTraining').returns(
-      [
-        {
-          workers: [],
-        }
-      ]
-    );
+    sinon.stub(models.establishment, 'workersAndTraining').returns([
+      {
+        workers: [],
+      },
+    ]);
     sinon.stub(models.worker, 'getEstablishmentTrainingRecords').callsFake(() => {
       return [];
     });
-    sinon.stub(models.workerQualifications, 'getWorkerQualifications').callsFake(() => {
-      return [];
-    });
-    sinon.stub(models.worker, 'getWorkersWithCareCertificateStatus').callsFake(() => {
-      return [];
-    });
+    sinon.stub(models.establishment, 'getWorkerQualifications').returns([{ workers: [] }]);
+    sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
+      {
+        workers: [],
+        get: () => {},
+      },
+    ]);
   });
 
   afterEach(() => {

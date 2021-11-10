@@ -7,7 +7,8 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocalAuthorityService } from '@core/services/localAuthority.service';
-import { findIndex, uniqBy } from 'lodash';
+import findIndex from 'lodash/findIndex';
+import uniqBy from 'lodash/uniqBy';
 
 import { Question } from '../question/question.component';
 
@@ -59,17 +60,17 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     this.primaryAuthority = this.establishment.primaryAuthority;
 
     this.subscriptions.add(
-      this.localAuthorityService.getAuthorities().subscribe(authorities => {
+      this.localAuthorityService.getAuthorities().subscribe((authorities) => {
         const index = findIndex(
           authorities,
-          authority => authority.custodianCode === this.primaryAuthority.custodianCode,
+          (authority) => authority.custodianCode === this.primaryAuthority.custodianCode,
         );
         authorities.splice(index, 1);
         this.authorities = authorities;
       }),
     );
 
-    this.establishment.localAuthorities.forEach(authority => {
+    this.establishment.localAuthorities.forEach((authority) => {
       if (!authority.isPrimaryAuthority) {
         this.localAuthoritiesArray.push(this.createLocalAuthorityItem(authority.custodianCode));
       } else {
@@ -95,7 +96,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
   protected generateUpdateProps() {
     const authorities = [];
-    this.localAuthoritiesArray.controls.forEach(control => {
+    this.localAuthoritiesArray.controls.forEach((control) => {
       if (control.value.custodianCode) {
         authorities.push({ custodianCode: parseInt(control.value.custodianCode, 10) });
       }
@@ -113,9 +114,9 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   public selectableAuthorities(index): LocalAuthorityModel[] {
     if (this.authorities) {
       return this.authorities.filter(
-        authority =>
+        (authority) =>
           !this.localAuthoritiesArray.controls.some(
-            localAuth =>
+            (localAuth) =>
               localAuth !== this.localAuthoritiesArray.controls[index] &&
               parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode,
           ),
@@ -126,8 +127,8 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService.updateLocalAuthorities(this.establishment.uid, props).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error),
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
       ),
     );
   }
