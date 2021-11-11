@@ -64,9 +64,9 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   public setTitle(): void {
     if (this.mandatoryTraining) {
-      this.title = this.trainingRecordId ? 'Edit mandatory training record' : 'Add mandatory training record';
+      this.title = this.trainingRecordId ? 'Mandatory training record' : 'Add mandatory training record';
     } else {
-      this.title = this.trainingRecordId ? 'Edit training details' : 'Enter training details';
+      this.title = this.trainingRecordId ? 'Training details' : 'Enter training details';
     }
   }
 

@@ -79,9 +79,9 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Enter training details')).toBeTruthy();
     });
 
-    it('should render the Edit training details title, when there is a training record id', async () => {
+    it('should render the Training details title, when there is a training record id', async () => {
       const { getByText } = await setup();
-      expect(getByText('Edit training details')).toBeTruthy();
+      expect(getByText('Training details')).toBeTruthy();
     });
 
     it('should render the Add mandatory training record title, when accessed from add mandatory training link', async () => {
@@ -95,14 +95,14 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Add mandatory training record')).toBeTruthy();
     });
 
-    it('should render the Edit mandatory training record title, when accessed from mandatory training title', async () => {
+    it('should render the Mandatory training record title, when accessed from mandatory training title', async () => {
       const { component, fixture, getByText } = await setup();
 
       component.mandatoryTraining = true;
       component.setTitle();
       fixture.detectChanges();
 
-      expect(getByText('Edit mandatory training record')).toBeTruthy();
+      expect(getByText('Mandatory training record')).toBeTruthy();
     });
   });
 });
