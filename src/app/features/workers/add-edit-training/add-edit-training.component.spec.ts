@@ -105,4 +105,12 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Mandatory training record')).toBeTruthy();
     });
   });
+
+  describe('delete button', () => {
+    it('should render the delete button when editing training', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Delete')).toBeTruthy();
+    });
+  });
 });

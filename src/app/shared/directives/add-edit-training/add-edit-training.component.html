@@ -141,9 +141,10 @@
   </div>
 
   <div class="govuk-button-group">
-    <button type="submit" class="govuk-button govuk-!-margin-right-9">
+    <button type="submit" class="govuk-button govuk-!-margin-right-5">
       {{ buttonText }}
     </button>
+    <button *ngIf="trainingRecordId" class="govuk-button govuk-button--warning govuk-!-margin-right-8">Delete</button>
     <a
       class="govuk-button govuk-button--link govuk-!-margin-left-9"
       role="button"
