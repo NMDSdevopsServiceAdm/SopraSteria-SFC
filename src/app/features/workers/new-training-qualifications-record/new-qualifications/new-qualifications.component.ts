@@ -7,4 +7,5 @@ import { QualificationsByGroup } from '@core/model/qualification.model';
 })
 export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;
+  @Input() canEditWorker: boolean;
 }
