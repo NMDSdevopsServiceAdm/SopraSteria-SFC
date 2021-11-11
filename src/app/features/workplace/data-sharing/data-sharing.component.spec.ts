@@ -34,6 +34,11 @@ describe('DataSharingComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+
+    const updateDataSharingSpy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
+
     return {
       fixture,
       component,
@@ -41,6 +46,7 @@ describe('DataSharingComponent', () => {
       getAllByText,
       queryByText,
       getByTestId,
+      updateDataSharingSpy,
     };
   }
 
@@ -67,45 +73,81 @@ describe('DataSharingComponent', () => {
     expect(queryByText('Do you agree to us sharing your data with the CQC?')).toBeFalsy();
   });
 
-  it('should call updateDataSharing in establishment service with local authorities set to true when Yes selected', async () => {
-    const { component, getByText, getByTestId } = await setup();
-    const injector = getTestBed();
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+  describe('Passing data to updateDataSharing in establishment service', async () => {
+    it('should call updateDataSharing in establishment service with local authorities set to true when Yes selected', async () => {
+      const { component, getByText, getByTestId, updateDataSharingSpy } = await setup();
 
-    const spy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
+      const laYesRadioButton = getByTestId('localAuthorities-yes');
+      fireEvent.click(laYesRadioButton);
 
-    const laYesRadioButton = getByTestId('localAuthorities-yes');
-    fireEvent.click(laYesRadioButton);
+      const returnButton = getByText('Save and return');
+      fireEvent.click(returnButton);
 
-    const returnButton = getByText('Save and return');
-    fireEvent.click(returnButton);
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        share: {
+          cqc: null,
+          localAuthorities: true,
+        },
+      });
+    });
 
-    expect(spy).toHaveBeenCalledWith(component.establishment.uid, {
-      share: {
-        cqc: null,
-        localAuthorities: true,
-      },
+    it('should call updateDataSharing in establishment service with local authorities set to false when No selected', async () => {
+      const { component, getByText, getByTestId, updateDataSharingSpy } = await setup();
+
+      const laYesRadioButton = getByTestId('localAuthorities-no');
+      fireEvent.click(laYesRadioButton);
+
+      const returnButton = getByText('Save and return');
+      fireEvent.click(returnButton);
+
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        share: {
+          cqc: null,
+          localAuthorities: false,
+        },
+      });
     });
   });
 
-  it('should call updateDataSharing in establishment service with local authorities set to false when No selected', async () => {
-    const { component, getByText, getByTestId } = await setup();
-    const injector = getTestBed();
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+  describe('Passing data to updateDataSharing in establishment service', async () => {
+    it('should call updateDataSharing in establishment service with CQC set to true when Yes selected', async () => {
+      const { component, fixture, getByText, getByTestId, updateDataSharingSpy } = await setup();
 
-    const spy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
 
-    const laYesRadioButton = getByTestId('localAuthorities-no');
-    fireEvent.click(laYesRadioButton);
+      const cqcYesRadioButton = getByTestId('cqc-yes');
+      fireEvent.click(cqcYesRadioButton);
 
-    const returnButton = getByText('Save and return');
-    fireEvent.click(returnButton);
+      const returnButton = getByText('Save and return');
+      fireEvent.click(returnButton);
 
-    expect(spy).toHaveBeenCalledWith(component.establishment.uid, {
-      share: {
-        cqc: null,
-        localAuthorities: false,
-      },
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        share: {
+          cqc: true,
+          localAuthorities: null,
+        },
+      });
+    });
+
+    it('should call updateDataSharing in establishment service with CQC set to false when No selected', async () => {
+      const { component, fixture, getByText, getByTestId, updateDataSharingSpy } = await setup();
+
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
+
+      const cqcYesRadioButton = getByTestId('cqc-no');
+      fireEvent.click(cqcYesRadioButton);
+
+      const returnButton = getByText('Save and return');
+      fireEvent.click(returnButton);
+
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        share: {
+          cqc: false,
+          localAuthorities: null,
+        },
+      });
     });
   });
 });

@@ -65,27 +65,29 @@
             <div class="govuk-radios govuk-radios--conditional">
               <div class="govuk-radios__item govuk-!-margin-top-3">
                 <input
-                  aria-controls="regulatedByCQC-conditional-1"
+                  aria-controls="cqc-conditional-1"
+                  data-testid="cqc-yes"
                   class="govuk-radios__input"
                   id="cqc-yes"
                   type="radio"
                   [value]="true"
                   [formControlName]="'cqc'"
                 />
-                <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
+                <label class="govuk-label govuk-radios__label" for="cqc-1">
                   Yes, I agree to you sharing our data with the CQC
                 </label>
               </div>
               <div class="govuk-radios__item">
                 <input
-                  aria-controls="regulatedByCQC-conditional-2"
+                  aria-controls="cqc-conditional-2"
+                  data-testid="cqc-no"
                   class="govuk-radios__input"
                   id="cqc-no"
                   type="radio"
                   [value]="false"
                   [formControlName]="'cqc'"
                 />
-                <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-8" for="regulatedByCQC-2">
+                <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-8" for="cqc-2">
                   No, I do not agree to you sharing our data with the CQC
                 </label>
               </div>
@@ -97,7 +99,7 @@
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item govuk-!-margin-top-3">
               <input
-                aria-controls="regulatedByCQC-conditional-1"
+                aria-controls="localAuthorities-conditional-1"
                 class="govuk-radios__input"
                 id="localAuthorities-yes"
                 data-testid="localAuthorities-yes"
@@ -105,13 +107,13 @@
                 [value]="true"
                 [formControlName]="'localAuthorities'"
               />
-              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
+              <label class="govuk-label govuk-radios__label" for="localAuthorities-1">
                 Yes, I agree to you sharing our data with local authorities
               </label>
             </div>
             <div class="govuk-radios__item">
               <input
-                aria-controls="regulatedByCQC-conditional-2"
+                aria-controls="localAuthorities-conditional-2"
                 class="govuk-radios__input"
                 id="localAuthorities-no"
                 data-testid="localAuthorities-no"
@@ -119,7 +121,7 @@
                 [value]="false"
                 [formControlName]="'localAuthorities'"
               />
-              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
+              <label class="govuk-label govuk-radios__label" for="localAuthorities-2">
                 No, I do not agree to you sharing our data with local authorities</label
               >
             </div>
