@@ -84,8 +84,8 @@ const getTrainingRecordStatus = (expiryDate) => {
     return 'Up-to-date';
   }
 
-  const currentDate = new Date();
-  const expiringSoonDate = new Date();
+  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+  const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
   expiringSoonDate.setDate(currentDate.getDate() + 90);
 
   if (expiryDate < currentDate) {
@@ -103,7 +103,7 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
     return {
       name: workplaceNameAsNumber ? workplaceNameAsNumber : establishment.NameValue,
       workerRecords: convertWorkerTrainingRecords(establishment.workers),
-    }
+    };
   });
 };
 

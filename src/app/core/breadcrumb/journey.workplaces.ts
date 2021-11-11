@@ -90,6 +90,14 @@ export const allWorkplacesJourney: JourneyRoute = {
               },
             },
             {
+              title: 'Training and qualifications',
+              path: Path.NEW_TRAINING_AND_QUALIFICATIONS_RECORD,
+              referrer: {
+                path: Path.DASHBOARD,
+                fragment: 'training-and-qualifications',
+              },
+            },
+            {
               title: 'Add a user',
               path: Path.CREATE_ACCOUNT,
             },
