@@ -144,7 +144,22 @@
     <button type="submit" class="govuk-button govuk-!-margin-right-5">
       {{ buttonText }}
     </button>
-    <button *ngIf="trainingRecordId" class="govuk-button govuk-button--warning govuk-!-margin-right-8">Delete</button>
+    <button
+      *ngIf="trainingRecordId"
+      type="button"
+      class="govuk-button govuk-button--warning govuk-!-margin-right-8"
+      [routerLink]="[
+        '/workplace',
+        workplace.uid,
+        'training-and-qualifications-record',
+        worker.uid,
+        'training',
+        trainingRecordId,
+        'delete'
+      ]"
+    >
+      Delete
+    </button>
     <a
       class="govuk-button govuk-button--link govuk-!-margin-left-9"
       role="button"
