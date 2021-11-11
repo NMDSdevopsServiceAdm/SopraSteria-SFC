@@ -6,9 +6,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithTrainingRecord, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../../server/test/factories/models';
 import { WorkersModule } from '../../workers.module';
@@ -47,7 +47,7 @@ describe('DeleteRecordComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerService,
+          useClass: MockWorkerServiceWithTrainingRecord,
         },
       ],
     });
@@ -76,9 +76,9 @@ describe('DeleteRecordComponent', () => {
   });
 
   it('should display the worker name', async () => {
-    const { component, getByText } = await setup();
+    const { component, getByTestId } = await setup();
 
-    expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
+    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.nameOrId);
   });
 
   it('should display the worker job role', async () => {
@@ -91,5 +91,41 @@ describe('DeleteRecordComponent', () => {
     const { component, getByTestId } = await setup(true);
 
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.other);
+  });
+
+  it('should navigate to the edit training page when pressing cancel', async () => {
+    const { component, getByText, routerSpy } = await setup();
+
+    const cancelButton = getByText('Cancel');
+    fireEvent.click(cancelButton);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.workplace.uid,
+      'training-and-qualifications-record',
+      component.worker.uid,
+      'training',
+      component.trainingRecordId,
+    ]);
+  });
+
+  describe('Summary table', () => {
+    it('should display the worker name or ID number', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      expect(getByTestId('workerName').textContent).toContain(component.worker.nameOrId);
+    });
+
+    it('should display the training category', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      expect(getByTestId('trainingCategory').textContent).toContain(component.trainingRecord.trainingCategory.category);
+    });
+
+    it('should display the training name', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      expect(getByTestId('trainingName').textContent).toContain(String(component.trainingRecord.title));
+    });
   });
 });
