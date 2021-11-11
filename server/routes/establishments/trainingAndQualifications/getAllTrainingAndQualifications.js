@@ -21,7 +21,7 @@ const getAllTrainingAndQualifications = async (req, res) => {
   }
 };
 
-router.route('/').get(hasPermission('canEditWorker'), getAllTrainingAndQualifications);
+router.route('/').get(hasPermission('canViewWorker'), getAllTrainingAndQualifications);
 
 module.exports = router;
 module.exports.getAllTrainingAndQualifications = getAllTrainingAndQualifications;
