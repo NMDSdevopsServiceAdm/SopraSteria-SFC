@@ -67,11 +67,10 @@
                 <input
                   aria-controls="regulatedByCQC-conditional-1"
                   class="govuk-radios__input"
-                  id="regulatedByCQC-1"
-                  name="regulatedByCQC"
+                  id="cqc-yes"
                   type="radio"
-                  value="yes"
-                  [formControlName]="'regulatedByCQC'"
+                  [value]="true"
+                  [formControlName]="'cqc'"
                 />
                 <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
                   Yes, I agree to you sharing our data with the CQC
@@ -81,11 +80,10 @@
                 <input
                   aria-controls="regulatedByCQC-conditional-2"
                   class="govuk-radios__input"
-                  id="regulatedByCQC-2"
-                  name="regulatedByCQC"
+                  id="cqc-no"
                   type="radio"
-                  value="no"
-                  [formControlName]="'regulatedByCQC'"
+                  [value]="false"
+                  [formControlName]="'cqc'"
                 />
                 <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-8" for="regulatedByCQC-2">
                   No, I do not agree to you sharing our data with the CQC
@@ -101,11 +99,11 @@
               <input
                 aria-controls="regulatedByCQC-conditional-1"
                 class="govuk-radios__input"
-                id="regulatedByCQC-1"
-                name="regulatedByCQC"
+                id="localAuthorities-yes"
+                data-testid="localAuthorities-yes"
                 type="radio"
-                value="yes"
-                [formControlName]="'regulatedByCQC'"
+                [value]="true"
+                [formControlName]="'localAuthorities'"
               />
               <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
                 Yes, I agree to you sharing our data with local authorities
@@ -115,37 +113,17 @@
               <input
                 aria-controls="regulatedByCQC-conditional-2"
                 class="govuk-radios__input"
-                id="regulatedByCQC-2"
-                name="regulatedByCQC"
+                id="localAuthorities-no"
+                data-testid="localAuthorities-no"
                 type="radio"
-                value="no"
-                [formControlName]="'regulatedByCQC'"
+                [value]="false"
+                [formControlName]="'localAuthorities'"
               />
               <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
                 No, I do not agree to you sharing our data with local authorities</label
               >
             </div>
           </div>
-          <!-- <div class="govuk-checkboxes">
-            <div class="govuk-checkboxes__item" *ngIf="establishment.isRegulated">
-              <input class="govuk-checkboxes__input" id="shareWith-cqc" [formControlName]="'cqc'" type="checkbox" />
-              <label class="govuk-label govuk-checkboxes__label" for="shareWith-cqc">
-                 Yes, I agree to you sharing our data with the CQC
-              </label>
-            </div>
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                id="shareWith-localAuthorities"
-                [formControlName]="'localAuthorities'"
-                type="checkbox"
-              />
-              <label class="govuk-label govuk-checkboxes__label" for="shareWith-localAuthorities">
-                No, I do not agree to you sharing our data with the CQC
-              </label>
-            </div>
-
-          </div> -->
         </fieldset>
       </div>
     </div>

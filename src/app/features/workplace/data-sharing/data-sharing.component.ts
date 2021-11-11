@@ -24,8 +24,8 @@ export class DataSharingComponent extends Question {
 
     this.form = this.formBuilder.group({
       shareWith: this.formBuilder.group({
-        cqc: false,
-        localAuthorities: false,
+        cqc: null,
+        localAuthorities: null,
       }),
     });
   }
@@ -54,23 +54,10 @@ export class DataSharingComponent extends Question {
   protected generateUpdateProps() {
     const { cqc, localAuthorities } = this.form.get('shareWith').value;
 
-    const shareWith = [];
-
-    if (cqc) {
-      shareWith.push(DataSharingOptions.CQC);
-    }
-    if (localAuthorities) {
-      shareWith.push(DataSharingOptions.LOCAL);
-    }
-
-    if ((this.establishment && !shareWith.length) || !localAuthorities) {
-      this.establishment.localAuthorities = [];
-    }
-
     return {
       share: {
-        enabled: shareWith.length ? true : false,
-        with: shareWith,
+        cqc,
+        localAuthorities,
       },
     };
   }

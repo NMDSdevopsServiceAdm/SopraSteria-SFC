@@ -8,9 +8,8 @@ export interface SharingOptionsModel {
 }
 
 export interface DataSharing {
-  enabled: boolean;
-  with: string[];
-  authorities?: LocalAuthorityModel[];
+  cqc: boolean;
+  localAuthorities: boolean;
 }
 
 export interface DataSharingRequest {
