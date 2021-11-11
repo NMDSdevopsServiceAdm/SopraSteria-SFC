@@ -167,10 +167,10 @@
 
       <div *ngIf="mandatoryTrainingCount > 0">
         <app-new-training
-          [workplace]="workplace"
           [trainingRecords]="mandatoryTraining"
           [trainingType]="'mandatory'"
           [setReturnRoute]="setReturnRoute"
+          [canEditWorker]="canEditWorker"
           data-testid="mandatory-training"
         ></app-new-training>
       </div>
