@@ -2,10 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 
-import { Establishment } from '../../../../../mockdata/establishment';
 import { NewTrainingComponent } from './new-training.component';
 
 describe('NewTrainingComponent', () => {
@@ -97,14 +94,14 @@ describe('NewTrainingComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [{ provide: PermissionsService, useClass: MockPermissionsService }],
+      providers: [],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewTrainingComponent);
     component = fixture.componentInstance;
-    component.workplace = Establishment;
+    component.canEditWorker = true;
     component.trainingRecords = trainingRecords;
     fixture.detectChanges();
   });

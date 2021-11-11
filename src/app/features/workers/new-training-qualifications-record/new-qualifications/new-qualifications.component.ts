@@ -1,20 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
+import { Component, Input } from '@angular/core';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-new-qualifications',
   templateUrl: './new-qualifications.component.html',
 })
-export class NewQualificationsComponent implements OnInit {
-  @Input() public workplace: Establishment;
+export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;
-  public canEditWorker: boolean;
-
-  constructor(private permissionsService: PermissionsService) {}
-
-  ngOnInit(): void {
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-  }
+  @Input() canEditWorker: boolean;
 }

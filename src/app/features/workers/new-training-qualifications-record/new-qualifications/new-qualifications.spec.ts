@@ -1,27 +1,19 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { Establishment } from '../../../../../mockdata/establishment';
 import { NewQualificationsComponent } from './new-qualifications.component';
 
 describe('NewQualificationsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        {
-          provide: PermissionsService,
-          useClass: MockPermissionsService,
-        },
-      ],
+      providers: [],
       componentProperties: {
-        workplace: Establishment,
+        canEditWorker: true,
         qualificationsByGroup,
       },
     });

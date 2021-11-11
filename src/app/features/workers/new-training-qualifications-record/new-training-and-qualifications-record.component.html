@@ -187,10 +187,10 @@
       </p>
       <ng-template #nonMandatoryTrainingTable>
         <app-new-training
-          [workplace]="workplace"
           [trainingRecords]="nonMandatoryTraining"
           [trainingType]="'nonMandatory'"
           [setReturnRoute]="setReturnRoute"
+          [canEditWorker]="canEditWorker"
           data-testid="non-mandatory-training"
         ></app-new-training>
       </ng-template>
@@ -206,7 +206,7 @@
       </p>
       <ng-template #qualificationTable>
         <app-new-qualifications
-          [workplace]="workplace"
+          [canEditWorker]="canEditWorker"
           [qualificationsByGroup]="qualificationsByGroup"
           data-testid="qualification"
         >
