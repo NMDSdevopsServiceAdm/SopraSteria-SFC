@@ -59,13 +59,77 @@
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">Do you agree to us sharing data with:</h2>
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
           </legend>
-          <div class="govuk-checkboxes">
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="regulatedByCQC-conditional-1"
+                class="govuk-radios__input"
+                id="regulatedByCQC-1"
+                name="regulatedByCQC"
+                type="radio"
+                value="yes"
+                [formControlName]="'regulatedByCQC'"
+              />
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
+                Yes, I agree to you sharing our data with the CQC
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="regulatedByCQC-conditional-2"
+                class="govuk-radios__input"
+                id="regulatedByCQC-2"
+                name="regulatedByCQC"
+                type="radio"
+                value="no"
+                [formControlName]="'regulatedByCQC'"
+              />
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
+                No, I do not agree to you sharing our data with the CQC
+              </label>
+            </div>
+          </div>
+
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with local authorities?</h2>
+          </legend>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="regulatedByCQC-conditional-1"
+                class="govuk-radios__input"
+                id="regulatedByCQC-1"
+                name="regulatedByCQC"
+                type="radio"
+                value="yes"
+                [formControlName]="'regulatedByCQC'"
+              />
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
+                Yes, I agree to you sharing our data with local authorities
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="regulatedByCQC-conditional-2"
+                class="govuk-radios__input"
+                id="regulatedByCQC-2"
+                name="regulatedByCQC"
+                type="radio"
+                value="no"
+                [formControlName]="'regulatedByCQC'"
+              />
+              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
+                No, I do not agree to you sharing our data with local authorities</label
+              >
+            </div>
+          </div>
+          <!-- <div class="govuk-checkboxes">
             <div class="govuk-checkboxes__item" *ngIf="establishment.isRegulated">
               <input class="govuk-checkboxes__input" id="shareWith-cqc" [formControlName]="'cqc'" type="checkbox" />
               <label class="govuk-label govuk-checkboxes__label" for="shareWith-cqc">
-                Care Quality Commission (CQC)
+                 Yes, I agree to you sharing our data with the CQC
               </label>
             </div>
             <div class="govuk-checkboxes__item">
@@ -76,10 +140,11 @@
                 type="checkbox"
               />
               <label class="govuk-label govuk-checkboxes__label" for="shareWith-localAuthorities">
-                Local authorities
+                No, I do not agree to you sharing our data with the CQC
               </label>
             </div>
-          </div>
+
+          </div> -->
         </fieldset>
       </div>
     </div>
