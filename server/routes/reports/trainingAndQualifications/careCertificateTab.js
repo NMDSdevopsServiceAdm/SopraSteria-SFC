@@ -9,7 +9,6 @@ const {
   fitColumnsToSize,
   alignColumnToLeft,
   addBlankRowIfTableEmpty,
-  addQuestion,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
@@ -27,19 +26,17 @@ const addContentToCareCertificateTab = (careCertificateTab, establishments, isPa
   alignColumnToLeft(careCertificateTab, 2);
   if (isParent) alignColumnToLeft(careCertificateTab, 3);
 
-  isParent && addQuestion(careCertificateTab, 'B6', 'E6', 'Have they started or completed the Care Certificate?');
-
   const careCertificateTable = createCareCertificateTable(careCertificateTab, isParent);
   addRowsToCareCertificateTable(careCertificateTable, establishments, isParent);
 
   fitColumnsToSize(careCertificateTab, 2, 5.5);
-  addBordersToAllFilledCells(careCertificateTab, isParent ? 8 : 5);
+  addBordersToAllFilledCells(careCertificateTab, 5);
 };
 
 const createCareCertificateTable = (careCertificateTab, isParent) => {
   setTableHeadingsStyle(
     careCertificateTab,
-    isParent ? 9 : 6,
+    6,
     backgroundColours.blue,
     textColours.white,
     isParent ? ['B', 'C', 'D', 'E'] : ['B', 'C', 'D'],
@@ -55,7 +52,7 @@ const createCareCertificateTable = (careCertificateTab, isParent) => {
 
   return careCertificateTab.addTable({
     name: 'careCertificateTable',
-    ref: isParent ? 'B9' : 'B6',
+    ref: 'B6',
     columns,
     rows: [],
   });
