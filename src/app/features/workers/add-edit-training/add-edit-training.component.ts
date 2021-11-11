@@ -71,7 +71,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected setButtonText(): void {
-    this.buttonText = this.trainingRecordId ? 'Update training' : 'Add training';
+    this.buttonText = this.trainingRecordId ? 'Save and return' : 'Add training';
   }
 
   protected setBackLink(): void {
