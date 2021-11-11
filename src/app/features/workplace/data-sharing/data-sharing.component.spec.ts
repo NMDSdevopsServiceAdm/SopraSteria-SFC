@@ -13,7 +13,7 @@ import { DataSharingComponent } from './data-sharing.component';
 
 describe('DataSharingComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText } = await render(DataSharingComponent, {
+    const { fixture, getByText, getAllByText, queryByText } = await render(DataSharingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         ErrorSummaryService,
@@ -30,11 +30,30 @@ describe('DataSharingComponent', () => {
       component,
       getByText,
       getAllByText,
+      queryByText,
     };
   }
 
   it('should render DataSharingComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should display CQC question when establishment is regulated', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.establishment.isRegulated = true;
+    fixture.detectChanges();
+
+    expect(getByText('Do you agree to us sharing your data with the CQC?')).toBeTruthy();
+  });
+
+  it('should not display CQC question when establishment is not regulated', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.establishment.isRegulated = false;
+    fixture.detectChanges();
+
+    expect(queryByText('Do you agree to us sharing your data with the CQC?')).toBeFalsy();
   });
 });

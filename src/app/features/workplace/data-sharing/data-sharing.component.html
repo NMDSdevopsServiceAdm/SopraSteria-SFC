@@ -58,37 +58,39 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
-          </legend>
-          <div class="govuk-radios govuk-radios--conditional">
-            <div class="govuk-radios__item govuk-!-margin-top-3">
-              <input
-                aria-controls="regulatedByCQC-conditional-1"
-                class="govuk-radios__input"
-                id="regulatedByCQC-1"
-                name="regulatedByCQC"
-                type="radio"
-                value="yes"
-                [formControlName]="'regulatedByCQC'"
-              />
-              <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
-                Yes, I agree to you sharing our data with the CQC
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input
-                aria-controls="regulatedByCQC-conditional-2"
-                class="govuk-radios__input"
-                id="regulatedByCQC-2"
-                name="regulatedByCQC"
-                type="radio"
-                value="no"
-                [formControlName]="'regulatedByCQC'"
-              />
-              <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-8" for="regulatedByCQC-2">
-                No, I do not agree to you sharing our data with the CQC
-              </label>
+          <div *ngIf="establishment.isRegulated">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
+            </legend>
+            <div class="govuk-radios govuk-radios--conditional">
+              <div class="govuk-radios__item govuk-!-margin-top-3">
+                <input
+                  aria-controls="regulatedByCQC-conditional-1"
+                  class="govuk-radios__input"
+                  id="regulatedByCQC-1"
+                  name="regulatedByCQC"
+                  type="radio"
+                  value="yes"
+                  [formControlName]="'regulatedByCQC'"
+                />
+                <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
+                  Yes, I agree to you sharing our data with the CQC
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  aria-controls="regulatedByCQC-conditional-2"
+                  class="govuk-radios__input"
+                  id="regulatedByCQC-2"
+                  name="regulatedByCQC"
+                  type="radio"
+                  value="no"
+                  [formControlName]="'regulatedByCQC'"
+                />
+                <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-8" for="regulatedByCQC-2">
+                  No, I do not agree to you sharing our data with the CQC
+                </label>
+              </div>
             </div>
           </div>
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
