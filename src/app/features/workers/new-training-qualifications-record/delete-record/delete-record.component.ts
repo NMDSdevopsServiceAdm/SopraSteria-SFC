@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -24,6 +25,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     private router: Router,
     private workerService: WorkerService,
     private backService: BackService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -63,6 +65,11 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
       .deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
       .subscribe(() => {
         this.router.navigate([this.trainingPageUrl, 'new-training']);
+
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Training record has been deleted',
+        });
       });
   }
 
