@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -31,11 +30,11 @@ export class DataSharingComponent extends Question {
   }
 
   protected init(): void {
-    if (this.establishment.share && this.establishment.share.enabled) {
-      const shareWith = this.establishment.share.with;
+    if (this.establishment.shareWith) {
+      const shareWith = this.establishment.shareWith;
       this.form.get('shareWith').patchValue({
-        cqc: shareWith.includes(DataSharingOptions.CQC),
-        localAuthorities: shareWith.includes(DataSharingOptions.LOCAL),
+        cqc: shareWith.cqc,
+        localAuthorities: shareWith.localAuthorities,
       });
     }
 
@@ -55,7 +54,7 @@ export class DataSharingComponent extends Question {
     const { cqc, localAuthorities } = this.form.get('shareWith').value;
 
     return {
-      share: {
+      shareWith: {
         cqc,
         localAuthorities,
       },

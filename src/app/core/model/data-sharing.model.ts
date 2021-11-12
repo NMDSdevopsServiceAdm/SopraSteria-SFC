@@ -13,7 +13,7 @@ export interface DataSharing {
 }
 
 export interface DataSharingRequest {
-  share: DataSharing;
+  shareWith: DataSharing;
 }
 
 export enum DataSharingOptions {

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { LocalAuthorityModel } from '@core/model/localAuthority.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -53,7 +52,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
 
-    if (!this.establishment.share.with.includes(DataSharingOptions.LOCAL)) {
+    if (!this.establishment.shareWith.localAuthorities) {
       this.router.navigate(this.previousRoute, { replaceUrl: true });
     }
 

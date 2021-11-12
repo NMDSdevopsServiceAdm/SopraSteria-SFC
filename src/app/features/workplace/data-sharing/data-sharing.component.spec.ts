@@ -14,7 +14,7 @@ import { of } from 'rxjs';
 import { DataSharingComponent } from './data-sharing.component';
 
 describe('DataSharingComponent', () => {
-  async function setup() {
+  async function setup(shareWith = { cqc: null, localAuthorities: null }) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DataSharingComponent, {
       imports: [
         SharedModule,
@@ -28,7 +28,7 @@ describe('DataSharingComponent', () => {
         ErrorSummaryService,
         BackService,
         FormBuilder,
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        { provide: EstablishmentService, useFactory: MockEstablishmentService.factory(shareWith) },
       ],
     });
 
@@ -84,7 +84,7 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        share: {
+        shareWith: {
           cqc: null,
           localAuthorities: true,
         },
@@ -101,7 +101,7 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        share: {
+        shareWith: {
           cqc: null,
           localAuthorities: false,
         },
@@ -123,7 +123,7 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        share: {
+        shareWith: {
           cqc: true,
           localAuthorities: null,
         },
@@ -143,7 +143,7 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        share: {
+        shareWith: {
           cqc: false,
           localAuthorities: null,
         },
