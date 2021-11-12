@@ -42,31 +42,16 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
     return true;
   }
 
-  jsonShareOption() {
-    const jsonResponse = {
-      enabled: this.property.enabled,
-    };
-
-    if (this.property.with) {
-      jsonResponse.with = this.property.with;
-    } else {
-      jsonResponse.with = [];
-    }
-
-    return jsonResponse;
-  }
-
   toJSON(withHistory = false, showPropertyHistoryOnly = true) {
     if (!withHistory) {
-      // simple form
       return {
-        share: this.jsonShareOption(),
+        shareWith: this.property,
       };
     }
 
     return {
-      share: {
-        currentValue: this.jsonShareOption(),
+      shareWith: {
+        currentValue: this.property,
         ...this.changePropsToJSON(showPropertyHistoryOnly),
       },
     };

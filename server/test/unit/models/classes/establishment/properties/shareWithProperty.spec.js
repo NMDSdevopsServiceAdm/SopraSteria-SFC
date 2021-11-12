@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const sinon = require('sinon');
 
 const ShareWithProperty =
   require('../../../../../../models/classes/establishment/properties/shareWithProperty').ShareWithProperty;
@@ -158,6 +159,34 @@ describe('ShareWithProperty', () => {
 
       const equal = shareWithProperty.isEqual(currentValue, newValue);
       expect(equal).to.equal(false);
+    });
+  });
+
+  describe('toJSON()', () => {
+    it('should return correctly formatted JSON', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const shareWith = {
+        cqc: true,
+        localAuthorities: true,
+      };
+      shareWithProperty.property = shareWith;
+
+      const json = shareWithProperty.toJSON();
+      expect(json.shareWith).to.deep.equal(shareWith);
+    });
+
+    it('should return object with currentValue when showHistory is true', () => {
+      const shareWithProperty = new ShareWithProperty();
+      sinon.stub(shareWithProperty, 'changePropsToJSON').returns({});
+
+      const shareWith = {
+        cqc: true,
+        localAuthorities: true,
+      };
+      shareWithProperty.property = shareWith;
+
+      const json = shareWithProperty.toJSON(true);
+      expect(json.shareWith.currentValue).to.deep.equal(shareWith);
     });
   });
 });
