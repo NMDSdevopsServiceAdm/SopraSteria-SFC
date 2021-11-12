@@ -18,61 +18,10 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
 
   // concrete implementations
   async restoreFromJson(document) {
-    if (document.share) {
-      const shareOptions = document.share;
-      const EXPECTED_SHARE_OPTIONS = [OPTION_CQC, OPTION_LOCAL_AUTHORITY];
-
-      if (typeof shareOptions.enabled === 'boolean') {
-        if (!shareOptions.enabled) {
-          this.property = {
-            enabled: false,
-          };
-        } else {
-          // share is enabled - could be zero, one or both "with" options
-          // could simply be a toggle of sharing on/off (so no options)
-          if (document.share.with && !Array.isArray(document.share.with)) {
-            // if "share.with"  is given it must be an Array, even if an empty array
-            this.property = null;
-          } else {
-            const validOptions = document.share.with
-              ? document.share.with.every((thisWithOption) => {
-                  return EXPECTED_SHARE_OPTIONS.includes(thisWithOption);
-                })
-              : true;
-
-            const newProperty = {
-              enabled: true,
-            };
-
-            if (validOptions && document.share.with) {
-              newProperty.with = document.share.with;
-              this.property = newProperty;
-            } else if (validOptions) {
-              // so no given with options, but the share property
-              //  is enabled. Check if we have cached the
-              //  share options and then reform the
-              //  with options (we're re-enabling share - toggle)
-              const withOptions = [];
-              if (this._shareWithCQC) {
-                withOptions.push(OPTION_CQC);
-              }
-              if (this._shareWithLA) {
-                withOptions.push(OPTION_LOCAL_AUTHORITY);
-              }
-
-              if (withOptions.length > 0) {
-                newProperty.with = withOptions;
-              }
-              this.property = newProperty;
-            } else {
-              // all with options must be valid
-              this.property = null;
-            }
-          }
-        }
-      } else {
-        this.property = null;
-      }
+    if (document.shareWith) {
+      this.property = document.shareWith;
+    } else {
+      this.property = null;
     }
   }
 
