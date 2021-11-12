@@ -16,7 +16,6 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public worker: Worker;
   public trainingRecord: TrainingRecord;
-  public trainingRecordId: string;
   private trainingPageUrl: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -29,29 +28,32 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.route.snapshot.data.establishment;
-    this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-    this.worker = this.route.snapshot.data.worker;
+    this.setVariables();
     this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
-    this.trainingRecord = this.route.snapshot.data.trainingRecord;
     this.setBackLink();
+  }
+
+  private setVariables(): void {
+    this.workplace = this.route.snapshot.data.establishment;
+    this.worker = this.route.snapshot.data.worker;
+    this.trainingRecord = this.route.snapshot.data.trainingRecord;
   }
 
   private setBackLink(): void {
     this.backService.setBackLink({
-      url: [this.trainingPageUrl, 'training', this.trainingRecordId],
+      url: [this.trainingPageUrl, 'training', this.trainingRecord.uid],
     });
   }
 
   public returnToEditPage(event: Event): void {
     event.preventDefault();
-    this.router.navigate([this.trainingPageUrl, 'training', this.trainingRecordId]);
+    this.router.navigate([this.trainingPageUrl, 'training', this.trainingRecord.uid]);
   }
 
   public deleteRecord(): void {
     this.subscriptions.add(
       this.workerService
-        .deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
+        .deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecord.uid)
         .subscribe(() => {
           this.router.navigate([this.trainingPageUrl, 'new-training']);
 

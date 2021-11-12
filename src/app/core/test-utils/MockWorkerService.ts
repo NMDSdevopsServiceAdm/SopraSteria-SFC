@@ -191,7 +191,7 @@ export const qualificationsByGroup = {
 
 export const trainingRecord = {
   id: 10,
-  uid: 'someuid',
+  uid: 'someTrainingUid',
   workerUid: '6787fgfghfghghjjg',
   created: '01/02/2020',
   updated: '01/02/2020',

@@ -6,7 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, trainingRecord, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, trainingRecord } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -17,7 +17,6 @@ import { DeleteRecordComponent } from './delete-record.component';
 
 describe('DeleteRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
-  const worker = workerBuilder() as Worker;
 
   async function setup(otherJob = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DeleteRecordComponent, {
@@ -40,9 +39,6 @@ describe('DeleteRecordComponent', () => {
                   },
                 },
                 trainingRecord: trainingRecord,
-              },
-              params: {
-                trainingRecordId: '1',
               },
             },
           },
@@ -113,7 +109,7 @@ describe('DeleteRecordComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith([
       `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
       'training',
-      component.trainingRecordId,
+      component.trainingRecord.uid,
     ]);
   });
 
@@ -150,7 +146,11 @@ describe('DeleteRecordComponent', () => {
       const deleteButton = getByText('Delete this training record');
       fireEvent.click(deleteButton);
 
-      expect(workerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, component.trainingRecordId);
+      expect(workerSpy).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+        component.trainingRecord.uid,
+      );
     });
 
     it('should navigate to the new-training page when pressing the delete button', async () => {
