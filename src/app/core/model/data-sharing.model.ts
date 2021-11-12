@@ -7,16 +7,11 @@ export interface SharingOptionsModel {
   authorities?: LocalAuthorityModel[];
 }
 
-export interface DataSharing {
+export interface ShareWith {
   cqc: boolean;
   localAuthorities: boolean;
 }
 
-export interface DataSharingRequest {
-  shareWith: DataSharing;
-}
-
-export enum DataSharingOptions {
-  CQC = 'CQC',
-  LOCAL = 'Local Authority',
+export interface ShareWithRequest {
+  shareWith: ShareWith;
 }

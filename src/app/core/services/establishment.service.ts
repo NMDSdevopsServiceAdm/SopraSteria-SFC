@@ -17,7 +17,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
+import { ShareWithRequest, SharingOptionsModel } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
@@ -220,7 +220,7 @@ export class EstablishmentService {
     return this.http.post<MainServiceRequest>(`/api/establishment/${establishmentId}/mainService`, data);
   }
 
-  updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
+  updateDataSharing(establishmentId, data: ShareWithRequest): Observable<any> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 

@@ -150,4 +150,42 @@ describe('DataSharingComponent', () => {
       });
     });
   });
+
+  describe('Setting radio buttons when establishment has shareWith data set', async () => {
+    it('should set Yes radio button when establishment has shareWith localAuthorities set to true', async () => {
+      const { component } = await setup({ cqc: null, localAuthorities: true });
+      const shareWithForm = component.form.value.shareWith;
+
+      expect(shareWithForm.localAuthorities).toBe(true);
+    });
+
+    it('should set No radio button when establishment has shareWith localAuthorities set to false', async () => {
+      const { component } = await setup({ cqc: null, localAuthorities: false });
+      const shareWithForm = component.form.value.shareWith;
+
+      expect(shareWithForm.localAuthorities).toBe(false);
+    });
+
+    it('should set Yes radio button when establishment has shareWith cqc set to true', async () => {
+      const { component } = await setup({ cqc: true, localAuthorities: null });
+      const shareWithForm = component.form.value.shareWith;
+
+      expect(shareWithForm.cqc).toBe(true);
+    });
+
+    it('should set No radio button when establishment has shareWith cqc set to false', async () => {
+      const { component } = await setup({ cqc: false, localAuthorities: null });
+      const shareWithForm = component.form.value.shareWith;
+
+      expect(shareWithForm.cqc).toBe(false);
+    });
+
+    it('should not set radio buttons when establishment has shareWith localAuthorities and cqc set to null', async () => {
+      const { component } = await setup({ cqc: null, localAuthorities: null });
+      const shareWithForm = component.form.value.shareWith;
+
+      expect(shareWithForm.localAuthorities).toBe(null);
+      expect(shareWithForm.cqc).toBe(null);
+    });
+  });
 });

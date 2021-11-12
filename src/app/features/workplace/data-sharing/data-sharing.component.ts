@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ShareWithRequest } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -50,7 +51,7 @@ export class DataSharingComponent extends Question {
     ];
   }
 
-  protected generateUpdateProps() {
+  protected generateUpdateProps(): ShareWithRequest {
     const { cqc, localAuthorities } = this.form.get('shareWith').value;
 
     return {
@@ -61,7 +62,7 @@ export class DataSharingComponent extends Question {
     };
   }
 
-  protected updateEstablishment(props): void {
+  protected updateEstablishment(props: ShareWithRequest): void {
     this.subscriptions.add(
       this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
         (data) => this._onSuccess(data),
