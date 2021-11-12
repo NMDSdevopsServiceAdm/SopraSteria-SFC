@@ -210,6 +210,8 @@ export const qualificationRecord = {
   updatedBy: 'user',
   qualification: {
     id: 1,
+    group: 'Degree',
+    title: 'Health Care Degree',
   },
   year: 2021,
   notes: 'Notes',

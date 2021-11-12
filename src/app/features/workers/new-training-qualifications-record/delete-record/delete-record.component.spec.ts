@@ -15,10 +15,10 @@ import { establishmentBuilder } from '../../../../../../server/test/factories/mo
 import { WorkersModule } from '../../workers.module';
 import { DeleteRecordComponent } from './delete-record.component';
 
-fdescribe('DeleteRecordComponent', () => {
+describe('DeleteRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup(otherJob = false, trainingView = true) {
+  async function setup(trainingView = true, otherJob = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DeleteRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -96,7 +96,7 @@ fdescribe('DeleteRecordComponent', () => {
   });
 
   it('should display the other worker job role', async () => {
-    const { component, getByTestId } = await setup(true);
+    const { component, getByTestId } = await setup(true, true);
 
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.other);
   });
@@ -191,13 +191,13 @@ fdescribe('DeleteRecordComponent', () => {
 
   describe('Qualification', () => {
     it('should display the correct title', async () => {
-      const { getByText } = await setup(false, false);
+      const { getByText } = await setup(false);
 
       expect(getByText("You're about to delete this qualification record")).toBeTruthy();
     });
 
     it('should navigate to the edit qualification page when pressing cancel if in qualifications view', async () => {
-      const { component, getByText, routerSpy } = await setup(false, false);
+      const { component, getByText, routerSpy } = await setup(false);
 
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
@@ -207,6 +207,30 @@ fdescribe('DeleteRecordComponent', () => {
         'qualification',
         component.qualificationRecord.uid,
       ]);
+    });
+
+    describe('Summary table', () => {
+      it('should display the worker name or ID number', async () => {
+        const { component, getByTestId } = await setup(false);
+
+        expect(getByTestId('workerName').textContent).toContain(component.worker.nameOrId);
+      });
+
+      it('should display the type of qualification', async () => {
+        const { component, getByTestId } = await setup(false);
+
+        expect(getByTestId('qualificationType').textContent).toContain(
+          component.qualificationRecord.qualification.group,
+        );
+      });
+
+      it('should display the qualification name', async () => {
+        const { component, getByTestId } = await setup(false);
+
+        expect(getByTestId('qualificationName').textContent).toContain(
+          component.qualificationRecord.qualification.title,
+        );
+      });
     });
   });
 });
