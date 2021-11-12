@@ -17,7 +17,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId } = await render(AddEditTrainingComponent, {
+    const { fixture, getByText, getByTestId, queryByText } = await render(AddEditTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -51,6 +51,7 @@ describe('AddEditTrainingComponent', () => {
       fixture,
       getByText,
       getByTestId,
+      queryByText,
     };
   }
 
@@ -111,6 +112,15 @@ describe('AddEditTrainingComponent', () => {
       const { getByText } = await setup();
 
       expect(getByText('Delete')).toBeTruthy();
+    });
+
+    it('should not render the delete button when there is no training id', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.trainingRecordId = null;
+      fixture.detectChanges();
+
+      expect(queryByText('Delete')).toBeFalsy();
     });
   });
 });
