@@ -18,7 +18,7 @@ import { DeleteRecordComponent } from './delete-record.component';
 describe('DeleteRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup(otherJob = false) {
+  async function setup(otherJob = false, trainingView = true) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DeleteRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -38,7 +38,7 @@ describe('DeleteRecordComponent', () => {
                     other: otherJob ? 'Care taker' : undefined,
                   },
                 },
-                trainingRecord: trainingRecord,
+                trainingRecord: trainingView ? trainingRecord : null,
               },
             },
           },
@@ -100,7 +100,7 @@ describe('DeleteRecordComponent', () => {
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.other);
   });
 
-  it('should navigate to the edit training page when pressing cancel', async () => {
+  it('should navigate to the edit training page when pressing cancel if in training view', async () => {
     const { component, getByText, routerSpy } = await setup();
 
     const cancelButton = getByText('Cancel');
@@ -109,7 +109,20 @@ describe('DeleteRecordComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith([
       `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
       'training',
-      component.trainingRecord.uid,
+      component.record.uid,
+    ]);
+  });
+
+  xit('should navigate to the edit qualification page when pressing cancel if in qualifications view', async () => {
+    const { component, getByText, routerSpy } = await setup(false, false);
+
+    const cancelButton = getByText('Cancel');
+    fireEvent.click(cancelButton);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
+      'qualification',
+      component.record.uid,
     ]);
   });
 
@@ -123,13 +136,13 @@ describe('DeleteRecordComponent', () => {
     it('should display the training category', async () => {
       const { component, getByTestId } = await setup();
 
-      expect(getByTestId('trainingCategory').textContent).toContain(component.trainingRecord.trainingCategory.category);
+      expect(getByTestId('trainingCategory').textContent).toContain(component.record.trainingCategory.category);
     });
 
     it('should display the training name', async () => {
       const { component, getByTestId } = await setup();
 
-      expect(getByTestId('trainingName').textContent).toContain(String(component.trainingRecord.title));
+      expect(getByTestId('trainingName').textContent).toContain(String(component.record.title));
     });
   });
 
@@ -146,11 +159,7 @@ describe('DeleteRecordComponent', () => {
       const deleteButton = getByText('Delete this training record');
       fireEvent.click(deleteButton);
 
-      expect(workerSpy).toHaveBeenCalledWith(
-        component.workplace.uid,
-        component.worker.uid,
-        component.trainingRecord.uid,
-      );
+      expect(workerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, component.record.uid);
     });
 
     it('should navigate to the new-training page when pressing the delete button', async () => {

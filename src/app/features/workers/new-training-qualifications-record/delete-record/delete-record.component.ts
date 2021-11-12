@@ -15,8 +15,10 @@ import { Subscription } from 'rxjs';
 export class DeleteRecordComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public worker: Worker;
-  public trainingRecord: TrainingRecord;
+  public record: TrainingRecord;
   private trainingPageUrl: string;
+  private trainingView: boolean;
+  private trainingOrQualification: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -28,40 +30,46 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.setTrainingView();
     this.setVariables();
     this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
     this.setBackLink();
   }
 
+  private setTrainingView(): void {
+    this.trainingView = this.route.snapshot.data.trainingRecord ? true : false;
+    this.trainingOrQualification = this.trainingView ? 'training' : 'qualification';
+  }
+
   private setVariables(): void {
     this.workplace = this.route.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
-    this.trainingRecord = this.route.snapshot.data.trainingRecord;
+    this.record = this.trainingView
+      ? this.route.snapshot.data.trainingRecord
+      : this.route.snapshot.data.qualificationRecord;
   }
 
   private setBackLink(): void {
     this.backService.setBackLink({
-      url: [this.trainingPageUrl, 'training', this.trainingRecord.uid],
+      url: [this.trainingPageUrl, this.trainingOrQualification, this.record.uid],
     });
   }
 
   public returnToEditPage(event: Event): void {
     event.preventDefault();
-    this.router.navigate([this.trainingPageUrl, 'training', this.trainingRecord.uid]);
+    this.router.navigate([this.trainingPageUrl, this.trainingOrQualification, this.record.uid]);
   }
 
   public deleteRecord(): void {
     this.subscriptions.add(
-      this.workerService
-        .deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecord.uid)
-        .subscribe(() => {
-          this.router.navigate([this.trainingPageUrl, 'new-training']);
+      this.workerService.deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.record.uid).subscribe(() => {
+        this.router.navigate([this.trainingPageUrl, 'new-training']);
 
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Training record has been deleted',
-          });
-        }),
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Training record has been deleted',
+        });
+      }),
     );
   }
 
