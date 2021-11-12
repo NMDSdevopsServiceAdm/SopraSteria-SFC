@@ -66,6 +66,21 @@
     <button type="submit" class="govuk-button govuk-!-margin-right-5">
       {{ qualificationId ? 'Save and return' : 'Add qualification' }}
     </button>
+    <button
+      *ngIf="qualificationId"
+      type="button"
+      class="govuk-button govuk-button--warning govuk-!-margin-right-8"
+      [routerLink]="[
+        '/workplace',
+        workplace.uid,
+        'training-and-qualifications-record',
+        worker.uid,
+        'qualification',
+        qualificationId,
+        'delete'
+      ]"
+    >
+      Delete
     </button>
     <a
       class="govuk-button govuk-button--link govuk-util__float-right"

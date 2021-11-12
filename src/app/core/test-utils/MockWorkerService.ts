@@ -203,6 +203,18 @@ export const trainingRecord = {
   expires: '01/02/2021',
 };
 
+export const qualificationRecord = {
+  uid: '1234-5678',
+  created: '01/01/2021',
+  updated: '01/02/2021',
+  updatedBy: 'user',
+  qualification: {
+    id: 1,
+  },
+  year: 2021,
+  notes: 'Notes',
+};
+
 @Injectable()
 export class MockWorkerService extends WorkerService {
   private _worker;
