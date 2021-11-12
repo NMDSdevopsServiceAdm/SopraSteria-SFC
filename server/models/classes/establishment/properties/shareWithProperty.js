@@ -1,9 +1,6 @@
 // the "share with" property is a value (enum) property only, but stored as a set of individual properties (shareWithLA and shareWithCQC)
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-const OPTION_LOCAL_AUTHORITY = 'Local Authority';
-const OPTION_CQC = 'CQC';
-
 exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyPrototype {
   constructor() {
     super('ShareData');
@@ -16,7 +13,6 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
     return new ShareWithProperty();
   }
 
-  // concrete implementations
   async restoreFromJson(document) {
     if (document.shareWith) {
       this.property = document.shareWith;
@@ -33,28 +29,10 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
   }
 
   savePropertyToSequelize() {
-    const updateDocument = {
-      ShareDataValue: this.property.enabled,
+    return {
+      shareWithCQC: this.property.cqc,
+      shareWithLA: this.property.localAuthorities,
     };
-
-    // only update the with options is share is enabled
-    if (this.property.enabled) {
-      // note - must reset the specific share option if it is not in the with set
-      if (this.property.with) {
-        if (this.property.with.includes(OPTION_CQC)) {
-          updateDocument.shareWithCQC = true;
-        } else {
-          updateDocument.shareWithCQC = false;
-        }
-        if (this.property.with.includes(OPTION_LOCAL_AUTHORITY)) {
-          updateDocument.shareWithLA = true;
-        } else {
-          updateDocument.shareWithLA = false;
-        }
-      }
-    }
-
-    return updateDocument;
   }
 
   isEqual(currentValue, newValue) {

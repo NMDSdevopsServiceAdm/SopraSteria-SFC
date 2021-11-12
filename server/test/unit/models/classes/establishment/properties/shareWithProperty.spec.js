@@ -62,4 +62,40 @@ describe('ShareWithProperty', () => {
       expect(restored).to.deep.equal(expectedShareWith);
     });
   });
+
+  describe('savePropertyToSequelize()', () => {
+    it('should save in correct format as if saving into database', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const shareWith = {
+        cqc: null,
+        localAuthorities: true,
+      };
+
+      const expectedSaved = {
+        shareWithCQC: null,
+        shareWithLA: true,
+      };
+      shareWithProperty.property = shareWith;
+
+      const saved = shareWithProperty.savePropertyToSequelize();
+      expect(saved).to.deep.equal(expectedSaved);
+    });
+
+    it('should still save in correct format as if saving into database when values are null', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const shareWith = {
+        cqc: null,
+        localAuthorities: null,
+      };
+
+      const expectedSaved = {
+        shareWithCQC: null,
+        shareWithLA: null,
+      };
+      shareWithProperty.property = shareWith;
+
+      const saved = shareWithProperty.savePropertyToSequelize();
+      expect(saved).to.deep.equal(expectedSaved);
+    });
+  });
 });
