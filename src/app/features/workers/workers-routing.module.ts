@@ -282,8 +282,18 @@ const routes: Routes = [
       },
       {
         path: 'qualification/:qualificationId',
-        component: AddEditQualificationComponent,
-        data: { title: 'Qualification' },
+        children: [
+          {
+            path: '',
+            component: AddEditQualificationComponent,
+            data: { title: 'Qualification' },
+          },
+          {
+            path: 'delete',
+            component: DeleteRecordComponent,
+            data: { title: 'Delete Training' },
+          },
+        ],
       },
       {
         path: 'add-training',
