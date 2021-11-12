@@ -9,6 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithTrainingRecord, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { establishmentBuilder } from '../../../../../../server/test/factories/models';
 import { WorkersModule } from '../../workers.module';
@@ -59,10 +60,15 @@ describe('DeleteRecordComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const workerSpy = spyOn(workerService, 'deleteTrainingRecord');
+    workerSpy.and.returnValue(of({}));
+
     return {
       component,
       fixture,
       routerSpy,
+      workerSpy,
       getByText,
       getAllByText,
       getByTestId,
@@ -100,10 +106,7 @@ describe('DeleteRecordComponent', () => {
     fireEvent.click(cancelButton);
 
     expect(routerSpy).toHaveBeenCalledWith([
-      '/workplace',
-      component.workplace.uid,
-      'training-and-qualifications-record',
-      component.worker.uid,
+      `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
       'training',
       component.trainingRecordId,
     ]);
@@ -126,6 +129,35 @@ describe('DeleteRecordComponent', () => {
       const { component, getByTestId } = await setup(true);
 
       expect(getByTestId('trainingName').textContent).toContain(String(component.trainingRecord.title));
+    });
+  });
+
+  describe('Delete button', () => {
+    it('should display the delete button', async () => {
+      const { getByText } = await setup(true);
+
+      expect(getByText('Delete this training record')).toBeTruthy();
+    });
+
+    it('should call the deleteTrainingRecord function when pressing the delete button', async () => {
+      const { component, getByText, workerSpy } = await setup(true);
+
+      const deleteButton = getByText('Delete this training record');
+      fireEvent.click(deleteButton);
+
+      expect(workerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, component.trainingRecordId);
+    });
+
+    it('should navigate to the new-training page when pressing the delete button', async () => {
+      const { component, getByText, routerSpy } = await setup(true);
+
+      const deleteButton = getByText('Delete this training record');
+      fireEvent.click(deleteButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
+        'new-training',
+      ]);
     });
   });
 });
