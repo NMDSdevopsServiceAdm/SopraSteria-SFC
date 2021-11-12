@@ -6,7 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithTrainingRecord, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, trainingRecord, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -39,6 +39,7 @@ describe('DeleteRecordComponent', () => {
                     other: otherJob ? 'Care taker' : undefined,
                   },
                 },
+                trainingRecord: trainingRecord,
               },
               params: {
                 trainingRecordId: '1',
@@ -48,7 +49,7 @@ describe('DeleteRecordComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerServiceWithTrainingRecord,
+          useClass: MockWorkerService,
         },
       ],
     });

@@ -33,20 +33,8 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     this.worker = this.route.snapshot.data.worker;
     this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
-    this.getTrainingRecord();
+    this.trainingRecord = this.route.snapshot.data.trainingRecord;
     this.setBackLink();
-  }
-
-  private getTrainingRecord(): void {
-    this.subscriptions.add(
-      this.workerService
-        .getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
-        .subscribe((trainingRecord) => {
-          if (trainingRecord) {
-            this.trainingRecord = trainingRecord;
-          }
-        }),
-    );
   }
 
   private setBackLink(): void {
@@ -61,16 +49,18 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   }
 
   public deleteRecord(): void {
-    this.workerService
-      .deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
-      .subscribe(() => {
-        this.router.navigate([this.trainingPageUrl, 'new-training']);
+    this.subscriptions.add(
+      this.workerService
+        .deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
+        .subscribe(() => {
+          this.router.navigate([this.trainingPageUrl, 'new-training']);
 
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Training record has been deleted',
-        });
-      });
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Training record has been deleted',
+          });
+        }),
+    );
   }
 
   ngOnDestroy(): void {

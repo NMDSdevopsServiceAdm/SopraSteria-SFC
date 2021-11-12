@@ -189,6 +189,20 @@ export const qualificationsByGroup = {
   ],
 } as QualificationsByGroup;
 
+export const trainingRecord = {
+  id: 10,
+  uid: 'someuid',
+  workerUid: '6787fgfghfghghjjg',
+  created: '01/02/2020',
+  updated: '01/02/2020',
+  updatedBy: 'admin',
+  trainingCategory: { id: 1, category: 'Communication' },
+  title: 'Communication Training 1',
+  accredited: true,
+  completed: '01/02/2020',
+  expires: '01/02/2021',
+};
+
 @Injectable()
 export class MockWorkerService extends WorkerService {
   private _worker;
@@ -250,24 +264,5 @@ export class MockWorkerService extends WorkerService {
 export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
-  }
-}
-
-@Injectable()
-export class MockWorkerServiceWithTrainingRecord extends MockWorkerService {
-  getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
-    return of({
-      id: 10,
-      uid: 'someuid',
-      workerUid: '6787fgfghfghghjjg',
-      created: '01/02/2020',
-      updated: '01/02/2020',
-      updatedBy: 'admin',
-      trainingCategory: { id: 1, category: 'Communication' },
-      title: 'Communication Training 1',
-      accredited: true,
-      completed: '01/02/2020',
-      expires: '01/02/2021',
-    });
   }
 }
