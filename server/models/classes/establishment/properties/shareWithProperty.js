@@ -26,27 +26,12 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
   }
 
   restorePropertyFromSequelize(document) {
-    if (document.ShareDataValue) {
-      const shareWith = [];
-
-      if (document.shareWithCQC) shareWith.push(OPTION_CQC);
-      if (document.shareWithLA) shareWith.push(OPTION_LOCAL_AUTHORITY);
-
-      return {
-        enabled: true,
-        with: shareWith,
-      };
-    } else {
-      // even if sharing if not enabled, cache (private) the share with CQC
-      //  and share with LA options, in case when serialising from JSON
-      //  we're toggling back on sharing
-      this._shareWithLA = document.shareWithLA;
-      this._shareWithCQC = document.shareWithCQC;
-      return {
-        enabled: false,
-      };
-    }
+    return {
+      cqc: document.shareWithCQC,
+      localAuthorities: document.shareWithLA,
+    };
   }
+
   savePropertyToSequelize() {
     const updateDocument = {
       ShareDataValue: this.property.enabled,

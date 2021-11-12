@@ -28,4 +28,38 @@ describe('ShareWithProperty', () => {
       expect(shareWithProperty.property).to.deep.equal(null);
     });
   });
+
+  describe('restorePropertyFromSequelize()', () => {
+    it('should restore in shareWith format with cqc and localAuthorities fields', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const document = {
+        shareWithCQC: false,
+        shareWithLA: true,
+      };
+
+      const expectedShareWith = {
+        cqc: false,
+        localAuthorities: true,
+      };
+
+      const restored = shareWithProperty.restorePropertyFromSequelize(document);
+      expect(restored).to.deep.equal(expectedShareWith);
+    });
+
+    it('should restore in shareWith format when properties are null', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const document = {
+        shareWithCQC: null,
+        shareWithLA: null,
+      };
+
+      const expectedShareWith = {
+        cqc: null,
+        localAuthorities: null,
+      };
+
+      const restored = shareWithProperty.restorePropertyFromSequelize(document);
+      expect(restored).to.deep.equal(expectedShareWith);
+    });
+  });
 });
