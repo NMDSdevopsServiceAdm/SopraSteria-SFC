@@ -98,4 +98,66 @@ describe('ShareWithProperty', () => {
       expect(saved).to.deep.equal(expectedSaved);
     });
   });
+
+  describe('isEqual()', () => {
+    it('should return true if the values are equal', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const currentValue = {
+        cqc: null,
+        localAuthorities: true,
+      };
+      const newValue = {
+        cqc: null,
+        localAuthorities: true,
+      };
+
+      const equal = shareWithProperty.isEqual(currentValue, newValue);
+      expect(equal).to.equal(true);
+    });
+
+    it('should return false if cqc has different value', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const currentValue = {
+        cqc: null,
+        localAuthorities: true,
+      };
+      const newValue = {
+        cqc: true,
+        localAuthorities: true,
+      };
+
+      const equal = shareWithProperty.isEqual(currentValue, newValue);
+      expect(equal).to.equal(false);
+    });
+
+    it('should return false if localAuthorities has different value', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const currentValue = {
+        cqc: true,
+        localAuthorities: true,
+      };
+      const newValue = {
+        cqc: true,
+        localAuthorities: false,
+      };
+
+      const equal = shareWithProperty.isEqual(currentValue, newValue);
+      expect(equal).to.equal(false);
+    });
+
+    it('should return false if field is changing from null to false', () => {
+      const shareWithProperty = new ShareWithProperty();
+      const currentValue = {
+        cqc: null,
+        localAuthorities: true,
+      };
+      const newValue = {
+        cqc: false,
+        localAuthorities: true,
+      };
+
+      const equal = shareWithProperty.isEqual(currentValue, newValue);
+      expect(equal).to.equal(false);
+    });
+  });
 });

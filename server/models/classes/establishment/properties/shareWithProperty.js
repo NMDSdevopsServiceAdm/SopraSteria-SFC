@@ -36,27 +36,10 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
   }
 
   isEqual(currentValue, newValue) {
-    // share data is a simple object - need to compare "enabled" and "with" attributes (the latter being an array)
-    let shareWithOptionsEqual = true;
+    if (currentValue.cqc !== newValue.cqc) return false;
+    if (currentValue.localAuthorities !== newValue.localAuthorities) return false;
 
-    if (currentValue && newValue && currentValue.enabled && newValue.enabled) {
-      if (currentValue.with && newValue.with) {
-        // current and new are both enabled
-        if (currentValue.with.length != newValue.with.length) {
-          // not the same length, so not equal
-          shareWithOptionsEqual = false;
-        } else {
-          // check every value in current is in new
-          shareWithOptionsEqual = currentValue.with.every((thisCurrentWithOption) => {
-            return newValue.with.find((thisNewWithOption) => thisNewWithOption === thisCurrentWithOption);
-          });
-        }
-      }
-    }
-
-    return (
-      currentValue !== null && newValue !== null && currentValue.enabled === newValue.enabled && shareWithOptionsEqual
-    );
+    return true;
   }
 
   jsonShareOption() {
