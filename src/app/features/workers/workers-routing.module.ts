@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
@@ -291,7 +292,10 @@ const routes: Routes = [
           {
             path: 'delete',
             component: DeleteRecordComponent,
-            data: { title: 'Delete Training' },
+            data: { title: 'Delete Qualification' },
+            resolve: {
+              qualificationRecord: QualificationResolver,
+            },
           },
         ],
       },

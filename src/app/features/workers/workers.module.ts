@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
@@ -137,6 +138,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DialogService,
     WorkerResolver,
     LongTermAbsenceResolver,
+    QualificationResolver,
     QualificationsResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
