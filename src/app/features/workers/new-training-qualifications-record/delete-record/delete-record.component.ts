@@ -18,9 +18,9 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public worker: Worker;
   public trainingRecord: TrainingRecord;
   public qualificationRecord: QualificationResponse;
+  public trainingOrQualification: string;
   private trainingPageUrl: string;
   private trainingView: boolean;
-  private trainingOrQualification: string;
   private recordUid: string;
   private subscriptions: Subscription = new Subscription();
 

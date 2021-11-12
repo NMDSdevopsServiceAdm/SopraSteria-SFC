@@ -3,7 +3,9 @@
     <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
       {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
     </span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-9">You're about to delete this training trainingRecord</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-9">
+      You're about to delete this {{ trainingOrQualification }} record
+    </h1>
 
     <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wide-key">
       <div class="govuk-summary-list__row">

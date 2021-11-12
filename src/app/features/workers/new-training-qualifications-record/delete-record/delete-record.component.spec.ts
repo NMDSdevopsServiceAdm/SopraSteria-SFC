@@ -102,6 +102,12 @@ fdescribe('DeleteRecordComponent', () => {
   });
 
   describe('Training', () => {
+    it('should display the correct title', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText("You're about to delete this training record")).toBeTruthy();
+    });
+
     it('should navigate to the edit training page when pressing cancel if in training view', async () => {
       const { component, getByText, routerSpy } = await setup();
 
@@ -184,7 +190,13 @@ fdescribe('DeleteRecordComponent', () => {
   });
 
   describe('Qualification', () => {
-    xit('should navigate to the edit qualification page when pressing cancel if in qualifications view', async () => {
+    it('should display the correct title', async () => {
+      const { getByText } = await setup(false, false);
+
+      expect(getByText("You're about to delete this qualification record")).toBeTruthy();
+    });
+
+    it('should navigate to the edit qualification page when pressing cancel if in qualifications view', async () => {
       const { component, getByText, routerSpy } = await setup(false, false);
 
       const cancelButton = getByText('Cancel');
