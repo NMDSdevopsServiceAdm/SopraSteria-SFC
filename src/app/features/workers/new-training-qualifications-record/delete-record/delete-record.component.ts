@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { QualificationResponse } from '@core/model/qualification.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -15,10 +16,12 @@ import { Subscription } from 'rxjs';
 export class DeleteRecordComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public worker: Worker;
-  public record: TrainingRecord;
+  public trainingRecord: TrainingRecord;
+  public qualificationRecord: QualificationResponse;
   private trainingPageUrl: string;
   private trainingView: boolean;
   private trainingOrQualification: string;
+  private recordUid: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -39,30 +42,34 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   private setTrainingView(): void {
     this.trainingView = this.route.snapshot.data.trainingRecord ? true : false;
     this.trainingOrQualification = this.trainingView ? 'training' : 'qualification';
+    if (this.trainingView) {
+      this.trainingRecord = this.route.snapshot.data.trainingRecord;
+      this.recordUid = this.trainingRecord.uid;
+    } else {
+      this.qualificationRecord = this.route.snapshot.data.qualificationRecord;
+      this.recordUid = this.qualificationRecord.uid;
+    }
   }
 
   private setVariables(): void {
     this.workplace = this.route.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
-    this.record = this.trainingView
-      ? this.route.snapshot.data.trainingRecord
-      : this.route.snapshot.data.qualificationRecord;
   }
 
   private setBackLink(): void {
     this.backService.setBackLink({
-      url: [this.trainingPageUrl, this.trainingOrQualification, this.record.uid],
+      url: [this.trainingPageUrl, this.trainingOrQualification, this.recordUid],
     });
   }
 
   public returnToEditPage(event: Event): void {
     event.preventDefault();
-    this.router.navigate([this.trainingPageUrl, this.trainingOrQualification, this.record.uid]);
+    this.router.navigate([this.trainingPageUrl, this.trainingOrQualification, this.recordUid]);
   }
 
   public deleteRecord(): void {
     this.subscriptions.add(
-      this.workerService.deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.record.uid).subscribe(() => {
+      this.workerService.deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.recordUid).subscribe(() => {
         this.router.navigate([this.trainingPageUrl, 'new-training']);
 
         this.alertService.addAlert({
