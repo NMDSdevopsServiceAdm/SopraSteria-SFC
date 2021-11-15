@@ -716,6 +716,12 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'InReview',
       },
+      showSharingPermissionsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ShowSharingPermissionsBanner',
+      },
     },
     {
       defaultScope: {
