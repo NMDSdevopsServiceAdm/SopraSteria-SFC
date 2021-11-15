@@ -148,15 +148,7 @@
       *ngIf="trainingRecordId && newTrainingAndQualificationsRecordsFlag"
       type="button"
       class="govuk-button govuk-button--warning govuk-!-margin-right-8"
-      [routerLink]="[
-        '/workplace',
-        workplace.uid,
-        'training-and-qualifications-record',
-        worker.uid,
-        'training',
-        trainingRecordId,
-        'delete'
-      ]"
+      [routerLink]="['../delete']"
     >
       Delete
     </button>
