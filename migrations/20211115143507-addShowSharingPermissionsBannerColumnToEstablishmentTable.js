@@ -11,14 +11,14 @@ module.exports = {
       return Promise.all([
         await queryInterface.addColumn(
           table,
-          'showSharingPermissionsBanner',
+          'ShowSharingPermissionsBanner',
           {
             type: Sequelize.DataTypes.BOOLEAN,
             defaultValue: false,
           },
           { transaction },
         ),
-        await queryInterface.sequelize.query('UPDATE cqc."Establishment" SET "showSharingPermissionsBanner" = true;', {
+        await queryInterface.sequelize.query('UPDATE cqc."Establishment" SET "ShowSharingPermissionsBanner" = true;', {
           transaction,
         }),
       ]);
@@ -26,6 +26,6 @@ module.exports = {
   },
 
   down: (queryInterface) => {
-    return queryInterface.removeColumn(table, 'showSharingPerimissionsBanner');
+    return queryInterface.removeColumn(table, 'ShowSharingPermissionsBanner');
   },
 };
