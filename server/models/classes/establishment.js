@@ -86,6 +86,7 @@ class Establishment extends EntityValidator {
     this._linkToParentRequested = null;
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
+    this._showSharingPermissionsBanner = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -336,6 +337,10 @@ class Establishment extends EntityValidator {
 
   get eightWeeksFromFirstLogin() {
     return this._eightWeeksFromFirstLogin;
+  }
+
+  get showSharingPermissionsBanner() {
+    return this._showSharingPermissionsBanner;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -1248,6 +1253,7 @@ class Establishment extends EntityValidator {
         this._linkToParentRequested = fetchResults.linkToParentRequested;
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
+        this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1724,6 +1730,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+        myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
       }
 
       if (this._ustatus) {
