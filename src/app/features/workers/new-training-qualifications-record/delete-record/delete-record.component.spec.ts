@@ -59,8 +59,11 @@ describe('DeleteRecordComponent', () => {
     routerSpy.and.returnValue(Promise.resolve(true));
 
     const workerService = injector.inject(WorkerService) as WorkerService;
-    const workerSpy = spyOn(workerService, 'deleteTrainingRecord');
-    workerSpy.and.returnValue(of({}));
+    const workerTrainingSpy = spyOn(workerService, 'deleteTrainingRecord');
+    workerTrainingSpy.and.returnValue(of({}));
+
+    const workerQualificationSpy = spyOn(workerService, 'deleteQualification');
+    workerQualificationSpy.and.returnValue(of({}));
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert');
@@ -69,7 +72,8 @@ describe('DeleteRecordComponent', () => {
       component,
       fixture,
       routerSpy,
-      workerSpy,
+      workerTrainingSpy,
+      workerQualificationSpy,
       alertSpy,
       getByText,
       getAllByText,
@@ -151,12 +155,12 @@ describe('DeleteRecordComponent', () => {
       });
 
       it('should call the deleteTrainingRecord function when pressing the delete button', async () => {
-        const { component, getByText, workerSpy } = await setup();
+        const { component, getByText, workerTrainingSpy } = await setup();
 
         const deleteButton = getByText('Delete this training record');
         fireEvent.click(deleteButton);
 
-        expect(workerSpy).toHaveBeenCalledWith(
+        expect(workerTrainingSpy).toHaveBeenCalledWith(
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecord.uid,
@@ -230,6 +234,51 @@ describe('DeleteRecordComponent', () => {
         expect(getByTestId('qualificationName').textContent).toContain(
           component.qualificationRecord.qualification.title,
         );
+      });
+    });
+
+    describe('Delete button', () => {
+      it('should display the delete button', async () => {
+        const { getByText } = await setup(false);
+
+        expect(getByText('Delete this qualification record')).toBeTruthy();
+      });
+
+      it('should call the deleteQualificationRecord function when pressing the delete button', async () => {
+        const { component, getByText, workerQualificationSpy } = await setup(false);
+
+        const deleteButton = getByText('Delete this qualification record');
+        fireEvent.click(deleteButton);
+
+        expect(workerQualificationSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.qualificationRecord.uid,
+        );
+      });
+
+      it('should navigate to the new-training page when pressing the delete button', async () => {
+        const { component, getByText, routerSpy } = await setup(false);
+
+        const deleteButton = getByText('Delete this qualification record');
+        fireEvent.click(deleteButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
+          'new-training',
+        ]);
+      });
+
+      it('should display an alert when the delete button is clicked', async () => {
+        const { getByText, alertSpy } = await setup(false);
+
+        const deleteButton = getByText('Delete this qualification record');
+        fireEvent.click(deleteButton);
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Qualification record has been deleted',
+        });
       });
     });
   });

@@ -69,15 +69,26 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
   public deleteRecord(): void {
     this.subscriptions.add(
-      this.workerService.deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.recordUid).subscribe(() => {
+      this.deleteTrainingOrQualificationRecord().subscribe(() => {
         this.router.navigate([this.trainingPageUrl, 'new-training']);
 
         this.alertService.addAlert({
           type: 'success',
-          message: 'Training record has been deleted',
+          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record has been deleted`,
         });
       }),
     );
+  }
+
+  private deleteTrainingOrQualificationRecord() {
+    if (this.trainingView) {
+      return this.workerService.deleteTrainingRecord(this.workplace.uid, this.worker.uid, this.recordUid);
+    }
+    return this.workerService.deleteQualification(this.workplace.uid, this.worker.uid, this.recordUid);
+  }
+
+  private capitalizeFirstLetter(string: string): string {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   ngOnDestroy(): void {
