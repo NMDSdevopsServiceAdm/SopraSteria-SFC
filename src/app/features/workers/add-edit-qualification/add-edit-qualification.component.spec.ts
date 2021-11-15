@@ -96,7 +96,7 @@ describe('AddEditQualificationComponent', () => {
       expect(getByText('Delete')).toBeTruthy();
     });
 
-    it('should not render the delete button when there is no training id', async () => {
+    it('should not render the delete button when there is no qualification id', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.qualificationId = null;
