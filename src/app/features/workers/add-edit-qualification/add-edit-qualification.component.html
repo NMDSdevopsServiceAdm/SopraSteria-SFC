@@ -70,15 +70,7 @@
       *ngIf="qualificationId"
       type="button"
       class="govuk-button govuk-button--warning govuk-!-margin-right-8"
-      [routerLink]="[
-        '/workplace',
-        workplace.uid,
-        'training-and-qualifications-record',
-        worker.uid,
-        'qualification',
-        qualificationId,
-        'delete'
-      ]"
+      [routerLink]="['../delete']"
     >
       Delete
     </button>
