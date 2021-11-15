@@ -480,8 +480,8 @@ class Establishment extends EntityValidator {
           if (!this.isRegulated) {
             this._locationId = null;
 
-            if (this.shareWith && this.shareWith.with) {
-              this.shareWith.with = this.shareWith.with.filter((x) => x !== 'CQC');
+            if (this.shareWith && this.shareWith.cqc) {
+              this.shareWith.cqc = false;
             }
           }
         }
@@ -755,7 +755,6 @@ class Establishment extends EntityValidator {
           MainServiceFKValue: this.mainService.id,
           nmdsId: this._nmdsId,
           updatedBy: savedBy.toLowerCase(),
-          ShareDataValue: false,
           shareWithCQC: false,
           shareWithLA: false,
           source: bulkUploaded ? 'Bulk' : 'Online',

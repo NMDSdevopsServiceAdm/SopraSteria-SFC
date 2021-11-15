@@ -68,7 +68,7 @@ const updateShareData = async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in share (options)
       const isValidEstablishment = await thisEstablishment.load({
-        share: req.body.share,
+        shareWith: req.body.shareWith,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!

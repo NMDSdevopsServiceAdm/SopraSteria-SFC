@@ -256,41 +256,19 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Data sharing</dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!workplace.share?.enabled && workplace.share?.with?.length === 0; else sharing">
+      <ng-container *ngIf="!workplace.shareWith?.cqc && !workplace.shareWith?.localAuthorities; else sharing">
         -
       </ng-container>
       <ng-template #sharing>
-        <p *ngIf="workplace.share?.with?.includes('CQC')">Care Quality Commission (CQC)</p>
-        <p *ngIf="workplace.share?.with?.includes('Local Authority')">Local authorities</p>
+        <p *ngIf="workplace.shareWith?.cqc">Care Quality Commission (CQC)</p>
+        <p *ngIf="workplace.shareWith?.localAuthorities">Local authorities</p>
       </ng-template>
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' data sharing'"
         [link]="['/workplace', workplace.uid, 'sharing-data']"
-        [hasData]="workplace.share?.enabled"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
-  <div *ngIf="workplace.share?.with?.includes('Local Authority')" class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Local authorities shared with</dt>
-    <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="workplace.localAuthorities?.length === 0; else localAuthorities"> - </ng-container>
-      <ng-template #localAuthorities>
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li *ngFor="let localAuthorities of workplace.localAuthorities">
-            {{ localAuthorities.name }}
-          </li>
-        </ul>
-      </ng-template>
-    </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' local authorities data is shared with'"
-        [link]="['/workplace', workplace.uid, 'sharing-data-with-local-authorities']"
-        [hasData]="workplace.share?.enabled"
+        [hasData]="workplace.shareWith?.cqc || workplace.shareWith?.localAuthorities"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
