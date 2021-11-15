@@ -16,7 +16,6 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
-  private newTrainingAndQualificationsRecordsFlag: boolean;
   private trainingPath: string;
   public mandatoryTraining: boolean;
 
