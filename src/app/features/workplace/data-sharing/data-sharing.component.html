@@ -54,7 +54,7 @@
 </div>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
@@ -62,8 +62,8 @@
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
             </legend>
-            <div class="govuk-radios govuk-radios--conditional">
-              <div class="govuk-radios__item govuk-!-margin-top-3">
+            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6">
+              <div class="govuk-radios__item">
                 <input
                   aria-controls="cqc-conditional-1"
                   data-testid="cqc-yes"
@@ -98,8 +98,8 @@
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with local authorities?</h2>
             </legend>
-            <div class="govuk-radios govuk-radios--conditional">
-              <div class="govuk-radios__item govuk-!-margin-top-3">
+            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6">
+              <div class="govuk-radios__item">
                 <input
                   aria-controls="localAuthorities-conditional-1"
                   class="govuk-radios__input"
