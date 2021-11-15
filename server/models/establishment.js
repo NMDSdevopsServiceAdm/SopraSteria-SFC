@@ -474,11 +474,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CapacityServicesChangedBy"',
       },
-      ShareDataValue: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        field: '"ShareDataValue"',
-      },
       ShareDataSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,

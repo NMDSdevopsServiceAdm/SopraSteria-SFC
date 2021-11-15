@@ -755,7 +755,6 @@ class Establishment extends EntityValidator {
           MainServiceFKValue: this.mainService.id,
           nmdsId: this._nmdsId,
           updatedBy: savedBy.toLowerCase(),
-          ShareDataValue: false,
           shareWithCQC: false,
           shareWithLA: false,
           source: bulkUploaded ? 'Bulk' : 'Online',
