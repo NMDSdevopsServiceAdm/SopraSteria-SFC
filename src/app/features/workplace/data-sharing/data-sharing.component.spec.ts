@@ -73,7 +73,7 @@ describe('DataSharingComponent', () => {
     expect(queryByText('Do you agree to us sharing your data with the CQC?')).toBeFalsy();
   });
 
-  describe('Passing data to updateDataSharing in establishment service', async () => {
+  describe('Passing data for local authorities to updateDataSharing in establishment service', async () => {
     it('should call updateDataSharing in establishment service with local authorities set to true when Yes selected', async () => {
       const { component, getByText, getByTestId, updateDataSharingSpy } = await setup();
 
@@ -109,7 +109,7 @@ describe('DataSharingComponent', () => {
     });
   });
 
-  describe('Passing data to updateDataSharing in establishment service', async () => {
+  describe('Passing data for cqc to updateDataSharing in establishment service', async () => {
     it('should call updateDataSharing in establishment service with CQC set to true when Yes selected', async () => {
       const { component, fixture, getByText, getByTestId, updateDataSharingSpy } = await setup();
 

@@ -102,10 +102,7 @@ export class MockEstablishmentService extends EstablishmentService {
       postcode: '',
       primaryAuthority: undefined,
       serviceUsers: [],
-      shareWith: {
-        cqc: null,
-        localAuthorities: null,
-      },
+      shareWith: this.shareWith,
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,
