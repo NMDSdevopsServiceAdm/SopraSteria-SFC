@@ -42,6 +42,7 @@ import { MentalHealthProfessionalComponent } from './mental-health-professional/
 import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dialog.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
+import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
 import {
   NewQualificationsComponent,
 } from './new-training-qualifications-record/new-qualifications/new-qualifications.component';
@@ -96,6 +97,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
     DeleteWorkerDialogComponent,
+    DeleteRecordComponent,
     DisabilityComponent,
     EditWorkerComponent,
     EthnicityComponent,
