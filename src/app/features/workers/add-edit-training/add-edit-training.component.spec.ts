@@ -17,7 +17,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId } = await render(AddEditTrainingComponent, {
+    const { fixture, getByText, getByTestId, queryByText } = await render(AddEditTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -51,6 +51,7 @@ describe('AddEditTrainingComponent', () => {
       fixture,
       getByText,
       getByTestId,
+      queryByText,
     };
   }
 
@@ -79,9 +80,9 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Enter training details')).toBeTruthy();
     });
 
-    it('should render the Edit training details title, when there is a training record id', async () => {
+    it('should render the Training details title, when there is a training record id', async () => {
       const { getByText } = await setup();
-      expect(getByText('Edit training details')).toBeTruthy();
+      expect(getByText('Training details')).toBeTruthy();
     });
 
     it('should render the Add mandatory training record title, when accessed from add mandatory training link', async () => {
@@ -95,14 +96,35 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Add mandatory training record')).toBeTruthy();
     });
 
-    it('should render the Edit mandatory training record title, when accessed from mandatory training title', async () => {
+    it('should render the Mandatory training record title, when accessed from mandatory training title', async () => {
       const { component, fixture, getByText } = await setup();
 
       component.mandatoryTraining = true;
       component.setTitle();
       fixture.detectChanges();
 
-      expect(getByText('Edit mandatory training record')).toBeTruthy();
+      expect(getByText('Mandatory training record')).toBeTruthy();
+    });
+  });
+
+  describe('delete button', () => {
+    it('should render the delete button when editing training', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.newTrainingAndQualificationsRecordsFlag = true;
+      fixture.detectChanges();
+
+      expect(getByText('Delete')).toBeTruthy();
+    });
+
+    it('should not render the delete button when there is no training id', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.newTrainingAndQualificationsRecordsFlag = true;
+      component.trainingRecordId = null;
+      fixture.detectChanges();
+
+      expect(queryByText('Delete')).toBeFalsy();
     });
   });
 });

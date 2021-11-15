@@ -16,7 +16,6 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
-  private newTrainingAndQualificationsRecordsFlag: boolean;
   private trainingPath: string;
   public mandatoryTraining: boolean;
 
@@ -64,14 +63,14 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   public setTitle(): void {
     if (this.mandatoryTraining) {
-      this.title = this.trainingRecordId ? 'Edit mandatory training record' : 'Add mandatory training record';
+      this.title = this.trainingRecordId ? 'Mandatory training record' : 'Add mandatory training record';
     } else {
-      this.title = this.trainingRecordId ? 'Edit training details' : 'Enter training details';
+      this.title = this.trainingRecordId ? 'Training details' : 'Enter training details';
     }
   }
 
   protected setButtonText(): void {
-    this.buttonText = this.trainingRecordId ? 'Update training' : 'Add training';
+    this.buttonText = this.trainingRecordId ? 'Save and return' : 'Add training';
   }
 
   protected setBackLink(): void {

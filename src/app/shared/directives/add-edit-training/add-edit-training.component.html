@@ -13,7 +13,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
             {{ title }}
           </h1>
@@ -141,8 +141,24 @@
   </div>
 
   <div class="govuk-button-group">
-    <button type="submit" class="govuk-button govuk-!-margin-right-9">
+    <button type="submit" class="govuk-button govuk-!-margin-right-5">
       {{ buttonText }}
+    </button>
+    <button
+      *ngIf="trainingRecordId && newTrainingAndQualificationsRecordsFlag"
+      type="button"
+      class="govuk-button govuk-button--warning govuk-!-margin-right-8"
+      [routerLink]="[
+        '/workplace',
+        workplace.uid,
+        'training-and-qualifications-record',
+        worker.uid,
+        'training',
+        trainingRecordId,
+        'delete'
+      ]"
+    >
+      Delete
     </button>
     <a
       class="govuk-button govuk-button--link govuk-!-margin-left-9"
