@@ -19,6 +19,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public updateWorkplaceAlert: boolean;
   public locationId: string;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
+  public showSharingPermissionsBanner = true;
 
   constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
 
