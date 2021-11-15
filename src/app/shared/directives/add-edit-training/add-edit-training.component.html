@@ -145,7 +145,7 @@
       {{ buttonText }}
     </button>
     <button
-      *ngIf="trainingRecordId"
+      *ngIf="trainingRecordId && newTrainingAndQualificationsRecordsFlag"
       type="button"
       class="govuk-button govuk-button--warning govuk-!-margin-right-8"
       [routerLink]="[

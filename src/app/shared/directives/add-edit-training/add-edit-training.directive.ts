@@ -33,6 +33,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public title: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public newTrainingAndQualificationsRecordsFlag: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,

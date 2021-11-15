@@ -17,7 +17,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId } = await render(AddEditTrainingComponent, {
+    const { fixture, getByText, getByTestId, queryByText } = await render(AddEditTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -51,6 +51,7 @@ describe('AddEditTrainingComponent', () => {
       fixture,
       getByText,
       getByTestId,
+      queryByText,
     };
   }
 
@@ -108,9 +109,22 @@ describe('AddEditTrainingComponent', () => {
 
   describe('delete button', () => {
     it('should render the delete button when editing training', async () => {
-      const { getByText } = await setup();
+      const { component, fixture, getByText } = await setup();
+
+      component.newTrainingAndQualificationsRecordsFlag = true;
+      fixture.detectChanges();
 
       expect(getByText('Delete')).toBeTruthy();
+    });
+
+    it('should not render the delete button when there is no training id', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.newTrainingAndQualificationsRecordsFlag = true;
+      component.trainingRecordId = null;
+      fixture.detectChanges();
+
+      expect(queryByText('Delete')).toBeFalsy();
     });
   });
 });
