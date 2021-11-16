@@ -55,22 +55,90 @@ describe('DataSharingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display CQC question when establishment is regulated', async () => {
-    const { component, fixture, getByText } = await setup();
+  describe('Top of page paragraph and reveals', async () => {
+    it('should display CQC paragraph when establishment is regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
 
-    component.establishment.isRegulated = true;
-    fixture.detectChanges();
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
 
-    expect(getByText('Do you agree to us sharing your data with the CQC?')).toBeTruthy();
+      expect(
+        queryByText("We'd like to share your data with the Care Quality Commission (CQC) and local authorities."),
+      ).toBeTruthy();
+    });
+
+    it('should not display CQC paragraph when establishment is not regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = false;
+      fixture.detectChanges();
+
+      expect(
+        queryByText("We'd like to share your data with the Care Quality Commission (CQC) and local authorities."),
+      ).toBeFalsy();
+    });
+
+    it('should display CQC paragraph in `Why share your data?` question when establishment is regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
+
+      const expectedText =
+        'The CQC use the data as part of their overall suite of intelligence about adult social care providers and the wider sector.';
+
+      expect(queryByText(expectedText)).toBeTruthy();
+    });
+
+    it('should not display CQC paragraph in `Why share your data?` question when establishment is not regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = false;
+      fixture.detectChanges();
+
+      const expectedText =
+        'The CQC use the data as part of their overall suite of intelligence about adult social care providers and the wider sector.';
+
+      expect(queryByText(expectedText)).toBeFalsy();
+    });
+
+    it('should display CQC reveal when establishment is regulated', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
+
+      expect(getByText('Not everything is shared with the CQC')).toBeTruthy();
+    });
+
+    it('should not display CQC reveal when establishment is not regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = false;
+      fixture.detectChanges();
+
+      expect(queryByText('Not everything is shared with the CQC')).toBeFalsy();
+    });
   });
 
-  it('should not display CQC question when establishment is not regulated', async () => {
-    const { component, fixture, queryByText } = await setup();
+  describe('CQC and Localauthority questions', async () => {
+    it('should display CQC question when establishment is regulated', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    component.establishment.isRegulated = false;
-    fixture.detectChanges();
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
 
-    expect(queryByText('Do you agree to us sharing your data with the CQC?')).toBeFalsy();
+      expect(getByText('Do you agree to us sharing your data with the CQC?')).toBeTruthy();
+    });
+
+    it('should not display CQC question when establishment is not regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = false;
+      fixture.detectChanges();
+
+      expect(queryByText('Do you agree to us sharing your data with the CQC?')).toBeFalsy();
+    });
   });
 
   describe('Passing data for local authorities to updateDataSharing in establishment service', async () => {

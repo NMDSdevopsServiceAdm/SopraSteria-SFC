@@ -7,48 +7,61 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">Sharing your data</h1>
-    <p>We would like to share your data with other organisations.</p>
+    <h1 class="govuk-heading-xl">Share your data</h1>
+    <div *ngIf="establishment.isRegulated">
+      <p>We'd like to share your data with the Care Quality Commission (CQC) and local authorities.</p>
+    </div>
+    <div *ngIf="!establishment.isRegulated">
+      <p>We'd like to share your data with local authorities.</p>
+    </div>
     <p>
-      Before we can do that, in order to comply with the Data Protection Act and The General Data Protection Regulations
-      (GDPR) we need your consent.
+      Before we can do that, and in order to comply with the Data Protection Act and the General Data Protection
+      Regulations (GDPR), we'll need your permission.
     </p>
-    <app-details [title]="'Why do we share your data?'">
+
+    <app-details [title]="'Why share your data?'">
+      <div *ngIf="establishment.isRegulated">
+        <p>
+          The CQC use the data as part of their overall suite of intelligence about adult social care providers and the
+          wider sector.
+        </p>
+      </div>
       <p>
-        The Care Quality Commission use the data you provide as part of their overall suite of intelligence about adult
-        social care providers and the wider sector. Local authorities use it to check compliance if the data for this
-        service has been included as part of the criteria for a contract. Sharing your data with local authorities also
-        makes them aware of your business. It allows them to discuss things like training events, advice and guidance
-        with you.
+        Local authorities would like access to your data to help them monitor where they've made ASC-WDS a condition of
+        contract.<br />
+        <br />
+        Having access to care provider data allows local authorities to plan the sector by area. It helps them to tackle
+        recruitment issues and to understand the types of training needed by care providers.
       </p>
     </app-details>
-    <app-details *ngIf="establishment.isRegulated" [title]="'What do we share with CQC?'">
-      <p>We share all data, including individual worker records, with the exception of:</p>
+    <app-details *ngIf="establishment.isRegulated" [title]="'Not everything is shared with the CQC'">
+      <p>We do not share:</p>
       <ul class="govuk-list govuk-list--bullet">
         <li>record ID</li>
         <li>pay</li>
         <li>sickness absence</li>
         <li>date of birth</li>
-        <li>national Insurance number</li>
+        <li>National Insurance number</li>
         <li>ethnicity</li>
         <li>nationality</li>
         <li>country of birth</li>
         <li>year of arrival in UK</li>
         <li>hours worked in the last 7 days</li>
       </ul>
-      <p>CQC cannot identify workers through this process</p>
+      <p>The CQC cannot identify workers from the data that is shared with them.</p>
     </app-details>
-    <app-details [title]="'What do we share with local authorities?'">
-      <p>We will share the following data with your local authority:</p>
+    <app-details [title]="'Not everything is shared with the local authorities'">
+      <p>We do not share:</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>your unique workplace reference</li>
-        <li>workplace name</li>
-        <li>address</li>
-        <li>main service</li>
-        <li>number of staff</li>
-        <li>percentage of worker records completed</li>
-        <li>when your account was last updated</li>
+        <li>record ID</li>
+        <li>date of birth</li>
+        <li>National Insurance number</li>
+        <li>ethnicity</li>
+        <li>nationality</li>
+        <li>country of birth</li>
+        <li>year of arrival in the UK</li>
       </ul>
+      <p>Local authorities cannot identify workers from the data that is shared with them.</p>
     </app-details>
   </div>
 </div>
