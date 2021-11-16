@@ -17,7 +17,10 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
     if (document.shareWith) {
       this.property = document.shareWith;
     } else {
-      this.property = null;
+      this.property = {
+        cqc: null,
+        localAuthorities: null,
+      };
     }
   }
 
