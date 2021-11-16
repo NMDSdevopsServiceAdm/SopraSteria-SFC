@@ -14,13 +14,6 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     EmployerTypeOther: fake((f) => f.lorem.sentence()),
     shareWithCQC: false,
     shareWithLA: false,
-    localAuthorities: perBuild(() => {
-      return [
-        {
-          cssrId: fake((f) => f.random.number({ min: 1, max: 200 })),
-        },
-      ];
-    }),
     isRegulated: false,
     otherServices: [],
     mainService: {

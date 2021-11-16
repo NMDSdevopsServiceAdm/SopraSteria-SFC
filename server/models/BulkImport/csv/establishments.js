@@ -2707,8 +2707,14 @@ class Establishment {
     columns.push(entity.EmployerTypeValue ? BUDI.establishmentType(BUDI.FROM_ASC, entity.EmployerTypeValue) : '');
     columns.push(csvQuote(entity.EmployerTypeOther ? entity.EmployerTypeOther : ''));
 
-    columns.push(entity.shareWithCQC ? 1 : 0);
-    columns.push(entity.shareWithLA ? 1 : 0);
+    const shareWithMapping = {
+      true: 1,
+      false: 0,
+      null: '',
+    }
+
+    columns.push(shareWithMapping[entity.shareWithCQC]);
+    columns.push(shareWithMapping[entity.shareWithLA]);
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
