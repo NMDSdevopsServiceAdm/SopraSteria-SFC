@@ -55,7 +55,7 @@ describe('DataSharingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Top of page and reveals', async () => {
+  describe('Top of page paragraph and reveals', async () => {
     it('should display CQC paragraph when establishment is regulated', async () => {
       const { component, fixture, queryByText } = await setup();
 
@@ -76,6 +76,30 @@ describe('DataSharingComponent', () => {
       expect(
         queryByText("We'd like to share your data with the Care Quality Commission (CQC) and local authorities."),
       ).toBeFalsy();
+    });
+
+    it('should display CQC paragraph in `Why share your data?` question when establishment is regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = true;
+      fixture.detectChanges();
+
+      const expectedText =
+        'The CQC use the data as part of their overall suite of intelligence about adult social care providers and the wider sector.';
+
+      expect(queryByText(expectedText)).toBeTruthy();
+    });
+
+    it('should not display CQC paragraph in `Why share your data?` question when establishment is not regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.establishment.isRegulated = false;
+      fixture.detectChanges();
+
+      const expectedText =
+        'The CQC use the data as part of their overall suite of intelligence about adult social care providers and the wider sector.';
+
+      expect(queryByText(expectedText)).toBeFalsy();
     });
 
     it('should display CQC reveal when establishment is regulated', async () => {
