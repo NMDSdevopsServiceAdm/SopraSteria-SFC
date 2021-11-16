@@ -128,6 +128,9 @@ class Establishment {
   static get ESTABLISHMENT_TYPE_ERROR() {
     return 1070;
   }
+  static get SHARE_WITH_ERROR() {
+    return 1070;
+  }
   static get REGTYPE_ERROR() {
     return 1100;
   }
@@ -792,9 +795,9 @@ class Establishment {
         errCode: Establishment.SHARE_WITH_ERROR,
         errType: 'SHARE_WITH_ERROR',
         error: 'The code you have entered for PERMCQC is incorrect',
-        source: myShareWithCqc,
+        source: this._currentLine.PERMCQC,
         column: 'PERMCQC',
-        name: this._currentLine.PERMCQC,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -813,9 +816,9 @@ class Establishment {
         errCode: Establishment.SHARE_WITH_ERROR,
         errType: 'SHARE_WITH_ERROR',
         error: 'The code you have entered for PERMLA is incorrect',
-        source: myShareWithLa,
+        source: this._currentLine.PERMLA,
         column: 'PERMLA',
-        name: this._currentLine.PERMLA,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {

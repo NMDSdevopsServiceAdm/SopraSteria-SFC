@@ -85,7 +85,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   afterEach(() => {
     sandbox.restore();
   });
-  describe.only('toAPI', () => {
+  describe('toAPI', () => {
     it('should return a correct API format ', async () => {
       const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -303,7 +303,6 @@ describe('Bulk Upload - Establishment CSV', () => {
         employerTypeOther: undefined,
         shareWithCQC: 1,
         shareWithLA: 1,
-        localAuthorities: [708, 721, 720],
         regType: 2,
         locationId: establishmentRow.LOCATIONID,
         provId: establishmentRow.PROVNUM,
@@ -323,8 +322,9 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
   });
+
   describe('Validations', () => {
-    it('should return no errors ', async () => {
+    it('should return no errors when given valid CSV', async () => {
       const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
@@ -349,7 +349,8 @@ describe('Bulk Upload - Establishment CSV', () => {
         },
       ]);
     });
-    it('should through an error if ALLSERVICES has a 0 and an other service ', async () => {
+
+    it('should throw an error if ALLSERVICES has a 0 and an other service', async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0;13';
@@ -401,6 +402,56 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
+    });
+
+    describe('shareWith', () => {
+      it('should produce error if PERMCQC is a number which is not 0 or 1', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '3';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1070,
+            errType: 'SHARE_WITH_ERROR',
+            error: 'The code you have entered for PERMCQC is incorrect',
+            source: '3',
+            column: 'PERMCQC',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should produce error if PERMLA contains text', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMLA = 'a';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1070,
+            errType: 'SHARE_WITH_ERROR',
+            error: 'The code you have entered for PERMLA is incorrect',
+            source: 'a',
+            column: 'PERMLA',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should not produce error if PERMLA or PERMCQC is an empty string', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMLA = '';
+        establishmentRow.PERMCQC = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
     });
   });
 
