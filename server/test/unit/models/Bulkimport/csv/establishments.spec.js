@@ -414,8 +414,8 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 1070,
-            errType: 'SHARE_WITH_ERROR',
+            errCode: 1080,
+            errType: 'SHARE_WITH_CQC_ERROR',
             error: 'The code you have entered for PERMCQC is incorrect',
             source: '3',
             column: 'PERMCQC',
@@ -433,8 +433,8 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 1070,
-            errType: 'SHARE_WITH_ERROR',
+            errCode: 1090,
+            errType: 'SHARE_WITH_LA_ERROR',
             error: 'The code you have entered for PERMLA is incorrect',
             source: 'a',
             column: 'PERMLA',
@@ -892,7 +892,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           shareWithCQC: true,
           shareWithLA: true,
           isRegulated: true,
-        }
+        },
       });
 
       const csv = establishmentCsv.toCSV(establishment);
@@ -906,7 +906,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     it('should have empty strings in PERMCQC and PERMLA when shareWithCQC and shareWithLA are null', async () => {
       const establishment = apiEstablishmentBuilder();
       establishment.shareWithCQC = null;
-      establishment.shareWithLA =  null;
+      establishment.shareWithLA = null;
 
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');

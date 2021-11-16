@@ -128,8 +128,11 @@ class Establishment {
   static get ESTABLISHMENT_TYPE_ERROR() {
     return 1070;
   }
-  static get SHARE_WITH_ERROR() {
-    return 1070;
+  static get SHARE_WITH_CQC_ERROR() {
+    return 1080;
+  }
+  static get SHARE_WITH_LA_ERROR() {
+    return 1090;
   }
   static get REGTYPE_ERROR() {
     return 1100;
@@ -185,14 +188,8 @@ class Establishment {
   static get ESTABLISHMENT_TYPE_WARNING() {
     return 2070;
   }
-  static get SHARE_WITH_WARNING() {
-    return 2070;
-  }
   static get TOTAL_PERM_TEMP_WARNING() {
     return 2200;
-  }
-  static get LOCAL_AUTHORITIES_WARNING() {
-    return 2090;
   }
   static get REGTYPE_WARNING() {
     return 2100;
@@ -225,7 +222,6 @@ class Establishment {
   static get LEAVERS_WARNING() {
     return 2320;
   }
-
   static get REASONS_FOR_LEAVING_WARNING() {
     return 2360;
   }
@@ -792,8 +788,8 @@ class Establishment {
     if (!ALLOWED_VALUES.includes(myShareWithCqc) && this._currentLine.PERMCQC != '') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
+        errCode: Establishment.SHARE_WITH_CQC_ERROR,
+        errType: 'SHARE_WITH_CQC_ERROR',
         error: 'The code you have entered for PERMCQC is incorrect',
         source: this._currentLine.PERMCQC,
         column: 'PERMCQC',
@@ -813,8 +809,8 @@ class Establishment {
     if (!ALLOWED_VALUES.includes(myShareWithLa) && this._currentLine.PERMLA != '') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
+        errCode: Establishment.SHARE_WITH_LA_ERROR,
+        errType: 'SHARE_WITH_LA_ERROR',
         error: 'The code you have entered for PERMLA is incorrect',
         source: this._currentLine.PERMLA,
         column: 'PERMLA',
@@ -2711,7 +2707,7 @@ class Establishment {
       true: 1,
       false: 0,
       null: '',
-    }
+    };
 
     columns.push(shareWithMapping[entity.shareWithCQC]);
     columns.push(shareWithMapping[entity.shareWithLA]);
