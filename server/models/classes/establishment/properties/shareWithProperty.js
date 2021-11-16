@@ -39,6 +39,7 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
   }
 
   isEqual(currentValue, newValue) {
+    if (!currentValue) return false;
     if (currentValue.cqc !== newValue.cqc) return false;
     if (currentValue.localAuthorities !== newValue.localAuthorities) return false;
 
