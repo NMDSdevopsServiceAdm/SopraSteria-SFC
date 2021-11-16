@@ -25,7 +25,6 @@ const validateAPIObject = (establishmentRow) => {
     localIdentifier: establishmentRow.LOCALESTID,
     isRegulated: true,
     employerType: { value: 'Private Sector', other: undefined },
-    localAuthorities: [708, 721, 720],
     mainService: 8,
     services: { value: 'Yes', services: [{ id: 8 }, { id: 13 }] },
     serviceUsers: [],
@@ -33,7 +32,7 @@ const validateAPIObject = (establishmentRow) => {
     vacancies: [999, 333, 1],
     starters: [0, 0, 0],
     leavers: [999, 0, 0],
-    share: { enabled: true, with: ['CQC', 'Local Authority'] },
+    shareWith: { cqc: true, localAuthorities: true },
     capacities: [0, 0, 0, 0],
   };
 };
@@ -86,7 +85,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   afterEach(() => {
     sandbox.restore();
   });
-  describe('toAPI', () => {
+  describe.only('toAPI', () => {
     it('should return a correct API format ', async () => {
       const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -244,7 +243,49 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       expect(apiObject).to.deep.equal(expectedResult);
     });
+
+    describe('shareWith', () => {
+      it('should return cqc and localAuthorities as true when set as 1 in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '1';
+        establishmentRow.PERMLA = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        const apiObject = establishment.toAPI();
+
+        const expectedShareWith = { cqc: true, localAuthorities: true };
+
+        expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+
+      it('should return cqc and localAuthorities as false when set as 0 in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '0';
+        establishmentRow.PERMLA = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        const apiObject = establishment.toAPI();
+
+        const expectedShareWith = { cqc: false, localAuthorities: false };
+
+        expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+
+      it('should return cqc and localAuthorities as null when empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '';
+        establishmentRow.PERMLA = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        const apiObject = establishment.toAPI();
+
+        const expectedShareWith = { cqc: null, localAuthorities: null };
+
+        expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+    });
   });
+
   describe('toJSON', () => {
     it('should return a correct JSON ', async () => {
       const establishmentRow = buildEstablishmentCSV();
@@ -752,6 +793,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       ]);
     });
   });
+
   describe('toCSV', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'establishmentType').callsFake((method, value) => value);

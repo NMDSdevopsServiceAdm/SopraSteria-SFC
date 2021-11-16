@@ -36,7 +36,7 @@ function isPerm(worker) {
 
 const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
-  'PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
+  'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
 
 class Establishment {
@@ -63,7 +63,6 @@ class Establishment {
 
     this._shareWithCqc = null;
     this._shareWithLA = null;
-    this._localAuthorities = null;
 
     this._regType = null;
     this._provID = null;
@@ -128,12 +127,6 @@ class Establishment {
   }
   static get ESTABLISHMENT_TYPE_ERROR() {
     return 1070;
-  }
-  static get SHARE_WITH_ERROR() {
-    return 1070;
-  }
-  static get LOCAL_AUTHORITIES_ERROR() {
-    return 1090;
   }
   static get REGTYPE_ERROR() {
     return 1100;
@@ -333,10 +326,6 @@ class Establishment {
 
   get shareWithLa() {
     return this._shareWithLA;
-  }
-
-  get localAuthorities() {
-    return this._localAuthorities;
   }
 
   get regType() {
@@ -797,29 +786,7 @@ class Establishment {
     const ALLOWED_VALUES = [0, 1];
     const myShareWithCqc = parseInt(this._currentLine.PERMCQC, 10);
 
-    if (!this._currentLine.PERMCQC || this._currentLine.PERMCQC.length === 0) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'PERMCQC has not been supplied',
-        source: this._currentLine.PERMCQC,
-        column: 'PERMCQC',
-        name: this._currentLine.PERMCQC,
-      });
-      return false;
-    } else if (Number.isNaN(myShareWithCqc)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'The code you have entered for PERMCQC is incorrect',
-        source: this._currentLine.PERMCQC,
-        column: 'PERMCQC',
-        name: this._currentLine.PERMCQC,
-      });
-      return false;
-    } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
+    if (!ALLOWED_VALUES.includes(myShareWithCqc) && this._currentLine.PERMCQC != '') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_ERROR,
@@ -831,7 +798,7 @@ class Establishment {
       });
       return false;
     } else {
-      this._shareWithCqc = myShareWithCqc;
+      this._shareWithCqc = Number.isNaN(myShareWithCqc) ? this._currentLine.PERMCQC : myShareWithCqc;
       return true;
     }
   }
@@ -840,29 +807,7 @@ class Establishment {
     const ALLOWED_VALUES = [0, 1];
     const myShareWithLa = parseInt(this._currentLine.PERMLA, 10);
 
-    if (!this._currentLine.PERMLA || this._currentLine.PERMLA.length === 0) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'PERMLA has not been supplied',
-        source: this._currentLine.PERMLA,
-        column: 'PERMLA',
-        name: this._currentLine.PERMLA,
-      });
-      return false;
-    } else if (Number.isNaN(myShareWithLa)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'The code you have entered for PERMLA is incorrect',
-        source: this._currentLine.PERMLA,
-        column: 'PERMLA',
-        name: this._currentLine.PERMLA,
-      });
-      return false;
-    } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
+    if (!ALLOWED_VALUES.includes(myShareWithLa) && this._currentLine.PERMLA != '') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_ERROR,
@@ -874,43 +819,7 @@ class Establishment {
       });
       return false;
     } else {
-      this._shareWithLA = myShareWithLa;
-      return true;
-    }
-  }
-
-  _validateLocalAuthorities() {
-    // local authorities is optional or is a semi colon delimited list of integers
-    if (this._currentLine.SHARELA && this._currentLine.SHARELA.length > 0) {
-      const listOfLAs = this._currentLine.SHARELA.split(';');
-      const isValid = listOfLAs.every((thisLA) => !Number.isNaN(parseInt(thisLA, 10)));
-
-      if (!isValid) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
-          errType: 'LOCAL_AUTHORITIES_ERROR',
-          error: 'An entry for code in SHARELA will be ignored as this is invalid',
-          source: this._currentLine.SHARELA,
-          column: 'SHARELA',
-          name: this._currentLine.LOCALESTID,
-        });
-        return false;
-      } else if (this._shareWithLA !== null && this._shareWithLA === 0 && listOfLAs && listOfLAs.length > 0) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.LOCAL_AUTHORITIES_WARNING,
-          errType: 'LOCAL_AUTHORITIES_WARNING',
-          error: 'SHARELAS will be ignored',
-          source: this._currentLine.SHARELA,
-          column: 'SHARELA',
-          name: this._currentLine.LOCALESTID,
-        });
-      } else {
-        this._localAuthorities = listOfLAs.map((thisLA) => parseInt(thisLA, 10));
-        return true;
-      }
-    } else {
+      this._shareWithLA = Number.isNaN(myShareWithLa) ? this._currentLine.PERMLA : myShareWithLa;
       return true;
     }
   }
@@ -2197,33 +2106,6 @@ class Establishment {
     }
   }
 
-  _transformLocalAuthorities() {
-    // integer in source; object in target comprised of CSSR ID and CSSR Name
-    if (this._localAuthorities && Array.isArray(this._localAuthorities)) {
-      const mappedAuthorities = [];
-
-      this._localAuthorities.forEach((thisLA) => {
-        const mappedAuthority = BUDI.localAuthority(BUDI.TO_ASC, thisLA);
-
-        if (mappedAuthority) {
-          mappedAuthorities.push(mappedAuthority);
-        } else {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
-            errType: 'LOCAL_AUTHORITIES_ERROR',
-            error: `The code ${thisLA} in SHARELA will be ignored as this is invalid`,
-            source: this._currentLine.SHARELA,
-            column: 'SHARELA',
-            name: this._currentLine.LOCALESTID,
-          });
-        }
-      });
-
-      this._localAuthorities = mappedAuthorities;
-    }
-  }
-
   _transformAllCapacities() {
     if (this._capacities && Array.isArray(this._capacities) && this._allServices) {
       const mappedCapacities = [];
@@ -2525,7 +2407,6 @@ class Establishment {
 
       this._validateShareWithCQC();
       this._validateShareWithLA();
-      this._validateLocalAuthorities();
 
       this._validateMainService();
       this._validateRegType();
@@ -2610,7 +2491,6 @@ class Establishment {
 
       status = !this._transformMainService() ? false : status;
       status = !this._transformEstablishmentType() ? false : status;
-      status = !this._transformLocalAuthorities() ? false : status;
       status = !this._transformAllServices() ? false : status;
       status = !this._transformServiceUsers() ? false : status;
       status = !this._transformAllJobs() ? false : status;
@@ -2638,7 +2518,6 @@ class Establishment {
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       shareWithCQC: this._shareWithCqc,
       shareWithLA: this._shareWithLA,
-      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
       regType: this._regType,
       locationId: this._regType ? this._locationID : undefined,
       provId: this._regType ? this._provID : undefined,
@@ -2724,7 +2603,6 @@ class Establishment {
         value: this.establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       },
-      localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
       services: {
         value: null,
@@ -2774,26 +2652,17 @@ class Establishment {
       changeProperties.locationId = this._locationID;
     }
 
-    // share options
-    if (this._shareWithCqc || this._shareWithLA) {
-      const shareWith = [];
+    // shareWith options
+    const shareWithMapping = {
+      0: false,
+      1: true,
+      '': null,
+    };
 
-      if (this._shareWithCqc) {
-        shareWith.push('CQC');
-      }
-      if (this._shareWithLA) {
-        shareWith.push('Local Authority');
-      }
-
-      changeProperties.share = {
-        enabled: true,
-        with: shareWith,
-      };
-    } else {
-      changeProperties.share = {
-        enabled: false,
-      };
-    }
+    changeProperties.shareWith = {
+      cqc: shareWithMapping[this._shareWithCqc],
+      localAuthorities: shareWithMapping[this._shareWithLA],
+    };
 
     // capacities - we combine both capacities and utilisations
     changeProperties.capacities = [];
@@ -2822,7 +2691,7 @@ class Establishment {
 
   // takes the given establishment entity and writes it out to CSV string (one line)
   static toCSV(entity) {
-    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
     columns.push(csvQuote(entity.LocalIdentifierValue));
     columns.push('UNCHECKED');
@@ -2837,9 +2706,6 @@ class Establishment {
 
     columns.push(entity.shareWithCQC ? 1 : 0);
     columns.push(entity.shareWithLA ? 1 : 0);
-
-    const localAuthorities = entity.localAuthorities.map((localAuthority) => localAuthority.cssrId);
-    columns.push(entity.shareWithLA ? localAuthorities.join(';') : '');
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
