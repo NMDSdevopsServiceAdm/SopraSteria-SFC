@@ -496,12 +496,12 @@ module.exports = function (sequelize, DataTypes) {
       },
       shareWithCQC: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithCQC"',
       },
       shareWithLA: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithLA"',
       },
       ShareWithLASavedAt: {

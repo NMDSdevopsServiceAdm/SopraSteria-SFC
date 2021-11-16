@@ -17,7 +17,10 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
     if (document.shareWith) {
       this.property = document.shareWith;
     } else {
-      this.property = null;
+      this.property = {
+        cqc: null,
+        localAuthorities: null,
+      };
     }
   }
 
@@ -36,6 +39,7 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
   }
 
   isEqual(currentValue, newValue) {
+    if (!currentValue) return false;
     if (currentValue.cqc !== newValue.cqc) return false;
     if (currentValue.localAuthorities !== newValue.localAuthorities) return false;
 
