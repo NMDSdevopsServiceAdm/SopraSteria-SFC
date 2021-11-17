@@ -83,4 +83,14 @@ describe('WorkplaceTabComponent', () => {
 
     expect(checkShowSharingPermissions).toBeNull();
   });
+
+  it('should set the banner link with to `sharing-data`', async () => {
+    component.showSharingPermissionsBanner = true;
+    const workplaceId = component.workplace.uid;
+    fixture.detectChanges();
+
+    const link = within(document.body).getByText('Please review your data sharing permissions');
+
+    expect(link.getAttribute('href')).toBe(`/workplace/${workplaceId}/sharing-data`);
+  });
 });
