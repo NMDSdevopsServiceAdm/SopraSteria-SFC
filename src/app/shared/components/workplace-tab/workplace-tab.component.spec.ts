@@ -18,22 +18,24 @@ describe('WorkplaceTabComponent', () => {
   let component: WorkplaceTabComponent;
   let fixture: ComponentFixture<WorkplaceTabComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-      ],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
+        providers: [
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+        ],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkplaceTabComponent);
@@ -62,5 +64,23 @@ describe('WorkplaceTabComponent', () => {
     const checkCQCDetailsBanner = within(document.body).queryByTestId('check-cqc-details');
 
     expect(checkCQCDetailsBanner).toBeNull();
+  });
+
+  it('should display the Sharing Permissions banner', async () => {
+    component.showSharingPermissionsBanner = true;
+    fixture.detectChanges();
+
+    const checkShowSharingPermissions = within(document.body).queryByTestId('check-sharing-permissions');
+
+    expect(checkShowSharingPermissions.innerHTML).toContain('You need to review your data sharing permissions');
+  });
+
+  it('should not display the Sharing Permissions banner', async () => {
+    component.showSharingPermissionsBanner = false;
+    fixture.detectChanges();
+
+    const checkShowSharingPermissions = within(document.body).queryByTestId('check-sharing-permissions');
+
+    expect(checkShowSharingPermissions).toBeNull();
   });
 });
