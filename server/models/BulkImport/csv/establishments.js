@@ -782,10 +782,9 @@ class Establishment {
   }
 
   _validateShareWithCQC() {
-    const ALLOWED_VALUES = [0, 1];
-    const myShareWithCqc = parseInt(this._currentLine.PERMCQC, 10);
+    const ALLOWED_VALUES = ['0', '1', ''];
 
-    if (!ALLOWED_VALUES.includes(myShareWithCqc) && this._currentLine.PERMCQC != '') {
+    if (!ALLOWED_VALUES.includes(this._currentLine.PERMCQC)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_CQC_ERROR,
@@ -797,16 +796,16 @@ class Establishment {
       });
       return false;
     } else {
-      this._shareWithCqc = Number.isNaN(myShareWithCqc) ? this._currentLine.PERMCQC : myShareWithCqc;
+      const shareWithCqcAsInt = parseInt(this._currentLine.PERMCQC, 10);
+      this._shareWithCqc = Number.isNaN(shareWithCqcAsInt) ? this._currentLine.PERMCQC : shareWithCqcAsInt;
       return true;
     }
   }
 
   _validateShareWithLA() {
-    const ALLOWED_VALUES = [0, 1];
-    const myShareWithLa = parseInt(this._currentLine.PERMLA, 10);
+    const ALLOWED_VALUES = ['0', '1', ''];
 
-    if (!ALLOWED_VALUES.includes(myShareWithLa) && this._currentLine.PERMLA != '') {
+    if (!ALLOWED_VALUES.includes(this._currentLine.PERMLA)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.SHARE_WITH_LA_ERROR,
@@ -818,7 +817,8 @@ class Establishment {
       });
       return false;
     } else {
-      this._shareWithLA = Number.isNaN(myShareWithLa) ? this._currentLine.PERMLA : myShareWithLa;
+      const shareWithLaAsInt = parseInt(this._currentLine.PERMLA, 10);
+      this._shareWithLA = Number.isNaN(shareWithLaAsInt) ? this._currentLine.PERMLA : shareWithLaAsInt;
       return true;
     }
   }
