@@ -75,7 +75,7 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
+  private _checkSharingPermissionsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
@@ -117,6 +117,7 @@ export class EstablishmentService {
       this.setPrimaryWorkplace(this.establishment);
       this.setCheckCQCDetailsBanner(false);
     }
+    this.setCheckSharingPermissionsBanner(establishment.showSharingPermissionsBanner);
   }
 
   public resetState() {
@@ -124,6 +125,7 @@ export class EstablishmentService {
     this._establishment$.next(null);
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
+    this.setCheckSharingPermissionsBanner(false);
   }
 
   public get establishmentId() {
@@ -164,6 +166,18 @@ export class EstablishmentService {
 
   public setCheckCQCDetailsBanner(data: boolean) {
     this._checkCQCDetailsBanner$.next(data);
+  }
+
+  public get checkSharingPermissionsBanner$(): Observable<boolean> {
+    return this._checkSharingPermissionsBanner$.asObservable();
+  }
+
+  public get checkSharingPermissionsBanner(): boolean {
+    return this._checkSharingPermissionsBanner$.value;
+  }
+
+  public setCheckSharingPermissionsBanner(data: boolean): void {
+    this._checkSharingPermissionsBanner$.next(data);
   }
 
   getEstablishment(id: string, wdf: boolean = false) {

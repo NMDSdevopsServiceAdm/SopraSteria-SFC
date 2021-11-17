@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showCQCDetailsBanner = false;
   public workers: Worker[];
   public workerCount: number;
-  public showSharingPermissionsBanner = true;
+  public showSharingPermissionsBanner: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -54,6 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
+    this.showSharingPermissionsBanner = this.establishmentService.checkSharingPermissionsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
@@ -67,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
 
       this.getShowCQCDetailsBanner();
+      this.getShowSharingPermissionBanner();
 
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
@@ -259,6 +261,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
         this.showCQCDetailsBanner = showBanner;
+      }),
+    );
+  }
+
+  private getShowSharingPermissionBanner(): void {
+    this.subscriptions.add(
+      this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
+        this.showSharingPermissionsBanner = showBanner;
       }),
     );
   }
