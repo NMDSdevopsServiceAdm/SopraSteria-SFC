@@ -67,6 +67,7 @@ export class MockEstablishmentService extends EstablishmentService {
       updated: undefined,
       updatedBy: 'mock establishment updatedBy',
       vacancies: undefined,
+      showSharingPermissionsBanner: false,
     };
   }
 

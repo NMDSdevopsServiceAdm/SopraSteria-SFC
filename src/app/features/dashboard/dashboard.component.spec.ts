@@ -124,6 +124,15 @@ describe('DashboardComponent', () => {
 
       expect(component.getByText('Users')).toBeTruthy();
     });
+
+    it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
+      const { component } = await setup(true);
+
+      component.fixture.componentInstance.showSharingPermissionsBanner = true;
+      component.fixture.detectChanges();
+
+      expect(component.getByTestId('red-flag')).toBeTruthy();
+    });
   });
 
   describe('Archive Workplace', () => {

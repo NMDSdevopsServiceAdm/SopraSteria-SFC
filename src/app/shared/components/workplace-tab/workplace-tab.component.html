@@ -1,9 +1,9 @@
-<ng-container *ngIf="!updateWorkplaceAlert && showCQCDetailsBanner">
+<ng-container *ngIf="!updateWorkplaceAlert && (showCQCDetailsBanner || showSharingPermissionsBanner)">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Workplace</h2>
     </div>
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-grid-column-two-thirds-from-desktop" *ngIf="showCQCDetailsBanner">
       <app-inset-text [color]="'todo'" data-testid="check-cqc-details">
         <h3 class="govuk-heading-s">You need to check your CQC details</h3>
         <p>
@@ -14,6 +14,16 @@
         <p>
           <a href="https://www.cqc.org.uk/location/{{ locationId }}" target="_blank">Please check your CQC details</a>
           and make sure they match your <br />ASC-WDS details.
+        </p>
+      </app-inset-text>
+    </div>
+    <div class="govuk-grid-column-two-thirds-from-desktop" *ngIf="showSharingPermissionsBanner">
+      <app-inset-text [color]="'todo'" data-testid="check-sharing-permissions">
+        <h3 class="govuk-heading-s">You need to review your data sharing permissions</h3>
+        <p>Skills for Care have updated the list of data that will be shared with local authorities.</p>
+        <p>You need to let us know that you're happy for us to share your data.</p>
+        <p>
+          <a [routerLink]="['/']">Please review your data sharing permissions</a>
         </p>
       </app-inset-text>
     </div>

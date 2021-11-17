@@ -10,9 +10,7 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -39,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showCQCDetailsBanner = false;
   public workers: Worker[];
   public workerCount: number;
+  public showSharingPermissionsBanner: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -55,6 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
+    this.showSharingPermissionsBanner = this.establishmentService.checkSharingPermissionsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
@@ -68,6 +68,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
 
       this.getShowCQCDetailsBanner();
+      this.getShowSharingPermissionBanner();
 
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
@@ -260,6 +261,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
         this.showCQCDetailsBanner = showBanner;
+      }),
+    );
+  }
+
+  private getShowSharingPermissionBanner(): void {
+    this.subscriptions.add(
+      this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
+        this.showSharingPermissionsBanner = showBanner;
       }),
     );
   }
