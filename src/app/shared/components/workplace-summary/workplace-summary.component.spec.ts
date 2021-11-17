@@ -186,6 +186,17 @@ describe('WorkplaceSummaryComponent', async () => {
       expect(dataSharing.innerHTML).toContain('Change');
       expect(dataSharing.innerHTML).toContain('Not sharing');
     });
+
+    it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
+      const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).not.toContain('Not sharing');
+    });
   });
 
   describe('Staff records banner', async () => {
