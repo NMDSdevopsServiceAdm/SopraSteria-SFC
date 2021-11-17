@@ -486,7 +486,7 @@ class Establishment extends EntityValidator {
             this._locationId = null;
 
             if (this.shareWith && this.shareWith.cqc) {
-              this.shareWith.cqc = false;
+              this.shareWith.cqc = null;
             }
           }
         }
