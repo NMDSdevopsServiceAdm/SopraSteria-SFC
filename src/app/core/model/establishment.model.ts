@@ -135,6 +135,7 @@ export interface Establishment {
   locationId?: string;
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
+  showSharingPermissionsBanner?: boolean;
 }
 
 export interface UpdateJobsRequest {
