@@ -17,16 +17,12 @@ import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { ShareWithRequest, SharingOptionsModel } from '../model/data-sharing.model';
+import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
   id: number;
   name: string;
-}
-
-interface ShareOptionsResponse extends EstablishmentApiResponse {
-  share: SharingOptionsModel;
 }
 
 interface EmployerTypeResponse {
@@ -190,10 +186,6 @@ export class EstablishmentService {
 
   postStaff(workplaceUid: string, numberOfStaff: number) {
     return this.http.post<any>(`/api/establishment/${workplaceUid}/staff/${numberOfStaff}`, null);
-  }
-
-  getSharingOptions() {
-    return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`);
   }
 
   getEmployerType() {
