@@ -2704,8 +2704,8 @@ class Establishment {
     columns.push(csvQuote(entity.EmployerTypeOther ? entity.EmployerTypeOther : ''));
 
     const shareWithMapping = {
-      true: 1,
-      false: 0,
+      true: '1',
+      false: '0',
       null: '',
     };
 
