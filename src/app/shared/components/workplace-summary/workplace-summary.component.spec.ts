@@ -153,6 +153,39 @@ describe('WorkplaceSummaryComponent', async () => {
       expect(dataSharing.innerHTML).toContain('Add information');
       expect(dataSharing.innerHTML).toContain('-');
     });
+
+    it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
+      const { component, fixture } = await setup({ cqc: false, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Not sharing');
+    });
+
+    it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null', async () => {
+      const { component, fixture } = await setup({ cqc: false, localAuthorities: null });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Not sharing');
+    });
+
+    it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null', async () => {
+      const { component, fixture } = await setup({ cqc: null, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Not sharing');
+    });
   });
 
   describe('Staff records banner', async () => {

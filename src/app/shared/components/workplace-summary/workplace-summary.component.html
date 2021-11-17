@@ -257,7 +257,15 @@
     <dt class="govuk-summary-list__key">Data sharing</dt>
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="!workplace.shareWith?.cqc && !workplace.shareWith?.localAuthorities; else sharing">
-        -
+        <ng-container
+          *ngIf="
+            workplace.shareWith?.cqc === false || workplace.shareWith?.localAuthorities === false;
+            else notProvided
+          "
+        >
+          Not sharing
+        </ng-container>
+        <ng-template #notProvided> - </ng-template>
       </ng-container>
       <ng-template #sharing>
         <p *ngIf="workplace.shareWith?.cqc">Care Quality Commission (CQC)</p>
@@ -268,7 +276,7 @@
       <app-summary-record-change
         [explanationText]="' data sharing'"
         [link]="['/workplace', workplace.uid, 'sharing-data']"
-        [hasData]="workplace.shareWith?.cqc || workplace.shareWith?.localAuthorities"
+        [hasData]="workplace.shareWith?.cqc !== null || workplace.shareWith?.localAuthorities !== null"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
