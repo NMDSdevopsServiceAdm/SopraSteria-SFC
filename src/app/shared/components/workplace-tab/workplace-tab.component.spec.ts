@@ -93,4 +93,11 @@ describe('WorkplaceTabComponent', () => {
 
     expect(link.getAttribute('href')).toBe(`/workplace/${workplaceId}/sharing-data`);
   });
+
+  it('should set the return url in the establishment service', async () => {
+    const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
+    fixture.detectChanges();
+    component.ngOnInit();
+    expect(setReturnRouteSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+  });
 });
