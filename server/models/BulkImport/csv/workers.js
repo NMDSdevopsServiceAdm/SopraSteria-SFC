@@ -1,7 +1,7 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 const get = require('lodash/get');
-const models = require('../../../models')
+const models = require('../../../models');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 

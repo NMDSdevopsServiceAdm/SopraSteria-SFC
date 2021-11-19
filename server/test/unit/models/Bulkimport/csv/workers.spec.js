@@ -13,6 +13,7 @@ const testUtils = require('../../../../../utils/testUtils');
 const { build } = require('@jackfranklin/test-data-bot');
 const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
 const get = require('lodash/get');
+const models = require('../../../../../models');
 
 const sandbox = require('sinon').createSandbox();
 
@@ -158,6 +159,7 @@ const getUnitInstance = () => {
           moment,
         },
         'lodash/get': get,
+        '../../../models': models,
       }),
     },
   });
@@ -169,6 +171,13 @@ const getUnitInstance = () => {
   return new bulkUpload.Worker();
 };
 describe('/server/models/Bulkimport/csv/workers.js', () => {
+  beforeEach(() => {
+    sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
   describe('get headers', () => {
     it('should return a string of headers seperated by a comma', () => {
       const bulkUpload = getUnitInstance();
@@ -197,6 +206,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
             moment: moment,
             'lodash/get': get,
+            '../../../models': models,
           }),
         },
       }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord(), buildSecondEstablishmentRecord()]);
@@ -237,6 +247,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
       });
     });
+
     it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
       const bulkUpload = new (testUtils.sandBox(filename, {
         locals: {
@@ -246,6 +257,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
             moment: moment,
             'lodash/get': get,
+            '../../../models': models,
           }),
         },
       }).Worker)(buildWorkerCsv(), 2, [
@@ -283,52 +295,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
 
       expect(csvWorkerSchemaErrors).to.deep.equal([]);
     });
-    it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
-      const bulkUpload = new (testUtils.sandBox(filename, {
-        locals: {
-          require: testUtils.wrapRequire({
-            '../BUDI': {
-              BUDI,
-            },
-            moment: moment,
-            'lodash/get': get,
-          }),
-        },
-      }).Worker)(buildWorkerCsv(), 2, [
-        buildEstablishmentRecord({
-          overrides: {
-            _isRegulated: true,
-          },
-        }),
-        buildSecondEstablishmentRecord(),
-      ]);
 
-      expect(bulkUpload).to.have.property('crossValidate');
-
-      const csvWorkerSchemaErrors = [];
-
-      const myEstablishments = [
-        {
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 2,
-        },
-      ];
-
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await bulkUpload.validate();
-
-      // call the method
-      await bulkUpload.crossValidate({
-        csvWorkerSchemaErrors,
-        myEstablishments,
-      });
-
-      // assert a error was returned
-      expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-      expect(csvWorkerSchemaErrors).to.deep.equal([]);
-    });
     it("should not emit an error if REGTYPE is 2 (CQC) but worker doesn't have registered manager main job role", async () => {
       const bulkUpload = new (testUtils.sandBox(filename, {
         locals: {
@@ -338,6 +305,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
             moment: moment,
             'lodash/get': get,
+            '../../../models': models,
           }),
         },
       }).Worker)(
@@ -392,6 +360,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
             moment: moment,
             'lodash/get': get,
+            '../../../models': models,
           }),
         },
       }).Worker)(
@@ -448,6 +417,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
@@ -480,6 +450,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
@@ -507,6 +478,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
                 },
                 moment: moment,
                 'lodash/get': get,
+                '../../../models': models,
               }),
             },
           }).Worker)(
@@ -540,6 +512,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -587,6 +560,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -616,6 +590,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -657,6 +632,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -699,6 +675,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -743,6 +720,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -778,6 +756,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -813,6 +792,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -861,6 +841,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
@@ -909,6 +890,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
               moment: moment,
               'lodash/get': get,
+              '../../../models': models,
             }),
           },
         }).Worker)(
