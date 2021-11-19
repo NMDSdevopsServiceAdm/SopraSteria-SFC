@@ -171,13 +171,6 @@ const getUnitInstance = () => {
   return new bulkUpload.Worker();
 };
 describe('/server/models/Bulkimport/csv/workers.js', () => {
-  beforeEach(() => {
-    sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
   describe('get headers', () => {
     it('should return a string of headers seperated by a comma', () => {
       const bulkUpload = getUnitInstance();
