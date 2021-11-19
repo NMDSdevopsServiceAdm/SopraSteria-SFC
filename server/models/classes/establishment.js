@@ -418,12 +418,6 @@ class Establishment extends EntityValidator {
       }
       // Consequential updates when one value means another should be empty or null
 
-      if (document.share) {
-        if (!document.share.enabled || (document.share.enabled && !document.share.with.includes('Local Authority'))) {
-          document.localAuthorities = [];
-        }
-      }
-
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
 
@@ -1284,7 +1278,7 @@ class Establishment extends EntityValidator {
           raw: true,
         });
 
-        const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
+        const [otherServices, mainService, serviceUsers, capacity, jobs] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
             where: {
@@ -1329,12 +1323,6 @@ class Establishment extends EntityValidator {
             attributes: ['id', 'type', 'total'],
             order: [['type', 'ASC']],
           }),
-          models.establishmentLocalAuthority.findAll({
-            where: {
-              EstablishmentID: this._id,
-            },
-            attributes: ['id', 'cssrId', 'cssr'],
-          }),
         ]);
 
         // For services merge any other data into resultset
@@ -1368,7 +1356,6 @@ class Establishment extends EntityValidator {
 
         fetchResults.capacity = capacity;
         fetchResults.jobs = jobs;
-        fetchResults.localAuthorities = localAuthorities;
 
         fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
 
