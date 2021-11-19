@@ -296,6 +296,102 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       expect(csvWorkerSchemaErrors).to.deep.equal([]);
     });
 
+    it('should not emit an error if REGTYPE is 2 (CQC) and establishment is UNCHECKED but worker has registered manager main job role', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            moment: moment,
+            'lodash/get': get,
+            '../../../models': models,
+          }),
+        },
+      }).Worker)(buildWorkerCsv(), 2, [
+        buildEstablishmentRecord({
+          overrides: {
+            _isRegulated: true,
+          },
+        }),
+        buildSecondEstablishmentRecord(),
+      ]);
+
+      expect(bulkUpload).to.have.property('crossValidate');
+
+      const csvWorkerSchemaErrors = [];
+
+      const myEstablishments = [
+        {
+          key: 'MARMA',
+          status: 'UNCHECKED',
+          regType: 2,
+        },
+      ];
+
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
+
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(0);
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([]);
+    });
+
+    it('should not emit an error if REGTYPE is 2 (CQC) and establishment is NOCHANGE but worker has registered manager main job role', async () => {
+      const bulkUpload = new (testUtils.sandBox(filename, {
+        locals: {
+          require: testUtils.wrapRequire({
+            '../BUDI': {
+              BUDI,
+            },
+            moment: moment,
+            'lodash/get': get,
+            '../../../models': models,
+          }),
+        },
+      }).Worker)(buildWorkerCsv(), 2, [
+        buildEstablishmentRecord({
+          overrides: {
+            _isRegulated: true,
+          },
+        }),
+        buildSecondEstablishmentRecord(),
+      ]);
+
+      expect(bulkUpload).to.have.property('crossValidate');
+
+      const csvWorkerSchemaErrors = [];
+
+      const myEstablishments = [
+        {
+          key: 'MARMA',
+          status: 'NOCHANGE',
+          regType: 2,
+        },
+      ];
+
+      // Regular validation has to run first for the establishment to populate the internal properties correctly
+      await bulkUpload.validate();
+
+      // call the method
+      await bulkUpload.crossValidate({
+        csvWorkerSchemaErrors,
+        myEstablishments,
+      });
+
+      // assert a error was returned
+      expect(csvWorkerSchemaErrors.length).to.equal(0);
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([]);
+    });
+
     it("should not emit an error if REGTYPE is 2 (CQC) but worker doesn't have registered manager main job role", async () => {
       const bulkUpload = new (testUtils.sandBox(filename, {
         locals: {
