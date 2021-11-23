@@ -83,4 +83,21 @@ describe('WorkplaceTabComponent', () => {
 
     expect(checkShowSharingPermissions).toBeNull();
   });
+
+  it('should set the banner link with to `sharing-data`', async () => {
+    component.showSharingPermissionsBanner = true;
+    const workplaceId = component.workplace.uid;
+    fixture.detectChanges();
+
+    const link = within(document.body).getByText('Please review your data sharing permissions');
+
+    expect(link.getAttribute('href')).toBe(`/workplace/${workplaceId}/sharing-data`);
+  });
+
+  it('should set the return url in the establishment service', async () => {
+    const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
+    fixture.detectChanges();
+    component.ngOnInit();
+    expect(setReturnRouteSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+  });
 });

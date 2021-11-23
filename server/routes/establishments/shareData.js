@@ -74,7 +74,6 @@ const updateShareData = async (req, res) => {
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
         await thisEstablishment.save(req.username);
-
         return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
       } else {
         return res.status(400).send('Unexpected Input.');

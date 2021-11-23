@@ -63,12 +63,20 @@ export class DataSharingComponent extends Question {
   }
 
   protected updateEstablishment(props: ShareWithRequest): void {
-    this.subscriptions.add(
-      this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
-        (data) => this._onSuccess(data),
-        (error) => this.onError(error),
-      ),
-    );
+    const completeUpdateEstablishment = () => {
+      this.subscriptions.add(
+        this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
+          (data) => {
+            this._onSuccess(data);
+          },
+          (error) => this.onError(error),
+        ),
+      );
+    };
+
+    this.establishment.showSharingPermissionsBanner
+      ? this.removeSharingPermissionsBanner(completeUpdateEstablishment)
+      : completeUpdateEstablishment();
   }
 
   protected onSuccess(): void {
@@ -77,5 +85,20 @@ export class DataSharingComponent extends Question {
     this.nextRoute = localAuthorities
       ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.uid}`, 'total-staff'];
+  }
+
+  protected removeSharingPermissionsBanner(completeFunction): void {
+    const data = { showPermissionsBannerFlag: false };
+    this.subscriptions.add(
+      this.establishmentService.updateSharingPermissionsBanner(this.establishment.uid, data).subscribe(
+        (data) => {
+          this.establishmentService.setState({ ...this.establishment, ...data });
+          completeFunction();
+        },
+        () => {
+          this.router.navigate(['/problem-with-the-service']);
+        },
+      ),
+    );
   }
 }

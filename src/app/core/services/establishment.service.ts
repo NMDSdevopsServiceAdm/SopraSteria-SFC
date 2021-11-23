@@ -230,6 +230,10 @@ export class EstablishmentService {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 
+  updateSharingPermissionsBanner(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSharingPermissionsBanner`, data);
+  }
+
   updateLocalAuthorities(establishmentId, data) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }

@@ -263,6 +263,10 @@ class Establishment extends EntityValidator {
     return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
   }
 
+  get showSharingPermissionsBanner() {
+    return this._showSharingPermissionsBanner;
+  }
+
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
   }
@@ -337,10 +341,6 @@ class Establishment extends EntityValidator {
 
   get eightWeeksFromFirstLogin() {
     return this._eightWeeksFromFirstLogin;
-  }
-
-  get showSharingPermissionsBanner() {
-    return this._showSharingPermissionsBanner;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -509,6 +509,10 @@ class Establishment extends EntityValidator {
 
         if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
           this._reasonsForLeaving = document.reasonsForLeaving;
+        }
+
+        if ('showSharingPermissionsBanner' in document) {
+          this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
         }
       }
 
@@ -928,11 +932,10 @@ class Establishment extends EntityValidator {
           const thisTransaction = externalTransaction || t;
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
-
+          const modifiedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
-            ...modifedUpdateDocument,
+            ...modifiedUpdateDocument,
             source: bulkUploaded ? 'Bulk' : 'Online',
             isRegulated: this._isRegulated, // to remove when a change managed property
             locationId: this._locationId, // to remove when a change managed property
@@ -948,6 +951,7 @@ class Establishment extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
+            showSharingPermissionsBanner: this._showSharingPermissionsBanner,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1716,6 +1720,9 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+      }
+
+      if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
       }
 

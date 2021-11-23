@@ -17,14 +17,12 @@
     </div>
   </ng-container>
   <ng-template #summary>
-    <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-half">
       <button type="submit" class="govuk-button" (click)="onClick($event, 'return', true)">Save and return</button>
     </div>
-    <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'return', false)"
-        >Exit</a
-      >
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'return', false)">Exit</a>
     </div>
   </ng-template>
 </div>
