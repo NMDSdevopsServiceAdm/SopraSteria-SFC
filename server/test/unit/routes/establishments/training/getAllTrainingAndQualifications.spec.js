@@ -39,7 +39,6 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
     });
 
     it('should reply with a status of 200', async () => {
-      console.log(MandatoryTraining);
       sinon.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').returns([]);
       await getAllTrainingAndQualifications(req, res);
 
