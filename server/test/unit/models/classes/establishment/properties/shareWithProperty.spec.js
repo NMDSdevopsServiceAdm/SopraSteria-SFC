@@ -18,16 +18,6 @@ describe('ShareWithProperty', () => {
       await shareWithProperty.restoreFromJson(document);
       expect(shareWithProperty.property).to.deep.equal(document.shareWith);
     });
-
-    it.skip('should return object with cqc and localAuthorities set to null when document does not contain shareWith', async () => {
-      const shareWithProperty = new ShareWithProperty();
-      const document = {
-        differentProperty: 'Test',
-      };
-
-      await shareWithProperty.restoreFromJson(document);
-      expect(shareWithProperty.property).to.deep.equal({ cqc: null, localAuthorities: null });
-    });
   });
 
   describe('restorePropertyFromSequelize()', () => {
