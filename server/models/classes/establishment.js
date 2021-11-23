@@ -343,10 +343,6 @@ class Establishment extends EntityValidator {
     return this._eightWeeksFromFirstLogin;
   }
 
-  // get showSharingPermissionsBanner() {
-  //   return this._showSharingPermissionsBanner;
-  // }
-
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {

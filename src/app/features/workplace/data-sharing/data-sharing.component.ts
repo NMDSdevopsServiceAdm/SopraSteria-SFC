@@ -63,7 +63,7 @@ export class DataSharingComponent extends Question {
   }
 
   protected updateEstablishment(props: ShareWithRequest): void {
-    const completeFunction = () => {
+    const completeUpdateEstablishment = () => {
       this.subscriptions.add(
         this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
           (data) => {
@@ -75,8 +75,8 @@ export class DataSharingComponent extends Question {
     };
 
     this.establishment.showSharingPermissionsBanner
-      ? this.removeSharingPermissionsBanner(completeFunction)
-      : completeFunction();
+      ? this.removeSharingPermissionsBanner(completeUpdateEstablishment)
+      : completeUpdateEstablishment();
   }
 
   protected onSuccess(): void {
