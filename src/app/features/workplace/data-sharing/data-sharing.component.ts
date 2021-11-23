@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
+import { ShareWithRequest } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,18 +24,18 @@ export class DataSharingComponent extends Question {
 
     this.form = this.formBuilder.group({
       shareWith: this.formBuilder.group({
-        cqc: false,
-        localAuthorities: false,
+        cqc: null,
+        localAuthorities: null,
       }),
     });
   }
 
   protected init(): void {
-    if (this.establishment.share && this.establishment.share.enabled) {
-      const shareWith = this.establishment.share.with;
+    if (this.establishment.shareWith) {
+      const shareWith = this.establishment.shareWith;
       this.form.get('shareWith').patchValue({
-        cqc: shareWith.includes(DataSharingOptions.CQC),
-        localAuthorities: shareWith.includes(DataSharingOptions.LOCAL),
+        cqc: shareWith.cqc,
+        localAuthorities: shareWith.localAuthorities,
       });
     }
 
@@ -51,37 +51,32 @@ export class DataSharingComponent extends Question {
     ];
   }
 
-  protected generateUpdateProps() {
+  protected generateUpdateProps(): ShareWithRequest {
     const { cqc, localAuthorities } = this.form.get('shareWith').value;
 
-    const shareWith = [];
-
-    if (cqc) {
-      shareWith.push(DataSharingOptions.CQC);
-    }
-    if (localAuthorities) {
-      shareWith.push(DataSharingOptions.LOCAL);
-    }
-
-    if ((this.establishment && !shareWith.length) || !localAuthorities) {
-      this.establishment.localAuthorities = [];
-    }
-
     return {
-      share: {
-        enabled: shareWith.length ? true : false,
-        with: shareWith,
+      shareWith: {
+        cqc,
+        localAuthorities,
       },
     };
   }
 
-  protected updateEstablishment(props): void {
-    this.subscriptions.add(
-      this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
-        (data) => this._onSuccess(data),
-        (error) => this.onError(error),
-      ),
-    );
+  protected updateEstablishment(props: ShareWithRequest): void {
+    const completeUpdateEstablishment = () => {
+      this.subscriptions.add(
+        this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
+          (data) => {
+            this._onSuccess(data);
+          },
+          (error) => this.onError(error),
+        ),
+      );
+    };
+
+    this.establishment.showSharingPermissionsBanner
+      ? this.removeSharingPermissionsBanner(completeUpdateEstablishment)
+      : completeUpdateEstablishment();
   }
 
   protected onSuccess(): void {
@@ -90,5 +85,20 @@ export class DataSharingComponent extends Question {
     this.nextRoute = localAuthorities
       ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.uid}`, 'total-staff'];
+  }
+
+  protected removeSharingPermissionsBanner(completeFunction): void {
+    const data = { showPermissionsBannerFlag: false };
+    this.subscriptions.add(
+      this.establishmentService.updateSharingPermissionsBanner(this.establishment.uid, data).subscribe(
+        (data) => {
+          this.establishmentService.setState({ ...this.establishment, ...data });
+          completeFunction();
+        },
+        () => {
+          this.router.navigate(['/problem-with-the-service']);
+        },
+      ),
+    );
   }
 }

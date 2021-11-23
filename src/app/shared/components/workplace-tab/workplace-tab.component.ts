@@ -19,19 +19,34 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public updateWorkplaceAlert: boolean;
   public locationId: string;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
+  public showSharingPermissionsBanner: boolean = this.establishmentService.checkSharingPermissionsBanner;
 
-  constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
+  constructor(private permissionsService: PermissionsService, public establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
     this.locationId = this.workplace.locationId;
     this.establishmentService.setCheckCQCDetailsBanner(false);
+    this.getShowCQCDetailsBanner();
+    this.getShowSharingPermissionsBanner();
+    this.setReturnRoute();
+    this.updateWorkplaceAlert =
+      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+  }
 
+  private getShowCQCDetailsBanner(): void {
     this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
       this.showCQCDetailsBanner = showBanner;
     });
+  }
 
-    this.updateWorkplaceAlert =
-      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+  private getShowSharingPermissionsBanner(): void {
+    this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
+      this.showSharingPermissionsBanner = showBanner;
+    });
+  }
+
+  private setReturnRoute(): void {
+    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'workplace' });
   }
 
   ngOnDestroy(): void {

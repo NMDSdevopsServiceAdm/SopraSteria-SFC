@@ -86,6 +86,7 @@ class Establishment extends EntityValidator {
     this._linkToParentRequested = null;
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
+    this._showSharingPermissionsBanner = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -262,6 +263,10 @@ class Establishment extends EntityValidator {
     return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
   }
 
+  get showSharingPermissionsBanner() {
+    return this._showSharingPermissionsBanner;
+  }
+
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
   }
@@ -413,12 +418,6 @@ class Establishment extends EntityValidator {
       }
       // Consequential updates when one value means another should be empty or null
 
-      if (document.share) {
-        if (!document.share.enabled || (document.share.enabled && !document.share.with.includes('Local Authority'))) {
-          document.localAuthorities = [];
-        }
-      }
-
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
 
@@ -480,8 +479,8 @@ class Establishment extends EntityValidator {
           if (!this.isRegulated) {
             this._locationId = null;
 
-            if (this.shareWith && this.shareWith.with) {
-              this.shareWith.with = this.shareWith.with.filter((x) => x !== 'CQC');
+            if (this.shareWith && this.shareWith.cqc) {
+              this.shareWith.cqc = null;
             }
           }
         }
@@ -510,6 +509,10 @@ class Establishment extends EntityValidator {
 
         if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
           this._reasonsForLeaving = document.reasonsForLeaving;
+        }
+
+        if ('showSharingPermissionsBanner' in document) {
+          this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
         }
       }
 
@@ -755,7 +758,6 @@ class Establishment extends EntityValidator {
           MainServiceFKValue: this.mainService.id,
           nmdsId: this._nmdsId,
           updatedBy: savedBy.toLowerCase(),
-          ShareDataValue: false,
           shareWithCQC: false,
           shareWithLA: false,
           source: bulkUploaded ? 'Bulk' : 'Online',
@@ -930,11 +932,10 @@ class Establishment extends EntityValidator {
           const thisTransaction = externalTransaction || t;
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
-
+          const modifiedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
-            ...modifedUpdateDocument,
+            ...modifiedUpdateDocument,
             source: bulkUploaded ? 'Bulk' : 'Online',
             isRegulated: this._isRegulated, // to remove when a change managed property
             locationId: this._locationId, // to remove when a change managed property
@@ -950,6 +951,7 @@ class Establishment extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
+            showSharingPermissionsBanner: this._showSharingPermissionsBanner,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1248,6 +1250,7 @@ class Establishment extends EntityValidator {
         this._linkToParentRequested = fetchResults.linkToParentRequested;
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
+        this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1279,7 +1282,7 @@ class Establishment extends EntityValidator {
           raw: true,
         });
 
-        const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
+        const [otherServices, mainService, serviceUsers, capacity, jobs] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
             where: {
@@ -1324,12 +1327,6 @@ class Establishment extends EntityValidator {
             attributes: ['id', 'type', 'total'],
             order: [['type', 'ASC']],
           }),
-          models.establishmentLocalAuthority.findAll({
-            where: {
-              EstablishmentID: this._id,
-            },
-            attributes: ['id', 'cssrId', 'cssr'],
-          }),
         ]);
 
         // For services merge any other data into resultset
@@ -1363,7 +1360,6 @@ class Establishment extends EntityValidator {
 
         fetchResults.capacity = capacity;
         fetchResults.jobs = jobs;
-        fetchResults.localAuthorities = localAuthorities;
 
         fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
 
@@ -1724,6 +1720,10 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+      }
+
+      if (this.showSharingPermissionsBanner !== null) {
+        myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
       }
 
       if (this._ustatus) {

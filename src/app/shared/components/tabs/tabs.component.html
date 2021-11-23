@@ -27,7 +27,7 @@
         [class.govuk-tabs__tab--red-cross]="tab.redCross"
       >
         <span *ngIf="tab.alert" class="govuk-visually-hidden">Orange warning flag</span>
-        <span *ngIf="tab.redAlert" class="govuk-visually-hidden">Red warning flag</span>
+        <span *ngIf="tab.redAlert" class="govuk-visually-hidden" data-testid="red-flag">Red warning flag</span>
         <span *ngIf="tab.redCross" class="govuk-visually-hidden">Red cross</span>
         <span *ngIf="tab.greenTick" class="govuk-visually-hidden">Green tick</span>
       </i>

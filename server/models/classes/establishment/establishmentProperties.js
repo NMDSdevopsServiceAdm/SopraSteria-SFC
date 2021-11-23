@@ -6,8 +6,7 @@ const employerTypeProperty = require('./properties/employerTypeProperty').Employ
 const staffProperty = require('./properties/staffProperty').StaffProperty;
 const otherServicesProperty = require('./properties/servicesProperty').ServicesProperty;
 const capacityServicesProperty = require('./properties/capacityProperties').CapacityProperty;
-const shareProperty = require('./properties/shareWithProperty').ShareWithProperty;
-const shareWithLAProperty = require('./properties/shareWithLAProperty').ShareWithLAProperty;
+const shareWithProperty = require('./properties/shareWithProperty').ShareWithProperty;
 const vacanciesProperty = require('./properties/vacanciesProperty').VacanciesProperty;
 const startersProperty = require('./properties/startersProperty').StartersProperty;
 const leaversProperty = require('./properties/leaversProperty').LeaversProperty;
@@ -37,8 +36,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(otherServicesProperty);
     this._thisManager.registerProperty(serviceUsersProperty);
     this._thisManager.registerProperty(capacityServicesProperty);
-    this._thisManager.registerProperty(shareProperty);
-    this._thisManager.registerProperty(shareWithLAProperty);
+    this._thisManager.registerProperty(shareWithProperty);
     this._thisManager.registerProperty(vacanciesProperty);
     this._thisManager.registerProperty(startersProperty);
     this._thisManager.registerProperty(leaversProperty);

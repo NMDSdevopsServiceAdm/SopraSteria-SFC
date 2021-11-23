@@ -474,11 +474,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CapacityServicesChangedBy"',
       },
-      ShareDataValue: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        field: '"ShareDataValue"',
-      },
       ShareDataSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -501,33 +496,13 @@ module.exports = function (sequelize, DataTypes) {
       },
       shareWithCQC: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithCQC"',
       },
       shareWithLA: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithLA"',
-      },
-      ShareWithLASavedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"ShareWithLASavedAt"',
-      },
-      ShareWithLAChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"ShareWithLAChangedAt"',
-      },
-      ShareWithLASavedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"ShareWithLASavedBy"',
-      },
-      ShareWithLAChangedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"ShareWithLAChangedBy"',
       },
       VacanciesValue: {
         type: DataTypes.ENUM,
@@ -716,6 +691,12 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'InReview',
       },
+      showSharingPermissionsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ShowSharingPermissionsBanner',
+      },
     },
     {
       defaultScope: {
@@ -811,11 +792,6 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'jobs',
-    });
-    Establishment.hasMany(models.establishmentLocalAuthority, {
-      foreignKey: 'establishmentId',
-      sourceKey: 'id',
-      as: 'localAuthorities',
     });
     Establishment.hasMany(models.establishmentAudit, {
       foreignKey: 'establishmentFk',
@@ -1272,11 +1248,6 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishmentJobs,
           attributes: ['jobId', 'type', 'total'],
           as: 'jobs',
-        },
-        {
-          model: sequelize.models.establishmentLocalAuthority,
-          attributes: ['cssrId'],
-          as: 'localAuthorities',
         },
       ],
     });

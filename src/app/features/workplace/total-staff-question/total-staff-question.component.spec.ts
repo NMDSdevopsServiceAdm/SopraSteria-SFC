@@ -5,7 +5,6 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -34,80 +33,67 @@ describe('TotalStaffQuestionComponent', () => {
     },
   });
 
-
-  // async function setup(share: Share = null, isAdmin = true, subsidiaries = 0) {
-  async function setup(share: any = null, isAdmin = true, subsidiaries = 0) {
-
+  async function setup(shareWith: any = null, isAdmin = true, subsidiaries = 0) {
     const establishment = establishmentBuilder() as Establishment;
 
     const component = await render(TotalStaffQuestionComponent, {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-        ],
-        declarations: [],
-        schemas: [ NO_ERRORS_SCHEMA ],
-        providers: [
-          FormBuilder,
-          {
-            provide: WindowRef,
-            useValue: WindowRef
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        FormBuilder,
+        {
+          provide: WindowRef,
+          useValue: WindowRef,
+        },
+        {
+          provide: Contracts,
+          useValue: Contracts,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentService.factory(shareWith),
+          deps: [HttpClient],
+        },
+        {
+          provide: JobService,
+          useValue: MockJobService,
+        },
+        {
+          provide: AuthService,
+          useValue: MockAuthService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              url: [{ path: 1 }, { path: 2 }],
+            },
+            parent: {
+              snapshot: {
+                url: [{ path: 'workplace' }],
+                data: {
+                  establishment,
+                  primaryWorkplace: establishment,
+                },
+              },
+            },
           },
-          {
-            provide: Contracts,
-            useValue: Contracts
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
-            deps: [HttpClient, Router, UserService]
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(subsidiaries, isAdmin),
-            deps: [HttpClient]
-          },
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory(share),
-            deps: [HttpClient]
-          },
-          {
-            provide: JobService,
-            useValue: MockJobService
-          },
-          {
-            provide: AuthService,
-            useValue: MockAuthService
-          },
-          {
-            provide: ActivatedRoute,
-            useValue:
-              {
-                snapshot:
-                  {
-                    url: [{ path: 1 }, { path: 2 }]
-                  },
-                parent: {
-                  snapshot: {
-                    url: [{ path: 'workplace' }],
-                    data: {
-                      establishment,
-                      primaryWorkplace: establishment
-                    }
-                  }
-
-                }
-              }
-          }
-        ]
-      })
-    ;
-
+        },
+      ],
+    });
     return {
-      component
+      component,
     };
   }
 
@@ -189,20 +175,31 @@ describe('TotalStaffQuestionComponent', () => {
   });
 
   it('should return to normal data sharing page if no data sharing options and you click on the back link', async () => {
-    const share: any = { enabled: false, with: [] };
-    const { component } = await setup(share);
-    expect(component.fixture.componentInstance.previousRoute).toEqual(['/workplace', `${component.fixture.componentInstance.establishment.uid}`, 'sharing-data']);
+    const shareWith: any = { cqc: false, localAuthorities: false };
+    const { component } = await setup(shareWith);
+    expect(component.fixture.componentInstance.previousRoute).toEqual([
+      '/workplace',
+      `${component.fixture.componentInstance.establishment.uid}`,
+      'sharing-data',
+    ]);
   });
 
   it('should return to data sharing page with LA if sharing options are LA and you click on the back link', async () => {
-    const share: any = { enabled: true, with: [DataSharingOptions.LOCAL] };
-    const { component } = await setup(share);
-    expect(component.fixture.componentInstance.previousRoute).toEqual(['/workplace', `${component.fixture.componentInstance.establishment.uid}`, 'sharing-data-with-local-authorities']);
+    const shareWith: any = { cqc: false, localAuthorities: true };
+    const { component } = await setup(shareWith);
+    expect(component.fixture.componentInstance.previousRoute).toEqual([
+      '/workplace',
+      `${component.fixture.componentInstance.establishment.uid}`,
+      'sharing-data-with-local-authorities',
+    ]);
   });
 
   it('should go on to vacancies page if you click submit', async () => {
     const { component } = await setup();
-    expect(component.fixture.componentInstance.nextRoute).toEqual(['/workplace', `${component.fixture.componentInstance.establishment.uid}`, 'vacancies']);
+    expect(component.fixture.componentInstance.nextRoute).toEqual([
+      '/workplace',
+      `${component.fixture.componentInstance.establishment.uid}`,
+      'vacancies',
+    ]);
   });
 });
-

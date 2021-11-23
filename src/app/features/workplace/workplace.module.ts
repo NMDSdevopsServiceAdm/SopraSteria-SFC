@@ -18,7 +18,6 @@ import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
-import { DataSharingWithLocalAuthoritiesComponent } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
@@ -55,7 +54,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ConfirmVacanciesComponent,
     CreateUserAccountComponent,
     DataSharingComponent,
-    DataSharingWithLocalAuthoritiesComponent,
     EditWorkplaceComponent,
     LeaversComponent,
     OtherServicesComponent,

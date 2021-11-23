@@ -1,4 +1,4 @@
-const { oneOf, fake, build, perBuild, sequence } = require('@jackfranklin/test-data-bot');
+const { oneOf, fake, build, sequence } = require('@jackfranklin/test-data-bot');
 
 module.exports.apiEstablishmentBuilder = build('Establishment', {
   fields: {
@@ -14,13 +14,6 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     EmployerTypeOther: fake((f) => f.lorem.sentence()),
     shareWithCQC: false,
     shareWithLA: false,
-    localAuthorities: perBuild(() => {
-      return [
-        {
-          cssrId: fake((f) => f.random.number({ min: 1, max: 200 })),
-        },
-      ];
-    }),
     isRegulated: false,
     otherServices: [],
     mainService: {

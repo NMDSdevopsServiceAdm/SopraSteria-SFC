@@ -21,7 +21,6 @@ import { FeedbackService } from '@core/services/feedback.service';
 import { HttpErrorHandler } from '@core/services/http-error-handler.service';
 import { HttpInterceptor } from '@core/services/http-interceptor';
 import { JobService } from '@core/services/job.service';
-import { LocalAuthorityService } from '@core/services/localAuthority.service';
 import { LocationService } from '@core/services/location.service';
 import { MessageService } from '@core/services/message.service';
 import { NationalityService } from '@core/services/nationality.service';
@@ -53,11 +52,11 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-accordion/benefit-accordion.component';
 import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-accordion/benefit-accordion.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +108,6 @@ import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-ac
     FeedbackService,
     HttpErrorHandler,
     JobService,
-    LocalAuthorityService,
     LocationService,
     MessageService,
     NationalityService,

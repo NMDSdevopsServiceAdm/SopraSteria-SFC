@@ -159,7 +159,6 @@ class PropertyManager {
     const allProperties = Object.keys(this._properties);
     allProperties.forEach((thisPropertyType) => {
       const thisProperty = this._properties[thisPropertyType];
-
       if (thisProperty.modified || (buChanged && thisProperty.property !== null)) {
         const { properties: saveProperties, audit: propertyAudit, additionalModels } = thisProperty.save(username);
 
