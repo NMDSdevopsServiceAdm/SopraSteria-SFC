@@ -110,7 +110,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     this.submitAction = payload;
     if (!this.submitAction.save) {
-      this.establishment.showSharingPermissionsBanner && this.removeSharingPermissionsBanner(() => this.navigate());
+      this.establishment.showSharingPermissionsBanner
+        ? this.removeSharingPermissionsBanner(() => this.navigate())
+        : this.navigate();
       return;
     }
 
