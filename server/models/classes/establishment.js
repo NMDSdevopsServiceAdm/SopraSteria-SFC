@@ -264,7 +264,7 @@ class Establishment extends EntityValidator {
   }
 
   get showSharingPermissionsBanner() {
-    return this._properties.get('SharingPermissions') ? this._properties.get('SharingPermissions').property: null;
+    return this._showSharingPermissionsBanner;
   }
 
   get reasonsForLeaving() {
@@ -961,7 +961,7 @@ class Establishment extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
-            // showSharingPermissionsBanner: this._showSharingPermissionsBanner,
+            showSharingPermissionsBanner: this._showSharingPermissionsBanner,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1122,7 +1122,6 @@ class Establishment extends EntityValidator {
    * @fetchQuery consist of parameters based on which we will filter parent detals.
    */
   async fetchParentDetails(id) {
-
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
@@ -1193,7 +1192,6 @@ class Establishment extends EntityValidator {
   // returns true on success; false if no User
   // Can throw EstablishmentRestoreException exception.
   async restore(id, showHistory = false, associatedEntities = false, associatedLevel = 1) {
-
     if (!id) {
       throw new EstablishmentExceptions.EstablishmentRestoreException(
         null,
@@ -1739,6 +1737,9 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+      }
+
+      if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
       }
 

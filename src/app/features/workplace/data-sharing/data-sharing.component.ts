@@ -89,7 +89,6 @@ export class DataSharingComponent extends Question {
 
   protected removeSharingPermissionsBanner(completeFunction): void {
     const data = { showPermissionsBannerFlag: false };
-
     this.subscriptions.add(
       this.establishmentService.updateSharingPermissionsBanner(this.establishment.uid, data).subscribe(
         (data) => {
