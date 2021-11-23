@@ -31,9 +31,14 @@ const convertWorkerWithCareCertificateStatus = (worker) => {
   };
 };
 
-exports.convertWorkersWithCareCertificateStatus = (rawWorkers) => {
-  return rawWorkers.map((worker) => {
-    return convertWorkerWithCareCertificateStatus(worker);
+exports.convertWorkersWithCareCertificateStatus = (establishments) => {
+  return establishments.map((establishment) => {
+    return {
+      establishmentName: establishment.get('NameValue'),
+      workers: establishment.workers.map((worker) => {
+        return convertWorkerWithCareCertificateStatus(worker);
+      }),
+    };
   });
 };
 
@@ -43,19 +48,21 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   });
 };
 
-const convertWorkerWithTrainingRecords = (worker) => {
-  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+const convertWorkerTrainingRecords = (workers) => {
+  return workers.map((worker) => {
+    const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
 
-  return {
-    workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
-    jobRole: worker.mainJob.title,
-    longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
-    mandatoryTraining: worker.get('mandatoryTrainingCategories') ? worker.get('mandatoryTrainingCategories') : [],
-    trainingRecords: convertWorkerTraining(worker.workerTraining),
-  };
+    return {
+      workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+      jobRole: worker.mainJob.title,
+      longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
+      mandatoryTraining: worker.get('mandatoryTrainingCategories') ? worker.get('mandatoryTrainingCategories') : [],
+      trainingRecords: convertIndividualWorkerTrainingRecords(worker.workerTraining),
+    };
+  });
 };
 
-const convertWorkerTraining = (workerTraining) => {
+const convertIndividualWorkerTrainingRecords = (workerTraining) => {
   return workerTraining.map((trainingRecord) => {
     const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
     const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
@@ -77,8 +84,8 @@ const getTrainingRecordStatus = (expiryDate) => {
     return 'Up-to-date';
   }
 
-  const currentDate = new Date();
-  const expiringSoonDate = new Date();
+  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+  const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
   expiringSoonDate.setDate(currentDate.getDate() + 90);
 
   if (expiryDate < currentDate) {
@@ -90,28 +97,44 @@ const getTrainingRecordStatus = (expiryDate) => {
   return 'Up-to-date';
 };
 
-exports.convertWorkersWithTrainingRecords = (rawWorkersWithTrainingRecords) => {
-  return rawWorkersWithTrainingRecords.map((worker) => {
-    return convertWorkerWithTrainingRecords(worker);
+exports.convertTrainingForEstablishments = (rawEstablishments) => {
+  return rawEstablishments.map((establishment) => {
+    const workplaceNameAsNumber = parseInt(establishment.NameValue);
+    return {
+      name: workplaceNameAsNumber ? workplaceNameAsNumber : establishment.NameValue,
+      workerRecords: convertWorkerTrainingRecords(establishment.workers),
+    };
   });
 };
 
-const convertIndividualWorkerQualifications = (workerQualifications) => {
-  const workerIdAsNumber = parseInt(workerQualifications.worker.get('NameOrIdValue'));
-
-  return {
-    workerName: workerIdAsNumber ? workerIdAsNumber : workerQualifications.worker.get('NameOrIdValue'),
-    jobRole: workerQualifications.worker.mainJob.title,
-    qualificationType: workerQualifications.qualification.group,
-    qualificationName: workerQualifications.qualification.title,
-    qualificationLevel: workerQualifications.qualification.level,
-    yearAchieved: workerQualifications.get('Year'),
-  };
+const convertIndividualWorkerQualifications = (worker) => {
+  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+  return worker.qualifications.map((qualification) => {
+    return {
+      workerName: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+      jobRole: worker.mainJob.title,
+      qualificationType: qualification.qualification.group,
+      qualificationName: qualification.qualification.title,
+      qualificationLevel: qualification.qualification.level,
+      yearAchieved: qualification.get('Year'),
+    };
+  });
 };
 
-exports.convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications.map((workerQualifications) => {
-    return convertIndividualWorkerQualifications(workerQualifications);
+const convertWorkerQualifications = (rawWorkerQualifications) => {
+  return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
+    return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
+  }, []);
+};
+
+exports.convertQualificationsForEstablishments = (rawEstablishments) => {
+  return rawEstablishments.map((establishment) => {
+    const workplaceNameAsNumber = parseInt(establishment.NameValue);
+
+    return {
+      name: workplaceNameAsNumber ? workplaceNameAsNumber : establishment.NameValue,
+      qualifications: convertWorkerQualifications(establishment),
+    };
   });
 };
 
@@ -175,7 +198,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
         expiringSoon: {
           total: a.totals.expiringSoon.total + b.totals.expiringSoon.total,
           mandatory: a.totals.expiringSoon.mandatory + b.totals.expiringSoon.mandatory,
-          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory
+          nonMandatory: a.totals.expiringSoon.nonMandatory + b.totals.expiringSoon.nonMandatory,
         },
         expired: {
           total: a.totals.expired.total + b.totals.expired.total,
@@ -183,8 +206,7 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
           nonMandatory: a.totals.expired.nonMandatory + b.totals.expired.nonMandatory,
         },
         missing: a.totals.missing + b.totals.missing,
-      }
-    }
+      },
+    };
   });
-}
-
+};

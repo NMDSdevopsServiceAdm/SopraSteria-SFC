@@ -10,7 +10,7 @@ import {
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { filter } from 'lodash';
+import filter from 'lodash/filter';
 import { combineLatest, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 

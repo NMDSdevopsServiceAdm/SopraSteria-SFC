@@ -9,8 +9,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
-import { sortBy } from 'lodash';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
+import sortBy from 'lodash/sortBy';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -114,8 +114,8 @@ export class WdfDataComponent implements OnInit {
   }
 
   private setDates(report: WDFReport): void {
-    this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
-    this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
   }
 
   private setWdfEligibility(report: WDFReport): void {

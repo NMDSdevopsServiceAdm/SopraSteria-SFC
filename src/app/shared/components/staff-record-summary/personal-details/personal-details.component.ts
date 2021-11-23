@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
@@ -21,7 +21,7 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   }
 
   get dob() {
-    return moment(this.worker.dateOfBirth).format(DATE_DISPLAY_DEFAULT);
+    return dayjs(this.worker.dateOfBirth).format(DATE_DISPLAY_DEFAULT);
   }
 
   public toggleNinoHide(event) {

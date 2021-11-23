@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, FilterTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
+import { MandatoryTraining, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -33,13 +33,15 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public expiredTraining: number;
   public expiresSoonTraining: number;
   public lastUpdatedDate: Date;
-  public jobRoleMandatoryTrainingCount: number;
+  public jobRoleMandatoryTraining: MandatoryTraining[];
+  public missingJobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
   private currentUrl: string;
   public filterTrainingByStatus;
   public filterTrainingByDefault: string;
   public filterTraining;
   public allTrainings;
+
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
@@ -83,7 +85,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
     this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
-    this.jobRoleMandatoryTrainingCount = trainingRecords.jobRoleMandatoryTrainingCount;
+    this.jobRoleMandatoryTraining = trainingRecords.jobRoleMandatoryTraining;
+    this.missingJobRoleMandatoryTrainingCount = this.getMissingMandatoryTrainingCount();
   }
 
   private setTraining(
@@ -116,7 +119,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const trainingTypes = Object.keys(training);
     trainingTypes.forEach((type) => {
-      if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTrainingCount') {
+      if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTraining') {
         training[type].forEach((category) => {
           category.trainingRecords.forEach((trainingRecord) => {
             if (trainingRecord.trainingStatus === status) {
@@ -138,6 +141,19 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         );
       });
     });
+  }
+
+  private getMissingMandatoryTrainingCount(): number {
+    let count = this.jobRoleMandatoryTraining.length;
+
+    if (this.mandatoryTraining.length > 0) {
+      this.jobRoleMandatoryTraining.forEach((jobRoleTraining) => {
+        this.mandatoryTraining.some((training) => {
+          jobRoleTraining.category === training.category && count--;
+        });
+      });
+    }
+    return count;
   }
 
   getFilterByStatus(dropdownValue) {

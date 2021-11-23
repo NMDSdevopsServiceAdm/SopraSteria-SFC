@@ -14,7 +14,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 

@@ -1,6 +1,7 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 const get = require('lodash/get');
+const models = require('../../../models');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -3095,11 +3096,15 @@ class Worker {
       if (this.establishmentKey === establishment.key) {
         switch (establishment.status) {
           case 'NEW':
-          case 'UPDATE': {
+          case 'UPDATE':
             cqcRegEstablishment = establishment.regType === 2;
-          }
-          /* fall through */
-
+            break;
+          case 'UNCHECKED':
+            cqcRegEstablishment = this.checkEstablishmentRegulated(establishment.id);
+            break;
+          case 'NOCHANGE':
+            cqcRegEstablishment = this.checkEstablishmentRegulated(establishment.id);
+            break;
           case 'DELETE':
             break;
         }
@@ -3108,6 +3113,11 @@ class Worker {
 
     // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
     this._crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment);
+  }
+
+  async checkEstablishmentRegulated(establishmentId) {
+    const establishment = await models.establishment.findbyId(establishmentId);
+    return establishment.isRegulated;
   }
 
   // returns true on success, false is any attribute of Worker fails

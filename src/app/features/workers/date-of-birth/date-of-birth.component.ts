@@ -6,7 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -17,10 +17,8 @@ import { QuestionComponent } from '../question/question.component';
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  private minDate = moment()
-    .subtract(100, 'years')
-    .add(1, 'days');
-  private maxDate = moment().subtract(14, 'years');
+  private minDate = dayjs().subtract(100, 'years').add(1, 'days');
+  private maxDate = dayjs().subtract(14, 'years');
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -28,7 +26,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -44,7 +42,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
 
   init() {
     if (this.worker.dateOfBirth) {
-      const date = moment(this.worker.dateOfBirth, DATE_PARSE_FORMAT);
+      const date = dayjs(this.worker.dateOfBirth, DATE_PARSE_FORMAT);
       this.form.get('dob').patchValue({
         year: date.year(),
         month: date.format('M'),
@@ -72,7 +70,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
           {
             name: 'dateBetween',
             message: `The date has to be between ${this.minDate.format(DATE_DISPLAY_DEFAULT)} and ${this.maxDate.format(
-              DATE_DISPLAY_DEFAULT
+              DATE_DISPLAY_DEFAULT,
             )}.`,
           },
         ],
@@ -82,7 +80,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
 
   generateUpdateProps() {
     const { day, month, year } = this.form.get('dob').value;
-    const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
+    const date = day && month && year ? dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
 
     if (date) {
       return {
@@ -90,6 +88,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
       };
     }
 
-    return {dateOfBirth: null};
+    return { dateOfBirth: null };
   }
 }

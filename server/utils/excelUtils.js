@@ -204,4 +204,4 @@ exports.textColours = {
 
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
-}
+};

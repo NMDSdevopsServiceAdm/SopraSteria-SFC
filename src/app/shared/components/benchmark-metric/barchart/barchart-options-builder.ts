@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BenchmarkValue, Metric, Tile } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
-import { cloneDeep, merge } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 
 @Injectable({
   providedIn: 'root',

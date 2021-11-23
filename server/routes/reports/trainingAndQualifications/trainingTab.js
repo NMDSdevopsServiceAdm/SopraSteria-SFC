@@ -1,4 +1,4 @@
-const { convertWorkersWithTrainingRecords } = require('../../../utils/trainingAndQualificationsUtils');
+const { convertTrainingForEstablishments } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
   addLine,
@@ -13,75 +13,85 @@ const {
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
-const generateTrainingTab = async (workbook, establishmentId) => {
-  const rawWorkersWithTraining = await models.worker.getEstablishmentTrainingRecords(establishmentId);
-  const workersWithTraining = convertWorkersWithTrainingRecords(rawWorkersWithTraining);
+const generateTrainingTab = async (workbook, establishmentId, isParent = false) => {
+  const rawEstablishments = await models.establishment.getEstablishmentTrainingRecords(establishmentId, isParent);
+  const establishments = convertTrainingForEstablishments(rawEstablishments);
 
   const trainingTab = workbook.addWorksheet('Training', { views: [{ showGridLines: false }] });
 
-  addContentToTrainingTab(trainingTab, workersWithTraining);
+  addContentToTrainingTab(trainingTab, establishments, isParent);
 };
 
-const addContentToTrainingTab = (trainingTab, workersWithTraining) => {
+const addContentToTrainingTab = (trainingTab, establishments, isParent) => {
   addHeading(trainingTab, 'B2', 'E2', 'Training');
-  addLine(trainingTab, 'A4', 'K4');
+  addLine(trainingTab, 'A4',isParent ? 'L4' : 'K4');
   alignColumnToLeft(trainingTab, 2);
+  if (isParent) alignColumnToLeft(trainingTab, 3);
 
-  const trainingTable = createTrainingTable(trainingTab);
-  addRowsToTrainingTable(trainingTable, workersWithTraining);
+  const trainingTable = createTrainingTable(trainingTab, isParent);
+  addRowsToTrainingTable(trainingTable, establishments, isParent);
 
   addBordersToAllFilledCells(trainingTab, 5);
-  addColoursToStatusColumn(trainingTab);
+  addColoursToStatusColumn(trainingTab, isParent);
   fitColumnsToSize(trainingTab, 2, 5.5);
 };
 
-const createTrainingTable = (trainingTab) => {
-  const tableColumns = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
-  setTableHeadingsStyle(trainingTab, 6, backgroundColours.blue, textColours.white, tableColumns);
+const createTrainingTable = (trainingTab, isParent) => {
+  const headingColumns = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+  if (isParent) headingColumns.push('L');
+
+  setTableHeadingsStyle(trainingTab, 6, backgroundColours.blue, textColours.white, headingColumns);
+
+  const columns = [
+    { name: 'Worker ID', filterButton: true },
+    { name: 'Job role', filterButton: true },
+    { name: 'Training category', filterButton: true },
+    { name: 'Training name', filterButton: true },
+    { name: 'Mandatory', filterButton: true },
+    { name: 'Status', filterButton: true },
+    { name: 'Expiry date', filterButton: true },
+    { name: 'Date completed', filterButton: true },
+    { name: 'Long-term absence', filterButton: true },
+    { name: 'Accredited', filterButton: true },
+  ];
+
+  if (isParent) {
+    columns.unshift({ name: 'Workplace', filterButton: true });
+  }
 
   return trainingTab.addTable({
     name: 'trainingTable',
     ref: 'B6',
-    columns: [
-      { name: 'Worker ID', filterButton: true },
-      { name: 'Job role', filterButton: true },
-      { name: 'Training category', filterButton: true },
-      { name: 'Training name', filterButton: true },
-      { name: 'Mandatory', filterButton: true },
-      { name: 'Status', filterButton: true },
-      { name: 'Expiry date', filterButton: true },
-      { name: 'Date completed', filterButton: true },
-      { name: 'Long-term absence', filterButton: true },
-      { name: 'Accredited', filterButton: true },
-    ],
+    columns,
     rows: [],
   });
 };
 
-const addRowsToTrainingTable = (trainingTable, workers) => {
-  for (let worker of workers) {
-    for (let trainingRecord of worker.trainingRecords) {
-      addRow(trainingTable, worker, trainingRecord);
+const addRowsToTrainingTable = (trainingTable, establishments, isParent) => {
+  for (let establishment of establishments) {
+    for (let workerRecord of establishment.workerRecords) {
+      for (let trainingRecord of workerRecord.trainingRecords) {
+        addRow(trainingTable, establishment, workerRecord, trainingRecord, isParent);
+      }
+      addRowsForWorkerMissingTraining(trainingTable, workerRecord, establishment, isParent);
     }
-
-    addRowsForWorkerMissingTraining(trainingTable, worker);
   }
 
-  addBlankRowIfTableEmpty(trainingTable, 10);
+  addBlankRowIfTableEmpty(trainingTable, isParent ? 11 : 10);
 
   trainingTable.commit();
 };
 
-const addRowsForWorkerMissingTraining = (trainingTable, worker) => {
+const addRowsForWorkerMissingTraining = (trainingTable, worker, establishment, isParent) => {
   for (let record of worker.mandatoryTraining) {
     if (!hasTrainingRecord(worker.trainingRecords, record)) {
-      addMissingRow(trainingTable, worker, record);
+      addMissingRow(trainingTable, worker, record, establishment, isParent);
     }
   }
 };
 
-const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord) => {
-  trainingTable.addRow([
+const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord, establishment, isParent) => {
+  const row = [
     worker.workerId,
     worker.jobRole,
     missingMandatoryTrainingRecord,
@@ -92,33 +102,45 @@ const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord) =>
     '',
     worker.longTermAbsence,
     '',
-  ]);
+  ];
+
+  if (isParent) {
+    row.unshift(establishment.name);
+  }
+
+  trainingTable.addRow(row);
 };
 
-const addRow = (trainingTable, worker, trainingRecord) => {
-  trainingTable.addRow([
-    worker.workerId,
-    worker.jobRole,
+const addRow = (trainingTable, establishment, workerRecord, trainingRecord,isParent) => {
+  const row = [
+    workerRecord.workerId,
+    workerRecord.jobRole,
     trainingRecord.category,
     trainingRecord.trainingName,
-    isMandatoryTraining(trainingRecord.category, worker.mandatoryTraining) ? 'Mandatory' : 'Not mandatory',
+    isMandatoryTraining(trainingRecord.category, workerRecord.mandatoryTraining) ? 'Mandatory' : 'Not mandatory',
     trainingRecord.status,
     trainingRecord.expiryDate,
     trainingRecord.dateCompleted,
-    worker.longTermAbsence,
+    workerRecord.longTermAbsence,
     trainingRecord.accredited,
-  ]);
+  ];
+
+  if (isParent) {
+    row.unshift(establishment.name);
+  }
+  trainingTable.addRow(row);
 };
 
-const addColoursToStatusColumn = (trainingTab) => {
+const addColoursToStatusColumn = (trainingTab, isParent) => {
   trainingTab.eachRow(function (row, rowNumber) {
-    const statusCell = row.getCell('G');
+    const statusCell = isParent ? row.getCell('H') : row.getCell('G');
+    const currentCell = isParent ?  `H${rowNumber}` : `G${rowNumber}`;
     if (statusCell.value === 'Up-to-date') {
-      setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.green, textColours.green);
+      setCellTextAndBackgroundColour(trainingTab, currentCell, backgroundColours.green, textColours.green);
     } else if (statusCell.value === 'Expiring soon') {
-      setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.yellow, textColours.yellow);
+      setCellTextAndBackgroundColour(trainingTab, currentCell, backgroundColours.yellow, textColours.yellow);
     } else if (statusCell.value === 'Expired' || statusCell.value === 'Missing') {
-      setCellTextAndBackgroundColour(trainingTab, `G${rowNumber}`, backgroundColours.red, textColours.red);
+      setCellTextAndBackgroundColour(trainingTab, currentCell, backgroundColours.red, textColours.red);
     }
   });
 };

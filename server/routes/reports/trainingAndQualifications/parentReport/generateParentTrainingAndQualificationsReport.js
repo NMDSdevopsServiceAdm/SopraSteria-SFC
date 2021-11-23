@@ -3,7 +3,10 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
 const { generateHowToTab } = require('../howToTab');
-const { generateSummaryTab } = require('./parentSummaryTab')
+const { generateSummaryTab } = require('./parentSummaryTab');
+const { generateTrainingTab } = require('../trainingTab');
+const { generateQualificationsTab } = require('../qualificationsTab');
+const { generateCareCertificateTab } = require('../careCertificateTab');
 const models = require('../../../../models');
 
 const generateParentTrainingAndQualificationsReport = async (req, res) => {
@@ -16,7 +19,10 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     workbook.properties.date1904 = true;
 
     generateHowToTab(workbook, true);
-    await generateSummaryTab(workbook, establishment.id)
+    await generateSummaryTab(workbook, establishment.id);
+    await generateTrainingTab(workbook, establishment.id, true);
+    await generateQualificationsTab(workbook, establishment.id, true);
+    await generateCareCertificateTab(workbook, establishment.id, true);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(

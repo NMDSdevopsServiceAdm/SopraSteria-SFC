@@ -189,6 +189,34 @@ export const qualificationsByGroup = {
   ],
 } as QualificationsByGroup;
 
+export const trainingRecord = {
+  id: 10,
+  uid: 'someTrainingUid',
+  workerUid: '6787fgfghfghghjjg',
+  created: '01/02/2020',
+  updated: '01/02/2020',
+  updatedBy: 'admin',
+  trainingCategory: { id: 1, category: 'Communication' },
+  title: 'Communication Training 1',
+  accredited: true,
+  completed: '01/02/2020',
+  expires: '01/02/2021',
+};
+
+export const qualificationRecord = {
+  uid: '1234-5678',
+  created: '01/01/2021',
+  updated: '01/02/2021',
+  updatedBy: 'user',
+  qualification: {
+    id: 1,
+    group: 'Degree',
+    title: 'Health Care Degree',
+  },
+  year: 2021,
+  notes: 'Notes',
+};
+
 @Injectable()
 export class MockWorkerService extends WorkerService {
   private _worker;
