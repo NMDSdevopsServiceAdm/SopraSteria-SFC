@@ -25,7 +25,7 @@ const postcodeProperty = require('./properties/postcodeProperty').PostcodeProper
 const latitudeProperty = require('./properties/latitudeProperty').LatitudeProperty;
 const longitudeProperty = require('./properties/longitudeProperty').LongitudeProperty;
 const isRegulatedProperty = require('./properties/isRegulatedProperty').IsRegulatedProperty;
-
+const sharingPermissionsProperty = require('./properties/sharingPermissionsProperty').SharingPermissionsProperty;
 class EstablishmentPropertyManager {
   constructor() {
     this._thisManager = new Manager.PropertyManager();
@@ -53,6 +53,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(latitudeProperty);
     this._thisManager.registerProperty(longitudeProperty);
     this._thisManager.registerProperty(isRegulatedProperty);
+    this._thisManager.registerProperty(sharingPermissionsProperty);
   }
 
   get manager() {

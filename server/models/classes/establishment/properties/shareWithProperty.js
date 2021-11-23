@@ -16,11 +16,6 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
   async restoreFromJson(document) {
     if (document.shareWith) {
       this.property = document.shareWith;
-    } else {
-      this.property = {
-        cqc: null,
-        localAuthorities: null,
-      };
     }
   }
 

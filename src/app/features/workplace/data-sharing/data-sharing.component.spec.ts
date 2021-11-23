@@ -38,6 +38,10 @@ describe('DataSharingComponent', () => {
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
 
     const updateDataSharingSpy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
+    const updateSharingPermissionsBannerSpy = spyOn(
+      establishmentService,
+      'updateSharingPermissionsBanner',
+    ).and.returnValue(of(true));
 
     return {
       fixture,
@@ -47,6 +51,7 @@ describe('DataSharingComponent', () => {
       queryByText,
       getByTestId,
       updateDataSharingSpy,
+      updateSharingPermissionsBannerSpy,
     };
   }
 
@@ -254,6 +259,32 @@ describe('DataSharingComponent', () => {
 
       expect(shareWithForm.localAuthorities).toBe(null);
       expect(shareWithForm.cqc).toBe(null);
+    });
+  });
+
+  describe('removing sharing permission banner function', () => {
+    it('should call updateSharingPermissionsBanner when the save and return button is clicked', async () => {
+      const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
+
+      component.establishment.showSharingPermissionsBanner = true;
+      fixture.detectChanges();
+
+      const returnButton = getByText('Save and return');
+      fireEvent.click(returnButton);
+
+      expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
+    });
+
+    it('should call updateSharingPermissionsBanner when the exit button is clicked', async () => {
+      const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
+
+      component.establishment.showSharingPermissionsBanner = true;
+      fixture.detectChanges();
+
+      const returnButton = getByText('Exit');
+      fireEvent.click(returnButton);
+
+      expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
     });
   });
 });
