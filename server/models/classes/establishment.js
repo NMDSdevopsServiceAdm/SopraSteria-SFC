@@ -2130,6 +2130,12 @@ class Establishment extends EntityValidator {
               },
             },
           ],
+          ustatus: {
+            [models.Sequelize.Op.or]: {
+              [models.Sequelize.Op.ne]: 'REJECTED',
+              [models.Sequelize.Op.is]: null,
+            },
+          },
         }
       : { id: primaryEstablishmentId };
 
@@ -2236,7 +2242,7 @@ class Establishment extends EntityValidator {
 
     // first - get the user's primary establishment (every user will have a primary establishment)
     const fetchResults = await models.establishment.findAll(params);
-
+    console.log(fetchResults);
     // if no results return false?! whatever. It's what it did before
     if (fetchResults.length === 0) {
       return false;

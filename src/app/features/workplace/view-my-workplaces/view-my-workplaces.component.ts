@@ -56,17 +56,16 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
         (workplaces: GetWorkplacesResponse) => {
           if (workplaces.subsidaries) {
             this.workplaces = workplaces.subsidaries.establishments;
-            this.workplaces = this.workplaces.filter((item) => item.ustatus !== 'PENDING');
-            this.pendingWorkplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus === 'PENDING');
+            this.workplaces = this.workplaces.filter((item) => item.ustatus === null);
+            this.pendingWorkplaces = workplaces.subsidaries.establishments.filter(
+              (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
+            );
             this.pendingWorkplaces.sort((a: any, b: any) => {
               const dateA = new Date(a.updated).getTime();
               const dateB = new Date(b.updated).getTime();
               return dateB > dateA ? 1 : -1;
             });
-            this.workplacesCount =
-              workplaces.subsidaries.count > this.pendingWorkplaces.length
-                ? workplaces.subsidaries.count - this.pendingWorkplaces.length
-                : this.pendingWorkplaces.length - workplaces.subsidaries.count;
+            this.workplacesCount = this.workplaces.length;
           }
         },
         (error: HttpErrorResponse) => {
