@@ -50,6 +50,7 @@ const workplaceBuilder = build('Workplace', {
     dataOwnerPermissions: '',
     isParent: bool(),
     postCode: 'xxxxx',
+    ustatus: null,
   },
 });
 
@@ -73,7 +74,7 @@ const subsid1Builder = () =>
       dataOwner: 'Parent',
       dataPermissions: 'Workplace',
       parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-      name: 'Subsid Workplace',
+      name: 'First Subsid Workplace',
       postCode: 'WA1 1BQ',
     },
   });
@@ -88,10 +89,15 @@ const subsid2Builder = () =>
       parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
       name: 'Another Subsid Workplace',
       postCode: 'WA8 9LW',
+      ustatus: 'PENDING',
     },
   });
 
 const subsid2 = subsid2Builder();
+
+const subsid3 = Object.assign({}, subsid2);
+subsid3.ustatus = 'IN PROGRESS';
+subsid3.name = 'Third Subsid';
 
 @Injectable()
 export class MockUserService extends UserService {
@@ -134,7 +140,7 @@ export class MockUserService extends UserService {
       primary: primary,
       subsidaries: {
         count: this.subsidiaries,
-        establishments: [subsid1, subsid2],
+        establishments: [subsid1, subsid2, subsid3],
       },
     } as GetWorkplacesResponse);
   }

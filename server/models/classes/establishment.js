@@ -2130,6 +2130,12 @@ class Establishment extends EntityValidator {
               },
             },
           ],
+          ustatus: {
+            [models.Sequelize.Op.or]: {
+              [models.Sequelize.Op.ne]: 'REJECTED',
+              [models.Sequelize.Op.is]: null,
+            },
+          },
         }
       : { id: primaryEstablishmentId };
 
