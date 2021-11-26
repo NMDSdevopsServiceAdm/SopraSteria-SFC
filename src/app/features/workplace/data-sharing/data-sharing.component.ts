@@ -80,11 +80,7 @@ export class DataSharingComponent extends Question {
   }
 
   protected onSuccess(): void {
-    const { localAuthorities } = this.form.get('shareWith').value;
-
-    this.nextRoute = localAuthorities
-      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'total-staff'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {
