@@ -7,6 +7,6 @@ export interface Wizard {
   benchmarksFlag: boolean;
 }
 
-export interface Wizard {
+export interface Wizards {
   data: Wizard[];
 }
