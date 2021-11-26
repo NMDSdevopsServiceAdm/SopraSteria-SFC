@@ -6,7 +6,6 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockWizardService } from '@core/test-utils/MockWizardService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { of } from 'rxjs';
 
 import { FirstLoginWizardComponent } from './first-login-wizard.component';
 
@@ -21,8 +20,6 @@ describe('FirstLoginWizardComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
-            params: [],
-            url: of(['testUrl']),
             snapshot: {
               data: {
                 wizard,
@@ -54,5 +51,13 @@ describe('FirstLoginWizardComponent', () => {
   it('should display content of the sign in wizard', async () => {
     const { getByText } = await setup();
     expect(getByText(wizard.data[0].content)).toBeTruthy();
+  });
+
+  it('should have correct href on the Close button', async () => {
+    const { getByText } = await setup();
+
+    const closeButton = getByText('Close', { exact: false });
+
+    expect(closeButton.getAttribute('href')).toEqual('/dashboard');
   });
 });

@@ -1,4 +1,19 @@
-<h1 class="govuk-heading-l govuk-!-margin-bottom-5">
-  {{ wizard.title }}
-</h1>
-<div class="asc-cms-content" [innerHTML]="wizard.content"></div>
+<div class="govuk-grid-row govuk-!-margin-1 govuk-!-margin-top-4">
+  <div class="asc-summary-box">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-util__align-right">
+        <a class="govuk-button govuk-button--link" href="/dashboard">Close</a>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h1 class="govuk-!-font-weight-regular">Help to get you started</h1>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
+          {{ wizard[0].title }}
+        </h2>
+        <div class="asc-cms-content" [innerHTML]="wizard[0].content"></div>
+      </div>
+      <div class="govuk-grid-column-one-half"></div>
+    </div>
+  </div>
+</div>
