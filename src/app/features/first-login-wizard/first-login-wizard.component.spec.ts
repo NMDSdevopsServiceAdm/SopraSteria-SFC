@@ -13,7 +13,7 @@ describe('FirstLoginWizardComponent', () => {
   const wizard = MockWizardService.wizardFactory();
 
   async function setup() {
-    const { fixture, getByText } = await render(FirstLoginWizardComponent, {
+    const { fixture, getByText, queryByText } = await render(FirstLoginWizardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
@@ -35,6 +35,7 @@ describe('FirstLoginWizardComponent', () => {
       component,
       fixture,
       getByText,
+      queryByText,
     };
   }
 
@@ -61,20 +62,20 @@ describe('FirstLoginWizardComponent', () => {
     expect(closeButton.getAttribute('href')).toEqual('/dashboard');
   });
 
-  describe('Previous/next buttons', () => {
-    it('should set the isFirst and isLast variables on init', async () => {
-      const { component } = await setup();
+  it('should set the isFirst and isLast variables on init', async () => {
+    const { component } = await setup();
 
-      expect(component.isFirst).toBeTrue();
-      expect(component.isLast).toBeFalse();
-    });
+    expect(component.isFirst).toBeTrue();
+    expect(component.isLast).toBeFalse();
+  });
 
-    it('should set the currentIndex to 0 on init', async () => {
-      const { component } = await setup();
+  it('should set the currentIndex to 0 on init', async () => {
+    const { component } = await setup();
 
-      expect(component.currentIndex).toBe(0);
-    });
+    expect(component.currentIndex).toBe(0);
+  });
 
+  describe('Next button', () => {
     it('should update variables when clicking the next button to load middle wizard', async () => {
       const { component, fixture, getByText } = await setup();
 
@@ -100,6 +101,30 @@ describe('FirstLoginWizardComponent', () => {
       expect(component.isLast).toBeTrue();
     });
 
+    it('should update the title and content when clicking the next button to load middle wizard', async () => {
+      const { fixture, getByText } = await setup();
+
+      const nextButton = getByText('Next');
+      fireEvent.click(nextButton);
+      fixture.detectChanges();
+
+      expect(getByText(wizard.data[1].title)).toBeTruthy();
+      expect(getByText(wizard.data[1].content)).toBeTruthy();
+    });
+
+    it('should not render the next button when on the last wizard', async () => {
+      const { component, fixture, getByText, queryByText } = await setup();
+
+      component.currentIndex = 2;
+      component.updateVariables();
+      fixture.detectChanges();
+
+      expect(queryByText('Next')).toBeFalsy();
+      expect(getByText('Previous')).toBeTruthy();
+    });
+  });
+
+  describe('Previous button', () => {
     it('should update variables when clicking the previous button to load first wizard', async () => {
       const { component, fixture, getByText } = await setup();
 
@@ -118,6 +143,35 @@ describe('FirstLoginWizardComponent', () => {
       expect(component.currentIndex).toBe(0);
       expect(component.isFirst).toBeTrue();
       expect(component.isLast).toBeFalse();
+    });
+
+    it('should update the title and content when clicking the previous button to load first wizard', async () => {
+      const { fixture, getByText } = await setup();
+
+      const nextButton = getByText('Next');
+      fireEvent.click(nextButton);
+      fixture.detectChanges();
+
+      expect(getByText(wizard.data[1].title)).toBeTruthy();
+      expect(getByText(wizard.data[1].content)).toBeTruthy();
+
+      const previousButton = getByText('Previous');
+      fireEvent.click(previousButton);
+      fixture.detectChanges();
+
+      expect(getByText(wizard.data[0].title)).toBeTruthy();
+      expect(getByText(wizard.data[0].content)).toBeTruthy();
+    });
+
+    it('should not render the previous button when on the first wizard', async () => {
+      const { component, fixture, getByText, queryByText } = await setup();
+
+      component.currentIndex = 0;
+      component.updateVariables();
+      fixture.detectChanges();
+
+      expect(getByText('Next')).toBeTruthy();
+      expect(queryByText('Previous')).toBeFalsy();
     });
   });
 });
