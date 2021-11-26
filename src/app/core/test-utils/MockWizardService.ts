@@ -21,6 +21,13 @@ export class MockWizardService extends WizardService {
           order: 2,
           benchmarksFlag: true,
         },
+        {
+          title: 'Staff records',
+          content: 'Test staff records content',
+          id: 3,
+          order: 3,
+          benchmarksFlag: false,
+        },
       ],
     };
   }
