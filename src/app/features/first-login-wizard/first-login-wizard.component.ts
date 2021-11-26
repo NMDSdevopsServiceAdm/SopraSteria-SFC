@@ -12,11 +12,14 @@ export class FirstLoginWizardComponent {
   public isFirst: boolean;
   public isLast: boolean;
   public currentIndex: number;
+  public imageUrl: string;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
+    this.imageUrl = 'https://sfccmstest.cloudapps.digital/assets/';
+    console.log(this.wizards);
     this.currentIndex = 0;
     this.updateVariables();
   }

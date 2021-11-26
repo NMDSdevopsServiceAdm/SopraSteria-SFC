@@ -2,8 +2,7 @@ export interface Wizard {
   id?: number;
   content?: string;
   title?: string;
-  slug?: string;
-  order: number;
+  image: string;
   benchmarksFlag: boolean;
 }
 

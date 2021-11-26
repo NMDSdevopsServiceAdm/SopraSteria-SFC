@@ -13,10 +13,12 @@
         </h2>
         <div class="asc-cms-content" [innerHTML]="wizards[currentIndex].content"></div>
       </div>
-      <div class="govuk-grid-column-one-half"></div>
+      <div class="govuk-grid-column-one-half">
+        <img src="{{ imageUrl }}{{ wizards[currentIndex].image }}" alt="{{ wizards[currentIndex].title }}" />
+      </div>
     </div>
     <div class="govuk-grid-row">
-      <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__align-right">
+      <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__align-left">
         <a
           *ngIf="!isFirst"
           class="asc-chevron-before govuk-button--link govuk-!-margin-top-3"

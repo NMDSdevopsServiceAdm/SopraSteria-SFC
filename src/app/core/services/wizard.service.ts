@@ -16,7 +16,7 @@ export class WizardService {
     let params = new HttpParams();
 
     params = params.set('sort', 'order');
-    params = params.set('fields', 'content,title');
+    params = params.set('fields', 'content,title,image');
 
     return this.http.get<Wizard>(`${environment.cmsUri}${this.path}`, { params });
   }
