@@ -1,6 +1,42 @@
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">Search by name, username or email address.</div>
+    <div class="govuk-grid-column-two-thirds">
+      <p>Search by name, username or email address.</p>
+      <table class="govuk-table" *ngIf="results && results.length" data-testid="user-search-results">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header govuk-!-width-one-third" scope="col">Name</th>
+            <th class="govuk-table__header" scope="col">Username</th>
+            <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Workplace ID</th>
+            <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Postcode</th>
+            <th class="govuk-table__header" scope="col">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <ng-container *ngFor="let item of results; index as index">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ item.name }}</td>
+              <td class="govuk-table__cell">{{ item.username }}</td>
+              <td class="govuk-table__cell">
+                <a (click)="setEstablishmentId(item.establishment.uid, item.username, null, $event)" href="#">{{
+                  item.establishment.nmdsId
+                }}</a>
+                <img
+                  src="/assets/images/flag-orange.svg"
+                  alt="Workplace is pending"
+                  class="govuk-!-margin-right-1 govuk-!-margin-left-3 govuk-util__vertical-align-top"
+                  *ngIf="item.establishment.ustatus === 'PENDING' || item.establishment.ustatus === 'IN PROGRESS'"
+                />
+              </td>
+              <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
+              <td class="govuk-table__cell">
+                <a class="govuk-link--no-visited-state" href="#">{{ 'Open' }}</a>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
     <div class="govuk-grid-column-one-third govuk-!-padding-right-3">
       <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
         <fieldset class="govuk-fieldset">

@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -7,8 +8,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class SearchForUserComponent implements OnInit {
   public form: FormGroup;
+  public results: any;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -18,13 +20,13 @@ export class SearchForUserComponent implements OnInit {
     });
   }
 
-  public searchUsers(data: UserSearchRequest): void {
-    console.log(data);
+  public searchUsers(data: UserSearchRequest): any {
+    return this.http.post<any>('/api/admin/search/users', data, { observe: 'response' });
   }
 
   public onSubmit(): void {
     const data = this.getRequestData();
-    this.searchUsers(data);
+    this.searchUsers(data).subscribe((response) => (this.results = response.body));
   }
 
   private getRequestData(): UserSearchRequest {
