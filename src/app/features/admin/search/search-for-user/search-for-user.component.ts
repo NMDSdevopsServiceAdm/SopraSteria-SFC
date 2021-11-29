@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 @Component({
   selector: 'app-search-for-user',
@@ -10,7 +11,11 @@ export class SearchForUserComponent implements OnInit {
   public form: FormGroup;
   public results: any;
 
-  constructor(private formBuilder: FormBuilder, private http: HttpClient) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private http: HttpClient,
+    private switchWorkplaceService: SwitchWorkplaceService,
+  ) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -35,6 +40,11 @@ export class SearchForUserComponent implements OnInit {
       name: this.form.controls.name.value,
       emailAddress: this.form.controls.emailAddress.value,
     };
+  }
+
+  public navigateToWorkplace(id: string, username: string, nmdsId: string, e: Event): void {
+    e.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 }
 

@@ -1,9 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { SearchForUserComponent } from './search-for-user.component';
@@ -35,6 +40,13 @@ describe('SearchForUserComponent', () => {
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
+      ],
+      providers: [
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: SwitchWorkplaceService,
+          useClass: MockSwitchWorkplaceService,
+        },
       ],
     });
 
@@ -151,6 +163,23 @@ describe('SearchForUserComponent', () => {
 
       const result = getByTestId('user-search-results').querySelector('img');
       expect(result.src).toContain('flag-orange');
+    });
+
+    it('should navigate to workplace when clicking workplace ID link', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      const searchButton = getByTestId('searchButton');
+      fireEvent.click(searchButton);
+
+      fixture.detectChanges();
+
+      const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
+      const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
+
+      const searchResults = within(getByTestId('user-search-results'));
+      fireEvent.click(searchResults.getByText('G1001376'));
+
+      await expect(switchWorkplaceSpy).toHaveBeenCalled();
     });
   });
 });
