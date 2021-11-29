@@ -3,7 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -14,24 +16,7 @@ import { of } from 'rxjs';
 import { SearchForUserComponent } from './search-for-user.component';
 
 describe('SearchForUserComponent', () => {
-  const mockSearchResults = [
-    {
-      uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-      name: 'John Doe',
-      username: 'johnUsername',
-      securityQuestion: 'What is your favourite sport?',
-      securityQuestionAnswer: 'Water Polo',
-      isLocked: false,
-      establishment: {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-        name: 'My workplace',
-        nmdsId: 'G1001376',
-        postcode: 'ABC123',
-      },
-    },
-  ];
-
-  async function setup() {
+  async function setup(isLocked = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForUserComponent, {
       imports: [
         SharedModule,
@@ -47,8 +32,27 @@ describe('SearchForUserComponent', () => {
           provide: SwitchWorkplaceService,
           useClass: MockSwitchWorkplaceService,
         },
+        RegistrationsService,
+        WindowRef,
       ],
     });
+
+    const mockSearchResults = [
+      {
+        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        name: 'John Doe',
+        username: 'johnUsername',
+        securityQuestion: 'What is your favourite sport?',
+        securityQuestionAnswer: 'Water Polo',
+        isLocked,
+        establishment: {
+          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+          name: 'My workplace',
+          nmdsId: 'G1001376',
+          postcode: 'ABC123',
+        },
+      },
+    ];
 
     const component = fixture.componentInstance;
     const searchUsersSpy = spyOn(component, 'searchUsers').and.returnValue(of({ body: mockSearchResults }));
@@ -221,6 +225,28 @@ describe('SearchForUserComponent', () => {
           'johnUsername',
           null,
         );
+      });
+
+      it('should open unlock user dialog when clicking unlock button', async () => {
+        const { fixture, getByText, getByTestId } = await setup(true);
+
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
+
+        fixture.detectChanges();
+
+        const registrationsService = TestBed.inject(RegistrationsService);
+
+        const spy = spyOn(registrationsService, 'unlockAccount').and.returnValue(of({}));
+
+        fireEvent.click(getByText('Open'));
+        fireEvent.click(getByText('Yes, unlock'));
+
+        const adminUnlockModal = within(document.body).getByRole('dialog');
+        const confirm = within(adminUnlockModal).getByText('Unlock account');
+        confirm.click();
+
+        await expect(spy).toHaveBeenCalled();
       });
     });
   });

@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 
 @Component({
   selector: 'app-search-for-user',
@@ -17,6 +19,7 @@ export class SearchForUserComponent implements OnInit {
     private formBuilder: FormBuilder,
     private http: HttpClient,
     private switchWorkplaceService: SwitchWorkplaceService,
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +56,18 @@ export class SearchForUserComponent implements OnInit {
     event.preventDefault();
     this.workerDetails[uid] = !this.workerDetails[uid];
     this.workerDetailsLabel[uid] = this.workerDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
+  }
+
+  public unlockUser(username: string, index: number, e): void {
+    e.preventDefault();
+    const data = {
+      username,
+      index,
+      removeUnlock: () => {
+        this.results[index].isLocked = false;
+      },
+    };
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 }
 
