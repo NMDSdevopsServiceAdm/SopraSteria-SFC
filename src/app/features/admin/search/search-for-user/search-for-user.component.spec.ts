@@ -19,8 +19,8 @@ describe('SearchForUserComponent', () => {
       uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
       name: 'John Doe',
       username: 'johnUsername',
-      securityQuestion: 'Question',
-      securityQuestionAnswer: 'Answer',
+      securityQuestion: 'What is your favourite sport?',
+      securityQuestionAnswer: 'Water Polo',
       isLocked: false,
       establishment: {
         uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
@@ -180,6 +180,22 @@ describe('SearchForUserComponent', () => {
       fireEvent.click(searchResults.getByText('G1001376'));
 
       await expect(switchWorkplaceSpy).toHaveBeenCalled();
+    });
+
+    it('should expand the User details when clicking Open', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      const searchButton = getByTestId('searchButton');
+      fireEvent.click(searchButton);
+
+      fixture.detectChanges();
+
+      const searchResults = within(getByTestId('user-search-results'));
+      fireEvent.click(searchResults.getByText('Open'));
+
+      expect(searchResults.getByText('My workplace'));
+      expect(searchResults.getByText('What is your favourite sport?'));
+      expect(searchResults.getByText('Water Polo'));
     });
   });
 });

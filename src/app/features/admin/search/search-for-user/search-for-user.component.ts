@@ -10,6 +10,8 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 export class SearchForUserComponent implements OnInit {
   public form: FormGroup;
   public results: any;
+  public workerDetails = [];
+  public workerDetailsLabel = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,6 +47,12 @@ export class SearchForUserComponent implements OnInit {
   public navigateToWorkplace(id: string, username: string, nmdsId: string, e: Event): void {
     e.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
+  }
+
+  public toggleDetails(uid: string, event): void {
+    event.preventDefault();
+    this.workerDetails[uid] = !this.workerDetails[uid];
+    this.workerDetailsLabel[uid] = this.workerDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 }
 
