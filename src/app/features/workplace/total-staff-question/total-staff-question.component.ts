@@ -42,9 +42,7 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = this.establishment.shareWith.localAuthorities
-      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   protected generateUpdateProps() {

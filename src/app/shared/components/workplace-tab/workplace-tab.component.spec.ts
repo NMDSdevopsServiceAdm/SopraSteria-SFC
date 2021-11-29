@@ -9,7 +9,7 @@ import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
-import { within } from '@testing-library/angular';
+import { fireEvent, within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { WorkplaceTabComponent } from './workplace-tab.component';
@@ -84,20 +84,40 @@ describe('WorkplaceTabComponent', () => {
     expect(checkShowSharingPermissions).toBeNull();
   });
 
-  it('should set the banner link with to `sharing-data`', async () => {
+  it('should navigate to the sharing data page whent the link in the permissions banner is clicked', async () => {
+    const routerSpy = spyOn(component.router, 'navigate');
     component.showSharingPermissionsBanner = true;
-    const workplaceId = component.workplace.uid;
     fixture.detectChanges();
 
     const link = within(document.body).getByText('Please review your data sharing permissions');
+    fireEvent.click(link);
 
-    expect(link.getAttribute('href')).toBe(`/workplace/${workplaceId}/sharing-data`);
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid, 'sharing-data']);
   });
 
-  it('should set the return url in the establishment service', async () => {
+  it('should set the return url in the establishment service to the dashboard if the permission page is accessed from dashboard', async () => {
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
+    component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
-    component.ngOnInit();
+
+    const link = within(document.body).getByText('Please review your data sharing permissions');
+    fireEvent.click(link);
+
     expect(setReturnRouteSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+  });
+
+  it('should set the return url in the establishment service to the workplace dashboard if the permissions page is accessed from sub establishment', async () => {
+    const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
+    component.showSharingPermissionsBanner = true;
+    component.route.snapshot.params = { establishmentuid: component.workplace.uid };
+    fixture.detectChanges();
+
+    const link = within(document.body).getByText('Please review your data sharing permissions');
+    fireEvent.click(link);
+
+    expect(setReturnRouteSpy).toHaveBeenCalledWith({
+      url: ['/workplace', component.workplace.uid],
+      fragment: 'workplace',
+    });
   });
 });

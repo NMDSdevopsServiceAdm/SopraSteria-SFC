@@ -174,23 +174,13 @@ describe('TotalStaffQuestionComponent', () => {
     expect(form.valid).toBeFalsy();
   });
 
-  it('should return to normal data sharing page if no data sharing options and you click on the back link', async () => {
+  it('should return to data sharing page when you click on the back link', async () => {
     const shareWith: any = { cqc: false, localAuthorities: false };
     const { component } = await setup(shareWith);
     expect(component.fixture.componentInstance.previousRoute).toEqual([
       '/workplace',
       `${component.fixture.componentInstance.establishment.uid}`,
       'sharing-data',
-    ]);
-  });
-
-  it('should return to data sharing page with LA if sharing options are LA and you click on the back link', async () => {
-    const shareWith: any = { cqc: false, localAuthorities: true };
-    const { component } = await setup(shareWith);
-    expect(component.fixture.componentInstance.previousRoute).toEqual([
-      '/workplace',
-      `${component.fixture.componentInstance.establishment.uid}`,
-      'sharing-data-with-local-authorities',
     ]);
   });
 
