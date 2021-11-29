@@ -26,6 +26,8 @@
           (click)="previousWizard($event)"
           >Previous</a
         >
+        <br />
+        <a *ngIf="!isFirst" href="#" class="govuk-button--link">{{ wizards[previousPageTitleIndex].title }}</a>
       </div>
       <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right">
         <a
@@ -33,8 +35,10 @@
           class="asc-chevron-after govuk-button--link govuk-!-margin-top-3 margin-left-6"
           href="#"
           (click)="nextWizard($event)"
-          >Next</a
-        >
+          >Next
+        </a>
+        <br />
+        <a *ngIf="!isLast" href="#" class="govuk-button--link">{{ wizards[nextPageTitleIndex].title }}</a>
       </div>
     </div>
   </div>

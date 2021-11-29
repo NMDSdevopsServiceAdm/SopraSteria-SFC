@@ -13,7 +13,8 @@ export class FirstLoginWizardComponent {
   public isLast: boolean;
   public currentIndex: number;
   public imageUrl: string;
-
+  public nextPageTitleIndex: number;
+  public previousPageTitleIndex: number;
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -22,11 +23,15 @@ export class FirstLoginWizardComponent {
     console.log(this.wizards);
     this.currentIndex = 0;
     this.updateVariables();
+    this.nextPageTitleIndex = this.currentIndex + 1;
+    this.previousPageTitleIndex = this.currentIndex - 1;
   }
 
   public updateVariables(): void {
     this.isFirst = this.currentIndex === 0;
+    this.nextPageTitleIndex = this.currentIndex + 1;
     this.isLast = this.currentIndex === this.wizards.length - 1;
+    this.previousPageTitleIndex = this.currentIndex - 1;
   }
 
   public nextWizard(event: Event): void {
