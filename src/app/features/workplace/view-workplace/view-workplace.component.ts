@@ -11,9 +11,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -34,6 +32,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
   public workers: Worker[];
   public workerCount: number;
+  public showSharingPermissionsBanner: boolean = this.establishmentService.checkSharingPermissionsBanner;
 
   constructor(
     private alertService: AlertService,
@@ -75,9 +74,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-      this.showCQCDetailsBanner = showBanner;
-    });
+    this.getShowCQCDetailsBanner();
+    this.getShowSharingPermissionsBanner();
 
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
@@ -149,6 +147,22 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
           });
         },
       ),
+    );
+  }
+
+  private getShowCQCDetailsBanner(): void {
+    this.subscriptions.add(
+      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+        this.showCQCDetailsBanner = showBanner;
+      }),
+    );
+  }
+
+  private getShowSharingPermissionsBanner(): void {
+    this.subscriptions.add(
+      this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
+        this.showSharingPermissionsBanner = showBanner;
+      }),
     );
   }
 
