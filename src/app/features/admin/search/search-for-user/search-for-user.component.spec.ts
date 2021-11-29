@@ -53,6 +53,9 @@ describe('SearchForUserComponent', () => {
     const component = fixture.componentInstance;
     const searchUsersSpy = spyOn(component, 'searchUsers').and.returnValue(of({ body: mockSearchResults }));
 
+    const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
+    const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
+
     return {
       component,
       fixture,
@@ -61,6 +64,7 @@ describe('SearchForUserComponent', () => {
       queryByText,
       queryAllByText,
       searchUsersSpy,
+      switchWorkplaceSpy,
     };
   }
 
@@ -166,36 +170,58 @@ describe('SearchForUserComponent', () => {
     });
 
     it('should navigate to workplace when clicking workplace ID link', async () => {
-      const { fixture, getByTestId } = await setup();
+      const { fixture, getByTestId, switchWorkplaceSpy } = await setup();
 
       const searchButton = getByTestId('searchButton');
       fireEvent.click(searchButton);
 
       fixture.detectChanges();
-
-      const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
-      const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
 
       const searchResults = within(getByTestId('user-search-results'));
       fireEvent.click(searchResults.getByText('G1001376'));
 
-      await expect(switchWorkplaceSpy).toHaveBeenCalled();
+      await expect(switchWorkplaceSpy).toHaveBeenCalledWith(
+        'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        'johnUsername',
+        null,
+      );
     });
 
-    it('should expand the User details when clicking Open', async () => {
-      const { fixture, getByTestId } = await setup();
+    describe('Dropdown', async () => {
+      it('should expand the User details when clicking Open', async () => {
+        const { fixture, getByTestId } = await setup();
 
-      const searchButton = getByTestId('searchButton');
-      fireEvent.click(searchButton);
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      const searchResults = within(getByTestId('user-search-results'));
-      fireEvent.click(searchResults.getByText('Open'));
+        const searchResults = within(getByTestId('user-search-results'));
+        fireEvent.click(searchResults.getByText('Open'));
 
-      expect(searchResults.getByText('My workplace'));
-      expect(searchResults.getByText('What is your favourite sport?'));
-      expect(searchResults.getByText('Water Polo'));
+        expect(searchResults.getByText('My workplace'));
+        expect(searchResults.getByText('What is your favourite sport?'));
+        expect(searchResults.getByText('Water Polo'));
+      });
+
+      it('should navigate to workplace when clicking workplace name link', async () => {
+        const { fixture, getByTestId, switchWorkplaceSpy } = await setup();
+
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
+
+        fixture.detectChanges();
+
+        const searchResults = within(getByTestId('user-search-results'));
+        fireEvent.click(searchResults.getByText('Open'));
+        fireEvent.click(searchResults.getByText('My workplace'));
+
+        await expect(switchWorkplaceSpy).toHaveBeenCalledWith(
+          'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+          'johnUsername',
+          null,
+        );
+      });
     });
   });
 });
