@@ -95,10 +95,9 @@ describe('WorkplaceTabComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid, 'sharing-data']);
   });
 
-  it('should set the return url in the establishment service to the dashboard if the establishment is a parent', async () => {
+  it('should set the return url in the establishment service to the dashboard if the permission page is accessed from dashboard', async () => {
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
-    component.workplace.isParent = true;
     fixture.detectChanges();
 
     const link = within(document.body).getByText('Please review your data sharing permissions');
@@ -107,10 +106,10 @@ describe('WorkplaceTabComponent', () => {
     expect(setReturnRouteSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
   });
 
-  it('should set the return url in the establishment service to the workplace dashboard if the establishment is not a parent', async () => {
+  it('should set the return url in the establishment service to the workplace dashboard if the permissions page is accessed from sub establishment', async () => {
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
-    component.workplace.isParent = false;
+    component.route.snapshot.params = { establishmentuid: component.workplace.uid };
     fixture.detectChanges();
 
     const link = within(document.body).getByText('Please review your data sharing permissions');

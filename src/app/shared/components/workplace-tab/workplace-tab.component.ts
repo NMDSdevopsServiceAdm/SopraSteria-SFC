@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -26,6 +26,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     public establishmentService: EstablishmentService,
     public router: Router,
+    public route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -52,9 +53,9 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public navigateToShareDataPage(e: Event): void {
     e.preventDefault();
 
-    this.workplace.isParent
-      ? this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'workplace' })
-      : this.establishmentService.setReturnTo({ url: ['/workplace', this.workplace.uid], fragment: 'workplace' });
+    this.route.snapshot.params?.establishmentuid
+      ? this.establishmentService.setReturnTo({ url: ['/workplace', this.workplace.uid], fragment: 'workplace' })
+      : this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'workplace' });
     this.router.navigate(['/workplace', this.workplace.uid, 'sharing-data']);
   }
 
