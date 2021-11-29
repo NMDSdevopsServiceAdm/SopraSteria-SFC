@@ -256,30 +256,6 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  const buildUserQuery = (where) => {
-    let userQuery = {};
-    if (where.name) {
-      userQuery = {
-        FullNameValue: {
-          [Op.iLike]: sanitise(where.name),
-        },
-      };
-    }
-    return userQuery;
-  };
-
-  const buildLoginQuery = (where) => {
-    let loginQuery = {};
-    if (where.username) {
-      loginQuery = {
-        username: {
-          [Op.iLike]: sanitise(where.username),
-        },
-      };
-    }
-    return loginQuery;
-  };
-
   User.associate = (models) => {
     User.belongsTo(models.establishment, {
       foreignKey: 'establishmentId',
@@ -300,6 +276,18 @@ module.exports = function (sequelize, DataTypes) {
       hooks: true,
       onDelete: 'CASCADE',
     });
+  };
+
+  const buildSearchQuery = (field, columnName) => {
+    let query = {};
+    if (field) {
+      query = {
+        [columnName]: {
+          [Op.iLike]: '%' + sanitise(field) + '%',
+        },
+      };
+    }
+    return query;
   };
 
   User.findByUUID = function (uuId) {
@@ -339,9 +327,11 @@ module.exports = function (sequelize, DataTypes) {
       },
     );
   };
+
   User.searchUsers = async function (where) {
-    const userQuery = buildUserQuery(where);
-    const loginQuery = buildLoginQuery(where);
+    const userQuery = buildSearchQuery(where.name, 'FullNameValue');
+    const emailQuery = buildSearchQuery(where.emailAddress, 'EmailValue');
+    const loginQuery = buildSearchQuery(where.username, 'username');
 
     return await this.findAll({
       attributes: [
@@ -356,6 +346,7 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         archived: false,
         ...userQuery,
+        ...emailQuery,
       },
       include: [
         {
