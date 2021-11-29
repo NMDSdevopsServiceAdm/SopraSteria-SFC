@@ -173,5 +173,46 @@ describe('FirstLoginWizardComponent', () => {
       expect(getByText('Next')).toBeTruthy();
       expect(queryByText('Previous')).toBeFalsy();
     });
+
+    it('should not render the previous button when on the first wizard', async () => {
+      const { component, fixture, getByText, queryByText } = await setup();
+
+      component.currentIndex = 0;
+      component.updateVariables();
+      fixture.detectChanges();
+
+      expect(getByText('Next')).toBeTruthy();
+      expect(queryByText('Previous')).toBeFalsy();
+    });
+  });
+
+  describe('Next page title underneath next button', () => {
+    it('should set nextPageTitle to `1` and isFirst `true` when first wizard is loaded', async () => {
+      const { component } = await setup();
+
+      expect(component.nextPageTitleIndex).toBe(1);
+      expect(component.isFirst).toBeTrue();
+      expect(component.isLast).toBeFalse();
+    });
+
+    it('should show next page title when to first wizard is loaded', async () => {
+      const { component } = await setup();
+
+      component.nextPageTitleIndex = 1;
+
+      expect(component.isFirst).toBeTrue();
+      expect(wizard.data[2].title).toBeTruthy();
+    });
+
+    it('should show next page title when to next wizard is loaded', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.updateVariables();
+      fixture.detectChanges();
+
+      expect(component.nextPageTitleIndex).toBe(1);
+      expect(wizard.data[1].title).toBeTruthy();
+      expect(component.isFirst).toBeTrue();
+    });
   });
 });
