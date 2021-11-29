@@ -10,6 +10,7 @@ export class SearchForWorkplaceComponent implements OnInit {
   public form: FormGroup;
 
   constructor(public formBuilder: FormBuilder) {}
+
   ngOnInit(): void {
     this.setupForm();
   }
