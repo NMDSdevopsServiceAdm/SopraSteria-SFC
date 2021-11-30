@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
+import { UserSearchRequest } from '@core/model/user.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -139,5 +140,11 @@ export class UserService {
     return this.http
       .get<GetAllUsersResponse>(`/api/user/establishment/${workplaceUid}`)
       .pipe(map((response) => response.users));
+  }
+
+  public searchUsers(data: UserSearchRequest): any {
+    return this.http
+      .post<any>('/api/admin/search/users', data, { observe: 'response' })
+      .pipe(map((response) => response.body));
   }
 }

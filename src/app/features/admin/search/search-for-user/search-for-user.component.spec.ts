@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
@@ -34,6 +35,7 @@ describe('SearchForUserComponent', () => {
         },
         RegistrationsService,
         WindowRef,
+        UserService,
       ],
     });
 
@@ -53,7 +55,8 @@ describe('SearchForUserComponent', () => {
     };
 
     const component = fixture.componentInstance;
-    const searchUsersSpy = spyOn(component, 'searchUsers').and.returnValue(of({ body: [mockSearchResult] }));
+    const userService = TestBed.inject(UserService);
+    const searchUsersSpy = spyOn(userService, 'searchUsers').and.returnValue(of([mockSearchResult]));
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
@@ -178,7 +181,7 @@ describe('SearchForUserComponent', () => {
       it('should show a no search results message when there are no search results', async () => {
         const { fixture, searchUsersSpy, getByTestId } = await setup();
 
-        searchUsersSpy.and.returnValue(of({ body: [] }));
+        searchUsersSpy.and.returnValue(of([]));
 
         const searchButton = getByTestId('searchButton');
         fireEvent.click(searchButton);
@@ -197,7 +200,7 @@ describe('SearchForUserComponent', () => {
       it('should show number of results message if results returned in plural when more than 1', async () => {
         const { searchUsersSpy, fixture, getByTestId, queryByText, mockSearchResult } = await setup();
 
-        searchUsersSpy.and.returnValue(of({ body: [mockSearchResult, mockSearchResult] }));
+        searchUsersSpy.and.returnValue(of([mockSearchResult, mockSearchResult]));
 
         const searchButton = getByTestId('searchButton');
         fireEvent.click(searchButton);

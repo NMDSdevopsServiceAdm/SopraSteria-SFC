@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserSearchRequest } from '@core/model/user.model';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { UserService } from '@core/services/user.service';
 import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 
 @Component({
@@ -19,7 +19,7 @@ export class SearchForUserComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient,
+    private userService: UserService,
     private switchWorkplaceService: SwitchWorkplaceService,
     private dialogService: DialogService,
   ) {}
@@ -32,14 +32,10 @@ export class SearchForUserComponent implements OnInit {
     });
   }
 
-  public searchUsers(data: UserSearchRequest): any {
-    return this.http.post<any>('/api/admin/search/users', data, { observe: 'response' });
-  }
-
   public onSubmit(): void {
     const data = this.getRequestData();
-    this.searchUsers(data).subscribe((response) => {
-      this.results = response.body;
+    this.userService.searchUsers(data).subscribe((response) => {
+      this.results = response;
       this.submitted = true;
     });
   }
