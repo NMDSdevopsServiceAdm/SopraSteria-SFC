@@ -36,9 +36,11 @@ export class SearchForUserComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    this.submitted = true;
     const data = this.getRequestData();
-    this.searchUsers(data).subscribe((response) => (this.results = response.body));
+    this.searchUsers(data).subscribe((response) => {
+      this.results = response.body;
+      this.submitted = true;
+    });
   }
 
   private getRequestData(): UserSearchRequest {
