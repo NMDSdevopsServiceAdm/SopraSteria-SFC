@@ -187,32 +187,46 @@ describe('FirstLoginWizardComponent', () => {
   });
 
   describe('Next page title underneath next button', () => {
-    it('should set nextPageTitle to `1` and isFirst `true` when first wizard is loaded', async () => {
-      const { component } = await setup();
+    it('should display the title for the next page when first wizard is loaded', async () => {
+      const { getByText } = await setup();
 
-      expect(component.nextPageTitleIndex).toBe(1);
-      expect(component.isFirst).toBeTrue();
+      const nextButtonTitle = getByText(wizard.data[1].title);
+      expect(nextButtonTitle).toBeTruthy();
+    });
+
+    it('should update variables when clicking the next button title to load middle wizard', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const nextButtonTitle = getByText(wizard.data[1].title);
+      fireEvent.click(nextButtonTitle);
+
+      expect(component.currentIndex).toBe(1);
+      expect(component.isFirst).toBeFalse();
       expect(component.isLast).toBeFalse();
     });
 
-    it('should show next page title when to first wizard is loaded', async () => {
-      const { component } = await setup();
+    describe('Previous page title underneath Previous button', () => {
+      it('should display the title for the previous page when second wizard is loaded', async () => {
+        const { getByText } = await setup();
 
-      component.nextPageTitleIndex = 1;
+        const nextButtonTitle = getByText(wizard.data[1].title);
+        expect(nextButtonTitle).toBeTruthy();
+      });
 
-      expect(component.isFirst).toBeTrue();
-      expect(wizard.data[2].title).toBeTruthy();
-    });
+      it('should update variables when clicking the previous button title to load first wizard', async () => {
+        const { component, fixture, getByText } = await setup();
 
-    it('should show next page title when to next wizard is loaded', async () => {
-      const { component, fixture, getByText } = await setup();
+        const nextButton = getByText('Next');
+        fireEvent.click(nextButton);
+        fixture.detectChanges();
 
-      component.updateVariables();
-      fixture.detectChanges();
+        const previousButtonTitle = getByText(wizard.data[0].title);
+        fireEvent.click(previousButtonTitle);
 
-      expect(component.nextPageTitleIndex).toBe(1);
-      expect(wizard.data[1].title).toBeTruthy();
-      expect(component.isFirst).toBeTrue();
+        expect(component.currentIndex).toBe(0);
+        expect(component.isFirst).toBeTrue();
+        expect(component.isLast).toBeFalse();
+      });
     });
   });
 });

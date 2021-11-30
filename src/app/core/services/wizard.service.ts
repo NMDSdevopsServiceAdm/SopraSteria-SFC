@@ -16,7 +16,7 @@ export class WizardService {
   constructor(
     private http: HttpClient,
     private permissionService: PermissionsService,
-    private establishmentservice: EstablishmentService,
+    private establishmentService: EstablishmentService,
   ) {}
 
   public getWizardPage(): Observable<Wizard> {
@@ -24,7 +24,7 @@ export class WizardService {
 
     const benchmarkFilter = {
       benchmarks_flag: {
-        _in: [false, this.permissionService.can(this.establishmentservice.primaryWorkplace.uid, 'canViewBenchmarks')],
+        _in: [false, this.permissionService.can(this.establishmentService.primaryWorkplace.uid, 'canViewBenchmarks')],
       },
     };
     params = params.set('sort', 'order');
