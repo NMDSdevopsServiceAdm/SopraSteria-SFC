@@ -18,10 +18,10 @@ describe('addRegistrationNote', () => {
     const request = {
       method: 'POST',
       url: '/api/admin/registrations/addRegistrationNote',
-      userUid: '123',
       body: {
         establishmentId: '123',
         note: 'This is a note',
+        userUid: '123',
       },
     };
 

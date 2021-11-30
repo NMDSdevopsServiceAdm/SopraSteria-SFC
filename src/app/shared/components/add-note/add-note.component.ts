@@ -15,6 +15,7 @@ export class AddNoteComponent {
   @Input() public notes: Note[];
   @Input() public notesError: string;
   @Input() public notesForm: FormGroup;
+  @Input() public loggedInUser;
 
   constructor(public registrationsService: RegistrationsService) {}
 }
