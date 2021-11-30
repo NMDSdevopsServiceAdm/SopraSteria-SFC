@@ -12,8 +12,8 @@ import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-
 export class SearchForUserComponent implements OnInit {
   public form: FormGroup;
   public results: any;
-  public workerDetails = [];
-  public workerDetailsLabel = [];
+  public userDetails = [];
+  public userDetailsLabel = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -54,8 +54,8 @@ export class SearchForUserComponent implements OnInit {
 
   public toggleDetails(uid: string, event): void {
     event.preventDefault();
-    this.workerDetails[uid] = !this.workerDetails[uid];
-    this.workerDetailsLabel[uid] = this.workerDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
+    this.userDetails[uid] = !this.userDetails[uid];
+    this.userDetailsLabel[uid] = this.userDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 
   public unlockUser(username: string, index: number, e): void {

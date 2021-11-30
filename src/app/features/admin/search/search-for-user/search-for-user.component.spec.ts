@@ -16,7 +16,7 @@ import { of } from 'rxjs';
 import { SearchForUserComponent } from './search-for-user.component';
 
 describe('SearchForUserComponent', () => {
-  async function setup(isLocked = false) {
+  async function setup(searchButtonClicked = false, isLocked = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForUserComponent, {
       imports: [
         SharedModule,
@@ -60,6 +60,13 @@ describe('SearchForUserComponent', () => {
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
 
+    if (searchButtonClicked) {
+      const searchButton = getByTestId('searchButton');
+      fireEvent.click(searchButton);
+
+      fixture.detectChanges();
+    }
+
     return {
       component,
       fixture,
@@ -78,10 +85,7 @@ describe('SearchForUserComponent', () => {
   });
 
   it('should call searchUsers with fields set to null when clicking search button with nothing entered', async () => {
-    const { getByTestId, searchUsersSpy } = await setup();
-
-    const searchButton = getByTestId('searchButton');
-    fireEvent.click(searchButton);
+    const { searchUsersSpy } = await setup(true);
 
     expect(searchUsersSpy).toHaveBeenCalledWith({
       username: null,
@@ -131,12 +135,7 @@ describe('SearchForUserComponent', () => {
 
   describe('Results returned from search', async () => {
     it('should show table headings after clicking search button if results returned', async () => {
-      const { fixture, queryByText, queryAllByText, getByTestId } = await setup();
-
-      const searchButton = getByTestId('searchButton');
-      fireEvent.click(searchButton);
-
-      fixture.detectChanges();
+      const { queryByText, queryAllByText } = await setup(true);
 
       expect(queryAllByText('Name')).toBeTruthy();
       expect(queryAllByText('Username')).toBeTruthy();
@@ -145,12 +144,7 @@ describe('SearchForUserComponent', () => {
     });
 
     it('should show returned user data in table after clicking search button if results returned', async () => {
-      const { fixture, queryByText, getByTestId } = await setup();
-
-      const searchButton = getByTestId('searchButton');
-      fireEvent.click(searchButton);
-
-      fixture.detectChanges();
+      const { queryByText } = await setup(true);
 
       expect(queryByText('John Doe')).toBeTruthy();
       expect(queryByText('johnUsername')).toBeTruthy();
@@ -159,12 +153,7 @@ describe('SearchForUserComponent', () => {
     });
 
     it("should show a flag when user's workplace is pending", async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      const searchButton = getByTestId('searchButton');
-      fireEvent.click(searchButton);
-
-      fixture.detectChanges();
+      const { component, fixture, getByTestId } = await setup(true);
 
       component.results[0].establishment.ustatus = 'PENDING';
       fixture.detectChanges();
@@ -174,12 +163,7 @@ describe('SearchForUserComponent', () => {
     });
 
     it('should navigate to workplace when clicking workplace ID link', async () => {
-      const { fixture, getByTestId, switchWorkplaceSpy } = await setup();
-
-      const searchButton = getByTestId('searchButton');
-      fireEvent.click(searchButton);
-
-      fixture.detectChanges();
+      const { getByTestId, switchWorkplaceSpy } = await setup(true);
 
       const searchResults = within(getByTestId('user-search-results'));
       fireEvent.click(searchResults.getByText('G1001376'));
@@ -193,12 +177,7 @@ describe('SearchForUserComponent', () => {
 
     describe('Dropdown', async () => {
       it('should expand the User details when clicking Open', async () => {
-        const { fixture, getByTestId } = await setup();
-
-        const searchButton = getByTestId('searchButton');
-        fireEvent.click(searchButton);
-
-        fixture.detectChanges();
+        const { getByTestId } = await setup(true);
 
         const searchResults = within(getByTestId('user-search-results'));
         fireEvent.click(searchResults.getByText('Open'));
@@ -209,12 +188,7 @@ describe('SearchForUserComponent', () => {
       });
 
       it('should navigate to workplace when clicking workplace name link', async () => {
-        const { fixture, getByTestId, switchWorkplaceSpy } = await setup();
-
-        const searchButton = getByTestId('searchButton');
-        fireEvent.click(searchButton);
-
-        fixture.detectChanges();
+        const { getByTestId, switchWorkplaceSpy } = await setup(true);
 
         const searchResults = within(getByTestId('user-search-results'));
         fireEvent.click(searchResults.getByText('Open'));
@@ -228,12 +202,7 @@ describe('SearchForUserComponent', () => {
       });
 
       it('should open unlock user dialog when clicking unlock button', async () => {
-        const { fixture, getByText, getByTestId } = await setup(true);
-
-        const searchButton = getByTestId('searchButton');
-        fireEvent.click(searchButton);
-
-        fixture.detectChanges();
+        const { getByText } = await setup(true, true);
 
         const registrationsService = TestBed.inject(RegistrationsService);
 
