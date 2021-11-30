@@ -4,27 +4,20 @@ import { Wizard } from '@core/model/wizard.model';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-import { EstablishmentService } from './establishment.service';
-import { PermissionsService } from './permissions/permissions.service';
-
 @Injectable({
   providedIn: 'root',
 })
 export class WizardService {
   private path = 'wizard';
 
-  constructor(
-    private http: HttpClient,
-    private permissionService: PermissionsService,
-    private establishmentService: EstablishmentService,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  public getWizardPage(): Observable<Wizard> {
+  public getWizardPage(canViewBenchmarks: boolean): Observable<Wizard> {
     let params = new HttpParams();
 
     const benchmarkFilter = {
       benchmarks_flag: {
-        _in: [false, this.permissionService.can(this.establishmentService.primaryWorkplace.uid, 'canViewBenchmarks')],
+        _in: [false, canViewBenchmarks],
       },
     };
     params = params.set('sort', 'order');
