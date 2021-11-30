@@ -37,25 +37,23 @@ describe('SearchForUserComponent', () => {
       ],
     });
 
-    const mockSearchResults = [
-      {
+    const mockSearchResult = {
+      uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+      name: 'John Doe',
+      username: 'johnUsername',
+      securityQuestion: 'What is your favourite sport?',
+      securityQuestionAnswer: 'Water Polo',
+      isLocked,
+      establishment: {
         uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-        name: 'John Doe',
-        username: 'johnUsername',
-        securityQuestion: 'What is your favourite sport?',
-        securityQuestionAnswer: 'Water Polo',
-        isLocked,
-        establishment: {
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
-          name: 'My workplace',
-          nmdsId: 'G1001376',
-          postcode: 'ABC123',
-        },
+        name: 'My workplace',
+        nmdsId: 'G1001376',
+        postcode: 'ABC123',
       },
-    ];
+    };
 
     const component = fixture.componentInstance;
-    const searchUsersSpy = spyOn(component, 'searchUsers').and.returnValue(of({ body: mockSearchResults }));
+    const searchUsersSpy = spyOn(component, 'searchUsers').and.returnValue(of({ body: [mockSearchResult] }));
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
@@ -76,6 +74,7 @@ describe('SearchForUserComponent', () => {
       queryAllByText,
       searchUsersSpy,
       switchWorkplaceSpy,
+      mockSearchResult,
     };
   }
 
@@ -175,17 +174,38 @@ describe('SearchForUserComponent', () => {
       );
     });
 
-    it('should show a no search results message when there are no search results', async () => {
-      const { fixture, searchUsersSpy, getByTestId } = await setup();
+    describe('Number of results message', async () => {
+      it('should show a no search results message when there are no search results', async () => {
+        const { fixture, searchUsersSpy, getByTestId } = await setup();
 
-      searchUsersSpy.and.returnValue(of({ body: [] }));
+        searchUsersSpy.and.returnValue(of({ body: [] }));
 
-      const searchButton = getByTestId('searchButton');
-      fireEvent.click(searchButton);
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      expect(getByTestId('no-search-results'));
+        expect(getByTestId('no-search-results'));
+      });
+
+      it('should show number of results message if results returned in singular when 1', async () => {
+        const { queryByText } = await setup(true);
+
+        expect(queryByText('Your search returned 1 result.')).toBeTruthy();
+      });
+
+      it('should show number of results message if results returned in plural when more than 1', async () => {
+        const { searchUsersSpy, fixture, getByTestId, queryByText, mockSearchResult } = await setup();
+
+        searchUsersSpy.and.returnValue(of({ body: [mockSearchResult, mockSearchResult] }));
+
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
+
+        fixture.detectChanges();
+
+        expect(queryByText('Your search returned 2 results.')).toBeTruthy();
+      });
     });
 
     describe('Dropdown', async () => {
