@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Wizard } from '@core/model/wizard.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-first-login-wizard',
@@ -17,7 +18,7 @@ export class FirstLoginWizardComponent {
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
-    this.imageUrl = 'https://sfccmstest.cloudapps.digital/assets/';
+    this.imageUrl = `${environment.cmsUri}/assets/`;
     this.currentIndex = 0;
     this.updateVariables();
   }
