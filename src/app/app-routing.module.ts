@@ -15,7 +15,7 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
-import { WizardResolver } from '@core/resolvers/wizard.resolver';
+import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';

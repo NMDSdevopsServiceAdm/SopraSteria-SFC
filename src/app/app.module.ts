@@ -14,7 +14,7 @@ import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
-import { WizardResolver } from '@core/resolvers/wizard.resolver';
+import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
 import { CountryService } from '@core/services/country.service';
