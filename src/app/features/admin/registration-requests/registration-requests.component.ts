@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-registration-requests',
   templateUrl: './registration-requests.component.html',
-  styleUrls: ['./registration-requests.component.scss'],
+  styleUrls: ['../admin-links.scss'],
 })
 export class RegistrationRequestsComponent implements OnInit {
   public pendingRegistrationsCount: number;

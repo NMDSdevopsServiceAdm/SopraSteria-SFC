@@ -1,30 +1,5 @@
-@import '~govuk-frontend/govuk/base';
+@import '../admin-links.scss';
 
-ul {
-  display: flex;
-
-  li {
-    padding: 10px 0;
-    flex: 1;
-
-    &.active {
-      a {
-        color: $govuk-link-active-colour;
-      }
-    }
-
-    a {
-      text-decoration: none;
-      font-weight: 600;
-      color: $govuk-link-colour;
-
-      &:hover {
-        color: $govuk-link-hover-colour;
-      }
-    }
-
-    &:not(:first-of-type) {
-      text-align: center;
-    }
-  }
+li:not(:first-of-type) {
+  text-align: center;
 }
