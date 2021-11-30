@@ -24,6 +24,6 @@ export class WizardService {
     params = params.set('fields', 'content,title,image');
     params = params.set('filter', JSON.stringify(benchmarkFilter));
 
-    return this.http.get<Wizard>(`${environment.cmsUri}${this.path}`, { params });
+    return this.http.get<Wizard>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
 }
