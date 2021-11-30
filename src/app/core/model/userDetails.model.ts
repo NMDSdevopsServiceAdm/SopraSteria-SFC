@@ -29,3 +29,9 @@ export enum UserStatus {
   Pending = 'Pending',
   Active = 'Active',
 }
+
+export interface UserSearchRequest {
+  username: string;
+  name: string;
+  emailAddress: string;
+}

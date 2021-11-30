@@ -2,8 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
-import { UserSearchRequest } from '@core/model/user.model';
-import { UserDetails } from '@core/model/userDetails.model';
+import { UserDetails, UserSearchRequest } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 

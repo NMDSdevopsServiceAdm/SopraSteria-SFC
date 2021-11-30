@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { UserSearchRequest } from '@core/model/user.model';
+import { UserSearchRequest } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { UserService } from '@core/services/user.service';
