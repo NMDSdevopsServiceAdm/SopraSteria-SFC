@@ -951,7 +951,7 @@ class Establishment extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
-            showSharingPermissionsBanner: this._showSharingPermissionsBanner,
+            showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
           };
 
           // Every time the establishment is saved, need to calculate
