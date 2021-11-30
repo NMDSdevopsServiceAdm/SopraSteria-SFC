@@ -25,6 +25,9 @@ import { RegistrationRequestsComponent } from './registration-requests/registrat
 import { RejectedRegistrationRequestComponent } from './registration-requests/rejected-registration-request/rejected-registration-request.component';
 import { RejectedRegistrationRequestsComponent } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
 import { ReportComponent } from './report/admin-report.component';
+import { SearchForGroupComponent } from './search/search-for-group/search-for-group.component';
+import { SearchForUserComponent } from './search/search-for-user/search-for-user.component';
+import { SearchForWorkplaceComponent } from './search/search-for-workplace/search-for-workplace.component';
 import { SearchComponent } from './search/search.component';
 
 @NgModule({
@@ -34,6 +37,9 @@ import { SearchComponent } from './search/search.component';
     LocalAuthoritiesReturnComponent,
     AdminComponent,
     SearchComponent,
+    SearchForWorkplaceComponent,
+    SearchForUserComponent,
+    SearchForGroupComponent,
     SetDatesComponent,
     MonitorComponent,
     LocalAuthorityComponent,

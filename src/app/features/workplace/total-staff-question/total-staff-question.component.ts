@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -43,9 +42,7 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
-      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   protected generateUpdateProps() {
@@ -57,9 +54,9 @@ export class TotalStaffQuestionComponent extends Question implements OnInit, OnD
   protected updateEstablishment(props): void {
     this.subscriptions.add(
       this.establishmentService.postStaff(this.establishment.uid, props.totalStaff).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error)
-      )
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 }

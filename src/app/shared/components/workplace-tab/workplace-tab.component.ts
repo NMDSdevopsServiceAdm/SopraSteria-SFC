@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -19,19 +20,43 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public updateWorkplaceAlert: boolean;
   public locationId: string;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
+  public showSharingPermissionsBanner: boolean = this.establishmentService.checkSharingPermissionsBanner;
 
-  constructor(private permissionsService: PermissionsService, private establishmentService: EstablishmentService) {}
+  constructor(
+    private permissionsService: PermissionsService,
+    public establishmentService: EstablishmentService,
+    public router: Router,
+    public route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
     this.locationId = this.workplace.locationId;
     this.establishmentService.setCheckCQCDetailsBanner(false);
+    this.getShowCQCDetailsBanner();
+    this.getShowSharingPermissionsBanner();
+    this.updateWorkplaceAlert =
+      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+  }
 
+  private getShowCQCDetailsBanner(): void {
     this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
       this.showCQCDetailsBanner = showBanner;
     });
+  }
 
-    this.updateWorkplaceAlert =
-      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+  private getShowSharingPermissionsBanner(): void {
+    this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
+      this.showSharingPermissionsBanner = showBanner;
+    });
+  }
+
+  public navigateToShareDataPage(e: Event): void {
+    e.preventDefault();
+
+    this.route.snapshot.params?.establishmentuid
+      ? this.establishmentService.setReturnTo({ url: ['/workplace', this.workplace.uid], fragment: 'workplace' })
+      : this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'workplace' });
+    this.router.navigate(['/workplace', this.workplace.uid, 'sharing-data']);
   }
 
   ngOnDestroy(): void {

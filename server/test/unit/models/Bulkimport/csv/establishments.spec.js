@@ -25,7 +25,6 @@ const validateAPIObject = (establishmentRow) => {
     localIdentifier: establishmentRow.LOCALESTID,
     isRegulated: true,
     employerType: { value: 'Private Sector', other: undefined },
-    localAuthorities: [708, 721, 720],
     mainService: 8,
     services: { value: 'Yes', services: [{ id: 8 }, { id: 13 }] },
     serviceUsers: [],
@@ -33,7 +32,7 @@ const validateAPIObject = (establishmentRow) => {
     vacancies: [999, 333, 1],
     starters: [0, 0, 0],
     leavers: [999, 0, 0],
-    share: { enabled: true, with: ['CQC', 'Local Authority'] },
+    shareWith: { cqc: true, localAuthorities: true },
     capacities: [0, 0, 0, 0],
   };
 };
@@ -244,7 +243,49 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       expect(apiObject).to.deep.equal(expectedResult);
     });
+
+    describe('shareWith', () => {
+      it('should return cqc and localAuthorities as true when set as 1 in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '1';
+        establishmentRow.PERMLA = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        const apiObject = establishment.toAPI();
+
+        const expectedShareWith = { cqc: true, localAuthorities: true };
+
+        expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+
+      it('should return cqc and localAuthorities as false when set as 0 in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '0';
+        establishmentRow.PERMLA = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        const apiObject = establishment.toAPI();
+
+        const expectedShareWith = { cqc: false, localAuthorities: false };
+
+        expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+
+      it('should return cqc and localAuthorities as null when empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '';
+        establishmentRow.PERMLA = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        const apiObject = establishment.toAPI();
+
+        const expectedShareWith = { cqc: null, localAuthorities: null };
+
+        expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+    });
   });
+
   describe('toJSON', () => {
     it('should return a correct JSON ', async () => {
       const establishmentRow = buildEstablishmentCSV();
@@ -262,7 +303,6 @@ describe('Bulk Upload - Establishment CSV', () => {
         employerTypeOther: undefined,
         shareWithCQC: 1,
         shareWithLA: 1,
-        localAuthorities: [708, 721, 720],
         regType: 2,
         locationId: establishmentRow.LOCATIONID,
         provId: establishmentRow.PROVNUM,
@@ -282,8 +322,9 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
   });
+
   describe('Validations', () => {
-    it('should return no errors ', async () => {
+    it('should return no errors when given valid CSV', async () => {
       const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
@@ -308,7 +349,8 @@ describe('Bulk Upload - Establishment CSV', () => {
         },
       ]);
     });
-    it('should through an error if ALLSERVICES has a 0 and an other service ', async () => {
+
+    it('should throw an error if ALLSERVICES has a 0 and an other service', async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0;13';
@@ -360,6 +402,56 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
+    });
+
+    describe('shareWith', () => {
+      it('should produce error if PERMCQC is a number which is not 0 or 1', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMCQC = '3';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1080,
+            errType: 'SHARE_WITH_CQC_ERROR',
+            error: 'The code you have entered for PERMCQC is incorrect',
+            source: '3',
+            column: 'PERMCQC',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should produce error if PERMLA contains text', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMLA = 'a';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1090,
+            errType: 'SHARE_WITH_LA_ERROR',
+            error: 'The code you have entered for PERMLA is incorrect',
+            source: 'a',
+            column: 'PERMLA',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should not produce error if PERMLA or PERMCQC is an empty string', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PERMLA = '';
+        establishmentRow.PERMCQC = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
     });
   });
 
@@ -752,6 +844,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       ]);
     });
   });
+
   describe('toCSV', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
@@ -783,27 +876,43 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(csvAsArray[9]).to.equal(establishment.EmployerTypeOther.toString());
     });
 
-    it('should have 0s in PERMCQC, PERMLACSV and REGTYPE columns when shareWithCQC, shareWithLA and isRegulated are false', async () => {
+    it('should have 0s in PERMCQC, PERMLA and REGTYPE columns when shareWithCQC, shareWithLA and isRegulated are false', async () => {
       const establishment = apiEstablishmentBuilder();
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[10]).to.equal('0');
       expect(csvAsArray[11]).to.equal('0');
-      expect(csvAsArray[13]).to.equal('0');
+      expect(csvAsArray[12]).to.equal('0');
     });
 
-    it('should have 1s in PERMCQC, PERMLACSV and 2 in REGTYPE column when shareWithCQC, shareWithLA and isRegulated are true', async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.shareWithCQC = true;
-      establishment.shareWithLA = true;
-      establishment.isRegulated = true;
+    it('should have 1s in PERMCQC, PERMLA and 2 in REGTYPE column when shareWithCQC, shareWithLA and isRegulated are true', async () => {
+      const establishment = apiEstablishmentBuilder({
+        overrides: {
+          shareWithCQC: true,
+          shareWithLA: true,
+          isRegulated: true,
+        },
+      });
+
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[10]).to.equal('1');
       expect(csvAsArray[11]).to.equal('1');
-      expect(csvAsArray[13]).to.equal('2');
+      expect(csvAsArray[12]).to.equal('2');
+    });
+
+    it('should have empty strings in PERMCQC and PERMLA when shareWithCQC and shareWithLA are null', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.shareWithCQC = null;
+      establishment.shareWithLA = null;
+
+      const csv = establishmentCsv.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[10]).to.equal('');
+      expect(csvAsArray[11]).to.equal('');
     });
 
     it('should have the same number in MAINSERVICE column and ALLSERVICES column', async () => {
@@ -811,7 +920,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[17]).to.include(csvAsArray[16]);
+      expect(csvAsArray[16]).to.include(csvAsArray[16]);
     });
 
     it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
@@ -820,8 +929,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[17]).to.include('23');
-      expect(csvAsArray[17]).to.include('12');
+      expect(csvAsArray[16]).to.include('23');
+      expect(csvAsArray[16]).to.include('12');
     });
 
     it('should put correct number of staff in TOTALPERMTEMP column', async () => {
@@ -829,7 +938,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[23]).to.equal(establishment.NumberOfStaffValue.toString());
+      expect(csvAsArray[22]).to.equal(establishment.NumberOfStaffValue.toString());
     });
 
     it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
@@ -838,8 +947,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[17]).to.include('23');
-      expect(csvAsArray[17]).to.include('12');
+      expect(csvAsArray[16]).to.include('23');
+      expect(csvAsArray[16]).to.include('12');
     });
 
     it('should store NumberOfStaffValue in TOTALPERMTEMP column', async () => {
@@ -847,7 +956,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[23]).to.include(establishment.NumberOfStaffValue);
+      expect(csvAsArray[22]).to.include(establishment.NumberOfStaffValue);
     });
 
     it('should store capacity in the CAPACITY column and utilisation in the UTILISATION column', async () => {
@@ -879,8 +988,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[18]).to.include(';' + establishment.capacity[0].answer + ';');
-      expect(csvAsArray[19]).to.include(';;' + establishment.capacity[1].answer);
+      expect(csvAsArray[17]).to.include(';' + establishment.capacity[0].answer + ';');
+      expect(csvAsArray[18]).to.include(';;' + establishment.capacity[1].answer);
     });
 
     it('should include all other descriptions from other services in SERVICEDESC column', async () => {
@@ -892,8 +1001,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[20]).to.include(establishment.otherServices[1].establishmentServices.other);
-      expect(csvAsArray[20]).to.include(establishment.otherServices[2].establishmentServices.other);
+      expect(csvAsArray[19]).to.include(establishment.otherServices[1].establishmentServices.other);
+      expect(csvAsArray[19]).to.include(establishment.otherServices[2].establishmentServices.other);
     });
 
     it('should include all service users in SERVICEUSERS column', async () => {
@@ -906,7 +1015,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[21]).to.include(establishment.serviceUsers[0].id);
+      expect(csvAsArray[20]).to.include(establishment.serviceUsers[0].id);
     });
 
     it('should include all service users in SERVICEUSERS column and OTHERUSERDESC if theres an other', async () => {
@@ -922,8 +1031,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[21]).to.include(establishment.serviceUsers[0].id);
-      expect(csvAsArray[22]).to.include(establishment.serviceUsers[0].establishmentServiceUsers.other);
+      expect(csvAsArray[20]).to.include(establishment.serviceUsers[0].id);
+      expect(csvAsArray[21]).to.include(establishment.serviceUsers[0].establishmentServiceUsers.other);
     });
 
     it('should include all jobs users in ALLJOBROLES column', async () => {
@@ -939,8 +1048,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[24]).to.include(establishment.jobs[0].jobId);
-      expect(csvAsArray[24]).to.include(establishment.jobs[1].jobId);
+      expect(csvAsArray[23]).to.include(establishment.jobs[0].jobId);
+      expect(csvAsArray[23]).to.include(establishment.jobs[1].jobId);
     });
 
     it('should include all jobs users in ALLJOBROLES, STARTERS, LEAVERS and VACANCIES column', async () => {
@@ -970,19 +1079,19 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[24]).to.include(establishment.jobs[0].jobId);
-      expect(csvAsArray[24]).to.include(establishment.jobs[1].jobId);
-      expect(csvAsArray[24]).to.include(establishment.jobs[2].jobId);
-      expect(csvAsArray[24]).to.include(establishment.jobs[3].jobId);
-      expect(csvAsArray[25]).to.include(establishment.jobs[0].total);
-      expect(csvAsArray[25]).to.include(establishment.jobs[1].total);
-      expect(csvAsArray[26]).to.include(establishment.jobs[2].total);
-      expect(csvAsArray[27]).to.include(establishment.jobs[3].total);
+      expect(csvAsArray[23]).to.include(establishment.jobs[0].jobId);
+      expect(csvAsArray[23]).to.include(establishment.jobs[1].jobId);
+      expect(csvAsArray[23]).to.include(establishment.jobs[2].jobId);
+      expect(csvAsArray[23]).to.include(establishment.jobs[3].jobId);
+      expect(csvAsArray[24]).to.include(establishment.jobs[0].total);
+      expect(csvAsArray[24]).to.include(establishment.jobs[1].total);
+      expect(csvAsArray[25]).to.include(establishment.jobs[2].total);
+      expect(csvAsArray[26]).to.include(establishment.jobs[3].total);
     });
 
     ['Starters', 'Leavers', 'Vacancies'].forEach((slv, index) => {
       it(`should show 999 if "Don't know" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
-        const column = 25 + index;
+        const column = 24 + index;
         const establishment = apiEstablishmentBuilder();
         establishment.jobs = [
           {
@@ -1001,7 +1110,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it(`should show nothing if null the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
-        const column = 25 + index;
+        const column = 24 + index;
         const establishment = apiEstablishmentBuilder();
         establishment[`${slv}Value`] = null;
 
@@ -1012,7 +1121,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it(`should show 0 for each job if "None" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
-        const column = 25 + index;
+        const column = 24 + index;
         const establishment = apiEstablishmentBuilder();
         establishment.jobs = [
           {
@@ -1037,11 +1146,11 @@ describe('Bulk Upload - Establishment CSV', () => {
       const csv = establishmentCsv.toCSV(establishment);
       const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[28]).to.include('34');
-      expect(csvAsArray[28]).to.include('18');
-      expect(csvAsArray[29]).to.include('Hello');
-      expect(csvAsArray[28]).to.include('29');
-      expect(csvAsArray[29]).to.include('Test');
+      expect(csvAsArray[27]).to.include('34');
+      expect(csvAsArray[27]).to.include('18');
+      expect(csvAsArray[27]).to.include('29');
+      expect(csvAsArray[28]).to.include('Hello');
+      expect(csvAsArray[28]).to.include('Test');
     });
   });
 });

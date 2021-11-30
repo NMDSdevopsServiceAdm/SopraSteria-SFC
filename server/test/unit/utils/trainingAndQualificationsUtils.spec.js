@@ -181,6 +181,27 @@ describe('trainingAndQualificationsUtils', () => {
         expect(result[0].name).to.equal('Nursing Home');
       });
 
+      it('should return a string if number in string', () => {
+        mockEstablishmentsTrainingResponse[0].NameValue = '80abc';
+        const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
+
+        expect(result[0].name).to.equal('80abc');
+      });
+
+      it('should return a string if number in string with letters', () => {
+        mockEstablishmentsTrainingResponse[0].NameValue = '80abc';
+        const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
+
+        expect(typeof result[0].name).to.deep.equal('string');
+      });
+
+      it('should return a number if only number in string', () => {
+        mockEstablishmentsTrainingResponse[0].NameValue = '80';
+        const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
+
+        expect(typeof result[0].name).to.deep.equal('number');
+      });
+
       it('should return worker details formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorker = result[0].workerRecords[0];

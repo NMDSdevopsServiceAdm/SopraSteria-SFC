@@ -68,7 +68,7 @@ describe('RegistrationRequestComponent', () => {
               snapshot: {
                 data: {
                   registration: inProgress ? InProgressRegistration(reviewer) : PendingRegistration(),
-                  loggedInUser: { fullname: 'adminUser' },
+                  loggedInUser: { fullname: 'adminUser', uid: '123' },
                   notes: existingNotes && notes,
                 },
               },
@@ -542,6 +542,7 @@ describe('RegistrationRequestComponent', () => {
         note: 'This is a note for this registration',
         establishmentId: component.registration.establishment.id,
         noteType: 'Registration',
+        userUid: '123',
       };
 
       expect(addRegistrationNotesSpy).toHaveBeenCalledWith(expectedBody);

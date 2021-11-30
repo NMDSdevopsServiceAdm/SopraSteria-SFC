@@ -6,7 +6,7 @@ import { WorkerService } from '@core/services/worker.service';
   templateUrl: 'worker-save-success.component.html',
 })
 export class WorkerSaveSuccessComponent implements OnDestroy {
-  public return: { url: any[]; label: string };
+  public return: { url: any[]; fragment: string; label: string };
 
   constructor(private route: ActivatedRoute, private workerService: WorkerService) {
     const workplaceUid = this.route.snapshot.paramMap.get('establishmentuid');
@@ -16,8 +16,8 @@ export class WorkerSaveSuccessComponent implements OnDestroy {
 
     this.return =
       workplaceUid === primaryWorkplaceUid
-        ? { url: ['/dashboard'], label: 'home' }
-        : { url: ['/workplace', workplaceUid], label: 'workplace' };
+        ? { url: ['/dashboard'], fragment: 'home', label: 'home' }
+        : { url: ['/workplace', workplaceUid], fragment: 'workplace', label: 'workplace' };
   }
 
   ngOnDestroy() {

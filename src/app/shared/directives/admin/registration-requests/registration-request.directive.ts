@@ -13,6 +13,7 @@ export class RegistrationRequestDirective implements OnInit {
   public notes: Note[];
   public notesForm: FormGroup;
   public notesError: string;
+  public loggedInUser;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -23,6 +24,7 @@ export class RegistrationRequestDirective implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.registration = this.route.snapshot.data.registration;
     this.notes = this.route.snapshot.data.notes;
     this.setBreadcrumbs();
@@ -55,6 +57,7 @@ export class RegistrationRequestDirective implements OnInit {
         note: this.notesForm.get('notes').value,
         establishmentId: this.registration.establishment.id,
         noteType: 'Registration',
+        userUid: this.loggedInUser.uid,
       };
 
       this.registrationsService.addRegistrationNote(body).subscribe(

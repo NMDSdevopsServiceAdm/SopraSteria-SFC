@@ -18,7 +18,7 @@ import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
-import { establishmentWithWdfBuilder } from '../../../../../server/test/factories/models';
+import { establishmentWithShareWith, establishmentWithWdfBuilder } from '../../../../../server/test/factories/models';
 import { Establishment } from '../../../../mockdata/establishment';
 import { EligibilityIconComponent } from '../eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '../inset-text/inset-text.component';
@@ -26,7 +26,7 @@ import { SummaryRecordValueComponent } from '../summary-record-value/summary-rec
 import { WorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('WorkplaceSummaryComponent', async () => {
-  const setup = async () => {
+  const setup = async (shareWith = null) => {
     const { fixture, getByText, queryByText } = await render(WorkplaceSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
@@ -48,7 +48,7 @@ describe('WorkplaceSummaryComponent', async () => {
       ],
       componentProperties: {
         wdfView: true,
-        workplace: establishmentWithWdfBuilder() as Establishment,
+        workplace: shareWith ? establishmentWithShareWith(shareWith) : (establishmentWithWdfBuilder() as Establishment),
       },
     });
 
@@ -107,6 +107,85 @@ describe('WorkplaceSummaryComponent', async () => {
       const mainServiceName = within(document.body).queryByTestId('main-service-name');
       expect(mainServiceName.innerHTML).toContain(component.workplace.mainService.name);
       expect(mainServiceName.innerHTML).not.toContain(component.requestedServiceName);
+    });
+  });
+
+  describe('Data sharing states', async () => {
+    it('should show dash and have Add information button on Data sharing when cqc and localAuthorities set to null (not answered)', async () => {
+      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Add information');
+      expect(dataSharing.innerHTML).toContain('-');
+    });
+
+    it('should show Local authorities and have Change button on Data sharing when localAuthorities set to true', async () => {
+      const { component, fixture } = await setup({ cqc: null, localAuthorities: true });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Local authorities');
+    });
+
+    it('should show CQC and have Change button on Data sharing when cqc set to true', async () => {
+      const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Care Quality Commission (CQC)');
+    });
+
+    it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
+      const { component, fixture } = await setup({ cqc: false, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Not sharing');
+    });
+
+    it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
+      const { component, fixture } = await setup({ cqc: false, localAuthorities: null });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Not sharing');
+    });
+
+    it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null (not answered)', async () => {
+      const { component, fixture } = await setup({ cqc: null, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).toContain('Not sharing');
+    });
+
+    it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
+      const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const dataSharing = within(document.body).queryByTestId('data-sharing');
+      expect(dataSharing.innerHTML).toContain('Change');
+      expect(dataSharing.innerHTML).not.toContain('Not sharing');
     });
   });
 

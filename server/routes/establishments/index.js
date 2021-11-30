@@ -19,7 +19,6 @@ const Capacity = require('./capacity');
 const ShareData = require('./shareData');
 const Staff = require('./staff');
 const Jobs = require('./jobs');
-const LA = require('./la');
 const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
 const LocalIdentifier = require('./localIdentifier');
@@ -32,6 +31,7 @@ const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
+const SharingPermissionsBanner = require('./sharingPermissionsBanner');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -70,7 +70,6 @@ router.use('/:id/capacity', Capacity);
 router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
-router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
 router.use('/:id/bulkupload', BulkUpload);
 router.use('/:id/localIdentifier', LocalIdentifier);
@@ -83,6 +82,7 @@ router.use('/:id/locationDetails', LocationDetails);
 router.use('/:id/mandatoryTraining', MandatoryTraining);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
+router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
