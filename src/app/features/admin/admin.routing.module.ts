@@ -18,6 +18,9 @@ import { RegistrationRequestsComponent } from './registration-requests/registrat
 import { RejectedRegistrationRequestComponent } from './registration-requests/rejected-registration-request/rejected-registration-request.component';
 import { RejectedRegistrationRequestsComponent } from './registration-requests/rejected-registration-requests/rejected-registration-requests.component';
 import { ReportComponent } from './report/admin-report.component';
+import { SearchForGroupComponent } from './search/search-for-group/search-for-group.component';
+import { SearchForUserComponent } from './search/search-for-user/search-for-user.component';
+import { SearchForWorkplaceComponent } from './search/search-for-workplace/search-for-workplace.component';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
@@ -28,10 +31,37 @@ const routes: Routes = [
   },
   {
     path: 'search',
-    component: SearchComponent,
-    data: {
-      title: 'Search',
-    },
+    children: [
+      {
+        path: '',
+        component: SearchComponent,
+        data: {
+          title: 'Search',
+        },
+        children: [
+          {
+            path: '',
+            redirectTo: 'workplace',
+            pathMatch: 'full',
+          },
+          {
+            path: 'workplace',
+            component: SearchForWorkplaceComponent,
+            data: { title: 'Search For A Workplace' },
+          },
+          {
+            path: 'user',
+            component: SearchForUserComponent,
+            data: { title: 'Search For A User' },
+          },
+          {
+            path: 'group',
+            component: SearchForGroupComponent,
+            data: { title: 'Search For A Group' },
+          },
+        ],
+      },
+    ],
   },
   {
     path: 'registrations',

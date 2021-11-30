@@ -1,0 +1,5 @@
+@import '../admin-links.scss';
+
+li:not(:first-of-type) {
+  text-align: center;
+}

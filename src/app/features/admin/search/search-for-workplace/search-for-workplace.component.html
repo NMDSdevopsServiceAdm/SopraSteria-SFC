@@ -1,0 +1,53 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds" data-testid="initial-text">
+      Search by workplace name, postcode, workplace ID, location ID or provider ID. <br />
+      You can also search with combinations, like workplace name and postcode.
+    </div>
+    <div class="govuk-grid-column-one-third govuk-!-padding-right-8">
+      <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form">
+        <fieldset class="govuk-fieldset">
+          <div class="govuk-form-group">
+            <label for="workplaceName" class="govuk-label">Workplace name</label>
+            <input
+              class="govuk-input"
+              [formControlName]="'workplaceName'"
+              id="workplaceName"
+              name="workplaceName"
+              type="text"
+            />
+          </div>
+          <div class="govuk-form-group">
+            <label for="postcode" class="govuk-label">Postcode</label>
+            <input
+              class="govuk-input govuk-!-width-two-thirds"
+              [formControlName]="'postcode'"
+              id="postcode"
+              name="postcode"
+              type="text"
+            />
+          </div>
+          <div class="govuk-form-group">
+            <label for="workplaceId" class="govuk-label">Workplace ID</label>
+            <input
+              class="govuk-input"
+              [formControlName]="'workplaceId'"
+              id="workplaceId"
+              name="workplaceId"
+              type="text"
+            />
+          </div>
+          <div class="govuk-form-group">
+            <label for="locationId" class="govuk-label">Location ID</label>
+            <input class="govuk-input" [formControlName]="'locationId'" id="locationId" name="locationId" type="text" />
+          </div>
+          <div class="govuk-form-group">
+            <label for="providerId" class="govuk-label">Provider ID</label>
+            <input class="govuk-input" [formControlName]="'providerId'" id="providerId" name="providerId" type="text" />
+          </div>
+        </fieldset>
+        <button type="submit" class="govuk-button">Search</button>
+      </form>
+    </div>
+  </div>
+</div>
