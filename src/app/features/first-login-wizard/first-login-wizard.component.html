@@ -25,26 +25,35 @@
       <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__align-left">
         <a
           *ngIf="!isFirst"
-          class="asc-chevron-before govuk-button--link govuk-!-margin-top-3"
+          class="asc-chevron-before asc-no-underline govuk-!-font-size-27 govuk-button--link govuk-!-margin-top-3"
           href="#"
           (click)="previousWizard($event)"
           >Previous</a
         >
         <br />
-        <a *ngIf="!isFirst" href="#" (click)="previousWizard($event)" class="govuk-button--link">{{
-          wizards[currentIndex - 1].title
-        }}</a>
+        <a
+          *ngIf="!isFirst"
+          href="#"
+          (click)="previousWizard($event)"
+          class="govuk-button--link govuk-!-margin-left-2"
+          >{{ wizards[currentIndex - 1].title }}</a
+        >
       </div>
       <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right">
         <a
           *ngIf="!isLast"
-          class="asc-chevron-after govuk-button--link govuk-!-margin-top-3 margin-left-6"
+          class="
+            asc-chevron-after asc-no-underline
+            govuk-button--link
+            govuk-!-font-size-27 govuk-!-margin-top-3
+            margin-left-6
+          "
           href="#"
           (click)="nextWizard($event)"
           >Next
         </a>
         <br />
-        <a *ngIf="!isLast" href="#" (click)="nextWizard($event)" class="govuk-button--link">{{
+        <a *ngIf="!isLast" href="#" (click)="nextWizard($event)" class="govuk-button--link govuk-!-margin-right-2">{{
           wizards[currentIndex + 1].title
         }}</a>
       </div>
