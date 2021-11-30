@@ -2,13 +2,22 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <p>Search by name, username or email address.</p>
+      <div *ngIf="submitted && !results.length" data-testid="no-search-results">
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Information</span>
+            Your search returned no results. Please refine your search criteria.
+          </strong>
+        </div>
+      </div>
       <table class="govuk-table" *ngIf="results && results.length" data-testid="user-search-results">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th class="govuk-table__header govuk-!-width-one-third" scope="col">Name</th>
+            <th class="govuk-table__header" scope="col">Name</th>
             <th class="govuk-table__header" scope="col">Username</th>
-            <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Workplace ID</th>
-            <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Postcode</th>
+            <th class="govuk-table__header" scope="col">Workplace ID</th>
+            <th class="govuk-table__header" scope="col">Postcode</th>
             <th class="govuk-table__header" scope="col">&nbsp;</th>
           </tr>
         </thead>
@@ -43,7 +52,7 @@
                       <tr class="govuk-table__row">
                         <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Location ID</th>
                         <th class="govuk-table__header govuk-!-width-one-half" scope="col">Workplace</th>
-                        <th class="govuk-table__header govuk-!-width-one-third" scope="col">&nbsp;</th>
+                        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">&nbsp;</th>
                       </tr>
                     </thead>
                     <tbody class="govuk-table__body">
@@ -99,8 +108,8 @@
         </tbody>
       </table>
     </div>
-    <div class="govuk-grid-column-one-third govuk-!-padding-right-3">
-      <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+    <div class="govuk-grid-column-one-third">
+      <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
         <fieldset class="govuk-fieldset">
           <div class="govuk-form-group">
             <label class="govuk-label" for="name"> Name </label>

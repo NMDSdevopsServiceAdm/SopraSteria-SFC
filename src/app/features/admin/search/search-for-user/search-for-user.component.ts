@@ -11,7 +11,8 @@ import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-
 })
 export class SearchForUserComponent implements OnInit {
   public form: FormGroup;
-  public results: any;
+  public submitted = false;
+  public results = [];
   public userDetails = [];
   public userDetailsLabel = [];
 
@@ -35,6 +36,7 @@ export class SearchForUserComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    this.submitted = true;
     const data = this.getRequestData();
     this.searchUsers(data).subscribe((response) => (this.results = response.body));
   }

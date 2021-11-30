@@ -175,6 +175,19 @@ describe('SearchForUserComponent', () => {
       );
     });
 
+    it('should show a no search results message when there are no search results', async () => {
+      const { fixture, searchUsersSpy, getByTestId } = await setup();
+
+      searchUsersSpy.and.returnValue(of({ body: [] }));
+
+      const searchButton = getByTestId('searchButton');
+      fireEvent.click(searchButton);
+
+      fixture.detectChanges();
+
+      expect(getByTestId('no-search-results'));
+    });
+
     describe('Dropdown', async () => {
       it('should expand the User details when clicking Open', async () => {
         const { getByTestId } = await setup(true);
