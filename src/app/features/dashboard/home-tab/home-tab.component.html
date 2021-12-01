@@ -133,6 +133,9 @@
             <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
           </ng-template>
         </li>
+        <li class="govuk-!-margin-bottom-3">
+          <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
+        </li>
       </ul>
       <div *ngIf="canRunLocalAuthorityReport && workplace">
         <h3 class="govuk-heading-s govuk-!-margin-top-1">Download reports</h3>
