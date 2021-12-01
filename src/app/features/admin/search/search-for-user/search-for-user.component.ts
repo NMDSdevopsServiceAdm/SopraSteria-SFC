@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { UserSearchRequest } from '@core/model/userDetails.model';
+import { UserSearchItem, UserSearchRequest } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { UserService } from '@core/services/user.service';
@@ -13,7 +13,7 @@ import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-
 export class SearchForUserComponent implements OnInit {
   public form: FormGroup;
   public submitted = false;
-  public results = [];
+  public results: Array<UserSearchItem> = [];
   public userDetails = [];
   public userDetailsLabel = [];
 

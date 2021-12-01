@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
-import { UserDetails, UserSearchRequest } from '@core/model/userDetails.model';
+import { UserDetails, UserSearchItem, UserSearchRequest } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
@@ -141,9 +141,9 @@ export class UserService {
       .pipe(map((response) => response.users));
   }
 
-  public searchUsers(data: UserSearchRequest): any {
+  public searchUsers(data: UserSearchRequest): Observable<Array<UserSearchItem>> {
     return this.http
-      .post<any>('/api/admin/search/users', data, { observe: 'response' })
+      .post<Array<UserSearchItem>>('/api/admin/search/users', data, { observe: 'response' })
       .pipe(map((response) => response.body));
   }
 }
