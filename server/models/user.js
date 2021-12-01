@@ -283,7 +283,7 @@ module.exports = function (sequelize, DataTypes) {
     if (field) {
       query = {
         [columnName]: {
-          [Op.iLike]: '%' + sanitise(field) + '%',
+          [Op.iLike]: sanitise(field),
         },
       };
     }
