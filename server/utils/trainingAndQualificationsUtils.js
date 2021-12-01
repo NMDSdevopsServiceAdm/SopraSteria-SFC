@@ -4,10 +4,8 @@ const convertWorkerTrainingBreakdown = (worker) => {
   const expiringTrainingCount = parseInt(worker.get('expiringTrainingCount'));
   const expiringMandatoryTrainingCount = parseInt(worker.get('expiringMandatoryTrainingCount'));
 
-  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
-
   return {
-    name: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+    name: numberCheck(worker.get('NameOrIdValue')),
     trainingCount: parseInt(worker.get('trainingCount')),
     qualificationCount: parseInt(worker.get('qualificationCount')),
     expiredTrainingCount,
@@ -22,10 +20,8 @@ const convertWorkerTrainingBreakdown = (worker) => {
 };
 
 const convertWorkerWithCareCertificateStatus = (worker) => {
-  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
-
   return {
-    workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+    workerId: numberCheck(worker.get('NameOrIdValue')),
     jobRole: worker.mainJob.title,
     status: worker.get('CareCertificateValue') ? worker.get('CareCertificateValue') : '',
   };
@@ -50,10 +46,8 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 
 const convertWorkerTrainingRecords = (workers) => {
   return workers.map((worker) => {
-    const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
-
     return {
-      workerId: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+      workerId: numberCheck(worker.get('NameOrIdValue')),
       jobRole: worker.mainJob.title,
       longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
       mandatoryTraining: worker.get('mandatoryTrainingCategories') ? worker.get('mandatoryTrainingCategories') : [],
@@ -108,10 +102,9 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
 };
 
 const convertIndividualWorkerQualifications = (worker) => {
-  const workerIdAsNumber = /^\d+$/.test(worker.get('NameOrIdValue'));
   return worker.qualifications.map((qualification) => {
     return {
-      workerName: workerIdAsNumber ? parseInt(workerIdAsNumber) : worker.get('NameOrIdValue'),
+      workerName: numberCheck(worker.get('NameOrIdValue')),
       jobRole: worker.mainJob.title,
       qualificationType: qualification.qualification.group,
       qualificationName: qualification.qualification.title,
@@ -129,13 +122,17 @@ const convertWorkerQualifications = (rawWorkerQualifications) => {
 
 exports.convertQualificationsForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
-    const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
-
     return {
-      name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
+      name: numberCheck(establishment.NameValue),
       qualifications: convertWorkerQualifications(establishment),
     };
   });
+};
+
+const numberCheck = (value) => {
+  const isNumber = /^\d+$/.test(value);
+
+  return isNumber ? parseInt(value) : value;
 };
 
 exports.getTrainingTotals = (workers) => {
@@ -210,3 +207,5 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
     };
   });
 };
+
+exports.numberCheck = numberCheck;

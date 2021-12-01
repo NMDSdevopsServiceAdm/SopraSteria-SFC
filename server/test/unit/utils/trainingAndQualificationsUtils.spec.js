@@ -4,6 +4,7 @@ const {
   convertQualificationsForEstablishments,
   convertWorkersWithCareCertificateStatus,
   convertTrainingForEstablishments,
+  numberCheck,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -334,6 +335,32 @@ describe('trainingAndQualificationsUtils', () => {
           accredited: 'No',
         });
       });
+    });
+  });
+
+  describe('numberCheck', () => {
+    it('should return string if string', () => {
+      const result = numberCheck('Workplace Name');
+
+      expect(result).to.equal('Workplace Name');
+    });
+
+    it('should return a string if number in string', () => {
+      const result = numberCheck('80abc');
+
+      expect(result).to.equal('80abc');
+    });
+
+    it('should return a string if number in string with letters', () => {
+      const result = numberCheck('80abc');
+
+      expect(typeof result).to.deep.equal('string');
+    });
+
+    it('should return a number if only number in string', () => {
+      const result = numberCheck('80');
+
+      expect(typeof result).to.deep.equal('number');
     });
   });
 });
