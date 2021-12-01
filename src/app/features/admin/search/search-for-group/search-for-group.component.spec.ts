@@ -4,10 +4,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -31,6 +33,10 @@ describe('SearchForGroupComponent', () => {
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
           provide: SwitchWorkplaceService,
           useClass: MockSwitchWorkplaceService,
         },
@@ -43,7 +49,9 @@ describe('SearchForGroupComponent', () => {
     const mockSearchResult = {};
 
     const component = fixture.componentInstance;
-    const searchGroupsSpy = spyOn(component, 'searchGroups').and.returnValue(of([mockSearchResult]));
+
+    const establishmentService = TestBed.inject(EstablishmentService);
+    const searchGroupsSpy = spyOn(establishmentService, 'searchGroups').and.returnValue(of([mockSearchResult]));
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');

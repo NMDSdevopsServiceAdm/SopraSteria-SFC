@@ -209,6 +209,11 @@ export interface adminMoveWorkplace {
   subUid: string;
 }
 
+export interface GroupSearchRequest {
+  employerType: string;
+  onlyParents: boolean;
+}
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
   '0_dsc' = 'Staff name (Z to A)',

@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { GroupSearchRequest } from '@core/model/establishment.model';
 import { UserSearchItem } from '@core/model/userDetails.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-search-for-group',
   templateUrl: './search-for-group.component.html',
 })
-export class SearchForGroupComponent implements OnInit {
+export class SearchForGroupComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
   public results: Array<UserSearchItem> = [];
-  public userDetails = [];
-  public userDetailsLabel = [];
+  public establishmentDetails = [];
+  public establishmentDetailsLabel = [];
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder, private establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -24,11 +28,15 @@ export class SearchForGroupComponent implements OnInit {
 
   public onSubmit(): void {
     const data = this.getRequestData();
-    this.searchGroups(data);
-  }
-
-  public searchGroups(data) {
-    return null;
+    this.subscriptions.add(
+      this.establishmentService.searchGroups(data).subscribe(
+        (response) => {
+          this.results = response;
+          this.submitted = true;
+        },
+        (error) => console.error(error),
+      ),
+    );
   }
 
   private getRequestData(): GroupSearchRequest {
@@ -37,9 +45,8 @@ export class SearchForGroupComponent implements OnInit {
       onlyParents: this.form.controls.onlyParents.value,
     };
   }
-}
 
-interface GroupSearchRequest {
-  employerType: string;
-  onlyParents: boolean;
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 }
