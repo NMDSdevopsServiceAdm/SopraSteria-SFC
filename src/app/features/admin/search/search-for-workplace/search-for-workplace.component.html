@@ -1,10 +1,59 @@
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds" data-testid="initial-text">
-      Search by workplace name, postcode, workplace ID, location ID or provider ID. <br />
-      You can also search with combinations, like workplace name and postcode.
+    <div class="govuk-grid-column-three-quarters" data-testid="initial-text">
+      <ng-container *ngIf="!submitted; else searchResults">
+        <p>
+          Search by workplace name, postcode, workplace ID, location ID or provider ID.
+          <br />
+          You can also search with combinations, like workplace name and postcode.
+        </p>
+      </ng-container>
+      <ng-template #searchResults>
+        <div *ngIf="!results.length">
+          <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Information</span>
+              Your search returned no results. Please refine your search criteria
+            </strong>
+          </div>
+        </div>
+        <div *ngIf="results.length">
+          <p class="govuk-!-font-weight-bold">Your search returned {{ results.length }} results</p>
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace</th>
+                <th class="govuk-table__header" scope="col">Postcode</th>
+                <th class="govuk-table__header" scope="col">Workplace ID</th>
+                <th class="govuk-table__header" scope="col">Location ID</th>
+                <th class="govuk-table__header" scope="col">Provider ID</th>
+                <th class="govuk-table__header" scope="col">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row" *ngFor="let item of results">
+                <td class="govuk-table__cell">
+                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{ item.NameValue }}</a>
+                </td>
+                <td class="govuk-table__cell">{{ item.postcode }}</td>
+                <td class="govuk-table__cell">
+                  <a>{{ item.nmdsId || '-' }}</a>
+                </td>
+                <td class="govuk-table__cell">
+                  <a>{{ item.locationId || '-' }}</a>
+                </td>
+                <td class="govuk-table__cell">{{ item.provId || '-' }}</td>
+                <td class="govuk-table__cell">
+                  <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)"> Open </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-template>
     </div>
-    <div class="govuk-grid-column-one-third govuk-!-padding-right-8">
+    <div class="govuk-grid-column-one-quarter govuk-!-padding-right-8">
       <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form">
         <fieldset class="govuk-fieldset">
           <div class="govuk-form-group">
@@ -28,22 +77,16 @@
             />
           </div>
           <div class="govuk-form-group">
-            <label for="workplaceId" class="govuk-label">Workplace ID</label>
-            <input
-              class="govuk-input"
-              [formControlName]="'workplaceId'"
-              id="workplaceId"
-              name="workplaceId"
-              type="text"
-            />
+            <label for="nmdsId" class="govuk-label">Workplace ID</label>
+            <input class="govuk-input" [formControlName]="'nmdsId'" id="nmdsId" name="nmdsId" type="text" />
           </div>
           <div class="govuk-form-group">
-            <label for="locationId" class="govuk-label">Location ID</label>
-            <input class="govuk-input" [formControlName]="'locationId'" id="locationId" name="locationId" type="text" />
+            <label for="locationid" class="govuk-label">Location ID</label>
+            <input class="govuk-input" [formControlName]="'locationid'" id="locationid" name="locationid" type="text" />
           </div>
           <div class="govuk-form-group">
-            <label for="providerId" class="govuk-label">Provider ID</label>
-            <input class="govuk-input" [formControlName]="'providerId'" id="providerId" name="providerId" type="text" />
+            <label for="providerid" class="govuk-label">Provider ID</label>
+            <input class="govuk-input" [formControlName]="'providerid'" id="providerid" name="providerid" type="text" />
           </div>
         </fieldset>
         <button type="submit" class="govuk-button">Search</button>

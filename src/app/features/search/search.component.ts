@@ -118,7 +118,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.form.errors = [];
     this.form.submitted = true;
     // this.errorSummaryService.syncFormErrorsEvent.next(true);
-
+    console.log(this.form.type);
     if (
       this.form.username.length === 0 &&
       this.form.name.length === 0 &&

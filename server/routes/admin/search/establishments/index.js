@@ -7,6 +7,19 @@ const search = async function (req, res) {
     const searchFields = req.body;
     let search = {};
 
+    if (searchFields && searchFields.workplaceName) {
+      const workplaceNameSearchField = searchFields.workplaceName
+        .replace(/[%_]/g, '')
+        .replace(/\*/g, '%')
+        .replace(/\?/g, '_');
+
+      search = {
+        NameValue: {
+          [models.Sequelize.Op.iLike]: workplaceNameSearchField,
+        },
+      };
+    }
+
     if (searchFields && searchFields.postcode) {
       const postcodeSearchField = searchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
 
@@ -40,6 +53,16 @@ const search = async function (req, res) {
       };
     }
 
+    if (searchFields && searchFields.providerid) {
+      const provIdSearchField = searchFields.providerid.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_');
+
+      search = {
+        provId: {
+          [models.Sequelize.Op.iLike]: provIdSearchField,
+        },
+      };
+    }
+
     const establishments = await models.establishment.findAll({
       attributes: [
         'id',
@@ -56,6 +79,7 @@ const search = async function (req, res) {
         'locationId',
         'dataOwner',
         'updated',
+        'provId',
       ],
       where: {
         ustatus: {
@@ -93,33 +117,19 @@ const search = async function (req, res) {
     const results = establishments.map((establishment) => {
       const parent = establishment.Parent ? { uid: establishment.Parent.uid, nmdsId: establishment.Parent.nmdsId } : {};
 
-      const users = establishment.users
-        ? establishment.users.map((user) => {
-            return {
-              uid: user.uid,
-              name: user.FullNameValue,
-              username: user.login ? user.login.username : '',
-              securityQuestion: user.SecurityQuestionValue,
-              securityAnswer: user.SecurityQuestionAnswerValue,
-              isLocked: user.login && user.login.status === 'Locked',
-            };
-          })
-        : [];
+      const users = establishment.users.map((user) => {
+        return {
+          uid: user.uid,
+          name: user.FullNameValue,
+          username: user.login ? user.login.username : '',
+          securityQuestion: user.SecurityQuestionValue,
+          securityAnswer: user.SecurityQuestionAnswerValue,
+          isLocked: user.login && user.login.status === 'Locked',
+        };
+      });
 
       return {
-        uid: establishment.uid,
-        name: establishment.NameValue,
-        nmdsId: establishment.nmdsId,
-        postcode: establishment.postcode,
-        isRegulated: establishment.isRegulated,
-        address1: establishment.address1,
-        address2: establishment.address2,
-        town: establishment.town,
-        county: establishment.county,
-        isParent: establishment.isParent,
-        dataOwner: establishment.dataOwner,
-        locationId: establishment.locationId,
-        lastUpdated: establishment.updated,
+        ...establishment.get({ plain: true }),
         parent,
         users,
       };
