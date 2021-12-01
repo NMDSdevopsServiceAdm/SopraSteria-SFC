@@ -1,0 +1,45 @@
+<div class="govuk-grid-row govuk-!-margin-1 govuk-!-margin-top-4">
+  <div class="asc-summary-box">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-util__align-right">
+        <a class="govuk-button govuk-button--link" routerLink="/dashboard">Close</a>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h1 class="govuk-!-font-weight-regular govuk-!-margin-top-0">Help to get you started</h1>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
+          {{ wizards[currentIndex].title }}
+        </h2>
+        <div class="asc-cms-content" [innerHTML]="wizards[currentIndex].content"></div>
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <img
+          class="asc-shadow-box"
+          src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
+          alt="{{ wizards[currentIndex].title }}"
+        />
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div *ngIf="!isFirst" class="govuk-grid-column-one-half govuk-util__float-left">
+        <a class="govuk-util__float-left" href="#" (click)="nextOrPreviousWizard($event, false)">
+          <div class="asc-chevron-before asc-no-underline govuk-!-font-size-27">Previous</div>
+          <div class="govuk-link govuk-!-padding-left-2">{{ wizards[currentIndex - 1].title }}</div>
+        </a>
+      </div>
+      <div *ngIf="!isLast" class="govuk-grid-column-one-half govuk-util__float-right">
+        <a
+          class="govuk-util__float-right govuk-util__align-right"
+          href="#"
+          (click)="nextOrPreviousWizard($event, true)"
+        >
+          <div class="asc-chevron-after asc-no-underline govuk-!-font-size-27">Next</div>
+          <div class="govuk-link govuk-!-padding-right-2">
+            {{ wizards[currentIndex + 1].title }}
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

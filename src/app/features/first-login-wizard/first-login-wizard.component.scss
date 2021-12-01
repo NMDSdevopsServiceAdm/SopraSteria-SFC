@@ -1,0 +1,15 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-summary-box {
+  border: 1px solid $govuk-border-colour;
+  background-color: govuk-colour('light-grey');
+  padding: 20px 40px;
+}
+
+.asc-shadow-box {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.asc-no-underline {
+  text-decoration: none;
+}
