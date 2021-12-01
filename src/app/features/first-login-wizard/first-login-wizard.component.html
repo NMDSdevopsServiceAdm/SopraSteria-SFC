@@ -22,37 +22,23 @@
       </div>
     </div>
     <div class="govuk-grid-row">
-      <div *ngIf="!isFirst" class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__align-left">
-        <a
-          class="asc-chevron-before asc-no-underline govuk-!-font-size-27 govuk-button--link govuk-!-margin-top-3"
-          href="#"
-          (click)="nextOrPreviousWizard($event, false)"
-          >Previous</a
-        >
-        <br />
-        <a href="#" (click)="nextOrPreviousWizard($event, false)" class="govuk-button--link govuk-!-margin-left-2">{{
-          wizards[currentIndex - 1].title
-        }}</a>
+      <div *ngIf="!isFirst" class="govuk-grid-column-one-half govuk-util__float-left">
+        <a class="govuk-util__float-left" href="#" (click)="nextOrPreviousWizard($event, false)">
+          <div class="asc-chevron-before asc-no-underline govuk-!-font-size-27">Previous</div>
+          <div class="govuk-link govuk-!-padding-left-2">{{ wizards[currentIndex - 1].title }}</div>
+        </a>
       </div>
-      <div
-        *ngIf="!isLast"
-        class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right"
-      >
+      <div *ngIf="!isLast" class="govuk-grid-column-one-half govuk-util__float-right">
         <a
-          class="
-            asc-chevron-after asc-no-underline
-            govuk-button--link
-            govuk-!-font-size-27 govuk-!-margin-top-3
-            margin-left-6
-          "
+          class="govuk-util__float-right govuk-util__align-right"
           href="#"
           (click)="nextOrPreviousWizard($event, true)"
-          >Next
+        >
+          <div class="asc-chevron-after asc-no-underline govuk-!-font-size-27">Next</div>
+          <div class="govuk-link govuk-!-padding-right-2">
+            {{ wizards[currentIndex + 1].title }}
+          </div>
         </a>
-        <br />
-        <a href="#" (click)="nextOrPreviousWizard($event, true)" class="govuk-button--link govuk-!-margin-right-2">{{
-          wizards[currentIndex + 1].title
-        }}</a>
       </div>
     </div>
   </div>
