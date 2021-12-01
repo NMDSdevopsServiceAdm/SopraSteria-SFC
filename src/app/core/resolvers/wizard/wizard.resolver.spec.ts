@@ -6,7 +6,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WizardService } from '@core/services/wizard.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { AppModule } from 'src/app/app.module';
 
 import { WizardResolver } from './wizard.resolver';
 
@@ -15,7 +14,7 @@ describe('WizardResolver', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AppModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
         WizardResolver,
         {
