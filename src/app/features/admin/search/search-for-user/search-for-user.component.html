@@ -1,5 +1,155 @@
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">Search for a user</div>
+    <div class="govuk-grid-column-two-thirds">
+      <p>Search by name, username or email address.</p>
+      <div *ngIf="submitted && !results.length" data-testid="no-search-results">
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Information</span>
+            Your search returned no results. Please refine your search criteria.
+          </strong>
+        </div>
+      </div>
+      <div *ngIf="results && results.length">
+        <p class="govuk-!-font-weight-bold">
+          Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
+        </p>
+        <table class="govuk-table" *ngIf="results && results.length" data-testid="user-search-results">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Name</th>
+              <th class="govuk-table__header" scope="col">Username</th>
+              <th class="govuk-table__header" scope="col">Workplace ID</th>
+              <th class="govuk-table__header" scope="col">Postcode</th>
+              <th class="govuk-table__header" scope="col">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <ng-container *ngFor="let item of results; index as index">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ item.name }}</td>
+                <td class="govuk-table__cell">{{ item.username }}</td>
+                <td class="govuk-table__cell">
+                  <a (click)="navigateToWorkplace(item.establishment.uid, item.username, null, $event)" href="#">{{
+                    item.establishment.nmdsId
+                  }}</a>
+                  <img
+                    src="/assets/images/flag-orange.svg"
+                    alt="Workplace is pending"
+                    class="govuk-!-margin-right-1 govuk-!-margin-left-3 govuk-util__vertical-align-top"
+                    *ngIf="item.establishment.ustatus === 'PENDING' || item.establishment.ustatus === 'IN PROGRESS'"
+                  />
+                </td>
+                <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
+                <td class="govuk-table__cell">
+                  <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
+                    userDetailsLabel[item.uid] ? userDetailsLabel[item.uid] : 'Open'
+                  }}</a>
+                </td>
+              </tr>
+              <tr *ngIf="userDetails[item.uid]" class="govuk-panel--gray">
+                <td colspan="6">
+                  <div class="govuk-!-margin-2">
+                    <table class="govuk-table">
+                      <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Location ID</th>
+                          <th class="govuk-table__header govuk-!-width-one-half" scope="col">Workplace</th>
+                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">&nbsp;</th>
+                        </tr>
+                      </thead>
+                      <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row govuk-util__vertical-align-top">
+                          <td class="govuk-table__cell govuk-!-font-weight-regular">
+                            {{ item.establishment.locationId }}
+                          </td>
+                          <td class="govuk-table__cell">
+                            <a
+                              (click)="navigateToWorkplace(item.establishment.uid, item.username, null, $event)"
+                              href="#"
+                              >{{ item.establishment.name }}</a
+                            >
+                          </td>
+                          <th class="govuk-table__cell" scope="col">&nbsp;</th>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="govuk-!-margin-2">
+                    <table class="govuk-table">
+                      <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Security question</th>
+                          <th class="govuk-table__header govuk-!-width-one-half" scope="col">Answer</th>
+                          <th class="govuk-table__header govuk-!-width-one-third" scope="col">Locked</th>
+                        </tr>
+                      </thead>
+                      <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row govuk-util__vertical-align-top">
+                          <td class="govuk-table__cell govuk-!-font-weight-regular">
+                            {{ item.securityQuestion }}
+                          </td>
+                          <td class="govuk-table__cell govuk-!-font-weight-regular">
+                            {{ item.securityQuestionAnswer }}
+                          </td>
+                          <td class="govuk-table__cell govuk-!-font-weight-regular">
+                            <a
+                              (click)="unlockUser(item.username, index, $event)"
+                              href="#"
+                              *ngIf="item.isLocked; else notLocked"
+                              >Yes, unlock</a
+                            >
+                            <ng-template #notLocked>No</ng-template>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+        <fieldset class="govuk-fieldset">
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="name"> Name </label>
+            <input
+              class="govuk-input govuk-!-width-three-quarters"
+              id="name"
+              name="name"
+              type="text"
+              [formControlName]="'name'"
+            />
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="username"> Username </label>
+            <input
+              class="govuk-input govuk-!-width-three-quarters"
+              id="username"
+              name="username"
+              type="text"
+              [formControlName]="'username'"
+            />
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="emailAddress"> Email address </label>
+            <input
+              class="govuk-input govuk-!-width-three-quarters"
+              id="emailAddress"
+              name="emailAddress"
+              type="text"
+              [formControlName]="'emailAddress'"
+            />
+          </div>
+        </fieldset>
+
+        <button type="submit" class="govuk-button" data-testid="searchButton">Search</button>
+      </form>
+    </div>
   </div>
 </div>
