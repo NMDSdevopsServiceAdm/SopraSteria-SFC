@@ -194,7 +194,7 @@ describe('SearchForUserComponent', () => {
       it('should show number of results message if results returned in singular when 1', async () => {
         const { queryByText } = await setup(true);
 
-        expect(queryByText('Your search returned 1 result.')).toBeTruthy();
+        expect(queryByText('Your search returned 1 result')).toBeTruthy();
       });
 
       it('should show number of results message if results returned in plural when more than 1', async () => {
@@ -207,7 +207,7 @@ describe('SearchForUserComponent', () => {
 
         fixture.detectChanges();
 
-        expect(queryByText('Your search returned 2 results.')).toBeTruthy();
+        expect(queryByText('Your search returned 2 results')).toBeTruthy();
       });
     });
 
