@@ -28,15 +28,10 @@ export class FirstLoginWizardComponent {
     this.isLast = this.currentIndex === this.wizards.length - 1;
   }
 
-  public nextWizard(event: Event): void {
+  public nextOrPreviousWizard(event: Event, isNext: boolean): void {
     event.preventDefault();
-    this.currentIndex += 1;
-    this.updateVariables();
-  }
-
-  public previousWizard(event: Event): void {
-    event.preventDefault();
-    this.currentIndex -= 1;
+    const nextIndex = isNext ? 1 : -1;
+    this.currentIndex += nextIndex;
     this.updateVariables();
   }
 }
