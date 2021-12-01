@@ -108,10 +108,10 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
 };
 
 const convertIndividualWorkerQualifications = (worker) => {
-  const workerIdAsNumber = parseInt(worker.get('NameOrIdValue'));
+  const workerIdAsNumber = /^\d+$/.test(worker.get('NameOrIdValue'));
   return worker.qualifications.map((qualification) => {
     return {
-      workerName: workerIdAsNumber ? workerIdAsNumber : worker.get('NameOrIdValue'),
+      workerName: workerIdAsNumber ? parseInt(workerIdAsNumber) : worker.get('NameOrIdValue'),
       jobRole: worker.mainJob.title,
       qualificationType: qualification.qualification.group,
       qualificationName: qualification.qualification.title,
@@ -129,10 +129,10 @@ const convertWorkerQualifications = (rawWorkerQualifications) => {
 
 exports.convertQualificationsForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
-    const workplaceNameAsNumber = parseInt(establishment.NameValue);
+    const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
 
     return {
-      name: workplaceNameAsNumber ? workplaceNameAsNumber : establishment.NameValue,
+      name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
       qualifications: convertWorkerQualifications(establishment),
     };
   });

@@ -271,6 +271,37 @@ describe('trainingAndQualificationsUtils', () => {
       });
     });
 
+    describe('convertQualificationsForEstablishments', () => {
+      describe('First establishment', async () => {
+        it('should return array with first establishment name', () => {
+          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+          expect(result[0].name).to.equal('Workplace Name');
+        });
+
+        it('should return a string if number in string', () => {
+          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
+          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+          expect(result[0].name).to.equal('80abc');
+        });
+
+        it('should return a string if number in string with letters', () => {
+          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
+          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+          expect(typeof result[0].name).to.deep.equal('string');
+        });
+
+        it('should return a number if only number in string', () => {
+          mockEstablishmentsQualificationsResponse[0].NameValue = '80';
+          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+          expect(typeof result[0].name).to.deep.equal('number');
+        });
+      });
+    });
+
     describe('Second establishment', async () => {
       it('should return array with second establishment name', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
