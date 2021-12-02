@@ -22,7 +22,7 @@ import { of } from 'rxjs';
 import { SearchForGroupComponent } from './search-for-group.component';
 
 describe('SearchForGroupComponent', () => {
-  async function setup(searchButtonClicked = false) {
+  async function setup(searchButtonClicked = false, isLocked = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForGroupComponent, {
       imports: [
         SharedModule,
@@ -60,13 +60,16 @@ describe('SearchForGroupComponent', () => {
       locationId: null,
       name: 'The One and Only',
       nmdsId: 'H1003112',
-      parent: {},
+      parent: {
+        uid: 'c1231-b13-40d3-4141-ad77f40f4629',
+        nmdsId: 'A1234567',
+      },
       postcode: 'ABC123',
       town: 'SOMEWHERE TOWN',
       uid: 'c93920e7-b373-40d3-8202-ad77f40f4629',
       users: [
         {
-          isLocked: false,
+          isLocked,
           name: 'Bob Bobson',
           securityAnswer: 'Blue maybe',
           securityQuestion: 'What is your favourite colour?',
@@ -202,6 +205,33 @@ describe('SearchForGroupComponent', () => {
         fireEvent.click(searchResults.getByText('Close'));
 
         expect(searchResults.queryByTestId('groups-workplace-details')).toBeNull();
+      });
+
+      it('should navigate to parent workplace when clicking parent ID link', async () => {
+        const { getByTestId, switchWorkplaceSpy } = await setup(true);
+
+        const searchResults = within(getByTestId('group-search-results'));
+        fireEvent.click(searchResults.getByText('Open'));
+        fireEvent.click(searchResults.getByText('A1234567'));
+
+        await expect(switchWorkplaceSpy).toHaveBeenCalledWith('c1231-b13-40d3-4141-ad77f40f4629', '', 'A1234567');
+      });
+
+      it('should open unlock user dialog when clicking unlock button', async () => {
+        const { getByText } = await setup(true, true);
+
+        const registrationsService = TestBed.inject(RegistrationsService);
+
+        const spy = spyOn(registrationsService, 'unlockAccount').and.returnValue(of({}));
+
+        fireEvent.click(getByText('Open'));
+        fireEvent.click(getByText('Yes, unlock'));
+
+        const adminUnlockModal = within(document.body).getByRole('dialog');
+        const confirm = within(adminUnlockModal).getByText('Unlock account');
+        confirm.click();
+
+        await expect(spy).toHaveBeenCalled();
       });
     });
 

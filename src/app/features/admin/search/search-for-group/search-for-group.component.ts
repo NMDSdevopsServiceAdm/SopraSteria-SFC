@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { EstablishmentSearchItem, GroupSearchRequest } from '@core/model/establishment.model';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,6 +23,7 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private establishmentService: EstablishmentService,
     private switchWorkplaceService: SwitchWorkplaceService,
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +49,18 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
       ' ' + [workplace.address2, workplace.town, workplace.county, workplace.postcode].filter(Boolean).join(', ') || '';
 
     return workplace.address1 + secondaryAddress;
+  }
+
+  public unlockWorkplaceUser(username: string, workplaceIndex: number, userIndex: number, e: Event): void {
+    e.preventDefault();
+    const data = {
+      username,
+      removeUnlock: () => {
+        this.results[workplaceIndex].users[userIndex].isLocked = false;
+      },
+    };
+
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
 
   public onSubmit(): void {
