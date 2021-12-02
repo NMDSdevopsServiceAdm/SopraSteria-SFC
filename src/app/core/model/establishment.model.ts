@@ -214,6 +214,37 @@ export interface GroupSearchRequest {
   onlyParents: boolean;
 }
 
+export interface EstablishmentSearchItem {
+  uid: string;
+  name: string;
+  nmdsId: string;
+  address1: string;
+  address2: string;
+  postcode: string;
+  town: string;
+  county: string;
+  dataOwner: string;
+  employerType: { value: string; other: string };
+  isParent: boolean;
+  isRegulated: boolean;
+  lastUpdated: Date;
+  locationId: string;
+  parent?: {
+    uid: string;
+    nmdsId: string;
+  };
+  users?: [
+    {
+      isLocked: boolean;
+      name: string;
+      securityAnswer: string;
+      securityQuestion: string;
+      uid: string;
+      username: string;
+    },
+  ];
+}
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
   '0_dsc' = 'Staff name (Z to A)',

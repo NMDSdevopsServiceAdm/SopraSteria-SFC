@@ -6,6 +6,7 @@ import {
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
+  EstablishmentSearchItem,
   GroupSearchRequest,
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
@@ -314,9 +315,9 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 
-  public searchGroups(data: GroupSearchRequest): Observable<Array<any>> {
+  public searchGroups(data: GroupSearchRequest): Observable<Array<EstablishmentSearchItem>> {
     return this.http
-      .post<Array<any>>('/api/admin/search/groups', data, { observe: 'response' })
+      .post<Array<EstablishmentSearchItem>>('/api/admin/search/groups', data, { observe: 'response' })
       .pipe(map((response) => response.body));
   }
 

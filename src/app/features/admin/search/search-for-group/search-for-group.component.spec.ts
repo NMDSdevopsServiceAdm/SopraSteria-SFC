@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentSearchItem } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -54,7 +55,7 @@ describe('SearchForGroupComponent', () => {
       employerType: { value: 'Voluntary / Charity', other: null },
       isParent: false,
       isRegulated: false,
-      lastUpdated: '2021-11-26T12:36:12.047Z',
+      lastUpdated: new Date('2021-11-26T12:36:12.047Z'),
       locationId: null,
       name: 'The One and Only',
       nmdsId: 'H1003112',
@@ -72,7 +73,7 @@ describe('SearchForGroupComponent', () => {
           username: 'bobby',
         },
       ],
-    };
+    } as EstablishmentSearchItem;
 
     const component = fixture.componentInstance;
 
