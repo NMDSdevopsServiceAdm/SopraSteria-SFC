@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { GroupSearchRequest } from '@core/model/establishment.model';
 import { UserSearchItem } from '@core/model/userDetails.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -17,13 +18,22 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
   public establishmentDetailsLabel = [];
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private formBuilder: FormBuilder, private establishmentService: EstablishmentService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private establishmentService: EstablishmentService,
+    private switchWorkplaceService: SwitchWorkplaceService,
+  ) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       employerType: 'All',
       onlyParents: false,
     });
+  }
+
+  public navigateToWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
+    event.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
   public onSubmit(): void {

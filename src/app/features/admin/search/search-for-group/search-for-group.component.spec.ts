@@ -169,6 +169,15 @@ describe('SearchForGroupComponent', () => {
       expect(table.queryByText('Voluntary / Charity')).toBeTruthy();
     });
 
+    it('should navigate to workplace when clicking workplace name link', async () => {
+      const { getByTestId, switchWorkplaceSpy } = await setup(true);
+
+      const searchResults = within(getByTestId('group-search-results'));
+      fireEvent.click(searchResults.getByText('The One and Only'));
+
+      await expect(switchWorkplaceSpy).toHaveBeenCalledWith('c93920e7-b373-40d3-8202-ad77f40f4629', '', 'H1003112');
+    });
+
     describe('Number of results message', async () => {
       it('should show a no search results message when there are no search results', async () => {
         const { fixture, searchGroupsSpy, getByTestId } = await setup();
