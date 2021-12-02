@@ -17,7 +17,9 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -504,6 +506,13 @@ describe('HomeTabComponent', () => {
       });
       expect(becomeAParentLink).toBeTruthy();
       expect(linkToParentLink).toBeTruthy();
+    });
+
+    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
+      const { component } = await setup();
+
+      const firstLoginWizardLink = component.getByText('Help to get you started');
+      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
     });
   });
 });
