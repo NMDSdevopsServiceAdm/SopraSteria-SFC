@@ -46,7 +46,33 @@ describe('SearchForGroupComponent', () => {
       ],
     });
 
-    const mockSearchResult = {};
+    const mockSearchResult = {
+      address1: '1 THE LANE',
+      address2: '',
+      county: 'HAMPSHIRE',
+      dataOwner: 'Workplace',
+      employerType: { value: 'Voluntary / Charity', other: null },
+      isParent: false,
+      isRegulated: false,
+      lastUpdated: '2021-11-26T12:36:12.047Z',
+      locationId: null,
+      name: 'The One and Only',
+      nmdsId: 'H1003112',
+      parent: {},
+      postcode: 'ABC123',
+      town: 'SOMEWHERE TOWN',
+      uid: 'c93920e7-b373-40d3-8202-ad77f40f4629',
+      users: [
+        {
+          isLocked: false,
+          name: 'Bob Bobson',
+          securityAnswer: 'Blue maybe',
+          securityQuestion: 'What is your favourite colour?',
+          uid: '60a22dd6-7fe0-4105-93f0-34946917768c',
+          username: 'bobby',
+        },
+      ],
+    };
 
     const component = fixture.componentInstance;
 
@@ -137,6 +163,25 @@ describe('SearchForGroupComponent', () => {
         fixture.detectChanges();
 
         expect(getByTestId('no-search-results'));
+      });
+
+      it('should show number of results message if results returned in singular when 1', async () => {
+        const { queryByText } = await setup(true);
+
+        expect(queryByText('Your search returned 1 result')).toBeTruthy();
+      });
+
+      it('should show number of results message if results returned in plural when more than 1', async () => {
+        const { searchGroupsSpy, fixture, getByTestId, queryByText, mockSearchResult } = await setup();
+
+        searchGroupsSpy.and.returnValue(of([mockSearchResult, mockSearchResult]));
+
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
+
+        fixture.detectChanges();
+
+        expect(queryByText('Your search returned 2 results')).toBeTruthy();
       });
     });
   });

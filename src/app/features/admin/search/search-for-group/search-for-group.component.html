@@ -11,6 +11,11 @@
           </strong>
         </div>
       </div>
+      <div *ngIf="results && results.length">
+        <p class="govuk-!-font-weight-bold">
+          Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
+        </p>
+      </div>
     </div>
     <div class="govuk-grid-column-one-third">
       <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
