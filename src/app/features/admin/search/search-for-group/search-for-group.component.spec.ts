@@ -13,6 +13,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -26,7 +27,7 @@ describe('SearchForGroupComponent', () => {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
@@ -177,6 +178,31 @@ describe('SearchForGroupComponent', () => {
       fireEvent.click(searchResults.getByText('The One and Only'));
 
       await expect(switchWorkplaceSpy).toHaveBeenCalledWith('c93920e7-b373-40d3-8202-ad77f40f4629', '', 'H1003112');
+    });
+
+    describe('Dropdowns', async () => {
+      it('should expand the Workplace details when clicking Open', async () => {
+        const { fixture, getByTestId } = await setup(true);
+
+        const searchResults = within(getByTestId('group-search-results'));
+        fireEvent.click(searchResults.getByText('Open'));
+
+        fixture.detectChanges();
+
+        expect(searchResults.getByText('1 THE LANE SOMEWHERE TOWN, HAMPSHIRE, ABC123'));
+        expect(searchResults.getByText('What is your favourite colour?'));
+      });
+
+      it('should collapse the Workplace details when clicking Close', async () => {
+        const { getByTestId } = await setup(true);
+
+        const searchResults = within(getByTestId('group-search-results'));
+
+        fireEvent.click(searchResults.getByText('Open'));
+        fireEvent.click(searchResults.getByText('Close'));
+
+        expect(searchResults.queryByTestId('groups-workplace-details')).toBeNull();
+      });
     });
 
     describe('Number of results message', async () => {

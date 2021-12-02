@@ -35,6 +35,19 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
+  public toggleDetails(uid: string, event: Event): void {
+    event.preventDefault();
+    this.establishmentDetails[uid] = !this.establishmentDetails[uid];
+    this.establishmentDetailsLabel[uid] = this.establishmentDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
+  }
+
+  public displayAddressForGroups(workplace: EstablishmentSearchItem): string {
+    const secondaryAddress =
+      ' ' + [workplace.address2, workplace.town, workplace.county, workplace.postcode].filter(Boolean).join(', ') || '';
+
+    return workplace.address1 + secondaryAddress;
+  }
+
   public onSubmit(): void {
     const data = this.getRequestData();
     this.subscriptions.add(
