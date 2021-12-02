@@ -123,4 +123,21 @@ describe('SearchForGroupComponent', () => {
       onlyParents: false,
     });
   });
+
+  describe('Results returned from search', async () => {
+    describe('Number of results message', async () => {
+      it('should show a no search results message when there are no search results', async () => {
+        const { fixture, searchGroupsSpy, getByTestId } = await setup();
+
+        searchGroupsSpy.and.returnValue(of([]));
+
+        const searchButton = getByTestId('searchButton');
+        fireEvent.click(searchButton);
+
+        fixture.detectChanges();
+
+        expect(getByTestId('no-search-results'));
+      });
+    });
+  });
 });
