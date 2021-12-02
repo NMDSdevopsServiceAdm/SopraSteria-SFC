@@ -14,7 +14,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { SearchForGroupComponent } from './search-for-group.component';
@@ -151,6 +151,24 @@ describe('SearchForGroupComponent', () => {
   });
 
   describe('Results returned from search', async () => {
+    it('should show table headings after clicking search button if results returned', async () => {
+      const { queryByText, queryAllByText } = await setup(true);
+
+      expect(queryAllByText('Workplace')).toBeTruthy();
+      expect(queryAllByText('Workplace ID')).toBeTruthy();
+      expect(queryByText('Employer type')).toBeTruthy();
+    });
+
+    it('should show returned user data in table after clicking search button if results returned', async () => {
+      const { getByTestId } = await setup(true);
+
+      const table = within(getByTestId('group-search-results'));
+
+      expect(table.queryByText('The One and Only')).toBeTruthy();
+      expect(table.queryByText('H1003112')).toBeTruthy();
+      expect(table.queryByText('Voluntary / Charity')).toBeTruthy();
+    });
+
     describe('Number of results message', async () => {
       it('should show a no search results message when there are no search results', async () => {
         const { fixture, searchGroupsSpy, getByTestId } = await setup();

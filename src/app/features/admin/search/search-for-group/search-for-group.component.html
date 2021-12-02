@@ -15,6 +15,34 @@
         <p class="govuk-!-font-weight-bold">
           Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
         </p>
+        <table class="govuk-table" *ngIf="results && results.length" data-testid="group-search-results">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace</th>
+              <th class="govuk-table__header" scope="col">Workplace ID</th>
+              <th class="govuk-table__header" scope="col">Employer type</th>
+              <th class="govuk-table__header" scope="col">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <ng-container *ngFor="let item of results; index as workplaceIndex">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
+                </td>
+                <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
+                <td class="govuk-table__cell">
+                  {{ item.employerType?.other ? item.employerType.other : item.employerType?.value || '-' }}
+                </td>
+                <td class="govuk-table__cell">
+                  <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
+                    establishmentDetailsLabel[item.uid] ? establishmentDetailsLabel[item.uid] : 'Open'
+                  }}</a>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
       </div>
     </div>
     <div class="govuk-grid-column-one-third">
