@@ -19,7 +19,9 @@
           </div>
         </div>
         <div *ngIf="results.length">
-          <p class="govuk-!-font-weight-bold">Your search returned {{ results.length }} results</p>
+          <p class="govuk-!-font-weight-bold">
+            Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
+          </p>
           <table class="govuk-table">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
@@ -34,21 +36,29 @@
             <tbody class="govuk-table__body">
               <tr class="govuk-table__row" *ngFor="let item of results">
                 <td class="govuk-table__cell">
-                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
+                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#" data-testid="name-link">{{
+                    item.name
+                  }}</a>
                 </td>
                 <td class="govuk-table__cell">{{ item.postcode }}</td>
                 <td class="govuk-table__cell">
-                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{
-                    item.nmdsId || '-'
-                  }}</a>
+                  <a
+                    (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)"
+                    href="#"
+                    data-testid="workplaceId-link"
+                    >{{ item.nmdsId || '-' }}</a
+                  >
                 </td>
                 <td class="govuk-table__cell">
                   <p *ngIf="!item.locationId">-</p>
-                  <a href="https://www.cqc.org.uk/location/{{ item.locationId }}" target="_blank">{{
-                    item.locationId
-                  }}</a>
+                  <a
+                    href="https://www.cqc.org.uk/location/{{ item.locationId }}"
+                    target="_blank"
+                    data-testid="locationId-link"
+                    >{{ item.locationId }}</a
+                  >
                 </td>
-                <td class="govuk-table__cell">{{ item.provId || '-' }}</td>
+                <td class="govuk-table__cell">{{ item.providerId || '-' }}</td>
                 <td class="govuk-table__cell">
                   <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)">
                     {{ workplaceDetails[item.uid] ? workplaceDetailsLabel[item.uid] : 'Open' }}
