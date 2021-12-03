@@ -14,8 +14,8 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
   public results: Array<WorkplaceSearchItem> = [];
-  public establishmentDetails = [];
-  public establishmentDetailsLabel = [];
+  public workplaceDetails = [];
+  public workplaceDetailsLabel = [];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -39,8 +39,8 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
 
   public toggleDetails(uid: string, event: Event): void {
     event.preventDefault();
-    this.establishmentDetails[uid] = !this.establishmentDetails[uid];
-    this.establishmentDetailsLabel[uid] = this.establishmentDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
+    this.workplaceDetails[uid] = !this.workplaceDetails[uid];
+    this.workplaceDetailsLabel[uid] = this.workplaceDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 
   public onSubmit(): void {

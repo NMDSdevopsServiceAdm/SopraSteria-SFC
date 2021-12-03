@@ -36,15 +36,11 @@
                 </td>
                 <td class="govuk-table__cell">
                   <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
-                    establishmentDetailsLabel[item.uid] ? establishmentDetailsLabel[item.uid] : 'Open'
+                    workplaceDetailsLabel[item.uid] ? workplaceDetailsLabel[item.uid] : 'Open'
                   }}</a>
                 </td>
               </tr>
-              <tr
-                *ngIf="establishmentDetails[item.uid]"
-                class="govuk-panel--gray"
-                data-testid="groups-workplace-details"
-              >
+              <tr *ngIf="workplaceDetails[item.uid]" class="govuk-panel--gray" data-testid="groups-workplace-details">
                 <td colspan="4">
                   <app-workplace-dropdown
                     [item]="item"
