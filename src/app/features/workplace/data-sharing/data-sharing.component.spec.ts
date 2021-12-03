@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -19,7 +20,7 @@ describe('DataSharingComponent', () => {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
@@ -209,8 +210,8 @@ describe('DataSharingComponent', () => {
       component.establishment.isRegulated = true;
       fixture.detectChanges();
 
-      const cqcYesRadioButton = getByTestId('cqc-no');
-      fireEvent.click(cqcYesRadioButton);
+      const cqcNoRadioButton = getByTestId('cqc-no');
+      fireEvent.click(cqcNoRadioButton);
 
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
