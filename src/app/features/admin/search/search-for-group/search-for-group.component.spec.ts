@@ -198,7 +198,8 @@ describe('SearchForGroupComponent', () => {
         fireEvent.click(searchResults.getByText('Open'));
         fireEvent.click(searchResults.getByText('Close'));
 
-        expect(searchResults.queryByTestId('groups-workplace-details')).toBeNull();
+        expect(searchResults.queryByText('1 THE LANE SOMEWHERE TOWN, HAMPSHIRE, ABC123')).toBeNull();
+        expect(searchResults.queryByText('What is your favourite colour?')).toBeNull();
       });
 
       it('should navigate to parent workplace when clicking parent ID link', async () => {
@@ -230,7 +231,7 @@ describe('SearchForGroupComponent', () => {
 
     describe('Number of results message', async () => {
       it('should show a no search results message when there are no search results', async () => {
-        const { fixture, searchGroupsSpy, getByTestId } = await setup();
+        const { fixture, searchGroupsSpy, getByTestId, getByText } = await setup();
 
         searchGroupsSpy.and.returnValue(of([]));
 
@@ -239,7 +240,7 @@ describe('SearchForGroupComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByTestId('no-search-results'));
+        expect(getByText('Your search returned no results. Please refine your search criteria.'));
       });
 
       it('should show number of results message if results returned in singular when 1', async () => {
