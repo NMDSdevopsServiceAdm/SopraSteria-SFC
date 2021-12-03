@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { GroupSearchRequest, WorkplaceSearchItem } from '@core/model/establishment.model';
+import { WorkplaceSearchItem } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { Subscription } from 'rxjs';
@@ -46,9 +46,8 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
   }
 
   public onSubmit(): void {
-    const data = this.getRequestData();
     this.subscriptions.add(
-      this.establishmentService.searchGroups(data).subscribe(
+      this.establishmentService.searchGroups(this.form.value).subscribe(
         (response) => {
           this.results = response;
           this.submitted = true;
@@ -56,13 +55,6 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
         (error) => console.error(error),
       ),
     );
-  }
-
-  private getRequestData(): GroupSearchRequest {
-    return {
-      employerType: this.form.controls.employerType.value,
-      parent: this.form.controls.parent.value,
-    };
   }
 
   ngOnDestroy(): void {
