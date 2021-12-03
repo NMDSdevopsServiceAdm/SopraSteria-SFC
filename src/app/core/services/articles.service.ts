@@ -21,7 +21,7 @@ export class ArticlesService {
     params = params.set('limit', '1');
     params = params.set('fields', 'content,title,slug');
 
-    return this.http.get<Articles>(`${environment.cmsUri}${this.path}`, { params });
+    return this.http.get<Articles>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
 
   public getThreeLatestArticles(): Observable<Articles> {
@@ -35,6 +35,6 @@ export class ArticlesService {
     params = params.set('fields', 'title,slug');
     params = params.set('filter', JSON.stringify(statusFilter));
 
-    return this.http.get<Articles>(`${environment.cmsUri}${this.path}`, { params });
+    return this.http.get<Articles>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
 }
