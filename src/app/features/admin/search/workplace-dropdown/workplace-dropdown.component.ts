@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { WorkplaceSearchItem } from '@core/model/establishment.model';
 import { DialogService } from '@core/services/dialog.service';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 
 @Component({
@@ -8,11 +9,11 @@ import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-
   templateUrl: './workplace-dropdown.component.html',
 })
 export class WorkplaceDropdownComponent {
-  @Input() item;
+  @Input() item: WorkplaceSearchItem;
   @Input() workplaceIndex: number;
-  @Output() navigateToWorkplaceClicked: EventEmitter<NavigationFields> = new EventEmitter<NavigationFields>();
+  @Input() navigateToWorkplace: () => void;
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private dialogService: DialogService, private switchWorkplaceService: SwitchWorkplaceService) {}
 
   public displayAddressForGroups(workplace: WorkplaceSearchItem): string {
     const secondaryAddress =
@@ -32,15 +33,4 @@ export class WorkplaceDropdownComponent {
 
     this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
   }
-
-  public navigateToWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
-    event.preventDefault();
-    this.navigateToWorkplaceClicked.emit({ id, username, nmdsId });
-  }
-}
-
-interface NavigationFields {
-  id: string;
-  username: string;
-  nmdsId: string;
 }

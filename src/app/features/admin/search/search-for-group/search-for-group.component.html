@@ -28,7 +28,7 @@
             <ng-container *ngFor="let item of results; index as workplaceIndex">
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
-                  <a (click)="navigate(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
+                  <a (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
                 </td>
                 <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
                 <td class="govuk-table__cell">
@@ -49,7 +49,7 @@
                   <app-workplace-dropdown
                     [item]="item"
                     [workplaceIndex]="workplaceIndex"
-                    (navigateToWorkplaceClicked)="navigateToWorkplace($event)"
+                    [(navigateToWorkplace)]="navigateToWorkplace"
                   ></app-workplace-dropdown>
                 </td>
               </tr>

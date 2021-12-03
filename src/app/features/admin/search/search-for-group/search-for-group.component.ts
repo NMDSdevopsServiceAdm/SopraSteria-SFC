@@ -30,13 +30,9 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
     });
   }
 
-  public navigate(id: string, username: string, nmdsId: string, event: Event): void {
+  public navigateToWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
     event.preventDefault();
-    this.navigateToWorkplace({ id, username, nmdsId });
-  }
-
-  public navigateToWorkplace(workplace): void {
-    this.switchWorkplaceService.navigateToWorkplace(workplace.id, workplace.username, workplace.nmdsId);
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
   public toggleDetails(uid: string, event: Event): void {
