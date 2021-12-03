@@ -19,7 +19,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { EstablishmentDropdownComponent } from '../establishment-dropdown/establishment-dropdown.component';
+import { WorkplaceDropdownComponent } from '../workplace-dropdown/workplace-dropdown.component';
 import { SearchForGroupComponent } from './search-for-group.component';
 
 describe('SearchForGroupComponent', () => {
@@ -33,7 +33,7 @@ describe('SearchForGroupComponent', () => {
         FormsModule,
         ReactiveFormsModule,
       ],
-      declarations: [EstablishmentDropdownComponent],
+      declarations: [WorkplaceDropdownComponent],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {

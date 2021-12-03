@@ -4,10 +4,10 @@ import { DialogService } from '@core/services/dialog.service';
 import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 
 @Component({
-  selector: 'app-establishment-dropdown',
-  templateUrl: './establishment-dropdown.component.html',
+  selector: 'app-workplace-dropdown',
+  templateUrl: './workplace-dropdown.component.html',
 })
-export class EstablishmentDropdownComponent {
+export class WorkplaceDropdownComponent {
   @Input() item;
   @Input() workplaceIndex: number;
   @Output() navigateToWorkplaceClicked: EventEmitter<NavigationFields> = new EventEmitter<NavigationFields>();
