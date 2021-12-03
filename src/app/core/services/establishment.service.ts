@@ -6,13 +6,13 @@ import {
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
-  EstablishmentSearchItem,
   GroupSearchRequest,
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
   mandatoryTraining,
   setPermission,
   UpdateJobsRequest,
+  WorkplaceSearchItem,
 } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -315,9 +315,9 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 
-  public searchGroups(data: GroupSearchRequest): Observable<Array<EstablishmentSearchItem>> {
+  public searchGroups(data: GroupSearchRequest): Observable<Array<WorkplaceSearchItem>> {
     return this.http
-      .post<Array<EstablishmentSearchItem>>('/api/admin/search/groups', data, { observe: 'response' })
+      .post<Array<WorkplaceSearchItem>>('/api/admin/search/groups', data, { observe: 'response' })
       .pipe(map((response) => response.body));
   }
 

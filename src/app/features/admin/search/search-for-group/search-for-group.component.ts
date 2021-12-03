@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { EstablishmentSearchItem, GroupSearchRequest } from '@core/model/establishment.model';
+import { GroupSearchRequest, WorkplaceSearchItem } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 export class SearchForGroupComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
-  public results: Array<EstablishmentSearchItem> = [];
+  public results: Array<WorkplaceSearchItem> = [];
   public establishmentDetails = [];
   public establishmentDetailsLabel = [];
   private subscriptions: Subscription = new Subscription();

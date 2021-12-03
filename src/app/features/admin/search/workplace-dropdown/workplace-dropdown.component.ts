@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EstablishmentSearchItem } from '@core/model/establishment.model';
+import { WorkplaceSearchItem } from '@core/model/establishment.model';
 import { DialogService } from '@core/services/dialog.service';
 import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 
@@ -14,7 +14,7 @@ export class WorkplaceDropdownComponent {
 
   constructor(private dialogService: DialogService) {}
 
-  public displayAddressForGroups(workplace: EstablishmentSearchItem): string {
+  public displayAddressForGroups(workplace: WorkplaceSearchItem): string {
     const secondaryAddress =
       ' ' + [workplace.address2, workplace.town, workplace.county, workplace.postcode].filter(Boolean).join(', ') || '';
 

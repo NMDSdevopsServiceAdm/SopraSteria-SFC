@@ -214,7 +214,7 @@ export interface GroupSearchRequest {
   parent: boolean;
 }
 
-export interface EstablishmentSearchItem {
+export interface WorkplaceSearchItem {
   uid: string;
   name: string;
   nmdsId: string;
