@@ -17,9 +17,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import {
-  StaffMismatchBannerComponent,
-} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -397,6 +395,9 @@ describe('HomeTabComponent', () => {
         component.fixture.componentInstance.linkToParentRequestedStatus = false;
         component.fixture.componentInstance.parentStatusRequested = false;
         component.fixture.componentInstance.canLinkToParent = true;
+
+        component.fixture.detectChanges();
+
         const becomeAParentLink = component.getByText('Become a parent organisation');
         const dialogMessage = 'Become a parent organisation';
 
