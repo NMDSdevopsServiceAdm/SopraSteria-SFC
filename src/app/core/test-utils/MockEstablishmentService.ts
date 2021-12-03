@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, WorkplaceSearchItem } from '@core/model/establishment.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -115,4 +115,37 @@ export class MockEstablishmentService extends EstablishmentService {
       vacancies: undefined,
     };
   }
+}
+
+export function buildMockAdminSearchWorkplace(isLocked = false): WorkplaceSearchItem {
+  return {
+    address1: '1 THE LANE',
+    address2: '',
+    county: 'HAMPSHIRE',
+    dataOwner: 'Workplace',
+    employerType: { value: 'Voluntary / Charity', other: null },
+    isParent: false,
+    isRegulated: false,
+    lastUpdated: new Date('2021-11-26T12:36:12.047Z'),
+    locationId: null,
+    name: 'The One and Only',
+    nmdsId: 'H1003112',
+    parent: {
+      uid: 'c1231-b13-40d3-4141-ad77f40f4629',
+      nmdsId: 'A1234567',
+    },
+    postcode: 'ABC123',
+    town: 'SOMEWHERE TOWN',
+    uid: 'c93920e7-b373-40d3-8202-ad77f40f4629',
+    users: [
+      {
+        isLocked,
+        name: 'Bob Bobson',
+        securityAnswer: 'Blue maybe',
+        securityQuestion: 'What is your favourite colour?',
+        uid: '60a22dd6-7fe0-4105-93f0-34946917768c',
+        username: 'bobby',
+      },
+    ],
+  } as WorkplaceSearchItem;
 }
