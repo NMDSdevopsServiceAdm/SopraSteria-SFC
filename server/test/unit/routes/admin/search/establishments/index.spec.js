@@ -5,7 +5,7 @@ const models = require('../../../../../../models/index');
 const establishmentSearch = require('../../../../../../routes/admin/search/establishments');
 const { establishmentBuilder } = require('../../../../../factories/models');
 
-describe('server/routes/admin/search/establishments', () => {
+describe.only('server/routes/admin/search/establishments', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findAll').returns([
       {
@@ -129,7 +129,7 @@ describe('server/routes/admin/search/establishments', () => {
       const searchObject = establishmentSearch.createSearchObject({ name: 'Care Home 1' });
 
       expect(searchObject).to.deep.equal({
-        name: {
+        NameValue: {
           ['iLike']: 'Care Home 1',
         },
       });
@@ -190,7 +190,7 @@ describe('server/routes/admin/search/establishments', () => {
       });
 
       expect(searchObject).to.deep.equal({
-        name: {
+        NameValue: {
           ['iLike']: 'Care Home 1',
         },
         postcode: {
@@ -216,7 +216,7 @@ describe('server/routes/admin/search/establishments', () => {
       });
 
       expect(searchObject).to.deep.equal({
-        name: {
+        NameValue: {
           ['iLike']: 'Care Home 1',
         },
         postcode: {
@@ -236,7 +236,7 @@ describe('server/routes/admin/search/establishments', () => {
       });
 
       expect(searchObject).to.deep.equal({
-        name: {
+        NameValue: {
           ['iLike']: 'Care Home 1',
         },
         postcode: {
