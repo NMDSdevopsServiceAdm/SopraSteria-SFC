@@ -34,18 +34,25 @@
             <tbody class="govuk-table__body">
               <tr class="govuk-table__row" *ngFor="let item of results">
                 <td class="govuk-table__cell">
-                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{ item.NameValue }}</a>
+                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
                 </td>
                 <td class="govuk-table__cell">{{ item.postcode }}</td>
                 <td class="govuk-table__cell">
-                  <a>{{ item.nmdsId || '-' }}</a>
+                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#">{{
+                    item.nmdsId || '-'
+                  }}</a>
                 </td>
                 <td class="govuk-table__cell">
-                  <a>{{ item.locationId || '-' }}</a>
+                  <p *ngIf="!item.locationId">-</p>
+                  <a href="https://www.cqc.org.uk/location/{{ item.locationId }}" target="_blank">{{
+                    item.locationId
+                  }}</a>
                 </td>
                 <td class="govuk-table__cell">{{ item.provId || '-' }}</td>
                 <td class="govuk-table__cell">
-                  <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)"> Open </a>
+                  <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)">
+                    {{ workplaceDetails[item.uid] ? workplaceDetailsLabel[item.uid] : 'Open' }}
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -57,14 +64,8 @@
       <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form">
         <fieldset class="govuk-fieldset">
           <div class="govuk-form-group">
-            <label for="workplaceName" class="govuk-label">Workplace name</label>
-            <input
-              class="govuk-input"
-              [formControlName]="'workplaceName'"
-              id="workplaceName"
-              name="workplaceName"
-              type="text"
-            />
+            <label for="name" class="govuk-label">Workplace name</label>
+            <input class="govuk-input" [formControlName]="'name'" id="name" name="name" type="text" />
           </div>
           <div class="govuk-form-group">
             <label for="postcode" class="govuk-label">Postcode</label>
@@ -81,12 +82,12 @@
             <input class="govuk-input" [formControlName]="'nmdsId'" id="nmdsId" name="nmdsId" type="text" />
           </div>
           <div class="govuk-form-group">
-            <label for="locationid" class="govuk-label">Location ID</label>
-            <input class="govuk-input" [formControlName]="'locationid'" id="locationid" name="locationid" type="text" />
+            <label for="locationId" class="govuk-label">Location ID</label>
+            <input class="govuk-input" [formControlName]="'locationId'" id="locationId" name="locationId" type="text" />
           </div>
           <div class="govuk-form-group">
-            <label for="providerid" class="govuk-label">Provider ID</label>
-            <input class="govuk-input" [formControlName]="'providerid'" id="providerid" name="providerid" type="text" />
+            <label for="provId" class="govuk-label">Provider ID</label>
+            <input class="govuk-input" [formControlName]="'provId'" id="provId" name="provId" type="text" />
           </div>
         </fieldset>
         <button type="submit" class="govuk-button">Search</button>

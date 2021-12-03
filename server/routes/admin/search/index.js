@@ -6,7 +6,7 @@ const establishments = require('./establishments');
 const users = require('./users');
 const groups = require('./groups');
 
-router.use('/establishments', establishments);
+router.use('/establishments', establishments.search);
 router.use('/users', users);
 router.use('/groups', groups);
 
