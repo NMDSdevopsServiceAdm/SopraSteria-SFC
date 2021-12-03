@@ -211,7 +211,7 @@ export interface adminMoveWorkplace {
 
 export interface GroupSearchRequest {
   employerType: string;
-  onlyParents: boolean;
+  parent: boolean;
 }
 
 export interface EstablishmentSearchItem {

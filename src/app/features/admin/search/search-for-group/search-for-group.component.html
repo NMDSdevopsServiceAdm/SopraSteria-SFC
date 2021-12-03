@@ -40,12 +40,19 @@
                   }}</a>
                 </td>
               </tr>
-              <app-establishment-dropdown
+              <tr
                 *ngIf="establishmentDetails[item.uid]"
-                [item]="item"
-                [workplaceIndex]="workplaceIndex"
-                (navigateToWorkplaceClicked)="navigateToWorkplace($event)"
-              ></app-establishment-dropdown>
+                class="govuk-panel--gray"
+                data-testid="groups-workplace-details"
+              >
+                <td colspan="4">
+                  <app-establishment-dropdown
+                    [item]="item"
+                    [workplaceIndex]="workplaceIndex"
+                    (navigateToWorkplaceClicked)="navigateToWorkplace($event)"
+                  ></app-establishment-dropdown>
+                </td>
+              </tr>
             </ng-container>
           </tbody>
         </table>
@@ -69,14 +76,14 @@
           <div class="govuk-checkboxes">
             <div class="govuk-checkboxes__item">
               <input
-                id="onlyParents"
-                name="onlyParents"
+                id="parent"
+                name="parent"
                 class="govuk-checkboxes__input"
                 type="checkbox"
                 value="true"
-                [formControlName]="'onlyParents'"
+                [formControlName]="'parent'"
               />
-              <label class="govuk-label govuk-checkboxes__label" for="onlyParents"> Only search for parents </label>
+              <label class="govuk-label govuk-checkboxes__label" for="parent"> Only search for parents </label>
             </div>
           </div>
         </div>

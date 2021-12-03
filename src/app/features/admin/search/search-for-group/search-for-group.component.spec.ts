@@ -114,20 +114,20 @@ describe('SearchForGroupComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call searchGroups with employerType set to All and onlyParents false when clicking search button with nothing changed', async () => {
+  it('should call searchGroups with employerType set to All and parent false when clicking search button with nothing changed', async () => {
     const { searchGroupsSpy } = await setup(true);
 
     expect(searchGroupsSpy).toHaveBeenCalledWith({
       employerType: 'All',
-      onlyParents: false,
+      parent: false,
     });
   });
 
-  it('should call searchGroups with onlyParents set to true when checkbox clicked and then search button', async () => {
+  it('should call searchGroups with parent set to true when checkbox clicked and then search button', async () => {
     const { fixture, getByText, getByTestId, searchGroupsSpy } = await setup();
 
-    const onlyParentsCheckbox = getByText('Only search for parents');
-    fireEvent.click(onlyParentsCheckbox);
+    const parentCheckbox = getByText('Only search for parents');
+    fireEvent.click(parentCheckbox);
 
     const searchButton = getByTestId('searchButton');
     fireEvent.click(searchButton);
@@ -136,7 +136,7 @@ describe('SearchForGroupComponent', () => {
 
     expect(searchGroupsSpy).toHaveBeenCalledWith({
       employerType: 'All',
-      onlyParents: true,
+      parent: true,
     });
   });
 
@@ -153,7 +153,7 @@ describe('SearchForGroupComponent', () => {
 
     expect(searchGroupsSpy).toHaveBeenCalledWith({
       employerType: 'Local Authority (adult services)',
-      onlyParents: false,
+      parent: false,
     });
   });
 
@@ -223,7 +223,6 @@ describe('SearchForGroupComponent', () => {
         const { getByText } = await setup(true, true);
 
         const registrationsService = TestBed.inject(RegistrationsService);
-
         const spy = spyOn(registrationsService, 'unlockAccount').and.returnValue(of({}));
 
         fireEvent.click(getByText('Open'));

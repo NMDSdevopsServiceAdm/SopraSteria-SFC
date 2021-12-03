@@ -26,7 +26,7 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       employerType: 'All',
-      onlyParents: false,
+      parent: false,
     });
   }
 
@@ -61,7 +61,7 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
   private getRequestData(): GroupSearchRequest {
     return {
       employerType: this.form.controls.employerType.value,
-      onlyParents: this.form.controls.onlyParents.value,
+      parent: this.form.controls.parent.value,
     };
   }
 
