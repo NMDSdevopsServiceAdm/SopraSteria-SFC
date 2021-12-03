@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SearchService } from '@core/services/admin/search/search.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
@@ -35,7 +35,7 @@ describe('SearchForUserComponent', () => {
         },
         RegistrationsService,
         WindowRef,
-        UserService,
+        SearchService,
       ],
     });
 
@@ -55,8 +55,8 @@ describe('SearchForUserComponent', () => {
     };
 
     const component = fixture.componentInstance;
-    const userService = TestBed.inject(UserService);
-    const searchUsersSpy = spyOn(userService, 'searchUsers').and.returnValue(of([mockSearchResult]));
+    const searchService = TestBed.inject(SearchService);
+    const searchUsersSpy = spyOn(searchService, 'searchUsers').and.returnValue(of([mockSearchResult]));
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');

@@ -1,5 +1,39 @@
 import { Note } from '../registrations.model';
 
+export interface UserSearchRequest {
+  username?: string;
+  name?: string;
+  emailAddress?: string;
+}
+
+export interface Establishment {
+  uid: string;
+  name: string;
+  nmdsId: string;
+  postcode: string;
+  address?: string;
+  isParent?: false;
+  isRegulated?: false;
+  locationId?: string;
+  parent?: Parent;
+  ustatus?: string;
+}
+export interface UserSearchItem {
+  uid: string;
+  name: string;
+  username: string;
+  securityQuestion: string;
+  securityQuestionAnswer: string;
+  isLocked: boolean;
+  email?: string;
+  invalidAttempt?: number;
+  isPrimary?: boolean;
+  lastLoggedIn?: string;
+  passwdLastChanged?: string;
+  phone?: string;
+  establishment: Establishment;
+}
+
 export interface WorkplaceSearchRequest {
   name?: string;
   postcode?: string;
@@ -9,8 +43,9 @@ export interface WorkplaceSearchRequest {
 }
 
 export interface Parent {
-  uid: string;
-  nmdsId: string;
+  uid?: string;
+  nmdsId?: string;
+  postcode?: string;
 }
 
 export interface User {
@@ -26,7 +61,6 @@ export interface WorkplaceSearchItem {
   address1: string;
   address2?: string;
   name: string;
-  Parent?: string;
   county?: string;
   dataOwner: string;
   isParent?: boolean;
@@ -38,7 +72,13 @@ export interface WorkplaceSearchItem {
   town: string;
   uid: string;
   updated?: string;
+  employerType?: { value?: string; other?: string };
   parent?: Parent;
   users: User[];
   notes: Note[];
+}
+
+export interface GroupSearchRequest {
+  employerType: string;
+  parent: boolean;
 }

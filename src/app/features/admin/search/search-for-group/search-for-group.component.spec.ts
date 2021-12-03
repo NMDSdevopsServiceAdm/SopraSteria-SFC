@@ -4,13 +4,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { buildMockAdminSearchWorkplace, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { buildMockAdminSearchWorkplace } from '@core/test-utils/admin/MockSearchService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
@@ -37,16 +36,12 @@ describe('SearchForGroupComponent', () => {
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
           provide: SwitchWorkplaceService,
           useClass: MockSwitchWorkplaceService,
         },
         RegistrationsService,
         WindowRef,
-        UserService,
+        SearchService,
         AlertService,
       ],
     });
@@ -55,8 +50,11 @@ describe('SearchForGroupComponent', () => {
 
     const component = fixture.componentInstance;
 
-    const establishmentService = TestBed.inject(EstablishmentService);
-    const searchGroupsSpy = spyOn(establishmentService, 'searchGroups').and.returnValue(of([mockSearchResult]));
+    // const establishmentService = TestBed.inject(EstablishmentService);
+    // const searchGroupsSpy = spyOn(establishmentService, 'searchGroups').and.returnValue(of([mockSearchResult]));
+
+    const searchService = TestBed.inject(SearchService);
+    const searchGroupsSpy = spyOn(searchService, 'searchGroups').and.returnValue(of([mockSearchResult]));
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');

@@ -67,6 +67,7 @@ describe('SearchForWorkplaceComponent', () => {
         },
       ],
     };
+
     const component = fixture.componentInstance;
 
     const searchService = TestBed.inject(SearchService);

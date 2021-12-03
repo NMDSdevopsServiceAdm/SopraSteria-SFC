@@ -31,4 +31,24 @@ describe('SearchService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ postcode: 'ab3 4de' });
   });
+
+  it('should get the search results for users', () => {
+    service.searchUsers({ name: 'Joe Bloggs' }).subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/search/users');
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ name: 'Joe Bloggs' });
+  });
+
+  it('should get the search results for users', () => {
+    service.searchGroups({ employerType: 'All', parent: true }).subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/search/groups');
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ employerType: 'All', parent: true });
+  });
 });
