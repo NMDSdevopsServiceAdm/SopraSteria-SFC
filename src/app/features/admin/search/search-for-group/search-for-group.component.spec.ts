@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -16,7 +17,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { WorkplaceDropdownComponent } from '../workplace-dropdown/workplace-dropdown.component';
 import { SearchForGroupComponent } from './search-for-group.component';
@@ -46,6 +47,7 @@ describe('SearchForGroupComponent', () => {
         RegistrationsService,
         WindowRef,
         UserService,
+        AlertService,
       ],
     });
 
@@ -58,6 +60,9 @@ describe('SearchForGroupComponent', () => {
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
+
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     if (searchButtonClicked) {
       const searchButton = getByTestId('searchButton');
@@ -76,6 +81,7 @@ describe('SearchForGroupComponent', () => {
       searchGroupsSpy,
       switchWorkplaceSpy,
       mockSearchResult,
+      alertServiceSpy,
     };
   }
 
@@ -124,6 +130,22 @@ describe('SearchForGroupComponent', () => {
     expect(searchGroupsSpy).toHaveBeenCalledWith({
       employerType: 'Local Authority (adult services)',
       parent: false,
+    });
+  });
+
+  it('should display alert banner when backend request fails', async () => {
+    const { fixture, getByTestId, searchGroupsSpy, alertServiceSpy } = await setup();
+
+    searchGroupsSpy.and.returnValue(throwError('Service unavailable'));
+
+    const searchButton = getByTestId('searchButton');
+    fireEvent.click(searchButton);
+
+    fixture.detectChanges();
+
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'warning',
+      message: 'There was a problem making this request',
     });
   });
 

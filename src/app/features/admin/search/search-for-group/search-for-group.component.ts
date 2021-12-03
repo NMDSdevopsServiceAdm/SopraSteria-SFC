@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { WorkplaceSearchItem } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { Subscription } from 'rxjs';
@@ -21,6 +22,7 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private establishmentService: EstablishmentService,
     private switchWorkplaceService: SwitchWorkplaceService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -48,9 +50,16 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
           this.results = response;
           this.submitted = true;
         },
-        (error) => console.error(error),
+        () => this.errorMessage(),
       ),
     );
+  }
+
+  private errorMessage(): void {
+    this.alertService.addAlert({
+      type: 'warning',
+      message: 'There was a problem making this request',
+    });
   }
 
   ngOnDestroy(): void {
