@@ -594,14 +594,14 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
   describe('validateEstablishmentCsv()', () => {
     it('should validate each line of the establishments CSV', async () => {
       const workplace = {
-        Address1: 'First Line',
-        Address2: 'Second Line',
-        Address3: '',
-        Town: 'My Town',
-        Postcode: 'LN11 9JG',
-        LocationId: '1-12345678',
-        ProvId: '1-12345678',
-        IsCQCRegulated: true,
+        address1: 'First Line',
+        address2: 'Second Line',
+        address3: '',
+        town: 'My Town',
+        postcode: 'LN11 9JG',
+        locationId: '1-12345678',
+        provId: '1-12345678',
+        isCQCRegulated: true,
         reasonsForLeaving: '',
         status: null,
         name: 'WOZiTech, with even more care',
@@ -623,16 +623,16 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'transform').resolves({});
       sinon
         .stub(Establishment.prototype, 'initialise')
-        .callsFake((Address1, Address2, Address3, Town, test, LocationId, ProvId, Postcode, IsCQCRegulated) => {
-          expect(Address1).to.deep.equal(workplace.Address1);
-          expect(Address2).to.deep.equal(workplace.Address2);
-          expect(Address3).to.deep.equal(workplace.Address3);
-          expect(Town).to.deep.equal(workplace.Town);
+        .callsFake((address1, address2, address3, town, test, locationId, provId, postcode, isCQCRegulated) => {
+          expect(address1).to.deep.equal(workplace.address1);
+          expect(address2).to.deep.equal(workplace.address2);
+          expect(address3).to.deep.equal(workplace.address3);
+          expect(town).to.deep.equal(workplace.town);
           expect(test).to.deep.equal(null);
-          expect(LocationId).to.deep.equal(workplace.LocationId);
-          expect(ProvId).to.deep.equal(workplace.ProvId);
-          expect(Postcode).to.deep.equal(workplace.Postcode);
-          expect(IsCQCRegulated).to.deep.equal(workplace.IsCQCRegulated);
+          expect(locationId).to.deep.equal(workplace.locationId);
+          expect(provId).to.deep.equal(workplace.provId);
+          expect(postcode).to.deep.equal(workplace.postcode);
+          expect(isCQCRegulated).to.deep.equal(workplace.isCQCRegulated);
         });
       sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'toAPI').callsFake(() => {
         return workplace;

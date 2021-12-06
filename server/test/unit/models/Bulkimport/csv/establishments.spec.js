@@ -10,15 +10,14 @@ const { apiEstablishmentBuilder } = require('../../../../integration/utils/estab
 
 const validateAPIObject = (establishmentRow) => {
   return {
-    Address1: establishmentRow.ADDRESS1,
-    Address2: establishmentRow.ADDRESS2,
-    Address3: '',
-    Town: establishmentRow.POSTTOWN,
-    Postcode: establishmentRow.POSTCODE,
-    LocationId: establishmentRow.LOCATIONID,
+    address1: establishmentRow.ADDRESS1,
+    address2: establishmentRow.ADDRESS2,
+    address3: '',
+    town: establishmentRow.POSTTOWN,
+    postcode: establishmentRow.POSTCODE,
     locationId: establishmentRow.LOCATIONID,
-    ProvId: establishmentRow.PROVNUM,
-    IsCQCRegulated: true,
+    provId: establishmentRow.PROVNUM,
+    isCQCRegulated: true,
     reasonsForLeaving: '',
     status: 'NEW',
     name: establishmentRow.ESTNAME,

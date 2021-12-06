@@ -2574,14 +2574,14 @@ class Establishment {
   // returns an API representation of this Establishment
   toAPI() {
     const fixedProperties = {
-      Address1: this._address1 ? this._address1 : '',
-      Address2: this._address2 ? this._address2 : '',
-      Address3: this._address3 ? this._address3 : '',
-      Town: this._town ? this._town : '',
-      Postcode: this._postcode ? this._postcode : '',
-      LocationId: this._regType ? this._locationID : undefined,
-      ProvId: this._regType ? this._provID : undefined,
-      IsCQCRegulated: this._regType === 2,
+      address1: this._address1 ? this._address1 : '',
+      address2: this._address2 ? this._address2 : '',
+      address3: this._address3 ? this._address3 : '',
+      town: this._town ? this._town : '',
+      postcode: this._postcode ? this._postcode : '',
+      locationId: this._regType ? this._locationID : undefined,
+      provId: this._regType ? this._provID : undefined,
+      isCQCRegulated: this._regType === 2,
     };
 
     // interim solution for reasons for leaving
