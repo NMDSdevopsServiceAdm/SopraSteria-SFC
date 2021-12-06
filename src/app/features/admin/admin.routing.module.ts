@@ -7,6 +7,7 @@ import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-req
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -114,6 +115,16 @@ const routes: Routes = [
           registration: GetSingleRegistrationResolver,
           notes: GetRegistrationNotesResolver,
         },
+      },
+    ],
+  },
+  {
+    path: 'cqc-main-service-change',
+    children: [
+      {
+        path: '',
+        component: CQCMainServiceChangeListComponent,
+        data: { title: 'CQC main service change' },
       },
     ],
   },

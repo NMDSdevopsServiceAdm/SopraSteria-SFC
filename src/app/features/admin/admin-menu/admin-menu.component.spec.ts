@@ -28,4 +28,11 @@ describe('AdminMenuComponent', () => {
     const laCompletionsLink = component.getByText('Local authority returns');
     expect(laCompletionsLink.getAttribute('href')).toBe('/sfcadmin/local-authorities-return');
   });
+
+  it('should contain a CQC main service change link that links to sfcadmin/cqc-main-service-change url', async () => {
+    const { component } = await setup();
+
+    const cqcMainServiceChangeLink = component.getByText('CQC main service change');
+    expect(cqcMainServiceChangeLink.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change');
+  });
 });
