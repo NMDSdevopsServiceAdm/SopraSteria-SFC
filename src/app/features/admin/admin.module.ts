@@ -15,6 +15,7 @@ import { SharedModule } from '@shared/shared.module';
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
+import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
@@ -51,6 +52,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     RejectedRegistrationRequestComponent,
     ReportComponent,
     WorkplaceDropdownComponent,
+    CqcIndividualMainServiceChangeComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
