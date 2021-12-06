@@ -202,6 +202,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workerService.getRoute$.next(this.currentUrl);
   }
 
+  public print(event: Event): void {
+    event.preventDefault();
+    window.print();
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

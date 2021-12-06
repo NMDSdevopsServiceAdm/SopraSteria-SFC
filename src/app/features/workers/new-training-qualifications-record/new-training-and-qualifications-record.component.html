@@ -36,19 +36,26 @@
       </span>
       <a
         *ngIf="canEditWorker"
-        class="govuk-list govuk-list--inline govuk-!-padding-left-0"
+        class="govuk-list govuk-list--inline govuk-!-padding-left-0 hide-print"
         role="button"
         draggable="false"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]"
       >
         View staff record
       </a>
+      <a
+        class="govuk-list govuk-list--inline govuk-!-margin-left-2 hide-print"
+        role="button"
+        href="#"
+        (click)="print($event)"
+        >Print</a
+      >
     </div>
     <div class="govuk-grid-column-one-half">
       <div class="govuk-!-margin-bottom-3">
         <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-0">
           <a
-            class="govuk-list govuk-list--inline govuk-!-margin-left-5"
+            class="govuk-list govuk-list--inline govuk-!-margin-left-5 hide-print"
             *ngIf="canEditWorker && worker.longTermAbsence === null"
             draggable="false"
             role="button"
@@ -64,7 +71,7 @@
           >
           <a
             *ngIf="canEditWorker"
-            class="govuk-button govuk-util__float-right govuk-!-margin-left-9"
+            class="govuk-button govuk-util__float-right govuk-!-margin-left-9 hide-print"
             role="button"
             draggable="false"
             [routerLink]="['../select-record-type']"
@@ -95,7 +102,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-quarter"></div>
     <div class="govuk-grid-column-one-quarter govuk-util__float-right">
-      <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-7">
+      <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-7 hide-print">
         <label class="govuk-label" for="filterByTrainingStatus">Filter training by</label>
         <select
           class="govuk-select govuk-!-width-full"
@@ -129,7 +136,7 @@
         </div>
         <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
           <a
-            class="govuk-list govuk-util__float-right"
+            class="govuk-list govuk-util__float-right hide-print"
             *ngIf="canEditWorker"
             draggable="false"
             role="button"
