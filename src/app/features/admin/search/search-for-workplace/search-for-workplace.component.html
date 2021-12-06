@@ -22,7 +22,7 @@
           <p class="govuk-!-font-weight-bold">
             Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
           </p>
-          <table class="govuk-table">
+          <table class="govuk-table" data-testid="workplace-search-results">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
                 <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace</th>
@@ -34,37 +34,51 @@
               </tr>
             </thead>
             <tbody class="govuk-table__body">
-              <tr class="govuk-table__row" *ngFor="let item of results">
-                <td class="govuk-table__cell">
-                  <a (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)" href="#" data-testid="name-link">{{
-                    item.name
-                  }}</a>
-                </td>
-                <td class="govuk-table__cell">{{ item.postcode }}</td>
-                <td class="govuk-table__cell">
-                  <a
-                    (click)="setEstablishmentId(item.uid, '', item.nmdsId, $event)"
-                    href="#"
-                    data-testid="workplaceId-link"
-                    >{{ item.nmdsId || '-' }}</a
-                  >
-                </td>
-                <td class="govuk-table__cell">
-                  <p *ngIf="!item.locationId">-</p>
-                  <a
-                    href="https://www.cqc.org.uk/location/{{ item.locationId }}"
-                    target="_blank"
-                    data-testid="locationId-link"
-                    >{{ item.locationId }}</a
-                  >
-                </td>
-                <td class="govuk-table__cell">{{ item.providerId || '-' }}</td>
-                <td class="govuk-table__cell">
-                  <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)">
-                    {{ workplaceDetails[item.uid] ? workplaceDetailsLabel[item.uid] : 'Open' }}
-                  </a>
-                </td>
-              </tr>
+              <ng-container *ngFor="let item of results; index as workplaceIndex">
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">
+                    <a
+                      (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)"
+                      href="#"
+                      data-testid="name-link"
+                      >{{ item.name }}</a
+                    >
+                  </td>
+                  <td class="govuk-table__cell">{{ item.postcode }}</td>
+                  <td class="govuk-table__cell">
+                    <a
+                      (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)"
+                      href="#"
+                      data-testid="workplaceId-link"
+                      >{{ item.nmdsId || '-' }}</a
+                    >
+                  </td>
+                  <td class="govuk-table__cell">
+                    <p *ngIf="!item.locationId">-</p>
+                    <a
+                      href="https://www.cqc.org.uk/location/{{ item.locationId }}"
+                      target="_blank"
+                      data-testid="locationId-link"
+                      >{{ item.locationId }}</a
+                    >
+                  </td>
+                  <td class="govuk-table__cell">{{ item.providerId || '-' }}</td>
+                  <td class="govuk-table__cell">
+                    <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)">
+                      {{ workplaceDetails[item.uid] ? workplaceDetailsLabel[item.uid] : 'Open' }}
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngIf="workplaceDetails[item.uid]" class="govuk-panel--gray" data-testid="groups-workplace-details">
+                  <td colspan="6">
+                    <app-workplace-dropdown
+                      [item]="item"
+                      [workplaceIndex]="workplaceIndex"
+                      [(navigateToWorkplace)]="navigateToWorkplace"
+                    ></app-workplace-dropdown>
+                  </td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>

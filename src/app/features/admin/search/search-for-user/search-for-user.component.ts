@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserSearchItem } from '@core/model/admin/search.model';
 import { SearchService } from '@core/services/admin/search/search.service';
+import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
@@ -24,6 +25,7 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
     private searchService: SearchService,
     private switchWorkplaceService: SwitchWorkplaceService,
     private dialogService: DialogService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -41,11 +43,17 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
           this.results = response;
           this.submitted = true;
         },
-        (error) => console.error(error),
+        () => this.errorMessage(),
       ),
     );
   }
 
+  private errorMessage(): void {
+    this.alertService.addAlert({
+      type: 'warning',
+      message: 'There was a problem making this request',
+    });
+  }
   public navigateToWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
     event.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);

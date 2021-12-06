@@ -9,7 +9,7 @@ export function buildMockAdminSearchWorkplace(isLocked = false): WorkplaceSearch
     employerType: { value: 'Voluntary / Charity', other: null },
     isParent: false,
     isRegulated: false,
-    lastUpdated: new Date('2021-11-26T12:36:12.047Z'),
+    lastUpdated: new Date('11/26/2021'),
     locationId: '1-1111111111',
     providerId: '1-2222222222',
     name: 'The One and Only',
@@ -33,7 +33,7 @@ export function buildMockAdminSearchWorkplace(isLocked = false): WorkplaceSearch
     ],
     notes: [
       {
-        createdAt: new Date('25/01/2021'),
+        createdAt: new Date('01/25/2021'),
         note: 'This is a note',
         user: { FullNameValue: 'Admin 1' },
       },

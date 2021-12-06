@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '@core/services/admin/search/search.service';
+import { AlertService } from '@core/services/alert.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -12,7 +13,7 @@ import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplace
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { SearchForUserComponent } from './search-for-user.component';
 
@@ -36,6 +37,7 @@ describe('SearchForUserComponent', () => {
         RegistrationsService,
         WindowRef,
         SearchService,
+        AlertService,
       ],
     });
 
@@ -132,6 +134,22 @@ describe('SearchForUserComponent', () => {
       username: null,
       name: 'Bob Monkhouse',
       emailAddress: 'bob@email.com',
+    });
+  });
+
+  it('should display an alert banner when the request fails', async () => {
+    const { getByText, searchUsersSpy } = await setup();
+
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert');
+    searchUsersSpy.and.returnValue(throwError('Service unavailable'));
+
+    const searchButton = getByText('Search');
+    fireEvent.click(searchButton);
+
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'warning',
+      message: 'There was a problem making this request',
     });
   });
 

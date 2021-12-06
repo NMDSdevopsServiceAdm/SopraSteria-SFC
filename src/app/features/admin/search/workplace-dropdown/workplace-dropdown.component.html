@@ -32,6 +32,17 @@
     </tbody>
   </table>
 </div>
+<div class="govuk-!-margin-2" *ngIf="item.notes?.length > 0">
+  <p class="govuk-heading-s govuk-!-margin-bottom-2">Notes</p>
+  <dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row--no-border" *ngFor="let note of item.notes">
+      <dt class="govuk-summary-list__key--no-border govuk-!-display-block govuk-!-font-weight-bold">
+        {{ note.user.FullNameValue }}, {{ note.createdAt | date: 'dd MMMM yyyy hh:mm a' }}
+      </dt>
+      <dd class="govuk-summary-list__value govuk-!-display-block govuk-!-padding-top-0">{{ note.note }}</dd>
+    </div>
+  </dl>
+</div>
 <div class="govuk-!-margin-2" *ngIf="item.users?.length > 0">
   <table class="govuk-table">
     <thead class="govuk-table__head">

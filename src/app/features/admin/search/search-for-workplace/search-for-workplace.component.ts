@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SearchService } from '@core/services/admin/search/search.service';
+import { AlertService } from '@core/services/alert.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { Subscription } from 'rxjs';
 
@@ -19,10 +19,10 @@ export class SearchForWorkplaceComponent implements OnInit, OnDestroy {
   public workplaceDetailsLabel = [];
 
   constructor(
-    public http: HttpClient,
     public formBuilder: FormBuilder,
     public searchService: SearchService,
-    public switchWorkplaceService: SwitchWorkplaceService,
+    private switchWorkplaceService: SwitchWorkplaceService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -42,14 +42,19 @@ export class SearchForWorkplaceComponent implements OnInit, OnDestroy {
           this.results = response;
           this.submitted = true;
         },
-        (error) => {
-          console.error(error);
-        },
+        () => this.errorMessage(),
       ),
     );
   }
 
-  public setEstablishmentId = (id: string, username: string, nmdsId: string, event: Event) => {
+  private errorMessage(): void {
+    this.alertService.addAlert({
+      type: 'warning',
+      message: 'There was a problem making this request',
+    });
+  }
+
+  public navigateToWorkplace = (id: string, username: string, nmdsId: string, event: Event) => {
     event.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   };
