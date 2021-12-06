@@ -1,0 +1,48 @@
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  a {
+    &[href]:after {
+      content: none;
+    }
+  }
+
+  // .page-break {
+  //   display: block;
+  //   page-break-inside: avoid;
+  // }
+
+  .govuk-link--no-visited-state {
+    color: black !important;
+    text-decoration: none;
+  }
+
+  .govuk-breadcrumbs {
+    display: none;
+  }
+
+  .govuk-footer__link {
+    display: none;
+  }
+
+  .govuk-header__menu-button {
+    // display: none;
+    visibility: hidden;
+  }
+
+  .govuk-phase-banner {
+    // display: none;
+    visibility: hidden;
+  }
+
+  .govuk-header__navigation {
+    display: none;
+    visibility: hidden;
+  }
+
+  .hide-print {
+    display: none;
+  }
+}
