@@ -61,7 +61,7 @@ export interface Note {
   user: { FullNameValue: string };
 }
 
-export interface RegistrationApprovalOrRejectionConfirmation {
+export interface ApprovalOrRejectionConfirmation {
   workplaceName: string;
   isApproval: boolean;
 }

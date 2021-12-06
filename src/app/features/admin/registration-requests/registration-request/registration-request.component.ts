@@ -11,7 +11,7 @@ import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
 
-import { RegistrationApprovalOrRejectionDialogComponent } from '../registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
+import { ApprovalOrRejectionDialogComponent } from '../../approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-registration-request',
@@ -175,8 +175,8 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
     return body;
   }
 
-  private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<RegistrationApprovalOrRejectionDialogComponent> {
-    return this.dialogService.open(RegistrationApprovalOrRejectionDialogComponent, {
+  private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<ApprovalOrRejectionDialogComponent> {
+    return this.dialogService.open(ApprovalOrRejectionDialogComponent, {
       workplaceName: this.registration.establishment.name,
       isApproval,
     });

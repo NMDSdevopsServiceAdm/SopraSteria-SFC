@@ -5,14 +5,14 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { SearchComponent } from './search.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const getSearchComponent = async () => {
   return render(SearchComponent, {
@@ -95,7 +95,7 @@ describe('SearchComponent', () => {
 
       await within(getByTestId('user-search-results')).getByText('John Doe');
     });
-    it('should show a flag when user\'s workplace is pending', async () => {
+    it("should show a flag when user's workplace is pending", async () => {
       const { fixture, navigate, getByText, getByTestId } = await getSearchComponent();
 
       await setup(fixture, navigate, getByText);
@@ -104,7 +104,7 @@ describe('SearchComponent', () => {
       fixture.detectChanges();
 
       const result = getByTestId('user-search-results').querySelector('img');
-      expect(result.src).toContain('flag-orange')
+      expect(result.src).toContain('flag-orange');
     });
 
     it('should expand the User details when clicking Open', async () => {
