@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { buildMockAdminSearchWorkplace } from '@core/test-utils/MockEstablishmentService';
+import { buildMockAdminSearchWorkplace } from '@core/test-utils/admin/MockSearchService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
