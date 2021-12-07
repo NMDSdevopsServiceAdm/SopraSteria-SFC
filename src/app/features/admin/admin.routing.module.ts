@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -125,6 +126,9 @@ const routes: Routes = [
         path: '',
         component: CQCMainServiceChangeListComponent,
         data: { title: 'CQC main service change' },
+        resolve: {
+          cqcStatusChangeList: GetCQCStatusChangeResolver,
+        },
       },
     ],
   },

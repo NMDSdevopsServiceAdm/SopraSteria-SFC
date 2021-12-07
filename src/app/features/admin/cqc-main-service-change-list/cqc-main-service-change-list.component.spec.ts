@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list.component';
 
-fdescribe('CQCMainServiceChangeListComponent', () => {
+describe('CQCMainServiceChangeListComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(CQCMainServiceChangeListComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],

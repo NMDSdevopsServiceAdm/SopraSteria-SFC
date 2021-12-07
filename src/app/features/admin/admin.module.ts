@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -62,6 +63,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     GetRegistrationsResolver,
     GetSingleRegistrationResolver,
     GetRegistrationNotesResolver,
+    GetCQCStatusChangeResolver,
     DatePipe,
   ],
   bootstrap: [AdminComponent],
