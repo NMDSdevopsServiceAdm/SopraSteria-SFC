@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const models = require('../../../../../../models/index');
-const establishmentSearch = require('../../../../../../routes/admin/search/establishments');
+const { fileExports } = require('../../../../../../routes/admin/search/establishments');
 const { establishmentBuilder } = require('../../../../../factories/models');
 
 describe('server/routes/admin/search/establishments', () => {
@@ -51,8 +51,7 @@ describe('server/routes/admin/search/establishments', () => {
         ],
       },
     ]);
-
-    sinon.stub(establishmentSearch, 'iLike').returns('iLike');
+    sinon.stub(fileExports, 'iLike').returns('iLike');
 
     emptySearchObj = {
       name: null,
@@ -85,7 +84,7 @@ describe('server/routes/admin/search/establishments', () => {
 
     const res = httpMocks.createResponse();
 
-    await establishmentSearch.search(req, res);
+    await fileExports.search(req, res);
 
     const response = res._getJSONData();
 
@@ -132,12 +131,12 @@ describe('server/routes/admin/search/establishments', () => {
 
   describe('createSearchObject', () => {
     it('should create a searchObject with an empty object if nothing is in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({});
+      const searchObject = fileExports.createSearchObject({});
       expect(searchObject).to.deep.equal({});
     });
 
     it('should create a searchObject with NameValue field if workplace name is in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, name: 'Care Home 1' });
+      const searchObject = fileExports.createSearchObject({ ...emptySearchObj, name: 'Care Home 1' });
 
       expect(searchObject).to.deep.equal({
         NameValue: {
@@ -147,7 +146,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with postcode field if postcode is in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, postcode: 'SR3 4AB' });
+      const searchObject = fileExports.createSearchObject({ ...emptySearchObj, postcode: 'SR3 4AB' });
 
       expect(searchObject).to.deep.equal({
         postcode: {
@@ -157,7 +156,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with nmdsId field if nmdsId is in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, nmdsId: 'BB111111' });
+      const searchObject = fileExports.createSearchObject({ ...emptySearchObj, nmdsId: 'BB111111' });
 
       expect(searchObject).to.deep.equal({
         nmdsId: {
@@ -167,7 +166,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with locationId field if locationId is in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, locationId: '1-1111111111' });
+      const searchObject = fileExports.createSearchObject({ ...emptySearchObj, locationId: '1-1111111111' });
 
       expect(searchObject).to.deep.equal({
         locationId: {
@@ -177,7 +176,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with providerId field if providerId is in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, provId: '6678912345' });
+      const searchObject = fileExports.createSearchObject({ ...emptySearchObj, provId: '6678912345' });
 
       expect(searchObject).to.deep.equal({
         provId: {
@@ -187,7 +186,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with all fields if all fields are in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({
+      const searchObject = fileExports.createSearchObject({
         name: 'Care Home 1',
         postcode: 'SR3 4AB',
         nmdsId: 'BB111111',
@@ -215,7 +214,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with postcode and name fields if postcode and name fields are in the body', () => {
-      const searchObject = establishmentSearch.createSearchObject({
+      const searchObject = fileExports.createSearchObject({
         ...emptySearchObj,
         name: 'Care Home 1',
         postcode: 'SR3 4AB',
@@ -232,7 +231,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with all fields if all fields are in the body formatted correctly', () => {
-      const searchObject = establishmentSearch.createSearchObject({
+      const searchObject = fileExports.createSearchObject({
         name: '%Care Home 1',
         postcode: '*SR3 4AB*',
         nmdsId: 'BB111111?',
@@ -262,17 +261,17 @@ describe('server/routes/admin/search/establishments', () => {
 
   describe('formattingSearchParameter', () => {
     it('should remove any % or  _ sign', () => {
-      const formattedParameter = establishmentSearch.formattingSearchParameters('%_a');
+      const formattedParameter = fileExports.formattingSearchParameters('%_a');
       expect(formattedParameter).to.deep.equal('a');
     });
 
     it('should replace any * with a %', () => {
-      const formattedParameter = establishmentSearch.formattingSearchParameters('*string*');
+      const formattedParameter = fileExports.formattingSearchParameters('*string*');
       expect(formattedParameter).to.deep.equal('%string%');
     });
 
     it('should replace any ? with a _', () => {
-      const formattedParameter = establishmentSearch.formattingSearchParameters('?string?');
+      const formattedParameter = fileExports.formattingSearchParameters('?string?');
       expect(formattedParameter).to.deep.equal('_string_');
     });
   });

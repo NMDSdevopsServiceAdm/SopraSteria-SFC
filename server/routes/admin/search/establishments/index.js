@@ -41,11 +41,11 @@ const search = async function (req, res) {
 router.route('/').post(search);
 
 const fileExports = {
-  router,
   search,
   createSearchObject,
   iLike,
   formattingSearchParameters,
 };
 
-module.exports = fileExports;
+module.exports = router;
+module.exports.fileExports = fileExports;
