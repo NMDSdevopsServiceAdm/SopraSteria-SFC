@@ -86,7 +86,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
     });
   });
 
-  it('should show rejection alert when approval confirmed', async () => {
+  it('should show rejection alert when rejection confirmed', async () => {
     const { fixture, getByText, alertServiceSpy } = await setup();
 
     const rejectButton = getByText('Reject');
