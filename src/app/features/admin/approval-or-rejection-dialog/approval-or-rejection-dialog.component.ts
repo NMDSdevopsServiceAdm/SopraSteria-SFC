@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { DialogComponent } from '@core/components/dialog.component';
-import { ApprovalOrRejectionConfirmation } from '@core/model/registrations.model';
+import { ApprovalOrRejectionConfirmation } from '@core/model/admin/approval-or-rejection.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({

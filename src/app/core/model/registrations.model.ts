@@ -61,13 +61,6 @@ export interface Note {
   user: { FullNameValue: string };
 }
 
-export interface ApprovalOrRejectionConfirmation {
-  workplaceName: string;
-  approvalName: string;
-  approvalType: string;
-  isApproval: boolean;
-}
-
 export interface RegistrationApprovalOrRejectionRequestBody {
   nmdsId: string;
   approve: boolean;
