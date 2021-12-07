@@ -52,7 +52,6 @@ describe('server/routes/admin/search/establishments', () => {
       },
     ]);
     sinon.stub(fileExports, 'iLike').returns('iLike');
-    // sinon.stub(establishmentSearch, 'iLike').returns('iLike');
 
     emptySearchObj = {
       name: null,
