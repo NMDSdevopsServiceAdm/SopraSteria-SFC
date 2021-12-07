@@ -6,6 +6,8 @@ const establishmentSearch = require('../../../../../../routes/admin/search/estab
 const { establishmentBuilder } = require('../../../../../factories/models');
 
 describe('server/routes/admin/search/establishments', () => {
+  let emptySearchObj;
+
   beforeEach(() => {
     sinon.stub(models.establishment, 'findAll').returns([
       {
@@ -49,6 +51,16 @@ describe('server/routes/admin/search/establishments', () => {
         ],
       },
     ]);
+
+    sinon.stub(establishmentSearch, 'iLike').returns('iLike');
+
+    emptySearchObj = {
+      name: null,
+      postcode: null,
+      nmdsId: null,
+      locationId: null,
+      provId: null,
+    };
   });
 
   afterEach(() => {
@@ -125,8 +137,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with NameValue field if workplace name is in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
-      const searchObject = establishmentSearch.createSearchObject({ name: 'Care Home 1' });
+      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, name: 'Care Home 1' });
 
       expect(searchObject).to.deep.equal({
         NameValue: {
@@ -136,8 +147,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with postcode field if postcode is in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
-      const searchObject = establishmentSearch.createSearchObject({ postcode: 'SR3 4AB' });
+      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, postcode: 'SR3 4AB' });
 
       expect(searchObject).to.deep.equal({
         postcode: {
@@ -147,8 +157,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with nmdsId field if nmdsId is in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
-      const searchObject = establishmentSearch.createSearchObject({ nmdsId: 'BB111111' });
+      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, nmdsId: 'BB111111' });
 
       expect(searchObject).to.deep.equal({
         nmdsId: {
@@ -158,8 +167,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with locationId field if locationId is in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
-      const searchObject = establishmentSearch.createSearchObject({ locationId: '1-1111111111' });
+      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, locationId: '1-1111111111' });
 
       expect(searchObject).to.deep.equal({
         locationId: {
@@ -169,8 +177,7 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with providerId field if providerId is in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
-      const searchObject = establishmentSearch.createSearchObject({ provId: '6678912345' });
+      const searchObject = establishmentSearch.createSearchObject({ ...emptySearchObj, provId: '6678912345' });
 
       expect(searchObject).to.deep.equal({
         provId: {
@@ -180,7 +187,6 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with all fields if all fields are in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
       const searchObject = establishmentSearch.createSearchObject({
         name: 'Care Home 1',
         postcode: 'SR3 4AB',
@@ -209,8 +215,8 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with postcode and name fields if postcode and name fields are in the body', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
       const searchObject = establishmentSearch.createSearchObject({
+        ...emptySearchObj,
         name: 'Care Home 1',
         postcode: 'SR3 4AB',
       });
@@ -226,7 +232,6 @@ describe('server/routes/admin/search/establishments', () => {
     });
 
     it('should create a searchObject with all fields if all fields are in the body formatted correctly', () => {
-      sinon.stub(establishmentSearch, 'iLike').returns('iLike');
       const searchObject = establishmentSearch.createSearchObject({
         name: '%Care Home 1',
         postcode: '*SR3 4AB*',

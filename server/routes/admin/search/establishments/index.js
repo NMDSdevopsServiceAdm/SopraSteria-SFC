@@ -8,35 +8,14 @@ const iLike = () => models.Sequelize.Op.iLike;
 const createSearchObject = (body) => {
   const searchObj = {};
 
-  if (body.name) {
-    searchObj.NameValue = {
-      [fileExports.iLike()]: formattingSearchParameters(body.name),
-    };
-  }
-
-  if (body.postcode) {
-    searchObj.postcode = {
-      [fileExports.iLike()]: formattingSearchParameters(body.postcode),
-    };
-  }
-
-  if (body.nmdsId) {
-    searchObj.nmdsId = {
-      [fileExports.iLike()]: formattingSearchParameters(body.nmdsId),
-    };
-  }
-
-  if (body.locationId) {
-    searchObj.locationId = {
-      [fileExports.iLike()]: formattingSearchParameters(body.locationId),
-    };
-  }
-
-  if (body.provId) {
-    searchObj.provId = {
-      [fileExports.iLike()]: formattingSearchParameters(body.provId),
-    };
-  }
+  Object.keys(body).filter((key) => {
+    if (body[key]) {
+      const editedKey = key === 'name' ? 'NameValue' : key;
+      searchObj[`${editedKey}`] = {
+        [fileExports.iLike()]: formattingSearchParameters(body[key]),
+      };
+    }
+  });
 
   return searchObj;
 };

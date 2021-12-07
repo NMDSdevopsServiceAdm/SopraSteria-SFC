@@ -313,12 +313,6 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/move-workplace`, data);
   }
 
-  // public searchGroups(data: GroupSearchRequest): Observable<Array<WorkplaceSearchItem>> {
-  //   return this.http
-  //     .post<Array<WorkplaceSearchItem>>('/api/admin/search/groups', data, { observe: 'response' })
-  //     .pipe(map((response) => response.body));
-  // }
-
   public getCQCRegistrationStatus(locationID, requestParams): Observable<any> {
     let params = new HttpParams();
 
