@@ -1,4 +1,9 @@
 @media print {
+  @page {
+    size: auto;
+    margin: 0;
+  }
+
   body {
     -webkit-print-color-adjust: exact !important;
     -moz-print-color-adjust: exact !important;
