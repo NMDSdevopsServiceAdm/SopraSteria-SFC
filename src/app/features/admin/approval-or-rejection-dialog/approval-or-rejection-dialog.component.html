@@ -1,5 +1,5 @@
 <div class="govuk-!-padding-3">
-  <h1 id="dialogHeading">You're about to {{ isApproval ? 'approve' : 'reject' }} this registration request</h1>
+  <h1 id="dialogHeading">You're about to {{ isApproval ? 'approve' : 'reject' }} this {{ approvalType }}</h1>
   <p><b>Workplace: </b>{{ workplaceName }}</p>
   <div class="govuk-!-padding-top-6 govuk-button-group">
     <ng-container *ngIf="isApproval; else rejection">

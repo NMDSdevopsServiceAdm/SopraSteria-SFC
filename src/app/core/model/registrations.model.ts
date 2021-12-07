@@ -63,6 +63,7 @@ export interface Note {
 
 export interface ApprovalOrRejectionConfirmation {
   workplaceName: string;
+  approvalType: string;
   isApproval: boolean;
 }
 

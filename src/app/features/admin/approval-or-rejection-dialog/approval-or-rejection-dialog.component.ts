@@ -10,6 +10,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 export class ApprovalOrRejectionDialogComponent extends DialogComponent {
   public isApproval: boolean;
   public workplaceName: string;
+  public approvalType: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data: ApprovalOrRejectionConfirmation,
@@ -19,6 +20,7 @@ export class ApprovalOrRejectionDialogComponent extends DialogComponent {
 
     this.isApproval = data.isApproval;
     this.workplaceName = data.workplaceName;
+    this.approvalType = data.approvalType;
   }
 
   public closeDialogWindow(event: Event, approvalOrRejectionConfirmed: boolean): void {

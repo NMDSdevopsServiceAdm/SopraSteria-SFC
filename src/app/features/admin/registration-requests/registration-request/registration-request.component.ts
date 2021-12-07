@@ -178,6 +178,7 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
   private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<ApprovalOrRejectionDialogComponent> {
     return this.dialogService.open(ApprovalOrRejectionDialogComponent, {
       workplaceName: this.registration.establishment.name,
+      approvalType: 'registration request',
       isApproval,
     });
   }

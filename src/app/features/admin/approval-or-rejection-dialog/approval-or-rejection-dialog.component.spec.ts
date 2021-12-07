@@ -14,6 +14,7 @@ describe('ApprovalOrRejectionDialogComponent', () => {
           useValue: {
             isApproval,
             workplaceName: 'Testing Village',
+            approvalType: 'registration request',
           },
         },
         {
