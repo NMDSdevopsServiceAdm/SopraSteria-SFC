@@ -7,7 +7,6 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import { ApprovalOrRejectionDialogComponent } from '@features/admin/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
@@ -169,7 +168,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
-    ApprovalOrRejectionDialogComponent,
     PageComponent,
   ],
   exports: [
@@ -248,7 +246,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
-    ApprovalOrRejectionDialogComponent,
     PageComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
