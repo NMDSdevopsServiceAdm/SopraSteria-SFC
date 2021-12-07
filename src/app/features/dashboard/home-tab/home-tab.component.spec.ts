@@ -395,6 +395,9 @@ describe('HomeTabComponent', () => {
         component.fixture.componentInstance.linkToParentRequestedStatus = false;
         component.fixture.componentInstance.parentStatusRequested = false;
         component.fixture.componentInstance.canLinkToParent = true;
+
+        component.fixture.detectChanges();
+
         const becomeAParentLink = component.getByText('Become a parent organisation');
         const dialogMessage = 'Become a parent organisation';
 
@@ -504,6 +507,13 @@ describe('HomeTabComponent', () => {
       });
       expect(becomeAParentLink).toBeTruthy();
       expect(linkToParentLink).toBeTruthy();
+    });
+
+    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
+      const { component } = await setup();
+
+      const firstLoginWizardLink = component.getByText('Help to get you started');
+      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
     });
   });
 });

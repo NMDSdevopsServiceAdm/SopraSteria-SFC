@@ -8,6 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, within } from '@testing-library/angular';
 
@@ -21,7 +22,13 @@ describe('WorkplaceTabComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [
+          SharedModule,
+          RouterTestingModule.withRoutes([
+            { path: 'workplace/4698f4a4-ab82-4906-8b0e-3f4972375927/sharing-data', component: DataSharingComponent },
+          ]),
+          HttpClientTestingModule,
+        ],
         providers: [
           {
             provide: PermissionsService,

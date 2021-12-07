@@ -30,7 +30,6 @@ export class AdminUnlockConfirmationDialogComponent extends DialogComponent impl
 
   ngOnInit() {
     this.setupServerErrorsMap();
-    console.log(this.data);
   }
 
   // setup server error message
