@@ -1,9 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts.component';
@@ -36,9 +36,9 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
 
-    // const router = injector.inject(Router) as Router;
-    // const spy = spyOn(router, 'navigate');
-    // spy.and.returnValue(Promise.resolve(true));
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     // const alert = injector.inject(AlertService) as AlertService;
     // const alertSpy = spyOn(alert, 'addAlert');
@@ -49,7 +49,7 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
       fixture,
       getByText,
       getAllByText,
-      // spy,
+      routerSpy,
       // alertSpy,
     };
   }
@@ -80,5 +80,15 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.value.expiresSoonAlerts).toBe('90');
+  });
+
+  it('should navigate to the training and quals tab on submit', async () => {
+    const { component, routerSpy, getByText } = await setup();
+
+    const saveAndReturnButton = getByText('Save and return');
+    fireEvent.click(saveAndReturnButton);
+
+    expect(component.form.valid).toBeTruthy();
+    expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
   });
 });

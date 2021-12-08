@@ -6,7 +6,7 @@
       change the alert to display 60 or 30 days before expiry or leave it set to 90 days.
     </p>
 
-    <form #formEl novalidate [formGroup]="form" id="server-error">
+    <form #formEl novalidate (submit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">When do you want to get 'expires soon' alerts?</legend>
@@ -52,6 +52,16 @@
             </div>
           </div>
         </fieldset>
+      </div>
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-6" type="submit">Save and return</button>
+        <a
+          role="button"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          [routerLink]="['/dashboard']"
+          [fragment]="'training-and-qualifications'"
+          >Cancel</a
+        >
       </div>
     </form>
   </div>
