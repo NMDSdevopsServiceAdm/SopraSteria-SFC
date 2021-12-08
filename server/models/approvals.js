@@ -97,7 +97,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
+          attributes: ['nmdsId', 'NameValue', 'Address1', 'Address2', 'Address3', 'PostCode', 'Town', 'County'],
         },
         {
           model: sequelize.models.user,
@@ -140,39 +140,20 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
-        },
-        {
-          model: sequelize.models.user,
-          as: 'User',
-          attributes: ['FullNameValue'],
-        },
-      ],
-    });
-  };
-
-  Approvals.findByEstablishmentUid = function (establishmentId, approvalType, status) {
-    return this.findOne({
-      where: {
-        EstablishmentID: establishmentId,
-        ApprovalType: approvalType,
-        Status: status,
-      },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
-      include: [
-        {
-          model: sequelize.models.establishment,
-          as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
+          attributes: ['id', 'nmdsId', 'NameValue'],
           include: [
             {
               model: sequelize.models.notes,
-              as: 'Notes',
-              attributes: ['createAt', 'note'],
+              where: {
+                noteType: 'Main Service',
+              },
+              as: 'notes',
+              attributes: ['createdAt', 'note'],
+              required: false,
               include: [
                 {
                   model: sequelize.models.user,
-                  as: 'User',
+                  as: 'user',
                   attributes: ['FullNameValue'],
                 },
               ],

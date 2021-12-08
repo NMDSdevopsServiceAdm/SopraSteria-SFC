@@ -338,11 +338,13 @@ describe.only('getIndividualCqcStatusChange', () => {
     const request = {
       method: 'GET',
       url: '/api/admin/cqc-status-change/f61696f7-30fe-441c-9c59-e25dfcb51f59',
-      body: {},
+      params: { establishmentUid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59' },
     };
 
     req = httpsMocks.createRequest(request);
     res = httpsMocks.createResponse();
+
+    sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(expectedResponse);
   });
 
   afterEach(() => {
@@ -385,17 +387,50 @@ describe.only('getIndividualCqcStatusChange', () => {
   };
 
   it('should return 200 when successfully retrieving an individual status change', async () => {
+    sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
     await cqcStatusChange.getIndividualCqcStatusChange(req, res);
 
     expect(res.statusCode).to.deep.equal(200);
   });
 
   it('should return the individual status change', async () => {
-    sinon.stub(models.Approvals, 'findByEstablishmentUid').returns(expectedResponse);
+    sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
     await cqcStatusChange.getIndividualCqcStatusChange(req, res);
 
     const returnedResponse = res._getData();
 
     expect(returnedResponse).to.deep.equal(expectedResponse);
+  });
+
+  it('should return a 400 error code when given an invalid establishment uid', async () => {
+    sinon.stub(models.establishment, 'findByUid').returns(null);
+
+    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
+    const { message } = res._getJSONData();
+
+    expect(res.statusCode).to.deep.equal(400);
+    expect(message).to.equal('Establishment could not be found');
+  });
+
+  it('should return a 500 error code if an exception is thrown by the call to the establishment table', async () => {
+    sinon.stub(models.establishment, 'findByUid').throws();
+
+    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
+    const { message } = res._getJSONData();
+
+    expect(res.statusCode).to.deep.equal(500);
+    expect(message).to.equal('There was an error retrieving the cqc status change');
+  });
+
+  it('should return a 500 error code if an exception is thrown by the call to the approvals table', async () => {
+    sinon.restore();
+    sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
+    sinon.stub(models.Approvals, 'findbyEstablishmentId').throws();
+
+    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
+    const { message } = res._getJSONData();
+
+    expect(res.statusCode).to.deep.equal(500);
+    expect(message).to.equal('There was an error retrieving the cqc status change');
   });
 });

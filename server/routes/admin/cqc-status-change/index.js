@@ -35,15 +35,25 @@ const cqcStatusChanges = async (req, res) => {
 
 const getIndividualCqcStatusChange = async (req, res) => {
   try {
-    const individualCqcStatusChange = await models.Approvals.findByEstablishmentUid(
-      req.params.establishmentUid,
-      'cqcStatusChange',
+    const { establishmentUid } = req.params;
+    const establishment = await models.establishment.findByUid(establishmentUid);
+
+    if (!establishment) {
+      return res.status(400).json({
+        message: 'Establishment could not be found',
+      });
+    }
+
+    const individualCqcStatusChange = await models.Approvals.findbyEstablishmentId(
+      establishment.id,
+      'CqcStatusChange',
       'Pending',
     );
+
     res.status(200).send(individualCqcStatusChange);
   } catch (error) {
     console.error(error);
-    res.sendStatus(500);
+    res.status(500).json({ message: 'There was an error retrieving the cqc status change' });
   }
 };
 

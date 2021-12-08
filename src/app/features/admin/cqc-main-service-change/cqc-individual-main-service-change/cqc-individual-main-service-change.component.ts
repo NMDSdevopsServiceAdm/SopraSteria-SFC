@@ -1,14 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DialogService } from '@core/services/dialog.service';
-import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import {
+  ApprovalOrRejectionDialogComponent,
+} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-cqc-individual-main-service-change',
   templateUrl: './cqc-individual-main-service-change.component.html',
 })
-export class CqcIndividualMainServiceChangeComponent {
-  constructor(private dialogService: DialogService, private alertService: AlertService) {}
+export class CqcIndividualMainServiceChangeComponent implements OnInit {
+  public individualApproval;
+
+  constructor(
+    private route: ActivatedRoute,
+    private dialogService: DialogService,
+    private alertService: AlertService,
+  ) {}
+
+  ngOnInit(): void {
+    this.individualApproval = this.route.snapshot.data.approval;
+    console.log(this.individualApproval);
+  }
 
   public approveOrRejectCqcChange(isApproval: boolean): void {
     const dialog = this.openApprovalOrRejectionDialog(isApproval);
