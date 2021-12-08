@@ -697,6 +697,13 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'ShowSharingPermissionsBanner',
       },
+      expiresSoonAlertDate: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['90', '60', '30'],
+        default: '90',
+        field: 'ExpiresSoonAlertDate',
+      },
     },
     {
       defaultScope: {
