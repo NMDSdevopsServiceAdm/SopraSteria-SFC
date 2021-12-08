@@ -1,13 +1,15 @@
 <div class="govuk-!-padding-3">
-  <h1 id="dialogHeading">You're about to {{ isApproval ? 'approve' : 'reject' }} this registration request</h1>
+  <h1 id="dialogHeading">You're about to {{ isApproval ? 'approve' : 'reject' }} this {{ approvalName }}</h1>
   <p><b>Workplace: </b>{{ workplaceName }}</p>
   <div class="govuk-!-padding-top-6 govuk-button-group">
     <ng-container *ngIf="isApproval; else rejection">
-      <button type="button" (click)="closeDialogWindow($event, true)" class="govuk-button">Approve this request</button>
+      <button type="button" (click)="closeDialogWindow($event, true)" class="govuk-button">
+        Approve this {{ approvalType }}
+      </button>
     </ng-container>
     <ng-template #rejection>
       <button type="button" (click)="closeDialogWindow($event, true)" class="govuk-button govuk-button--warning">
-        Reject this request
+        Reject this {{ approvalType }}
       </button>
     </ng-template>
     <a href="#" class="govuk-!-margin-left-9 govuk-list" (click)="closeDialogWindow($event, null)">Cancel</a>

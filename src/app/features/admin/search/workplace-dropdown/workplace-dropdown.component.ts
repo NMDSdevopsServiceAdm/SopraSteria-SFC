@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { WorkplaceSearchItem } from '@core/model/establishment.model';
+import { WorkplaceSearchItem } from '@core/model/admin/search.model';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
