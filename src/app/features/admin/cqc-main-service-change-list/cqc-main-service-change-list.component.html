@@ -14,10 +14,14 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row" *ngFor="let cqcServiceChange of pendingCQCMainServiceChanges">
           <td class="govuk-table__cell">
-            <a [routerLink]="[cqcServiceChange.workplaceId]">{{ cqcServiceChange.orgName }}</a>
+            <a
+              [attr.data-testid]="'workplaceName-' + cqcServiceChange.orgName"
+              [routerLink]="['/', cqcServiceChange.establishmentUid]"
+              >{{ cqcServiceChange.orgName }}</a
+            >
           </td>
           <td class="govuk-table__cell">
-            {{ cqcServiceChange.requested }}
+            {{ cqcServiceChange.requested | date: 'dd MMM yyyy' }}
           </td>
           <td class="govuk-table__cell">
             <strong class="govuk-tag" [ngClass]="setStatusClass(cqcServiceChange.status)">
