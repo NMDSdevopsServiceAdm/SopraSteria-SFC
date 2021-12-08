@@ -33,6 +33,20 @@ const cqcStatusChanges = async (req, res) => {
   }
 };
 
+const getIndividualCqcStatusChange = async (req, res) => {
+  try {
+    const individualCqcStatusChange = await models.Approvals.findByEstablishmentUid(
+      req.params.establishmentUid,
+      'cqcStatusChange',
+      'Pending',
+    );
+    res.status(200).send(individualCqcStatusChange);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
 const _mapResults = async (approvalResults) => {
   let data;
   const promises = approvalResults.map(async (approval) => {
@@ -121,9 +135,11 @@ const _updateMainService = async (req, res) => {
 
 router.route('/').post(cqcStatusChanges);
 router.route('/').get(getCqcStatusChanges);
+router.route('/:establishmentUid').get(getIndividualCqcStatusChange);
 
 module.exports = router;
 module.exports.cqcStatusChanges = cqcStatusChanges;
 module.exports.getCqcStatusChanges = getCqcStatusChanges;
+module.exports.getIndividualCqcStatusChange = getIndividualCqcStatusChange;
 module.exports.cqcStatusChangeApprovalConfirmation = cqcStatusChangeApprovalConfirmation;
 module.exports.cqcStatusChangeRejectionConfirmation = cqcStatusChangeRejectionConfirmation;

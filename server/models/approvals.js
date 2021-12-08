@@ -151,6 +151,43 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
+  Approvals.findByEstablishmentUid = function (establishmentId, approvalType, status) {
+    return this.findOne({
+      where: {
+        EstablishmentID: establishmentId,
+        ApprovalType: approvalType,
+        Status: status,
+      },
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'Establishment',
+          attributes: ['nmdsId', 'NameValue'],
+          include: [
+            {
+              model: sequelize.models.notes,
+              as: 'Notes',
+              attributes: ['createAt', 'note'],
+              include: [
+                {
+                  model: sequelize.models.user,
+                  as: 'User',
+                  attributes: ['FullNameValue'],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.user,
+          as: 'User',
+          attributes: ['FullNameValue'],
+        },
+      ],
+    });
+  };
+
   Approvals.createBecomeAParentRequest = function (userId, establishmentId) {
     return this.create({
       UserID: userId,

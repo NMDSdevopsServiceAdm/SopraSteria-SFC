@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { CqcIndividualMainServiceChangeComponent } from './cqc-individual-main-service-change.component';
 
-fdescribe('SearchComponent', () => {
+describe('CqcIndividualMainServiceChangeComponent', () => {
   async function setup() {
     const component = await render(CqcIndividualMainServiceChangeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -17,7 +17,7 @@ fdescribe('SearchComponent', () => {
     };
   }
 
-  it('should render a SearchComponent', async () => {
+  it('should render a CqcIndividualMainServiceChangeComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

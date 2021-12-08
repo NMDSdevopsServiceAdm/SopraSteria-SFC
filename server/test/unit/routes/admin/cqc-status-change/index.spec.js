@@ -1,8 +1,13 @@
 const faker = require('faker');
-const expect = require('chai').expect;
+const chai = require('chai');
+const expect = chai.expect;
 const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+chai.should();
+chai.use(sinonChai);
 const moment = require('moment-timezone');
 const config = require('../../../../../config/config');
+const httpsMocks = require('node-mocks-http');
 const Sequelize = require('sequelize');
 
 const models = require('../../../../../models/index');
@@ -39,23 +44,25 @@ var fakeApproval = {
   Establishment: {
     uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
     nmdsId: testWorkplace.nmdsId,
-    NameValue: testWorkplace.NameValue
+    NameValue: testWorkplace.NameValue,
   },
   User: {
-    FullNameValue: faker.name.findName()
+    FullNameValue: faker.name.findName(),
   },
   Data: {
     requestedService: {
-      id: 1, name: 'Carers support'
+      id: 1,
+      name: 'Carers support',
     },
     currentService: {
       id: 14,
       name: 'Any childrens / young peoples services',
-      other: 'Other Name'
-    }
-  }, save: () => {
+      other: 'Other Name',
+    },
+  },
+  save: () => {
     approvalObjectWasSaved = true;
-  }
+  },
 };
 
 var approvalRequestBody = {};
@@ -74,17 +81,15 @@ const approvalJson = (json) => {
 const approvalStatus = (status) => {
   returnedStatus = status;
   return {
-    json: approvalJson, send: () => {
-    }
+    json: approvalJson,
+    send: () => {},
   };
 };
 var changeMainService;
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
-
 describe.skip('admin/cqc-status-change route', () => {
-
   afterEach(() => {
     sb.restore();
   });
@@ -135,7 +140,6 @@ describe.skip('admin/cqc-status-change route', () => {
     noMatchingRequestByEstablishmentId = false;
   });
 
-
   describe('fetching CQC Status Approval', () => {
     it('should return an array of cqc status approvals', async () => {
       // Arrange (see beforeEach)
@@ -145,29 +149,31 @@ describe.skip('admin/cqc-status-change route', () => {
 
       // Assert
       expect(returnedStatus).to.deep.equal(200);
-      expect(returnedJson).to.deep.equal([{
-        requestId: fakeApproval.ID,
-        requestUUID: fakeApproval.UUID,
-        establishmentId: fakeApproval.EstablishmentID,
-        establishmentUid: fakeApproval.Establishment.uid,
-        userId: fakeApproval.UserID,
-        workplaceId: fakeApproval.Establishment.nmdsId,
-        username: fakeApproval.User.FullNameValue,
-        orgName: fakeApproval.Establishment.NameValue,
-        requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
-        data: {
-          currentService: {
-            ID: fakeApproval.Data.currentService.id,
-            name: fakeApproval.Data.currentService.name,
-            other: fakeApproval.Data.currentService.other
+      expect(returnedJson).to.deep.equal([
+        {
+          requestId: fakeApproval.ID,
+          requestUUID: fakeApproval.UUID,
+          establishmentId: fakeApproval.EstablishmentID,
+          establishmentUid: fakeApproval.Establishment.uid,
+          userId: fakeApproval.UserID,
+          workplaceId: fakeApproval.Establishment.nmdsId,
+          username: fakeApproval.User.FullNameValue,
+          orgName: fakeApproval.Establishment.NameValue,
+          requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+          data: {
+            currentService: {
+              ID: fakeApproval.Data.currentService.id,
+              name: fakeApproval.Data.currentService.name,
+              other: fakeApproval.Data.currentService.other,
+            },
+            requestedService: {
+              ID: fakeApproval.Data.requestedService.id,
+              name: fakeApproval.Data.requestedService.name,
+              other: null,
+            },
           },
-          requestedService: {
-            ID: fakeApproval.Data.requestedService.id,
-            name: fakeApproval.Data.requestedService.name,
-            other: null
-          }
-        }
-      }]);
+        },
+      ]);
     });
 
     it('should return 400 on error', async () => {
@@ -182,7 +188,6 @@ describe.skip('admin/cqc-status-change route', () => {
     });
   });
 
-
   describe('approving a new cqcStatusRequest', () => {
     beforeEach(async () => {
       approvalRequestBody.approve = true;
@@ -192,9 +197,12 @@ describe.skip('admin/cqc-status-change route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -207,9 +215,12 @@ describe.skip('admin/cqc-status-change route', () => {
       fakeApproval.Status = 'Pending';
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(fakeApproval.Status).to.equal('Approved');
@@ -220,9 +231,12 @@ describe.skip('admin/cqc-status-change route', () => {
       approvalObjectWasSaved = false;
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
@@ -232,9 +246,12 @@ describe.skip('admin/cqc-status-change route', () => {
       // Arrange
       throwErrorWhenFetchingSingleRequest = true;
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedStatus).to.deep.equal(400);
@@ -250,9 +267,12 @@ describe.skip('admin/cqc-status-change route', () => {
       // Arrange (see beforeEach)
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
@@ -265,9 +285,12 @@ describe.skip('admin/cqc-status-change route', () => {
       fakeApproval.Status = 'Pending';
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(fakeApproval.Status).to.equal('Rejected');
@@ -278,9 +301,12 @@ describe.skip('admin/cqc-status-change route', () => {
       approvalObjectWasSaved = false;
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(approvalObjectWasSaved).to.equal(true);
@@ -291,12 +317,85 @@ describe.skip('admin/cqc-status-change route', () => {
       workplaceObjectWasSaved = false;
 
       // Act
-      await cqcStatusChange.cqcStatusChanges({
-        body: approvalRequestBody
-      }, { status: approvalStatus });
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
 
       // Assert
       expect(workplaceObjectWasSaved).to.equal(false);
     });
+  });
+});
+
+describe.only('getIndividualCqcStatusChange', () => {
+  let req;
+  let res;
+
+  beforeEach(() => {
+    const request = {
+      method: 'GET',
+      url: '/api/admin/cqc-status-change/f61696f7-30fe-441c-9c59-e25dfcb51f59',
+      body: {},
+    };
+
+    req = httpsMocks.createRequest(request);
+    res = httpsMocks.createResponse();
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const expectedResponse = {
+    ID: 9,
+    UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    EstablishmentID: testWorkplace.id,
+    UserID: testUser.id,
+    createdAt: new Date('1/1/2021 12:00pm'),
+    Status: 'Pending',
+    Establishment: {
+      uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
+      nmdsId: testWorkplace.nmdsId,
+      NameValue: testWorkplace.NameValue,
+      Notes: [
+        {
+          createdAt: new Date('10/08/2021 11.53am'),
+          note: 'cqc status note',
+          user: { FullNameValue: 'adminUser1' },
+        },
+      ],
+    },
+    User: {
+      FullNameValue: faker.name.findName(),
+    },
+    Data: {
+      requestedService: {
+        id: 1,
+        name: 'Carers support',
+      },
+      currentService: {
+        id: 14,
+        name: 'Any childrens / young peoples services',
+        other: 'Other Name',
+      },
+    },
+  };
+
+  it('should return 200 when successfully retrieving an individual status change', async () => {
+    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
+
+    expect(res.statusCode).to.deep.equal(200);
+  });
+
+  it('should return the individual status change', async () => {
+    sinon.stub(models.Approvals, 'findByEstablishmentUid').returns(expectedResponse);
+    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
+
+    const returnedResponse = res._getData();
+
+    expect(returnedResponse).to.deep.equal(expectedResponse);
   });
 });
