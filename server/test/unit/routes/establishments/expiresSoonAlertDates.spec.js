@@ -1,11 +1,20 @@
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
+const models = require('../../../../models');
 
 const expiresSoonAlertDates = require('../../../../routes/establishments/expiresSoonAlertDates');
 
 describe.only('server/routes/establishments/expiresSoonAlertDates', () => {
-  afterEach(async () => {
+  beforeEach(() => {
+    sinon.stub(models.establishment, 'getExpiresSoonAlertDate').returns({
+      get: () => {
+        return '90';
+      },
+    });
+  });
+
+  afterEach(() => {
     sinon.restore();
   });
 
@@ -16,6 +25,9 @@ describe.only('server/routes/establishments/expiresSoonAlertDates', () => {
       const request = {
         method: 'GET',
         url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
+        establishment: {
+          id: 1,
+        },
       };
 
       const req = httpMocks.createRequest(request);
@@ -27,6 +39,5 @@ describe.only('server/routes/establishments/expiresSoonAlertDates', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(response.expiresSoonAlertDate).to.deep.equal('90');
     });
-
   });
 });

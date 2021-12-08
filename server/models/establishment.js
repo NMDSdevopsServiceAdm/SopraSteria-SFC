@@ -1812,5 +1812,15 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
+  Establishment.getExpiresSoonAlertDate = async function (establishmentId) {
+    return this.findOne({
+      attributes: ['ExpiresSoonAlertDate'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
   return Establishment;
 };
