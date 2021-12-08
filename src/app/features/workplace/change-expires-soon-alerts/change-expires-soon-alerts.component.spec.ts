@@ -1,9 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -16,23 +19,22 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
       providers: [
         WindowRef,
-        // {
-        //   provide: ActivatedRoute,
-        //   useValue: new MockActivatedRoute({
-        //     snapshot: {
-        //       params: { trainingRecordId: '1' },
-        //     },
-        //     parent: {
-        //       snapshot: {
-        //         data: {
-        //           establishment: {
-        //             uid: '1',
-        //           },
-        //         },
-        //       },
-        //     },
-        //   }),
-        // },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              data: {
+                establishment: {
+                  uid: '1',
+                },
+              },
+            },
+          }),
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
       ],
     });
 
@@ -42,6 +44,10 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
+
+    const establishment = injector.inject(EstablishmentService) as EstablishmentService;
+    const establishmentSpy = spyOn(establishment, 'setExpiresSoonAlertDates');
+    establishmentSpy.and.callThrough();
 
     const alert = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alert, 'addAlert');
@@ -53,6 +59,7 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
       getByText,
       getAllByText,
       routerSpy,
+      establishmentSpy,
       alertSpy,
     };
   }
@@ -86,6 +93,19 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
   });
 
   describe('onSubmit', () => {
+    it('should update the expires soon dates on submit', async () => {
+      const { component, establishmentSpy, getByText } = await setup();
+
+      const sixtyDaysRadioButton = getByText('60 days before the training expires');
+      fireEvent.click(sixtyDaysRadioButton);
+
+      const saveAndReturnButton = getByText('Save and return');
+      fireEvent.click(saveAndReturnButton);
+
+      expect(component.form.valid).toBeTruthy();
+      expect(establishmentSpy).toHaveBeenCalledWith('1', { expiresSoonAlertDates: '60' });
+    });
+
     it('should navigate to the training and quals tab on submit', async () => {
       const { component, routerSpy, getByText } = await setup();
 
@@ -97,7 +117,7 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     });
 
     it('should display an alert when the "Save and return" button is clicked', async () => {
-      const { getByText, alertSpy } = await setup();
+      const { getByText, fixture, alertSpy } = await setup();
 
       const sixtyDaysRadioButton = getByText('60 days before the training expires');
       fireEvent.click(sixtyDaysRadioButton);
@@ -105,6 +125,7 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
       const saveAndReturnButton = getByText('Save and return');
       fireEvent.click(saveAndReturnButton);
 
+      await fixture.whenStable();
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `'Expires soon' alerts set to 60 days`,

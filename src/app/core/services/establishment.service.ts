@@ -14,7 +14,7 @@ import {
 } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
@@ -320,5 +320,15 @@ export class EstablishmentService {
     params = params.set('mainService', `${requestParams.mainService}`);
 
     return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
+  }
+
+  public getExpiresSoonAlertDates(establishmentId: string): Observable<string> {
+    return of('90');
+    // return this.http.get<string>(`/api/workplace/${establishmentId}/training`);
+  }
+
+  public setExpiresSoonAlertDates(establishmentId: string, data): Observable<string> {
+    return of('');
+    // return this.http.post<string>(`/api/workplace/${establishmentId}/training`);
   }
 }
