@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DialogService } from '@core/services/dialog.service';
-import { ApprovalOrRejectionDialogComponent } from '@features/admin/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-cqc-individual-main-service-change',
