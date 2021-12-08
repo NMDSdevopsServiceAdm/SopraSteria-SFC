@@ -322,9 +322,8 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
   }
 
-  public getExpiresSoonAlertDates(establishmentId: string): Observable<string> {
-    return of('90');
-    // return this.http.get<string>(`/api/workplace/${establishmentId}/training`);
+  public getExpiresSoonAlertDates(establishmentId: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`);
   }
 
   public setExpiresSoonAlertDates(establishmentId: string, data): Observable<string> {

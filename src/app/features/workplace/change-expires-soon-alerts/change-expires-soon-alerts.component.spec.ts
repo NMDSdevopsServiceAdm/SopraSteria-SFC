@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WorkplaceModule } from '../workplace.module';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts.component';
 
-fdescribe('ChangeExpiresSoonAlertsComponent', () => {
+describe('ChangeExpiresSoonAlertsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(ChangeExpiresSoonAlertsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
