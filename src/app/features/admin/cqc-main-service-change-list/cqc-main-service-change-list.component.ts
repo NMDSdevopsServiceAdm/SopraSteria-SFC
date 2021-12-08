@@ -13,4 +13,8 @@ export class CQCMainServiceChangeListComponent implements OnInit {
   ngOnInit(): void {
     this.pendingCQCMainServiceChanges = this.route.snapshot.data.cqcStatusChangeList;
   }
+
+  public setStatusClass(status: string): string {
+    return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
+  }
 }

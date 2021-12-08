@@ -49,6 +49,7 @@ const _mapResults = async (approvalResults) => {
       workplaceId: approval.Establishment.nmdsId,
       username: approval.User.FullNameValue,
       orgName: approval.Establishment.NameValue,
+      status: approval.Status,
       requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
       data: {
         currentService: {
