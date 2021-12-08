@@ -15,6 +15,6 @@ export class CQCMainServiceChangeListComponent implements OnInit {
   }
 
   public setStatusClass(status: string): string {
-    return status === 'PENDING' ? 'govuk-tag--grey' : 'govuk-tag--blue';
+    return status === 'Pending' ? 'govuk-tag--grey' : 'govuk-tag--blue';
   }
 }
