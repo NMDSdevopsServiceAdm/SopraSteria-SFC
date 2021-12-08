@@ -2,6 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
+import { WindowRef } from '@core/services/window.ref';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -13,6 +15,7 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     const { fixture, getByText, getAllByText } = await render(ChangeExpiresSoonAlertsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
       providers: [
+        WindowRef,
         // {
         //   provide: ActivatedRoute,
         //   useValue: new MockActivatedRoute({
@@ -40,9 +43,9 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
-    // const alert = injector.inject(AlertService) as AlertService;
-    // const alertSpy = spyOn(alert, 'addAlert');
-    // alertSpy.and.callThrough();
+    const alert = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alert, 'addAlert');
+    alertSpy.and.callThrough();
 
     return {
       component,
@@ -50,7 +53,7 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
       getByText,
       getAllByText,
       routerSpy,
-      // alertSpy,
+      alertSpy,
     };
   }
 
@@ -82,13 +85,30 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     expect(component.form.value.expiresSoonAlerts).toBe('90');
   });
 
-  it('should navigate to the training and quals tab on submit', async () => {
-    const { component, routerSpy, getByText } = await setup();
+  describe('onSubmit', () => {
+    it('should navigate to the training and quals tab on submit', async () => {
+      const { component, routerSpy, getByText } = await setup();
 
-    const saveAndReturnButton = getByText('Save and return');
-    fireEvent.click(saveAndReturnButton);
+      const saveAndReturnButton = getByText('Save and return');
+      fireEvent.click(saveAndReturnButton);
 
-    expect(component.form.valid).toBeTruthy();
-    expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
+      expect(component.form.valid).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
+    });
+
+    it('should display an alert when the "Save and return" button is clicked', async () => {
+      const { getByText, alertSpy } = await setup();
+
+      const sixtyDaysRadioButton = getByText('60 days before the training expires');
+      fireEvent.click(sixtyDaysRadioButton);
+
+      const saveAndReturnButton = getByText('Save and return');
+      fireEvent.click(saveAndReturnButton);
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `'Expires soon' alerts set to 60 days`,
+      });
+    });
   });
 });
