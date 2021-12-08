@@ -6,6 +6,7 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
@@ -404,6 +405,9 @@ const routes: Routes = [
       {
         path: 'change-expires-soon-alerts',
         component: ChangeExpiresSoonAlertsComponent,
+        resolve: {
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+        },
         data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
       },
     ],

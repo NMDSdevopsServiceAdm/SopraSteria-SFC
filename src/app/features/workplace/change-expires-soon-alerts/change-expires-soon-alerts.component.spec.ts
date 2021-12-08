@@ -24,6 +24,9 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
           useValue: new MockActivatedRoute({
             snapshot: {
               data: {
+                expiresSoonAlertDate: {
+                  expiresSoonAlertDate: '90',
+                },
                 establishment: {
                   uid: '1',
                 },

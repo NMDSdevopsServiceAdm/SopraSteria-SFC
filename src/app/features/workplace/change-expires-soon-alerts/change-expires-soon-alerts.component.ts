@@ -28,11 +28,7 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
 
   public ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
-    this.subscriptions.add(
-      this.establishmentService.getExpiresSoonAlertDates(this.workplaceUid).subscribe((value) => {
-        this.expiresSoonDate = value;
-      }),
-    );
+    this.expiresSoonDate = this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate;
     this.setupForm();
     this.setBackLink();
   }
