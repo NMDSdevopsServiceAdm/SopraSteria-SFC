@@ -1,5 +1,58 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Change when you get 'expires soon' alerts</h1>
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Change when you get 'expires soon' alerts</h1>
+    <p class="govuk-inset-text">
+      Training records have a default 'expires soon' alert that displays 90 days before the training expires. You can
+      change the alert to display 60 or 30 days before expiry or leave it set to 90 days.
+    </p>
+
+    <form #formEl novalidate [formGroup]="form" id="server-error">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">When do you want to get 'expires soon' alerts?</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="expiresSoonAlerts-90"
+                name="expiresSoonAlerts"
+                type="radio"
+                formControlName="expiresSoonAlerts"
+                value="90"
+              />
+              <label for="expiresSoonAlerts-90" class="govuk-label govuk-radios__label">
+                90 days before the training expires
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="expiresSoonAlerts-60"
+                name="expiresSoonAlerts"
+                type="radio"
+                formControlName="expiresSoonAlerts"
+                value="60"
+              />
+              <label for="expiresSoonAlerts-60" class="govuk-label govuk-radios__label">
+                60 days before the training expires
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="expiresSoonAlerts-30"
+                name="expiresSoonAlerts"
+                type="radio"
+                formControlName="expiresSoonAlerts"
+                value="30"
+              />
+              <label for="expiresSoonAlerts-30" class="govuk-label govuk-radios__label">
+                30 days before the training expires
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </form>
   </div>
 </div>

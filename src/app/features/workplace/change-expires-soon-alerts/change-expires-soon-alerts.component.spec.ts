@@ -63,4 +63,22 @@ fdescribe('ChangeExpiresSoonAlertsComponent', () => {
     const { getByText } = await setup();
     expect(getByText(`Change when you get 'expires soon' alerts`)).toBeTruthy();
   });
+
+  it('should display the different radio options', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('90 days before the training expires')).toBeTruthy();
+    expect(getByText('60 days before the training expires')).toBeTruthy();
+    expect(getByText('30 days before the training expires')).toBeTruthy();
+  });
+
+  it('should prefill the form with the current expires soon date', async () => {
+    const { component, fixture } = await setup();
+
+    component.expiresSoonDate = '90';
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(component.form.value.expiresSoonAlerts).toBe('90');
+  });
 });
