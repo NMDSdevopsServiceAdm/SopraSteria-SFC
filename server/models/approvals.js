@@ -140,24 +140,17 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['uid', 'nmdsId', 'NameValue', 'address1', 'address2', 'address3', 'postcode', 'town', 'county'],
-          include: [
-            {
-              model: sequelize.models.notes,
-              where: {
-                noteType: 'Main Service',
-              },
-              as: 'notes',
-              attributes: ['createdAt', 'note'],
-              required: false,
-              include: [
-                {
-                  model: sequelize.models.user,
-                  as: 'user',
-                  attributes: ['FullNameValue'],
-                },
-              ],
-            },
+          attributes: [
+            'id',
+            'uid',
+            'nmdsId',
+            'NameValue',
+            'address1',
+            'address2',
+            'address3',
+            'postcode',
+            'town',
+            'county',
           ],
         },
         {

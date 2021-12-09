@@ -1,9 +1,10 @@
 module.exports.convertIndividualCqcStatusChange = (cqcStatusChange) => {
-  const individualApproval = {
+  return {
     status: cqcStatusChange.Status,
     requestUid: cqcStatusChange.UUID,
     username: cqcStatusChange.User.FullNameValue,
     establishment: {
+      establishmentId: cqcStatusChange.Establishment.id,
       establishmentUid: cqcStatusChange.Establishment.uid,
       workplaceId: cqcStatusChange.Establishment.nmdsId,
       name: cqcStatusChange.Establishment.NameValue,
@@ -27,21 +28,4 @@ module.exports.convertIndividualCqcStatusChange = (cqcStatusChange) => {
       },
     },
   };
-
-  const notes = convertNotes(cqcStatusChange.Establishment.notes);
-
-  return {
-    ...individualApproval,
-    notes,
-  };
-};
-
-const convertNotes = (notes) => {
-  return notes.map((noteObj) => {
-    return {
-      note: noteObj.note,
-      createdAt: noteObj.createdAt,
-      user: noteObj.user.FullNameValue,
-    };
-  });
 };

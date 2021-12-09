@@ -142,6 +142,7 @@ const routes: Routes = [
         data: { title: 'CQC Individual Main Service Change' },
         resolve: {
           approval: GetIndividualCqcMainServiceChangeResolver,
+          // notes: GetRegistrationNotesResolver,
         },
       },
     ],

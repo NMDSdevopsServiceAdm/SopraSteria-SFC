@@ -13,42 +13,42 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Workplace ID</dt>
-        <dl class="govuk-summary-list__value">{{ individualApproval.establishment.workplaceId }}</dl>
+        <dl class="govuk-summary-list__value">{{ registration.establishment.workplaceId }}</dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Name and address</dt>
         <dl class="govuk-summary-list__value">
-          {{ individualApproval.establishment.name }}<br />
-          {{ individualApproval.establishment.address1 }}<br *ngIf="individualApproval.establishment.address2" />
-          {{ individualApproval.establishment.address2 }}<br *ngIf="individualApproval.establishment.address3" />
-          {{ individualApproval.establishment.address3 }}<br *ngIf="individualApproval.establishment.county" />
-          {{ individualApproval.establishment.county }}<br />
-          {{ individualApproval.establishment.town }},
-          {{ individualApproval.establishment.postcode }}
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address1 }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+          {{ registration.establishment.address3 }}<br *ngIf="registration.establishment.county" />
+          {{ registration.establishment.county }}<br />
+          {{ registration.establishment.town }}
+          {{ registration.establishment.postcode }}
         </dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Username</dt>
-        <dl class="govuk-summary-list__value">{{ individualApproval.username }}</dl>
+        <dl class="govuk-summary-list__value">{{ registration.username }}</dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Current service</dt>
-        <dl class="govuk-summary-list__value">{{ individualApproval.data.currentService.name }}</dl>
+        <dl class="govuk-summary-list__value">{{ registration.data.currentService.name }}</dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Requested service</dt>
-        <dl class="govuk-summary-list__value">{{ individualApproval.data.requestedService.name }}</dl>
+        <dl class="govuk-summary-list__value">{{ registration.data.requestedService.name }}</dl>
       </div>
     </dl>
 
     <app-add-note
-      [addNote]=""
-      [registration]=""
-      [notes]=""
-      [getNotes]=""
-      [notesError]=""
-      [notesForm]=""
-      [loggedInUser]=""
+      [addNote]="addNote"
+      [registration]="registration"
+      [notes]="notes"
+      [getNotes]="getNotes"
+      [notesError]="notesError"
+      [notesForm]="notesForm"
+      [loggedInUser]="loggedInUser"
     ></app-add-note>
 
     <div class="govuk-frid-column-three-quarters">

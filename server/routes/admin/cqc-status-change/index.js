@@ -52,8 +52,6 @@ const getIndividualCqcStatusChange = async (req, res) => {
     );
 
     const convertedIndividualCqcStatusChange = convertIndividualCqcStatusChange(individualCqcStatusChange);
-    // console.log('******* getIndividualCqcStatusChange *****');
-    // console.log(convertIndividualCqcStatusChange(individualCqcStatusChange));
     res.status(200).send(convertedIndividualCqcStatusChange);
   } catch (error) {
     console.error(error);

@@ -350,6 +350,7 @@ describe('getIndividualCqcStatusChange', () => {
       },
     },
     Establishment: {
+      id: 1,
       uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
       nmdsId: 'J111111',
       NameValue: 'Workplace 1',
@@ -359,13 +360,6 @@ describe('getIndividualCqcStatusChange', () => {
       town: 'Manchester',
       county: 'Cheshire',
       postcode: 'CA1 2BD',
-      notes: [
-        {
-          createdAt: '10/08/2021 11.53am',
-          note: 'cqc status note',
-          user: { FullNameValue: 'adminUser1' },
-        },
-      ],
     },
   };
 
@@ -391,6 +385,7 @@ describe('getIndividualCqcStatusChange', () => {
     requestUid: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
     username: 'Joe Bloggs',
     establishment: {
+      establishmentId: 1,
       establishmentUid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
       workplaceId: 'J111111',
       name: 'Workplace 1',
@@ -413,13 +408,6 @@ describe('getIndividualCqcStatusChange', () => {
         other: 'Other Name',
       },
     },
-    notes: [
-      {
-        createdAt: '10/08/2021 11.53am',
-        note: 'cqc status note',
-        user: 'adminUser1',
-      },
-    ],
   };
 
   it('should return 200 when successfully retrieving an individual status change', async () => {
@@ -431,22 +419,6 @@ describe('getIndividualCqcStatusChange', () => {
 
   it('should return the individual status change', async () => {
     sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
-    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
-
-    const returnedResponse = res._getData();
-
-    expect(returnedResponse).to.deep.equal(expectedResponse);
-  });
-
-  it('should return the individual status change with empty notes array if there are no notes', async () => {
-    sinon.restore();
-
-    dummyDetails.Establishment.notes = [];
-    sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(dummyDetails);
-    sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
-
-    expectedResponse.notes = [];
-
     await cqcStatusChange.getIndividualCqcStatusChange(req, res);
 
     const returnedResponse = res._getData();

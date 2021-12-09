@@ -19,8 +19,8 @@ export class CqcStatusChangeService {
     return this.http.post<any>('/api/admin/cqc-status-change/', data);
   }
 
-  public getIndividualCqcStatusChange(establishmentUid: string): Observable<CqcStatusChanges> {
-    return this.http.get<CqcStatusChanges>(`/api/admin/cqc-status-change/${establishmentUid}`);
+  public getIndividualCqcStatusChange(establishmentUid: string): Observable<any> {
+    return this.http.get<any>(`/api/admin/cqc-status-change/${establishmentUid}`);
   }
 
   public getCqcRequestByEstablishmentId(establishmentId: number): Observable<ApprovalRequest<CqcChangeData>> {
