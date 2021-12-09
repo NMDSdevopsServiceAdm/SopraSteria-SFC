@@ -13,29 +13,35 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Workplace ID</dt>
-        <dl class="govuk-summary-list__value">{{ individualApproval.Establishment.nmdsId }}</dl>
+        <dl class="govuk-summary-list__value">{{ individualApproval.establishment.workplaceId }}</dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Name and address</dt>
         <dl class="govuk-summary-list__value">
-          {{ individualApproval.Establishment.NameValue }}
+          {{ individualApproval.establishment.name }}<br />
+          {{ individualApproval.establishment.address1 }}<br *ngIf="individualApproval.establishment.address2" />
+          {{ individualApproval.establishment.address2 }}<br *ngIf="individualApproval.establishment.address3" />
+          {{ individualApproval.establishment.address3 }}<br *ngIf="individualApproval.establishment.county" />
+          {{ individualApproval.establishment.county }}<br />
+          {{ individualApproval.establishment.town }},
+          {{ individualApproval.establishment.postcode }}
         </dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Username</dt>
-        <dl class="govuk-summary-list__value"></dl>
+        <dl class="govuk-summary-list__value">{{ individualApproval.username }}</dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Current service</dt>
-        <dl class="govuk-summary-list__value"></dl>
+        <dl class="govuk-summary-list__value">{{ individualApproval.data.currentService.name }}</dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Requested service</dt>
-        <dl class="govuk-summary-list__value"></dl>
+        <dl class="govuk-summary-list__value">{{ individualApproval.data.requestedService.name }}</dl>
       </div>
     </dl>
 
-    <!-- <app-add-note
+    <app-add-note
       [addNote]=""
       [registration]=""
       [notes]=""
@@ -43,7 +49,7 @@
       [notesError]=""
       [notesForm]=""
       [loggedInUser]=""
-    ></app-add-note> -->
+    ></app-add-note>
 
     <div class="govuk-frid-column-three-quarters">
       <div class="govuk-button-group">
