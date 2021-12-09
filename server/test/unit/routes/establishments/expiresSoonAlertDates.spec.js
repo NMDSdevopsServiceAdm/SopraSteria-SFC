@@ -67,6 +67,9 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
         establishment: {
           id: 1,
         },
+        body: {
+          expiresSoonAlertDate: '90',
+        },
       };
 
       const req = httpMocks.createRequest(request);
@@ -85,6 +88,9 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
         url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
         establishment: {
           id: 1,
+        },
+        body: {
+          expiresSoonAlertDate: '90',
         },
       };
 

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
-// const { hasPermission } = require('../../utils/security/hasPermission');
+const { celebrate, Joi, errors } = require('celebrate');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const getExpiresSoonAlertDate = async (req, res) => {
   try {
@@ -30,7 +31,17 @@ const setExpiresSoonAlertDate = async (req, res) => {
 };
 
 router.route('/').get(getExpiresSoonAlertDate);
-router.route('/').post(setExpiresSoonAlertDate);
+router.route('/').post(
+  celebrate({
+    body: Joi.object().keys({
+      expiresSoonAlertDate: Joi.string().valid('30', '60', '90'),
+    }),
+  }),
+  hasPermission('canEditEstablishment'),
+  setExpiresSoonAlertDate,
+);
+
+router.use('/', errors());
 
 module.exports = router;
 module.exports.getExpiresSoonAlertDate = getExpiresSoonAlertDate;

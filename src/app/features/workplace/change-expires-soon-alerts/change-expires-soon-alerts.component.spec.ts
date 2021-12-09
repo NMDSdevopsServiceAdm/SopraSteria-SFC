@@ -28,7 +28,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
                   expiresSoonAlertDate: '90',
                 },
                 establishment: {
-                  uid: '1',
+                  uid: '1446-uid-54638',
                 },
               },
             },
@@ -106,7 +106,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
       fireEvent.click(saveAndReturnButton);
 
       expect(component.form.valid).toBeTruthy();
-      expect(establishmentSpy).toHaveBeenCalledWith('1', { expiresSoonAlertDates: '60' });
+      expect(establishmentSpy).toHaveBeenCalledWith('1446-uid-54638', '60');
     });
 
     it('should navigate to the training and quals tab on submit', async () => {
