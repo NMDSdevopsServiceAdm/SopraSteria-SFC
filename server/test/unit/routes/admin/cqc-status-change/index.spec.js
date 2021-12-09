@@ -330,49 +330,14 @@ describe.skip('admin/cqc-status-change route', () => {
   });
 });
 
-describe.only('getIndividualCqcStatusChange', () => {
+describe('getIndividualCqcStatusChange', () => {
   let req;
   let res;
 
-  beforeEach(() => {
-    const request = {
-      method: 'GET',
-      url: '/api/admin/cqc-status-change/f61696f7-30fe-441c-9c59-e25dfcb51f59',
-      params: { establishmentUid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59' },
-    };
-
-    req = httpsMocks.createRequest(request);
-    res = httpsMocks.createResponse();
-
-    sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(expectedResponse);
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  const expectedResponse = {
-    ID: 9,
-    UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
-    EstablishmentID: testWorkplace.id,
-    UserID: testUser.id,
-    createdAt: new Date('1/1/2021 12:00pm'),
+  const dummyDetails = {
     Status: 'Pending',
-    Establishment: {
-      uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
-      nmdsId: testWorkplace.nmdsId,
-      NameValue: testWorkplace.NameValue,
-      Notes: [
-        {
-          createdAt: new Date('10/08/2021 11.53am'),
-          note: 'cqc status note',
-          user: { FullNameValue: 'adminUser1' },
-        },
-      ],
-    },
-    User: {
-      FullNameValue: faker.name.findName(),
-    },
+    UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    User: { FullNameValue: 'Joe Bloggs' },
     Data: {
       requestedService: {
         id: 1,
@@ -384,6 +349,77 @@ describe.only('getIndividualCqcStatusChange', () => {
         other: 'Other Name',
       },
     },
+    Establishment: {
+      uid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
+      nmdsId: 'J111111',
+      NameValue: 'Workplace 1',
+      address1: 'Care Home 1',
+      address2: '31 King Street',
+      address3: 'Sale',
+      town: 'Manchester',
+      county: 'Cheshire',
+      postcode: 'CA1 2BD',
+      notes: [
+        {
+          createdAt: '10/08/2021 11.53am',
+          note: 'cqc status note',
+          user: { FullNameValue: 'adminUser1' },
+        },
+      ],
+    },
+  };
+
+  beforeEach(() => {
+    const request = {
+      method: 'GET',
+      url: '/api/admin/cqc-status-change/f61696f7-30fe-441c-9c59-e25dfcb51f59',
+      params: { establishmentUid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59' },
+    };
+
+    req = httpsMocks.createRequest(request);
+    res = httpsMocks.createResponse();
+
+    sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(dummyDetails);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const expectedResponse = {
+    status: 'Pending',
+    requestUid: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    username: 'Joe Bloggs',
+    establishment: {
+      establishmentUid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
+      workplaceId: 'J111111',
+      name: 'Workplace 1',
+      address1: 'Care Home 1',
+      address2: '31 King Street',
+      address3: 'Sale',
+      town: 'Manchester',
+      county: 'Cheshire',
+      postcode: 'CA1 2BD',
+    },
+    data: {
+      requestedService: {
+        id: 1,
+        name: 'Carers support',
+        other: null,
+      },
+      currentService: {
+        id: 14,
+        name: 'Any childrens / young peoples services',
+        other: 'Other Name',
+      },
+    },
+    notes: [
+      {
+        createdAt: '10/08/2021 11.53am',
+        note: 'cqc status note',
+        user: 'adminUser1',
+      },
+    ],
   };
 
   it('should return 200 when successfully retrieving an individual status change', async () => {
@@ -395,6 +431,22 @@ describe.only('getIndividualCqcStatusChange', () => {
 
   it('should return the individual status change', async () => {
     sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
+    await cqcStatusChange.getIndividualCqcStatusChange(req, res);
+
+    const returnedResponse = res._getData();
+
+    expect(returnedResponse).to.deep.equal(expectedResponse);
+  });
+
+  it('should return the individual status change with empty notes array if there are no notes', async () => {
+    sinon.restore();
+
+    dummyDetails.Establishment.notes = [];
+    sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(dummyDetails);
+    sinon.stub(models.establishment, 'findByUid').returns({ id: '123' });
+
+    expectedResponse.notes = [];
+
     await cqcStatusChange.getIndividualCqcStatusChange(req, res);
 
     const returnedResponse = res._getData();

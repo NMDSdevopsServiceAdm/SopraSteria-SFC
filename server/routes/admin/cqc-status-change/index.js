@@ -5,6 +5,7 @@ const moment = require('moment-timezone');
 const config = require('../../../config/config');
 const mainServiceRouter = require('../../establishments/mainService');
 const Establishment = require('../../../models/classes/establishment');
+const { convertIndividualCqcStatusChange } = require('../../../utils/cqcStatusChangeUtils');
 
 const cqcStatusChangeApprovalConfirmation = 'CQC status change approved';
 const cqcStatusChangeRejectionConfirmation = 'CQC status change rejected';
@@ -50,7 +51,10 @@ const getIndividualCqcStatusChange = async (req, res) => {
       'Pending',
     );
 
-    res.status(200).send(individualCqcStatusChange);
+    const convertedIndividualCqcStatusChange = convertIndividualCqcStatusChange(individualCqcStatusChange);
+    // console.log('******* getIndividualCqcStatusChange *****');
+    // console.log(convertIndividualCqcStatusChange(individualCqcStatusChange));
+    res.status(200).send(convertedIndividualCqcStatusChange);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'There was an error retrieving the cqc status change' });

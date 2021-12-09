@@ -97,7 +97,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue', 'Address1', 'Address2', 'Address3', 'PostCode', 'Town', 'County'],
+          attributes: ['nmdsId', 'NameValue'],
         },
         {
           model: sequelize.models.user,
@@ -140,7 +140,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['id', 'nmdsId', 'NameValue'],
+          attributes: ['uid', 'nmdsId', 'NameValue', 'address1', 'address2', 'address3', 'postcode', 'town', 'county'],
           include: [
             {
               model: sequelize.models.notes,
