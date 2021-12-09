@@ -94,12 +94,8 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
     expect(getByText('30 days before the training expires')).toBeTruthy();
   });
 
-  it('should prefill the form with the current expires soon date', async () => {
-    const { component, fixture } = await setup();
-
-    component.expiresSoonDate = '90';
-    component.ngOnInit();
-    fixture.detectChanges();
+  it('should prefill the form with the current expires soon date from the resolver', async () => {
+    const { component } = await setup();
 
     expect(component.form.value.expiresSoonAlerts).toBe('90');
   });
