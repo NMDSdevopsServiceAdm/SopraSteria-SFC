@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,7 +15,9 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public expiresSoonDate: string;
-  private workplaceUid: string;
+  public workplaceUid: string;
+  private isPrimary: boolean;
+  private returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -29,7 +32,9 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
     this.expiresSoonDate = this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate;
+    this.isPrimary = this.route.snapshot.data.primaryWorkplace.uid === this.workplaceUid;
     this.setupForm();
+    this.setReturnUrl();
     this.setBackLink();
   }
 
@@ -37,6 +42,11 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
     this.form = this.formBuilder.group({
       expiresSoonAlerts: this.formBuilder.control(this.expiresSoonDate),
     });
+  }
+
+  private setReturnUrl(): void {
+    const url = this.isPrimary ? ['dashboard'] : ['workplace', this.workplaceUid];
+    this.returnUrl = { url, fragment: 'training-and-qualifications' };
   }
 
   public setBackLink(): void {
@@ -54,7 +64,7 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   }
 
   private async onSuccess(formValue: string): Promise<void> {
-    await this.router.navigate(['dashboard'], { fragment: 'training-and-qualifications' });
+    await this.router.navigate(this.returnUrl.url, { fragment: this.returnUrl.fragment });
 
     this.alertService.addAlert({
       type: 'success',

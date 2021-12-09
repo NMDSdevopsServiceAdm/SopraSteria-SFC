@@ -14,7 +14,7 @@ import { WorkplaceModule } from '../workplace.module';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts.component';
 
 describe('ChangeExpiresSoonAlertsComponent', () => {
-  async function setup() {
+  async function setup(isPrimary = true) {
     const { fixture, getByText, getAllByText } = await render(ChangeExpiresSoonAlertsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
       providers: [
@@ -29,6 +29,9 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
                 },
                 establishment: {
                   uid: '1446-uid-54638',
+                },
+                primaryWorkplace: {
+                  uid: isPrimary ? '1446-uid-54638' : '4678-otheruid-5436',
                 },
               },
             },
@@ -109,7 +112,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
       expect(establishmentSpy).toHaveBeenCalledWith('1446-uid-54638', '60');
     });
 
-    it('should navigate to the training and quals tab on submit', async () => {
+    it('should navigate to the training and quals tab on submit if user is primary user', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const saveAndReturnButton = getByText('Save and return');
@@ -117,6 +120,18 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
 
       expect(component.form.valid).toBeTruthy();
       expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
+    });
+
+    it(`should navigate to the sub's training and quals tab on submit if user is not primary user`, async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const saveAndReturnButton = getByText('Save and return');
+      fireEvent.click(saveAndReturnButton);
+
+      expect(component.form.valid).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplaceUid], {
+        fragment: 'training-and-qualifications',
+      });
     });
 
     it('should display an alert when the "Save and return" button is clicked', async () => {
