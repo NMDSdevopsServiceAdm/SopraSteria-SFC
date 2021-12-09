@@ -20,8 +20,8 @@ const getExpiresSoonAlertDate = async (req, res) => {
 const setExpiresSoonAlertDate = async (req, res) => {
   try {
     const expiresSoonAlertDate = req.body.expiresSoonAlertDate;
-    await models.establishment.updateEstablishment(req.establishment.id, {
-      expiresSoonAlertDate: expiresSoonAlertDate,
+    await models.establishment.updateEstablishment(req.establishmentId, {
+      expiresSoonAlertDate,
     });
     return res.status(200).send();
   } catch (error) {
