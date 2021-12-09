@@ -2,6 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { NewTrainingAndQualificationsRecordSummaryComponent } from './new-training-and-qualifications-record-summary.component';
 
@@ -13,7 +15,7 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [],
+      providers: [{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NewTrainingAndQualificationsRecordSummaryComponent);
