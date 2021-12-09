@@ -16,8 +16,8 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public form: FormGroup;
   public expiresSoonDate: string;
   public workplaceUid: string;
+  public returnUrl: URLStructure;
   private isPrimary: boolean;
-  private returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -45,12 +45,12 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   }
 
   private setReturnUrl(): void {
-    const url = this.isPrimary ? ['dashboard'] : ['workplace', this.workplaceUid];
+    const url = this.isPrimary ? ['/dashboard'] : ['/workplace', this.workplaceUid];
     this.returnUrl = { url, fragment: 'training-and-qualifications' };
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: ['dashboard'], fragment: 'training-and-qualifications' });
+    this.backService.setBackLink(this.returnUrl);
   }
 
   public onSubmit(): void {
