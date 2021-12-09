@@ -4,13 +4,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { buildMockAdminSearchWorkplace, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { buildMockAdminSearchWorkplace } from '@core/test-utils/admin/MockSearchService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
@@ -37,26 +36,21 @@ describe('SearchForGroupComponent', () => {
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
           provide: SwitchWorkplaceService,
           useClass: MockSwitchWorkplaceService,
         },
         RegistrationsService,
         WindowRef,
-        UserService,
+        SearchService,
         AlertService,
       ],
     });
 
     const mockSearchResult = buildMockAdminSearchWorkplace(isLocked);
-
     const component = fixture.componentInstance;
 
-    const establishmentService = TestBed.inject(EstablishmentService);
-    const searchGroupsSpy = spyOn(establishmentService, 'searchGroups').and.returnValue(of([mockSearchResult]));
+    const searchService = TestBed.inject(SearchService);
+    const searchGroupsSpy = spyOn(searchService, 'searchGroups').and.returnValue(of([mockSearchResult]));
 
     const switchWorkplaceService = TestBed.inject(SwitchWorkplaceService);
     const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
@@ -200,6 +194,32 @@ describe('SearchForGroupComponent', () => {
 
         expect(searchResults.queryByText('1 THE LANE SOMEWHERE TOWN, HAMPSHIRE, ABC123')).toBeNull();
         expect(searchResults.queryByText('What is your favourite colour?')).toBeNull();
+      });
+
+      it('should show any notes associated with the establishment', async () => {
+        const { getByTestId } = await setup(true);
+
+        const searchResults = within(getByTestId('group-search-results'));
+        fireEvent.click(searchResults.getByText('Open'));
+        fireEvent.click(searchResults.getByText('A1234567'));
+
+        expect(searchResults.getByText('Notes')).toBeTruthy();
+        expect(searchResults.getByText('Admin 1, 25 January 2021 12:00 AM', { exact: false })).toBeTruthy();
+        expect(searchResults.getByText('This is a note')).toBeTruthy();
+      });
+
+      it('should not show the notes section, when there are no notes associated with the establishment', async () => {
+        const { getByTestId, mockSearchResult, searchGroupsSpy } = await setup(true);
+        mockSearchResult.notes = [];
+        searchGroupsSpy.and.returnValue(of([mockSearchResult]));
+
+        const searchResults = within(getByTestId('group-search-results'));
+        fireEvent.click(searchResults.getByText('Open'));
+        fireEvent.click(searchResults.getByText('A1234567'));
+
+        expect(searchResults.queryByText('Notes')).toBeFalsy();
+        expect(searchResults.queryByText('Admin 1, 25 January 2021 12:00 AM')).toBeFalsy();
+        expect(searchResults.queryByText('This is a note')).toBeFalsy();
       });
 
       it('should navigate to parent workplace when clicking parent ID link', async () => {

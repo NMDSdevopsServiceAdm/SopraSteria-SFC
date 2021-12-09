@@ -25,15 +25,15 @@ const validateEstablishmentCsv = async (
     try {
       const thisApiEstablishment = new Establishment();
       thisApiEstablishment.initialise(
-        thisEstablishmentAsAPI.Address1,
-        thisEstablishmentAsAPI.Address2,
-        thisEstablishmentAsAPI.Address3,
-        thisEstablishmentAsAPI.Town,
+        thisEstablishmentAsAPI.address1,
+        thisEstablishmentAsAPI.address2,
+        thisEstablishmentAsAPI.address3,
+        thisEstablishmentAsAPI.town,
         null,
-        thisEstablishmentAsAPI.LocationId,
-        thisEstablishmentAsAPI.ProvId,
-        thisEstablishmentAsAPI.Postcode,
-        thisEstablishmentAsAPI.IsCQCRegulated,
+        thisEstablishmentAsAPI.locationId,
+        thisEstablishmentAsAPI.provId,
+        thisEstablishmentAsAPI.postcode,
+        thisEstablishmentAsAPI.isCQCRegulated,
       );
 
       const foundCurrentEstablishment = myCurrentEstablishments.find(

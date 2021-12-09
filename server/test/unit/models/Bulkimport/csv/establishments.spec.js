@@ -10,15 +10,14 @@ const { apiEstablishmentBuilder } = require('../../../../integration/utils/estab
 
 const validateAPIObject = (establishmentRow) => {
   return {
-    Address1: establishmentRow.ADDRESS1,
-    Address2: establishmentRow.ADDRESS2,
-    Address3: '',
-    Town: establishmentRow.POSTTOWN,
-    Postcode: establishmentRow.POSTCODE,
-    LocationId: establishmentRow.LOCATIONID,
+    address1: establishmentRow.ADDRESS1,
+    address2: establishmentRow.ADDRESS2,
+    address3: '',
+    town: establishmentRow.POSTTOWN,
+    postcode: establishmentRow.POSTCODE,
     locationId: establishmentRow.LOCATIONID,
-    ProvId: establishmentRow.PROVNUM,
-    IsCQCRegulated: true,
+    provId: establishmentRow.PROVNUM,
+    isCQCRegulated: true,
     reasonsForLeaving: '',
     status: 'NEW',
     name: establishmentRow.ESTNAME,
@@ -242,6 +241,73 @@ describe('Bulk Upload - Establishment CSV', () => {
       expectedResult.capacities = [null, null];
 
       expect(apiObject).to.deep.equal(expectedResult);
+    });
+
+    describe('CQC Regulated', () => {
+      it('should return isCQCRegulated as false when set to 0 in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REGTYPE = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.isCQCRegulated).to.equal(false);
+      });
+
+      it('should set isCQCRegulated as false when column empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REGTYPE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.isCQCRegulated).to.equal(false);
+      });
+
+      it('should set isCQCRegulated as true when set to 2 in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REGTYPE = '2';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.isCQCRegulated).to.equal(true);
+      });
+    });
+
+    describe('Address fields', () => {
+      it('should return address fields in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADDRESS1 = 'First Address';
+        establishmentRow.ADDRESS2 = 'Second Address';
+        establishmentRow.ADDRESS3 = 'Third Address';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.address1).to.deep.equal('First Address');
+        expect(apiObject.address2).to.deep.equal('Second Address');
+        expect(apiObject.address3).to.deep.equal('Third Address');
+      });
+
+      it('should return town and postcode fields from CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+
+        establishmentRow.POSTTOWN = 'Wonderland';
+        establishmentRow.POSTCODE = 'CT11AB';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        console.log(establishment);
+        const apiObject = establishment.toAPI();
+        console.log(apiObject);
+
+        expect(apiObject.postcode).to.deep.equal('CT11AB');
+        expect(apiObject.town).to.deep.equal('Wonderland');
+      });
     });
 
     describe('shareWith', () => {

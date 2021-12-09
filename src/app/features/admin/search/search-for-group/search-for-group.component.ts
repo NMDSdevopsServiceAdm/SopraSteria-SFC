@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { WorkplaceSearchItem } from '@core/model/establishment.model';
+import { WorkplaceSearchItem } from '@core/model/admin/search.model';
+import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { Subscription } from 'rxjs';
 
@@ -13,14 +13,14 @@ import { Subscription } from 'rxjs';
 export class SearchForGroupComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
-  public results: Array<WorkplaceSearchItem> = [];
+  public results: WorkplaceSearchItem[] = [];
   public workplaceDetails = [];
   public workplaceDetailsLabel = [];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
-    private establishmentService: EstablishmentService,
+    private searchService: SearchService,
     private switchWorkplaceService: SwitchWorkplaceService,
     private alertService: AlertService,
   ) {}
@@ -45,7 +45,7 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
 
   public onSubmit(): void {
     this.subscriptions.add(
-      this.establishmentService.searchGroups(this.form.value).subscribe(
+      this.searchService.searchGroups(this.form.value).subscribe(
         (response) => {
           this.results = response;
           this.submitted = true;

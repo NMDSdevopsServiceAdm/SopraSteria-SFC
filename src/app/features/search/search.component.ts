@@ -29,7 +29,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     usernameLabel: '',
     name: '',
     nameLabel: '',
-    locationid: '',
+    locationId: '',
     employerType: 'All',
     parent: false,
     errors: [],
@@ -122,7 +122,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (
       this.form.username.length === 0 &&
       this.form.name.length === 0 &&
-      this.form.locationid.length === 0 &&
+      this.form.locationId.length === 0 &&
       this.form.employerType.length === 0
     ) {
       this.form.errors.push({
@@ -147,7 +147,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         data = {
           postcode: this.form.username,
           nmdsId: this.form.name,
-          locationid: this.form.locationid,
+          locationId: this.form.locationId,
         };
       }
 
