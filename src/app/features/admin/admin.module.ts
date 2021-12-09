@@ -4,6 +4,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
+  GetCQCStatusChangeResolver,
+} from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+import {
   GetIndividualCqcMainServiceChangeResolver,
 } from '@core/resolvers/admin/cqc-main-service-change/cqc-individual-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
@@ -27,6 +30,7 @@ import { AdminRoutingModule } from './admin.routing.module';
 import {
   ApprovalOrRejectionDialogComponent,
 } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import {
   CqcIndividualMainServiceChangeComponent,
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
@@ -72,6 +76,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     RejectedRegistrationRequestComponent,
     ReportComponent,
     WorkplaceDropdownComponent,
+    CQCMainServiceChangeListComponent,
     CqcIndividualMainServiceChangeComponent,
     ApprovalOrRejectionDialogComponent,
   ],
@@ -84,6 +89,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     GetSingleRegistrationResolver,
     GetRegistrationNotesResolver,
     GetIndividualCqcMainServiceChangeResolver,
+    GetCQCStatusChangeResolver,
     DatePipe,
   ],
   bootstrap: [AdminComponent],
