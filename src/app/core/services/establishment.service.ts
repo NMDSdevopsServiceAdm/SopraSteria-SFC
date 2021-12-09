@@ -14,7 +14,7 @@ import {
 } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
@@ -326,8 +326,7 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`);
   }
 
-  public setExpiresSoonAlertDates(establishmentId: string, data): Observable<string> {
-    return of('');
-    // return this.http.post<string>(`/api/workplace/${establishmentId}/training`);
+  public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
   }
 }

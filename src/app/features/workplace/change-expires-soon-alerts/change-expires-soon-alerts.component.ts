@@ -46,12 +46,10 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public onSubmit(): void {
     const formValue = this.form.value.expiresSoonAlerts;
     this.subscriptions.add(
-      this.establishmentService
-        .setExpiresSoonAlertDates(this.workplaceUid, { expiresSoonAlertDates: formValue })
-        .subscribe(
-          () => this.onSuccess(formValue),
-          (error) => this.onError(error),
-        ),
+      this.establishmentService.setExpiresSoonAlertDates(this.workplaceUid, formValue).subscribe(
+        () => this.onSuccess(formValue),
+        (error) => this.onError(error),
+      ),
     );
   }
 
