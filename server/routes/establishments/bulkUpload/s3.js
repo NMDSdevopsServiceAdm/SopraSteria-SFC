@@ -228,6 +228,15 @@ const deleteFilesS3 = async (establishmentId, fileName) => {
   }
 };
 
+const listObjectsInBucket = async (establishmentId) => {
+  return await s3
+    .listObjects({
+      Bucket,
+      Prefix: `${establishmentId}/latest/`,
+    })
+    .promise();
+};
+
 module.exports = {
   s3,
   Bucket,
@@ -239,4 +248,5 @@ module.exports = {
   deleteFilesS3,
   findFilesS3,
   listMetaData,
+  listObjectsInBucket,
 };
