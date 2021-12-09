@@ -15,8 +15,8 @@
         <tr class="govuk-table__row" *ngFor="let cqcServiceChange of pendingCQCMainServiceChanges">
           <td class="govuk-table__cell">
             <a
-              [attr.data-testid]="'workplaceName-' + cqcServiceChange.orgName"
-              [routerLink]="['/', cqcServiceChange.establishmentUid]"
+              [attr.data-testid]="'workplaceName-' + cqcServiceChange.establishmentUid"
+              [routerLink]="['/sfcadmin/cqc-main-service-change', cqcServiceChange.establishmentUid]"
               >{{ cqcServiceChange.orgName }}</a
             >
           </td>

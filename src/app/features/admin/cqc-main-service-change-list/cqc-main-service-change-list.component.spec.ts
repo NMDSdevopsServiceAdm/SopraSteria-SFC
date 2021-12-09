@@ -98,12 +98,10 @@ describe('CQCMainServiceChangeListComponent', () => {
   it('should contain link in workplace name ', async () => {
     const { component, fixture } = await setup();
     fixture.detectChanges();
-
     const workplaceName1 = fixture.debugElement.query(
-      By.css('[data-testid="workplaceName-Workplace 1"]'),
+      By.css('[data-testid="workplaceName-ajfkdk890809"]'),
     ).nativeElement;
-
-    expect(workplaceName1.getAttribute('href')).toBe('/ajfkdk890809');
+    expect(workplaceName1.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change/ajfkdk890809');
   });
 
   it('should contain link in seconf workplace name ', async () => {
@@ -111,9 +109,9 @@ describe('CQCMainServiceChangeListComponent', () => {
     fixture.detectChanges();
 
     const workplaceName2 = fixture.debugElement.query(
-      By.css('[data-testid="workplaceName-Workplace 2"]'),
+      By.css('[data-testid="workplaceName-ajfkdk8908678"]'),
     ).nativeElement;
 
-    expect(workplaceName2.getAttribute('href')).toBe('/ajfkdk8908678');
+    expect(workplaceName2.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change/ajfkdk8908678');
   });
 });
