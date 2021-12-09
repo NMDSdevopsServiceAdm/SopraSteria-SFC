@@ -13,7 +13,21 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Workplace ID</dt>
-        <dl class="govuk-summary-list__value">{{ registration.establishment.workplaceId }}</dl>
+        <dl class="govuk-summary-list__value">
+          <a
+            href="#"
+            (click)="
+              navigateToWorkplace(
+                registration.establishment.establishmentUid,
+                '',
+                registration.establishment.workplaceId,
+                $event
+              )
+            "
+          >
+            {{ registration.establishment.workplaceId }}
+          </a>
+        </dl>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Name and address</dt>

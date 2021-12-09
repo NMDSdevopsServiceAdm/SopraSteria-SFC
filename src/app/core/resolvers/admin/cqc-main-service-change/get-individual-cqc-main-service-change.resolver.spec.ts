@@ -24,7 +24,7 @@ describe('GetIndividualCqcMainServiceChangeResolver', () => {
 
   it('should call getIndividualCqcStatusChange with uid in route', () => {
     const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-    spyOn(cqcStatusChangeService, 'getCqcRequestByEstablishmentUid').and.callThrough();
+    spyOn(cqcStatusChangeService, 'getIndividualCqcStatusChange').and.callThrough();
 
     const mockRoute = {
       url: [{ path: 'sfcadmin' }, { path: 'cqc-status-changes' }, { path: 'mockUid' }],
@@ -32,6 +32,6 @@ describe('GetIndividualCqcMainServiceChangeResolver', () => {
 
     resolver.resolve(mockRoute);
 
-    expect(cqcStatusChangeService.getCqcRequestByEstablishmentUid).toHaveBeenCalledWith('mockUid');
+    expect(cqcStatusChangeService.getIndividualCqcStatusChange).toHaveBeenCalledWith('mockUid');
   });
 });

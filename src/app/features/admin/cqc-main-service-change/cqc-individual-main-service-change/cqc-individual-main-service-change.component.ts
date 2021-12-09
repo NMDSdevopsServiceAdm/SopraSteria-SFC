@@ -38,7 +38,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
   ngOnInit(): void {
     this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.registration = this.route.snapshot.data.approval;
-    // this.notes = this.route.snapshot.data.notes;
+    this.notes = this.route.snapshot.data.notes;
     console.log(this.notes);
     this.setBreadcrumbs();
     this.setupNotesForm();
@@ -114,4 +114,9 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
       },
     );
   }
+
+  public navigateToWorkplace = (id: string, username: string, nmdsId: string, event: Event): void => {
+    event.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
+  };
 }

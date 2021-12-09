@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   GetCQCStatusChangeResolver,
-} from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+} from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
 import {
   GetIndividualCqcMainServiceChangeResolver,
-} from '@core/resolvers/admin/cqc-main-service-change/cqc-individual-main-service-change/get-individual-cqc-main-service-change.resolver';
+} from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -17,10 +17,10 @@ import {
   GetSingleRegistrationResolver,
 } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
-import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import {
   CqcIndividualMainServiceChangeComponent,
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -149,12 +149,12 @@ const routes: Routes = [
         },
       },
       {
-        path: 'cqc-main-service-change',
+        path: ':establishmentUid',
         component: CqcIndividualMainServiceChangeComponent,
         data: { title: 'CQC Individual Main Service Change' },
         resolve: {
           approval: GetIndividualCqcMainServiceChangeResolver,
-          // notes: GetRegistrationNotesResolver,
+          notes: GetRegistrationNotesResolver,
         },
       },
     ],

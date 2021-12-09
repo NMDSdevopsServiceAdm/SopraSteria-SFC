@@ -5,10 +5,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
   GetCQCStatusChangeResolver,
-} from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+} from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
 import {
   GetIndividualCqcMainServiceChangeResolver,
-} from '@core/resolvers/admin/cqc-main-service-change/cqc-individual-main-service-change/get-individual-cqc-main-service-change.resolver';
+} from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -30,10 +30,10 @@ import { AdminRoutingModule } from './admin.routing.module';
 import {
   ApprovalOrRejectionDialogComponent,
 } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
-import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import {
   CqcIndividualMainServiceChangeComponent,
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
