@@ -54,7 +54,7 @@ export const mockConfigCatClient = {
     }
     if (flagName === 'newTrainingAndQualificationsRecords') {
       return new Promise((resolve) => {
-        return resolve(false);
+        return resolve(true);
       });
     }
     if (flagName === 'benefitsBundle') {
@@ -62,6 +62,13 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
+
+    if (flagName === 'changingExpiryDateLink') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+
     return new Promise((resolve) => {
       return resolve(defaultSetting);
     });

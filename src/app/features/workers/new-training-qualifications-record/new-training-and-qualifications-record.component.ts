@@ -11,6 +11,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -41,6 +42,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public filterTrainingByDefault: string;
   public filterTraining;
   public allTrainings;
+  public changingExpiryDateLinkFlag: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -51,9 +53,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private router: Router,
     private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
+    private featureFlagService: FeatureFlagsService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -74,6 +77,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
     this.getFilterByStatus(this.filterTrainingByDefault);
+
+    this.changingExpiryDateLinkFlag = await this.featureFlagService.configCatClient.getValueAsync(
+      'changingExpiryDateLink',
+      false,
+    );
   }
 
   public setTrainingAndQualifications(): void {
