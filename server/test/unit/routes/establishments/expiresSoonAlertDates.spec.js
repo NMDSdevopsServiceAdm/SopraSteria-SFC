@@ -6,7 +6,13 @@ const models = require('../../../../models');
 const expiresSoonAlertDates = require('../../../../routes/establishments/expiresSoonAlertDates');
 
 describe('server/routes/establishments/expiresSoonAlertDates', () => {
-  beforeEach(() => {});
+  beforeEach(() => {
+    sinon.stub(models.establishment, 'getExpiresSoonAlertDate').returns({
+      get: () => {
+        return '90';
+      },
+    });
+  });
 
   afterEach(() => {
     sinon.restore();
@@ -14,12 +20,6 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
 
   describe('getExpiresSoonAlertDates', () => {
     it('should return 200 with the current expires soon alert date', async () => {
-      sinon.stub(models.establishment, 'getExpiresSoonAlertDate').returns({
-        get: () => {
-          return '90';
-        },
-      });
-
       const establishmentId = 'a131313dasd123325453bac';
 
       const request = {
