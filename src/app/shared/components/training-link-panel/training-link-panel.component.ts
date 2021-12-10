@@ -19,7 +19,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   @Input() workers: Worker[];
 
   public establishmentUid: string;
-  public canEditWorker: boolean;
   public canEditEstablishment: boolean;
   public url: string;
   public fromStaffRecord: boolean;
@@ -44,7 +43,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     this.establishmentUid = this.workplace.uid;
     this.isParent = this.workplace.isParent;
     this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
     this.featureFlagsService.configCatClient
       .getValueAsync('newTrainingAndQualificationsReport', false)
