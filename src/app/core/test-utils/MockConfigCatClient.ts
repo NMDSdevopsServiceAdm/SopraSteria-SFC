@@ -54,7 +54,7 @@ export const mockConfigCatClient = {
     }
     if (flagName === 'newTrainingAndQualificationsRecords') {
       return new Promise((resolve) => {
-        return resolve(true);
+        return resolve(false);
       });
     }
     if (flagName === 'benefitsBundle') {
