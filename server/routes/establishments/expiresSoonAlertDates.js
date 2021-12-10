@@ -6,7 +6,7 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 
 const getExpiresSoonAlertDate = async (req, res) => {
   try {
-    const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(req.establishment.id);
+    const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(req.establishmentId);
     res.status(200);
     return res.json({
       expiresSoonAlertDate: expiresSoonAlertDate.get('ExpiresSoonAlertDate'),
