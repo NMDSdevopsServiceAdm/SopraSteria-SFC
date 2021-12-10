@@ -19,7 +19,7 @@ const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalary } = require('./validatePartTimeSalary');
 
 // if commit is false, then the results of validation are not uploaded to S3
-const validateBulkUploadFiles = async (commit, req, files, keepAlive = () => {}) => {
+const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
   const { username, establishmentId, isParent } = req;
 
   const establishments = files.Establishment;
@@ -430,193 +430,191 @@ const validateBulkUploadFiles = async (commit, req, files, keepAlive = () => {})
     numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
   // upload intermediary/validation S3 objects
-  if (commit) {
-    const s3UploadPromises = [];
+  const s3UploadPromises = [];
 
-    // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
-    if (establishments.imported) {
-      s3UploadPromises.push(
-        uploadAsJSON(
-          username,
-          establishmentId,
-          establishments.metadata,
-          `${establishmentId}/latest/${establishments.metadata.filename}.metadata.json`,
-        ),
-      );
-    }
-
-    if (workers.imported) {
-      s3UploadPromises.push(
-        uploadAsJSON(
-          username,
-          establishmentId,
-          workers.metadata,
-          `${establishmentId}/latest/${workers.metadata.filename}.metadata.json`,
-        ),
-      );
-    }
-
-    if (training.imported) {
-      s3UploadPromises.push(
-        uploadAsJSON(
-          username,
-          establishmentId,
-          training.metadata,
-          `${establishmentId}/latest/${training.metadata.filename}.metadata.json`,
-        ),
-      );
-    }
-
-    // upload the validation data to S3 - these are reuquired for validation report -
-    // although one object is likely to be quicker to upload - and only one object is required then to download
+  // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
+  if (establishments.imported) {
     s3UploadPromises.push(
       uploadAsJSON(
         username,
         establishmentId,
-        csvEstablishmentSchemaErrors,
-        `${establishmentId}/validation/establishments.validation.json`,
+        establishments.metadata,
+        `${establishmentId}/latest/${establishments.metadata.filename}.metadata.json`,
       ),
     );
+  }
 
+  if (workers.imported) {
     s3UploadPromises.push(
       uploadAsJSON(
         username,
         establishmentId,
-        csvWorkerSchemaErrors,
-        `${establishmentId}/validation/workers.validation.json`,
+        workers.metadata,
+        `${establishmentId}/latest/${workers.metadata.filename}.metadata.json`,
       ),
     );
+  }
 
+  if (training.imported) {
     s3UploadPromises.push(
       uploadAsJSON(
         username,
         establishmentId,
-        csvTrainingSchemaErrors,
-        `${establishmentId}/validation/training.validation.json`,
+        training.metadata,
+        `${establishmentId}/latest/${training.metadata.filename}.metadata.json`,
       ),
     );
+  }
 
+  // upload the validation data to S3 - these are reuquired for validation report -
+  // although one object is likely to be quicker to upload - and only one object is required then to download
+  s3UploadPromises.push(
+    uploadAsJSON(
+      username,
+      establishmentId,
+      csvEstablishmentSchemaErrors,
+      `${establishmentId}/validation/establishments.validation.json`,
+    ),
+  );
+
+  s3UploadPromises.push(
+    uploadAsJSON(
+      username,
+      establishmentId,
+      csvWorkerSchemaErrors,
+      `${establishmentId}/validation/workers.validation.json`,
+    ),
+  );
+
+  s3UploadPromises.push(
+    uploadAsJSON(
+      username,
+      establishmentId,
+      csvTrainingSchemaErrors,
+      `${establishmentId}/validation/training.validation.json`,
+    ),
+  );
+
+  s3UploadPromises.push(
+    uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`),
+  );
+
+  // to false to disable the upload of intermediary objects
+  // the all entities intermediary file is required on completion - establishments entity for validation report
+  if (establishmentsAsArray.length > 0) {
     s3UploadPromises.push(
-      uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`),
+      uploadAsJSON(
+        username,
+        establishmentId,
+        establishmentsAsArray.map((thisEstablishment) =>
+          thisEstablishment.toJSON(false, false, false, false, true, null, true),
+        ),
+        `${establishmentId}/intermediary/all.entities.json`,
+      ),
     );
+  }
 
-    // to false to disable the upload of intermediary objects
-    // the all entities intermediary file is required on completion - establishments entity for validation report
+  // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
+  const establishmentsOnlyForJson = establishmentsAsArray.map((thisEstablishment) => thisEstablishment.toJSON());
+  const uniqueLocalAuthorities = establishmentsOnlyForJson
+    .map((en) => (en.localAuthorities !== undefined ? en.localAuthorities : []))
+    .reduce((acc, val) => acc.concat(val), [])
+    .map((la) => la.name)
+    .sort((a, b) => a > b)
+    .filter((value, index, self) => self.indexOf(value) === index);
+
+  s3UploadPromises.push(
+    uploadAsJSON(
+      username,
+      establishmentId,
+      uniqueLocalAuthorities,
+      `${establishmentId}/intermediary/all.localauthorities.json`,
+    ),
+  );
+
+  if (config.get('bulkupload.validation.storeIntermediaries')) {
+    // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
+    if (myEstablishments.length > 0) {
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          myEstablishments.map((thisEstablishment) => thisEstablishment.toJSON()),
+          `${establishmentId}/intermediary/${establishments.metadata.filename}.csv.json`,
+        ),
+      );
+    }
+
+    if (myWorkers.length > 0) {
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          myWorkers.map((thisEstablishment) => thisEstablishment.toJSON()),
+          `${establishmentId}/intermediary/${workers.metadata.filename}.csv.json`,
+        ),
+      );
+    }
+
+    if (myTrainings.length > 0) {
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          myTrainings.map((thisEstablishment) => thisEstablishment.toJSON()),
+          `${establishmentId}/intermediary/${training.metadata.filename}.csv.json`,
+        ),
+      );
+    }
+
+    // upload the intermediary entities as JSON to S3
     if (establishmentsAsArray.length > 0) {
       s3UploadPromises.push(
         uploadAsJSON(
           username,
           establishmentId,
-          establishmentsAsArray.map((thisEstablishment) =>
-            thisEstablishment.toJSON(false, false, false, false, true, null, true),
-          ),
-          `${establishmentId}/intermediary/all.entities.json`,
+          establishmentsOnlyForJson,
+          `${establishmentId}/intermediary/establishment.entities.json`,
         ),
       );
     }
 
-    // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
-    const establishmentsOnlyForJson = establishmentsAsArray.map((thisEstablishment) => thisEstablishment.toJSON());
-    const uniqueLocalAuthorities = establishmentsOnlyForJson
-      .map((en) => (en.localAuthorities !== undefined ? en.localAuthorities : []))
-      .reduce((acc, val) => acc.concat(val), [])
-      .map((la) => la.name)
-      .sort((a, b) => a > b)
-      .filter((value, index, self) => self.indexOf(value) === index);
-
-    s3UploadPromises.push(
-      uploadAsJSON(
-        username,
-        establishmentId,
-        uniqueLocalAuthorities,
-        `${establishmentId}/intermediary/all.localauthorities.json`,
-      ),
-    );
-
-    if (config.get('bulkupload.validation.storeIntermediaries')) {
-      // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
-      if (myEstablishments.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            myEstablishments.map((thisEstablishment) => thisEstablishment.toJSON()),
-            `${establishmentId}/intermediary/${establishments.metadata.filename}.csv.json`,
-          ),
-        );
-      }
-
-      if (myWorkers.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            myWorkers.map((thisEstablishment) => thisEstablishment.toJSON()),
-            `${establishmentId}/intermediary/${workers.metadata.filename}.csv.json`,
-          ),
-        );
-      }
-
-      if (myTrainings.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            myTrainings.map((thisEstablishment) => thisEstablishment.toJSON()),
-            `${establishmentId}/intermediary/${training.metadata.filename}.csv.json`,
-          ),
-        );
-      }
-
-      // upload the intermediary entities as JSON to S3
-      if (establishmentsAsArray.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            establishmentsOnlyForJson,
-            `${establishmentId}/intermediary/establishment.entities.json`,
-          ),
-        );
-      }
-
-      if (workersAsArray.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            workersAsArray.map((thisWorker) => thisWorker.toJSON()),
-            `${establishmentId}/intermediary/worker.entities.json`,
-          ),
-        );
-      }
-
-      if (trainingAsArray.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            trainingAsArray.map((thisTraining) => thisTraining.toJSON()),
-            `${establishmentId}/intermediary/training.entities.json`,
-          ),
-        );
-      }
-
-      if (qualificationsAsArray.length > 0) {
-        s3UploadPromises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            qualificationsAsArray.map((thisQualification) => thisQualification.toJSON()),
-            `${establishmentId}/intermediary/qualification.entities.json`,
-          ),
-        );
-      }
+    if (workersAsArray.length > 0) {
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          workersAsArray.map((thisWorker) => thisWorker.toJSON()),
+          `${establishmentId}/intermediary/worker.entities.json`,
+        ),
+      );
     }
 
-    // before returning, wait for all uploads to complete
-    await Promise.all(s3UploadPromises);
+    if (trainingAsArray.length > 0) {
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          trainingAsArray.map((thisTraining) => thisTraining.toJSON()),
+          `${establishmentId}/intermediary/training.entities.json`,
+        ),
+      );
+    }
+
+    if (qualificationsAsArray.length > 0) {
+      s3UploadPromises.push(
+        uploadAsJSON(
+          username,
+          establishmentId,
+          qualificationsAsArray.map((thisQualification) => thisQualification.toJSON()),
+          `${establishmentId}/intermediary/qualification.entities.json`,
+        ),
+      );
+    }
   }
+
+  // before returning, wait for all uploads to complete
+  await Promise.all(s3UploadPromises);
 
   return {
     status,

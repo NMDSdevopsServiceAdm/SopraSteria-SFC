@@ -36,17 +36,17 @@ const validatePut = async (req, res) => {
       bucketFiles.Contents.map(async (fileInfo) => {
         if (isNotMetadata(fileInfo.Key)) {
           const file = await S3.downloadContent(fileInfo.Key);
-          const fileType = getFileType(file);
+          const fileType = getFileType(file.data);
 
           if (files[fileType].imported === null) {
             files[fileType].metadata = getMetadata(file, fileType);
-            files[fileType].imported = await generateJSONFromCSV(file);
+            files[fileType].imported = await generateJSONFromCSV(file.data);
           }
         }
       }),
     );
 
-    const validationResponse = await validateBulkUploadFiles(true, req, files, keepAlive);
+    const validationResponse = await validateBulkUploadFiles(req, files, keepAlive);
 
     res.buValidationResult = validationResponse.status;
 
@@ -75,20 +75,20 @@ const getMetadata = (file, fileType) => {
   return metadata;
 };
 
-const generateJSONFromCSV = async (file) => {
-  return await csv().fromString(file.data);
+const generateJSONFromCSV = async (fileData) => {
+  return await csv().fromString(fileData);
 };
 
 const keepAlive = (stepName = '', stepId = '') => {
   console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
 };
 
-const getFileType = (file) => {
-  if (EstablishmentCsvValidator.isContent(file.data)) {
+const getFileType = (fileData) => {
+  if (EstablishmentCsvValidator.isContent(fileData)) {
     return 'Establishment';
-  } else if (WorkerCsvValidator.isContent(file.data)) {
+  } else if (WorkerCsvValidator.isContent(fileData)) {
     return 'Worker';
-  } else if (TrainingCsvValidator.isContent(file.data)) {
+  } else if (TrainingCsvValidator.isContent(fileData)) {
     return 'Training';
   }
 };
@@ -105,4 +105,6 @@ const isNotMetadata = (fileKey) => !(/.*metadata.json$/.test(fileKey) || /.*\/$/
 module.exports = {
   getMetadata,
   isNotMetadata,
+  generateJSONFromCSV,
+  getFileType,
 };
