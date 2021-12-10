@@ -72,7 +72,7 @@ const validateBulkUploadFiles = async (
   if (
     Array.isArray(establishments.imported) &&
     establishments.imported.length > 0 &&
-    establishments.establishmentMetadata.fileType === 'Establishment'
+    establishments.metadata.fileType === 'Establishment'
   ) {
     // validate all establishment rows
     await Promise.all(
@@ -110,11 +110,11 @@ const validateBulkUploadFiles = async (
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
   }
 
-  establishments.establishmentMetadata.records = myEstablishments.length;
+  establishments.metadata.records = myEstablishments.length;
 
   // /////////////////////////
   // Parse and process Workers CSV
-  if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType === 'Worker') {
+  if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.metadata.fileType === 'Worker') {
     await Promise.all(
       workers.imported.map((thisLine, currentLineNumber) =>
         validateWorkerCsv(
@@ -223,15 +223,11 @@ const validateBulkUploadFiles = async (
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no workers records');
   }
-  workers.workerMetadata.records = myWorkers.length;
+  workers.metadata.records = myWorkers.length;
 
   // /////////////////////////
   // Parse and process Training CSV
-  if (
-    Array.isArray(training.imported) &&
-    training.imported.length > 0 &&
-    training.trainingMetadata.fileType === 'Training'
-  ) {
+  if (Array.isArray(training.imported) && training.imported.length > 0 && training.metadata.fileType === 'Training') {
     await Promise.all(
       training.imported.map(
         async (thisLine, currentLineNumber) =>
@@ -306,7 +302,7 @@ const validateBulkUploadFiles = async (
     console.info('API bulkupload - validateBulkUploadFiles: no training records');
   }
 
-  training.trainingMetadata.records = myTrainings.length;
+  training.metadata.records = myTrainings.length;
 
   // /////////////////////////
   // Cross Entity Validations
@@ -400,30 +396,20 @@ const validateBulkUploadFiles = async (
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
   // update CSV metadata error/warning counts
-  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(
-    (thisError) => 'errCode' in thisError,
-  ).length;
-  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(
-    (thisError) => 'warnCode' in thisError,
-  ).length;
+  establishments.metadata.errors = csvEstablishmentSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
+  establishments.metadata.warnings = csvEstablishmentSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
 
-  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
-  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
+  workers.metadata.errors = csvWorkerSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
+  workers.metadata.warnings = csvWorkerSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
 
-  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
-  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
+  training.metadata.errors = csvTrainingSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
+  training.metadata.warnings = csvTrainingSchemaErrors.filter((thisError) => 'warnCode' in thisError).length;
 
   // set the status based upon whether there were errors or warnings
   let status = buStates.FAILED;
-  if (
-    establishments.establishmentMetadata.errors + workers.workerMetadata.errors + training.trainingMetadata.errors ===
-    0
-  ) {
+  if (establishments.metadata.errors + workers.metadata.errors + training.metadata.errors === 0) {
     status =
-      establishments.establishmentMetadata.warnings +
-        workers.workerMetadata.warnings +
-        training.trainingMetadata.warnings ===
-      0
+      establishments.metadata.warnings + workers.metadata.warnings + training.metadata.warnings === 0
         ? buStates.PASSED
         : buStates.WARNINGS;
   }
@@ -434,7 +420,7 @@ const validateBulkUploadFiles = async (
   // from the validation report, get a summary of deleted establishments and workers
   // the report will always have new, udpated, deleted array values, even if empty
   // Note - Array.reduce but it doesn't work with empty arrays, except when you provide an initial value (0 in this case)
-  establishments.establishmentMetadata.deleted = report.deleted.length;
+  establishments.metadata.deleted = report.deleted.length;
   const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce(
     (total, current) => total + current.workers.deleted.length,
     0,
@@ -443,7 +429,7 @@ const validateBulkUploadFiles = async (
     (total, current) => total + current.workers.deleted.length,
     0,
   );
-  workers.workerMetadata.deleted =
+  workers.metadata.deleted =
     numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
   // upload intermediary/validation S3 objects
@@ -456,8 +442,8 @@ const validateBulkUploadFiles = async (
         uploadAsJSON(
           username,
           establishmentId,
-          establishments.establishmentMetadata,
-          `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`,
+          establishments.metadata,
+          `${establishmentId}/latest/${establishments.metadata.filename}.metadata.json`,
         ),
       );
     }
@@ -467,8 +453,8 @@ const validateBulkUploadFiles = async (
         uploadAsJSON(
           username,
           establishmentId,
-          workers.workerMetadata,
-          `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`,
+          workers.metadata,
+          `${establishmentId}/latest/${workers.metadata.filename}.metadata.json`,
         ),
       );
     }
@@ -478,8 +464,8 @@ const validateBulkUploadFiles = async (
         uploadAsJSON(
           username,
           establishmentId,
-          training.trainingMetadata,
-          `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`,
+          training.metadata,
+          `${establishmentId}/latest/${training.metadata.filename}.metadata.json`,
         ),
       );
     }
@@ -558,7 +544,7 @@ const validateBulkUploadFiles = async (
             username,
             establishmentId,
             myEstablishments.map((thisEstablishment) => thisEstablishment.toJSON()),
-            `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`,
+            `${establishmentId}/intermediary/${establishments.metadata.filename}.csv.json`,
           ),
         );
       }
@@ -569,7 +555,7 @@ const validateBulkUploadFiles = async (
             username,
             establishmentId,
             myWorkers.map((thisEstablishment) => thisEstablishment.toJSON()),
-            `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`,
+            `${establishmentId}/intermediary/${workers.metadata.filename}.csv.json`,
           ),
         );
       }
@@ -580,7 +566,7 @@ const validateBulkUploadFiles = async (
             username,
             establishmentId,
             myTrainings.map((thisEstablishment) => thisEstablishment.toJSON()),
-            `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`,
+            `${establishmentId}/intermediary/${training.metadata.filename}.csv.json`,
           ),
         );
       }
@@ -644,9 +630,9 @@ const validateBulkUploadFiles = async (
       training: csvTrainingSchemaErrors,
     },
     metaData: {
-      establishments: establishments.establishmentMetadata,
-      workers: workers.workerMetadata,
-      training: training.trainingMetadata,
+      establishments: establishments.metadata,
+      workers: workers.metadata,
+      training: training.metadata,
     },
     data: {
       csv: {
