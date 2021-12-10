@@ -115,4 +115,12 @@ export class MockEstablishmentService extends EstablishmentService {
       vacancies: undefined,
     };
   }
+
+  public getExpiresSoonAlertDates(): Observable<string> {
+    return of('90');
+  }
+
+  public setExpiresSoonAlertDates(establishmentUid, data): Observable<string> {
+    return of('');
+  }
 }

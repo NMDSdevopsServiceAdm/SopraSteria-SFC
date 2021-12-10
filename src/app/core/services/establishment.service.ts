@@ -321,4 +321,12 @@ export class EstablishmentService {
 
     return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
   }
+
+  public getExpiresSoonAlertDates(establishmentId: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`);
+  }
+
+  public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
+  }
 }
