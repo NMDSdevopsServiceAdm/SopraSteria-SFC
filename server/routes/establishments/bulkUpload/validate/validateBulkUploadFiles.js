@@ -19,16 +19,13 @@ const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalary } = require('./validatePartTimeSalary');
 
 // if commit is false, then the results of validation are not uploaded to S3
-const validateBulkUploadFiles = async (
-  commit,
-  username,
-  establishmentId,
-  isParent,
-  establishments,
-  workers,
-  training,
-  keepAlive = () => {},
-) => {
+const validateBulkUploadFiles = async (commit, req, files, keepAlive = () => {}) => {
+  const { username, establishmentId, isParent } = req;
+
+  const establishments = files.Establishment;
+  const workers = files.Worker;
+  const training = files.Training;
+
   const csvEstablishmentSchemaErrors = [];
   const csvWorkerSchemaErrors = [];
   const csvTrainingSchemaErrors = [];

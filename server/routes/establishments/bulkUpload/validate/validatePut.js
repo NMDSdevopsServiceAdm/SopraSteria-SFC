@@ -29,10 +29,8 @@ const validatePut = async (req, res) => {
     },
   };
 
-  const establishmentId = req.establishmentId;
-
   try {
-    const bucketFiles = await S3.listObjectsInBucket(establishmentId);
+    const bucketFiles = await S3.listObjectsInBucket(req.establishmentId);
 
     await Promise.all(
       bucketFiles.Contents.map(async (fileInfo) => {
@@ -48,18 +46,7 @@ const validatePut = async (req, res) => {
       }),
     );
 
-    console.log('files: ', files);
-
-    const validationResponse = await validateBulkUploadFiles(
-      true,
-      req.username,
-      establishmentId,
-      req.isParent,
-      files.Establishment,
-      files.Worker,
-      files.Training,
-      keepAlive,
-    );
+    const validationResponse = await validateBulkUploadFiles(true, req, files, keepAlive);
 
     res.buValidationResult = validationResponse.status;
 
