@@ -405,6 +405,7 @@ const routes: Routes = [
       {
         path: 'change-expires-soon-alerts',
         component: ChangeExpiresSoonAlertsComponent,
+        canActivate: [CheckPermissionsGuard],
         resolve: {
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
