@@ -23,9 +23,7 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
       const request = {
         method: 'GET',
         url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
-        establishment: {
-          id: 1,
-        },
+        establishmentId,
       };
 
       const req = httpMocks.createRequest(request);
@@ -43,9 +41,7 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
       const request = {
         method: 'GET',
         url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
-        establishment: {
-          id: 1,
-        },
+        establishmentId,
       };
 
       const req = httpMocks.createRequest(request);
@@ -64,9 +60,7 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
       const request = {
         method: 'POST',
         url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
-        establishment: {
-          id: 1,
-        },
+        establishmentId,
         body: {
           expiresSoonAlertDate: '90',
         },
@@ -86,9 +80,7 @@ describe('server/routes/establishments/expiresSoonAlertDates', () => {
       const request = {
         method: 'GET',
         url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
-        establishment: {
-          id: 1,
-        },
+        establishmentId,
         body: {
           expiresSoonAlertDate: '90',
         },
