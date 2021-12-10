@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -11,6 +12,7 @@ import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registratio
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { EmailsComponent } from './emails/emails.component';
+import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
 import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -146,6 +148,17 @@ const routes: Routes = [
         path: '',
         component: EmailsComponent,
         data: { title: 'Emails' },
+
+        children: [
+          {
+            path: 'targeted-emails',
+            component: TargetedEmailsComponent,
+            data: { title: 'Targeted Emails' },
+            resolve: {
+              emailTemplates: EmailTemplateResolver,
+            },
+          },
+        ],
       },
     ],
   },

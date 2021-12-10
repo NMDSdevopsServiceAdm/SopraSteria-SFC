@@ -2,4 +2,19 @@
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Emails</h2>
   </div>
+  <div class="govuk-grid-column-one-half">
+    <ul class="govuk-list">
+      <li routerLinkActive="active" data-testid="inactiveWorkplacesLink">
+        <a routerLink="/sfcadmin/emails" class="govuk-link" data-testid="inactiveWorkplacesLinkAnchor">
+          Inactive workplaces
+        </a>
+      </li>
+      <li routerLinkActive="active" data-testid="targetedEmailsLink">
+        <a routerLink="/sfcadmin/emails/targeted-emails" class="govuk-link" data-testid="targetedEmailsLinkAnchor">
+          Targeted emails
+        </a>
+      </li>
+    </ul>
+  </div>
+  <router-outlet></router-outlet>
 </div>
