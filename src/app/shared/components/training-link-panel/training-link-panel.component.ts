@@ -28,6 +28,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   public parentTrainingAndQualificationsReport: boolean;
   private subscriptions: Subscription = new Subscription();
   private newTrainingAndQualificationsReport: boolean;
+  public changingExpiryDateLinkFlag: boolean;
 
   constructor(
     private reportService: ReportService,
@@ -36,7 +37,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.url = this.router.url;
 
     this.establishmentUid = this.workplace.uid;
@@ -54,6 +55,11 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
       .then((value) => {
         this.parentTrainingAndQualificationsReport = value;
       });
+
+    this.changingExpiryDateLinkFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'changingExpiryDateLink',
+      false,
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
