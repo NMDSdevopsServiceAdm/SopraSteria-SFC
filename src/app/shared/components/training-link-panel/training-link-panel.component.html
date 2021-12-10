@@ -6,7 +6,7 @@
       >Manage mandatory training
     </a>
   </div>
-  <div *ngIf="canEditEstablishment" class="govuk-grid-column-one-third">
+  <div *ngIf="canEditWorker" class="govuk-grid-column-one-third">
     <a
       class="govuk-list govuk-list--inline govuk-!-margin-right-5"
       [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
