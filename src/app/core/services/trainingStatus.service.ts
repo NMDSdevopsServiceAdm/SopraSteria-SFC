@@ -64,7 +64,7 @@ export class TrainingStatusService {
     return this.getTrainingStatus(trainingRecord.expires, trainingRecord.missing, expiresSoonAlertDate);
   }
 
-  public trainingStatusCount(training, status, expiresSoonAlertDate = '90') {
+  public trainingStatusCount(training, status, expiresSoonAlertDate) {
     return training.filter((trainingRecord) => {
       return this.trainingStatusForRecord(trainingRecord, expiresSoonAlertDate) === status;
     }).length;

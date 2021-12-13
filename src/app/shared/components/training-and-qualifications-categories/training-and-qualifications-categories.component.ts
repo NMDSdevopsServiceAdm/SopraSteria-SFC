@@ -83,7 +83,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       this.trainingCategories = orderBy(
         this.trainingCategories,
         [
-          (tc) => this.trainingStatusService.trainingStatusCount(tc.training, sortValue),
+          (tc) => this.trainingStatusService.trainingStatusCount(tc.training, sortValue, this.expiresSoonAlertDate),
           (tc) => tc.category.toLowerCase(),
         ],
         ['desc', 'asc'],
@@ -107,9 +107,21 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public trainingIsComplete(training) {
     return (
       [
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.MISSING),
+        this.trainingStatusService.trainingStatusCount(
+          training,
+          this.trainingStatusService.EXPIRED,
+          this.expiresSoonAlertDate,
+        ),
+        this.trainingStatusService.trainingStatusCount(
+          training,
+          this.trainingStatusService.EXPIRING,
+          this.expiresSoonAlertDate,
+        ),
+        this.trainingStatusService.trainingStatusCount(
+          training,
+          this.trainingStatusService.MISSING,
+          this.expiresSoonAlertDate,
+        ),
       ].reduce((total, num) => {
         return total + num;
       }) === 0
