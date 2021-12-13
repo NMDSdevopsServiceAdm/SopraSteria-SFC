@@ -45,7 +45,6 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 };
 
 const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
-  console.log(expiresSoonAlertDate);
   return workers.map((worker) => {
     return {
       workerId: numberCheck(worker.get('NameOrIdValue')),
