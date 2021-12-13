@@ -44,7 +44,7 @@ export class TrainingStatusService {
     }
   }
 
-  public getTrainingStatus(expires, missing) {
+  public getTrainingStatus(expires, missing, expiresSoonAlertDate = '90') {
     if (missing) {
       return this.MISSING;
     } else if (expires) {
@@ -53,7 +53,7 @@ export class TrainingStatusService {
       const daysDifference = expiringDate.diff(currentDate, 'days');
       if (daysDifference < 0) {
         return this.EXPIRED;
-      } else if (daysDifference >= 0 && daysDifference <= 90) {
+      } else if (daysDifference >= 0 && daysDifference <= parseInt(expiresSoonAlertDate)) {
         return this.EXPIRING;
       }
     }
