@@ -18,7 +18,6 @@ import { take } from 'rxjs/operators';
 export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
-  @Input() expiresSoonAlertDate: string;
   @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
 
   public canEditWorker: boolean;
@@ -74,7 +73,6 @@ export class TrainingComponent implements OnInit {
             trainingRecord.trainingStatus = this.trainingStatusService.getTrainingStatus(
               trainingRecord.expires,
               trainingRecord.missing,
-              this.expiresSoonAlertDate,
             );
           });
           this.trainingRecords.sort((record1, record2) => {

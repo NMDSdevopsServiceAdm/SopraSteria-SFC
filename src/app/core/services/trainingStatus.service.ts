@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import dayjs from 'dayjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,14 +11,16 @@ export class TrainingStatusService {
   readonly EXPIRING = 1;
   readonly ACTIVE = 0;
 
-  public getAggregatedStatus(trainingRecords, expiresSoonAlertDate: string) {
+  public expiresSoonAlertDate$: BehaviorSubject<string> = new BehaviorSubject(null);
+
+  public getAggregatedStatus(trainingRecords) {
     let expired = false;
     let expiring = false;
     let missing = false;
     let trainingStatus = 0;
 
     trainingRecords.forEach((training) => {
-      trainingStatus = this.getTrainingStatus(training.expires, training.missing, expiresSoonAlertDate);
+      trainingStatus = this.getTrainingStatus(training.expires, training.missing);
       switch (trainingStatus) {
         case this.MISSING: {
           missing = true;
@@ -44,7 +47,7 @@ export class TrainingStatusService {
     }
   }
 
-  public getTrainingStatus(expires, missing, expiresSoonAlertDate: string) {
+  public getTrainingStatus(expires, missing) {
     if (missing) {
       return this.MISSING;
     } else if (expires) {
@@ -53,20 +56,20 @@ export class TrainingStatusService {
       const daysDifference = expiringDate.diff(currentDate, 'days');
       if (daysDifference < 0) {
         return this.EXPIRED;
-      } else if (daysDifference >= 0 && daysDifference <= parseInt(expiresSoonAlertDate)) {
+      } else if (daysDifference >= 0 && daysDifference <= parseInt(this.expiresSoonAlertDate$.value)) {
         return this.EXPIRING;
       }
     }
     return this.ACTIVE;
   }
 
-  public trainingStatusForRecord(trainingRecord, expiresSoonAlertDate) {
-    return this.getTrainingStatus(trainingRecord.expires, trainingRecord.missing, expiresSoonAlertDate);
+  public trainingStatusForRecord(trainingRecord) {
+    return this.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
   }
 
-  public trainingStatusCount(training, status, expiresSoonAlertDate) {
+  public trainingStatusCount(training, status) {
     return training.filter((trainingRecord) => {
-      return this.trainingStatusForRecord(trainingRecord, expiresSoonAlertDate) === status;
+      return this.trainingStatusForRecord(trainingRecord) === status;
     }).length;
   }
 }
