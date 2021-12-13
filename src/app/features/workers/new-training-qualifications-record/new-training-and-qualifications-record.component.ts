@@ -37,7 +37,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public missingJobRoleMandatoryTrainingCount: number;
   private subscriptions: Subscription = new Subscription();
   private currentUrl: string;
-  private expiresSoonAlertDate: string;
   public filterTrainingByStatus;
   public filterTrainingByDefault: string;
   public filterTraining;
