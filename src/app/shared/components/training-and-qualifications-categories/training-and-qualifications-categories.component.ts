@@ -27,7 +27,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public sortByDefault: string;
   public newTrainingAndQualificationsRecordsFlag: boolean;
   public trainingAndQualsRoute: string;
-  public expiresSoonAlertDate: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -46,7 +45,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
     this.sortByDefault = '0_expired';
     this.orderTrainingCategories(this.sortByDefault);
-    this.getExpiresSoonAlertDates();
+    this.setExpiresSoonAlertDates();
 
     this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
       'newTrainingAndQualificationsRecords',
@@ -56,10 +55,10 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     this.trainingAndQualsRoute = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
   }
 
-  private getExpiresSoonAlertDates(): void {
+  private setExpiresSoonAlertDates(): void {
     this.subscriptions.add(
       this.establishmentService.getExpiresSoonAlertDates(this.workplace.uid).subscribe((date) => {
-        this.expiresSoonAlertDate = date.expiresSoonAlertDate;
+        this.trainingStatusService.expiresSoonAlertDate$.next(date.expiresSoonAlertDate);
       }),
     );
   }
