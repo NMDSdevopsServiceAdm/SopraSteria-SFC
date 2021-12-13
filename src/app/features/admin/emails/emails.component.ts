@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-registration-requests',
+  selector: 'app-emails',
   templateUrl: './emails.component.html',
   styleUrls: ['../admin-links.scss'],
 })

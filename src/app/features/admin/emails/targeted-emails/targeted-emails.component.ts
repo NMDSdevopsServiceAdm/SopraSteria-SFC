@@ -11,8 +11,9 @@ import { map, switchMap } from 'rxjs/operators';
 import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
-  selector: 'app-registration-requests',
+  selector: 'app-targeted-emails',
   templateUrl: './targeted-emails.component.html',
+  styleUrls: ['./targeted-emails.component.scss'],
 })
 export class TargetedEmailsComponent {
   public totalEmails = 0;
