@@ -32,7 +32,7 @@ const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, 
   }
 };
 
-const validateWorkerCsv = async (
+const validateWorkerCsvLine = async (
   thisLine,
   currentLineNumber,
   csvWorkerSchemaErrors,
@@ -82,6 +82,29 @@ const validateWorkerCsv = async (
   }
 
   myWorkers.push(lineValidator);
+};
+
+const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
+  const csvWorkerSchemaErrors = [];
+  const myWorkers = [];
+  const myAPIWorkers = {};
+  const myAPIQualifications = {};
+
+  await Promise.all(
+    workers.imported.map((thisLine, currentLineNumber) =>
+      validateWorkerCsvLine(
+        thisLine,
+        currentLineNumber + 2,
+        csvWorkerSchemaErrors,
+        myWorkers,
+        myAPIWorkers,
+        myAPIQualifications,
+        myCurrentEstablishments,
+      ),
+    ),
+  );
+
+  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications };
 };
 
 module.exports = {

@@ -538,25 +538,12 @@ const validateBulkUploadFiles = async (req, files) => {
 };
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
-  const csvWorkerSchemaErrors = [];
-  const myWorkers = [];
-  const myAPIWorkers = {};
   const workersKeyed = [];
   const allWorkersByKey = {};
-  const myAPIQualifications = {};
 
-  await Promise.all(
-    workers.imported.map((thisLine, currentLineNumber) =>
-      validateWorkerCsv(
-        thisLine,
-        currentLineNumber + 2,
-        csvWorkerSchemaErrors,
-        myWorkers,
-        myAPIWorkers,
-        myAPIQualifications,
-        myCurrentEstablishments,
-      ),
-    ),
+  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications } = await validateWorkerCsv(
+    workers,
+    myCurrentEstablishments,
   );
 
   keepAlive('workers validated'); // keep connection alive
@@ -587,13 +574,13 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
       )
     ) {
       // does not yet exist - check this worker can be associated with a known establishment
-      const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
+      const establishmentKey = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
 
       if (worksOverNationalInsuranceMaximum(thisWorker, myWorkers)) {
         csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
       }
 
-      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
+      if (!allEstablishmentsByKey[establishmentKey]) {
         // not found the associated establishment
         csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
 
@@ -609,9 +596,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
         }
 
         // associate this worker to the known establishment
-        const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace]
-          ? myAPIEstablishments[establishmentKeyNoWhitespace]
-          : null;
+        const knownEstablishment = myAPIEstablishments[establishmentKey] ? myAPIEstablishments[establishmentKey] : null;
 
         // key workers, to be used in training
         workersKeyed[workerKey] = thisWorker._currentLine;
