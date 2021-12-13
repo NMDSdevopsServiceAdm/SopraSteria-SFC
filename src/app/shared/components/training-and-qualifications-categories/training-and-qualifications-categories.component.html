@@ -156,10 +156,7 @@
                       </td>
                       <td class="govuk-table__cell">
                         <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
-                            trainingStatusService.EXPIRED
-                          "
+                          *ngIf="trainingStatus(training) === trainingStatusService.EXPIRED"
                           class="govuk-!-margin-bottom-1"
                         >
                           <img
@@ -170,10 +167,7 @@
                           Expired
                         </div>
                         <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
-                            trainingStatusService.MISSING
-                          "
+                          *ngIf="trainingStatus(training) === trainingStatusService.MISSING"
                           class="govuk-!-margin-bottom-1"
                         >
                           <img
@@ -183,12 +177,7 @@
                           />
                           Missing
                         </div>
-                        <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
-                            trainingStatusService.EXPIRING
-                          "
-                        >
+                        <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
                           <img
                             src="/assets/images/flag-orange.svg"
                             alt=""
@@ -197,14 +186,7 @@
                           Expiring soon
                         </div>
 
-                        <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
-                            trainingStatusService.ACTIVE
-                          "
-                        >
-                          Up-to-date
-                        </div>
+                        <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">Up-to-date</div>
                       </td>
                       <td class="govuk-table__cell">
                         <div

@@ -100,10 +100,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   public totalTrainingRecords(training) {
     return training.filter((trainingRecord) => {
-      return (
-        this.trainingStatusService.trainingStatusForRecord(trainingRecord, this.expiresSoonAlertDate) !==
-        this.trainingStatusService.MISSING
-      );
+      return this.trainingStatus(trainingRecord) !== this.trainingStatusService.MISSING;
     }).length;
   }
 
