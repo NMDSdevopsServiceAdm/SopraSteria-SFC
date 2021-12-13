@@ -157,7 +157,8 @@
                       <td class="govuk-table__cell">
                         <div
                           *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.EXPIRED
+                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
+                            trainingStatusService.EXPIRED
                           "
                           class="govuk-!-margin-bottom-1"
                         >
@@ -170,7 +171,8 @@
                         </div>
                         <div
                           *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.MISSING
+                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
+                            trainingStatusService.MISSING
                           "
                           class="govuk-!-margin-bottom-1"
                         >
@@ -183,7 +185,8 @@
                         </div>
                         <div
                           *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.EXPIRING
+                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
+                            trainingStatusService.EXPIRING
                           "
                         >
                           <img
@@ -196,7 +199,8 @@
 
                         <div
                           *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE
+                            trainingStatusService.trainingStatusForRecord(training, expiresSoonAlertDate) ===
+                            trainingStatusService.ACTIVE
                           "
                         >
                           Up-to-date
