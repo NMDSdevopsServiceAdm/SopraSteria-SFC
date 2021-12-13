@@ -6,7 +6,6 @@ import { EmailCampaignService } from '@core/services/admin/email-campaign.servic
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
 
 import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
@@ -20,12 +19,8 @@ export class TargetedEmailsComponent {
   public emailGroup = '';
   public selectedTemplateId = '';
   public templates = this.route.snapshot.data.emailTemplates.templates;
-  public isAdmin: boolean;
-  public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
-  inactiveWorkplaces: any;
-  history: any;
   constructor(
     public alertService: AlertService,
     public dialogService: DialogService,
@@ -47,51 +42,15 @@ export class TargetedEmailsComponent {
       this.totalEmails = 0;
     }
   }
-  public confirmSendEmails(event: Event, emailCount: number, type: EmailType): void {
+  public confirmSendEmails(event: Event, emailCount: number): void {
     event.preventDefault();
     this.subscriptions.add(
       this.dialogService
         .open(SendEmailsConfirmationDialogComponent, { emailCount })
         .afterClosed.subscribe((hasConfirmed) => {
           if (hasConfirmed) {
-            this.sendEmails(type);
+            this.sendTargetedEmails();
           }
-        }),
-    );
-  }
-  private sendEmails(type: EmailType): void {
-    switch (type) {
-      case EmailType.InactiveWorkplaces:
-        this.sendInactiveEmails();
-        break;
-      case EmailType.TargetedEmails:
-        this.sendTargetedEmails();
-        break;
-    }
-  }
-  private sendInactiveEmails(): void {
-    this.subscriptions.add(
-      this.emailCampaignService
-        .createInactiveWorkplacesCampaign()
-        .pipe(
-          switchMap((latestCampaign) => {
-            return this.emailCampaignService.getInactiveWorkplaces().pipe(
-              map(({ inactiveWorkplaces }) => ({
-                latestCampaign,
-                inactiveWorkplaces,
-              })),
-            );
-          }),
-        )
-        .subscribe(({ latestCampaign, inactiveWorkplaces }) => {
-          this.history.unshift(latestCampaign);
-          this.alertService.addAlert({
-            type: 'success',
-            message: `${this.decimalPipe.transform(latestCampaign.emails)} ${
-              latestCampaign.emails > 1 ? 'emails have' : 'email has'
-            } been scheduled to be sent.`,
-          });
-          this.inactiveWorkplaces = inactiveWorkplaces;
         }),
     );
   }

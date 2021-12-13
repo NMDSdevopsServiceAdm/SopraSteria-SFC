@@ -39,7 +39,7 @@
     <button
       class="govuk-button"
       [disabled]="emailGroup === '' || selectedTemplateId === ''"
-      (click)="confirmSendEmails($event, totalEmails, emailType.TargetedEmails)"
+      (click)="confirmSendEmails($event, totalEmails)"
       type="submit"
     >
       Send
