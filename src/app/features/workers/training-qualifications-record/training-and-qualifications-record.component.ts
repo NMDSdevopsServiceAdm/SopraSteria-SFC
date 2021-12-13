@@ -62,6 +62,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
     this.trainingCount = this.route.snapshot.data.trainingRecords.count;
     this.trainingAlert = this.trainingStatusService.getAggregatedStatus(
       this.route.snapshot.data.trainingRecords.training,
+      this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
     );
   }
 
