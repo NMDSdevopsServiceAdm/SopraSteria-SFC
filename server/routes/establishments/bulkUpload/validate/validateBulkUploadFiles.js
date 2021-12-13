@@ -27,13 +27,10 @@ const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
   const training = files.Training;
 
   const csvEstablishmentSchemaErrors = [];
-  const csvWorkerSchemaErrors = [];
   const csvTrainingSchemaErrors = [];
 
   const myEstablishments = [];
-  const myWorkers = [];
   const myTrainings = [];
-  const workersKeyed = [];
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
@@ -56,13 +53,10 @@ const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
   //    ...
   // }
   const myAPIEstablishments = {};
-  const myAPIWorkers = {};
   const myAPITrainings = {};
-  const myAPIQualifications = {};
 
   // for unique/cross-reference validations
   const allEstablishmentsByKey = {};
-  const allWorkersByKey = {};
 
   // /////////////////////////
   // Parse and process Establishments CSV
@@ -109,118 +103,9 @@ const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
 
   establishments.metadata.records = myEstablishments.length;
 
-  // /////////////////////////
   // Parse and process Workers CSV
-  if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.metadata.fileType === 'Worker') {
-    await Promise.all(
-      workers.imported.map((thisLine, currentLineNumber) =>
-        validateWorkerCsv(
-          thisLine,
-          currentLineNumber + 2,
-          csvWorkerSchemaErrors,
-          myWorkers,
-          myAPIWorkers,
-          myAPIQualifications,
-          myCurrentEstablishments,
-          keepAlive,
-        ),
-      ),
-    );
-
-    keepAlive('workers validated'); // keep connection alive
-
-    // having parsed all workers, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
-    const allKeys = [];
-    myWorkers.map((worker) => {
-      const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-      allKeys.push(id);
-    });
-
-    myWorkers.forEach((thisWorker) => {
-      // check if hours matches others in the same job and same annual pay
-      validatePartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
-
-      // uniquness for a worker is across both the establishment and the worker
-      const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-      const changeKeyNoWhitespace = thisWorker.changeUniqueWorker
-        ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '')
-        : null;
-
-      if (
-        validateDuplicateWorkerID(
-          thisWorker,
-          allKeys,
-          changeKeyNoWhitespace,
-          keyNoWhitespace,
-          allWorkersByKey,
-          myAPIWorkers,
-          csvWorkerSchemaErrors,
-        )
-      ) {
-        // does not yet exist - check this worker can be associated with a known establishment
-        const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
-
-        const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
-          if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-            if (thatWorker.weeklyContractedHours) {
-              return sum + thatWorker.weeklyContractedHours;
-            }
-            if (thatWorker.weeklyAverageHours) {
-              return sum + thatWorker.weeklyAverageHours;
-            }
-          }
-          return sum;
-        }, 0);
-
-        if (myWorkersTotalHours > 65) {
-          csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
-        }
-
-        if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
-          // not found the associated establishment
-          csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
-
-          // remove the entity
-          delete myAPIWorkers[thisWorker.lineNumber];
-        } else {
-          // this worker is unique and can be associated to establishment
-          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          if (changeKeyNoWhitespace) {
-            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
-          }
-
-          // associate this worker to the known establishment
-          const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace]
-            ? myAPIEstablishments[establishmentKeyNoWhitespace]
-            : null;
-
-          // key workers, to be used in training
-          const workerKeyNoWhitespace = (
-            thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID
-          ).replace(/\s/g, '');
-          workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
-
-          if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
-            knownEstablishment.associateWorker(
-              myAPIWorkers[thisWorker.lineNumber].key,
-              myAPIWorkers[thisWorker.lineNumber],
-            );
-          } else {
-            // this should never happen
-            console.error(
-              `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`,
-            );
-          }
-        }
-      }
-    });
-  } else {
-    console.info('API bulkupload - validateBulkUploadFiles: no workers records');
-  }
-  workers.metadata.records = myWorkers.length;
+  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myAPIQualifications } =
+    await validateWorkers(workers, myCurrentEstablishments, keepAlive, allEstablishmentsByKey, myAPIEstablishments);
 
   // /////////////////////////
   // Parse and process Training CSV
@@ -646,6 +531,131 @@ const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
       ),
     },
   };
+};
+
+const validateWorkers = async (
+  workers,
+  myCurrentEstablishments,
+  keepAlive,
+  allEstablishmentsByKey,
+  myAPIEstablishments,
+) => {
+  const csvWorkerSchemaErrors = [];
+  const myWorkers = [];
+  const myAPIWorkers = {};
+  const workersKeyed = [];
+  const allWorkersByKey = {};
+  const myAPIQualifications = {};
+
+  await Promise.all(
+    workers.imported.map((thisLine, currentLineNumber) =>
+      validateWorkerCsv(
+        thisLine,
+        currentLineNumber + 2,
+        csvWorkerSchemaErrors,
+        myWorkers,
+        myAPIWorkers,
+        myAPIQualifications,
+        myCurrentEstablishments,
+        keepAlive,
+      ),
+    ),
+  );
+
+  keepAlive('workers validated'); // keep connection alive
+
+  // having parsed all workers, check for duplicates
+  // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
+  const allKeys = [];
+  myWorkers.map((worker) => {
+    const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+    allKeys.push(id);
+  });
+
+  myWorkers.forEach((thisWorker) => {
+    // check if hours matches others in the same job and same annual pay
+    validatePartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+
+    // uniquness for a worker is across both the establishment and the worker
+    const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+    const changeKeyNoWhitespace = thisWorker.changeUniqueWorker
+      ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '')
+      : null;
+
+    if (
+      validateDuplicateWorkerID(
+        thisWorker,
+        allKeys,
+        changeKeyNoWhitespace,
+        keyNoWhitespace,
+        allWorkersByKey,
+        myAPIWorkers,
+        csvWorkerSchemaErrors,
+      )
+    ) {
+      // does not yet exist - check this worker can be associated with a known establishment
+      const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
+
+      const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
+        if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
+          if (thatWorker.weeklyContractedHours) {
+            return sum + thatWorker.weeklyContractedHours;
+          }
+          if (thatWorker.weeklyAverageHours) {
+            return sum + thatWorker.weeklyAverageHours;
+          }
+        }
+        return sum;
+      }, 0);
+
+      if (myWorkersTotalHours > 65) {
+        csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
+      }
+
+      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
+        // not found the associated establishment
+        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
+
+        // remove the entity
+        delete myAPIWorkers[thisWorker.lineNumber];
+      } else {
+        // this worker is unique and can be associated to establishment
+        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+        // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+        if (changeKeyNoWhitespace) {
+          allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+        }
+
+        // associate this worker to the known establishment
+        const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace]
+          ? myAPIEstablishments[establishmentKeyNoWhitespace]
+          : null;
+
+        // key workers, to be used in training
+        const workerKeyNoWhitespace = (
+          thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID
+        ).replace(/\s/g, '');
+        workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+
+        if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+          knownEstablishment.associateWorker(
+            myAPIWorkers[thisWorker.lineNumber].key,
+            myAPIWorkers[thisWorker.lineNumber],
+          );
+        } else {
+          // this should never happen
+          console.error(
+            `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`,
+          );
+        }
+      }
+    }
+  });
+
+  workers.metadata.records = myWorkers.length;
+
+  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myAPIQualifications };
 };
 
 module.exports = {
