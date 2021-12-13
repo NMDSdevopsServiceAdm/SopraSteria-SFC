@@ -566,18 +566,14 @@ const validateWorkers = async (
 
   // having parsed all workers, check for duplicates
   // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
-  const allKeys = [];
-  myWorkers.map((worker) => {
-    const id = (worker.local + worker.uniqueWorker).replace(/\s/g, '');
-    allKeys.push(id);
-  });
+  const allWorkerKeys = createKeysForWorkers(myWorkers);
 
   myWorkers.forEach((thisWorker) => {
     // check if hours matches others in the same job and same annual pay
     validatePartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
 
     // uniquness for a worker is across both the establishment and the worker
-    const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
+    const keyNoWhitespace = createWorkerKey(thisWorker);
     const changeKeyNoWhitespace = thisWorker.changeUniqueWorker
       ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '')
       : null;
@@ -585,7 +581,7 @@ const validateWorkers = async (
     if (
       validateDuplicateWorkerID(
         thisWorker,
-        allKeys,
+        allWorkerKeys,
         changeKeyNoWhitespace,
         keyNoWhitespace,
         allWorkersByKey,
@@ -658,6 +654,18 @@ const validateWorkers = async (
   return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myAPIQualifications };
 };
 
+const createKeysForWorkers = (workers) => {
+  return workers.map((worker) => {
+    return createWorkerKey(worker);
+  });
+};
+
+const createWorkerKey = (worker) => {
+  return (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+};
+
 module.exports = {
   validateBulkUploadFiles,
+  createKeysForWorkers,
+  createWorkerKey,
 };
