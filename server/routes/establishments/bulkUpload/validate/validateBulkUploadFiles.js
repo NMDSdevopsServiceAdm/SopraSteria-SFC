@@ -617,10 +617,7 @@ const validateWorkers = async (
           : null;
 
         // key workers, to be used in training
-        const workerKeyNoWhitespace = (
-          thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID
-        ).replace(/\s/g, '');
-        workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+        workersKeyed[workerKey] = thisWorker._currentLine;
 
         if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
           knownEstablishment.associateWorker(
