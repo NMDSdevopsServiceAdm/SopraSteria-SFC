@@ -46,7 +46,7 @@ const validatePut = async (req, res) => {
       }),
     );
 
-    const validationResponse = await validateBulkUploadFiles(req, files, keepAlive);
+    const validationResponse = await validateBulkUploadFiles(req, files);
 
     res.buValidationResult = validationResponse.status;
 
@@ -77,10 +77,6 @@ const getMetadata = (file, fileType) => {
 
 const generateJSONFromCSV = async (fileData) => {
   return await csv().fromString(fileData);
-};
-
-const keepAlive = (stepName = '', stepId = '') => {
-  console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
 };
 
 const getFileType = (fileData) => {

@@ -5,19 +5,11 @@ const { Qualification } = require('../../../../models/classes/qualification');
 
 const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers').Worker;
 
-const loadWorkerQualifications = async (
-  lineValidator,
-  thisQual,
-  thisApiWorker,
-  myAPIQualifications,
-  keepAlive = () => {},
-) => {
+const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
   const thisApiQualification = new Qualification();
 
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   const isValid = await thisApiQualification.load(thisQual);
-
-  keepAlive('qualification loaded', lineValidator.lineNumber);
 
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
@@ -48,7 +40,6 @@ const validateWorkerCsv = async (
   myAPIWorkers,
   myAPIQualifications,
   myCurrentEstablishments,
-  keepAlive = () => {},
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
@@ -63,8 +54,6 @@ const validateWorkerCsv = async (
     const thisApiWorker = new Worker();
     await thisApiWorker.load(thisWorkerAsAPI);
 
-    keepAlive('worker loaded', currentLineNumber);
-
     if (thisApiWorker.validate()) {
       // no validation errors in the entity itself, so add it ready for completion
       myAPIWorkers[currentLineNumber] = thisApiWorker;
@@ -74,9 +63,7 @@ const validateWorkerCsv = async (
       await Promise.all(
         lineValidator
           .toQualificationAPI()
-          .map((thisQual) =>
-            loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications, keepAlive),
-          ),
+          .map((thisQual) => loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications)),
       );
     } else {
       const errors = thisApiWorker.errors;

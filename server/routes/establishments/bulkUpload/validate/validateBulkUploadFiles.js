@@ -18,8 +18,12 @@ const { validateDuplicateLocations } = require('./validateDuplicateLocations');
 const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalary } = require('./validatePartTimeSalary');
 
+const keepAlive = (stepName = '', stepId = '') => {
+  console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
+};
+
 // if commit is false, then the results of validation are not uploaded to S3
-const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
+const validateBulkUploadFiles = async (req, files) => {
   const { username, establishmentId, isParent } = req;
 
   const establishments = files.Establishment;
@@ -105,7 +109,7 @@ const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
 
   // Parse and process Workers CSV
   const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myAPIQualifications } =
-    await validateWorkers(workers, myCurrentEstablishments, keepAlive, allEstablishmentsByKey, myAPIEstablishments);
+    await validateWorkers(workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments);
 
   // /////////////////////////
   // Parse and process Training CSV
@@ -533,13 +537,7 @@ const validateBulkUploadFiles = async (req, files, keepAlive = () => {}) => {
   };
 };
 
-const validateWorkers = async (
-  workers,
-  myCurrentEstablishments,
-  keepAlive,
-  allEstablishmentsByKey,
-  myAPIEstablishments,
-) => {
+const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const csvWorkerSchemaErrors = [];
   const myWorkers = [];
   const myAPIWorkers = {};
@@ -557,7 +555,6 @@ const validateWorkers = async (
         myAPIWorkers,
         myAPIQualifications,
         myCurrentEstablishments,
-        keepAlive,
       ),
     ),
   );
