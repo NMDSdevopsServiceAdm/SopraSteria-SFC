@@ -1,33 +1,12 @@
 <div class="govuk-grid-row">
-  <!--
-  <div class="govuk-grid-row">
-    <div class="govuk-form-group govuk-!-margin-top-3"> -->
-
-  <!-- </div>
-      </div> -->
   <div class="govuk-grid-column-one-third">
-    <p class="asc-summary-box govuk-!-margin-bottom-8">
+    <p class="asc-summary-box govuk-!-margin-bottom-12">
       <span>Number of users to email:</span>
       <br />
-      <strong>
+      <strong class="govuk-!-font-size-36">
         {{ totalEmails | number }}
       </strong>
     </p>
-    <!-- <dl class="govuk-list--definition">
-      <dd data-testid="totalEmails">
-        {{ totalEmails | number }}
-      </dd>
-      <dt>Number of users to email:</dt>
-    </dl> -->
-
-    <button
-      class="govuk-button"
-      [disabled]="emailGroup === '' || selectedTemplateId === ''"
-      (click)="confirmSendEmails($event, totalEmails, emailType.TargetedEmails)"
-      type="submit"
-    >
-      Send X targeted emails
-    </button>
   </div>
   <div class="govuk-grid-column-one-third">
     <label class="govuk-label" for="emailGroup"> Email group </label>
@@ -43,8 +22,6 @@
       <option value="parentOnly">Parent only</option>
       <option value="singleAccountsOnly">Single accounts only</option>
     </select>
-    <!-- </div>
-      <div class="govuk-grid-column-one-half"> -->
     <label class="govuk-label" for="selectedTemplateId"> Template</label>
     <select
       [(ngModel)]="selectedTemplateId"
@@ -55,5 +32,18 @@
       <option value="">Select a template</option>
       <option *ngFor="let template of templates" [value]="template.id">{{ template.name }}</option>
     </select>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <button
+      class="govuk-button"
+      [disabled]="emailGroup === '' || selectedTemplateId === ''"
+      (click)="confirmSendEmails($event, totalEmails, emailType.TargetedEmails)"
+      type="submit"
+    >
+      Send
+      <strong> {{ totalEmails | number }} </strong>targeted emails
+    </button>
   </div>
 </div>
