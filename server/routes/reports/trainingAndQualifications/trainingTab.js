@@ -15,11 +15,7 @@ const models = require('../../../models');
 
 const generateTrainingTab = async (workbook, establishmentId, isParent = false) => {
   const rawEstablishments = await models.establishment.getEstablishmentTrainingRecords(establishmentId, isParent);
-  const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(establishmentId);
-  const establishments = convertTrainingForEstablishments(
-    rawEstablishments,
-    expiresSoonAlertDate.get('ExpiresSoonAlertDate'),
-  );
+  const establishments = convertTrainingForEstablishments(rawEstablishments);
 
   const trainingTab = workbook.addWorksheet('Training', { views: [{ showGridLines: false }] });
 

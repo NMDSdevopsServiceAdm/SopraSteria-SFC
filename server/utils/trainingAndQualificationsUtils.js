@@ -45,6 +45,7 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 };
 
 const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
+  console.log(expiresSoonAlertDate);
   return workers.map((worker) => {
     return {
       workerId: numberCheck(worker.get('NameOrIdValue')),
@@ -91,12 +92,12 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
   return 'Up-to-date';
 };
 
-exports.convertTrainingForEstablishments = (rawEstablishments, expiresSoonAlertDate) => {
+exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
     const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
     return {
       name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
-      workerRecords: convertWorkerTrainingRecords(establishment.workers, expiresSoonAlertDate),
+      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.get('ExpiresSoonAlertDate')),
     };
   });
 };
