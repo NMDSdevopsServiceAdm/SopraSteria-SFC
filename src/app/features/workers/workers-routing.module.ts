@@ -330,6 +330,7 @@ const routes: Routes = [
           worker: WorkerResolver,
           qualifications: QualificationsResolver,
           trainingRecords: TrainingRecordsResolver,
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { title: 'Training and qualification record' },
       },
