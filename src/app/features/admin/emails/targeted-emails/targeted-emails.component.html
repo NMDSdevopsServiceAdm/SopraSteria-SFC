@@ -2,9 +2,10 @@
   <div class="govuk-grid-column-two-thirds">
     <dl class="govuk-list--definition">
       <dt>Total number of users to be emailed</dt>
-      <dd data-testid="totalEmails"></dd>
+      <dd data-testid="totalEmails">
+        {{ totalEmails | number }}
+      </dd>
     </dl>
-
     <div class="govuk-grid-row">
       <div class="govuk-form-group govuk-!-margin-top-3">
         <div class="govuk-grid-column-one-half">
