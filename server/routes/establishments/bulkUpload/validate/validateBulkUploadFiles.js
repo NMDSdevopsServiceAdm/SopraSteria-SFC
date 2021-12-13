@@ -572,7 +572,7 @@ const validateWorkers = async (
     // check if hours matches others in the same job and same annual pay
     validatePartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
 
-    // uniquness for a worker is across both the establishment and the worker
+    // uniqueness for a worker is across both the establishment and the worker
     const workerKey = createWorkerKey(thisWorker.local, thisWorker.uniqueWorker);
     const changeWorkerIdKey = thisWorker.changeUniqueWorker
       ? createWorkerKey(thisWorker.local, thisWorker.changeUniqueWorker)
@@ -592,19 +592,7 @@ const validateWorkers = async (
       // does not yet exist - check this worker can be associated with a known establishment
       const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
 
-      const myWorkersTotalHours = myWorkers.reduce((sum, thatWorker) => {
-        if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-          if (thatWorker.weeklyContractedHours) {
-            return sum + thatWorker.weeklyContractedHours;
-          }
-          if (thatWorker.weeklyAverageHours) {
-            return sum + thatWorker.weeklyAverageHours;
-          }
-        }
-        return sum;
-      }, 0);
-
-      if (myWorkersTotalHours > 65) {
+      if (worksOverNationalInsuranceMaximum(thisWorker, myWorkers)) {
         csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
       }
 
@@ -664,8 +652,25 @@ const createWorkerKey = (localEstablishmentId, workerId) => {
   return (localEstablishmentId + workerId).replace(/\s/g, '');
 };
 
+const worksOverNationalInsuranceMaximum = (thisWorker, workers) => {
+  const workerTotalHours = workers.reduce((sum, thatWorker) => {
+    if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
+      if (thatWorker.weeklyContractedHours) {
+        return sum + thatWorker.weeklyContractedHours;
+      }
+      if (thatWorker.weeklyAverageHours) {
+        return sum + thatWorker.weeklyAverageHours;
+      }
+    }
+    return sum;
+  }, 0);
+
+  return workerTotalHours > 65;
+};
+
 module.exports = {
   validateBulkUploadFiles,
   createKeysForWorkers,
   createWorkerKey,
+  worksOverNationalInsuranceMaximum,
 };
