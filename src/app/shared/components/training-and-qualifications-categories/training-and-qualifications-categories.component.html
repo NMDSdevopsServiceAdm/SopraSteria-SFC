@@ -64,11 +64,7 @@
           <td class="govuk-table__cell">
             <div
               *ngIf="
-                trainingStatusService.trainingStatusCount(
-                  trainingCategory.training,
-                  trainingStatusService.EXPIRED,
-                  expiresSoonAlertDate
-                ) > 0
+                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) > 0
               "
               class="govuk-!-margin-bottom-1"
             >
@@ -77,22 +73,12 @@
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
-              {{
-                trainingStatusService.trainingStatusCount(
-                  trainingCategory.training,
-                  trainingStatusService.EXPIRED,
-                  expiresSoonAlertDate
-                )
-              }}
+              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) }}
               Expired
             </div>
             <div
               *ngIf="
-                trainingStatusService.trainingStatusCount(
-                  trainingCategory.training,
-                  trainingStatusService.MISSING,
-                  expiresSoonAlertDate
-                ) > 0
+                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) > 0
               "
               class="govuk-!-margin-bottom-1"
             >
@@ -101,22 +87,12 @@
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
-              {{
-                trainingStatusService.trainingStatusCount(
-                  trainingCategory.training,
-                  trainingStatusService.MISSING,
-                  expiresSoonAlertDate
-                )
-              }}
+              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) }}
               Missing
             </div>
             <div
               *ngIf="
-                trainingStatusService.trainingStatusCount(
-                  trainingCategory.training,
-                  trainingStatusService.EXPIRING,
-                  expiresSoonAlertDate
-                ) > 0
+                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) > 0
               "
               class="govuk-!-margin-bottom-1"
             >
@@ -125,13 +101,7 @@
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
-              {{
-                trainingStatusService.trainingStatusCount(
-                  trainingCategory.training,
-                  trainingStatusService.EXPIRING,
-                  expiresSoonAlertDate
-                )
-              }}
+              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) }}
               Expiring soon
             </div>
             <div *ngIf="trainingIsComplete(trainingCategory.training)">Up-to-date</div>
