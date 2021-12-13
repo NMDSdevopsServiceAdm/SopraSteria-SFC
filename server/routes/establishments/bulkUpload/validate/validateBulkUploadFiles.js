@@ -573,17 +573,17 @@ const validateWorkers = async (
     validatePartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
 
     // uniquness for a worker is across both the establishment and the worker
-    const keyNoWhitespace = createWorkerKey(thisWorker);
-    const changeKeyNoWhitespace = thisWorker.changeUniqueWorker
-      ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '')
+    const workerKey = createWorkerKey(thisWorker.local, thisWorker.uniqueWorker);
+    const changeWorkerIdKey = thisWorker.changeUniqueWorker
+      ? createWorkerKey(thisWorker.local, thisWorker.changeUniqueWorker)
       : null;
 
     if (
       validateDuplicateWorkerID(
         thisWorker,
         allWorkerKeys,
-        changeKeyNoWhitespace,
-        keyNoWhitespace,
+        changeWorkerIdKey,
+        workerKey,
         allWorkersByKey,
         myAPIWorkers,
         csvWorkerSchemaErrors,
@@ -616,11 +616,11 @@ const validateWorkers = async (
         delete myAPIWorkers[thisWorker.lineNumber];
       } else {
         // this worker is unique and can be associated to establishment
-        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+        allWorkersByKey[workerKey] = thisWorker.lineNumber;
 
         // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-        if (changeKeyNoWhitespace) {
-          allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
+        if (changeWorkerIdKey) {
+          allWorkersByKey[changeWorkerIdKey] = thisWorker.lineNumber;
         }
 
         // associate this worker to the known establishment
@@ -656,12 +656,12 @@ const validateWorkers = async (
 
 const createKeysForWorkers = (workers) => {
   return workers.map((worker) => {
-    return createWorkerKey(worker);
+    return createWorkerKey(worker.local, worker.uniqueWorker);
   });
 };
 
-const createWorkerKey = (worker) => {
-  return (worker.local + worker.uniqueWorker).replace(/\s/g, '');
+const createWorkerKey = (localEstablishmentId, workerId) => {
+  return (localEstablishmentId + workerId).replace(/\s/g, '');
 };
 
 module.exports = {

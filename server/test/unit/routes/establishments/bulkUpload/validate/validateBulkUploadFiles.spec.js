@@ -9,7 +9,7 @@ describe('validateBulkUploadFiles', () => {
     it('should return key with local and uniqueWorker concatenated', async () => {
       const worker = { local: 'mockWorkplace', uniqueWorker: 'testUser' };
 
-      const workerKey = createWorkerKey(worker);
+      const workerKey = createWorkerKey(worker.local, worker.uniqueWorker);
 
       expect(workerKey).to.equal('mockWorkplacetestUser');
     });
@@ -17,7 +17,7 @@ describe('validateBulkUploadFiles', () => {
     it('should return key with local and uniqueWorker concatenated with whitespace removed', async () => {
       const worker = { local: 'Workplace With Spaces', uniqueWorker: 'Test User' };
 
-      const workerKey = createWorkerKey(worker);
+      const workerKey = createWorkerKey(worker.local, worker.uniqueWorker);
 
       expect(workerKey).to.equal('WorkplaceWithSpacesTestUser');
     });
