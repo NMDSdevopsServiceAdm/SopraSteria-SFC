@@ -1,9 +1,9 @@
 'use strict';
 
-const { Worker } = require('../../../../models/classes/worker');
-const { Qualification } = require('../../../../models/classes/qualification');
+const { Worker } = require('../../../../../models/classes/worker');
+const { Qualification } = require('../../../../../models/classes/qualification');
 
-const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers').Worker;
+const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 
 const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
   const thisApiQualification = new Qualification();

@@ -19,10 +19,10 @@ const {
 } = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateLocations');
 const {
   validateDuplicateWorkerID,
-} = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateWorkerID');
+} = require('../../../../routes/establishments/bulkUpload/validate/workers/validateDuplicateWorkerID');
 const {
   validatePartTimeSalary,
-} = require('../../../../routes/establishments/bulkUpload/validate/validatePartTimeSalary');
+} = require('../../../../routes/establishments/bulkUpload/validate/workers/validatePartTimeSalary');
 
 const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
 

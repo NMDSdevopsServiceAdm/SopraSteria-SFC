@@ -3,9 +3,9 @@ const {
   createKeysForWorkers,
   createWorkerKey,
   worksOverNationalInsuranceMaximum,
-} = require('../../../../../../routes/establishments/bulkUpload/validate/validateBulkUploadFiles');
+} = require('../../../../../../../routes/establishments/bulkUpload/validate/workers/validateWorkers');
 
-describe('validateBulkUploadFiles', () => {
+describe('validateWorkers', () => {
   describe('createWorkerKey', () => {
     it('should return key with local and uniqueWorker concatenated', async () => {
       const worker = { local: 'mockWorkplace', uniqueWorker: 'testUser' };

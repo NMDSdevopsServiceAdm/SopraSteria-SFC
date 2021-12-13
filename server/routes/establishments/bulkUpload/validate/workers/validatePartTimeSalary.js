@@ -1,6 +1,6 @@
 'use strict';
 
-const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
+const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 
 // check if hours matches others in the same job and same annual pay
 const validatePartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
