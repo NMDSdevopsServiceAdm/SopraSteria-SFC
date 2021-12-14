@@ -12,6 +12,7 @@ import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registratio
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { EmailsComponent } from './emails/emails.component';
+import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
 import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
@@ -157,6 +158,11 @@ const routes: Routes = [
             resolve: {
               emailTemplates: EmailTemplateResolver,
             },
+          },
+          {
+            path: 'inactive-emails',
+            component: InactiveEmailsComponent,
+            data: { title: 'Inactive Emails' },
           },
         ],
       },

@@ -23,6 +23,7 @@ import { ApprovalOrRejectionDialogComponent } from './components/approval-or-rej
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { EmailsComponent } from './emails/emails.component';
+import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -73,6 +74,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ApprovalOrRejectionDialogComponent,
     EmailsComponent,
     TargetedEmailsComponent,
+    InactiveEmailsComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
