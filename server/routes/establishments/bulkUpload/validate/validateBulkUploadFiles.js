@@ -111,8 +111,12 @@ const validateBulkUploadFiles = async (req, files) => {
   establishments.metadata.records = myEstablishments.length;
 
   // Parse and process Workers CSV
-  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myAPIQualifications } =
-    await validateWorkers(workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments);
+  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey } = await validateWorkers(
+    workers,
+    myCurrentEstablishments,
+    allEstablishmentsByKey,
+    myAPIEstablishments,
+  );
 
   // /////////////////////////
   // Parse and process Training CSV
@@ -280,9 +284,6 @@ const validateBulkUploadFiles = async (req, files) => {
 
   // prepare entities ready for upload/return
   const establishmentsAsArray = Object.values(myAPIEstablishments);
-  const workersAsArray = Object.values(myAPIWorkers);
-  const trainingAsArray = Object.values(myAPITrainings);
-  const qualificationsAsArray = Object.values(myAPIQualifications);
 
   // update CSV metadata error/warning counts
   establishments.metadata.errors = csvEstablishmentSchemaErrors.filter((thisError) => 'errCode' in thisError).length;
@@ -342,32 +343,10 @@ const validateBulkUploadFiles = async (req, files) => {
 
   return {
     status,
-    report,
-    validation: {
-      establishments: csvEstablishmentSchemaErrors,
-      workers: csvWorkerSchemaErrors,
-      training: csvTrainingSchemaErrors,
-    },
     metaData: {
       establishments: establishments.metadata,
       workers: workers.metadata,
       training: training.metadata,
-    },
-    data: {
-      csv: {
-        establishments: myEstablishments.map((thisEstablishment) => thisEstablishment.toJSON()),
-        workers: myWorkers.map((thisWorker) => thisWorker.toJSON()),
-        training: myTrainings.map((thisTraining) => thisTraining.toJSON()),
-      },
-      entities: {
-        establishments: establishmentsAsArray.map((thisEstablishment) => thisEstablishment.toJSON()),
-        workers: workersAsArray.map((thisWorker) => thisWorker.toJSON()),
-        training: trainingAsArray.map((thisTraining) => thisTraining.toJSON()),
-        qualifications: qualificationsAsArray.map((thisQualification) => thisQualification.toJSON()),
-      },
-      resulting: establishmentsAsArray.map((thisEstablishment) =>
-        thisEstablishment.toJSON(false, false, false, false, true, null, true),
-      ),
     },
   };
 };

@@ -5,16 +5,13 @@ const { Qualification } = require('../../../../../models/classes/qualification')
 
 const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 
-const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
+const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker) => {
   const thisApiQualification = new Qualification();
 
   // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   const isValid = await thisApiQualification.load(thisQual);
 
   if (isValid) {
-    // no validation errors in the entity itself, so add it ready for completion
-    myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
-
     // associate the qualification entity to the Worker
     thisApiWorker.associateQualification(thisApiQualification);
   } else {
@@ -24,8 +21,6 @@ const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, 
     lineValidator.addQualificationAPIValidation(thisQual.column, errors, warnings);
 
     if (errors.length === 0) {
-      myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
-
       // associate the qualification entity to the Worker
       thisApiWorker.associateQualification(thisApiQualification);
     }
@@ -38,7 +33,6 @@ const validateWorkerCsvLine = async (
   csvWorkerSchemaErrors,
   myWorkers,
   myAPIWorkers,
-  myAPIQualifications,
   myCurrentEstablishments,
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
@@ -63,7 +57,7 @@ const validateWorkerCsvLine = async (
       await Promise.all(
         lineValidator
           .toQualificationAPI()
-          .map((thisQual) => loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications)),
+          .map((thisQual) => loadWorkerQualifications(lineValidator, thisQual, thisApiWorker)),
       );
     } else {
       const errors = thisApiWorker.errors;
@@ -88,7 +82,6 @@ const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
   const csvWorkerSchemaErrors = [];
   const myWorkers = [];
   const myAPIWorkers = {};
-  const myAPIQualifications = {};
 
   await Promise.all(
     workers.imported.map((thisLine, currentLineNumber) =>
@@ -98,13 +91,12 @@ const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
         csvWorkerSchemaErrors,
         myWorkers,
         myAPIWorkers,
-        myAPIQualifications,
         myCurrentEstablishments,
       ),
     ),
   );
 
-  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications };
+  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers };
 };
 
 module.exports = {
