@@ -4,7 +4,7 @@ const moment = require('moment');
 
 const { Establishment } = require('../../../../models/classes/establishment');
 const { restoreExistingEntities } = require('../entities');
-const { uploadAsJSON, uploadMetadataToS3 } = require('../s3');
+const { uploadAsJSON, uploadMetadataToS3, uploadDifferenceReportToS3, uploadValidationDataToS3 } = require('../s3');
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
@@ -315,48 +315,22 @@ const validateBulkUploadFiles = async (req, files) => {
   workers.metadata.deleted =
     numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
-  // upload intermediary/validation S3 objects
-  const s3UploadPromises = [];
-
-  // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
-
-  await Promise.all([uploadMetadataToS3(username, establishmentId, establishments, workers, training)]);
-
-  // upload the validation data to S3 - these are reuquired for validation report -
-  // although one object is likely to be quicker to upload - and only one object is required then to download
-  s3UploadPromises.push(
-    uploadAsJSON(
+  await Promise.all([
+    uploadMetadataToS3(username, establishmentId, establishments, workers, training),
+    uploadValidationDataToS3(
       username,
       establishmentId,
       csvEstablishmentSchemaErrors,
-      `${establishmentId}/validation/establishments.validation.json`,
-    ),
-  );
-
-  s3UploadPromises.push(
-    uploadAsJSON(
-      username,
-      establishmentId,
       csvWorkerSchemaErrors,
-      `${establishmentId}/validation/workers.validation.json`,
-    ),
-  );
-
-  s3UploadPromises.push(
-    uploadAsJSON(
-      username,
-      establishmentId,
       csvTrainingSchemaErrors,
-      `${establishmentId}/validation/training.validation.json`,
     ),
-  );
-
-  s3UploadPromises.push(
-    uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`),
-  );
+    uploadDifferenceReportToS3(username, establishmentId, report),
+  ]);
 
   // to false to disable the upload of intermediary objects
   // the all entities intermediary file is required on completion - establishments entity for validation report
+  const s3UploadPromises = [];
+
   if (establishmentsAsArray.length > 0) {
     s3UploadPromises.push(
       uploadAsJSON(

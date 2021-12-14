@@ -45,6 +45,22 @@ const uploadMetadataToS3 = async (username, establishmentId, establishments, wor
   if (training.imported) uploadDataToS3(username, establishmentId, training.metadata, training.metadata.filename);
 };
 
+const uploadValidationDataToS3 = (
+  username,
+  establishmentId,
+  csvEstablishmentSchemaErrors,
+  csvWorkerSchemaErrors,
+  csvTrainingSchemaErrors,
+) => {
+  uploadDataToS3(username, establishmentId, csvEstablishmentSchemaErrors, 'establishments.validation');
+  uploadDataToS3(username, establishmentId, csvWorkerSchemaErrors, 'workers.validation');
+  uploadDataToS3(username, establishmentId, csvTrainingSchemaErrors, 'training.validation');
+};
+
+const uploadDifferenceReportToS3 = (username, establishmentId, report) => {
+  uploadDataToS3(username, establishmentId, report, 'difference.report');
+};
+
 const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
@@ -256,6 +272,8 @@ module.exports = {
   uploadAsJSON,
   uploadDataToS3,
   uploadMetadataToS3,
+  uploadValidationDataToS3,
+  uploadDifferenceReportToS3,
   saveResponse,
   saveLastBulkUpload,
   downloadContent,
