@@ -32,15 +32,17 @@ const uploadAsJSON = async (username, establishmentId, content, key) => {
   }
 };
 
-const uploadMetadataToS3 = async (username, establishmentId, data) => {
-  if (data.imported) {
-    await uploadAsJSON(
-      username,
-      establishmentId,
-      data.metadata,
-      `${establishmentId}/latest/${data.metadata.filename}.metadata.json`,
-    );
-  }
+const uploadDataToS3 = async (username, establishmentId, data, fileName) => {
+  await uploadAsJSON(username, establishmentId, data, `${establishmentId}/validation/${fileName}.json`);
+};
+
+const uploadMetadataToS3 = async (username, establishmentId, establishments, workers, training) => {
+  if (establishments.imported)
+    uploadDataToS3(username, establishmentId, establishments.metadata, establishments.metadata.filename);
+
+  if (workers.imported) uploadDataToS3(username, establishmentId, workers.metadata, workers.metadata.filename);
+
+  if (training.imported) uploadDataToS3(username, establishmentId, training.metadata, training.metadata.filename);
 };
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
@@ -252,6 +254,7 @@ module.exports = {
   s3,
   Bucket,
   uploadAsJSON,
+  uploadDataToS3,
   uploadMetadataToS3,
   saveResponse,
   saveLastBulkUpload,

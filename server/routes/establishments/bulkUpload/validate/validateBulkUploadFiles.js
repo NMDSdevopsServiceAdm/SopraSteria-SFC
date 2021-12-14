@@ -319,11 +319,8 @@ const validateBulkUploadFiles = async (req, files) => {
   const s3UploadPromises = [];
 
   // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
-  await Promise.all([
-    uploadMetadataToS3(username, establishmentId, establishments),
-    uploadMetadataToS3(username, establishmentId, workers),
-    uploadMetadataToS3(username, establishmentId, training),
-  ]);
+
+  await Promise.all([uploadMetadataToS3(username, establishmentId, establishments, workers, training)]);
 
   // upload the validation data to S3 - these are reuquired for validation report -
   // although one object is likely to be quicker to upload - and only one object is required then to download
