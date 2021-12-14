@@ -54,6 +54,9 @@ describe('TrainingAndQualificationsRecordComponent', () => {
                   qualifications: {
                     count: 2,
                   },
+                  expiresSoonAlertDate: {
+                    expiresSoonAlertDate: '90',
+                  },
                 },
               },
             },

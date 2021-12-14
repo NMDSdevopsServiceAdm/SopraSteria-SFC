@@ -24,7 +24,7 @@ const generateTrainingTab = async (workbook, establishmentId, isParent = false) 
 
 const addContentToTrainingTab = (trainingTab, establishments, isParent) => {
   addHeading(trainingTab, 'B2', 'E2', 'Training');
-  addLine(trainingTab, 'A4',isParent ? 'L4' : 'K4');
+  addLine(trainingTab, 'A4', isParent ? 'L4' : 'K4');
   alignColumnToLeft(trainingTab, 2);
   if (isParent) alignColumnToLeft(trainingTab, 3);
 
@@ -111,7 +111,7 @@ const addMissingRow = (trainingTable, worker, missingMandatoryTrainingRecord, es
   trainingTable.addRow(row);
 };
 
-const addRow = (trainingTable, establishment, workerRecord, trainingRecord,isParent) => {
+const addRow = (trainingTable, establishment, workerRecord, trainingRecord, isParent) => {
   const row = [
     workerRecord.workerId,
     workerRecord.jobRole,
@@ -134,7 +134,7 @@ const addRow = (trainingTable, establishment, workerRecord, trainingRecord,isPar
 const addColoursToStatusColumn = (trainingTab, isParent) => {
   trainingTab.eachRow(function (row, rowNumber) {
     const statusCell = isParent ? row.getCell('H') : row.getCell('G');
-    const currentCell = isParent ?  `H${rowNumber}` : `G${rowNumber}`;
+    const currentCell = isParent ? `H${rowNumber}` : `G${rowNumber}`;
     if (statusCell.value === 'Up-to-date') {
       setCellTextAndBackgroundColour(trainingTab, currentCell, backgroundColours.green, textColours.green);
     } else if (statusCell.value === 'Expiring soon') {

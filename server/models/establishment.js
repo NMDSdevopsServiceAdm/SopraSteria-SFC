@@ -1474,7 +1474,8 @@ module.exports = function (sequelize, DataTypes) {
     isParent = false,
   ) {
     const currentDate = moment().toISOString();
-    const expiresSoon = moment().add(90, 'days').toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
 
     let attributes = [
       'id',
@@ -1657,7 +1658,7 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
     return this.findAll({
-      attributes: ['id', 'NameValue'],
+      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
       where: {
         [Op.or]: [
           {
