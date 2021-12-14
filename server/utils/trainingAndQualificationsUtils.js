@@ -209,3 +209,4 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
 };
 
 exports.numberCheck = numberCheck;
+exports.getTrainingRecordStatus = getTrainingRecordStatus;
