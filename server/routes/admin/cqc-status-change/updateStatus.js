@@ -9,7 +9,7 @@ const updateStatus = async (req, res) => {
       return res.status(400).send({ error: 'Workplace could not be found' });
     }
 
-    const approval = await models.Approvals.findbyEstablishmentId(establishment.id, 'CqcStatusChange', status);
+    const approval = await models.Approvals.findbyEstablishmentId(establishment.id, 'CqcStatusChange');
 
     if (!approval) {
       return res.status(400).send({ error: 'CQC status change request could not be found' });

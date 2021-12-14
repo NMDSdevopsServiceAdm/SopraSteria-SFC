@@ -1,4 +1,7 @@
 'use strict';
+
+const { Op } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   const Approvals = sequelize.define(
     'Approvals',
@@ -72,11 +75,11 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Approvals.findAllPending = function (approvalType) {
+  Approvals.findAllPendingAndInProgress = function (approvalType) {
     return this.findAll({
       where: {
         ApprovalType: approvalType,
-        Status: 'Pending',
+        Status: { [Op.or]: ['Pending', 'In progress'] },
       },
       attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [
@@ -137,13 +140,26 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   Approvals.findbyEstablishmentId = function (establishmentId, approvalType, status) {
+    const params = status ? status : { [Op.or]: ['Pending', 'In progress'] };
+
     return this.findOne({
       where: {
         EstablishmentID: establishmentId,
         ApprovalType: approvalType,
-        Status: status,
+        Status: params,
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data', 'Reviewer', 'InReview'],
+      attributes: [
+        'ID',
+        'UUID',
+        'EstablishmentID',
+        'UserID',
+        'createdAt',
+        'Status',
+        'Data',
+        'Reviewer',
+        'InReview',
+        'createdAt',
+      ],
       include: [
         {
           model: sequelize.models.establishment,

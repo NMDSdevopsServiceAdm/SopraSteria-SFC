@@ -339,6 +339,7 @@ describe('getIndividualCqcStatusChange', () => {
     UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
     InReview: false,
     Reviewer: null,
+    createdAt: new Date('05/02/2020'),
     User: { FullNameValue: 'Joe Bloggs' },
     Data: {
       requestedService: {
@@ -385,10 +386,12 @@ describe('getIndividualCqcStatusChange', () => {
   const expectedResponse = {
     status: 'Pending',
     requestUid: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
-    inReview: false,
-    reviewer: null,
+    createdAt: new Date('05/02/2020'),
     username: 'Joe Bloggs',
     establishment: {
+      status: 'Pending',
+      inReview: false,
+      reviewer: null,
       establishmentId: 1,
       establishmentUid: 'f61696f7-30fe-441c-9c59-e25dfcb51f59',
       workplaceId: 'J111111',

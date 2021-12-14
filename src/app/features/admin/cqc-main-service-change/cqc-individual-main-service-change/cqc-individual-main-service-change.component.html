@@ -1,14 +1,17 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
-    <h2 class="govuk-heading-l">CQC main service change: Dummy Establishment</h2>
-    <p>Receveived some date</p>
-    <!-- <app-review-checkbox
-      [toggleCheckbox]=""
-      [registration]=""
-      [userFullName]=""
-      [checkBoxError]=""
-      [getUpdatedRegistration]=""
-    ></app-review-checkbox> -->
+    <h2 class="govuk-heading-l">CQC main service change: {{ registration.establishment.name }}</h2>
+    <p>
+      Receveived {{ registration.createdAt | date: 'dd MMM yyyy' }},
+      {{ registration.createdAt | date: 'hh:mma' | lowercase }}
+    </p>
+    <app-review-checkbox
+      [toggleCheckbox]="toggleCheckbox"
+      [registration]="registration"
+      [userFullName]="userFullName"
+      [checkBoxError]="checkBoxError"
+      [getUpdatedRegistration]="getUpdatedRegistration"
+    ></app-review-checkbox>
     <h2 class="govuk-heading-m">Workplace details</h2>
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">

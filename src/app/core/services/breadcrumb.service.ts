@@ -4,6 +4,7 @@ import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/rout
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import {
+  adminCqcStatusChangeJournery,
   adminJourney,
   adminPendingRegistrationJourney,
   adminRejectedRegistrationJourney,
@@ -145,6 +146,10 @@ export class BreadcrumbService {
   private getRoutesConfig(journey: JourneyType) {
     let routes: JourneyRoute;
     switch (journey) {
+      case JourneyType.CQC_MAIN_SERVICE_CHANGE: {
+        routes = adminCqcStatusChangeJournery;
+        break;
+      }
       case JourneyType.ADMIN: {
         routes = adminJourney;
         break;

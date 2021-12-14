@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -20,6 +21,7 @@ import {
 export class CqcIndividualMainServiceChangeComponent implements OnInit {
   public registration;
   public loggedInUser;
+  public userFullName;
   public notes: Note[];
   public notesForm: FormGroup;
   public notesError: string;
@@ -39,13 +41,15 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
   ngOnInit(): void {
     this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.registration = this.route.snapshot.data.approval;
+    this.userFullName = this.loggedInUser.fullname;
     this.notes = this.route.snapshot.data.notes;
-    console.log(this.notes);
     this.setBreadcrumbs();
     this.setupNotesForm();
   }
 
-  public setBreadcrumbs(): void {}
+  public setBreadcrumbs(): void {
+    this.breadcrumbService.show(JourneyType.CQC_MAIN_SERVICE_CHANGE);
+  }
 
   public approveOrRejectCqcChange(isApproval: boolean): void {
     const dialog = this.openApprovalOrRejectionDialog(isApproval);
@@ -126,14 +130,14 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
 
     const body = {
       uid: this.registration.establishment.establishmentUid,
-      status: checked ? 'IN PROGRESS' : 'PENDING',
-      reviewer: checked ? this.loggedInUser.fullname : null,
+      status: checked ? 'In progress' : 'Pending',
+      reviewer: checked ? this.userFullName : null,
       inReview: checked,
     };
 
     this.cqcStatusChangeService.updateApprovalStatus(body).subscribe(
       () => {
-        this.getUpdatedApproval();
+        this.getUpdatedRegistration();
       },
       (error: HttpErrorResponse) => {
         if (error.status === 400) {
@@ -145,12 +149,16 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
     );
   }
 
-  public getUpdatedApproval(): void {
+  public getUpdatedRegistration(): void {
     this.cqcStatusChangeService
       .getIndividualCqcStatusChange(this.registration.establishment.establishmentUid)
       .subscribe(
-        (data) => (this.registration = data),
-        () => (this.checkBoxError = 'There was an error retrieving the approval'),
+        (data) => {
+          this.registration = data;
+        },
+        () => {
+          this.checkBoxError = 'There was an error retrieving the approval';
+        },
       );
   }
 }
