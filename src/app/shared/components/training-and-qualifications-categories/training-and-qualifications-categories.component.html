@@ -74,7 +74,7 @@
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) }}
-              Expired
+              expired
             </div>
             <div
               *ngIf="
@@ -88,7 +88,7 @@
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) }}
-              Missing
+              missing
             </div>
             <div
               *ngIf="
@@ -101,8 +101,17 @@
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
-              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) }}
-              Expiring soon
+              <ng-container
+                [ngPlural]="
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                "
+              >
+                {{
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                }}
+                <ng-template ngPluralCase="=1">expires soon</ng-template>
+                <ng-template ngPluralCase="other">expire soon</ng-template>
+              </ng-container>
             </div>
             <div *ngIf="trainingIsComplete(trainingCategory.training)">Up-to-date</div>
           </td>
