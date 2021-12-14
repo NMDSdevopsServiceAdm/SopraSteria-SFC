@@ -41,6 +41,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: true,
       },
+      Reviewer: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      InReview: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
     },
@@ -135,7 +143,7 @@ module.exports = (sequelize, DataTypes) => {
         ApprovalType: approvalType,
         Status: status,
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
+      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data', 'Reviewer', 'InReview'],
       include: [
         {
           model: sequelize.models.establishment,

@@ -2,6 +2,8 @@ module.exports.convertIndividualCqcStatusChange = (cqcStatusChange) => {
   return {
     status: cqcStatusChange.Status,
     requestUid: cqcStatusChange.UUID,
+    inReview: cqcStatusChange.InReview,
+    reviewer: cqcStatusChange.Reviewer,
     username: cqcStatusChange.User.FullNameValue,
     establishment: {
       establishmentId: cqcStatusChange.Establishment.id,

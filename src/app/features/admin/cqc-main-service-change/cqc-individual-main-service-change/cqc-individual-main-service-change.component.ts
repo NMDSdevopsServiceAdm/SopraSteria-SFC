@@ -23,6 +23,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
   public notes: Note[];
   public notesForm: FormGroup;
   public notesError: string;
+  public checkBoxError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -119,4 +120,37 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
     event.preventDefault();
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   };
+
+  public toggleCheckbox(target: HTMLInputElement): void {
+    const { checked } = target;
+
+    const body = {
+      uid: this.registration.establishment.establishmentUid,
+      status: checked ? 'IN PROGRESS' : 'PENDING',
+      reviewer: checked ? this.loggedInUser.fullname : null,
+      inReview: checked,
+    };
+
+    this.cqcStatusChangeService.updateApprovalStatus(body).subscribe(
+      () => {
+        this.getUpdatedApproval();
+      },
+      (error: HttpErrorResponse) => {
+        if (error.status === 400) {
+          this.checkBoxError = 'This approval is already in progress';
+        } else {
+          this.checkBoxError = 'There was a server error';
+        }
+      },
+    );
+  }
+
+  public getUpdatedApproval(): void {
+    this.cqcStatusChangeService
+      .getIndividualCqcStatusChange(this.registration.establishment.establishmentUid)
+      .subscribe(
+        (data) => (this.registration = data),
+        () => (this.checkBoxError = 'There was an error retrieving the approval'),
+      );
+  }
 }

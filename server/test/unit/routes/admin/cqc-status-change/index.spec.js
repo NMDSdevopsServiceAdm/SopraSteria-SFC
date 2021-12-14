@@ -337,6 +337,8 @@ describe('getIndividualCqcStatusChange', () => {
   const dummyDetails = {
     Status: 'Pending',
     UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    InReview: false,
+    Reviewer: null,
     User: { FullNameValue: 'Joe Bloggs' },
     Data: {
       requestedService: {
@@ -383,6 +385,8 @@ describe('getIndividualCqcStatusChange', () => {
   const expectedResponse = {
     status: 'Pending',
     requestUid: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    inReview: false,
+    reviewer: null,
     username: 'Joe Bloggs',
     establishment: {
       establishmentId: 1,

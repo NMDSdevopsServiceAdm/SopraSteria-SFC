@@ -23,6 +23,10 @@ export class CqcStatusChangeService {
     return this.http.get<any>(`/api/admin/cqc-status-change/${establishmentUid}`);
   }
 
+  public updateApprovalStatus(data): Observable<any> {
+    return this.http.post<any>(`/api/admin/cqc-status-change/updateStatus`, data);
+  }
+
   public getCqcRequestByEstablishmentId(establishmentId: number): Observable<ApprovalRequest<CqcChangeData>> {
     return this.http.get<ApprovalRequest<CqcChangeData>>(
       `/api/approvals/establishment/${establishmentId}?type=CqcStatusChange&status=Pending`,

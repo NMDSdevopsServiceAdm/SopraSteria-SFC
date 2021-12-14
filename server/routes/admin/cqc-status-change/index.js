@@ -149,6 +149,7 @@ const _updateMainService = async (req, res) => {
 router.route('/').post(cqcStatusChanges);
 router.route('/').get(getCqcStatusChanges);
 router.route('/:establishmentUid').get(getIndividualCqcStatusChange);
+router.route('/updateStatus', require('./updateStatus.js'));
 
 module.exports = router;
 module.exports.cqcStatusChanges = cqcStatusChanges;
