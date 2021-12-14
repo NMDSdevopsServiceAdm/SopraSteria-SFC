@@ -33,35 +33,49 @@ const uploadJSONDataToS3 = async (username, establishmentId, content, key) => {
 };
 
 const uploadMetadataToS3 = async (username, establishmentId, establishments, workers, training) => {
-  if (establishments.imported)
+  const promises = [
     uploadJSONDataToS3(
       username,
       establishmentId,
       establishments.metadata,
       `validation/${establishments.metadata.filename}`,
+    ),
+    uploadJSONDataToS3(username, establishmentId, workers.metadata, `validation/${workers.metadata.filename}`),
+  ];
+
+  if (training.imported) {
+    promises.push(
+      uploadJSONDataToS3(username, establishmentId, training.metadata, `validation/${training.metadata.filename}`),
     );
+  }
 
-  if (workers.imported)
-    uploadJSONDataToS3(username, establishmentId, workers.metadata, `validation/${workers.metadata.filename}`);
-
-  if (training.imported)
-    uploadJSONDataToS3(username, establishmentId, training.metadata, `validation/${training.metadata.filename}`);
+  await Promise.all(promises);
 };
 
-const uploadValidationDataToS3 = (
+const uploadValidationDataToS3 = async (
   username,
   establishmentId,
   csvEstablishmentSchemaErrors,
   csvWorkerSchemaErrors,
   csvTrainingSchemaErrors,
 ) => {
-  uploadJSONDataToS3(username, establishmentId, csvEstablishmentSchemaErrors, 'validation/establishments.validation');
-  uploadJSONDataToS3(username, establishmentId, csvWorkerSchemaErrors, 'validation/workers.validation');
-  uploadJSONDataToS3(username, establishmentId, csvTrainingSchemaErrors, 'validation/training.validation');
+  await Promise.all([
+    uploadJSONDataToS3(username, establishmentId, csvEstablishmentSchemaErrors, 'validation/establishments.validation'),
+    uploadJSONDataToS3(username, establishmentId, csvWorkerSchemaErrors, 'validation/workers.validation'),
+    uploadJSONDataToS3(username, establishmentId, csvTrainingSchemaErrors, 'validation/training.validation'),
+  ]);
 };
 
-const uploadDifferenceReportToS3 = (username, establishmentId, report) => {
-  uploadJSONDataToS3(username, establishmentId, report, 'validation/difference.report');
+const uploadDifferenceReportToS3 = async (username, establishmentId, report) => {
+  await uploadJSONDataToS3(username, establishmentId, report, 'validation/difference.report');
+};
+
+const uploadEntitiesToS3 = async (username, establishmentId, establishmentsOnlyForJson) => {
+  await uploadJSONDataToS3(username, establishmentId, establishmentsOnlyForJson, 'intermediary/all.entities');
+};
+
+const uploadUniqueLocalAuthoritiesToS3 = async (username, establishmentId, uniqueLocalAuthorities) => {
+  await uploadJSONDataToS3(username, establishmentId, uniqueLocalAuthorities, 'intermediary/all.localauthorities');
 };
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
@@ -276,6 +290,8 @@ module.exports = {
   uploadMetadataToS3,
   uploadValidationDataToS3,
   uploadDifferenceReportToS3,
+  uploadEntitiesToS3,
+  uploadUniqueLocalAuthoritiesToS3,
   saveResponse,
   saveLastBulkUpload,
   downloadContent,

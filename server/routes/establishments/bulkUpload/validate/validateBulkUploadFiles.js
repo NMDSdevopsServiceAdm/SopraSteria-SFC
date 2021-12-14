@@ -5,10 +5,11 @@ const moment = require('moment');
 const { Establishment } = require('../../../../models/classes/establishment');
 const { restoreExistingEntities } = require('../entities');
 const {
-  uploadJSONDataToS3,
+  uploadUniqueLocalAuthoritiesToS3,
   uploadMetadataToS3,
   uploadDifferenceReportToS3,
   uploadValidationDataToS3,
+  uploadEntitiesToS3,
 } = require('../s3');
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
@@ -320,6 +321,11 @@ const validateBulkUploadFiles = async (req, files) => {
   workers.metadata.deleted =
     numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
+  const establishmentsToJSONWithAssociatedEntities = establishmentsAsArray.map((thisEstablishment) =>
+    thisEstablishment.toJSON(false, false, false, false, true, null, true),
+  );
+  const uniqueLocalAuthorities = getUniqueLocalAuthorities(establishmentsAsArray);
+
   await Promise.all([
     uploadMetadataToS3(username, establishmentId, establishments, workers, training),
     uploadValidationDataToS3(
@@ -330,40 +336,9 @@ const validateBulkUploadFiles = async (req, files) => {
       csvTrainingSchemaErrors,
     ),
     uploadDifferenceReportToS3(username, establishmentId, report),
+    uploadEntitiesToS3(username, establishmentId, establishmentsToJSONWithAssociatedEntities),
+    uploadUniqueLocalAuthoritiesToS3(username, establishmentId, uniqueLocalAuthorities),
   ]);
-
-  // to false to disable the upload of intermediary objects
-  // the all entities intermediary file is required on completion - establishments entity for validation report
-  const s3UploadPromises = [];
-
-  if (establishmentsAsArray.length > 0) {
-    s3UploadPromises.push(
-      uploadJSONDataToS3(
-        username,
-        establishmentId,
-        establishmentsAsArray.map((thisEstablishment) =>
-          thisEstablishment.toJSON(false, false, false, false, true, null, true),
-        ),
-        'intermediary/all.entities',
-      ),
-    );
-  }
-
-  // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
-  const establishmentsOnlyForJson = establishmentsAsArray.map((thisEstablishment) => thisEstablishment.toJSON());
-  const uniqueLocalAuthorities = establishmentsOnlyForJson
-    .map((en) => (en.localAuthorities !== undefined ? en.localAuthorities : []))
-    .reduce((acc, val) => acc.concat(val), [])
-    .map((la) => la.name)
-    .sort((a, b) => a > b)
-    .filter((value, index, self) => self.indexOf(value) === index);
-
-  s3UploadPromises.push(
-    uploadJSONDataToS3(username, establishmentId, uniqueLocalAuthorities, 'intermediary/all.localauthorities'),
-  );
-
-  // before returning, wait for all uploads to complete
-  await Promise.all(s3UploadPromises);
 
   return {
     status,
@@ -396,6 +371,15 @@ const validateBulkUploadFiles = async (req, files) => {
     },
   };
 };
+
+const getUniqueLocalAuthorities = (establishmentsAsArray) =>
+  establishmentsAsArray
+    .map((thisEstablishment) => thisEstablishment.toJSON())
+    .map((en) => (en.localAuthorities !== undefined ? en.localAuthorities : []))
+    .reduce((acc, val) => acc.concat(val), [])
+    .map((la) => la.name)
+    .sort((a, b) => a > b)
+    .filter((value, index, self) => self.indexOf(value) === index);
 
 module.exports = {
   validateBulkUploadFiles,
