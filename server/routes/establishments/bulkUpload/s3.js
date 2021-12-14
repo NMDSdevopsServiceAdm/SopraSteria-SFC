@@ -12,12 +12,12 @@ const params = (establishmentId) => {
   };
 };
 
-const uploadAsJSON = async (username, establishmentId, content, key) => {
+const uploadJSONDataToS3 = async (username, establishmentId, content, key) => {
   try {
     await s3
       .putObject({
         Bucket,
-        Key: key,
+        Key: `${establishmentId}/${key}.json`,
         Body: JSON.stringify(content, null, 2),
         ContentType: 'application/json',
         Metadata: {
@@ -27,22 +27,25 @@ const uploadAsJSON = async (username, establishmentId, content, key) => {
       })
       .promise();
   } catch (err) {
-    console.error('uploadAsJSON: ', err);
+    console.error('uploadDataToS3: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
   }
 };
 
-const uploadDataToS3 = async (username, establishmentId, data, fileName) => {
-  await uploadAsJSON(username, establishmentId, data, `${establishmentId}/validation/${fileName}.json`);
-};
-
 const uploadMetadataToS3 = async (username, establishmentId, establishments, workers, training) => {
   if (establishments.imported)
-    uploadDataToS3(username, establishmentId, establishments.metadata, establishments.metadata.filename);
+    uploadJSONDataToS3(
+      username,
+      establishmentId,
+      establishments.metadata,
+      `validation/${establishments.metadata.filename}`,
+    );
 
-  if (workers.imported) uploadDataToS3(username, establishmentId, workers.metadata, workers.metadata.filename);
+  if (workers.imported)
+    uploadJSONDataToS3(username, establishmentId, workers.metadata, `validation/${workers.metadata.filename}`);
 
-  if (training.imported) uploadDataToS3(username, establishmentId, training.metadata, training.metadata.filename);
+  if (training.imported)
+    uploadJSONDataToS3(username, establishmentId, training.metadata, `validation/${training.metadata.filename}`);
 };
 
 const uploadValidationDataToS3 = (
@@ -52,13 +55,13 @@ const uploadValidationDataToS3 = (
   csvWorkerSchemaErrors,
   csvTrainingSchemaErrors,
 ) => {
-  uploadDataToS3(username, establishmentId, csvEstablishmentSchemaErrors, 'establishments.validation');
-  uploadDataToS3(username, establishmentId, csvWorkerSchemaErrors, 'workers.validation');
-  uploadDataToS3(username, establishmentId, csvTrainingSchemaErrors, 'training.validation');
+  uploadJSONDataToS3(username, establishmentId, csvEstablishmentSchemaErrors, 'validation/establishments.validation');
+  uploadJSONDataToS3(username, establishmentId, csvWorkerSchemaErrors, 'validation/workers.validation');
+  uploadJSONDataToS3(username, establishmentId, csvTrainingSchemaErrors, 'validation/training.validation');
 };
 
 const uploadDifferenceReportToS3 = (username, establishmentId, report) => {
-  uploadDataToS3(username, establishmentId, report, 'difference.report');
+  uploadJSONDataToS3(username, establishmentId, report, 'validation/difference.report');
 };
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
@@ -269,8 +272,7 @@ const listObjectsInBucket = async (establishmentId) => {
 module.exports = {
   s3,
   Bucket,
-  uploadAsJSON,
-  uploadDataToS3,
+  uploadJSONDataToS3,
   uploadMetadataToS3,
   uploadValidationDataToS3,
   uploadDifferenceReportToS3,

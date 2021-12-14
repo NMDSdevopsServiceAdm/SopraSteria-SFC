@@ -4,7 +4,12 @@ const moment = require('moment');
 
 const { Establishment } = require('../../../../models/classes/establishment');
 const { restoreExistingEntities } = require('../entities');
-const { uploadAsJSON, uploadMetadataToS3, uploadDifferenceReportToS3, uploadValidationDataToS3 } = require('../s3');
+const {
+  uploadJSONDataToS3,
+  uploadMetadataToS3,
+  uploadDifferenceReportToS3,
+  uploadValidationDataToS3,
+} = require('../s3');
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
@@ -333,13 +338,13 @@ const validateBulkUploadFiles = async (req, files) => {
 
   if (establishmentsAsArray.length > 0) {
     s3UploadPromises.push(
-      uploadAsJSON(
+      uploadJSONDataToS3(
         username,
         establishmentId,
         establishmentsAsArray.map((thisEstablishment) =>
           thisEstablishment.toJSON(false, false, false, false, true, null, true),
         ),
-        `${establishmentId}/intermediary/all.entities.json`,
+        'intermediary/all.entities',
       ),
     );
   }
@@ -354,12 +359,7 @@ const validateBulkUploadFiles = async (req, files) => {
     .filter((value, index, self) => self.indexOf(value) === index);
 
   s3UploadPromises.push(
-    uploadAsJSON(
-      username,
-      establishmentId,
-      uniqueLocalAuthorities,
-      `${establishmentId}/intermediary/all.localauthorities.json`,
-    ),
+    uploadJSONDataToS3(username, establishmentId, uniqueLocalAuthorities, 'intermediary/all.localauthorities'),
   );
 
   // before returning, wait for all uploads to complete
