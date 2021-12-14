@@ -89,6 +89,24 @@ describe('TrainingLinkPanelComponent', () => {
     expect(component.queryByText('Manage mandatory training')).toBeFalsy();
   });
 
+  it('should show the `change when you get expires soon alert` link when  canEditEstablishment in permissions service is true', async () => {
+    const { component, fixture, componentInstance } = await setup();
+
+    componentInstance.canEditEstablishment = true;
+    fixture.detectChanges();
+
+    expect(component.getByText("Change when you get 'expires soon' alerts")).toBeTruthy();
+  });
+
+  it('should not show the `change when you get expires soon alert` link when canEditEstablishment in permissions service is false', async () => {
+    const { component, fixture, componentInstance } = await setup();
+
+    componentInstance.canEditEstablishment = false;
+    fixture.detectChanges();
+
+    expect(component.queryByText("Change when you get 'expires soon' alerts")).toBeFalsy();
+  });
+
   it('should call getTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
     const { component, componentInstance, fixture } = await setup();
 

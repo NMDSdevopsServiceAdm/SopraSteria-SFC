@@ -697,6 +697,13 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'ShowSharingPermissionsBanner',
       },
+      expiresSoonAlertDate: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['90', '60', '30'],
+        default: '90',
+        field: 'ExpiresSoonAlertDate',
+      },
     },
     {
       defaultScope: {
@@ -1467,7 +1474,8 @@ module.exports = function (sequelize, DataTypes) {
     isParent = false,
   ) {
     const currentDate = moment().toISOString();
-    const expiresSoon = moment().add(90, 'days').toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
 
     let attributes = [
       'id',
@@ -1650,7 +1658,7 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
     return this.findAll({
-      attributes: ['id', 'NameValue'],
+      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
       where: {
         [Op.or]: [
           {
@@ -1805,5 +1813,15 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
+  Establishment.getExpiresSoonAlertDate = async function (establishmentId) {
+    return this.findOne({
+      attributes: ['ExpiresSoonAlertDate'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
   return Establishment;
 };

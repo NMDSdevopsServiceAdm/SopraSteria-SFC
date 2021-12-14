@@ -4,6 +4,7 @@ const {
   convertQualificationsForEstablishments,
   convertWorkersWithCareCertificateStatus,
   convertTrainingForEstablishments,
+  getTrainingRecordStatus,
   numberCheck,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
@@ -361,6 +362,40 @@ describe('trainingAndQualificationsUtils', () => {
       const result = numberCheck('80');
 
       expect(typeof result).to.deep.equal('number');
+    });
+  });
+
+  describe('getTrainingRecordStatus', () => {
+    it('should return "Expired" when a training record has expired', () => {
+      const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+      const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
+      expiringSoonDate.setDate(currentDate.getDate() - 1);
+
+      const result = getTrainingRecordStatus(expiringSoonDate, '90');
+      expect(result).to.deep.equal('Expired');
+    });
+
+    it('should return "Expiring soon" when a training record is expiring within expiresSoonAlertDate', () => {
+      const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+      const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
+      expiringSoonDate.setDate(currentDate.getDate() + 30);
+
+      const result = getTrainingRecordStatus(expiringSoonDate, '60');
+      expect(result).to.deep.equal('Expiring soon');
+    });
+
+    it('should return "Up-to-date" when a training record is not expiring within expiresSoonAlertDate', () => {
+      const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+      const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
+      expiringSoonDate.setDate(currentDate.getDate() + 100);
+
+      const result = getTrainingRecordStatus(expiringSoonDate, '60');
+      expect(result).to.deep.equal('Up-to-date');
+    });
+
+    it('should return "Up-to-date" when expiry date has not been passed in', () => {
+      const result = getTrainingRecordStatus('', '60');
+      expect(result).to.deep.equal('Up-to-date');
     });
   });
 });

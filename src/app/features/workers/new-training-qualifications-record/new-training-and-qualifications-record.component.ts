@@ -53,9 +53,12 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private trainingStatusService: TrainingStatusService,
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+    this.trainingStatusService.expiresSoonAlertDate$.next(
+      this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
+    );
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();

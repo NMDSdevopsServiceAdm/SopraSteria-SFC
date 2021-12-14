@@ -19,6 +19,7 @@ export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
   @Output() trainingChanged: EventEmitter<boolean> = new EventEmitter();
+
   public canEditWorker: boolean;
   public lastUpdated: dayjs.Dayjs;
   public trainingRecords: TrainingRecord[] = [];

@@ -464,6 +464,9 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Nursing Home',
+    get() {
+      return '90';
+    },
     workers: [
       {
         id: 11169,
@@ -531,6 +534,9 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Care Home',
+    get() {
+      return '90';
+    },
     workers: [
       {
         id: 11169,
