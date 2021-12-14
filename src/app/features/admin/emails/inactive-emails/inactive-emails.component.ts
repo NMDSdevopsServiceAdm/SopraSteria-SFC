@@ -15,6 +15,7 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
 @Component({
   selector: 'app-inactive-emails',
   templateUrl: './inactive-emails.component.html',
+  styleUrls: ['./inactive-emails.component.scss'],
 })
 export class InactiveEmailsComponent {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;

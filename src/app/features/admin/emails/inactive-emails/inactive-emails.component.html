@@ -1,11 +1,12 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <dl class="govuk-list--definition">
-      <dt>Total number of inactive workplaces to email</dt>
-      <dd data-testid="inactiveWorkplaces">
+  <div class="govuk-grid-column-one-half">
+    <p class="asc-summary-box govuk-!-margin-bottom-12" data-testid="inactoveWorkplacesToEmail">
+      <span>Number of inactive workplaces to email:</span>
+      <br />
+      <strong class="govuk-!-font-size-36" data-testid="inactiveWorkplaces">
         {{ inactiveWorkplaces | number }}
-      </dd>
-    </dl>
+      </strong>
+    </p>
 
     <div class="govuk__flex">
       <div class="govuk-!-margin-top-6 govuk">
