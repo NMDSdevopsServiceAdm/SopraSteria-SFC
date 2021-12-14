@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { EmailsComponent } from './emails.component';
 
-fdescribe('EmailsComponent', () => {
+describe('EmailsComponent', () => {
   async function setup() {
     const component = await render(EmailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
