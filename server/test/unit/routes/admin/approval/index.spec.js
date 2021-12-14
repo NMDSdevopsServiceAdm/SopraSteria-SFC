@@ -316,6 +316,7 @@ describe('adminApproval', async () => {
         inReview: false,
         reviewer: null,
         updatedBy: 'Joe Bloggs',
+        archived: true,
       });
       expect(workplaceUpdateSpy.args[0][0]).to.haveOwnProperty('updated');
     });
