@@ -5,7 +5,7 @@ const moment = require('moment');
 
 const { Establishment } = require('../../../../models/classes/establishment');
 const { restoreExistingEntities } = require('../entities');
-const { uploadAsJSON } = require('../s3');
+const { uploadAsJSON, uploadMetadataToS3 } = require('../s3');
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
@@ -320,38 +320,11 @@ const validateBulkUploadFiles = async (req, files) => {
   const s3UploadPromises = [];
 
   // upload the metadata as JSON to S3 - these are requested for uploaded list endpoint
-  if (establishments.imported) {
-    s3UploadPromises.push(
-      uploadAsJSON(
-        username,
-        establishmentId,
-        establishments.metadata,
-        `${establishmentId}/latest/${establishments.metadata.filename}.metadata.json`,
-      ),
-    );
-  }
-
-  if (workers.imported) {
-    s3UploadPromises.push(
-      uploadAsJSON(
-        username,
-        establishmentId,
-        workers.metadata,
-        `${establishmentId}/latest/${workers.metadata.filename}.metadata.json`,
-      ),
-    );
-  }
-
-  if (training.imported) {
-    s3UploadPromises.push(
-      uploadAsJSON(
-        username,
-        establishmentId,
-        training.metadata,
-        `${establishmentId}/latest/${training.metadata.filename}.metadata.json`,
-      ),
-    );
-  }
+  await Promise.all([
+    uploadMetadataToS3(username, establishmentId, establishments),
+    uploadMetadataToS3(username, establishmentId, workers),
+    uploadMetadataToS3(username, establishmentId, training),
+  ]);
 
   // upload the validation data to S3 - these are reuquired for validation report -
   // although one object is likely to be quicker to upload - and only one object is required then to download

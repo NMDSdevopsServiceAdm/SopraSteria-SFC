@@ -1,4 +1,3 @@
-const { keepAlive } = require('../validateBulkUploadFiles');
 const { validateWorkerCsv } = require('./validateWorkerCsv');
 const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalary } = require('./validatePartTimeSalary');
@@ -12,7 +11,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
     myCurrentEstablishments,
   );
 
-  keepAlive('workers validated');
+  console.info('Workers validated');
 
   // used to check for duplicates
   const allWorkerKeys = createKeysForWorkers(myWorkers);

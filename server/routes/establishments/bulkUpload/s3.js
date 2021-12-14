@@ -32,6 +32,17 @@ const uploadAsJSON = async (username, establishmentId, content, key) => {
   }
 };
 
+const uploadMetadataToS3 = async (username, establishmentId, data) => {
+  if (data.imported) {
+    await uploadAsJSON(
+      username,
+      establishmentId,
+      data.metadata,
+      `${establishmentId}/latest/${data.metadata.filename}.metadata.json`,
+    );
+  }
+};
+
 const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
@@ -241,6 +252,7 @@ module.exports = {
   s3,
   Bucket,
   uploadAsJSON,
+  uploadMetadataToS3,
   saveResponse,
   saveLastBulkUpload,
   downloadContent,
