@@ -181,6 +181,7 @@ describe('adminApproval', async () => {
         inReview: false,
         reviewer: null,
         updatedBy: 'Joe Bloggs',
+        archived: true,
       });
     });
 
