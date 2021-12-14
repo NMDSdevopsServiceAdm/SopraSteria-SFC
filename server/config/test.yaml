@@ -33,7 +33,6 @@ bulkupload:
   bucketname: sfc-bulkupload-staging
   validation:
     timeout: 300
-    storeIntermediaries: false
   completion:
     timeout: 120
 
