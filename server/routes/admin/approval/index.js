@@ -112,6 +112,7 @@ const _rejectNewUser = async (user, workplace, req, res) => {
         reviewer: null,
         updated: new Date(),
         updatedBy: adminUser.FullNameValue,
+        archived: true,
       });
 
       if (deletedUser && rejectedWorkplace) {
@@ -157,6 +158,7 @@ const _rejectNewWorkplace = async (workplace, req, res) => {
       reviewer: null,
       updated: new Date(),
       updatedBy: adminUser.FullNameValue,
+      archived: true,
     });
 
     if (rejectedWorkplace) {
