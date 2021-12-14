@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
+import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -163,6 +165,11 @@ const routes: Routes = [
             path: 'inactive-emails',
             component: InactiveEmailsComponent,
             data: { title: 'Inactive Emails' },
+            resolve: {
+              inactiveWorkplaces: InactiveWorkplacesResolver,
+              emailCampaignHistory: EmailCampaignHistoryResolver,
+              emailTemplates: EmailTemplateResolver,
+            },
           },
         ],
       },
