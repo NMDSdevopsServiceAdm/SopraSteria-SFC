@@ -38,14 +38,14 @@ const uploadMetadataToS3 = async (username, establishmentId, establishments, wor
       username,
       establishmentId,
       establishments.metadata,
-      `validation/${establishments.metadata.filename}`,
+      `latest/${establishments.metadata.filename}.metadata`,
     ),
-    uploadJSONDataToS3(username, establishmentId, workers.metadata, `validation/${workers.metadata.filename}`),
+    uploadJSONDataToS3(username, establishmentId, workers.metadata, `latest/${workers.metadata.filename}.metadata`),
   ];
 
   if (training.imported) {
     promises.push(
-      uploadJSONDataToS3(username, establishmentId, training.metadata, `validation/${training.metadata.filename}`),
+      uploadJSONDataToS3(username, establishmentId, training.metadata, `latest/${training.metadata.filename}.metadata`),
     );
   }
 
