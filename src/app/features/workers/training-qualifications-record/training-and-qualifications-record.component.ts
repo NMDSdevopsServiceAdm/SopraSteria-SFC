@@ -24,6 +24,7 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   public trainingAlert: number;
   public qualificationsCount: number;
   public trainingCount: number;
+  public expiresSoonAlertDate: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -39,6 +40,9 @@ export class TrainingAndQualificationsRecordComponent implements OnInit, OnDestr
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+    this.trainingStatusService.expiresSoonAlertDate$.next(
+      this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
+    );
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();

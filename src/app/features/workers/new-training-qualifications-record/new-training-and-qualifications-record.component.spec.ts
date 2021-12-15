@@ -121,6 +121,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                       ? { count: 0, groups: [], lastUpdated: null }
                       : qualificationsByGroup,
                   },
+                  expiresSoonAlertDate: {
+                    expiresSoonAlertDate: '90',
+                  },
                 },
               },
             },

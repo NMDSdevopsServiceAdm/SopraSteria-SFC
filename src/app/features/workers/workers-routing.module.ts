@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
@@ -329,6 +330,7 @@ const routes: Routes = [
           worker: WorkerResolver,
           qualifications: QualificationsResolver,
           trainingRecords: TrainingRecordsResolver,
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { title: 'Training and qualification record' },
       },
@@ -338,6 +340,7 @@ const routes: Routes = [
         resolve: {
           worker: WorkerResolver,
           trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { title: 'Training and qualification record' },
       },
