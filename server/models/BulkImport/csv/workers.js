@@ -1,7 +1,6 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 const get = require('lodash/get');
-const models = require('../../../models');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -1730,27 +1729,6 @@ class Worker {
     }
   }
 
-  async _crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment) {
-    const template = {
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-      lineNumber: this._lineNumber,
-      errCode: Worker.MAIN_JOB_ROLE_ERROR,
-      errType: 'MAIN_JOB_ROLE_ERROR',
-      source: this._currentLine.MAINJOBROLE,
-      column: 'MAINJOBROLE',
-    };
-
-    if (!cqcRegEstablishment && this.mainJobRoleId === 4) {
-      csvWorkerSchemaErrors.unshift(
-        Object.assign(template, {
-          error:
-            'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
-        }),
-      );
-    }
-  }
-
   _validateMainJobDesc() {
     const myMainJobDesc = this._currentLine.MAINJRDESC;
     const MAX_LENGTH = 120;
@@ -3085,41 +3063,6 @@ class Worker {
     return true;
   }
 
-  async crossValidate(csvWorkerSchemaErrors, myEstablishments) {
-    // if worker isn't being added or updated then exit early
-    if (!['NEW', 'UPDATE'].includes(this._status)) {
-      return;
-    }
-    let cqcRegEstablishment = false;
-
-    myEstablishments.forEach((establishment) => {
-      if (this.establishmentKey === establishment.key) {
-        switch (establishment.status) {
-          case 'NEW':
-          case 'UPDATE':
-            cqcRegEstablishment = establishment.regType === 2;
-            break;
-          case 'UNCHECKED':
-            cqcRegEstablishment = this.checkEstablishmentRegulated(establishment.id);
-            break;
-          case 'NOCHANGE':
-            cqcRegEstablishment = this.checkEstablishmentRegulated(establishment.id);
-            break;
-          case 'DELETE':
-            break;
-        }
-      }
-    });
-
-    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
-    this._crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment);
-  }
-
-  async checkEstablishmentRegulated(establishmentId) {
-    const establishment = await models.establishment.findbyId(establishmentId);
-    return establishment.isRegulated;
-  }
-
   // returns true on success, false is any attribute of Worker fails
   validate() {
     let status = true;
@@ -3204,6 +3147,7 @@ class Worker {
       extraFields.contractTypeId = this.contractTypeId;
       extraFields.mainJobRoleId = this.mainJobRoleId;
       extraFields.otherJobIds = this.otherJobIds;
+      extraFields.lineNumber = this._lineNumber;
     }
 
     return {

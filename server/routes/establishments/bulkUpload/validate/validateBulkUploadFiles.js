@@ -19,6 +19,7 @@ const { validateEstablishmentCsv } = require('./validateEstablishmentCsv');
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { validateDuplicateLocations } = require('./validateDuplicateLocations');
 const { validateWorkers } = require('./workers/validateWorkers');
+const { crossValidate } = require('../../../../models/BulkImport/csv/crossValidate');
 
 const keepAlive = (stepName = '', stepId = '') => {
   console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
@@ -110,8 +111,12 @@ const validateBulkUploadFiles = async (req, files) => {
   establishments.metadata.records = myEstablishments.length;
 
   // Parse and process Workers CSV
-  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers } =
-    await validateWorkers(workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments);
+  const { csvWorkerSchemaErrors, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers } = await validateWorkers(
+    workers,
+    myCurrentEstablishments,
+    allEstablishmentsByKey,
+    myAPIEstablishments,
+  );
 
   // /////////////////////////
   // Parse and process Training CSV
@@ -262,8 +267,8 @@ const validateBulkUploadFiles = async (req, files) => {
 
   // Run validations that require information about establishments
   await Promise.all(
-    myWorkers.map(async (worker) => {
-      await worker.crossValidate(csvWorkerSchemaErrors, myEstablishments);
+    myJSONWorkers.map(async (worker) => {
+      await crossValidate(csvWorkerSchemaErrors, myEstablishments, worker);
     }),
   );
 

@@ -14,7 +14,6 @@ const { build } = require('@jackfranklin/test-data-bot');
 const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
 const get = require('lodash/get');
 const models = require('../../../../../models');
-const { Worker } = require('../../../../../models/BulkImport/csv/workers');
 
 const sandbox = require('sinon').createSandbox();
 
@@ -191,204 +190,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
   });
 
   describe('validations', () => {
-    it('should emit an error if REGTYPE is not 2 (CQC) but worker has registered manager main job role', async () => {
-      const bulkUpload = new (testUtils.sandBox(filename, {
-        locals: {
-          require: testUtils.wrapRequire({
-            '../BUDI': {
-              BUDI,
-            },
-            moment: moment,
-            'lodash/get': get,
-            '../../../models': models,
-          }),
-        },
-      }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord(), buildSecondEstablishmentRecord()]);
-
-      expect(bulkUpload).to.have.property('crossValidate');
-
-      const csvWorkerSchemaErrors = [];
-
-      const myEstablishments = [
-        {
-          key: 'MARMA',
-          status: 'UPDATE',
-          regtype: 1,
-        },
-      ];
-
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await bulkUpload.validate();
-
-      // call the method
-      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
-
-      // assert a error was returned
-      expect(csvWorkerSchemaErrors.length).to.equal(1);
-
-      expect(csvWorkerSchemaErrors[0]).to.deep.equal({
-        lineNumber: 2,
-        name: 'MARMA',
-        source: '4',
-        column: 'MAINJOBROLE',
-        worker: '3',
-        errCode: 1280,
-        errType: 'MAIN_JOB_ROLE_ERROR',
-        error:
-          'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
-      });
-    });
-
-    it('should not emit an error if REGTYPE is 2 (CQC) but worker has registered manager main job role', async () => {
-      const bulkUpload = new (testUtils.sandBox(filename, {
-        locals: {
-          require: testUtils.wrapRequire({
-            '../BUDI': {
-              BUDI,
-            },
-            moment: moment,
-            'lodash/get': get,
-            '../../../models': models,
-          }),
-        },
-      }).Worker)(buildWorkerCsv(), 2, [
-        buildEstablishmentRecord({
-          overrides: {
-            _isRegulated: true,
-          },
-        }),
-        buildSecondEstablishmentRecord(),
-      ]);
-
-      expect(bulkUpload).to.have.property('crossValidate');
-
-      const csvWorkerSchemaErrors = [];
-
-      const myEstablishments = [
-        {
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 2,
-        },
-      ];
-
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await bulkUpload.validate();
-
-      // call the method
-      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
-
-      // assert a error was returned
-      expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-      expect(csvWorkerSchemaErrors).to.deep.equal([]);
-    });
-
-    it("should not emit an error if REGTYPE is 2 (CQC) but worker doesn't have registered manager main job role", async () => {
-      const bulkUpload = new (testUtils.sandBox(filename, {
-        locals: {
-          require: testUtils.wrapRequire({
-            '../BUDI': {
-              BUDI,
-            },
-            moment: moment,
-            'lodash/get': get,
-            '../../../models': models,
-          }),
-        },
-      }).Worker)(
-        buildWorkerCsv({
-          overrides: {
-            MAINJOBROLE: '3',
-          },
-        }),
-        2,
-        [
-          buildEstablishmentRecord({
-            overrides: {
-              _isRegulated: true,
-            },
-          }),
-          buildSecondEstablishmentRecord(),
-        ],
-      );
-
-      expect(bulkUpload).to.have.property('crossValidate');
-
-      const csvWorkerSchemaErrors = [];
-
-      const myEstablishments = [
-        {
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 2,
-        },
-      ];
-
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await bulkUpload.validate();
-
-      // call the method
-      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
-
-      // assert a error was returned
-      expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-      expect(csvWorkerSchemaErrors).to.deep.equal([]);
-    });
-    it("should not emit an error if REGTYPE is not 2 (CQC) but worker doesn't have registered manager main job role", async () => {
-      const bulkUpload = new (testUtils.sandBox(filename, {
-        locals: {
-          require: testUtils.wrapRequire({
-            '../BUDI': {
-              BUDI,
-            },
-            moment: moment,
-            'lodash/get': get,
-            '../../../models': models,
-          }),
-        },
-      }).Worker)(
-        buildWorkerCsv({
-          overrides: {
-            MAINJOBROLE: '3',
-          },
-        }),
-        2,
-        [
-          buildEstablishmentRecord({
-            overrides: {
-              _isRegulated: true,
-            },
-          }),
-          buildSecondEstablishmentRecord(),
-        ],
-      );
-
-      expect(bulkUpload).to.have.property('crossValidate');
-
-      const csvWorkerSchemaErrors = [];
-
-      const myEstablishments = [
-        {
-          key: 'MARMA',
-          status: 'UPDATE',
-          regType: 1,
-        },
-      ];
-
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await bulkUpload.validate();
-
-      // call the method
-      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
-
-      // assert a error was returned
-      expect(csvWorkerSchemaErrors.length).to.equal(0);
-
-      expect(csvWorkerSchemaErrors).to.deep.equal([]);
-    });
-
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
         const bulkUpload = new (testUtils.sandBox(filename, {
@@ -474,8 +275,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
           );
 
-          expect(bulkUpload).to.have.property('crossValidate');
-
           // Regular validation has to run first for the establishment to populate the internal properties correctly
           await bulkUpload.validate();
 
@@ -507,8 +306,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           2,
           [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
         );
-
-        expect(bulkUpload).to.have.property('crossValidate');
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
         await bulkUpload.validate();
@@ -718,8 +515,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
         );
 
-        expect(bulkUpload).to.have.property('crossValidate');
-
         // Regular validation has to run first for the establishment to populate the internal properties correctly
         await bulkUpload.validate();
 
@@ -754,8 +549,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
         );
 
-        expect(bulkUpload).to.have.property('crossValidate');
-
         // Regular validation has to run first for the establishment to populate the internal properties correctly
         await bulkUpload.validate();
 
@@ -789,8 +582,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           2,
           [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
         );
-
-        expect(bulkUpload).to.have.property('crossValidate');
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
         await bulkUpload.validate();
@@ -839,8 +630,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
         );
 
-        expect(bulkUpload).to.have.property('crossValidate');
-
         // Regular validation has to run first for the establishment to populate the internal properties correctly
         await bulkUpload.validate();
 
@@ -887,8 +676,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
           2,
           [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
         );
-
-        expect(bulkUpload).to.have.property('crossValidate');
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
         await bulkUpload.validate();
@@ -1051,6 +838,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       });
     });
   });
+
   // Need to test if nationality is other and no nationality
   describe('toCSV', () => {
     beforeEach(() => {
@@ -1954,88 +1742,6 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
     it("return false when headings don't match", async () => {
       const header = 'NOTATALLWHATWEEXPECT,HOWCOULDYOUUPLOADTHISFILE,';
       expect(WorkerCsvValidator.isContent(header)).to.deep.equal(false);
-    });
-  });
-
-  describe('crossValidate()', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should set establishmentRegType to true if status is UNCHECKED but establishment is regulated in database', () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UNCHECKED',
-          key: null,
-        },
-      ];
-      const worker = new Worker();
-      worker._status = 'NEW';
-
-      sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
-      const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
-
-      worker.crossValidate([], myEstablishments).then(() => {
-        crossValidateStub.should.have.been.calledWith([], true);
-      });
-    });
-
-    it('should set establishmentRegType to true if status is NOCHANGE but establishment is regulated in database', () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'NOCHANGE',
-          key: null,
-        },
-      ];
-      const worker = new Worker();
-      worker._status = 'NEW';
-
-      sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
-      const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
-
-      worker.crossValidate([], myEstablishments).then(() => {
-        crossValidateStub.should.have.been.calledWith([], true);
-      });
-    });
-
-    it('should set establishmentRegType to false if status is UNCHECKED and establishment is not regulated in database', () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UNCHECKED',
-          key: null,
-        },
-      ];
-      const worker = new Worker();
-      worker._status = 'NEW';
-
-      sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: false });
-      const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
-
-      worker.crossValidate([], myEstablishments).then(() => {
-        crossValidateStub.should.have.been.calledWith([], false);
-      });
-    });
-
-    it('should set establishmentRegType to false if status is NOCHANGE and establishment is not regulated in database', () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'NOCHANGE',
-          key: null,
-        },
-      ];
-      const worker = new Worker();
-      worker._status = 'NEW';
-
-      sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: false });
-      const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
-
-      worker.crossValidate([], myEstablishments).then(() => {
-        crossValidateStub.should.have.been.calledWith([], false);
-      });
     });
   });
 });
