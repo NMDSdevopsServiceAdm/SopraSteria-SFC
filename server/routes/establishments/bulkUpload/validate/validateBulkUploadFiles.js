@@ -2,7 +2,6 @@
 
 const moment = require('moment');
 
-const { Establishment } = require('../../../../models/classes/establishment');
 const { restoreExistingEntities } = require('../entities');
 const {
   uploadUniqueLocalAuthoritiesToS3,
@@ -111,12 +110,8 @@ const validateBulkUploadFiles = async (req, files) => {
   establishments.metadata.records = myEstablishments.length;
 
   // Parse and process Workers CSV
-  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey } = await validateWorkers(
-    workers,
-    myCurrentEstablishments,
-    allEstablishmentsByKey,
-    myAPIEstablishments,
-  );
+  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers } =
+    await validateWorkers(workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments);
 
   // /////////////////////////
   // Parse and process Training CSV
@@ -261,11 +256,7 @@ const validateBulkUploadFiles = async (req, files) => {
   // Run validations that require information about workers
   await Promise.all(
     myEstablishments.map(async (establishment) => {
-      await establishment.crossValidate({
-        csvEstablishmentSchemaErrors,
-        myWorkers,
-        fetchMyEstablishmentsWorkers: Establishment.fetchMyEstablishmentsWorkers,
-      });
+      await establishment.crossValidate(csvEstablishmentSchemaErrors, myJSONWorkers);
     }),
   );
 

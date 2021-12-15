@@ -6,7 +6,10 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
   const workersKeyed = [];
   const allWorkersByKey = {};
 
-  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers } = await validateWorkerCsv(workers, myCurrentEstablishments);
+  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myJSONWorkers } = await validateWorkerCsv(
+    workers,
+    myCurrentEstablishments,
+  );
 
   console.info('Workers validated');
 
@@ -79,7 +82,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
 
   workers.metadata.records = myWorkers.length;
 
-  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey };
+  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers };
 };
 
 const createKeysForWorkers = (workers) => {

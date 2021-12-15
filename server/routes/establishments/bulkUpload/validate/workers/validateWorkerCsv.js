@@ -34,6 +34,7 @@ const validateWorkerCsvLine = async (
   myWorkers,
   myAPIWorkers,
   myCurrentEstablishments,
+  myJSONWorkers,
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
@@ -76,12 +77,14 @@ const validateWorkerCsvLine = async (
   }
 
   myWorkers.push(lineValidator);
+  myJSONWorkers.push(lineValidator.toJSON(true));
 };
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
   const csvWorkerSchemaErrors = [];
   const myWorkers = [];
   const myAPIWorkers = {};
+  const myJSONWorkers = [];
 
   await Promise.all(
     workers.imported.map((thisLine, currentLineNumber) =>
@@ -92,11 +95,12 @@ const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
         myWorkers,
         myAPIWorkers,
         myCurrentEstablishments,
+        myJSONWorkers,
       ),
     ),
   );
 
-  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers };
+  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myJSONWorkers };
 };
 
 module.exports = {

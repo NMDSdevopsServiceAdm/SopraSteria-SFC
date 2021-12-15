@@ -3197,8 +3197,15 @@ class Worker {
     }
   }
 
-  toJSON() {
-    // force to undefined if not set, because 'undefined' when JSON stingified is not rendered
+  toJSON(isValidation = false) {
+    const extraFields = {};
+    if (isValidation) {
+      extraFields.establishmentKey = this.establishmentKey;
+      extraFields.contractTypeId = this.contractTypeId;
+      extraFields.mainJobRoleId = this.mainJobRoleId;
+      extraFields.otherJobIds = this.otherJobIds;
+    }
+
     return {
       localId: this._localId,
       status: this._status,
@@ -3277,6 +3284,7 @@ class Worker {
           })
         : undefined,
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
+      ...extraFields,
     };
   }
 
