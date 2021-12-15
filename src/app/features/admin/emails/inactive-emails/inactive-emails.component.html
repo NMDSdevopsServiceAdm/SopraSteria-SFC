@@ -8,25 +8,27 @@
       </strong>
     </p>
 
-    <div class="govuk__flex">
-      <div class="govuk-!-margin-top-6 govuk">
-        <button
-          class="govuk-button govuk-!-margin-right-9"
-          [disabled]="!inactiveWorkplaces"
-          (click)="confirmSendEmails($event, inactiveWorkplaces, emailType.InactiveWorkplaces)"
-          type="submit"
-        >
-          Send emails
-        </button>
+    <div class="govuk-!-margin-top-6 govuk__flex govuk-util__vertical-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a class="govuk__flex govuk__align-items-center" (click)="downloadReport($event)" href="#">
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Download report on inactive workplaces</span>
+        </a>
       </div>
-      <div class="govuk-!-margin-top-4 govuk__flex govuk-util__vertical-align-center">
-        <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
-          <a class="govuk__flex govuk__align-items-center" (click)="downloadReport($event)" href="#">
-            <img alt="" src="/assets/images/icon-download.svg" />
-            <span class="govuk-!-margin-left-1">Download report</span>
-          </a>
-        </div>
-      </div>
+    </div>
+    <div class="govuk-!-margin-top-6">
+      <button
+        class="govuk-button govuk-!-margin-right-9"
+        [disabled]="!inactiveWorkplaces"
+        (click)="confirmSendEmails($event, inactiveWorkplaces, emailType.InactiveWorkplaces)"
+        type="submit"
+      >
+        Send
+        <strong>
+          {{ inactiveWorkplaces | number }}
+        </strong>
+        inactive workplace emails
+      </button>
     </div>
 
     <div data-testid="emailCampaignHistory">
