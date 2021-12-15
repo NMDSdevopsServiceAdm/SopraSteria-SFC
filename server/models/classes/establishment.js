@@ -87,6 +87,7 @@ class Establishment extends EntityValidator {
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
+    this._expiresSoonAlertDate = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -319,6 +320,10 @@ class Establishment extends EntityValidator {
     return this._status;
   }
 
+  get expiresSoonAlertDate() {
+    return this._expiresSoonAlertDate;
+  }
+
   get key() {
     return (
       this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
@@ -513,6 +518,10 @@ class Establishment extends EntityValidator {
 
         if ('showSharingPermissionsBanner' in document) {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
+        }
+
+        if (document.expiresSoonAlertDate) {
+          this._expiresSoonAlertDate = document.expiresSoonAlertDate;
         }
       }
 
@@ -763,6 +772,7 @@ class Establishment extends EntityValidator {
           source: bulkUploaded ? 'Bulk' : 'Online',
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
+          expiresSoonAlertDate: '90',
         };
 
         // need to create the Establishment record and the Establishment Audit event
