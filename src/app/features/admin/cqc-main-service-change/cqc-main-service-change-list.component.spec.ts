@@ -10,7 +10,7 @@ import { render } from '@testing-library/angular';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list.component';
 
 describe('CQCMainServiceChangeListComponent', () => {
-  async function setup() {
+  async function setup(notes = true) {
     const component = await render(CQCMainServiceChangeListComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -20,20 +20,22 @@ describe('CQCMainServiceChangeListComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                cqcStatusChangeList: [
-                  {
-                    orgName: 'Workplace 1',
-                    status: 'Pending',
-                    requested: new Date('01/01/2021'),
-                    establishmentUid: 'ajfkdk890809',
-                  },
-                  {
-                    orgName: 'Workplace 2',
-                    status: 'In progress',
-                    requested: new Date('02/01/2021'),
-                    establishmentUid: 'ajfkdk8908678',
-                  },
-                ],
+                cqcStatusChangeList: notes
+                  ? [
+                      {
+                        orgName: 'Workplace 1',
+                        status: 'Pending',
+                        requested: new Date('01/01/2021'),
+                        establishmentUid: 'ajfkdk890809',
+                      },
+                      {
+                        orgName: 'Workplace 2',
+                        status: 'In progress',
+                        requested: new Date('02/01/2021'),
+                        establishmentUid: 'ajfkdk8908678',
+                      },
+                    ]
+                  : [],
               },
             },
           },
@@ -98,8 +100,16 @@ describe('CQCMainServiceChangeListComponent', () => {
     expect(workplace2Status.getAttribute('class')).toContain('govuk-tag--blue');
   });
 
+  it('should display text saying there are no requests, if no approvals are returned', async () => {
+    const { component } = await setup(false);
+
+    const noRequestsText = component.getByTestId('noRequestsText');
+
+    expect(noRequestsText).toBeTruthy();
+  });
+
   it('should contain link in workplace name ', async () => {
-    const { component, fixture } = await setup();
+    const { fixture } = await setup();
     fixture.detectChanges();
     const workplaceName1 = fixture.debugElement.query(
       By.css('[data-testid="workplaceName-ajfkdk890809"]'),
@@ -107,8 +117,8 @@ describe('CQCMainServiceChangeListComponent', () => {
     expect(workplaceName1.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change/ajfkdk890809');
   });
 
-  it('should contain link in seconf workplace name ', async () => {
-    const { component, fixture } = await setup();
+  it('should contain link in second workplace name ', async () => {
+    const { fixture } = await setup();
     fixture.detectChanges();
 
     const workplaceName2 = fixture.debugElement.query(

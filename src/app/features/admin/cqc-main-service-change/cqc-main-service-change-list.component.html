@@ -2,34 +2,39 @@
   <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-5">
     <h2 class="govuk-heading-m">CQC main service change</h2>
   </div>
-  <div class="govuk-grid-column-two-thirds">
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Workplace</th>
-          <th scope="col" class="govuk-table__header">Received</th>
-          <th scope="col" class="govuk-table__header">Status</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let cqcServiceChange of pendingCQCMainServiceChanges">
-          <td class="govuk-table__cell">
-            <a
-              [attr.data-testid]="'workplaceName-' + cqcServiceChange.establishmentUid"
-              [routerLink]="['/sfcadmin/cqc-main-service-change', cqcServiceChange.establishmentUid]"
-              >{{ cqcServiceChange.orgName }}</a
-            >
-          </td>
-          <td class="govuk-table__cell">
-            {{ cqcServiceChange.requested | date: 'dd MMM yyyy' }}
-          </td>
-          <td class="govuk-table__cell">
-            <strong class="govuk-tag" [ngClass]="setStatusClass(cqcServiceChange.status)">
-              {{ cqcServiceChange.status | uppercase }}
-            </strong>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <ng-container *ngIf="pendingCQCMainServiceChanges.length === 0; else cqcRequestsTable">
+    <p data-testid="noRequestsText">There are no CQC main service change requests at the moment</p>
+  </ng-container>
+  <ng-template #cqcRequestsTable>
+    <div class="govuk-grid-column-two-thirds">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Workplace</th>
+            <th scope="col" class="govuk-table__header">Received</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let cqcServiceChange of pendingCQCMainServiceChanges">
+            <td class="govuk-table__cell">
+              <a
+                [attr.data-testid]="'workplaceName-' + cqcServiceChange.establishmentUid"
+                [routerLink]="['/sfcadmin/cqc-main-service-change', cqcServiceChange.establishmentUid]"
+                >{{ cqcServiceChange.orgName }}</a
+              >
+            </td>
+            <td class="govuk-table__cell">
+              {{ cqcServiceChange.requested | date: 'dd MMM yyyy' }}
+            </td>
+            <td class="govuk-table__cell">
+              <strong class="govuk-tag" [ngClass]="setStatusClass(cqcServiceChange.status)">
+                {{ cqcServiceChange.status | uppercase }}
+              </strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
 </div>
