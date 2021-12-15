@@ -17,9 +17,10 @@ describe('updateStatus', () => {
   const dummyDetails = {
     Status: 'Pending',
     UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    ID: 1,
     InReview: false,
     Reviewer: null,
-    User: { FullNameValue: 'Joe Bloggs' },
+    User: { FullNameValue: 'Joe Bloggs', RegistrationID: 1 },
     Data: {
       requestedService: {
         id: 1,

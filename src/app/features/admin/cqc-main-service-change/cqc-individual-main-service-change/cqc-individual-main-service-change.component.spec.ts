@@ -532,7 +532,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const { component, fixture, getByText } = await setup();
 
       const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'updateApprovalStatus').and.returnValue(of(true));
+      spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
@@ -543,11 +543,12 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
 
       fireEvent.click(approvalConfirmButton);
 
-      expect(cqcStatusChangeService.updateApprovalStatus).toHaveBeenCalledWith({
-        uid: component.registration.establishment.establishmentUid,
-        status: 'Approved',
-        reviewer: null,
-        inReview: false,
+      expect(cqcStatusChangeService.CqcStatusChangeApproval).toHaveBeenCalledWith({
+        approvalId: component.registration.requestId,
+        establishmentId: component.registration.establishment.establishmentId,
+        userId: component.registration.userId,
+        rejectionReason: 'Approved',
+        approve: true,
       });
     });
 
@@ -557,7 +558,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const approvalServerErrorMessage = 'There was an error completing the approval';
 
       const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'updateApprovalStatus').and.returnValue(throwError('Service unavailable'));
+      spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(throwError('Service unavailable'));
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
@@ -575,7 +576,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const { component, fixture, getByText, alertServiceSpy } = await setup();
 
       const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'updateApprovalStatus').and.returnValue(of(true));
+      spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
 
       const approveButton = getByText('Approve');
       const workplaceName = component.registration.establishment.name;
@@ -629,7 +630,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const { component, fixture, getByText } = await setup();
 
       const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'updateApprovalStatus').and.returnValue(of(true));
+      spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
@@ -640,11 +641,12 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
 
       fireEvent.click(rejectConfirmButton);
 
-      expect(cqcStatusChangeService.updateApprovalStatus).toHaveBeenCalledWith({
-        uid: component.registration.establishment.establishmentUid,
-        status: 'Rejected',
-        reviewer: null,
-        inReview: false,
+      expect(cqcStatusChangeService.CqcStatusChangeApproval).toHaveBeenCalledWith({
+        approvalId: component.registration.requestId,
+        establishmentId: component.registration.establishment.establishmentId,
+        userId: component.registration.userId,
+        rejectionReason: 'Rejected',
+        approve: false,
       });
     });
 
@@ -654,7 +656,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const rejectionServerErrorMessage = 'There was an error completing the rejection';
 
       const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'updateApprovalStatus').and.returnValue(throwError('Service unavailable'));
+      spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(throwError('Service unavailable'));
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
@@ -672,7 +674,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const { component, fixture, getByText, alertServiceSpy } = await setup();
 
       const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-      spyOn(cqcStatusChangeService, 'updateApprovalStatus').and.returnValue(of(true));
+      spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
 
       const workplaceName = component.registration.establishment.name;
       const rejectButton = getByText('Reject');

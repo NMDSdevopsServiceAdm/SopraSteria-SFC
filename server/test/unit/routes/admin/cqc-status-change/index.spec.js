@@ -336,11 +336,12 @@ describe('getIndividualCqcStatusChange', () => {
 
   const dummyDetails = {
     Status: 'Pending',
+    ID: 1,
     UUID: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
     InReview: false,
     Reviewer: null,
     createdAt: new Date('05/02/2020'),
-    User: { FullNameValue: 'Joe Bloggs' },
+    User: { FullNameValue: 'Joe Bloggs', RegistrationID: 1 },
     Data: {
       requestedService: {
         id: 1,
@@ -385,9 +386,11 @@ describe('getIndividualCqcStatusChange', () => {
 
   const expectedResponse = {
     status: 'Pending',
+    requestId: 1,
     requestUid: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
     createdAt: new Date('05/02/2020'),
     username: 'Joe Bloggs',
+    userId: 1,
     establishment: {
       status: 'Pending',
       inReview: false,

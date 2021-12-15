@@ -180,7 +180,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           model: sequelize.models.user,
           as: 'User',
-          attributes: ['FullNameValue'],
+          attributes: ['FullNameValue', 'RegistrationID'],
         },
       ],
     });

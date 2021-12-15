@@ -11,7 +11,9 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import {
+  ApprovalOrRejectionDialogComponent,
+} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-cqc-individual-main-service-change',
@@ -57,14 +59,15 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
 
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
-        const body = {
-          uid: this.registration.establishment.establishmentUid,
-          status: isApproval ? 'Approved' : 'Rejected',
-          reviewer: null,
-          inReview: false,
+        const data = {
+          approvalId: this.registration.requestId,
+          establishmentId: this.registration.establishment.establishmentId,
+          userId: this.registration.userId,
+          rejectionReason: isApproval ? 'Approved' : 'Rejected',
+          approve: isApproval,
         };
 
-        this.cqcStatusChangeService.updateApprovalStatus(body).subscribe(
+        this.cqcStatusChangeService.CqcStatusChangeApproval(data).subscribe(
           () => {
             this.router.navigate(['/sfcadmin', 'cqc-main-service-change']);
             this.showApprovalOrRejectionConfirmationAlert(isApproval);

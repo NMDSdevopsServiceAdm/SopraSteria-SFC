@@ -2,9 +2,11 @@ import { CqcChangeData } from '@core/model/cqc-change-data.model';
 
 export interface CqcStatusChange {
   status: string;
+  requestId: number;
   requestUid: string;
   createdAt: string;
   username: string;
+  userId: number;
   establishment: Establishment;
   data: CqcChangeData;
 }

@@ -7,6 +7,8 @@ export const PendingApproval = build('PendingApproval', {
   fields: {
     status: 'Pending',
     requestUid: 'bbd54f18-f0bd-4fc2-893d-e492faa9b278',
+    requestId: 1,
+    userId: 1,
     createdAt: '01/02/2020',
     username: 'John Doe',
     establishment: {
