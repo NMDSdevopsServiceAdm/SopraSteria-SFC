@@ -154,6 +154,11 @@ const routes: Routes = [
 
         children: [
           {
+            path: '',
+            redirectTo: 'inactive-emails',
+            pathMatch: 'full',
+          },
+          {
             path: 'targeted-emails',
             component: TargetedEmailsComponent,
             data: { title: 'Targeted Emails' },
