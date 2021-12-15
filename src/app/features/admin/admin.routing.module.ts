@@ -1,6 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+import {
+  GetCQCStatusChangeResolver,
+} from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
+import {
+  GetIndividualCqcMainServiceChangeResolver,
+} from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
 import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
@@ -10,9 +15,10 @@ import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/g
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
-
-import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
-import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import {
+  CqcIndividualMainServiceChangeComponent,
+} from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
 import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
@@ -138,9 +144,13 @@ const routes: Routes = [
         },
       },
       {
-        path: 'cqc-main-service-change',
+        path: ':establishmentUid',
         component: CqcIndividualMainServiceChangeComponent,
         data: { title: 'CQC Individual Main Service Change' },
+        resolve: {
+          approval: GetIndividualCqcMainServiceChangeResolver,
+          notes: GetRegistrationNotesResolver,
+        },
       },
     ],
   },

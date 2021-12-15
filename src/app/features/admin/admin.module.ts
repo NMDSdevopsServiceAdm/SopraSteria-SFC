@@ -3,7 +3,12 @@ import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+import {
+  GetCQCStatusChangeResolver,
+} from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
+import {
+  GetIndividualCqcMainServiceChangeResolver,
+} from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
 import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
@@ -16,13 +21,16 @@ import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registratio
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
-
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
-import { ApprovalOrRejectionDialogComponent } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
-import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
-import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import {
+  ApprovalOrRejectionDialogComponent,
+} from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import {
+  CqcIndividualMainServiceChangeComponent,
+} from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
 import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
@@ -85,6 +93,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     GetRegistrationsResolver,
     GetSingleRegistrationResolver,
     GetRegistrationNotesResolver,
+    GetIndividualCqcMainServiceChangeResolver,
     GetCQCStatusChangeResolver,
     DatePipe,
     EmailCampaignService,

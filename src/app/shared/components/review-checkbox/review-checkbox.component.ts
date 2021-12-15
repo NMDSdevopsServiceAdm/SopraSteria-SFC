@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 
 @Component({
@@ -12,7 +13,10 @@ export class ReviewCheckboxComponent {
   @Input() public userFullName: string;
   @Input() public checkBoxError: string;
 
-  constructor(public registrationsService: RegistrationsService) {}
+  constructor(
+    public registrationsService: RegistrationsService,
+    public cqcStatusChangeService: CqcStatusChangeService,
+  ) {}
 
   public setStatusClass(): string {
     return this.registration.establishment.inReview ? 'govuk-tag--blue' : 'govuk-tag--grey';
