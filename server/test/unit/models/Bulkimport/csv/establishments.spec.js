@@ -3,6 +3,7 @@ const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const buildEstablishmentCSV = require('../../../../factories/establishment/csv');
 const buildWorkerCSV = require('../../../../factories/worker/csv');
 const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments').Establishment;
+const OGEstablishment = require('../../../../../models/classes/establishment').Establishment;
 const workerCsv = require('../../../../../models/BulkImport/csv/workers');
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
@@ -57,15 +58,9 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
   const csvEstablishmentSchemaErrors = [];
 
-  const fetchMyEstablishmentsWorkers = sandbox.spy(async () => {
-    return databaseWorkers;
-  });
+  sandbox.stub(OGEstablishment, 'fetchMyEstablishmentsWorkers').returns(databaseWorkers);
 
-  await establishment.crossValidate({
-    csvEstablishmentSchemaErrors,
-    myWorkers,
-    fetchMyEstablishmentsWorkers,
-  });
+  await establishment.crossValidate(csvEstablishmentSchemaErrors, myWorkers);
 
   callback(csvEstablishmentSchemaErrors);
 };
@@ -84,6 +79,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   afterEach(() => {
     sandbox.restore();
   });
+
   describe('toAPI', () => {
     it('should return a correct API format ', async () => {
       const establishmentRow = buildEstablishmentCSV();
