@@ -42,7 +42,7 @@ describe('EmailsComponent', () => {
     expect(targetedEmailsLink.getAttribute('href')).toBe('/sfcadmin/emails/targeted-emails');
   });
 
-  it('should contain a inactive workplaces to emais link that links to sfcadmin/emails/inactive-emails url', async () => {
+  it('should contain a inactive workplaces to emails link that links to sfcadmin/emails/inactive-emails url', async () => {
     const { component } = await setup();
 
     const targetedEmailsLink = component.getByText('Inactive workplaces', { exact: false });

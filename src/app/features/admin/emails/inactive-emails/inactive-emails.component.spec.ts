@@ -47,7 +47,7 @@ describe('InactiveEmailsComponent', () => {
     it('should display the total number of emails to be sent', async () => {
       const component = await setup();
 
-      const numberOfInactiveWorkplacesToEmail = component.getByTestId('inactoveWorkplacesToEmail');
+      const numberOfInactiveWorkplacesToEmail = component.getByTestId('inactiveWorkplacesToEmail');
       expect(numberOfInactiveWorkplacesToEmail.innerHTML).toContain('Number of inactive workplaces to email:');
     });
 
