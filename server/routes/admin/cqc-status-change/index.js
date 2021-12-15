@@ -108,7 +108,8 @@ const _updateApprovalStatus = async (approvalId, status) => {
   let singleApproval = await models.Approvals.findbyId(approvalId);
   if (singleApproval) {
     singleApproval.Status = status;
-    (singleApproval.InReview = false), (singleApproval.Reviewer = null);
+    singleApproval.InReview = false;
+    singleApproval.Reviewer = null;
     await singleApproval.save();
   } else {
     throw `Can't find approval item with id ${approvalId}`;
