@@ -3,7 +3,10 @@ const models = require('../../../models');
 
 const getSingleRegistration = async (req, res) => {
   try {
-    const workplaceAndUser = await models.establishment.getEstablishmentWithPrimaryUser(req.params.establishmentUid);
+    const workplaceAndUser = await models.establishment.getEstablishmentWithPrimaryUser(
+      req.params.establishmentUid,
+      true,
+    );
 
     const workplaceAndUserDetails = convertWorkplaceAndUserDetails(workplaceAndUser);
 

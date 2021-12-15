@@ -862,10 +862,11 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findByUid = async function (uid) {
+  Establishment.findByUid = async function (uid, isRegistration = false) {
     return await this.findOne({
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
     });
   };
@@ -1068,7 +1069,7 @@ module.exports = function (sequelize, DataTypes) {
     return await this.scope(scopes).count();
   };
 
-  Establishment.getEstablishmentWithPrimaryUser = async function (uid) {
+  Establishment.getEstablishmentWithPrimaryUser = async function (uid, isRegistration = false) {
     return await this.findOne({
       attributes: [
         'NameValue',
@@ -1094,6 +1095,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
       include: [
         {
@@ -1128,7 +1130,9 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getEstablishmentRegistrationsByStatus = async function (isRejection) {
-    const params = isRejection ? { ustatus: 'REJECTED' } : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
+    const params = isRejection
+      ? { ustatus: 'REJECTED', archived: true }
+      : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
 
     return await this.findAll({
       attributes: [
