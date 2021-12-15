@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change-list/get-cqc-main-service-change-list.resolver';
+import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
 import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
@@ -23,6 +24,7 @@ import { ApprovalOrRejectionDialogComponent } from './components/approval-or-rej
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { EmailsComponent } from './emails/emails.component';
+import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -73,6 +75,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ApprovalOrRejectionDialogComponent,
     EmailsComponent,
     TargetedEmailsComponent,
+    InactiveEmailsComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
@@ -88,6 +91,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     DecimalPipe,
     InactiveWorkplacesResolver,
     EmailTemplateResolver,
+    EmailCampaignHistoryResolver,
   ],
   bootstrap: [AdminComponent],
 })
