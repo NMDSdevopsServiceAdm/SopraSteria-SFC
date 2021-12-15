@@ -5,12 +5,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { AdminModule } from '../admin.module';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list.component';
 
 describe('CQCMainServiceChangeListComponent', () => {
   async function setup() {
     const component = await render(CQCMainServiceChangeListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AdminModule],
       providers: [
         {
           provide: ActivatedRoute,
