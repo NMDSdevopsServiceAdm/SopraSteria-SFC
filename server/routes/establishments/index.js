@@ -32,6 +32,7 @@ const MandatoryTraining = require('./mandatoryTraining');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
 const SharingPermissionsBanner = require('./sharingPermissionsBanner');
+const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -83,6 +84,7 @@ router.use('/:id/mandatoryTraining', MandatoryTraining);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
 router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
+router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {

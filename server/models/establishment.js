@@ -697,6 +697,13 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'ShowSharingPermissionsBanner',
       },
+      expiresSoonAlertDate: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['90', '60', '30'],
+        default: '90',
+        field: 'ExpiresSoonAlertDate',
+      },
     },
     {
       defaultScope: {
@@ -855,10 +862,11 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findByUid = async function (uid) {
+  Establishment.findByUid = async function (uid, isRegistration = false) {
     return await this.findOne({
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
     });
   };
@@ -1061,7 +1069,7 @@ module.exports = function (sequelize, DataTypes) {
     return await this.scope(scopes).count();
   };
 
-  Establishment.getEstablishmentWithPrimaryUser = async function (uid) {
+  Establishment.getEstablishmentWithPrimaryUser = async function (uid, isRegistration = false) {
     return await this.findOne({
       attributes: [
         'NameValue',
@@ -1087,6 +1095,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
       include: [
         {
@@ -1121,7 +1130,9 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getEstablishmentRegistrationsByStatus = async function (isRejection) {
-    const params = isRejection ? { ustatus: 'REJECTED' } : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
+    const params = isRejection
+      ? { ustatus: 'REJECTED', archived: true }
+      : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
 
     return await this.findAll({
       attributes: [
@@ -1467,7 +1478,8 @@ module.exports = function (sequelize, DataTypes) {
     isParent = false,
   ) {
     const currentDate = moment().toISOString();
-    const expiresSoon = moment().add(90, 'days').toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
 
     let attributes = [
       'id',
@@ -1650,7 +1662,7 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
     return this.findAll({
-      attributes: ['id', 'NameValue'],
+      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
       where: {
         [Op.or]: [
           {
@@ -1805,5 +1817,15 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
+  Establishment.getExpiresSoonAlertDate = async function (establishmentId) {
+    return this.findOne({
+      attributes: ['ExpiresSoonAlertDate'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
   return Establishment;
 };

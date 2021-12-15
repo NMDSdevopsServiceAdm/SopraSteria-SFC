@@ -1,11 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import orderBy from 'lodash/orderBy';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-training-and-qualifications-categories',
@@ -25,6 +27,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public sortByDefault: string;
   public newTrainingAndQualificationsRecordsFlag: boolean;
   public trainingAndQualsRoute: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private permissionsService: PermissionsService,
@@ -32,6 +35,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     private workerService: WorkerService,
     private router: Router,
     private featureFlagsService: FeatureFlagsService,
+    private establishmentService: EstablishmentService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -41,6 +45,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
     this.sortByDefault = '0_expired';
     this.orderTrainingCategories(this.sortByDefault);
+    this.setExpiresSoonAlertDates();
 
     this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
       'newTrainingAndQualificationsRecords',
@@ -48,6 +53,14 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     );
 
     this.trainingAndQualsRoute = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
+  }
+
+  private setExpiresSoonAlertDates(): void {
+    this.subscriptions.add(
+      this.establishmentService.getExpiresSoonAlertDates(this.workplace.uid).subscribe((date) => {
+        this.trainingStatusService.expiresSoonAlertDate$.next(date.expiresSoonAlertDate);
+      }),
+    );
   }
 
   public toggleFilter(filterValue): void {
@@ -86,7 +99,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
 
   public totalTrainingRecords(training) {
     return training.filter((trainingRecord) => {
-      return this.trainingStatusService.trainingStatusForRecord(trainingRecord) !== this.trainingStatusService.MISSING;
+      return this.trainingStatus(trainingRecord) !== this.trainingStatusService.MISSING;
     }).length;
   }
 
@@ -102,7 +115,9 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     );
   }
 
-  public trainingStatus = (training) => this.trainingStatusService.trainingStatusForRecord(training);
+  public trainingStatus(training) {
+    return this.trainingStatusService.trainingStatusForRecord(training);
+  }
 
   public updateTrainingRecord(event, training): void {
     event.preventDefault();
@@ -116,5 +131,9 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
       'training',
       training.uid,
     ]);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

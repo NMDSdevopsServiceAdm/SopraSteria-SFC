@@ -258,7 +258,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
 
     expect(rows.length).toBe(4);
-    expect(rows[0].innerHTML).toContain('1 Expired');
+    expect(rows[0].innerHTML).toContain('1 expired');
     expect(rows[1].innerHTML).toContain('A Category Name');
     expect(rows[2].innerHTML).toContain('C Category Name');
     expect(rows[3].innerHTML).toContain('D Category Name');

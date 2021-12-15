@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import dayjs from 'dayjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,8 @@ export class TrainingStatusService {
   readonly EXPIRED = 3;
   readonly EXPIRING = 1;
   readonly ACTIVE = 0;
+
+  public expiresSoonAlertDate$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   public getAggregatedStatus(trainingRecords) {
     let expired = false;
@@ -53,7 +56,7 @@ export class TrainingStatusService {
       const daysDifference = expiringDate.diff(currentDate, 'days');
       if (daysDifference < 0) {
         return this.EXPIRED;
-      } else if (daysDifference >= 0 && daysDifference <= 90) {
+      } else if (daysDifference >= 0 && daysDifference <= parseInt(this.expiresSoonAlertDate$.value)) {
         return this.EXPIRING;
       }
     }
@@ -62,12 +65,6 @@ export class TrainingStatusService {
 
   public trainingStatusForRecord(trainingRecord) {
     return this.getTrainingStatus(trainingRecord.expires, trainingRecord.missing);
-  }
-
-  public totalTrainingRecords(training) {
-    return training.filter((trainingRecord) => {
-      return this.trainingStatusForRecord(trainingRecord) !== this.MISSING;
-    }).length;
   }
 
   public trainingStatusCount(training, status) {

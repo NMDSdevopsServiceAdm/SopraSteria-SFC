@@ -74,7 +74,7 @@
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) }}
-              Expired
+              expired
             </div>
             <div
               *ngIf="
@@ -88,7 +88,7 @@
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) }}
-              Missing
+              missing
             </div>
             <div
               *ngIf="
@@ -101,10 +101,19 @@
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
-              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) }}
-              Expiring soon
+              <ng-container
+                [ngPlural]="
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                "
+              >
+                {{
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                }}
+                <ng-template ngPluralCase="=1">expires soon</ng-template>
+                <ng-template ngPluralCase="other">expire soon</ng-template>
+              </ng-container>
             </div>
-            <div *ngIf="trainingIsComplete(trainingCategory.training)">Up-to-date</div>
+            <div *ngIf="trainingIsComplete(trainingCategory.training)">OK</div>
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
@@ -156,9 +165,7 @@
                       </td>
                       <td class="govuk-table__cell">
                         <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.EXPIRED
-                          "
+                          *ngIf="trainingStatus(training) === trainingStatusService.EXPIRED"
                           class="govuk-!-margin-bottom-1"
                         >
                           <img
@@ -169,9 +176,7 @@
                           Expired
                         </div>
                         <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.MISSING
-                          "
+                          *ngIf="trainingStatus(training) === trainingStatusService.MISSING"
                           class="govuk-!-margin-bottom-1"
                         >
                           <img
@@ -181,11 +186,7 @@
                           />
                           Missing
                         </div>
-                        <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.EXPIRING
-                          "
-                        >
+                        <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
                           <img
                             src="/assets/images/flag-orange.svg"
                             alt=""
@@ -194,13 +195,7 @@
                           Expiring soon
                         </div>
 
-                        <div
-                          *ngIf="
-                            trainingStatusService.trainingStatusForRecord(training) === trainingStatusService.ACTIVE
-                          "
-                        >
-                          Up-to-date
-                        </div>
+                        <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">Up-to-date</div>
                       </td>
                       <td class="govuk-table__cell">
                         <div
