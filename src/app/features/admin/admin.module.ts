@@ -9,6 +9,7 @@ import {
 import {
   GetIndividualCqcMainServiceChangeResolver,
 } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
+import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
 import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
@@ -31,6 +32,7 @@ import {
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
+import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
@@ -81,6 +83,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ApprovalOrRejectionDialogComponent,
     EmailsComponent,
     TargetedEmailsComponent,
+    InactiveEmailsComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
@@ -97,6 +100,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     DecimalPipe,
     InactiveWorkplacesResolver,
     EmailTemplateResolver,
+    EmailCampaignHistoryResolver,
   ],
   bootstrap: [AdminComponent],
 })

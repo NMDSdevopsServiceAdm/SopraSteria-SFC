@@ -6,7 +6,9 @@ import {
 import {
   GetIndividualCqcMainServiceChangeResolver,
 } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
+import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
+import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
@@ -18,6 +20,7 @@ import {
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
+import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
 import { ExternalLinkComponent } from './external-link/external-link.component';
 import { LocalAuthoritiesReturnComponent } from './local-authorities-return/local-authorities-return.component';
@@ -161,10 +164,25 @@ const routes: Routes = [
 
         children: [
           {
+            path: '',
+            redirectTo: 'inactive-emails',
+            pathMatch: 'full',
+          },
+          {
             path: 'targeted-emails',
             component: TargetedEmailsComponent,
             data: { title: 'Targeted Emails' },
             resolve: {
+              emailTemplates: EmailTemplateResolver,
+            },
+          },
+          {
+            path: 'inactive-emails',
+            component: InactiveEmailsComponent,
+            data: { title: 'Inactive Emails' },
+            resolve: {
+              inactiveWorkplaces: InactiveWorkplacesResolver,
+              emailCampaignHistory: EmailCampaignHistoryResolver,
               emailTemplates: EmailTemplateResolver,
             },
           },
