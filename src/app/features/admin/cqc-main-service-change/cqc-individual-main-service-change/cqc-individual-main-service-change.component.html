@@ -68,7 +68,7 @@
       [loggedInUser]="loggedInUser"
     ></app-add-note>
 
-    <div class="govuk-frid-column-three-quarters">
+    <div class="govuk-grid-column-three-quarters">
       <div class="govuk-button-group">
         <button
           class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
@@ -85,8 +85,12 @@
         >
           Reject
         </button>
-        <a [routerLink]="['/']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
+        <a [routerLink]="['/sfcadmin', 'cqc-main-service-change']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
       </div>
+      <span *ngIf="approvalOrRejectionServerError" id="approvalOrRejectionServerError" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ approvalOrRejectionServerError }}
+      </span>
     </div>
   </div>
 </div>

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 import { Note } from '@core/model/registrations.model';
@@ -11,9 +11,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import {
-  ApprovalOrRejectionDialogComponent,
-} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-cqc-individual-main-service-change',
@@ -27,6 +25,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
   public notesForm: FormGroup;
   public notesError: string;
   public checkBoxError: string;
+  public approvalOrRejectionServerError: string;
 
   constructor(
     public registrationsService: RegistrationsService,
@@ -37,6 +36,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
     public switchWorkplaceService: SwitchWorkplaceService,
     public breadcrumbService: BreadcrumbService,
     public cqcStatusChangeService: CqcStatusChangeService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +57,24 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
 
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
-        this.showApprovalOrRejectionConfirmationAlert(isApproval);
+        const body = {
+          uid: this.registration.establishment.establishmentUid,
+          status: isApproval ? 'Approved' : 'Rejected',
+          reviewer: null,
+          inReview: false,
+        };
+
+        this.cqcStatusChangeService.updateApprovalStatus(body).subscribe(
+          () => {
+            this.router.navigate(['/sfcadmin', 'cqc-main-service-change']);
+            this.showApprovalOrRejectionConfirmationAlert(isApproval);
+          },
+          () => {
+            this.approvalOrRejectionServerError = `There was an error completing the ${
+              isApproval ? 'approval' : 'rejection'
+            }`;
+          },
+        );
       }
     });
   }
@@ -74,7 +91,9 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
   private showApprovalOrRejectionConfirmationAlert(isApproval: boolean): void {
     this.alertService.addAlert({
       type: 'success',
-      message: `The main service change of workplace 'Stub Workplace' has been ${isApproval ? 'approved' : 'rejected'}`,
+      message: `The main service change of workplace ${this.registration.establishment.name} has been ${
+        isApproval ? 'approved' : 'rejected'
+      }`,
     });
   }
 

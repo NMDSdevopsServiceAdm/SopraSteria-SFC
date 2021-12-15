@@ -2,11 +2,11 @@
   <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-5">
     <h2 class="govuk-heading-m">CQC main service change</h2>
   </div>
-  <ng-container *ngIf="pendingCQCMainServiceChanges.length === 0; else cqcRequestsTable">
-    <p data-testid="noRequestsText">There are no CQC main service change requests at the moment</p>
-  </ng-container>
-  <ng-template #cqcRequestsTable>
-    <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="pendingCQCMainServiceChanges.length === 0; else cqcRequestsTable">
+      <p data-testid="noRequestsText">There are no CQC main service change requests at the moment.</p>
+    </ng-container>
+    <ng-template #cqcRequestsTable>
       <table class="govuk-table">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
@@ -35,6 +35,6 @@
           </tr>
         </tbody>
       </table>
-    </div>
-  </ng-template>
+    </ng-template>
+  </div>
 </div>
