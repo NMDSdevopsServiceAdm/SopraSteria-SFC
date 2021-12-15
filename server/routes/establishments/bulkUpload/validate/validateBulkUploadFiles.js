@@ -263,10 +263,7 @@ const validateBulkUploadFiles = async (req, files) => {
   // Run validations that require information about establishments
   await Promise.all(
     myWorkers.map(async (worker) => {
-      await worker.crossValidate({
-        csvWorkerSchemaErrors,
-        myEstablishments,
-      });
+      await worker.crossValidate(csvWorkerSchemaErrors, myEstablishments);
     }),
   );
 

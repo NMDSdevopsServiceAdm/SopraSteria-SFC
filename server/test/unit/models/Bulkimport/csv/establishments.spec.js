@@ -40,7 +40,7 @@ const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishm
   const worker = new workerCsv.Worker(currentLine, lineNumber, allCurrentEstablishments);
   worker.validate();
 
-  return worker;
+  return worker.toJSON(true);
 };
 
 const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {

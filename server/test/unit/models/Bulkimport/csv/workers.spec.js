@@ -221,10 +221,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       await bulkUpload.validate();
 
       // call the method
-      await bulkUpload.crossValidate({
-        csvWorkerSchemaErrors,
-        myEstablishments,
-      });
+      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
 
       // assert a error was returned
       expect(csvWorkerSchemaErrors.length).to.equal(1);
@@ -279,10 +276,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       await bulkUpload.validate();
 
       // call the method
-      await bulkUpload.crossValidate({
-        csvWorkerSchemaErrors,
-        myEstablishments,
-      });
+      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
 
       // assert a error was returned
       expect(csvWorkerSchemaErrors.length).to.equal(0);
@@ -335,10 +329,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       await bulkUpload.validate();
 
       // call the method
-      await bulkUpload.crossValidate({
-        csvWorkerSchemaErrors,
-        myEstablishments,
-      });
+      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
 
       // assert a error was returned
       expect(csvWorkerSchemaErrors.length).to.equal(0);
@@ -390,10 +381,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       await bulkUpload.validate();
 
       // call the method
-      await bulkUpload.crossValidate({
-        csvWorkerSchemaErrors,
-        myEstablishments,
-      });
+      await bulkUpload.crossValidate(csvWorkerSchemaErrors, myEstablishments);
 
       // assert a error was returned
       expect(csvWorkerSchemaErrors.length).to.equal(0);
@@ -1988,7 +1976,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
       const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
 
-      worker.crossValidate({ csvWorkerSchemaErrors: [], myEstablishments }).then(() => {
+      worker.crossValidate([], myEstablishments).then(() => {
         crossValidateStub.should.have.been.calledWith([], true);
       });
     });
@@ -2007,7 +1995,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
       const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
 
-      worker.crossValidate({ csvWorkerSchemaErrors: [], myEstablishments }).then(() => {
+      worker.crossValidate([], myEstablishments).then(() => {
         crossValidateStub.should.have.been.calledWith([], true);
       });
     });
@@ -2026,7 +2014,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: false });
       const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
 
-      worker.crossValidate({ csvWorkerSchemaErrors: [], myEstablishments }).then(() => {
+      worker.crossValidate([], myEstablishments).then(() => {
         crossValidateStub.should.have.been.calledWith([], false);
       });
     });
@@ -2045,7 +2033,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
       sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: false });
       const crossValidateStub = sinon.stub(worker, '_crossValidateMainJobRole');
 
-      worker.crossValidate({ csvWorkerSchemaErrors: [], myEstablishments }).then(() => {
+      worker.crossValidate([], myEstablishments).then(() => {
         crossValidateStub.should.have.been.calledWith([], false);
       });
     });

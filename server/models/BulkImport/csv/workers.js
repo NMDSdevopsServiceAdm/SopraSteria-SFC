@@ -3085,7 +3085,7 @@ class Worker {
     return true;
   }
 
-  async crossValidate({ csvWorkerSchemaErrors, myEstablishments }) {
+  async crossValidate(csvWorkerSchemaErrors, myEstablishments) {
     // if worker isn't being added or updated then exit early
     if (!['NEW', 'UPDATE'].includes(this._status)) {
       return;
