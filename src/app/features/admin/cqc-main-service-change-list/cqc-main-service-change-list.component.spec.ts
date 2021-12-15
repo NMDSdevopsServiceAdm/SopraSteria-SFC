@@ -57,14 +57,6 @@ describe('CQCMainServiceChangeListComponent', () => {
     expect(component.getByText('CQC main service change')).toBeTruthy();
   });
 
-  it('should show `CQC main service change` table headings', async () => {
-    const { component } = await setup();
-
-    expect(component.getByText('Workplace')).toBeTruthy();
-    expect(component.getByText('Received')).toBeTruthy();
-    expect(component.getByText('Status')).toBeTruthy();
-  });
-
   it('should render the pending and in progess cqc main service change when first loading page', async () => {
     const { component } = await setup();
 
