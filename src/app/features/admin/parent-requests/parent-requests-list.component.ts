@@ -6,11 +6,11 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './parent-requests-list.component.html',
 })
 export class ParentRequestsListComponent implements OnInit {
+  public parentRequests = [];
+
   constructor(private route: ActivatedRoute) {}
 
-  ngOnInit(): void {}
-
-  // public setStatusClass(status: string): string {
-  //   return status === 'Pending' ? 'govuk-tag--grey' : 'govuk-tag--blue';
-  // }
+  ngOnInit(): void {
+    this.parentRequests = this.route.snapshot.data.parentRequests;
+  }
 }

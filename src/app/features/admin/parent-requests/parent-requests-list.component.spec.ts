@@ -40,4 +40,11 @@ describe('ParentRequestsListComponent', () => {
 
     expect(component.getByText('Parent requests')).toBeTruthy();
   });
+
+  // it('should display the workplace name in the parent requests table', async () => {
+  //   const { component } = await setup();
+
+  //   const workplaceName = component.queryByText('Workplace 1');
+  //   expect(workplaceName).toBeTruthy();
+  // });
 });
