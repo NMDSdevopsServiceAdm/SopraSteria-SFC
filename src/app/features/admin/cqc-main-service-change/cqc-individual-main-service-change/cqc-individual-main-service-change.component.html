@@ -40,7 +40,7 @@
           {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
           {{ registration.establishment.address3 }}<br *ngIf="registration.establishment.county" />
           {{ registration.establishment.county }}<br />
-          {{ registration.establishment.town }}
+          {{ registration.establishment.town }}<span *ngIf="registration.establishment.town">,</span>
           {{ registration.establishment.postcode }}
         </dl>
       </div>

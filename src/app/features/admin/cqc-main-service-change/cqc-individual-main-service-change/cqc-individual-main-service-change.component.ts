@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -19,9 +20,9 @@ import {
   templateUrl: './cqc-individual-main-service-change.component.html',
 })
 export class CqcIndividualMainServiceChangeComponent implements OnInit {
-  public registration;
+  public registration: CqcStatusChange;
   public loggedInUser;
-  public userFullName;
+  public userFullName: string;
   public notes: Note[];
   public notesForm: FormGroup;
   public notesError: string;
@@ -56,7 +57,6 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
 
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
-        console.log('confirmed');
         this.showApprovalOrRejectionConfirmationAlert(isApproval);
       }
     });
@@ -64,7 +64,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
 
   private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<ApprovalOrRejectionDialogComponent> {
     return this.dialogService.open(ApprovalOrRejectionDialogComponent, {
-      workplaceName: 'Stub Workplace',
+      workplaceName: this.registration.establishment.name,
       approvalName: 'CQC main service change',
       approvalType: 'change',
       isApproval,
@@ -100,7 +100,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
         },
         (error: HttpErrorResponse) => {
           if (error.status === 400) {
-            this.notesError = 'There was an error adding the note to the registration';
+            this.notesError = 'There was an error adding the note';
           } else {
             this.notesError = 'There was a server error';
           }

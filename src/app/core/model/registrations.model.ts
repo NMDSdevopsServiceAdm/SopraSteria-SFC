@@ -1,7 +1,3 @@
-// export interface Registrations {
-//   [index: number]: Registration;
-// }
-
 export interface Registrations {
   [index: number]: {
     created: string;

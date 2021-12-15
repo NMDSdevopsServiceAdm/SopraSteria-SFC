@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApprovalRequest } from '@core/model/approval-request.model';
 import { CqcChangeData } from '@core/model/cqc-change-data.model';
+import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 import { CqcStatusChanges } from '@core/model/cqc-status-changes.model';
 import { Observable } from 'rxjs';
 
@@ -19,8 +20,8 @@ export class CqcStatusChangeService {
     return this.http.post<any>('/api/admin/cqc-status-change/', data);
   }
 
-  public getIndividualCqcStatusChange(establishmentUid: string): Observable<any> {
-    return this.http.get<any>(`/api/admin/cqc-status-change/${establishmentUid}`);
+  public getIndividualCqcStatusChange(establishmentUid: string): Observable<CqcStatusChange> {
+    return this.http.get<CqcStatusChange>(`/api/admin/cqc-status-change/${establishmentUid}`);
   }
 
   public updateApprovalStatus(data): Observable<any> {
