@@ -1,4 +1,7 @@
 'use strict';
+
+const { Op } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   const Approvals = sequelize.define(
     'Approvals',
@@ -68,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
     return this.findAll({
       where: {
         ApprovalType: approvalType,
-        Status: 'Pending',
+        Status: { [Op.or]: ['Pending', 'In progress'] },
       },
       attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
       include: [

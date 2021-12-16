@@ -129,6 +129,7 @@ describe.skip('admin/parent-approval route', () => {
           userName: fakeApproval.User.FullNameValue,
           orgName: fakeApproval.Establishment.NameValue,
           requested: fakeApproval.createdAt,
+          status: fakeApproval.Status,
         },
       ]);
     });

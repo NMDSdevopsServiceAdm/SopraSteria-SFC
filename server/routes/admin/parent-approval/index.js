@@ -45,6 +45,7 @@ const _mapResults = async (approvalResults) => {
       userName: approval.User.FullNameValue,
       orgName: approval.Establishment.NameValue,
       requested: approval.createdAt,
+      status: approval.Status,
     };
   });
 };
