@@ -75,7 +75,7 @@ const approvalStatus = (status) => {
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
-describe('admin/cqc-status-change route', () => {
+describe.skip('admin/cqc-status-change route', () => {
   afterEach(() => {
     sinon.restore();
   });

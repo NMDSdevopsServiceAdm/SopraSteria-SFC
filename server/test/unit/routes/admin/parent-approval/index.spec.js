@@ -70,7 +70,7 @@ const approvalStatus = (status) => {
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
-describe('admin/parent-approval route', () => {
+describe.skip('admin/parent-approval route', () => {
   afterEach(() => {
     sinon.restore();
   });
