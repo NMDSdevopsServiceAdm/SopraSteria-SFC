@@ -163,6 +163,23 @@ describe.skip('admin/cqc-status-change route', () => {
       approvalRequestBody.approve = true;
     });
 
+    it('should return a confirmation message and status 200 when cqc Change Request is approved for an org', async () => {
+      // Arrange (see beforeEach)
+
+      // Act
+      await cqcStatusChange.cqcStatusChanges(
+        {
+          body: approvalRequestBody,
+        },
+        { status: approvalStatus },
+      );
+
+      // Assert
+      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
+      expect(returnedJson.message).to.equal(cqcStatusChange.cqcStatusChangeApprovalConfirmation);
+      expect(returnedStatus).to.deep.equal(200);
+    });
+
     it('should change the approval status to Approved when approving a CQC Status Change', async () => {
       // Arrange
       fakeApproval.Status = 'Pending';
