@@ -11,6 +11,7 @@ import { HeaderComponent } from '@core/components/header/header.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
@@ -143,6 +144,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NotificationsListResolver,
     FeatureFlagsService,
     WizardResolver,
+    PageResolver,
   ],
   bootstrap: [AppComponent],
 })

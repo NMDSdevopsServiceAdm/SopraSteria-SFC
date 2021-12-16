@@ -10,9 +10,9 @@ import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/ha
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
-import { BenefitsTrainingDiscountsResolver } from '@core/resolvers/benefits-training-discounts/benefits-training-discounts.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
@@ -251,7 +251,7 @@ const routes: Routes = [
             component: BenefitsTrainingDiscountsComponent,
             data: { title: 'Endorsed Training Providers Discounts' },
             resolve: {
-              benefitsTrainingDiscounts: BenefitsTrainingDiscountsResolver,
+              benefitsTrainingDiscounts: PageResolver,
             },
           },
         ],
