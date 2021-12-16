@@ -128,7 +128,7 @@ describe('admin/parent-approval route', () => {
           workplaceId: fakeApproval.Establishment.nmdsId,
           userName: fakeApproval.User.FullNameValue,
           orgName: fakeApproval.Establishment.NameValue,
-          requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+          requested: fakeApproval.createdAt,
         },
       ]);
     });
