@@ -10,6 +10,8 @@ enum Path {
   REJECTED = '/sfcadmin/registrations/rejected',
   PENDING_REGISTRATION = '/sfcadmin/registrations/pending/:establishmentUid',
   REJECTED_REGISTRATION = '/sfcadmin/registrations/rejected/:establishmentUid',
+  PARENT_REQUESTS = '/sfcadmin/parent-requests',
+  PARENT_REQUESTS_INDIVIDUAL = '/sfcadmin/parent-requests/:establishmentUid',
 }
 
 export const adminJourney: JourneyRoute = {
@@ -77,6 +79,27 @@ export const adminRejectedRegistrationJourney: JourneyRoute = {
             {
               title: 'Request',
               path: Path.REJECTED_REGISTRATION,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const adminParentRequestJournery: JourneyRoute = {
+  children: [
+    {
+      title: 'Admin',
+      path: Path.ADMIN,
+      children: [
+        {
+          title: 'Parent requests',
+          path: Path.PARENT_REQUESTS,
+          children: [
+            {
+              title: 'Parent Individual Request',
+              path: Path.PARENT_REQUESTS_INDIVIDUAL,
             },
           ],
         },

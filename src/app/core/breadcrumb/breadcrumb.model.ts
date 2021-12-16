@@ -22,6 +22,7 @@ export enum JourneyType {
   ADMIN_PENDING_REGISTRATIONS,
   ADMIN_REJECTED_REGISTRATIONS,
   BENEFITS_BUNDLE,
+  PARENT_REQUESTS,
 }
 
 export interface JourneyRoute {
