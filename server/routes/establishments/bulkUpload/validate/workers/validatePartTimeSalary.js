@@ -1,67 +1,80 @@
 'use strict';
 
-const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
+const get = require('lodash/get');
+
+const SALARY_ERROR = () => 1260;
 
 // check if hours matches others in the same job and same annual pay
 const validatePartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
-  if (thisWorker._currentLine.STATUS === 'UNCHECKED' || thisWorker._currentLine.STATUS === 'DELETE') {
+  if (thisWorker.status === 'UNCHECKED' || thisWorker.status === 'DELETE') {
     return;
   }
-  if (
-    thisWorker._currentLine.CONTHOURS !== '' &&
-    parseFloat(thisWorker._currentLine.CONTHOURS) < 37 &&
-    thisWorker._currentLine.SALARY !== '' &&
-    thisWorker._currentLine.SALARYINT === '1'
-  ) {
-    let workersToCheckinDB = [];
-    let otherWorkerFTE = myWorkers.some(function (worker) {
-      if (
-        worker._currentLine.STATUS !== 'DELETE' &&
-        worker._currentLine.STATUS !== 'UNCHECKED' &&
-        worker._currentLine.STATUS !== 'NOCHANGE' &&
-        worker._currentLine.SALARYINT === '1' &&
-        worker._currentLine.SALARY === thisWorker._currentLine.SALARY &&
-        worker._currentLine.MAINJOBROLE === thisWorker._currentLine.MAINJOBROLE &&
-        parseFloat(worker._currentLine.CONTHOURS) > 36
-      ) {
-        return true;
-      } else if (worker._currentLine.STATUS === 'UNCHECKED' || worker._currentLine.STATUS === 'NOCHANGE') {
-        workersToCheckinDB.push(worker._currentLine.UNIQUEWORKERID);
-      }
-    });
+  if (isPartTimeWorkerAndHasAnnualSalary(thisWorker)) {
+    if (fullTimeEquivalentWorkerExistsInFile(thisWorker, myWorkers)) {
+      addPartTimeError(csvWorkerSchemaErrors);
+    } else {
+      const workersToCheckinDB = myWorkers.filter((worker) => worker.status === 'NOCHANGE');
 
-    if (otherWorkerFTE) {
-      csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
-    } else if (workersToCheckinDB.length) {
-      if (
-        myCurrentEstablishments.some(function (establishment) {
-          return workersToCheckinDB.some(function (localID) {
-            localID = localID.replace(/\s/g, '');
-            if (establishment._workerEntities[localID]) {
-              const worker = establishment._workerEntities[localID];
-              if (
-                worker.annualHourlyPay &&
-                worker.annualHourlyPay.value === 'Annually' &&
-                worker.annualHourlyPay.rate == thisWorker._currentLine.SALARY &&
-                worker.mainJob
-              ) {
-                const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, parseInt(thisWorker._currentLine.MAINJOBROLE));
-                if (
-                  worker.mainJob.jobId == mappedRole &&
-                  worker.contractedHours &&
-                  parseFloat(worker.contractedHours.hours) > 36
-                ) {
-                  return true;
-                }
-              }
-            }
-          });
-        })
-      ) {
-        csvWorkerSchemaErrors.push(thisWorker.ftePayCheckHasDifferentHours());
+      if (fullTimeEquivalentWorkerExistsInDB(myCurrentEstablishments, workersToCheckinDB, thisWorker)) {
+        addPartTimeError(csvWorkerSchemaErrors);
       }
     }
   }
+};
+
+const fullTimeEquivalentWorkerExistsInDB = (myCurrentEstablishments, workersToCheckinDB, thisWorker) => {
+  if (workersToCheckinDB.length === 0) {
+    return false;
+  }
+
+  return myCurrentEstablishments.some((establishment) => hasFTEInDB(establishment, workersToCheckinDB, thisWorker));
+};
+
+const hasFTEInDB = (establishment, workersToCheckinDB, thisWorker) =>
+  workersToCheckinDB.some((localID) => {
+    localID = localID.replace(/\s/g, '');
+    if (establishment._workerEntities[localID]) {
+      const worker = establishment._workerEntities[localID];
+      if (workerIsFullTimeEquivalent(worker, thisWorker)) {
+        return true;
+      }
+    }
+  });
+
+const workerIsFullTimeEquivalent = (worker, thisWorker) =>
+  get(worker, 'annualHourlyPay.value') === 'Annually' &&
+  get(worker, 'annualHourlyPay.rate') == thisWorker.salary &&
+  worker.mainJob.jobId == thisWorker.mainJob.role &&
+  parseFloat(get(worker, 'contractedHours.hours')) > 36;
+
+const isPartTimeWorkerAndHasAnnualSalary = (thisWorker) =>
+  parseFloat(thisWorker.hours.contractedHours) < 37 && thisWorker.salary !== '' && thisWorker.salaryInterval === '1';
+
+const fullTimeEquivalentWorkerExistsInFile = (thisWorker, myWorkers) =>
+  myWorkers.some(
+    (worker) =>
+      worker.status !== 'NOCHANGE' &&
+      worker.salaryInterval === '1' &&
+      worker.salary === thisWorker.salary &&
+      worker.mainJob.role === thisWorker.mainJob.role &&
+      parseFloat(thisWorker.hours.contractedHours) > 36,
+  );
+
+const addPartTimeError = (csvWorkerSchemaErrors) => csvWorkerSchemaErrors.push(ftePayCheckHasDifferentHours());
+
+const ftePayCheckHasDifferentHours = (thisWorker) => {
+  return {
+    origin: 'Workers',
+    lineNumber: thisWorker.lineNumber,
+    warnCode: SALARY_ERROR(),
+    warnType: 'SALARY_ERROR',
+    warning:
+      'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
+    source: thisWorker.localId,
+    column: 'SALARY',
+    worker: thisWorker.uniqueWorkerId,
+    name: thisWorker.localId,
+  };
 };
 
 module.exports = {
