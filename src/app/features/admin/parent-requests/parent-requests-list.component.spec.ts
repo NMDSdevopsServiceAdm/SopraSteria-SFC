@@ -93,7 +93,7 @@ describe('ParentRequestsListComponent', () => {
       expect(status.getAttribute('class')).toContain('govuk-tag--grey');
     });
 
-    it('should contain a link on the first workplace name ', async () => {
+    it('should contain a link on the first workplace name', async () => {
       const { fixture } = await setup();
 
       const workplaceName1 = fixture.debugElement.query(
@@ -128,7 +128,7 @@ describe('ParentRequestsListComponent', () => {
       expect(status.getAttribute('class')).toContain('govuk-tag--blue');
     });
 
-    it('should contain a link on the second workplace name ', async () => {
+    it('should contain a link on the second workplace name', async () => {
       const { fixture } = await setup();
 
       const workplaceName2 = fixture.debugElement.query(
