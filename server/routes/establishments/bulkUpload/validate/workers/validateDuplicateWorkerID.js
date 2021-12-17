@@ -3,31 +3,41 @@
 const validateDuplicateWorkerID = (
   thisWorker,
   allKeys,
-  changeKeyNoWhitespace,
   keyNoWhitespace,
   allWorkersByKey,
   myAPIWorkers,
   csvWorkerSchemaErrors,
 ) => {
-  // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
-  if (changeKeyNoWhitespace && (allWorkersByKey[changeKeyNoWhitespace] || allKeys.includes(changeKeyNoWhitespace))) {
-    // this worker is a duplicate
-    csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(thisWorker.changeUniqueWorker));
+  if (isDuplicate(allWorkersByKey, keyNoWhitespace, thisWorker, allKeys)) {
+    csvWorkerSchemaErrors.push(addDuplicate(thisWorker));
 
-    // remove the entity
     delete myAPIWorkers[thisWorker.lineNumber];
     return false;
-  } else if (allWorkersByKey[keyNoWhitespace] !== undefined) {
-    // this worker is a duplicate
-    csvWorkerSchemaErrors.push(thisWorker.addDuplicate(thisWorker.uniqueWorker));
-
-    // remove the entity
-    delete myAPIWorkers[thisWorker.lineNumber];
-    return false;
-  } else {
-    return true;
   }
+  return true;
 };
+
+const DUPLICATE_ERROR = () => 998;
+
+const addDuplicate = (thisWorker) => {
+  const workerIDText = thisWorker.changeUniqueWorker ? 'CHGUNIQUEWRKID' : 'UNIQUEWORKERID';
+  const workerID = thisWorker.changeUniqueWorker ? thisWorker.changeUniqueWorker : thisWorker.uniqueWorkerId;
+
+  return {
+    origin: 'Workers',
+    lineNumber: thisWorker.lineNumber,
+    errCode: DUPLICATE_ERROR(),
+    errType: 'DUPLICATE_ERROR',
+    error: `${workerIDText} ${workerID} is not unique`,
+    source: thisWorker.uniqueWorkerId,
+    column: workerIDText,
+    worker: thisWorker.uniqueWorkerId,
+    name: thisWorker.localId,
+  };
+};
+
+const isDuplicate = (allWorkersByKey, keyNoWhitespace, thisWorker, allKeys) =>
+  allWorkersByKey[keyNoWhitespace] || (thisWorker.changeUniqueWorker && allKeys.includes(keyNoWhitespace));
 
 module.exports = {
   validateDuplicateWorkerID,
