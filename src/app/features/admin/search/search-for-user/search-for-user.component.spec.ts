@@ -172,7 +172,7 @@ describe('SearchForUserComponent', () => {
       expect(queryByText('ABC123')).toBeTruthy();
     });
 
-    it("should show a flag when user's workplace is pending", async () => {
+    it(`should show a flag when user's workplace is pending`, async () => {
       const { component, fixture, getByTestId } = await setup(true);
 
       component.results[0].establishment.ustatus = 'PENDING';

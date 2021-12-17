@@ -44,11 +44,11 @@
                 <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
                 <td class="govuk-table__cell">
                   <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
-                    userDetailsLabel[item.uid] ? userDetailsLabel[item.uid] : 'Open'
+                    searchDetailsLabel[item.uid] ? searchDetailsLabel[item.uid] : 'Open'
                   }}</a>
                 </td>
               </tr>
-              <tr *ngIf="userDetails[item.uid]" class="govuk-panel--gray">
+              <tr *ngIf="searchDetails[item.uid]" class="govuk-panel--gray">
                 <td colspan="6">
                   <div class="govuk-!-margin-2">
                     <table class="govuk-table">
@@ -95,7 +95,7 @@
                           </td>
                           <td class="govuk-table__cell govuk-!-font-weight-regular">
                             <a
-                              (click)="unlockUser(item.username, index, $event)"
+                              (click)="changeStatus(item.username, index, $event)"
                               href="#"
                               *ngIf="item.isLocked; else notLocked"
                               >Yes, unlock</a
