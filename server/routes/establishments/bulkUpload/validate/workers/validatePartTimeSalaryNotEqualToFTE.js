@@ -4,22 +4,25 @@ const get = require('lodash/get');
 
 const SALARY_ERROR = () => 1260;
 
-// check if hours matches others in the same job and same annual pay
-const validatePartTimeSalary = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
+const validatePartTimeSalaryNotEqualToFTE = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
   if (thisWorker.status === 'UNCHECKED' || thisWorker.status === 'DELETE') {
     return;
   }
-  if (isPartTimeWorkerAndHasAnnualSalary(thisWorker)) {
-    if (fullTimeEquivalentWorkerExistsInFile(thisWorker, myWorkers)) {
-      addPartTimeError(csvWorkerSchemaErrors);
-    } else {
-      const workersToCheckinDB = myWorkers.filter((worker) => worker.status === 'NOCHANGE');
-
-      if (fullTimeEquivalentWorkerExistsInDB(myCurrentEstablishments, workersToCheckinDB, thisWorker)) {
-        addPartTimeError(csvWorkerSchemaErrors);
-      }
-    }
+  if (
+    isPartTimeWorkerAndHasAnnualSalary(thisWorker) &&
+    fullTimeEquivilentExists(thisWorker, myWorkers, myCurrentEstablishments)
+  ) {
+    addPartTimeError(csvWorkerSchemaErrors, thisWorker);
   }
+};
+
+const fullTimeEquivilentExists = (thisWorker, myWorkers, myCurrentEstablishments) => {
+  const workersToCheckinDB = myWorkers.filter((worker) => worker.status === 'NOCHANGE');
+
+  return (
+    fullTimeEquivalentWorkerExistsInFile(thisWorker, myWorkers) ||
+    fullTimeEquivalentWorkerExistsInDB(myCurrentEstablishments, workersToCheckinDB, thisWorker)
+  );
 };
 
 const fullTimeEquivalentWorkerExistsInDB = (myCurrentEstablishments, workersToCheckinDB, thisWorker) => {
@@ -57,10 +60,11 @@ const fullTimeEquivalentWorkerExistsInFile = (thisWorker, myWorkers) =>
       worker.salaryInterval === '1' &&
       worker.salary === thisWorker.salary &&
       worker.mainJob.role === thisWorker.mainJob.role &&
-      parseFloat(thisWorker.hours.contractedHours) > 36,
+      parseFloat(worker.hours.contractedHours) > 36,
   );
 
-const addPartTimeError = (csvWorkerSchemaErrors) => csvWorkerSchemaErrors.push(ftePayCheckHasDifferentHours());
+const addPartTimeError = (csvWorkerSchemaErrors, thisWorker) =>
+  csvWorkerSchemaErrors.push(ftePayCheckHasDifferentHours(thisWorker));
 
 const ftePayCheckHasDifferentHours = (thisWorker) => {
   return {
@@ -78,5 +82,5 @@ const ftePayCheckHasDifferentHours = (thisWorker) => {
 };
 
 module.exports = {
-  validatePartTimeSalary,
+  validatePartTimeSalaryNotEqualToFTE,
 };
