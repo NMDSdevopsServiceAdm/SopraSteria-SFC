@@ -251,7 +251,7 @@ const routes: Routes = [
             component: BenefitsTrainingDiscountsComponent,
             data: { title: 'Endorsed Training Providers Discounts' },
             resolve: {
-              benefitsTrainingDiscounts: PageResolver,
+              pages: PageResolver,
             },
           },
         ],

@@ -9,7 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
   templateUrl: './benefits-training-discounts.component.html',
 })
 export class BenefitsTrainingDiscountsComponent implements OnInit {
-  public benefitsTrainingDiscounts;
+  public pages;
   public workplaceName: string;
   public revealTitle = `What's an endorsed training provider?`;
 
@@ -20,7 +20,7 @@ export class BenefitsTrainingDiscountsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.benefitsTrainingDiscounts = this.route.snapshot.data.benefitsTrainingDiscounts?.data[0];
+    this.pages = this.route.snapshot.data.pages?.data[0];
     this.workplaceName = this.establishmentService.primaryWorkplace.name;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
