@@ -5,32 +5,25 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 chai.should();
 chai.use(sinonChai);
-const moment = require('moment-timezone');
-const config = require('../../../../../config/config');
 const httpsMocks = require('node-mocks-http');
-const Sequelize = require('sequelize');
 
 const models = require('../../../../../models/index');
-const mainServiceRouter = require('../../../../../routes/establishments/mainService');
-
 const cqcStatusChange = require('../../../../../routes/admin/cqc-status-change');
-const sb = sinon.createSandbox();
-var testWorkplace = {};
+
 var workplaceObjectWasSaved = false;
-const _initialiseTestWorkplace = () => {
-  testWorkplace.id = 4321;
-  testWorkplace.isRegulated = false;
-  testWorkplace.MainServiceFKValue = 1;
-  testWorkplace.nmdsId = 'I1234567';
-  testWorkplace.NameValue = faker.lorem.words(4);
-  testWorkplace.save = () => {
-    workplaceObjectWasSaved = true;
-  };
+var testWorkplace = {
+  id: 4321,
+  isRegulated: false,
+  MainServiceFKValue: 1,
+  nmdsId: 'I1234567',
+  NameValue: faker.lorem.words(4),
+  save: () => {
+    return (workplaceObjectWasSaved = true);
+  },
 };
 
-var testUser = {};
-const _initialiseTestUser = () => {
-  testUser.id = 1234;
+var testUser = {
+  id: 1234,
 };
 
 var approvalObjectWasSaved = false;
@@ -65,12 +58,11 @@ var fakeApproval = {
   },
 };
 
-var approvalRequestBody = {};
-const _initialiseTestRequestBody = () => {
-  approvalRequestBody.approvalId = fakeApproval.ID;
-  approvalRequestBody.establishmentId = testWorkplace.id;
-  approvalRequestBody.userId = testUser.id;
-  approvalRequestBody.rejectionReason = 'Because I felt like it.';
+var approvalRequestBody = {
+  approvalId: fakeApproval.ID,
+  establishmentId: testWorkplace.id,
+  userId: testUser.id,
+  rejectionReason: 'Because I felt like it.',
 };
 
 var returnedJson = null;
@@ -85,32 +77,24 @@ const approvalStatus = (status) => {
     send: () => {},
   };
 };
-var changeMainService;
 var throwErrorWhenFetchingAllRequests = false;
 var throwErrorWhenFetchingSingleRequest = false;
 
 describe.skip('admin/cqc-status-change route', () => {
   afterEach(() => {
-    sb.restore();
+    sinon.restore();
   });
 
   beforeEach(async () => {
-    sb.stub(models.Approvals, 'findAllPending').callsFake(async (approvalType) => {
+    sinon.stub(models.Approvals, 'findAllPending').callsFake(async () => {
       if (throwErrorWhenFetchingAllRequests) {
         throw 'Oopsy! findAllPending throwing error.';
       } else {
         return [fakeApproval];
       }
     });
-    changeMainService = sb.stub(mainServiceRouter, 'changeMainService').callsFake(async (approvalType) => {
-      if (throwErrorWhenFetchingSingleRequest) {
-        return { success: false, errorCode: '400', errorMsg: 'error' };
-      } else {
-        return { success: true, fakeApproval };
-      }
-    });
 
-    sb.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
+    sinon.stub(models.Approvals, 'findbyId').callsFake(async (id) => {
       if (throwErrorWhenFetchingSingleRequest) {
         throw 'Oopsy! findbyId throwing error.';
       } else if (id === fakeApproval.ID) {
@@ -118,26 +102,16 @@ describe.skip('admin/cqc-status-change route', () => {
       }
     });
 
-    sb.stub(models.establishment, 'findbyId').callsFake(async (id) => {
+    sinon.stub(models.establishment, 'findbyId').callsFake(async (id) => {
       if (id === testWorkplace.id) {
         return testWorkplace;
       }
     });
 
-    sb.stub(models.establishment, 'findbyId').callsFake(async (id) => {
-      if (id === testWorkplace.id) {
-        return testWorkplace;
-      }
-    });
-
-    _initialiseTestWorkplace();
-    _initialiseTestUser();
-    _initialiseTestRequestBody();
     returnedJson = null;
     returnedStatus = null;
     throwErrorWhenFetchingAllRequests = false;
     throwErrorWhenFetchingSingleRequest = false;
-    noMatchingRequestByEstablishmentId = false;
   });
 
   describe('fetching CQC Status Approval', () => {
@@ -159,7 +133,8 @@ describe.skip('admin/cqc-status-change route', () => {
           workplaceId: fakeApproval.Establishment.nmdsId,
           username: fakeApproval.User.FullNameValue,
           orgName: fakeApproval.Establishment.NameValue,
-          requested: moment.utc(fakeApproval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+          requested: fakeApproval.createdAt,
+          status: 'Pending',
           data: {
             currentService: {
               ID: fakeApproval.Data.currentService.id,

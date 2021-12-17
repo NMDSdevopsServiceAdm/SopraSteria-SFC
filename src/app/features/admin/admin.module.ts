@@ -34,12 +34,9 @@ import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
 import {
   ApprovalOrRejectionDialogComponent,
-  ApprovalOrRejectionDialogComponent,
 } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 import { ApprovalsTableComponent } from './components/approvals-table/approvals-table.component';
-import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list/cqc-main-service-change-list.component';
 import {
-  CqcIndividualMainServiceChangeComponent,
   CqcIndividualMainServiceChangeComponent,
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
@@ -100,7 +97,6 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     RejectedRegistrationRequestComponent,
     ReportComponent,
     WorkplaceDropdownComponent,
-    CQCMainServiceChangeListComponent,
     CqcIndividualMainServiceChangeComponent,
     ApprovalOrRejectionDialogComponent,
     EmailsComponent,
@@ -109,6 +105,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ApprovalsTableComponent,
     ParentRequestIndividualComponent,
     InactiveEmailsComponent,
+    CQCMainServiceChangeListComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,

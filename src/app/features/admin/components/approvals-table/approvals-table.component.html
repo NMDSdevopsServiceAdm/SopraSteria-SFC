@@ -1,30 +1,28 @@
-<div class="govuk-grid-column-two-thirds">
-  <table class="govuk-table">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Workplace</th>
-        <th scope="col" class="govuk-table__header">Received</th>
-        <th scope="col" class="govuk-table__header">Status</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-      <tr class="govuk-table__row" *ngFor="let individualRequest of pendingApprovals">
-        <td class="govuk-table__cell">
-          <a
-            [attr.data-testid]="'workplaceName-' + individualRequest.establishmentUid"
-            [routerLink]="['/sfcadmin', routerLinkUrl, individualRequest.establishmentUid]"
-            >{{ individualRequest.orgName }}</a
-          >
-        </td>
-        <td class="govuk-table__cell">
-          {{ individualRequest.requested | date: 'dd MMM yyyy' }}
-        </td>
-        <td class="govuk-table__cell">
-          <strong class="govuk-tag" [ngClass]="setStatusClass(individualRequest.status)">
-            {{ individualRequest.status | uppercase }}
-          </strong>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Workplace</th>
+      <th scope="col" class="govuk-table__header">Received</th>
+      <th scope="col" class="govuk-table__header">Status</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row" *ngFor="let individualRequest of pendingApprovals">
+      <td class="govuk-table__cell">
+        <a
+          [attr.data-testid]="'workplaceName-' + individualRequest.establishmentUid"
+          [routerLink]="['/sfcadmin', routerLinkUrl, individualRequest.establishmentUid]"
+          >{{ individualRequest.orgName }}</a
+        >
+      </td>
+      <td class="govuk-table__cell">
+        {{ individualRequest.requested | date: 'dd MMM yyyy' }}
+      </td>
+      <td class="govuk-table__cell">
+        <strong class="govuk-tag" [ngClass]="setStatusClass(individualRequest.status)">
+          {{ individualRequest.status | uppercase }}
+        </strong>
+      </td>
+    </tr>
+  </tbody>
+</table>
