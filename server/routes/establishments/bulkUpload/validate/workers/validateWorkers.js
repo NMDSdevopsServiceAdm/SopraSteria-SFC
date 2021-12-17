@@ -1,6 +1,7 @@
 const { validateWorkerCsv } = require('./validateWorkerCsv');
 const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalaryNotEqualToFTE } = require('./validatePartTimeSalaryNotEqualToFTE');
+const { validateWorkerUnderNationalInsuranceMaximum } = require('./validateWorkerUnderNationalInsuranceMaximum');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = [];
@@ -18,6 +19,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
 
   myJSONWorkers.forEach((thisWorker) => {
     validatePartTimeSalaryNotEqualToFTE(thisWorker, myJSONWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+    validateWorkerUnderNationalInsuranceMaximum(thisWorker, myJSONWorkers, csvWorkerSchemaErrors);
   });
 
   myWorkers.forEach((thisWorker) => {
@@ -40,10 +42,6 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
     ) {
       // does not yet exist - check this worker can be associated with a known establishment
       const establishmentKey = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
-
-      if (worksOverNationalInsuranceMaximum(thisWorker, myWorkers)) {
-        csvWorkerSchemaErrors.push(thisWorker.exceedsNationalInsuranceMaximum());
-      }
 
       if (!allEstablishmentsByKey[establishmentKey]) {
         // not found the associated establishment
@@ -96,25 +94,8 @@ const createWorkerKey = (localEstablishmentId, workerId) => {
   return (localEstablishmentId + workerId).replace(/\s/g, '');
 };
 
-const worksOverNationalInsuranceMaximum = (thisWorker, workers) => {
-  const workerTotalHours = workers.reduce((sum, thatWorker) => {
-    if (thisWorker.nationalInsuranceNumber === thatWorker.nationalInsuranceNumber) {
-      if (thatWorker.weeklyContractedHours) {
-        return sum + thatWorker.weeklyContractedHours;
-      }
-      if (thatWorker.weeklyAverageHours) {
-        return sum + thatWorker.weeklyAverageHours;
-      }
-    }
-    return sum;
-  }, 0);
-
-  return workerTotalHours > 65;
-};
-
 module.exports = {
   validateWorkers,
   createKeysForWorkers,
   createWorkerKey,
-  worksOverNationalInsuranceMaximum,
 };
