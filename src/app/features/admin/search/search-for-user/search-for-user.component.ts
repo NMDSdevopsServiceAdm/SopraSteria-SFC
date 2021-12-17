@@ -36,7 +36,7 @@ export class SearchForUserComponent extends SearchDirective {
     });
   }
 
-  public onSubmit(): void {
+  protected onSubmit(): void {
     this.subscriptions.add(
       this.searchService.searchUsers(this.form.value).subscribe(
         (response) => {

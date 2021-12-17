@@ -1,31 +1,30 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
+import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { Subscription } from 'rxjs';
+import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
   selector: 'app-search-for-workplace',
   templateUrl: './search-for-workplace.component.html',
 })
-export class SearchForWorkplaceComponent implements OnInit, OnDestroy {
-  @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+export class SearchForWorkplaceComponent extends SearchDirective {
   public results = [];
-  public submitted: boolean;
-  private subscriptions: Subscription = new Subscription();
-  public workplaceDetails = [];
-  public workplaceDetailsLabel = [];
+  public submitted = false;
 
   constructor(
-    public formBuilder: FormBuilder,
-    public searchService: SearchService,
-    private switchWorkplaceService: SwitchWorkplaceService,
-    private alertService: AlertService,
-  ) {}
+    protected formBuilder: FormBuilder,
+    protected searchService: SearchService,
+    protected switchWorkplaceService: SwitchWorkplaceService,
+    protected alertService: AlertService,
+    protected dialogService: DialogService,
+  ) {
+    super(formBuilder, searchService, switchWorkplaceService, alertService, dialogService);
+  }
 
-  ngOnInit(): void {
+  protected setupForm(): void {
     this.form = this.formBuilder.group({
       name: null,
       postcode: null,
@@ -35,7 +34,7 @@ export class SearchForWorkplaceComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onSubmit(): void {
+  protected onSubmit(): void {
     this.subscriptions.add(
       this.searchService.searchWorkplaces(this.form.value).subscribe(
         (response) => {
@@ -45,27 +44,5 @@ export class SearchForWorkplaceComponent implements OnInit, OnDestroy {
         () => this.errorMessage(),
       ),
     );
-  }
-
-  private errorMessage(): void {
-    this.alertService.addAlert({
-      type: 'warning',
-      message: 'There was a problem making this request',
-    });
-  }
-
-  public navigateToWorkplace = (id: string, username: string, nmdsId: string, event: Event) => {
-    event.preventDefault();
-    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
-  };
-
-  public toggleDetails(uid: string, event: Event): void {
-    event.preventDefault();
-    this.workplaceDetails[uid] = !this.workplaceDetails[uid];
-    this.workplaceDetailsLabel[uid] = this.workplaceDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }
