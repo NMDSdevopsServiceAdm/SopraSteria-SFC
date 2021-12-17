@@ -75,6 +75,7 @@ describe('BenefitsBundleComponent', () => {
     it('should display accordion headings', async () => {
       const { getByText } = await setup();
 
+      expect(getByText("Discounts from Skills for Care's endorsed training providers")).toBeTruthy();
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
       expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
@@ -87,21 +88,21 @@ describe('BenefitsBundleComponent', () => {
     it('should drop down when clicking on funded essential training heading and include content', async () => {
       const { getByTestId, getByText } = await setup();
 
-      expect(getByTestId('accordion-5').getAttribute('class')).not.toContain('govuk-accordion__section--expanded');
+      expect(getByTestId('accordion-6').getAttribute('class')).not.toContain('govuk-accordion__section--expanded');
 
       const fundedEssentialTrainingDrop = getByText('Funded essential training');
       fireEvent.click(fundedEssentialTrainingDrop);
 
-      const droppedDiv = getByTestId('accordion-drop-5');
+      const droppedDiv = getByTestId('accordion-drop-6');
 
-      expect(getByTestId('accordion-5').getAttribute('class')).toContain('govuk-accordion__section--expanded');
+      expect(getByTestId('accordion-6').getAttribute('class')).toContain('govuk-accordion__section--expanded');
       expect(droppedDiv.innerText).toContain('This free training comes as 3 individual packages for your staff.');
     });
 
     it('should display the workplace ID in the funded essential training content', async () => {
       const { component, getByTestId } = await setup();
 
-      const fundedEssentialTrainingContent = getByTestId('accordion-drop-5');
+      const fundedEssentialTrainingContent = getByTestId('accordion-drop-6');
 
       expect(fundedEssentialTrainingContent.innerText).toContain(
         `Your chosen training provider will need your Workplace ID (${component.workplaceId}) when you register`,
@@ -181,6 +182,7 @@ describe('BenefitsBundleComponent', () => {
       it('should toggle button to Close all when all accordions opened individually', async () => {
         const { getByText, fixture } = await setup();
 
+        fireEvent.click(getByText("Discounts from Skills for Care's endorsed training providers"));
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fireEvent.click(getByText('10% off values-based interviewing seminars'));
         fireEvent.click(getByText('10% off valuable conversations online seminars'));
@@ -260,6 +262,16 @@ describe('BenefitsBundleComponent', () => {
         'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
       );
       expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the discounts link from skills for cares endorsed training providers in content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText("View discounts from Skills for Care's endorsed training providers");
+
+      expect(link.getAttribute('href')).toBe(
+        '/benefits-bundle/training-discounts',
+      );
     });
 
     it('should display the Recommendations for CQC link in the learning for managers content', async () => {

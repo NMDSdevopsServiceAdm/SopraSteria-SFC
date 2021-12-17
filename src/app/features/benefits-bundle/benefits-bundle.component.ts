@@ -14,6 +14,10 @@ export class BenefitsBundleComponent implements OnInit {
   public allOpen = false;
   public benefits = [
     {
+      title: "Discounts from Skills for Care's endorsed training providers",
+      open: false,
+    },
+    {
       title: '10% off all publications in the Skills for Care bookshop',
       open: false,
     },
