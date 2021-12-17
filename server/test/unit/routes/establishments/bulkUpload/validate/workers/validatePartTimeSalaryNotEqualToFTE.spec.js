@@ -12,7 +12,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
       uniqueWorkerId: 'FTE',
       hours: { contractedHours: '50' },
       salary: '50',
-      salaryInterval: '1', //Annually
+      salaryInterval: 'Annually',
       mainJob: { role: '5' },
       lineNumber: 2,
     },
@@ -22,7 +22,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
       uniqueWorkerId: 'PTE',
       hours: { contractedHours: '10' },
       salary: '50',
-      salaryInterval: '1', //Annually
+      salaryInterval: 'Annually',
       mainJob: { role: '5' },
       lineNumber: 1,
     },
@@ -96,7 +96,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
         uniqueWorkerId: 'FTE',
         hours: { contractedHours: '50' },
         salary: '50',
-        salaryInterval: '1', //Annually
+        salaryInterval: 'Annually',
         mainJob: { role: '5' },
         lineNumber: 1,
       },
@@ -106,7 +106,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
         uniqueWorkerId: 'PTE',
         hours: { contractedHours: '10' },
         salary: '50',
-        salaryInterval: '1', //Annually
+        salaryInterval: 'Annually',
         mainJob: { role: '5' },
         lineNumber: 2,
       },
@@ -116,7 +116,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
         uniqueWorkerId: 'PTE 2',
         hours: { contractedHours: '10' },
         salary: '50',
-        salaryInterval: '1', //Annually
+        salaryInterval: 'Annually',
         mainJob: { role: '5' },
         lineNumber: 3,
       },

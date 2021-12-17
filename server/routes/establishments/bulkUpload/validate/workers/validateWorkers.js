@@ -17,7 +17,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
   const allWorkerKeys = createKeysForWorkers(myWorkers);
 
   myJSONWorkers.forEach((thisWorker) => {
-    validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+    validatePartTimeSalaryNotEqualToFTE(thisWorker, myJSONWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
   });
 
   myWorkers.forEach((thisWorker) => {

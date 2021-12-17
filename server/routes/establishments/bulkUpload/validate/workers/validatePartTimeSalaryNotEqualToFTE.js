@@ -10,13 +10,13 @@ const validatePartTimeSalaryNotEqualToFTE = (thisWorker, myWorkers, myCurrentEst
   }
   if (
     isPartTimeWorkerAndHasAnnualSalary(thisWorker) &&
-    fullTimeEquivilentExists(thisWorker, myWorkers, myCurrentEstablishments)
+    fullTimeEquivalentExists(thisWorker, myWorkers, myCurrentEstablishments)
   ) {
     addPartTimeError(csvWorkerSchemaErrors, thisWorker);
   }
 };
 
-const fullTimeEquivilentExists = (thisWorker, myWorkers, myCurrentEstablishments) => {
+const fullTimeEquivalentExists = (thisWorker, myWorkers, myCurrentEstablishments) => {
   const workersToCheckinDB = myWorkers.filter((worker) => worker.status === 'NOCHANGE');
 
   return (
@@ -34,10 +34,10 @@ const fullTimeEquivalentWorkerExistsInDB = (myCurrentEstablishments, workersToCh
 };
 
 const hasFTEInDB = (establishment, workersToCheckinDB, thisWorker) =>
-  workersToCheckinDB.some((localID) => {
-    localID = localID.replace(/\s/g, '');
-    if (establishment._workerEntities[localID]) {
-      const worker = establishment._workerEntities[localID];
+  workersToCheckinDB.some(({ uniqueWorkerId }) => {
+    const workerIDNoSpaces = uniqueWorkerId.replace(/\s/g, '');
+    if (establishment._workerEntities[workerIDNoSpaces]) {
+      const worker = establishment._workerEntities[workerIDNoSpaces];
       if (workerIsFullTimeEquivalent(worker, thisWorker)) {
         return true;
       }
@@ -51,13 +51,15 @@ const workerIsFullTimeEquivalent = (worker, thisWorker) =>
   parseFloat(get(worker, 'contractedHours.hours')) > 36;
 
 const isPartTimeWorkerAndHasAnnualSalary = (thisWorker) =>
-  parseFloat(thisWorker.hours.contractedHours) < 37 && thisWorker.salary !== '' && thisWorker.salaryInterval === '1';
+  parseFloat(thisWorker.hours.contractedHours) < 37 &&
+  thisWorker.salary !== '' &&
+  thisWorker.salaryInterval === 'Annually';
 
 const fullTimeEquivalentWorkerExistsInFile = (thisWorker, myWorkers) =>
   myWorkers.some(
     (worker) =>
       worker.status !== 'NOCHANGE' &&
-      worker.salaryInterval === '1' &&
+      worker.salaryInterval === 'Annually' &&
       worker.salary === thisWorker.salary &&
       worker.mainJob.role === thisWorker.mainJob.role &&
       parseFloat(worker.hours.contractedHours) > 36,
