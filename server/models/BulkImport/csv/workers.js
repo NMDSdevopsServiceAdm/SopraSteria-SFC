@@ -2970,21 +2970,6 @@ class Worker {
     };
   }
 
-  ftePayCheckHasDifferentHours() {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      warnCode: Worker.SALARY_ERROR,
-      warnType: 'SALARY_ERROR',
-      warning:
-        'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
-      source: this._currentLine.LOCALESTID,
-      column: 'SALARY',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
