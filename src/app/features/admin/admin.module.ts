@@ -39,6 +39,7 @@ import { ApprovalsTableComponent } from './components/approvals-table/approvals-
 import {
   CqcIndividualMainServiceChangeComponent,
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
 import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
@@ -100,6 +101,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ParentRequestsListComponent,
     ApprovalsTableComponent,
     InactiveEmailsComponent,
+    CQCMainServiceChangeListComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
