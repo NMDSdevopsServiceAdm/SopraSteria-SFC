@@ -28,7 +28,7 @@ export class SearchDirective implements OnInit, OnDestroy {
 
   protected setupForm(): void {}
 
-  protected onSubmit(): void {}
+  public onSubmit(): void {}
 
   protected changeStatus(username: string, index: number, event: Event): void {}
 

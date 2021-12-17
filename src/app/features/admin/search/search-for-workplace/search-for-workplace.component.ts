@@ -34,7 +34,7 @@ export class SearchForWorkplaceComponent extends SearchDirective {
     });
   }
 
-  protected onSubmit(): void {
+  public onSubmit(): void {
     this.subscriptions.add(
       this.searchService.searchWorkplaces(this.form.value).subscribe(
         (response) => {

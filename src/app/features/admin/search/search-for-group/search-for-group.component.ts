@@ -33,7 +33,7 @@ export class SearchForGroupComponent extends SearchDirective {
     });
   }
 
-  protected onSubmit(): void {
+  public onSubmit(): void {
     this.subscriptions.add(
       this.searchService.searchGroups(this.form.value).subscribe(
         (response) => {
