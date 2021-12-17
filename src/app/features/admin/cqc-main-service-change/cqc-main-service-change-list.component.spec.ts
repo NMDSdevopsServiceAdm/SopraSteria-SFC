@@ -7,12 +7,13 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { AdminModule } from '../admin.module';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-list.component';
 
 describe('CQCMainServiceChangeListComponent', () => {
   async function setup(notes = true) {
     const component = await render(CQCMainServiceChangeListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AdminModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -60,14 +61,6 @@ describe('CQCMainServiceChangeListComponent', () => {
     const { component } = await setup();
 
     expect(component.getByText('CQC main service change')).toBeTruthy();
-  });
-
-  it('should show `CQC main service change` table headings', async () => {
-    const { component } = await setup();
-
-    expect(component.getByText('Workplace')).toBeTruthy();
-    expect(component.getByText('Received')).toBeTruthy();
-    expect(component.getByText('Status')).toBeTruthy();
   });
 
   it('should render the pending and in progess cqc main service change when first loading page', async () => {

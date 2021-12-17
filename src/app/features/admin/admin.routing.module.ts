@@ -12,6 +12,7 @@ import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workp
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
+import { ParentRequestsListResolver } from '@core/resolvers/admin/parent-requests-list/parent-requests-list.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
@@ -27,6 +28,7 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { ParentRequestsListComponent } from './parent-requests/parent-requests-list.component';
 import { PendingRegistrationRequestsComponent } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
 import { RegistrationRequestsComponent } from './registration-requests/registration-requests.component';
@@ -128,6 +130,19 @@ const routes: Routes = [
         resolve: {
           registration: GetSingleRegistrationResolver,
           notes: GetRegistrationNotesResolver,
+        },
+      },
+    ],
+  },
+  {
+    path: 'parent-requests',
+    children: [
+      {
+        path: '',
+        component: ParentRequestsListComponent,
+        data: { title: 'Parent requests' },
+        resolve: {
+          parentRequests: ParentRequestsListResolver,
         },
       },
     ],
