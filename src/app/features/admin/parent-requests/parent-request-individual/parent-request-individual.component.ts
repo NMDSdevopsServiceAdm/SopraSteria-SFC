@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
@@ -14,7 +13,7 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
   templateUrl: './parent-request-individual.component.html',
 })
 export class ParentRequestIndividualComponent implements OnInit {
-  public registration: CqcStatusChange;
+  public parentIndividtualRequest: any;
   public loggedInUser;
   public userFullName: string;
   public notes: Note[];
@@ -36,7 +35,7 @@ export class ParentRequestIndividualComponent implements OnInit {
 
   ngOnInit(): void {
     this.loggedInUser = this.route.snapshot.data.loggedInUser;
-    this.registration = this.route.snapshot.data.approval;
+    this.parentIndividtualRequest = this.route.snapshot.data.parentRequestsIndividual;
     this.userFullName = this.loggedInUser.fullname;
     this.notes = this.route.snapshot.data.notes;
   }

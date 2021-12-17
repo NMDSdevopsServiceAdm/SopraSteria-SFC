@@ -18,6 +18,10 @@ export class ParentRequestsService {
     return this.http.get<boolean>(`/api/approvals/establishment/${establishmentId}?type=BecomeAParent&status=Pending`);
   }
 
+  public getIndividualParentRequest(establishmentUid: string): Observable<any> {
+    return this.http.get<any>(`/api/admin/parent-approval/${establishmentUid}`);
+  }
+
   public parentStatusRequested(establishmentId: number): Observable<boolean> {
     return this.getParentRequestByEstablishmentId(establishmentId).pipe(map((result) => result != null));
   }
