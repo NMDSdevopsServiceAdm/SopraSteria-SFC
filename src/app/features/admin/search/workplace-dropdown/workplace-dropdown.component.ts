@@ -22,8 +22,14 @@ export class WorkplaceDropdownComponent {
     return workplace.address1 + secondaryAddress;
   }
 
-  public unlockWorkplaceUser(username: string, workplaceIndex: number, userIndex: number, e: Event): void {
-    e.preventDefault();
+  public unlockWorkplaceUser(username: string, workplaceIndex: number, userIndex: number, event: Event): void {
+    event.preventDefault();
     this.unlockUser(username, workplaceIndex, this.item.users[userIndex]);
+  }
+
+  public removeParent(establishmentUid: string, event: Event): void {
+    event.preventDefault();
+    console.log('removeParent *********');
+    console.log(establishmentUid);
   }
 }

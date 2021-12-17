@@ -1,10 +1,10 @@
 <div class="govuk-!-margin-2">
-  <table class="govuk-table">
+  <table class="govuk-table govuk-!-margin-bottom-2">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header govuk-!-width-one-third" scope="col">Address</th>
-        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Parent ID</th>
-        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Regulated</th>
+        <th class="govuk-table__header" scope="col">Parent ID</th>
+        <th class="govuk-table__header" scope="col">Regulated</th>
         <th class="govuk-table__header" scope="col">Data Owner</th>
       </tr>
     </thead>
@@ -31,10 +31,13 @@
       </tr>
     </tbody>
   </table>
+  <div *ngIf="item.isParent">
+    <a href="#" (click)="removeParent(item.uid, $event)">Remove parent status</a>
+  </div>
 </div>
-<div class="govuk-!-margin-2" *ngIf="item.notes?.length > 0">
+<div class="govuk-!-margin-left-2 govuk-!-margin-top-4" *ngIf="item.notes?.length > 0">
   <p class="govuk-heading-s govuk-!-margin-bottom-2">Notes</p>
-  <dl class="govuk-summary-list">
+  <dl class="govuk-summary-list govuk-!-margin-bottom-0">
     <div class="govuk-summary-list__row--no-border" *ngFor="let note of item.notes">
       <dt class="govuk-summary-list__key--no-border govuk-!-display-block govuk-!-font-weight-bold">
         {{ note.user.FullNameValue }}, {{ note.createdAt | date: 'dd MMMM yyyy hh:mm a' }}
