@@ -23,6 +23,7 @@ export enum JourneyType {
   ADMIN_REJECTED_REGISTRATIONS,
   BENEFITS_BUNDLE,
   PARENT_REQUESTS,
+  CQC_MAIN_SERVICE_CHANGE,
 }
 
 export interface JourneyRoute {

@@ -1,0 +1,56 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <p class="asc-summary-box govuk-!-margin-bottom-12" data-testid="inactiveWorkplacesToEmail">
+      <span>Number of inactive workplaces to email:</span>
+      <br />
+      <strong class="govuk-!-font-size-36" data-testid="inactiveWorkplaces">
+        {{ inactiveWorkplaces | number }}
+      </strong>
+    </p>
+
+    <div class="govuk-!-margin-top-6 govuk__flex govuk-util__vertical-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a class="govuk__flex govuk__align-items-center" (click)="downloadReport($event)" href="#">
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Download report on inactive workplaces</span>
+        </a>
+      </div>
+    </div>
+    <div class="govuk-!-margin-top-6">
+      <button
+        class="govuk-button govuk-!-margin-right-9"
+        [disabled]="!inactiveWorkplaces"
+        (click)="confirmSendEmails($event, inactiveWorkplaces)"
+        type="submit"
+      >
+        Send
+        <strong>
+          {{ inactiveWorkplaces | number }}
+        </strong>
+        inactive workplace emails
+      </button>
+    </div>
+
+    <div data-testid="emailCampaignHistory">
+      <h2>History</h2>
+      <table class="govuk-table" *ngIf="history.length > 0; else noHistory">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Date</th>
+            <th class="govuk-table__header" scope="col">Total emails sent</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let row of history">
+            <td class="govuk-table__cell">{{ row.date | date: 'dd/MM/yyyy' }}</td>
+            <td class="govuk-table__cell">{{ row.emails | number }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noHistory>
+        <p>No emails have been sent yet.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
