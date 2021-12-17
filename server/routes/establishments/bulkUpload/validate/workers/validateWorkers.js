@@ -1,6 +1,6 @@
 const { validateWorkerCsv } = require('./validateWorkerCsv');
 const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
-const { validatePartTimeSalary } = require('./validatePartTimeSalary');
+const { validatePartTimeSalaryNotEqualToFTE } = require('./validatePartTimeSalaryNotEqualToFTE');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = [];
@@ -16,10 +16,11 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
   // used to check for duplicates
   const allWorkerKeys = createKeysForWorkers(myWorkers);
 
-  myWorkers.forEach((thisWorker) => {
-    // check if hours matches others in the same job and same annual pay
-    validatePartTimeSalary(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+  myJSONWorkers.forEach((thisWorker) => {
+    validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
+  });
 
+  myWorkers.forEach((thisWorker) => {
     // uniqueness for a worker is across both the establishment and the worker
     const workerKey = createWorkerKey(thisWorker.local, thisWorker.uniqueWorker);
     const changeWorkerIdKey = thisWorker.changeUniqueWorker
