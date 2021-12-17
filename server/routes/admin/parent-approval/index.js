@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const moment = require('moment-timezone');
-const config = require('../../../config/config');
 const notifications = require('../../../data/notifications');
 const uuid = require('uuid');
 
