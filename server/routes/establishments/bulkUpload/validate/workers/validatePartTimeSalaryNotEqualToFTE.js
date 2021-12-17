@@ -17,7 +17,7 @@ const validatePartTimeSalaryNotEqualToFTE = (thisWorker, myWorkers, myCurrentEst
 };
 
 const fullTimeEquivalentExists = (thisWorker, myWorkers, myCurrentEstablishments) => {
-  const workersToCheckinDB = myWorkers.filter((worker) => worker.status === 'NOCHANGE');
+  const workersToCheckinDB = myWorkers.filter((worker) => isSavingWorker(worker.status));
 
   return (
     fullTimeEquivalentWorkerExistsInFile(thisWorker, myWorkers) ||
@@ -58,12 +58,20 @@ const isPartTimeWorkerAndHasAnnualSalary = (thisWorker) =>
 const fullTimeEquivalentWorkerExistsInFile = (thisWorker, myWorkers) =>
   myWorkers.some(
     (worker) =>
-      worker.status !== 'NOCHANGE' &&
+      isSavingWorker(worker.status, true) &&
       worker.salaryInterval === 'Annually' &&
       worker.salary === thisWorker.salary &&
       worker.mainJob.role === thisWorker.mainJob.role &&
       parseFloat(worker.hours.contractedHours) > 36,
   );
+
+const isSavingWorker = (status, includeDelete = false) => {
+  const notSavedStatuses = ['NOCHANGE', 'UNCHECKED'];
+  if (includeDelete) {
+    notSavedStatuses.push('DELETE');
+  }
+  return !notSavedStatuses.includes(status);
+};
 
 const addPartTimeError = (csvWorkerSchemaErrors, thisWorker) =>
   csvWorkerSchemaErrors.push(ftePayCheckHasDifferentHours(thisWorker));
@@ -85,4 +93,5 @@ const ftePayCheckHasDifferentHours = (thisWorker) => {
 
 module.exports = {
   validatePartTimeSalaryNotEqualToFTE,
+  isSavingWorker,
 };

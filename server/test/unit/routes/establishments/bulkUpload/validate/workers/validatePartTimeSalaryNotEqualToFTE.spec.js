@@ -1,10 +1,10 @@
 const {
   validatePartTimeSalaryNotEqualToFTE,
+  isSavingWorker,
 } = require('../../../../../../../routes/establishments/bulkUpload/validate/workers/validatePartTimeSalaryNotEqualToFTE');
 const expect = require('chai').expect;
 
-// const validatePartTimeSalaryNotEqualToFTE = (thisWorker, myWorkers, myCurrentEstablishments, csvWorkerSchemaErrors) => {
-describe('validatePartTimeSalaryNotEqualToFTE()', () => {
+describe('validatePartTimeSalaryNotEqualToFTE', () => {
   const workers = () => [
     {
       status: 'UPDATE',
@@ -34,7 +34,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
     const myWorkers = workers();
 
     myWorkers.forEach((thisWorker) => {
-      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, [], csvWorkerSchemaErrors);
     });
     expect(csvWorkerSchemaErrors.length).equals(1);
     expect(csvWorkerSchemaErrors[0]).to.eql({
@@ -51,14 +51,14 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
     });
   });
 
-  it('shouldnt error when two workers have the same salary, different jobs and one is FTE and one is PTE ', async () => {
+  it('shouldnt error when two workers have the same salary, different jobs and one is FTE and one is PTE', async () => {
     const csvWorkerSchemaErrors = [];
 
     const myWorkers = workers();
     myWorkers[0].mainJob.role = 3;
 
     myWorkers.forEach((thisWorker) => {
-      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, [], csvWorkerSchemaErrors);
     });
     expect(csvWorkerSchemaErrors.length).equals(0);
   });
@@ -70,7 +70,7 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
     myWorkers[1].hours.contractedHours = 50;
 
     myWorkers.forEach((thisWorker) => {
-      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, [], csvWorkerSchemaErrors);
     });
     expect(csvWorkerSchemaErrors.length).equals(0);
   });
@@ -82,53 +82,32 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
     myWorkers[1].status = 'DELETE';
 
     myWorkers.forEach((thisWorker) => {
-      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, [], csvWorkerSchemaErrors);
     });
     expect(csvWorkerSchemaErrors.length).equals(0);
   });
 
   it('should only show errors on PTEs', async () => {
     const csvWorkerSchemaErrors = [];
-    const myWorkers = [
-      {
-        status: 'UPDATE',
-        localId: 'foo',
-        uniqueWorkerId: 'FTE',
-        hours: { contractedHours: '50' },
-        salary: '50',
-        salaryInterval: 'Annually',
-        mainJob: { role: '5' },
-        lineNumber: 1,
-      },
-      {
-        status: 'UPDATE',
-        localId: 'foo',
-        uniqueWorkerId: 'PTE',
-        hours: { contractedHours: '10' },
-        salary: '50',
-        salaryInterval: 'Annually',
-        mainJob: { role: '5' },
-        lineNumber: 2,
-      },
-      {
-        status: 'UPDATE',
-        localId: 'foo',
-        uniqueWorkerId: 'PTE 2',
-        hours: { contractedHours: '10' },
-        salary: '50',
-        salaryInterval: 'Annually',
-        mainJob: { role: '5' },
-        lineNumber: 3,
-      },
-    ];
+    const myWorkers = workers();
+    myWorkers.push({
+      status: 'UPDATE',
+      localId: 'foo',
+      uniqueWorkerId: 'PTE 2',
+      hours: { contractedHours: '10' },
+      salary: '50',
+      salaryInterval: 'Annually',
+      mainJob: { role: '5' },
+      lineNumber: 3,
+    });
 
     myWorkers.forEach((thisWorker) => {
-      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
+      validatePartTimeSalaryNotEqualToFTE(thisWorker, myWorkers, [], csvWorkerSchemaErrors);
     });
     expect(csvWorkerSchemaErrors.length).equals(2);
     expect(csvWorkerSchemaErrors[0]).to.eql({
       origin: 'Workers',
-      lineNumber: 2,
+      lineNumber: 1,
       warnCode: 1260,
       warnType: 'SALARY_ERROR',
       warning:
@@ -149,6 +128,28 @@ describe('validatePartTimeSalaryNotEqualToFTE()', () => {
       worker: 'PTE 2',
       name: 'foo',
       column: 'SALARY',
+    });
+  });
+
+  describe('isSavingWorker', () => {
+    ['NOCHANGE', 'UNCHECKED'].forEach((status) => {
+      it(`should return false if status is ${status}`, async () => {
+        expect(isSavingWorker(status)).to.deep.equal(false);
+      });
+    });
+
+    it('should return false if status is DELETE and includeDelete', async () => {
+      expect(isSavingWorker('DELETE', true)).to.deep.equal(false);
+    });
+
+    it('should return true if status is DELETE', async () => {
+      expect(isSavingWorker('DELETE')).to.deep.equal(true);
+    });
+
+    ['UPDATE', 'NEW'].forEach((status) => {
+      it(`should return true if status is ${status}`, async () => {
+        expect(isSavingWorker(status)).to.deep.equal(true);
+      });
     });
   });
 });

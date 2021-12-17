@@ -386,10 +386,6 @@ class Worker {
     return 5560;
   }
 
-  static get NI_WORKER_DUPLICATE_ERROR() {
-    return 5570;
-  }
-
   static headers(MAX_QUALS) {
     const extraHeaders = [];
 
@@ -2937,21 +2933,6 @@ class Worker {
       column: 'CHGUNIQUEWRKID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // Exceeds national insurance maximum
-  exceedsNationalInsuranceMaximum() {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.NI_WORKER_DUPLICATE_ERROR,
-      errType: 'NI_WORKER_DUPLICATE_ERROR',
-      error: 'NINUMBER is already associated with another full time worker record',
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'NINUMBER',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.NINUMBER,
     };
   }
 
