@@ -4,7 +4,7 @@ const models = require('../../../models');
 const getRegistrationNotes = async (req, res) => {
   try {
     const { establishmentUid } = req.params;
-    const establishment = await models.establishment.findByUid(establishmentUid);
+    const establishment = await models.establishment.findByUid(establishmentUid, true);
 
     if (!establishment) {
       return res.status(400).json({

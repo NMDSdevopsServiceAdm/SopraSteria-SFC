@@ -11,7 +11,7 @@ const parentRejectionConfirmation = 'Parent request rejected';
 
 const getParentRequests = async (req, res) => {
   try {
-    let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
+    let approvalResults = await models.Approvals.findAllPendingAndInProgress('BecomeAParent');
     let parentRequests = await _mapResults(approvalResults);
     return res.status(200).json(parentRequests);
   } catch (error) {

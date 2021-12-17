@@ -44,6 +44,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: true,
       },
+      Reviewer: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      InReview: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
     },
@@ -67,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Approvals.findAllPending = function (approvalType) {
+  Approvals.findAllPendingAndInProgress = function (approvalType) {
     return this.findAll({
       where: {
         ApprovalType: approvalType,
@@ -132,23 +140,47 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   Approvals.findbyEstablishmentId = function (establishmentId, approvalType, status) {
+    const params = status ? status : { [Op.or]: ['Pending', 'In progress'] };
+
     return this.findOne({
       where: {
         EstablishmentID: establishmentId,
         ApprovalType: approvalType,
-        Status: status,
+        Status: params,
       },
-      attributes: ['ID', 'UUID', 'EstablishmentID', 'UserID', 'createdAt', 'Status', 'Data'],
+      attributes: [
+        'ID',
+        'UUID',
+        'EstablishmentID',
+        'UserID',
+        'createdAt',
+        'Status',
+        'Data',
+        'Reviewer',
+        'InReview',
+        'createdAt',
+      ],
       include: [
         {
           model: sequelize.models.establishment,
           as: 'Establishment',
-          attributes: ['nmdsId', 'NameValue'],
+          attributes: [
+            'id',
+            'uid',
+            'nmdsId',
+            'NameValue',
+            'address1',
+            'address2',
+            'address3',
+            'postcode',
+            'town',
+            'county',
+          ],
         },
         {
           model: sequelize.models.user,
           as: 'User',
-          attributes: ['FullNameValue'],
+          attributes: ['FullNameValue', 'RegistrationID'],
         },
       ],
     });
