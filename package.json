@@ -103,7 +103,7 @@
     "sequelize-replace-enum-postgres": "^1.6.0",
     "serve-favicon": "^2.5.0",
     "sib-api-v3-sdk": "^8.2.1",
-    "slugify": "^1.4.6",
+    "slugify": "^1.6.4",
     "sqreen": "^1.64.2",
     "text-encoding-utf-8": "^1.0.2",
     "toobusy-js": "^0.5.1",
