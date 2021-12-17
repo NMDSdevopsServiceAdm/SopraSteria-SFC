@@ -20,61 +20,52 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
   myJSONWorkers.forEach((thisWorker) => {
     validatePartTimeSalaryNotEqualToFTE(thisWorker, myJSONWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
     validateWorkerUnderNationalInsuranceMaximum(thisWorker, myJSONWorkers, csvWorkerSchemaErrors);
-  });
 
-  myWorkers.forEach((thisWorker) => {
-    // uniqueness for a worker is across both the establishment and the worker
-    const workerKey = createWorkerKey(thisWorker.local, thisWorker.uniqueWorker);
-    const changeWorkerIdKey = thisWorker.changeUniqueWorker
-      ? createWorkerKey(thisWorker.local, thisWorker.changeUniqueWorker)
-      : null;
+    const workerKey = thisWorker.changeUniqueWorker
+      ? createWorkerKey(thisWorker.localId, thisWorker.changeUniqueWorker)
+      : createWorkerKey(thisWorker.localId, thisWorker.uniqueWorkerId);
 
-    if (
-      validateDuplicateWorkerID(
-        thisWorker,
-        allWorkerKeys,
-        changeWorkerIdKey,
-        workerKey,
-        allWorkersByKey,
-        myAPIWorkers,
-        csvWorkerSchemaErrors,
-      )
-    ) {
-      // does not yet exist - check this worker can be associated with a known establishment
-      const establishmentKey = thisWorker.local ? thisWorker.local.replace(/\s/g, '') : '';
+    const isNotDuplicateWorker = validateDuplicateWorkerID(
+      thisWorker,
+      allWorkerKeys,
+      workerKey,
+      allWorkersByKey,
+      myAPIWorkers,
+      csvWorkerSchemaErrors,
+    );
 
-      if (!allEstablishmentsByKey[establishmentKey]) {
-        // not found the associated establishment
-        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
+    if (!isNotDuplicateWorker) {
+      return;
+    }
 
-        // remove the entity
-        delete myAPIWorkers[thisWorker.lineNumber];
+    // Start refactoring from here, needs if moving out etc.
+
+    const establishmentKey = thisWorker.localId ? thisWorker.localId.replace(/\s/g, '') : '';
+
+    if (!allEstablishmentsByKey[establishmentKey]) {
+      csvWorkerSchemaErrors.push(uncheckedEstablishment(thisWorker));
+
+      delete myAPIWorkers[thisWorker.lineNumber];
+    } else {
+      // this worker is unique and can be associated to establishment
+      allWorkersByKey[workerKey] = thisWorker.lineNumber;
+
+      // associate this worker to the known establishment
+      const knownEstablishment = myAPIEstablishments[establishmentKey] ? myAPIEstablishments[establishmentKey] : null;
+
+      // key workers, to be used in training
+      workersKeyed[workerKey] = thisWorker._currentLine;
+
+      if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+        knownEstablishment.associateWorker(
+          myAPIWorkers[thisWorker.lineNumber].key,
+          myAPIWorkers[thisWorker.lineNumber],
+        );
       } else {
-        // this worker is unique and can be associated to establishment
-        allWorkersByKey[workerKey] = thisWorker.lineNumber;
-
-        // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-        if (changeWorkerIdKey) {
-          allWorkersByKey[changeWorkerIdKey] = thisWorker.lineNumber;
-        }
-
-        // associate this worker to the known establishment
-        const knownEstablishment = myAPIEstablishments[establishmentKey] ? myAPIEstablishments[establishmentKey] : null;
-
-        // key workers, to be used in training
-        workersKeyed[workerKey] = thisWorker._currentLine;
-
-        if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
-          knownEstablishment.associateWorker(
-            myAPIWorkers[thisWorker.lineNumber].key,
-            myAPIWorkers[thisWorker.lineNumber],
-          );
-        } else {
-          // this should never happen
-          console.error(
-            `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`,
-          );
-        }
+        // this should never happen
+        console.error(
+          `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorkerId})) with a known establishment.`,
+        );
       }
     }
   });
@@ -93,6 +84,22 @@ const createKeysForWorkers = (workers) => {
 const createWorkerKey = (localEstablishmentId, workerId) => {
   return (localEstablishmentId + workerId).replace(/\s/g, '');
 };
+
+const uncheckedEstablishment = (thisWorker) => {
+  return {
+    origin: 'Workers',
+    lineNumber: thisWorker.lineNumber,
+    errCode: UNCHECKED_ESTABLISHMENT_ERROR(),
+    errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
+    error: 'LOCALESTID does not exist in Workplace file',
+    source: thisWorker.localId,
+    column: 'LOCALESTID',
+    worker: thisWorker.uniqueWorkerId,
+    name: thisWorker.localId,
+  };
+};
+
+const UNCHECKED_ESTABLISHMENT_ERROR = () => 997;
 
 module.exports = {
   validateWorkers,
