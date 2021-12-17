@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
@@ -32,7 +30,6 @@ export class ParentRequestIndividualComponent implements OnInit {
     private alertService: AlertService,
     public formBuilder: FormBuilder,
     public switchWorkplaceService: SwitchWorkplaceService,
-    public breadcrumbService: BreadcrumbService,
     public cqcStatusChangeService: CqcStatusChangeService,
     private router: Router,
   ) {}
@@ -42,10 +39,5 @@ export class ParentRequestIndividualComponent implements OnInit {
     this.registration = this.route.snapshot.data.approval;
     this.userFullName = this.loggedInUser.fullname;
     this.notes = this.route.snapshot.data.notes;
-    this.setBreadcrumbs();
-  }
-
-  public setBreadcrumbs(): void {
-    this.breadcrumbService.show(JourneyType.PARENT_REQUESTS);
   }
 }

@@ -10,8 +10,6 @@ enum Path {
   REJECTED = '/sfcadmin/registrations/rejected',
   PENDING_REGISTRATION = '/sfcadmin/registrations/pending/:establishmentUid',
   REJECTED_REGISTRATION = '/sfcadmin/registrations/rejected/:establishmentUid',
-  PARENT_REQUESTS = '/sfcadmin/parent-requests',
-  PARENT_REQUESTS_INDIVIDUAL = '/sfcadmin/parent-requests/:establishmentUid',
   CQC_MAIN_SERVICE_CHANGE = '/sfcadmin/cqc-main-service-change',
   CQC_MAIN_SERVICE_CHANGE_REQUEST = '/sfcadmin/cqc-main-service -change/:establishmentUid',
 }
@@ -89,7 +87,6 @@ export const adminRejectedRegistrationJourney: JourneyRoute = {
   ],
 };
 
-export const adminParentRequestJournery: JourneyRoute = {
 export const adminCqcStatusChangeJournery: JourneyRoute = {
   children: [
     {
@@ -97,12 +94,6 @@ export const adminCqcStatusChangeJournery: JourneyRoute = {
       path: Path.ADMIN,
       children: [
         {
-          title: 'Parent requests',
-          path: Path.PARENT_REQUESTS,
-          children: [
-            {
-              title: 'Parent Individual Request',
-              path: Path.PARENT_REQUESTS_INDIVIDUAL,
           title: 'CQC main service change',
           path: Path.CQC_MAIN_SERVICE_CHANGE,
           children: [
