@@ -5,9 +5,6 @@ import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import {
-  AdminUnlockConfirmationDialogComponent,
-} from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
 import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
@@ -48,15 +45,8 @@ export class SearchForUserComponent extends SearchDirective {
     );
   }
 
-  protected changeStatus(username: string, index: number, event: Event): void {
+  public unlockWorkplaceUser(username: string, index: number, event: Event): void {
     event.preventDefault();
-    const data = {
-      username,
-      index,
-      removeUnlock: () => {
-        this.results[index].isLocked = false;
-      },
-    };
-    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
+    this.unlockUser(username, index, this.results[index]);
   }
 }

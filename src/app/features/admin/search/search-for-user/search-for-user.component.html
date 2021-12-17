@@ -95,7 +95,7 @@
                           </td>
                           <td class="govuk-table__cell govuk-!-font-weight-regular">
                             <a
-                              (click)="changeStatus(item.username, index, $event)"
+                              (click)="unlockWorkplaceUser(item.username, index, $event)"
                               href="#"
                               *ngIf="item.isLocked; else notLocked"
                               >Yes, unlock</a

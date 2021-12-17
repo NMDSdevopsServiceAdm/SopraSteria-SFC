@@ -992,7 +992,7 @@ module.exports = function (sequelize, DataTypes) {
           include: [
             {
               model: sequelize.models.login,
-              attributes: ['username', 'status'],
+              attributes: ['username', 'isActive'],
             },
           ],
         },

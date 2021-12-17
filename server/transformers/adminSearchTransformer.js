@@ -10,7 +10,7 @@ const EstablishmentTransformer = async (establishments) => {
             username: user.login ? user.login.username : '',
             securityQuestion: user.SecurityQuestionValue,
             securityAnswer: user.SecurityQuestionAnswerValue,
-            isLocked: user.login && user.login.status === 'Locked',
+            isLocked: user.login && !user.login.isActive,
           };
         })
       : [];

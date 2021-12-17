@@ -4,6 +4,9 @@ import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import {
+  AdminUnlockConfirmationDialogComponent,
+} from '@shared/components/admin-unlock-confirmation/admin-unlock-confirmation';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -30,7 +33,16 @@ export class SearchDirective implements OnInit, OnDestroy {
 
   public onSubmit(): void {}
 
-  protected changeStatus(username: string, index: number, event: Event): void {}
+  public unlockUser(username: string, index: number, user: any): void {
+    const data = {
+      username,
+      index,
+      removeUnlock: () => {
+        user.isLocked = false;
+      },
+    };
+    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
+  }
 
   protected errorMessage(): void {
     this.alertService.addAlert({
