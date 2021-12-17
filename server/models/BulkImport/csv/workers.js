@@ -101,12 +101,6 @@ class Worker {
     this._amhp = null;
   }
 
-  static get UNCHECKED_ESTABLISHMENT_ERROR() {
-    return 997;
-  }
-  static get DUPLICATE_ERROR() {
-    return 998;
-  }
   static get HEADERS_ERROR() {
     return 999;
   }
@@ -2906,51 +2900,6 @@ class Worker {
     }
   }
 
-  // add a duplicate validation error to the current set
-  addDuplicate(UNIQUEWORKERID) {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.DUPLICATE_ERROR,
-      errType: 'DUPLICATE_ERROR',
-      error: `UNIQUEWORKERID ${UNIQUEWORKERID} is not unique`,
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'UNIQUEWORKERID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // add a duplicate validation error to the current set
-  addChgDuplicate(CHGUNIQUEWORKERID) {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.DUPLICATE_ERROR,
-      errType: 'DUPLICATE_ERROR',
-      error: `CHGUNIQUEWRKID ${CHGUNIQUEWORKERID} is not unique`,
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'CHGUNIQUEWRKID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // add unchecked establishment reference validation error
-  uncheckedEstablishment() {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
-      errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
-      error: 'LOCALESTID does not exist in Workplace file',
-      source: this._currentLine.LOCALESTID,
-      column: 'LOCALESTID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
@@ -3114,6 +3063,7 @@ class Worker {
       extraFields.mainJobRoleId = this.mainJobRoleId;
       extraFields.otherJobIds = this.otherJobIds;
       extraFields.lineNumber = this._lineNumber;
+      extraFields._currentLine = this._currentLine;
     }
 
     return {
