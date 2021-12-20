@@ -2,6 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Note } from '@core/model/registrations.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 
 @Component({
@@ -21,5 +22,6 @@ export class AddNoteComponent {
   constructor(
     public registrationsService: RegistrationsService,
     public cqcStatusChangeService: CqcStatusChangeService,
+    public parentRequestsService: ParentRequestsService,
   ) {}
 }

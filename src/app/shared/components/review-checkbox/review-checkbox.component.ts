@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class ReviewCheckboxComponent {
   constructor(
     public registrationsService: RegistrationsService,
     public cqcStatusChangeService: CqcStatusChangeService,
+    public parentRequestsService: ParentRequestsService,
   ) {}
 
   public setStatusClass(): string {
