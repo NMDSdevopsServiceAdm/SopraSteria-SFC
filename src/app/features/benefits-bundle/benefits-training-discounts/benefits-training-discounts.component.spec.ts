@@ -45,7 +45,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
     };
   }
 
-  it('should render a FirstLoginWizardComponent', async () => {
+  it('should render a BenefitsTrainingDiscountsComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

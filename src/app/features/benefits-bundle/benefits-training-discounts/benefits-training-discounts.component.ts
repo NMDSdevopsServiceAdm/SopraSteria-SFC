@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Page } from '@core/model/page.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
@@ -9,7 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
   templateUrl: './benefits-training-discounts.component.html',
 })
 export class BenefitsTrainingDiscountsComponent implements OnInit {
-  public pages;
+  public pages: Page;
   public workplaceName: string;
   public revealTitle = `What's an endorsed training provider?`;
 
