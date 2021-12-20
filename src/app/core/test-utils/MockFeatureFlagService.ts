@@ -25,6 +25,11 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
           return resolve(true);
         });
       }
+      if (flagName === 'endorsedProvidersLink') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
       if (flagName === 'benefitsBundle') {
         return new Promise((resolve) => {
           return resolve(true);

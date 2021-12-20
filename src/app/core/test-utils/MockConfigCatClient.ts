@@ -69,6 +69,12 @@ export const mockConfigCatClient = {
       });
     }
 
+    if (flagName === 'endorsedProvidersLink') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+
     return new Promise((resolve) => {
       return resolve(defaultSetting);
     });
