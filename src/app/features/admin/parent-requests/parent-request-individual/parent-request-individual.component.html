@@ -5,6 +5,13 @@
       Receveived {{ registration.createdAt | date: 'dd MMM yyyy' }},
       {{ registration.createdAt | date: 'hh:mma' | lowercase }}
     </p>
+    <app-review-checkbox
+      [toggleCheckbox]="toggleCheckbox"
+      [registration]="registration"
+      [userFullName]="userFullName"
+      [checkBoxError]="checkBoxError"
+      [getUpdatedRegistration]="getUpdatedRegistration"
+    ></app-review-checkbox>
     <h2 class="govuk-heading-m">Workplace details</h2>
     <dl class="govuk-summary-list asc-summarylist-border-top">
       <div class="govuk-summary-list__row">

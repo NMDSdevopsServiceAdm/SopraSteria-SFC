@@ -47,6 +47,30 @@ export class ParentRequestIndividualComponent implements OnInit {
     this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   };
 
+  public toggleCheckbox(target: HTMLInputElement): void {
+    const { checked } = target;
+
+    const body = {
+      uid: this.registration.establishment.establishmentUid,
+      status: checked ? 'In progress' : 'Pending',
+      reviewer: checked ? this.userFullName : null,
+      inReview: checked,
+    };
+    console.log(body.status);
+    this.parentRequestsService.updateApprovalStatus(body).subscribe(
+      () => {
+        this.getUpdatedRegistration();
+      },
+      (error: HttpErrorResponse) => {
+        if (error.status === 400) {
+          this.checkBoxError = 'This approval is already in progress';
+        } else {
+          this.checkBoxError = 'There was a server error';
+        }
+      },
+    );
+  }
+
   private setupNotesForm(): void {
     this.notesForm = this.formBuilder.group({
       notes: ['', { validators: [Validators.required], updateOn: 'submit' }],
@@ -84,6 +108,17 @@ export class ParentRequestIndividualComponent implements OnInit {
       },
       () => {
         this.notesError = 'There was an error retrieving the notes';
+      },
+    );
+  }
+
+  public getUpdatedRegistration(): void {
+    this.parentRequestsService.getIndividualParentRequest(this.registration.establishment.establishmentUid).subscribe(
+      (data) => {
+        this.registration = data;
+      },
+      () => {
+        this.checkBoxError = 'There was an error retrieving the approval';
       },
     );
   }

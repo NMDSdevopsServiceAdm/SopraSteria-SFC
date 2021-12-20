@@ -129,6 +129,7 @@ const _notify = async (approvalId, userUid, establishmentId) => {
 router.route('/').post(parentApproval);
 router.route('/').get(getParentRequests);
 router.route('/:establishmentUid').get(getIndividualParentRequest);
+router.use('/updateStatus', require('./updateStatus.js'));
 
 module.exports = router;
 module.exports.parentApproval = parentApproval;

@@ -26,10 +26,13 @@ export class ParentRequestsService {
     return this.getParentRequestByEstablishmentId(establishmentId).pipe(map((result) => result != null));
   }
 
-  public parentApproval(data: object) {
-    return this.http.post<any>('/api/admin/parent-approval/', data);
+  public updateApprovalStatus(data: object) {
+    return this.http.post<any>('/api/admin/parent-approval/updateStatus', data);
   }
 
+  public parentApproval(data: object) {
+    return this.http.post<any>('/api/admin/parent-approval', data);
+  }
   public becomeParent() {
     return this.http.post<any>('/api/approvals/become-a-parent/', null);
   }
