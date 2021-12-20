@@ -25,17 +25,19 @@
         </a>
       </div>
 
-      <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
-        <p>
-          We've negotiated some great discounts from endorsed providers who offer high quality learning and development
-          to the social care sector.
-        </p>
-        <p>
-          <a href="/benefits-bundle/training-discounts"
-            >View discounts from Skills for Care's endorsed training providers</a
-          >
-        </p>
-      </app-benefit-accordion>
+      <ng-container *ngIf="endorsedProvidersLinkFlag">
+        <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
+          <p>
+            We've negotiated some great discounts from endorsed providers who offer high quality learning and
+            development to the social care sector.
+          </p>
+          <p>
+            <a href="/benefits-bundle/training-discounts"
+              >View discounts from Skills for Care's endorsed training providers</a
+            >
+          </p>
+        </app-benefit-accordion>
+      </ng-container>
 
       <app-benefit-accordion [benefit]="benefits[1]" [index]="1" (toggleEmitter)="toggleAccordion(1)">
         <p>
