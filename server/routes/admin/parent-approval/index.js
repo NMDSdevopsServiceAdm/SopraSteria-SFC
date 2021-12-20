@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const moment = require('moment-timezone');
-const config = require('../../../config/config');
 const notifications = require('../../../data/notifications');
 const uuid = require('uuid');
 
@@ -11,7 +9,7 @@ const parentRejectionConfirmation = 'Parent request rejected';
 
 const getParentRequests = async (req, res) => {
   try {
-    let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
+    let approvalResults = await models.Approvals.findAllPendingAndInProgress('BecomeAParent');
     let parentRequests = await _mapResults(approvalResults);
     return res.status(200).json(parentRequests);
   } catch (error) {
@@ -44,7 +42,8 @@ const _mapResults = async (approvalResults) => {
       workplaceId: approval.Establishment.nmdsId,
       userName: approval.User.FullNameValue,
       orgName: approval.Establishment.NameValue,
-      requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma'),
+      requested: approval.createdAt,
+      status: approval.Status,
     };
   });
 };

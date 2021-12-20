@@ -1,17 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const moment = require('moment-timezone');
-const config = require('../../../config/config');
 const mainServiceRouter = require('../../establishments/mainService');
 const Establishment = require('../../../models/classes/establishment');
+const { convertIndividualCqcStatusChange } = require('../../../utils/cqcStatusChangeUtils');
 
 const cqcStatusChangeApprovalConfirmation = 'CQC status change approved';
 const cqcStatusChangeRejectionConfirmation = 'CQC status change rejected';
 
 const getCqcStatusChanges = async (req, res) => {
   try {
-    let approvalResults = await models.Approvals.findAllPending('CqcStatusChange');
+    let approvalResults = await models.Approvals.findAllPendingAndInProgress('CqcStatusChange');
     let cqcStatusChanges = await _mapResults(approvalResults);
     return res.status(200).json(cqcStatusChanges);
   } catch (error) {
@@ -30,6 +29,27 @@ const cqcStatusChanges = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(400).send();
+  }
+};
+
+const getIndividualCqcStatusChange = async (req, res) => {
+  try {
+    const { establishmentUid } = req.params;
+    const establishment = await models.establishment.findByUid(establishmentUid);
+
+    if (!establishment) {
+      return res.status(400).json({
+        message: 'Establishment could not be found',
+      });
+    }
+
+    const individualCqcStatusChange = await models.Approvals.findbyEstablishmentId(establishment.id, 'CqcStatusChange');
+
+    const convertedIndividualCqcStatusChange = convertIndividualCqcStatusChange(individualCqcStatusChange);
+    res.status(200).send(convertedIndividualCqcStatusChange);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'There was an error retrieving the cqc status change' });
   }
 };
 
@@ -88,6 +108,8 @@ const _updateApprovalStatus = async (approvalId, status) => {
   let singleApproval = await models.Approvals.findbyId(approvalId);
   if (singleApproval) {
     singleApproval.Status = status;
+    singleApproval.InReview = false;
+    singleApproval.Reviewer = null;
     await singleApproval.save();
   } else {
     throw `Can't find approval item with id ${approvalId}`;
@@ -122,9 +144,13 @@ const _updateMainService = async (req, res) => {
 
 router.route('/').post(cqcStatusChanges);
 router.route('/').get(getCqcStatusChanges);
+router.route('/:establishmentUid').get(getIndividualCqcStatusChange);
+
+router.use('/updateStatus', require('./updateStatus.js'));
 
 module.exports = router;
 module.exports.cqcStatusChanges = cqcStatusChanges;
 module.exports.getCqcStatusChanges = getCqcStatusChanges;
+module.exports.getIndividualCqcStatusChange = getIndividualCqcStatusChange;
 module.exports.cqcStatusChangeApprovalConfirmation = cqcStatusChangeApprovalConfirmation;
 module.exports.cqcStatusChangeRejectionConfirmation = cqcStatusChangeRejectionConfirmation;
