@@ -59,7 +59,7 @@ export const mockConfigCatClient = {
     }
     if (flagName === 'benefitsBundle') {
       return new Promise((resolve) => {
-        return resolve(true);
+        return resolve(false);
       });
     }
 

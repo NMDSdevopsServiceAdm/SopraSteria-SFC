@@ -16,10 +16,6 @@ export class BenefitsBundleComponent implements OnInit {
   public endorsedProvidersLinkFlag: boolean;
   public benefits = [
     {
-      title: "Discounts from Skills for Care's endorsed training providers",
-      open: false,
-    },
-    {
       title: '10% off all publications in the Skills for Care bookshop',
       open: false,
     },
@@ -63,6 +59,16 @@ export class BenefitsBundleComponent implements OnInit {
       'endorsedProvidersLink',
       false,
     );
+    this.addEndorsedProvidersLink();
+  }
+
+  private addEndorsedProvidersLink(): void {
+    if (this.endorsedProvidersLinkFlag) {
+      this.benefits.push({
+        title: "Discounts from Skills for Care's endorsed training providers",
+        open: false,
+      });
+    }
   }
 
   public toggleAll(event: Event): void {
