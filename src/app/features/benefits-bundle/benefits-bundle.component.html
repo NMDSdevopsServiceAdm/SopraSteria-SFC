@@ -25,7 +25,7 @@
         </a>
       </div>
 
-      <ng-container *ngIf="endorsedProvidersLinkFlag">
+      <ng-container *ngIf="this.endorsedProvidersLinkFlag">
         <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
           <p>
             We've negotiated some great discounts from endorsed providers who offer high quality learning and
