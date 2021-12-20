@@ -39,4 +39,9 @@ export class ParentRequestIndividualComponent implements OnInit {
     this.userFullName = this.loggedInUser.fullname;
     this.notes = this.route.snapshot.data.notes;
   }
+
+  public navigateToWorkplace = (id: string, username: string, nmdsId: string, event: Event): void => {
+    event.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
+  };
 }
