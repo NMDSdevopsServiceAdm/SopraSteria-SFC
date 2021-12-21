@@ -50,7 +50,6 @@ export class ParentRequestIndividualComponent implements OnInit {
       reviewer: checked ? this.userFullName : null,
       inReview: checked,
     };
-    console.log(body.status);
     this.parentRequestsService.updateApprovalStatus(body).subscribe(
       () => {
         this.getUpdatedRegistration();
