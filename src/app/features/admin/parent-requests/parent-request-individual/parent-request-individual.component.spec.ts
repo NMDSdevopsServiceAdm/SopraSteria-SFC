@@ -1,7 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -12,6 +14,7 @@ import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplace
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs/internal/observable/of';
 
 import { ParentRequestIndividualComponent } from './parent-request-individual.component';
 
@@ -88,7 +91,7 @@ fdescribe('ParentRequestIndividualComponent', () => {
       const { fixture, getByText } = await setup();
 
       const approveButton = getByText('Approve');
-      const dialogMessage = `You're about to approve this CQC main service change`;
+      const dialogMessage = `You're about to approve this parent request`;
 
       fireEvent.click(approveButton);
       fixture.detectChanges();
@@ -99,43 +102,43 @@ fdescribe('ParentRequestIndividualComponent', () => {
       expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
     });
 
-    // it('shows workplace name in confirmation dialog', async () => {
-    //   const { component, fixture, getByText } = await setup();
+    it('shows workplace name in confirmation dialog', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    //   const approveButton = getByText('Approve');
-    //   const workplaceName = component.registration.establishment.name;
+      const approveButton = getByText('Approve');
+      const workplaceName = component.registration.establishment.name;
 
-    //   fireEvent.click(approveButton);
-    //   fixture.detectChanges();
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
 
-    //   const dialog = await within(document.body).findByRole('dialog');
+      const dialog = await within(document.body).findByRole('dialog');
 
-    //   expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
-    // });
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
 
-    //   it('should call registrationApproval in registrations service when approval confirmed', async () => {
-    //     const { component, fixture, getByText } = await setup();
+    it('should call parentApproval in the parent requests service when approval confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    //     const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
-    //     spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
-    //     const approveButton = getByText('Approve');
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(true));
+      const approveButton = getByText('Approve');
 
-    //     fireEvent.click(approveButton);
-    //     fixture.detectChanges();
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
 
-    //     const dialog = await within(document.body).findByRole('dialog');
-    //     const approvalConfirmButton = within(dialog).getByText('Approve this change');
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
 
-    //     fireEvent.click(approvalConfirmButton);
+      fireEvent.click(approvalConfirmButton);
 
-    //     expect(cqcStatusChangeService.CqcStatusChangeApproval).toHaveBeenCalledWith({
-    //       approvalId: component.registration.requestId,
-    //       establishmentId: component.registration.establishment.establishmentId,
-    //       userId: component.registration.userId,
-    //       rejectionReason: 'Approved',
-    //       approve: true,
-    //     });
-    //   });
+      expect(parentRequestsService.parentApproval).toHaveBeenCalledWith({
+        approvalId: component.registration.requestId,
+        establishmentId: component.registration.establishment.establishmentId,
+        userId: component.registration.userId,
+        rejectionReason: 'Approved',
+        approve: true,
+      });
+    });
 
     //   it('should display approval server error message when server error', async () => {
     //     const { fixture, getByText } = await setup();

@@ -41,39 +41,39 @@ export class ParentRequestIndividualComponent implements OnInit {
     this.setupNotesForm();
   }
 
-  public approveOrRejectCqcChange(isApproval: boolean): void {
+  public approveOrRejectParentRequest(isApproval: boolean): void {
     const dialog = this.openApprovalOrRejectionDialog(isApproval);
 
-    // dialog.afterClosed.subscribe((confirmed) => {
-    //   if (confirmed) {
-    //     const data = {
-    //       approvalId: this.registration.requestId,
-    //       establishmentId: this.registration.establishment.establishmentId,
-    //       userId: this.registration.userId,
-    //       rejectionReason: isApproval ? 'Approved' : 'Rejected',
-    //       approve: isApproval,
-    //     };
+    dialog.afterClosed.subscribe((confirmed) => {
+      if (confirmed) {
+        const data = {
+          approvalId: this.registration.requestId,
+          establishmentId: this.registration.establishment.establishmentId,
+          userId: this.registration.userId,
+          rejectionReason: isApproval ? 'Approved' : 'Rejected',
+          approve: isApproval,
+        };
 
-    //     this.cqcStatusChangeService.CqcStatusChangeApproval(data).subscribe(
-    //       () => {
-    //         this.router.navigate(['/sfcadmin', 'cqc-main-service-change']);
-    //         this.showApprovalOrRejectionConfirmationAlert(isApproval);
-    //       },
-    //       () => {
-    //         this.approvalOrRejectionServerError = `There was an error completing the ${
-    //           isApproval ? 'approval' : 'rejection'
-    //         }`;
-    //       },
-    //     );
-    //   }
-    // });
+        this.parentRequestsService.parentApproval(data).subscribe(
+          () => {
+            //     this.router.navigate(['/sfcadmin', 'cqc-main-service-change']);
+            //     this.showApprovalOrRejectionConfirmationAlert(isApproval);
+          },
+          //   () => {
+          //     this.approvalOrRejectionServerError = `There was an error completing the ${
+          //       isApproval ? 'approval' : 'rejection'
+          //     }`;
+          //   },
+        );
+      }
+    });
   }
 
   private openApprovalOrRejectionDialog(isApproval: boolean): Dialog<ApprovalOrRejectionDialogComponent> {
     return this.dialogService.open(ApprovalOrRejectionDialogComponent, {
       workplaceName: this.registration.establishment.name,
-      approvalName: 'CQC main service change',
-      approvalType: 'change',
+      approvalName: 'parent request',
+      approvalType: 'request',
       isApproval,
     });
   }
