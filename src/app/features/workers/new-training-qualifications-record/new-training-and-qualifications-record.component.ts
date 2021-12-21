@@ -77,6 +77,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
     this.getFilterByStatus(this.filterTrainingByDefault);
+    this.setReturnRoute();
   }
 
   public setTrainingAndQualifications(): void {
