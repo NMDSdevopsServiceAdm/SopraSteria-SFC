@@ -41,7 +41,6 @@ describe('updateStatus', () => {
   beforeEach(() => {
     const request = {
       method: 'POST',
-      url: '/api/admin/cqc-status-change/updateRegistrationStatus',
       body: {
         status: 'In progress',
         uid: 'someuid',

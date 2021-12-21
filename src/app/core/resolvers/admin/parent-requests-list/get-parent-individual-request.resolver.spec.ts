@@ -22,7 +22,7 @@ describe('GetIndividualParentRequestResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getIndividualCqcStatusChange with uid in route', () => {
+  it('should call getIndividualParentRequest with uid in route', () => {
     const parentRequestsService = TestBed.inject(ParentRequestsService);
     spyOn(parentRequestsService, 'getIndividualParentRequest').and.callThrough();
 

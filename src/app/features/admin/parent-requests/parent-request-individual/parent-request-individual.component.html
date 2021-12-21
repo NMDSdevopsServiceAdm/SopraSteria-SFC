@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">Parent request: {{ registration.establishment.name }}</h2>
     <p>
-      Receveived {{ registration.createdAt | date: 'dd MMM yyyy' }},
+      Received {{ registration.createdAt | date: 'dd MMM yyyy' }},
       {{ registration.createdAt | date: 'hh:mma' | lowercase }}
     </p>
     <app-review-checkbox
