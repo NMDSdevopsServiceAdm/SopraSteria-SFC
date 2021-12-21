@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Note } from '@core/model/registrations.model';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -295,6 +296,181 @@ describe('ParentRequestIndividualComponent', () => {
       const errorMessage = 'There was an error retrieving the approval';
       const checkbox = getByTestId('reviewingRegistrationCheckbox');
       fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+  });
+
+  describe('Notes component', () => {
+    it('should show a textbox', async () => {
+      const { getByTestId, queryByText } = await setup();
+
+      const textbox = getByTestId('notesTextbox');
+      const addNotesButton = queryByText('Add this note');
+
+      expect(textbox).toBeTruthy();
+      expect(addNotesButton).toBeTruthy();
+    });
+
+    it('should not show any notes when there are not notes for this registration', async () => {
+      const { queryByTestId, component } = await setup();
+
+      const notes = component.notes;
+      const notesList = queryByTestId('notesList');
+
+      expect(notes).toBeFalsy();
+      expect(notesList).toBeFalsy();
+    });
+    it('should show a list of notes when there are notes associated with this registration', async () => {
+      const notInProgress = false;
+      const noReviewer = null;
+      const existingNotes = true;
+      const { component, queryByTestId } = await setup(notInProgress, noReviewer, existingNotes);
+
+      const notes = component.notes;
+      const notesList = queryByTestId('notesList');
+
+      expect(notes.length).toEqual(2);
+      expect(notesList).toBeTruthy();
+    });
+
+    it('should call addRegistrationNote when the note is submitted', async () => {
+      const { getByText, component, fixture } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      const addRegistrationNotesSpy = spyOn(registrationsService, 'addRegistrationNote').and.callThrough();
+
+      const form = component.notesForm;
+      form.controls['notes'].setValue('This is a note for this registration');
+      form.controls['notes'].markAsDirty();
+      const addNotesButton = getByText('Add this note');
+
+      fireEvent.click(addNotesButton);
+      fixture.detectChanges();
+
+      const expectedBody = {
+        note: 'This is a note for this registration',
+        establishmentId: component.registration.establishment.establishmentId,
+        noteType: 'Main Service',
+        userUid: '123',
+      };
+
+      expect(addRegistrationNotesSpy).toHaveBeenCalledWith(expectedBody);
+    });
+
+    it('should submit a note and update the list of notes', async () => {
+      const { component, getByText, fixture, queryByTestId } = await setup();
+      const addedNote = [
+        {
+          createdAt: new Date('01/09/2021'),
+          note: 'This is a note for this registration',
+          user: { FullNameValue: 'adminUser' },
+        },
+      ];
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'addRegistrationNote').and.returnValue(of({}));
+      const getRegistrationNotesSpy = spyOn(registrationsService, 'getRegistrationNotes').and.returnValue(
+        of(addedNote as Note[]),
+      );
+
+      const form = component.notesForm;
+      form.controls['notes'].setValue('This is a note for this registration');
+      form.controls['notes'].markAsDirty();
+      const addNotesButton = getByText('Add this note');
+
+      fireEvent.click(addNotesButton);
+      fixture.detectChanges();
+
+      const notesList = queryByTestId('notesList');
+
+      expect(notesList).toBeTruthy();
+      expect(getRegistrationNotesSpy).toHaveBeenCalled();
+    });
+
+    it('should not be able to submit the note when textarea is empty', async () => {
+      const { getByText } = await setup();
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      const addRegistrationNoteSpy = spyOn(registrationsService, 'addRegistrationNote');
+
+      const addNotesButton = getByText('Add this note');
+      fireEvent.click(addNotesButton);
+
+      expect(addRegistrationNoteSpy).not.toHaveBeenCalled();
+    });
+
+    it('should show an error message when an error is thrown adding registration note', async () => {
+      const { getByText, getAllByText, component, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        error: {},
+      });
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'addRegistrationNote').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'There was an error adding the note';
+
+      const form = component.notesForm;
+      form.controls['notes'].setValue('This is a note for this registration');
+      form.controls['notes'].markAsDirty();
+      const addNotesButton = getByText('Add this note');
+
+      fireEvent.click(addNotesButton);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+
+    it('should show an error message when there is a problem with the service', async () => {
+      const { getByText, getAllByText, component, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error',
+        error: {},
+      });
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'addRegistrationNote').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'There was a server error';
+
+      const form = component.notesForm;
+      form.controls['notes'].setValue('This is a note for this registration');
+      form.controls['notes'].markAsDirty();
+      const addNotesButton = getByText('Add this note');
+
+      fireEvent.click(addNotesButton);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+
+    it('should show an error message when there is a problem retrieving notes', async () => {
+      const { getByText, getAllByText, component, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error',
+        error: {},
+      });
+
+      const registrationsService = TestBed.inject(RegistrationsService);
+      spyOn(registrationsService, 'addRegistrationNote').and.returnValue(of({}));
+      spyOn(registrationsService, 'getRegistrationNotes').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'There was an error retrieving the notes';
+
+      const form = component.notesForm;
+      form.controls['notes'].setValue('This is a note for this registration');
+      form.controls['notes'].markAsDirty();
+      const addNotesButton = getByText('Add this note');
+
+      fireEvent.click(addNotesButton);
       fixture.detectChanges();
 
       expect(getAllByText(errorMessage).length).toBe(1);
