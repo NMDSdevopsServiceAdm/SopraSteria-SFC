@@ -11,7 +11,7 @@ import { MockRegistrationsService } from '@core/test-utils/MockRegistrationsServ
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { ParentRequestIndividualComponent } from './parent-request-individual.component';
 
@@ -81,5 +81,103 @@ fdescribe('ParentRequestIndividualComponent', () => {
   it('should render a CqcIndividualMainServiceChangeComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('Approvals', () => {
+    it('shows dialog with approval confirmation message when Approve button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const dialogMessage = `You're about to approve this CQC main service change`;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+    });
+
+    // it('shows workplace name in confirmation dialog', async () => {
+    //   const { component, fixture, getByText } = await setup();
+
+    //   const approveButton = getByText('Approve');
+    //   const workplaceName = component.registration.establishment.name;
+
+    //   fireEvent.click(approveButton);
+    //   fixture.detectChanges();
+
+    //   const dialog = await within(document.body).findByRole('dialog');
+
+    //   expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    // });
+
+    //   it('should call registrationApproval in registrations service when approval confirmed', async () => {
+    //     const { component, fixture, getByText } = await setup();
+
+    //     const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
+    //     spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
+    //     const approveButton = getByText('Approve');
+
+    //     fireEvent.click(approveButton);
+    //     fixture.detectChanges();
+
+    //     const dialog = await within(document.body).findByRole('dialog');
+    //     const approvalConfirmButton = within(dialog).getByText('Approve this change');
+
+    //     fireEvent.click(approvalConfirmButton);
+
+    //     expect(cqcStatusChangeService.CqcStatusChangeApproval).toHaveBeenCalledWith({
+    //       approvalId: component.registration.requestId,
+    //       establishmentId: component.registration.establishment.establishmentId,
+    //       userId: component.registration.userId,
+    //       rejectionReason: 'Approved',
+    //       approve: true,
+    //     });
+    //   });
+
+    //   it('should display approval server error message when server error', async () => {
+    //     const { fixture, getByText } = await setup();
+
+    //     const approvalServerErrorMessage = 'There was an error completing the approval';
+
+    //     const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
+    //     spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(throwError('Service unavailable'));
+    //     const approveButton = getByText('Approve');
+
+    //     fireEvent.click(approveButton);
+    //     fixture.detectChanges();
+
+    //     const dialog = await within(document.body).findByRole('dialog');
+    //     const approvalConfirmButton = within(dialog).getByText('Approve this change');
+
+    //     fireEvent.click(approvalConfirmButton);
+
+    //     expect(getByText(approvalServerErrorMessage, { exact: false })).toBeTruthy();
+    //   });
+
+    //   it('should show approval alert when approval confirmed', async () => {
+    //     const { component, fixture, getByText, alertServiceSpy } = await setup();
+
+    //     const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
+    //     spyOn(cqcStatusChangeService, 'CqcStatusChangeApproval').and.returnValue(of(true));
+
+    //     const approveButton = getByText('Approve');
+    //     const workplaceName = component.registration.establishment.name;
+
+    //     fireEvent.click(approveButton);
+    //     fixture.detectChanges();
+
+    //     const dialog = await within(document.body).findByRole('dialog');
+    //     const approvalConfirmButton = within(dialog).getByText('Approve this change');
+
+    //     fireEvent.click(approvalConfirmButton);
+
+    //     expect(alertServiceSpy).toHaveBeenCalledWith({
+    //       type: 'success',
+    //       message: `The main service change of workplace ${workplaceName} has been approved`,
+    //     });
+    //   });
   });
 });

@@ -62,6 +62,21 @@
     ></app-add-note>
     <div class="govuk-grid-column-three-quarters">
       <div class="govuk-button-group">
+        <button
+          class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
+          (click)="approveOrRejectCqcChange(true)"
+        >
+          Approve
+        </button>
+        <button
+          class="
+            govuk-button govuk-button--warning
+            govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6
+          "
+          (click)="approveOrRejectCqcChange(false)"
+        >
+          Reject
+        </button>
         <a [routerLink]="['/sfcadmin', 'parent-requests']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
       </div>
     </div>
