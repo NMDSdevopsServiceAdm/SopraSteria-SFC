@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplace
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { ParentRequestIndividualComponent } from './parent-request-individual.component';
 
@@ -213,6 +214,90 @@ describe('ParentRequestIndividualComponent', () => {
 
       expect(inProgressBanner).toBeTruthy();
       expect(getIndividualParentRequesteSpy).toHaveBeenCalled();
+    });
+
+    it('should show an error when clicking on the checkbox and someone has already clicked on it while you have been on the page', async () => {
+      const { getByTestId, getAllByText, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        error: {},
+      });
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'updateApprovalStatus').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'This approval is already in progress';
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+
+    it('should show an error when clicking on the checkbox and there is a problem with the server', async () => {
+      const { getByTestId, getAllByText, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error',
+        error: {},
+      });
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'updateApprovalStatus').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'There was a server error';
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
+    });
+
+    it('should show the PENDING banner when unchecking the checkbox', async () => {
+      const inProgress = true;
+      const reviewer = 'adminUser';
+      const { queryByText, getByTestId, fixture } = await setup(inProgress, reviewer);
+
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'updateApprovalStatus').and.returnValue(of({}));
+      const getIndividuaParentRequestSpy = spyOn(parentRequestsService, 'getIndividualParentRequest').and.returnValue(
+        of(PendingApproval() as any),
+      );
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      const pendingBanner = queryByText('PENDING');
+
+      expect(pendingBanner).toBeTruthy();
+      expect(getIndividuaParentRequestSpy).toHaveBeenCalled();
+    });
+
+    it('should show an error when clicking on the checkbox and there is an error retrieving the single registration', async () => {
+      const { getByTestId, getAllByText, fixture } = await setup();
+
+      const mockErrorResponse = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        error: {},
+      });
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'updateApprovalStatus').and.returnValue(of({}));
+      spyOn(parentRequestsService, 'getIndividualParentRequest').and.returnValue(throwError(mockErrorResponse));
+
+      const errorMessage = 'There was an error retrieving the approval';
+      const checkbox = getByTestId('reviewingRegistrationCheckbox');
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(getAllByText(errorMessage).length).toBe(1);
     });
   });
 });
