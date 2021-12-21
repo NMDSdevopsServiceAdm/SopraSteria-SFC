@@ -476,4 +476,13 @@ describe('ParentRequestIndividualComponent', () => {
       expect(getAllByText(errorMessage).length).toBe(1);
     });
   });
+
+  describe('Navigation', () => {
+    it('has parent requests page url for exit link', async () => {
+      const { getByText } = await setup();
+      const exitButton = getByText('Exit');
+
+      expect(exitButton.getAttribute('href')).toBe('/sfcadmin/parent-requests');
+    });
+  });
 });
