@@ -15,6 +15,12 @@ const EstablishmentTransformer = async (establishments) => {
         })
       : [];
 
+    const subsidiaries = establishment.Subsidiaries
+      ? establishment.Subsidiaries.map((sub) => {
+          return { name: sub.NameValue };
+        })
+      : [];
+
     return {
       uid: establishment.uid,
       name: establishment.NameValue,
@@ -37,6 +43,7 @@ const EstablishmentTransformer = async (establishments) => {
       },
       parent,
       users,
+      subsidiaries,
     };
   });
 };

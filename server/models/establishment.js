@@ -819,6 +819,11 @@ module.exports = function (sequelize, DataTypes) {
       as: 'notes',
       onDelete: 'CASCADE',
     });
+    Establishment.hasMany(models.establishment, {
+      foreignKey: 'parentId',
+      sourceKey: 'id',
+      as: 'Subsidiaries',
+    });
   };
 
   Establishment.turnoverData = function (establishmentId) {
@@ -965,6 +970,7 @@ module.exports = function (sequelize, DataTypes) {
         'provId',
         'EmployerTypeValue',
         'EmployerTypeOther',
+        // [sequelize.fn('COUNT', sequelize.col('"establishment"."ParentID"')), 'subCount'],
       ],
       where: {
         ustatus: {
@@ -978,6 +984,12 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishment,
           attributes: ['id', 'uid', 'nmdsId'],
           as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.establishment,
+          attributes: ['NameValue'],
+          as: 'Subsidiaries',
           required: false,
         },
         {

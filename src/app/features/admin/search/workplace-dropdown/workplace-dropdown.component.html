@@ -31,7 +31,7 @@
       </tr>
     </tbody>
   </table>
-  <div *ngIf="item.isParent">
+  <div *ngIf="item.isParent && item.subsidiaries.length === 0">
     <a href="#" (click)="removeParent(item.uid, $event)">Remove parent status</a>
   </div>
 </div>

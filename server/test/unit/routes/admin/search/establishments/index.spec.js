@@ -20,7 +20,7 @@ describe('server/routes/admin/search/establishments', () => {
         town: 'Leeds',
         county: 'West Yorkshire',
         postcode: 'WF14 9TS',
-        isParent: false,
+        isParent: true,
         isRegulated: false,
         dataOwner: 'Workplace',
         updated: '2019-10-07T08:49:30.625Z',
@@ -30,6 +30,7 @@ describe('server/routes/admin/search/establishments', () => {
           uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
           nmdsId: 'W-1234567',
         },
+        Subsidiaries: [{ NameValue: 'Sub Care Home' }],
         users: [
           {
             uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
@@ -99,7 +100,7 @@ describe('server/routes/admin/search/establishments', () => {
         town: 'Leeds',
         county: 'West Yorkshire',
         postcode: 'WF14 9TS',
-        isParent: false,
+        isParent: true,
         isRegulated: false,
         dataOwner: 'Workplace',
         employerType: {},
@@ -117,6 +118,7 @@ describe('server/routes/admin/search/establishments', () => {
             isLocked: true,
           },
         ],
+        subsidiaries: [{ name: 'Sub Care Home' }],
         notes: [
           {
             note: 'This is a note',

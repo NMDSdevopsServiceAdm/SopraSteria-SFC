@@ -57,6 +57,9 @@ export interface User {
   username: string;
 }
 
+export interface Subsidiaries {
+  name: string;
+}
 export interface WorkplaceSearchItem {
   address1: string;
   address2?: string;
@@ -76,6 +79,7 @@ export interface WorkplaceSearchItem {
   parent?: Parent;
   users: User[];
   notes: Note[];
+  subsidiaries: Subsidiaries[];
 }
 
 export interface GroupSearchRequest {
