@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
 const notifications = require('../../../data/notifications');
+const { convertIndividualParentRequest } = require('../../../utils/parentIndividualRequestUtils');
 const uuid = require('uuid');
 
 const parentApprovalConfirmation = 'Parent request approved';
@@ -15,6 +16,27 @@ const getParentRequests = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(400).send();
+  }
+};
+
+const getIndividualParentRequest = async (req, res) => {
+  try {
+    const { establishmentUid } = req.params;
+    const establishment = await models.establishment.findByUid(establishmentUid);
+
+    if (!establishment) {
+      return res.status(400).json({
+        message: 'Establishment could not be found',
+      });
+    }
+
+    const individualParentRequest = await models.Approvals.findbyEstablishmentId(establishment.id, 'BecomeAParent');
+
+    const convertedIndividualParentRequest = convertIndividualParentRequest(individualParentRequest);
+    res.status(200).send(convertedIndividualParentRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'There was an error retrieving the parent request' });
   }
 };
 
@@ -106,10 +128,13 @@ const _notify = async (approvalId, userUid, establishmentId) => {
 
 router.route('/').post(parentApproval);
 router.route('/').get(getParentRequests);
+router.route('/:establishmentUid').get(getIndividualParentRequest);
+router.use('/updateStatus', require('./updateStatus.js'));
 
 module.exports = router;
 module.exports.parentApproval = parentApproval;
 module.exports.getParentRequests = getParentRequests;
 
+module.exports.getIndividualParentRequest = getIndividualParentRequest;
 module.exports.parentApprovalConfirmation = parentApprovalConfirmation;
 module.exports.parentRejectionConfirmation = parentRejectionConfirmation;

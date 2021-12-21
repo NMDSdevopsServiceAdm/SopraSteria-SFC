@@ -15,6 +15,9 @@ import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workp
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
+import {
+  GetIndividualParentRequestResolver,
+} from '@core/resolvers/admin/parent-requests-list/get-parent-individual-request.resolver';
 import { ParentRequestsListResolver } from '@core/resolvers/admin/parent-requests-list/parent-requests-list.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import {
@@ -47,6 +50,9 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import {
+  ParentRequestIndividualComponent,
+} from './parent-requests/parent-request-individual/parent-request-individual.component';
 import { ParentRequestsListComponent } from './parent-requests/parent-requests-list.component';
 import {
   PendingRegistrationRequestsComponent,
@@ -98,10 +104,11 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ApprovalOrRejectionDialogComponent,
     EmailsComponent,
     TargetedEmailsComponent,
-    ParentRequestsListComponent,
     ApprovalsTableComponent,
+    ParentRequestIndividualComponent,
     InactiveEmailsComponent,
     CQCMainServiceChangeListComponent,
+    ParentRequestsListComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
@@ -120,6 +127,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     EmailTemplateResolver,
     ParentRequestsListResolver,
     EmailCampaignHistoryResolver,
+    GetIndividualParentRequestResolver,
   ],
   bootstrap: [AdminComponent],
 })
