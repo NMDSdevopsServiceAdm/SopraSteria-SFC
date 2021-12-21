@@ -32,7 +32,7 @@
     </tbody>
   </table>
   <div *ngIf="item.isParent && item.subsidiaries.length === 0">
-    <a href="#" (click)="removeParent(item.uid, $event)">Remove parent status</a>
+    <a href="#" (click)="removeParent($event)">Remove parent status</a>
   </div>
 </div>
 <div class="govuk-!-margin-left-2 govuk-!-margin-top-4" *ngIf="item.notes?.length > 0">

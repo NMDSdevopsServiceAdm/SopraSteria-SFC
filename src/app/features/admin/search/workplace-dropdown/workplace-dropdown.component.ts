@@ -2,6 +2,9 @@ import { Component, Input } from '@angular/core';
 import { WorkplaceSearchItem } from '@core/model/admin/search.model';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
+import {
+  RemoveParentConfirmationComponent,
+} from '@shared/components/remove-parent-confirmation/remove-parent-confirmation.component';
 
 @Component({
   selector: 'app-workplace-dropdown',
@@ -27,9 +30,15 @@ export class WorkplaceDropdownComponent {
     this.unlockUser(username, workplaceIndex, this.item.users[userIndex]);
   }
 
-  public removeParent(establishmentUid: string, event: Event): void {
+  public removeParent(event: Event): void {
     event.preventDefault();
-    console.log('removeParent *********');
-    console.log(establishmentUid);
+    const data = {
+      establishmentId: this.item.uid,
+      establishmentName: this.item.name,
+      removeStatus: () => {
+        this.item.isParent = false;
+      },
+    };
+    this.dialogService.open(RemoveParentConfirmationComponent, data);
   }
 }
