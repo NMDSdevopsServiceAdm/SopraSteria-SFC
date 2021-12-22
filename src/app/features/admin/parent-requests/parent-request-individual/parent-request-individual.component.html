@@ -79,6 +79,10 @@
         </button>
         <a [routerLink]="['/sfcadmin', 'parent-requests']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
       </div>
+      <span *ngIf="approvalOrRejectionServerError" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ approvalOrRejectionServerError }}
+      </span>
     </div>
   </div>
 </div>
