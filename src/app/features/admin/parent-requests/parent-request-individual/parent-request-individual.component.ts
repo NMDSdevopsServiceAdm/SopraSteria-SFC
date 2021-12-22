@@ -107,7 +107,6 @@ export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
       reviewer: checked ? this.userFullName : null,
       inReview: checked,
     };
-    console.log(body.status);
     this.parentRequestsService.updateApprovalStatus(body).subscribe(
       () => {
         this.getUpdatedRegistration();

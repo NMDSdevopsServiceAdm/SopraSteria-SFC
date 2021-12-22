@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">Parent request: {{ registration.establishment.name }}</h2>
     <p>
-      Receveived {{ registration.createdAt | date: 'dd MMM yyyy' }},
+      Received {{ registration.createdAt | date: 'dd MMM yyyy' }},
       {{ registration.createdAt | date: 'hh:mma' | lowercase }}
     </p>
     <app-review-checkbox
@@ -35,8 +35,8 @@
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Name and address</dt>
         <dd class="govuk-summary-list__value">
-          {{ registration.establishment.name }}
-          {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address1 }}<br *ngIf="registration.establishment.address2" />
           {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
           {{ registration.establishment.address3 }}<br />
           {{ registration.establishment.county }}<br />

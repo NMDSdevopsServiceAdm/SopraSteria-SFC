@@ -1,46 +1,36 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { WorkplaceSearchItem } from '@core/model/admin/search.model';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
+import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { Subscription } from 'rxjs';
+import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
   selector: 'app-search-for-group',
   templateUrl: './search-for-group.component.html',
 })
-export class SearchForGroupComponent implements OnInit, OnDestroy {
+export class SearchForGroupComponent extends SearchDirective {
   public form: FormGroup;
   public submitted = false;
   public results: WorkplaceSearchItem[] = [];
-  public workplaceDetails = [];
-  public workplaceDetailsLabel = [];
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private formBuilder: FormBuilder,
-    private searchService: SearchService,
-    private switchWorkplaceService: SwitchWorkplaceService,
-    private alertService: AlertService,
-  ) {}
+    protected formBuilder: FormBuilder,
+    protected searchService: SearchService,
+    protected switchWorkplaceService: SwitchWorkplaceService,
+    protected alertService: AlertService,
+    protected dialogService: DialogService,
+  ) {
+    super(formBuilder, searchService, switchWorkplaceService, alertService, dialogService);
+  }
 
-  ngOnInit(): void {
+  protected setupForm(): void {
     this.form = this.formBuilder.group({
       employerType: 'All',
       parent: false,
     });
-  }
-
-  public navigateToWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
-    event.preventDefault();
-    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
-  }
-
-  public toggleDetails(uid: string, event: Event): void {
-    event.preventDefault();
-    this.workplaceDetails[uid] = !this.workplaceDetails[uid];
-    this.workplaceDetailsLabel[uid] = this.workplaceDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
   }
 
   public onSubmit(): void {
@@ -53,16 +43,5 @@ export class SearchForGroupComponent implements OnInit, OnDestroy {
         () => this.errorMessage(),
       ),
     );
-  }
-
-  private errorMessage(): void {
-    this.alertService.addAlert({
-      type: 'warning',
-      message: 'There was a problem making this request',
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

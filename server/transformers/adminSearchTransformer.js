@@ -10,8 +10,14 @@ const EstablishmentTransformer = async (establishments) => {
             username: user.login ? user.login.username : '',
             securityQuestion: user.SecurityQuestionValue,
             securityAnswer: user.SecurityQuestionAnswerValue,
-            isLocked: user.login && user.login.status === 'Locked',
+            isLocked: user.login && !user.login.isActive,
           };
+        })
+      : [];
+
+    const subsidiaries = establishment.Subsidiaries
+      ? establishment.Subsidiaries.map((sub) => {
+          return { name: sub.NameValue };
         })
       : [];
 
@@ -37,6 +43,7 @@ const EstablishmentTransformer = async (establishments) => {
       },
       parent,
       users,
+      subsidiaries,
     };
   });
 };
