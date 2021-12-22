@@ -32,7 +32,6 @@ export class RemoveParentConfirmationComponent extends DialogComponent implement
     this.setupServerErrorsMap();
   }
 
-  // setup server error message
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
@@ -50,27 +49,17 @@ export class RemoveParentConfirmationComponent extends DialogComponent implement
     ];
   }
 
-  /**
-   * Function is used to close dialog window after successful confirmation
-   * @param {any} true to close dialog after response or null to close without action
-   * @return {void}
-   */
   public closeDialogWindow(confirm: any): void {
     this.dialog.close(confirm);
   }
 
-  /**
-   * Unlock a users account
-   * @param {string}
-   * @return {void}
-   */
   public removeParentStatus(data: any): void {
     this.establishmentService.removeParentStatus(data).subscribe(
       () => {
         data.removeStatus();
         this.alertService.addAlert({
           type: 'success',
-          message: 'Parent status has been removed,',
+          message: 'Parent status has been removed.',
         });
         this.closeDialogWindow(true);
       },
