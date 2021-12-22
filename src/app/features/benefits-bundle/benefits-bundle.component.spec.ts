@@ -4,6 +4,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -23,6 +25,10 @@ describe('BenefitsBundleComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
         },
       ],
     });
@@ -73,8 +79,11 @@ describe('BenefitsBundleComponent', () => {
 
   describe('Accordions', () => {
     it('should display accordion headings', async () => {
-      const { getByText } = await setup();
+      const { fixture, getByText } = await setup();
 
+      fixture.detectChanges();
+
+      expect(getByText("Discounts from Skills for Care's endorsed training providers")).toBeTruthy();
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
       expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
@@ -143,7 +152,9 @@ describe('BenefitsBundleComponent', () => {
       });
 
       it('should drop all when clicking on the open all link', async () => {
-        const { component, getByTestId, getByText } = await setup();
+        const { component, fixture, getByTestId, getByText } = await setup();
+
+        fixture.detectChanges();
 
         component.benefits.map((_, index) => {
           expect(getByTestId('accordion-' + index).getAttribute('class')).not.toContain(
@@ -181,6 +192,9 @@ describe('BenefitsBundleComponent', () => {
       it('should toggle button to Close all when all accordions opened individually', async () => {
         const { getByText, fixture } = await setup();
 
+        fixture.detectChanges();
+
+        fireEvent.click(getByText("Discounts from Skills for Care's endorsed training providers"));
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fireEvent.click(getByText('10% off values-based interviewing seminars'));
         fireEvent.click(getByText('10% off valuable conversations online seminars'));
@@ -260,6 +274,16 @@ describe('BenefitsBundleComponent', () => {
         'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
       );
       expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the discounts link from skills for cares endorsed training providers in content', async () => {
+      const { fixture, getByText } = await setup();
+
+      fixture.detectChanges();
+
+      const link = getByText("View discounts from Skills for Care's endorsed training providers");
+
+      expect(link.getAttribute('href')).toBe('/benefits-bundle/training-discounts');
     });
 
     it('should display the Recommendations for CQC link in the learning for managers content', async () => {
