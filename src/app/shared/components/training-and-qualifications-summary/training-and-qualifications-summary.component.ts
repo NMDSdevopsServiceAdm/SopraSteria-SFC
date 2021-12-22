@@ -21,7 +21,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  public newTrainingAndQualificationsRecordsFlag: boolean;
 
   constructor(private permissionsService: PermissionsService, private featureFlagsService: FeatureFlagsService) {}
 
@@ -30,11 +29,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByDefault = '0_expired';
     this.orderWorkers(this.sortByDefault);
-
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
   }
 
   public orderWorkers(dropdownValue): void {
@@ -55,8 +49,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   }
 
   public getWorkerTrainingAndQualificationsPath(worker: Worker) {
-    const trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, trainingPath];
+    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'new-training'];
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
 }

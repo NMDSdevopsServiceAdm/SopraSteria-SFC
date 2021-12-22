@@ -8,7 +8,6 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -30,7 +29,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: string;
-  private newTrainingAndQualificationsRecordsFlag: boolean;
   private trainingPath: string;
 
   constructor(
@@ -40,7 +38,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
-    private featureFlagsService: FeatureFlagsService,
   ) {
     this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
@@ -125,11 +122,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     });
 
     this.setupFormErrorsMap();
-
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
 
     this.setTrainingPathAndBackLink();
   }
@@ -272,7 +264,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   private setTrainingPathAndBackLink(): void {
-    this.trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
+    this.trainingPath = 'new-training';
 
     this.workerService.getRoute$.subscribe((route) => {
       if (route) {
