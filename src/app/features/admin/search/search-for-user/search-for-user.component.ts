@@ -1,34 +1,31 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { UserSearchItem } from '@core/model/admin/search.model';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { AdminUnlockConfirmationDialogComponent } from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
-import { Subscription } from 'rxjs';
+import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
   selector: 'app-search-for-user',
   templateUrl: './search-for-user.component.html',
 })
-export class SearchForUserComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
+export class SearchForUserComponent extends SearchDirective {
   public submitted = false;
   public results: UserSearchItem[] = [];
-  public userDetails = [];
-  public userDetailsLabel = [];
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private formBuilder: FormBuilder,
-    private searchService: SearchService,
-    private switchWorkplaceService: SwitchWorkplaceService,
-    private dialogService: DialogService,
-    private alertService: AlertService,
-  ) {}
+    protected formBuilder: FormBuilder,
+    protected searchService: SearchService,
+    protected switchWorkplaceService: SwitchWorkplaceService,
+    protected alertService: AlertService,
+    protected dialogService: DialogService,
+  ) {
+    super(formBuilder, searchService, switchWorkplaceService, alertService, dialogService);
+  }
 
-  ngOnInit(): void {
+  protected setupForm(): void {
     this.form = this.formBuilder.group({
       name: null,
       username: null,
@@ -48,36 +45,8 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
     );
   }
 
-  private errorMessage(): void {
-    this.alertService.addAlert({
-      type: 'warning',
-      message: 'There was a problem making this request',
-    });
-  }
-  public navigateToWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
+  public unlockWorkplaceUser(username: string, index: number, event: Event): void {
     event.preventDefault();
-    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
-  }
-
-  public toggleDetails(uid: string, event: Event): void {
-    event.preventDefault();
-    this.userDetails[uid] = !this.userDetails[uid];
-    this.userDetailsLabel[uid] = this.userDetailsLabel[uid] === 'Close' ? 'Open' : 'Close';
-  }
-
-  public unlockUser(username: string, index: number, event: Event): void {
-    event.preventDefault();
-    const data = {
-      username,
-      index,
-      removeUnlock: () => {
-        this.results[index].isLocked = false;
-      },
-    };
-    this.dialogService.open(AdminUnlockConfirmationDialogComponent, data);
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.unlockUser(username, index, this.results[index]);
   }
 }

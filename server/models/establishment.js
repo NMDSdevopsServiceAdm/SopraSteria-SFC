@@ -819,6 +819,11 @@ module.exports = function (sequelize, DataTypes) {
       as: 'notes',
       onDelete: 'CASCADE',
     });
+    Establishment.hasMany(models.establishment, {
+      foreignKey: 'parentId',
+      sourceKey: 'id',
+      as: 'Subsidiaries',
+    });
   };
 
   Establishment.turnoverData = function (establishmentId) {
@@ -981,6 +986,12 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
         },
         {
+          model: sequelize.models.establishment,
+          attributes: ['NameValue'],
+          as: 'Subsidiaries',
+          required: false,
+        },
+        {
           model: sequelize.models.user,
           attributes: ['id', 'uid', 'FullNameValue', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue'],
           as: 'users',
@@ -992,7 +1003,7 @@ module.exports = function (sequelize, DataTypes) {
           include: [
             {
               model: sequelize.models.login,
-              attributes: ['username', 'status'],
+              attributes: ['username', 'isActive'],
             },
           ],
         },

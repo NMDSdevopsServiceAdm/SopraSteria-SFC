@@ -117,7 +117,7 @@ app.use(compression());
 app.use(function (req, res, next) {
   if (toobusy()) {
     res.setHeader('Retry-After', '1');
-    res.send(503, 'Server busy, try again later');
+    res.status(503).send('Server busy, try again later');
   } else {
     next();
   }
