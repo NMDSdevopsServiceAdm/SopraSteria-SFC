@@ -5,7 +5,7 @@ const models = require('../../../../../models');
 
 const { removeParentStatus } = require('../../../../../routes/admin/remove-parent-status');
 
-describe.only('removeParentStatus', () => {
+describe('removeParentStatus', () => {
   const establishmentId = 'a131313dasd123325453bac';
   let req;
   let res;
