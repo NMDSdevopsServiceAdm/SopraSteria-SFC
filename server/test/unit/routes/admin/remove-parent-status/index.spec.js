@@ -29,7 +29,7 @@ describe('removeParentStatus', () => {
 
   it('should reply with a status of 200', async () => {
     sinon.stub(models.establishment, 'findByUid').returns({ id: 1 });
-    sinon.stub(models.establishment, 'updateEstablishment').callThrough();
+    sinon.stub(models.establishment, 'updateEstablishment');
 
     await removeParentStatus(req, res);
     expect(res.statusCode).to.deep.equal(200);
