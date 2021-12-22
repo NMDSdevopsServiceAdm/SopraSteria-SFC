@@ -970,7 +970,6 @@ module.exports = function (sequelize, DataTypes) {
         'provId',
         'EmployerTypeValue',
         'EmployerTypeOther',
-        // [sequelize.fn('COUNT', sequelize.col('"establishment"."ParentID"')), 'subCount'],
       ],
       where: {
         ustatus: {
