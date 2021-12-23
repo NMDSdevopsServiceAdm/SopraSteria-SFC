@@ -4,10 +4,8 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
-import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
-import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
@@ -36,9 +34,7 @@ import { MentalHealthProfessionalComponent } from './mental-health-professional/
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import {
-  NewTrainingAndQualificationsRecordComponent,
-} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -47,16 +43,11 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import {
-  TrainingAndQualificationsRecordComponent,
-} from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -322,17 +313,6 @@ const routes: Routes = [
             },
           },
         ],
-      },
-      {
-        path: 'training',
-        component: TrainingAndQualificationsRecordComponent,
-        resolve: {
-          worker: WorkerResolver,
-          qualifications: QualificationsResolver,
-          trainingRecords: TrainingRecordsResolver,
-          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
-        },
-        data: { title: 'Training and qualification record' },
       },
       {
         path: 'new-training',

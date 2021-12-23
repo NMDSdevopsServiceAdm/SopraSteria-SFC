@@ -13,40 +13,6 @@ export class TrainingStatusService {
 
   public expiresSoonAlertDate$: BehaviorSubject<string> = new BehaviorSubject(null);
 
-  public getAggregatedStatus(trainingRecords) {
-    let expired = false;
-    let expiring = false;
-    let missing = false;
-    let trainingStatus = 0;
-
-    trainingRecords.forEach((training) => {
-      trainingStatus = this.getTrainingStatus(training.expires, training.missing);
-      switch (trainingStatus) {
-        case this.MISSING: {
-          missing = true;
-          break;
-        }
-        case this.EXPIRING: {
-          expiring = true;
-          break;
-        }
-        case this.EXPIRED: {
-          expired = true;
-          break;
-        }
-      }
-    });
-    if (expired) {
-      return this.EXPIRED;
-    } else if (missing) {
-      return this.MISSING;
-    } else if (expiring) {
-      return this.EXPIRING;
-    } else {
-      return this.ACTIVE;
-    }
-  }
-
   public getTrainingStatus(expires, missing) {
     if (missing) {
       return this.MISSING;
