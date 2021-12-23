@@ -29,7 +29,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: string;
-  private trainingPath: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -244,9 +243,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private onSuccess(): void {
     this.router
-      .navigate([
-        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`,
-      ])
+      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`])
       .then(() => {
         if (this.qualificationId) {
           this.workerService.alert = { type: 'success', message: 'Qualification has been saved.' };
@@ -264,13 +261,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   private setTrainingPathAndBackLink(): void {
-    this.trainingPath = 'new-training';
-
     this.workerService.getRoute$.subscribe((route) => {
       if (route) {
         this.previousUrl = route;
       } else {
-        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`;
+        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`;
       }
     });
     this.backService.setBackLink({
