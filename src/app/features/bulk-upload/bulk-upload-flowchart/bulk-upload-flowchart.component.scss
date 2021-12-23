@@ -1,0 +1,39 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-flowchart-row {
+  border: 1px solid blue;
+  width: 100%;
+
+  &__justify-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__flex {
+    display: flex;
+  }
+}
+
+.asc-flowchart-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  border: 1px solid red;
+}
+
+.asc-flowchart-text-box {
+  display: inline-block;
+  border: 1px solid black;
+  padding: 10px 20px;
+  font-size: 16px;
+
+  &__fixed-width {
+    width: 340px;
+  }
+}
+
+.asc-flowchart-flow-text {
+  font-size: 16px;
+  display: inline-block;
+}

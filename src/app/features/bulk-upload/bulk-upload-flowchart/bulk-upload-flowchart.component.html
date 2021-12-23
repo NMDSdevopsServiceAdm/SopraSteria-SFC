@@ -1,4 +1,5 @@
-<div class="govuk-grid-row">
+<!-- USING A SINGLE IMAGE AS THE FLOWCHART -->
+<!-- <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4" data-testid="heading">Step by step bulk upload guide</h1>
     <a role="button" class="govuk-list govuk-list--inline govuk-util__float-right" href="#" (click)="printPage($event)"
@@ -6,6 +7,52 @@
     >
     <div>
       <img alt="Bulk upload step by step guide" src="/assets/images/bulk-upload-flowchart.png" style="width: 100%" />
+    </div>
+  </div>
+</div> -->
+
+<!-- CREATING THE FLOWCHART USING HTML ELEMENTS -->
+
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row" style="border: 1px solid green">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4" data-testid="heading">Step by step bulk upload guide</h1>
+    <a role="button" class="govuk-list govuk-list--inline govuk-util__float-right" href="#" (click)="printPage($event)"
+      >Print this page</a
+    >
+  </div>
+  <div class="govuk-grid-row">
+    <div class="asc-flowchart-row asc-flowchart-row__justify-center">
+      <p class="asc-flowchart-text-box">Is this the first time you've done a bulk upload?</p>
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__flex">
+      <div class="asc-flowchart-column">
+        <p class="asc-flowchart-flow-text">Yes</p>
+        <p class="asc-flowchart-text-box asc-flowchart-text-box__fixed-width">
+          Select 'bulk upload your data' and then read about who should do bulk uploads and what you need to know before
+          doing one
+        </p>
+        <p class="asc-flowchart-text-box asc-flowchart-text-box__fixed-width">
+          Add unique workplace and staff references as needed
+        </p>
+        <p class="asc-flowchart-text-box asc-flowchart-text-box__fixed-width">
+          Download and read 'codes and guidance' documents
+        </p>
+      </div>
+      <div class="asc-flowchart-column">
+        <p class="asc-flowchart-flow-text">No</p>
+        <p class="asc-flowchart-text-box asc-flowchart-text-box__fixed-width">
+          Select 'bulk upload your data', do you have any missing references
+        </p>
+        <div class="asc-flowchart-row asc-flowchart-row__flex">
+          <div class="asc-flowchart-column">
+            <p class="asc-flowchart-flow-text">Yes</p>
+            <p class="asc-flowchart-text-box">Add missing references?</p>
+          </div>
+          <div class="asc-flowchart-column">
+            <p class="asc-flowchart-flow-text">No</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

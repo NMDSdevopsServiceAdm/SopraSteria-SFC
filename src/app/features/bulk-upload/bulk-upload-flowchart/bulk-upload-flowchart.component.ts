@@ -4,6 +4,7 @@ import { BackService } from '@core/services/back.service';
 @Component({
   selector: 'app-bulk-upload-flowchart',
   templateUrl: './bulk-upload-flowchart.component.html',
+  styleUrls: ['./bulk-upload-flowchart.component.scss'],
 })
 export class BulkUploadFlowchartComponent implements OnInit {
   constructor(public backService: BackService) {}
