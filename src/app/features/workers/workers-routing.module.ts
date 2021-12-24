@@ -314,7 +314,6 @@ const routes: Routes = [
           },
         ],
       },
-
       {
         path: 'new-training',
         component: NewTrainingAndQualificationsRecordComponent,

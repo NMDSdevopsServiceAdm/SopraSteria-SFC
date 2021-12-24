@@ -1,10 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Note } from '@core/model/registrations.model';
+import { AlertService } from '@core/services/alert.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
@@ -15,8 +16,9 @@ import { MockRegistrationsService } from '@core/test-utils/MockRegistrationsServ
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
-import { of, throwError } from 'rxjs';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { throwError } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
 
 import { ParentRequestIndividualComponent } from './parent-request-individual.component';
 
@@ -71,9 +73,19 @@ describe('ParentRequestIndividualComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
+
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       component,
       fixture,
+      routerSpy,
+      alertServiceSpy,
       queryAllByText,
       getByText,
       queryByText,
@@ -120,7 +132,6 @@ describe('ParentRequestIndividualComponent', () => {
     const postcode = component.registration.establishment.postcode;
     const town = component.registration.establishment.town;
     const county = component.registration.establishment.county;
-    console.log(address3);
 
     expect(getByText(address1, { exact: false })).toBeTruthy();
     expect(getByText(address2, { exact: false })).toBeTruthy();
@@ -483,6 +494,228 @@ describe('ParentRequestIndividualComponent', () => {
       const exitButton = getByText('Exit');
 
       expect(exitButton.getAttribute('href')).toBe('/sfcadmin/parent-requests');
+    });
+  });
+
+  describe('Approvals', () => {
+    it('shows dialog with approval confirmation message when Approve button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const dialogMessage = `You're about to approve this parent request`;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('shows workplace name in confirmation dialog', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const approveButton = getByText('Approve');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
+
+    it('should return to parent request page once approved', async () => {
+      const { fixture, getByText, routerSpy } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(true));
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'parent-requests']);
+    });
+
+    it('should call parentApproval in the parent requests service when approval confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(true));
+      const approveButton = getByText('Approve');
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+
+      fireEvent.click(approvalConfirmButton);
+
+      expect(parentRequestsService.parentApproval).toHaveBeenCalledWith({
+        parentRequestId: component.registration.requestId,
+        establishmentId: component.registration.establishment.establishmentId,
+        userId: component.registration.userId,
+        rejectionReason: 'Approved',
+        approve: true,
+      });
+    });
+
+    it('should display approval server error message when server error', async () => {
+      const { fixture, getByText } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(throwError('Service unavailable'));
+
+      const approveButton = getByText('Approve');
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+      fireEvent.click(approvalConfirmButton);
+
+      const approvalServerErrorMessage = 'There was an error completing the approval';
+      expect(getByText(approvalServerErrorMessage, { exact: false })).toBeTruthy();
+    });
+
+    it('should show approval alert when approval confirmed', async () => {
+      const { component, fixture, getByText, alertServiceSpy } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(true));
+
+      const approveButton = getByText('Approve');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const approvalConfirmButton = within(dialog).getByText('Approve this request');
+      fireEvent.click(approvalConfirmButton);
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `The parent request of workplace ${workplaceName} has been approved`,
+      });
+    });
+  });
+
+  describe('Rejections', () => {
+    it('shows dialog with reject confirmation message when Reject button is clicked', async () => {
+      const { fixture, getByText } = await setup();
+
+      const approveButton = getByText('Reject');
+      const dialogMessage = `You're about to reject this parent request`;
+
+      fireEvent.click(approveButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(dialog).toBeTruthy();
+      expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+    });
+    it('shows workplace name in rejection dialog', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const rejectButton = getByText('Reject');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
+    });
+
+    it('should return to parent request page once rejected', async () => {
+      const { fixture, getByText, routerSpy } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(true));
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectionConfirmButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'parent-requests']);
+    });
+    it('should display rejection server error message when server error', async () => {
+      const { fixture, getByText } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(throwError('Service unavailable'));
+
+      const rejectButton = getByText('Reject');
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+      fireEvent.click(rejectionConfirmButton);
+
+      const rejectionServerErrorMessage = 'There was an error completing the rejection';
+      expect(getByText(rejectionServerErrorMessage, { exact: false })).toBeTruthy();
+    });
+    it('should call parentApproval in the parent requests service when rejection is confirmed', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(false));
+      const rejectButton = getByText('Reject');
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+
+      fireEvent.click(rejectionConfirmButton);
+
+      expect(parentRequestsService.parentApproval).toHaveBeenCalledWith({
+        parentRequestId: component.registration.requestId,
+        establishmentId: component.registration.establishment.establishmentId,
+        userId: component.registration.userId,
+        rejectionReason: 'Rejected',
+        approve: false,
+      });
+    });
+    it('should show rejected alert when rejection is confirmed', async () => {
+      const { component, fixture, getByText, alertServiceSpy } = await setup();
+
+      const parentRequestsService = TestBed.inject(ParentRequestsService);
+      spyOn(parentRequestsService, 'parentApproval').and.returnValue(of(false));
+
+      const rejectButton = getByText('Reject');
+      const workplaceName = component.registration.establishment.name;
+
+      fireEvent.click(rejectButton);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const rejectionConfirmButton = within(dialog).getByText('Reject this request');
+      fireEvent.click(rejectionConfirmButton);
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `The parent request of workplace ${workplaceName} has been rejected`,
+      });
     });
   });
 });
