@@ -27,6 +27,24 @@ const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker) 
   }
 };
 
+const findExistingWorker = (thisLine, myCurrentEstablishments) => {
+  const establishmentUniqueID = thisLine.LOCALESTID.replace(/\s/g, '');
+  const workerUniqueID = thisLine.UNIQUEWORKERID.replace(/\s/g, '');
+
+  const foundEstablishment = myCurrentEstablishments.find(
+    (currentEstablishment) => currentEstablishment.key === establishmentUniqueID,
+  );
+
+  if (foundEstablishment) {
+    const worker = foundEstablishment.theWorker(workerUniqueID);
+    if (worker) {
+      return worker.toJSON(true, false);
+    }
+  }
+
+  return null;
+};
+
 const validateWorkerCsvLine = async (
   thisLine,
   currentLineNumber,
@@ -35,28 +53,9 @@ const validateWorkerCsvLine = async (
   myCurrentEstablishments,
   myJSONWorkers,
 ) => {
-  // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
 
-  // console.log(myCurrentEstablishments);
-  // const establishments = myCurrentEstablishments.map((establishment) =>
-  //   JSON.stringify(establishment.toJSON(false, true, false, false, true, null, true)),
-  // );
-  // console.log(establishments);
-
-  const establishmentUniqueID = thisLine.LOCALESTID.replace(/\s/g, '');
-  const workerUniqueID = thisLine.UNIQUEWORKERID.replace(/\s/g, '');
-
-  const foundEstablishment = myCurrentEstablishments.find(
-    (currentEstablishment) => currentEstablishment.key === establishmentUniqueID,
-  );
-
-  let workerInEst;
-
-  if (foundEstablishment) {
-    workerInEst = foundEstablishment.theWorker(workerUniqueID).toJSON(true, false);
-  }
-
-  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, workerInEst);
+  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
 
   lineValidator.validate();
   lineValidator.transform();
