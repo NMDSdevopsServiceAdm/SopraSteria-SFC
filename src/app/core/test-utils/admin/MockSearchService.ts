@@ -1,13 +1,17 @@
 import { WorkplaceSearchItem } from '@core/model/admin/search.model';
 
-export function buildMockAdminSearchWorkplace(isLocked = false): WorkplaceSearchItem {
+export function buildMockAdminSearchWorkplace(
+  isLocked = false,
+  isParent = false,
+  hasSubs = false,
+): WorkplaceSearchItem {
   return {
     address1: '1 THE LANE',
     address2: '',
     county: 'HAMPSHIRE',
     dataOwner: 'Workplace',
     employerType: { value: 'Voluntary / Charity', other: null },
-    isParent: false,
+    isParent: isParent,
     isRegulated: false,
     lastUpdated: new Date('11/26/2021'),
     locationId: '1-1111111111',
@@ -38,5 +42,6 @@ export function buildMockAdminSearchWorkplace(isLocked = false): WorkplaceSearch
         user: { FullNameValue: 'Admin 1' },
       },
     ],
+    subsidiaries: hasSubs ? [{ name: 'Subsidiary 1' }] : [],
   } as WorkplaceSearchItem;
 }

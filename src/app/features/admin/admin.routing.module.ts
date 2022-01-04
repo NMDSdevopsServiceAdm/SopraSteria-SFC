@@ -1,24 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {
-  GetCQCStatusChangeResolver,
-} from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
-import {
-  GetIndividualCqcMainServiceChangeResolver,
-} from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
+import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
+import { GetIndividualCqcMainServiceChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
 import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
 import { GetLasResolver } from '@core/resolvers/admin/local-authorities-return/get-las.resolver';
+import { GetIndividualParentRequestResolver } from '@core/resolvers/admin/parent-requests-list/get-parent-individual-request.resolver';
 import { ParentRequestsListResolver } from '@core/resolvers/admin/parent-requests-list/parent-requests-list.resolver';
 import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-requests/get-registrations.resolver';
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
-import {
-  CqcIndividualMainServiceChangeComponent,
-} from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
+
+import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
 import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
@@ -28,6 +24,7 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { ParentRequestIndividualComponent } from './parent-requests/parent-request-individual/parent-request-individual.component';
 import { ParentRequestsListComponent } from './parent-requests/parent-requests-list.component';
 import { PendingRegistrationRequestsComponent } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
 import { RegistrationRequestComponent } from './registration-requests/registration-request/registration-request.component';
@@ -143,6 +140,15 @@ const routes: Routes = [
         data: { title: 'Parent requests' },
         resolve: {
           parentRequests: ParentRequestsListResolver,
+        },
+      },
+      {
+        path: ':establishmentUid',
+        component: ParentRequestIndividualComponent,
+        data: { title: 'Parent Individual Request' },
+        resolve: {
+          parentRequestsIndividual: GetIndividualParentRequestResolver,
+          notes: GetRegistrationNotesResolver,
         },
       },
     ],

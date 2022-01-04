@@ -329,4 +329,8 @@ export class EstablishmentService {
   public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
     return this.http.post<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
   }
+
+  public removeParentStatus(data: object): Observable<any> {
+    return this.http.post<any>(`/api/admin/remove-parent-status`, data);
+  }
 }

@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -22,7 +23,7 @@ import { WorkplaceDropdownComponent } from '../workplace-dropdown/workplace-drop
 import { SearchForGroupComponent } from './search-for-group.component';
 
 describe('SearchForGroupComponent', () => {
-  async function setup(searchButtonClicked = false, isLocked = false) {
+  async function setup(searchButtonClicked = false, isLocked = false, isParent = false, hasSubs = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForGroupComponent, {
       imports: [
         SharedModule,
@@ -46,7 +47,7 @@ describe('SearchForGroupComponent', () => {
       ],
     });
 
-    const mockSearchResult = buildMockAdminSearchWorkplace(isLocked);
+    const mockSearchResult = buildMockAdminSearchWorkplace(isLocked, isParent, hasSubs);
     const component = fixture.componentInstance;
 
     const searchService = TestBed.inject(SearchService);
@@ -194,6 +195,55 @@ describe('SearchForGroupComponent', () => {
 
         expect(searchResults.queryByText('1 THE LANE SOMEWHERE TOWN, HAMPSHIRE, ABC123')).toBeNull();
         expect(searchResults.queryByText('What is your favourite colour?')).toBeNull();
+      });
+
+      it('should show a remove parent status link if the workpace is a parent but has no subsidiaries', async () => {
+        const { fixture, getByTestId } = await setup(true, false, true, false);
+
+        const searchResults = within(getByTestId('group-search-results'));
+
+        fireEvent.click(searchResults.getByText('Open'));
+        fixture.detectChanges();
+
+        expect(searchResults.queryByText('Remove parent status')).toBeTruthy();
+      });
+
+      it('should open remove parent dialog when clicking remove parent status link', async () => {
+        const { getByText } = await setup(true, false, true, false);
+
+        const establishmentService = TestBed.inject(EstablishmentService);
+        const spy = spyOn(establishmentService, 'removeParentStatus').and.returnValue(of({}));
+
+        fireEvent.click(getByText('Open'));
+        fireEvent.click(getByText('Remove parent status'));
+
+        const removeParentStatusModal = within(document.body).getByRole('dialog');
+        const confirm = within(removeParentStatusModal).getByText('Remove parent status');
+        confirm.click();
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('should not show a remove parent status link if the workpace is a parent but has subsidiaries', async () => {
+        const { fixture, getByTestId } = await setup(true, false, true, true);
+
+        const searchResults = within(getByTestId('group-search-results'));
+
+        fireEvent.click(searchResults.getByText('Open'));
+        fixture.detectChanges();
+
+        expect(searchResults.queryByText('Remove parent status')).toBeFalsy();
+      });
+
+      it('should not show a remove parent status link if the workpace is not a parent', async () => {
+        const { fixture, getByTestId } = await setup(true);
+
+        const searchResults = within(getByTestId('group-search-results'));
+
+        fireEvent.click(searchResults.getByText('Open'));
+        fixture.detectChanges();
+
+        expect(searchResults.queryByText('Remove parent status')).toBeFalsy();
       });
 
       it('should show any notes associated with the establishment', async () => {
