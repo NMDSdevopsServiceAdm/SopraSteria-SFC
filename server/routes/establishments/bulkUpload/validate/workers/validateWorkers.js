@@ -38,46 +38,40 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
       return;
     }
 
-    // Start refactoring from here, needs if moving out etc.
-
     const establishmentKey = thisWorker.localId ? thisWorker.localId.replace(/\s/g, '') : '';
 
-    if (!allEstablishmentsByKey[establishmentKey]) {
-      csvWorkerSchemaErrors.push(uncheckedEstablishment(thisWorker));
-
-      delete myAPIWorkers[thisWorker.lineNumber];
-    } else {
-      // this worker is unique and can be associated to establishment
-      allWorkersByKey[workerKey] = thisWorker.lineNumber;
-
-      // associate this worker to the known establishment
-      const knownEstablishment = myAPIEstablishments[establishmentKey] ? myAPIEstablishments[establishmentKey] : null;
-
-      // key workers, to be used in training
-      workersKeyed[workerKey] = thisWorker._currentLine;
-
-      if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
-        knownEstablishment.associateWorker(
-          myAPIWorkers[thisWorker.lineNumber].key,
-          myAPIWorkers[thisWorker.lineNumber],
-        );
-      } else {
-        // this should never happen
-        console.error(
-          `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorkerId})) with a known establishment.`,
-        );
-      }
+    if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
+      addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker);
+      deleteWorker(myAPIWorkers, thisWorker.lineNumber);
+      return;
     }
+
+      allWorkersByKey[workerKey] = thisWorker.lineNumber;
+    workersKeyed[workerKey] = thisWorker._currentLine;
+
+    associateWorkerWithEstablishment(myAPIEstablishments, establishmentKey, myAPIWorkers, thisWorker);
   });
 
-  workers.metadata.records = myWorkers.length;
+  workers.metadata.records = myJSONWorkers.length;
 
   return { csvWorkerSchemaErrors, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers };
 };
 
-const createKeysForWorkers = (workers) => {
-  return workers.map((worker) => {
-    return createWorkerKey(worker.local, worker.uniqueWorker);
+const associateWorkerWithEstablishment = (myAPIEstablishments, establishmentKey, myAPIWorkers, thisWorker) => {
+  const knownEstablishment = myAPIEstablishments[establishmentKey];
+
+      if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+    knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
+      } else {
+        console.error(
+          `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorkerId})) with a known establishment.`,
+        );
+      }
+};
+
+const createKeysForWorkers = (myJSONWorkers) => {
+  return myJSONWorkers.map((worker) => {
+    return createWorkerKey(worker.localId, worker.uniqueWorkerId);
   });
 };
 
@@ -101,8 +95,19 @@ const uncheckedEstablishment = (thisWorker) => {
 
 const UNCHECKED_ESTABLISHMENT_ERROR = () => 997;
 
+const establishmentNotFoundInFile = (allEstablishmentsByKey, establishmentKey) =>
+  !allEstablishmentsByKey[establishmentKey];
+
+const addNoEstablishmentError = (csvWorkerSchemaErrors, thisWorker) =>
+  csvWorkerSchemaErrors.push(uncheckedEstablishment(thisWorker));
+
+const deleteWorker = (myAPIWorkers, workerLineNumber) => delete myAPIWorkers[workerLineNumber];
+
 module.exports = {
   validateWorkers,
   createKeysForWorkers,
   createWorkerKey,
+  establishmentNotFoundInFile,
+  addNoEstablishmentError,
+  deleteWorker,
 };
