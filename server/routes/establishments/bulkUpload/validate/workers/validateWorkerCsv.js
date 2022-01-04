@@ -31,7 +31,6 @@ const validateWorkerCsvLine = async (
   thisLine,
   currentLineNumber,
   csvWorkerSchemaErrors,
-  myWorkers,
   myAPIWorkers,
   myCurrentEstablishments,
   myJSONWorkers,
@@ -76,13 +75,11 @@ const validateWorkerCsvLine = async (
     lineValidator.validationErrors.forEach((thisError) => csvWorkerSchemaErrors.push(thisError));
   }
 
-  myWorkers.push(lineValidator);
   myJSONWorkers.push(lineValidator.toJSON(true));
 };
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
   const csvWorkerSchemaErrors = [];
-  const myWorkers = [];
   const myAPIWorkers = {};
   const myJSONWorkers = [];
 
@@ -92,7 +89,6 @@ const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
         thisLine,
         currentLineNumber + 2,
         csvWorkerSchemaErrors,
-        myWorkers,
         myAPIWorkers,
         myCurrentEstablishments,
         myJSONWorkers,
@@ -100,7 +96,7 @@ const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
     ),
   );
 
-  return { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myJSONWorkers };
+  return { csvWorkerSchemaErrors, myAPIWorkers, myJSONWorkers };
 };
 
 module.exports = {

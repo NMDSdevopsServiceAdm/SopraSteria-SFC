@@ -7,7 +7,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
   const workersKeyed = [];
   const allWorkersByKey = {};
 
-  const { csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myJSONWorkers } = await validateWorkerCsv(
+  const { csvWorkerSchemaErrors, myAPIWorkers, myJSONWorkers } = await validateWorkerCsv(
     workers,
     myCurrentEstablishments,
   );
@@ -15,7 +15,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
   console.info('Workers validated');
 
   // used to check for duplicates
-  const allWorkerKeys = createKeysForWorkers(myWorkers);
+  const allWorkerKeys = createKeysForWorkers(myJSONWorkers);
 
   myJSONWorkers.forEach((thisWorker) => {
     validatePartTimeSalaryNotEqualToFTE(thisWorker, myJSONWorkers, myCurrentEstablishments, csvWorkerSchemaErrors);
