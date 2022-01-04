@@ -1,4 +1,5 @@
 <!-- USING A SINGLE IMAGE AS THE FLOWCHART -->
+
 <!-- <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4" data-testid="heading">Step by step bulk upload guide</h1>
@@ -6,21 +7,21 @@
       >Print this page</a
     >
     <div>
-      <img alt="Bulk upload step by step guide" src="/assets/images/bulk-upload-flowchart.png" style="width: 100%" />
+      <img alt="Bulk upload step by step guide" src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart.png" style="width: 100%" />
     </div>
   </div>
 </div> -->
 
 <!-- CREATING THE FLOWCHART USING HTML ELEMENTS -->
 
-<div class="govuk-grid-column-full">
-  <div class="govuk-grid-row" style="border: 1px solid green">
+<!-- <div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-4" data-testid="heading">Step by step bulk upload guide</h1>
     <a role="button" class="govuk-list govuk-list--inline govuk-util__float-right" href="#" (click)="printPage($event)"
       >Print this page</a
     >
   </div>
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="asc-flowchart-row asc-flowchart-row__justify-center">
       <p class="asc-flowchart-text-box">Is this the first time you've done a bulk upload?</p>
     </div>
@@ -52,6 +53,150 @@
             <p class="asc-flowchart-flow-text">No</p>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__justify-center">
+      <p class="asc-flowchart-text-box asc-flowchart-text-box__fixed-width">
+        Download the current workplace and staff data files, the training data file is optional
+      </p>
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__justify-center">
+      <p class="asc-flowchart-text-box">Update the data files and save them as CSV files</p>
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__justify-center">
+      <p class="asc-flowchart-text-box">Select the data files that you've just updated</p>
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__justify-center">
+      <p class="asc-flowchart-text-box">Validate the data files that you've just selected</p>
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__justify-center">
+      <p class="asc-flowchart-text-box">Are there any errors?</p>
+    </div>
+  </div>
+</div> -->
+
+<!-- CREATING THE FLOWCHART USING MULTIPLE IMAGES -->
+
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4" data-testid="heading">Step by step bulk upload guide</h1>
+    <a role="button" class="govuk-list govuk-list--inline govuk-util__float-right" href="#" (click)="printPage($event)"
+      >Print this page</a
+    >
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="asc-flowchart-row">
+      <img
+        alt="Is this your first time you've done a bulk upload?"
+        src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-1.png"
+        class="asc-flowchart-image"
+      />
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__flex">
+      <div class="asc-flowchart-column">
+        <img
+          alt="If yes, select 'bulk upload your data' and then read about who should do bulk uploads and what you need to know before doing one"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-2.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="Then add unique workplace and staff references as needed"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-3.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="Then download and read 'codes and guidance' documents"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-4.png"
+          class="asc-flowchart-image"
+        />
+      </div>
+      <div class="asc-flowchart-column">
+        <img
+          alt="If no, select 'bulk upload your data', do you have any missing references?"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-5.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="If yes, add missing references"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-6.png"
+          class="asc-flowchart-image"
+        />
+      </div>
+    </div>
+    <div class="asc-flowchart-row">
+      <img
+        alt="Then download the current workplace and staff data files, the training data file is optional"
+        src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-7.png"
+        class="asc-flowchart-image"
+      />
+    </div>
+    <div class="asc-flowchart-row">
+      <img
+        alt="Then update the data files and save them as CSV files"
+        src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-8.png"
+        class="asc-flowchart-image"
+      />
+    </div>
+    <div class="asc-flowchart-row">
+      <img
+        alt="Then select the data files that you've just updated"
+        src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-9.png"
+        class="asc-flowchart-image"
+      />
+    </div>
+    <div class="asc-flowchart-row">
+      <img
+        alt="Then validate the data files that you've just selected"
+        src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-10.png"
+        class="asc-flowchart-image"
+      />
+    </div>
+    <div class="asc-flowchart-row">
+      <img
+        alt="Are there any errors?"
+        src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-11.png"
+        class="asc-flowchart-image"
+      />
+    </div>
+    <div class="asc-flowchart-row asc-flowchart-row__flex">
+      <div class="asc-flowchart-column">
+        <img
+          alt="If yes, view the error report"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-12.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="Then fix the errors (you do not need to fix warnings, but it does improve the data)"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-13.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="Then select the data files that you've just fixed"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-14.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="Then validate the data files that you've just selected"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-15.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="Are there any errors? If yes - go back to view the error report and repeat the process. If no - complete the upload"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-16.png"
+          class="asc-flowchart-image"
+        />
+      </div>
+      <div class="asc-flowchart-column">
+        <img
+          alt="If there are no errors - complete the upload"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-18.png"
+          class="asc-flowchart-image"
+        />
+        <img
+          alt="arrows"
+          src="/assets/images/bulk-upload-flowchart/bulk-upload-flowchart-17.png"
+          class="asc-flowchart-image"
+        />
       </div>
     </div>
   </div>

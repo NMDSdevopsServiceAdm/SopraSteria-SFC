@@ -1,7 +1,7 @@
 @import '~govuk-frontend/govuk/base';
 
 .asc-flowchart-row {
-  border: 1px solid blue;
+  // border: 1px solid blue;
   width: 100%;
 
   &__justify-center {
@@ -19,7 +19,7 @@
   flex-direction: column;
   align-items: center;
   flex: 1;
-  border: 1px solid red;
+  // border: 1px solid red;
 }
 
 .asc-flowchart-text-box {
@@ -36,4 +36,9 @@
 .asc-flowchart-flow-text {
   font-size: 16px;
   display: inline-block;
+}
+
+.asc-flowchart-image {
+  // border: 1px solid red;
+  width: 100%;
 }
