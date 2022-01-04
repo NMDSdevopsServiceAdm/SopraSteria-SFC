@@ -36,12 +36,35 @@ const validateWorkerCsvLine = async (
   myJSONWorkers,
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
+
+  // console.log(myCurrentEstablishments);
+  // const establishments = myCurrentEstablishments.map((establishment) =>
+  //   JSON.stringify(establishment.toJSON(false, true, false, false, true, null, true)),
+  // );
+  // console.log(establishments);
+
+  const establishmentUniqueID = thisLine.LOCALESTID.replace(/\s/g, '');
+  const workerUniqueID = thisLine.UNIQUEWORKERID.replace(/\s/g, '');
+
+  const foundEstablishment = myCurrentEstablishments.find(
+    (currentEstablishment) => currentEstablishment.key === establishmentUniqueID,
+  );
+
+  let workerInEst;
+
+  if (foundEstablishment) {
+    workerInEst = foundEstablishment.theWorker(workerUniqueID).toJSON(true, false);
+  }
+
+  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, workerInEst);
 
   lineValidator.validate();
   lineValidator.transform();
 
   const thisWorkerAsAPI = lineValidator.toAPI();
+  // .toQualificationAPI()
+  // .toAPI()
+  // .toJSON(true)
 
   try {
     // construct Worker entity

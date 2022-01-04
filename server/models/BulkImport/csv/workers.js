@@ -31,11 +31,10 @@ const csvQuote = (toCsv) => {
 };
 
 class Worker {
-  constructor(currentLine, lineNumber, allCurrentEstablishments) {
+  constructor(currentLine, lineNumber, currentWorker) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
-    this._allCurrentEstablishments = allCurrentEstablishments;
-    this._currentWorker = null;
+    this._currentWorker = currentWorker;
 
     this._validationErrors = [];
     this._contractType = null;
@@ -688,23 +687,13 @@ class Worker {
       return false;
     } else {
       // helper which returns true if the given LOCALESTID
-      const thisWorkerExists = (establishmentKey, workerKey) => {
-        const foundEstablishment = this._allCurrentEstablishments.find(
-          (currentEstablishment) => currentEstablishment.key === establishmentKey,
-        );
-
-        // having found the establishment, find the worker within the establishment
-        if (foundEstablishment) {
-          this._currentWorker = foundEstablishment.theWorker(workerKey);
-          return !!this._currentWorker;
-        } else {
-          return false;
-        }
+      const thisWorkerExists = () => {
+        return !!this._currentWorker;
       };
 
       switch (myStatus) {
         case 'NEW':
-          if (thisWorkerExists(this._establishmentKey, this._key)) {
+          if (thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
@@ -719,7 +708,7 @@ class Worker {
           }
           break;
         case 'DELETE':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+          if (!thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
@@ -733,45 +722,16 @@ class Worker {
           }
           break;
         case 'UNCHECKED':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
-            this._validationErrors.push({
-              name: this._currentLine.LOCALESTID,
-              worker: this._currentLine.UNIQUEWORKERID,
-              lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
-              errType: 'STATUS_ERROR',
-              error:
-                "Staff record has a STATUS of UNCHECKED but doesn't exist, please change to NEW if you want to add this staff record",
-              source: myStatus,
-              column: 'STATUS',
-            });
-          }
-          break;
         case 'NOCHANGE':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
-            this._validationErrors.push({
-              name: this._currentLine.LOCALESTID,
-              worker: this._currentLine.UNIQUEWORKERID,
-              lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
-              errType: 'STATUS_ERROR',
-              error:
-                "Staff record has a STATUS of NOCHANGE but doesn't exist, please change to NEW if you want to add this staff record",
-              source: myStatus,
-              column: 'STATUS',
-            });
-          }
-          break;
         case 'UPDATE':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+          if (!thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error:
-                "Staff record has a STATUS of UPDATE but doesn't exist, please change to NEW if you want to add this staff record",
+              error: `Staff record has a STATUS of ${myStatus} but doesn't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
               column: 'STATUS',
             });
@@ -779,7 +739,7 @@ class Worker {
           break;
         case 'CHGSUB':
           // note - the LOCALESTID here is that of the target sub - not the current sub
-          if (thisWorkerExists(this._establishmentKey, this._key)) {
+          if (thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
@@ -1548,10 +1508,11 @@ class Worker {
       return;
     }
 
+    console.log(this._currentWorker);
     if (
       this._currentWorker &&
-      moment(this._currentWorker._properties.get('DaysSick').savedAt).isBefore(Date.now(), 'day') &&
-      this._currentWorker.daysSick.days === parseInt(this._currentLine.DAYSSICK)
+      moment(get(this._currentWorker, 'daysSick.lastSaved')).isBefore(Date.now(), 'day') &&
+      get(this._currentWorker, 'daysSick.currentValue.days') === parseInt(this._currentLine.DAYSSICK)
     ) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,

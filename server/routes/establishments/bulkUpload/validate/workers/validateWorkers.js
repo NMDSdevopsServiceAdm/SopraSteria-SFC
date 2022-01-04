@@ -46,7 +46,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
       return;
     }
 
-      allWorkersByKey[workerKey] = thisWorker.lineNumber;
+    allWorkersByKey[workerKey] = thisWorker.lineNumber;
     workersKeyed[workerKey] = thisWorker._currentLine;
 
     associateWorkerWithEstablishment(myAPIEstablishments, establishmentKey, myAPIWorkers, thisWorker);
@@ -60,13 +60,13 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
 const associateWorkerWithEstablishment = (myAPIEstablishments, establishmentKey, myAPIWorkers, thisWorker) => {
   const knownEstablishment = myAPIEstablishments[establishmentKey];
 
-      if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+  if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
     knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
-      } else {
-        console.error(
-          `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorkerId})) with a known establishment.`,
-        );
-      }
+  } else {
+    console.error(
+      `FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorkerId})) with a known establishment.`,
+    );
+  }
 };
 
 const createKeysForWorkers = (myJSONWorkers) => {

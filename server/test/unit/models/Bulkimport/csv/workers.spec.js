@@ -203,15 +203,13 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               '../../../models': models,
             }),
           },
-        }).Worker)(buildWorkerCsv(), 2, [buildEstablishmentRecord()]);
-
-        bulkUpload._currentWorker = buildWorkerRecord({
-          overrides: {
-            _properties: {
-              get() {
-                return { savedAt: moment().add(-1, 'days') };
-              },
+        }).Worker)(buildWorkerCsv(), 2, {
+          daysSick: {
+            currentValue: {
+              value: 'Yes',
+              days: 1,
             },
+            lastSaved: moment().add(-1, 'days'),
           },
         });
 
@@ -272,7 +270,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
               },
             }),
             2,
-            [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+            null,
           );
 
           // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -304,7 +302,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -350,7 +348,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -380,7 +378,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -423,7 +421,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -466,7 +464,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -512,7 +510,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -546,7 +544,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -580,7 +578,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -627,7 +625,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -674,7 +672,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [buildEstablishmentRecord(), buildSecondEstablishmentRecord()],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -714,7 +712,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -739,7 +737,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -764,7 +762,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -788,7 +786,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
@@ -812,7 +810,7 @@ describe('/server/models/Bulkimport/csv/workers.js', () => {
             },
           }),
           2,
-          [],
+          null,
         );
 
         // Regular validation has to run first for the establishment to populate the internal properties correctly
