@@ -64,9 +64,7 @@ const validateWorkerCsvLine = async (
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
       await Promise.all(
-        lineValidator
-          .toQualificationAPI()
-          .map((thisQual) => loadWorkerQualifications(lineValidator, thisQual, thisApiWorker)),
+        lineValidator.toQualificationAPI().map((thisQual) => loadWorkerQualifications(thisQual, thisApiWorker)),
       );
     } else {
       const errors = thisApiWorker.errors;
