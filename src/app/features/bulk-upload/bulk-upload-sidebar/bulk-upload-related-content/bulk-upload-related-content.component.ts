@@ -6,7 +6,6 @@ import { AuthService } from '@core/services/auth.service';
   templateUrl: './bulk-upload-related-content.component.html',
 })
 export class BulkUploadRelatedContentComponent {
-  // @Input() showAll: boolean;
   @Input() showAboutBulkUpload = true;
   @Input() showViewLastBulkUpload = true;
   @Input() showViewReferences = true;
