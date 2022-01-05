@@ -1500,7 +1500,6 @@ class Worker {
       return;
     }
 
-    console.log(this._currentWorker);
     if (
       this._currentWorker &&
       moment(get(this._currentWorker, 'daysSick.lastSaved')).isBefore(Date.now(), 'day') &&
@@ -3373,79 +3372,6 @@ class Worker {
         origin: 'Workers',
         ...thisValidation,
       };
-    });
-  }
-
-  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
-  addQualificationAPIValidation(columnIndex, errors, warnings) {
-    errors.forEach((thisError) => {
-      if (thisError.properties) {
-        thisError.properties.forEach((thisProp) => {
-          const validationError = {
-            lineNumber: this._lineNumber,
-            error: thisError.message,
-            name: this._currentLine.LOCALESTID,
-          };
-
-          switch (thisProp) {
-            case 'Qualification':
-              // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
-              // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Year':
-              // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-              // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Notes':
-              // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-              // validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-              // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
-              break;
-            default:
-            // validationError.errCode = thisError.code;
-            // validationError.errType = 'Undefined';
-            // validationError.source  = thisProp;
-          }
-          this._validationErrors.push(validationError);
-        });
-      }
-    });
-
-    warnings.forEach((thisWarning) => {
-      if (thisWarning.properties) {
-        thisWarning.properties.forEach((thisProp) => {
-          const validationWarning = {
-            lineNumber: this._lineNumber,
-            warning: thisWarning.message,
-          };
-
-          switch (thisProp) {
-            case 'Qualification':
-              // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-              // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Year':
-              // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-              // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Notes':
-              // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-              // validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-              // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
-              break;
-            default:
-            // validationWarning.warnCode = thisWarning.code;
-            // validationWarning.warnType = 'Undefined';
-            // validationWarning.source  = thisProp;
-          }
-
-          this._validationErrors.push(validationWarning);
-        });
-      }
     });
   }
 }

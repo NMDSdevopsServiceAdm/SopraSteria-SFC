@@ -5,26 +5,12 @@ const { Qualification } = require('../../../../../models/classes/qualification')
 
 const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 
-const loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker) => {
+const loadWorkerQualifications = async (thisQual, thisApiWorker) => {
   const thisApiQualification = new Qualification();
 
-  // load while ignoring the "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
-  const isValid = await thisApiQualification.load(thisQual);
+  await thisApiQualification.load(thisQual);
 
-  if (isValid) {
-    // associate the qualification entity to the Worker
-    thisApiWorker.associateQualification(thisApiQualification);
-  } else {
-    const errors = thisApiQualification.errors;
-    const warnings = thisApiQualification.warnings;
-
-    lineValidator.addQualificationAPIValidation(thisQual.column, errors, warnings);
-
-    if (errors.length === 0) {
-      // associate the qualification entity to the Worker
-      thisApiWorker.associateQualification(thisApiQualification);
-    }
-  }
+  thisApiWorker.associateQualification(thisApiQualification);
 };
 
 const findExistingWorker = (thisLine, myCurrentEstablishments) => {
