@@ -3,18 +3,14 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
@@ -22,8 +18,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { render } from '@testing-library/angular';
 
 const MockWindow = {
   dataLayer: {
@@ -59,17 +54,8 @@ describe('DashboardComponent', () => {
           deps: [HttpClient],
         },
         {
-          provide: NotificationsService,
-          useClass: MockNotificationsService,
-        },
-        {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
-        },
-        {
-          provide: AuthService,
-          useFactory: MockAuthService.factory(true, isAdmin),
-          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -103,6 +89,7 @@ describe('DashboardComponent', () => {
 
       expect(component.getByTestId('tab_benchmarks')).toBeTruthy();
     });
+
     it('should not display the Benchmarks tab when canViewBenchmarks is false', async () => {
       const { component } = await setup(true);
 
@@ -112,6 +99,7 @@ describe('DashboardComponent', () => {
 
       expect(component.queryByTestId('tab_benchmarks')).toBeNull();
     });
+
     it('should display the Users tab', async () => {
       const { component } = await setup(true);
 
@@ -124,69 +112,14 @@ describe('DashboardComponent', () => {
 
       expect(component.getByText('Users')).toBeTruthy();
     });
-  });
 
-  describe('Archive Workplace', () => {
-    it('should display a Delete Workplace link if user is an admin', async () => {
+    it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
       const { component } = await setup(true);
 
-      component.getByText('Delete Workplace');
-    });
+      component.fixture.componentInstance.showSharingPermissionsBanner = true;
+      component.fixture.detectChanges();
 
-    it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
-      const { component } = await setup(true, 1);
-
-      expect(component.queryByText('Delete Workplace')).toBeNull();
-    });
-
-    it('should not display a Delete Workplace link if user not an admin', async () => {
-      const { component } = await setup(false);
-
-      expect(component.queryByText('Delete Workplace')).toBeNull();
-    });
-
-    it('should display a modal when the user clicks on Delete Workplace', async () => {
-      const { component } = await setup(true);
-
-      const deleteWorkplace = component.getByText('Delete Workplace');
-      deleteWorkplace.click();
-
-      const dialog = await within(document.body).findByRole('dialog');
-
-      const cancel = within(dialog).getByText('Cancel');
-      cancel.click();
-    });
-
-    it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { component, establishmentService } = await setup(true);
-
-      const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-
-      const deleteWorkplace = component.getByText('Delete Workplace');
-      deleteWorkplace.click();
-
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete workplace');
-      confirm.click();
-
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should redirect the user after deleting a workplace', async () => {
-      const { component, establishmentService, router } = await setup(true);
-
-      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-      const spy = spyOn(router, 'navigate');
-      spy.and.returnValue(Promise.resolve(true));
-
-      const deleteWorkplace = component.getByText('Delete Workplace');
-      deleteWorkplace.click();
-
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete workplace');
-      confirm.click();
-
-      expect(spy).toHaveBeenCalled();
+      expect(component.getByTestId('red-flag')).toBeTruthy();
     });
   });
 });

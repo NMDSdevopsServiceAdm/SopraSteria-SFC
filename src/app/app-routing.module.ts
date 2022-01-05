@@ -12,9 +12,14 @@ import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
+import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
+import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
+import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
+import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
@@ -126,6 +131,14 @@ const routes: Routes = [
         data: { title: 'Dashboard' },
       },
       {
+        path: 'first-login-wizard',
+        component: FirstLoginPageComponent,
+        resolve: {
+          wizard: WizardResolver,
+        },
+        data: { title: 'First Login Wizard' },
+      },
+      {
         path: 'bulk-upload',
         loadChildren: () => import('@features/bulk-upload/bulk-upload.module').then((m) => m.BulkUploadModule),
         data: { title: 'Bulk Upload' },
@@ -225,6 +238,24 @@ const routes: Routes = [
         path: '',
         loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
       },
+      {
+        path: 'benefits-bundle',
+        children: [
+          {
+            path: '',
+            component: BenefitsBundleComponent,
+            data: { title: 'Benefits Bundle' },
+          },
+          {
+            path: 'training-discounts',
+            component: BenefitsTrainingDiscountsComponent,
+            data: { title: 'Endorsed Training Providers Discounts' },
+            resolve: {
+              pages: PageResolver,
+            },
+          },
+        ],
+      },
     ],
   },
   {
@@ -239,6 +270,7 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       onSameUrlNavigation: 'reload',
       paramsInheritanceStrategy: 'always',
+      relativeLinkResolution: 'legacy',
     }),
   ],
   exports: [RouterModule],

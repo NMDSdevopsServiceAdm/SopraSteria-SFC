@@ -8,20 +8,20 @@ import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
-  private share: any = { enabled: false, with: [] };
+  private shareWith: any = { cqc: null, localAuthorities: null };
 
-  public static factory(newShare: any) {
+  public static factory(shareWith: any) {
     return (http: HttpClient) => {
       const service = new MockEstablishmentService(http);
-      if (newShare) {
-        service.setShare(newShare);
+      if (shareWith) {
+        service.setShareWith(shareWith);
       }
       return service;
     };
   }
 
-  public setShare(newShare: any) {
-    this.share = newShare;
+  public setShareWith(shareWith: any) {
+    this.shareWith = shareWith;
   }
 
   public get establishment$(): Observable<Establishment> {
@@ -57,7 +57,7 @@ export class MockEstablishmentService extends EstablishmentService {
       postcode: 'mock establishment postcode',
       primaryAuthority: undefined,
       serviceUsers: [],
-      share: { enabled: this.share.enabled, with: this.share.with },
+      shareWith: this.shareWith,
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,
@@ -67,6 +67,7 @@ export class MockEstablishmentService extends EstablishmentService {
       updated: undefined,
       updatedBy: 'mock establishment updatedBy',
       vacancies: undefined,
+      showSharingPermissionsBanner: false,
     };
   }
 
@@ -102,10 +103,7 @@ export class MockEstablishmentService extends EstablishmentService {
       postcode: '',
       primaryAuthority: undefined,
       serviceUsers: [],
-      share: {
-        enabled: false,
-        with: [],
-      },
+      shareWith: this.shareWith,
       starters: undefined,
       totalLeavers: 0,
       totalStarters: 0,
@@ -116,5 +114,13 @@ export class MockEstablishmentService extends EstablishmentService {
       updatedBy: '',
       vacancies: undefined,
     };
+  }
+
+  public getExpiresSoonAlertDates(): Observable<string> {
+    return of('90');
+  }
+
+  public setExpiresSoonAlertDates(establishmentUid, data): Observable<string> {
+    return of('');
   }
 }

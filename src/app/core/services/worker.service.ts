@@ -10,6 +10,7 @@ import {
   QualificationType,
 } from '@core/model/qualification.model';
 import { MultipleTrainingResponse, TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
+import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -196,6 +197,15 @@ export class WorkerService {
 
   getTrainingRecords(workplaceUid: string, workerId: string) {
     return this.http.get<TrainingResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/training`);
+  }
+
+  getAllTrainingAndQualificationRecords(
+    workplaceUid: string,
+    workerId: string,
+  ): Observable<TrainingAndQualificationRecords> {
+    return this.http.get<TrainingAndQualificationRecords>(
+      `/api/establishment/${workplaceUid}/worker/${workerId}/trainingAndQualifications/getAllTrainingAndQualifications`,
+    );
   }
 
   getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {

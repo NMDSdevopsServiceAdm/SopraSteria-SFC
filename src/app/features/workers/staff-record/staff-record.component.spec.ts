@@ -12,8 +12,10 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -51,6 +53,7 @@ describe('StaffRecordComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: PermissionsService, useClass: MockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     });
 

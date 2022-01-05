@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -473,11 +474,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CapacityServicesChangedBy"',
       },
-      ShareDataValue: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        field: '"ShareDataValue"',
-      },
       ShareDataSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -500,33 +496,13 @@ module.exports = function (sequelize, DataTypes) {
       },
       shareWithCQC: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithCQC"',
       },
       shareWithLA: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithLA"',
-      },
-      ShareWithLASavedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"ShareWithLASavedAt"',
-      },
-      ShareWithLAChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"ShareWithLAChangedAt"',
-      },
-      ShareWithLASavedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"ShareWithLASavedBy"',
-      },
-      ShareWithLAChangedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"ShareWithLAChangedBy"',
       },
       VacanciesValue: {
         type: DataTypes.ENUM,
@@ -715,6 +691,19 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'InReview',
       },
+      showSharingPermissionsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ShowSharingPermissionsBanner',
+      },
+      expiresSoonAlertDate: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['90', '60', '30'],
+        default: '90',
+        field: 'ExpiresSoonAlertDate',
+      },
     },
     {
       defaultScope: {
@@ -811,11 +800,6 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'jobs',
     });
-    Establishment.hasMany(models.establishmentLocalAuthority, {
-      foreignKey: 'establishmentId',
-      sourceKey: 'id',
-      as: 'localAuthorities',
-    });
     Establishment.hasMany(models.establishmentAudit, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
@@ -828,6 +812,17 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'workers',
       onDelete: 'CASCADE',
+    });
+    Establishment.hasMany(models.notes, {
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'notes',
+      onDelete: 'CASCADE',
+    });
+    Establishment.hasMany(models.establishment, {
+      foreignKey: 'parentId',
+      sourceKey: 'id',
+      as: 'Subsidiaries',
     });
   };
 
@@ -872,10 +867,11 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findByUid = async function (uid) {
+  Establishment.findByUid = async function (uid, isRegistration = false) {
     return await this.findOne({
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
     });
   };
@@ -971,6 +967,7 @@ module.exports = function (sequelize, DataTypes) {
         'locationId',
         'dataOwner',
         'updated',
+        'provId',
         'EmployerTypeValue',
         'EmployerTypeOther',
       ],
@@ -989,6 +986,12 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
         },
         {
+          model: sequelize.models.establishment,
+          attributes: ['NameValue'],
+          as: 'Subsidiaries',
+          required: false,
+        },
+        {
           model: sequelize.models.user,
           attributes: ['id', 'uid', 'FullNameValue', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue'],
           as: 'users',
@@ -1000,7 +1003,19 @@ module.exports = function (sequelize, DataTypes) {
           include: [
             {
               model: sequelize.models.login,
-              attributes: ['username', 'status'],
+              attributes: ['username', 'isActive'],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.notes,
+          attributes: ['note', 'createdAt', 'noteType'],
+          as: 'notes',
+          include: [
+            {
+              model: sequelize.models.user,
+              attributes: ['FullNameValue'],
+              as: 'user',
             },
           ],
         },
@@ -1065,7 +1080,7 @@ module.exports = function (sequelize, DataTypes) {
     return await this.scope(scopes).count();
   };
 
-  Establishment.getEstablishmentWithPrimaryUser = async function (uid) {
+  Establishment.getEstablishmentWithPrimaryUser = async function (uid, isRegistration = false) {
     return await this.findOne({
       attributes: [
         'NameValue',
@@ -1091,6 +1106,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
       include: [
         {
@@ -1125,7 +1141,9 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.getEstablishmentRegistrationsByStatus = async function (isRejection) {
-    const params = isRejection ? { ustatus: 'REJECTED' } : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
+    const params = isRejection
+      ? { ustatus: 'REJECTED', archived: true }
+      : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
 
     return await this.findAll({
       attributes: [
@@ -1271,11 +1289,6 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishmentJobs,
           attributes: ['jobId', 'type', 'total'],
           as: 'jobs',
-        },
-        {
-          model: sequelize.models.establishmentLocalAuthority,
-          attributes: ['cssrId'],
-          as: 'localAuthorities',
         },
       ],
     });
@@ -1467,6 +1480,361 @@ module.exports = function (sequelize, DataTypes) {
         },
       },
       attributes: ['locationId'],
+    });
+  };
+
+  Establishment.workersAndTraining = async function (
+    establishmentId,
+    includeMandatoryTrainingBreakdown = false,
+    isParent = false,
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+
+    let attributes = [
+      'id',
+      'uid',
+      'LocalIdentifierValue',
+      'NameOrIdValue',
+      'ContractValue',
+      'CompletedValue',
+      'created',
+      'updated',
+      'updatedBy',
+      'lastWdfEligibility',
+      'wdfEligible',
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
+        'trainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
+        ),
+        'expiredTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+        ),
+        'expiringTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT
+                  COUNT(0)
+                FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+                AND "TrainingCategoryFK" NOT IN (
+                  SELECT
+                    DISTINCT "CategoryFK"
+                  FROM cqc."WorkerTraining"
+                  WHERE "WorkerFK" = "workers"."ID"
+                )
+            )
+            `,
+        ),
+        'missingMandatoryTrainingCount',
+      ],
+      'LongTermAbsence',
+    ];
+
+    if (includeMandatoryTrainingBreakdown) {
+      const mandatoryTrainingAttributes = [
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiredMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID"  AND "CategoryFK"  IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'mandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiringMandatoryTrainingCount',
+        ],
+      ];
+
+      attributes = [...attributes, ...mandatoryTrainingAttributes];
+    }
+
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes,
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getEstablishmentTrainingRecords = async function (establishmentId, isParent = false) {
+    let attributes = [
+      'id',
+      'NameOrIdValue',
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT json_agg(cqc."TrainingCategories"."Category")
+                FROM cqc."MandatoryTraining"
+                RIGHT JOIN cqc."TrainingCategories" ON
+                "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+            )
+          `,
+        ),
+        'mandatoryTrainingCategories',
+      ],
+      'LongTermAbsence',
+    ];
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+    return this.findAll({
+      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes,
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+            {
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              required: false,
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                  attributes: ['category'],
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getWorkerQualifications = async function (establishmentId, isParent = false) {
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['NameOrIdValue'],
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+            {
+              model: sequelize.models.workerQualifications,
+              as: 'qualifications',
+              attributes: ['Year'],
+              include: [
+                {
+                  model: sequelize.models.workerAvailableQualifications,
+                  as: 'qualification',
+                  attributes: ['group', 'title', 'level'],
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId, isParent = false) {
+    let subsidiaries = [];
+
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['NameOrIdValue', 'CareCertificateValue'],
+          where: {
+            CareCertificateValue: { [Op.ne]: null },
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getExpiresSoonAlertDate = async function (establishmentId) {
+    return this.findOne({
+      attributes: ['ExpiresSoonAlertDate'],
+      where: {
+        id: establishmentId,
+      },
     });
   };
 

@@ -1,0 +1,88 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h2 class="govuk-heading-l">Parent request: {{ registration.establishment.name }}</h2>
+    <p>
+      Received {{ registration.createdAt | date: 'dd MMM yyyy' }},
+      {{ registration.createdAt | date: 'hh:mma' | lowercase }}
+    </p>
+    <app-review-checkbox
+      [toggleCheckbox]="toggleCheckbox"
+      [registration]="registration"
+      [userFullName]="userFullName"
+      [checkBoxError]="checkBoxError"
+      [getUpdatedRegistration]="getUpdatedRegistration"
+    ></app-review-checkbox>
+    <h2 class="govuk-heading-m">Workplace details</h2>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Workplace ID</dt>
+        <dd class="govuk-summary-list__value">
+          <a
+            href="#"
+            (click)="
+              navigateToWorkplace(
+                registration.establishment.establishmentUid,
+                '',
+                registration.establishment.workplaceId,
+                $event
+              )
+            "
+          >
+            {{ registration.establishment.workplaceId }}
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name and address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address1 }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+          {{ registration.establishment.address3 }}<br />
+          {{ registration.establishment.county }}<br />
+          {{ registration.establishment.town }}<br />
+          {{ registration.establishment.postcode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.username }}
+        </dd>
+      </div>
+    </dl>
+    <app-add-note
+      [addNote]="addNote"
+      [registration]="registration"
+      [notes]="notes"
+      [getNotes]="getNotes"
+      [notesError]="notesError"
+      [notesForm]="notesForm"
+      [loggedInUser]="loggedInUser"
+    ></app-add-note>
+    <div class="govuk-grid-column-three-quarters govuk-!-padding-left-0">
+      <div class="govuk-button-group">
+        <button
+          class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
+          (click)="approveOrRejectParentRequest(true)"
+        >
+          Approve
+        </button>
+        <button
+          class="
+            govuk-button govuk-button--warning
+            govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6
+          "
+          (click)="approveOrRejectParentRequest(false)"
+        >
+          Reject
+        </button>
+        <a [routerLink]="['/sfcadmin', 'parent-requests']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
+      </div>
+      <span *ngIf="approvalOrRejectionServerError" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ approvalOrRejectionServerError }}
+      </span>
+    </div>
+  </div>
+</div>

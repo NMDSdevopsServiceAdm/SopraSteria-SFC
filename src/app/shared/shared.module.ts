@@ -5,10 +5,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import {
-  RegistrationApprovalOrRejectionDialogComponent,
-} from '@features/admin/registration-requests/registration-approval-or-rejection-dialog/registration-approval-or-rejection-dialog.component';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
 import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
@@ -51,6 +49,9 @@ import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
+import {
+  RemoveParentConfirmationComponent,
+} from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
@@ -188,7 +189,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
-    RegistrationApprovalOrRejectionDialogComponent,
+    PageComponent,
+    RemoveParentConfirmationComponent,
   ],
   exports: [
     AlertComponent,
@@ -266,8 +268,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
-    RegistrationApprovalOrRejectionDialogComponent,
+    PageComponent,
+    RemoveParentConfirmationComponent,
   ],
-  providers: [DialogService, TotalStaffComponent, ArticleListResolver],
+  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
 export class SharedModule {}

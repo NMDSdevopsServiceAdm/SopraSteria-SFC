@@ -1,7 +1,3 @@
-// export interface Registrations {
-//   [index: number]: Registration;
-// }
-
 export interface Registrations {
   [index: number]: {
     created: string;
@@ -59,11 +55,6 @@ export interface Note {
   createdAt: Date;
   note: string;
   user: { FullNameValue: string };
-}
-
-export interface RegistrationApprovalOrRejectionConfirmation {
-  workplaceName: string;
-  isApproval: boolean;
 }
 
 export interface RegistrationApprovalOrRejectionRequestBody {

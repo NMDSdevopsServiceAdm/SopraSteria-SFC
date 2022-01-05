@@ -5,7 +5,7 @@ import { INT_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -22,7 +22,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -40,23 +40,21 @@ export class YearArrivedUkComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.form.get('yearKnown').valueChanges.subscribe(value => {
+      this.form.get('yearKnown').valueChanges.subscribe((value) => {
         this.form.get('year').clearValidators();
 
         if (value === 'Yes') {
-          this.form.get('year').setValidators([
-            Validators.required,
-            Validators.min(
-              moment()
-                .subtract(100, 'years')
-                .year()
-            ),
-            Validators.max(moment().year()),
-          ]);
+          this.form
+            .get('year')
+            .setValidators([
+              Validators.required,
+              Validators.min(dayjs().subtract(100, 'years').year()),
+              Validators.max(dayjs().year()),
+            ]);
         }
 
         this.form.get('year').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.yearArrived) {

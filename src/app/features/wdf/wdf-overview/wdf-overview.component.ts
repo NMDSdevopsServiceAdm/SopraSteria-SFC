@@ -7,8 +7,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
-import { orderBy } from 'lodash';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
+import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -72,7 +72,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
 
   public getLastOverallEligibilityDate(): void {
     if (this.parentOverallWdfEligibility) {
-      this.parentOverallEligibilityDate = moment(this.workplaces[0].wdf.overallWdfEligibility).format('D MMMM YYYY');
+      this.parentOverallEligibilityDate = dayjs(this.workplaces[0].wdf.overallWdfEligibility).format('D MMMM YYYY');
     }
   }
 
@@ -87,8 +87,8 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   }
 
   private setDates(report: WDFReport): void {
-    this.wdfStartDate = moment(report.effectiveFrom).format('D MMMM YYYY');
-    this.wdfEndDate = moment(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
-    this.overallEligibilityDate = moment(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
+    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+    this.overallEligibilityDate = dayjs(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
   }
 }

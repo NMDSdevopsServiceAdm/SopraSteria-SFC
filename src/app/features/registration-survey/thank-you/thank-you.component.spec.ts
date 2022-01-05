@@ -33,10 +33,10 @@ describe('ThankYouComponent', () => {
     expect(text.innerText).toContain('Thank you, we really appreciate your help');
   });
 
-  it('should navigate to the dashboard', async () => {
+  it('should navigate to the first login wizard', async () => {
     const component = await setup();
 
     const nextPage = component.fixture.componentInstance.nextPage;
-    expect(nextPage.url).toEqual(['/dashboard']);
+    expect(nextPage.url).toEqual(['/first-login-wizard']);
   });
 });

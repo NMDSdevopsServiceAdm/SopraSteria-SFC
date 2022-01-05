@@ -7,7 +7,7 @@ export const environment = {
   environmentName: 'other',
   tracesSampleRate: 0,
   configCatKey: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ',
-  cmsUri: 'https://sfccmstest.cloudapps.digital/items/',
+  cmsUri: 'https://sfccmstest.cloudapps.digital',
 };
 
 /*
@@ -17,4 +17,4 @@ export const environment = {
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.

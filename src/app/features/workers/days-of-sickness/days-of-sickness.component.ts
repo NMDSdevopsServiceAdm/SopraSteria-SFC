@@ -6,7 +6,7 @@ import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import { isNull } from 'lodash';
+import isNull from 'lodash/isNull';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -25,7 +25,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -43,7 +43,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.form.get('daysKnown').valueChanges.subscribe(value => {
+      this.form.get('daysKnown').valueChanges.subscribe((value) => {
         this.form.get('days').clearValidators();
 
         if (value === 'Yes') {
@@ -57,7 +57,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
         }
 
         this.form.get('days').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.daysSick) {

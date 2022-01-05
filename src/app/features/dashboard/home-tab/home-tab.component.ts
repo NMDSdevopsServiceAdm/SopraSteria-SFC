@@ -24,6 +24,7 @@ import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-pa
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -70,6 +71,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRunLocalAuthorityReport: boolean;
   public workplaceUid: string;
   public now: Date = new Date();
+  public benefitsBundleFlag: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -82,10 +84,11 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private router: Router,
     private establishmentService: EstablishmentService,
     private reportsService: ReportService,
+    private featureFlagService: FeatureFlagsService,
     @Inject(WindowToken) private window: Window,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
@@ -125,6 +128,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         event: 'firstLogin',
       });
     }
+    this.benefitsBundleFlag = await this.featureFlagService.configCatClient.getValueAsync('benefitsBundle', false);
   }
 
   public downloadLocalAuthorityReport(event: Event) {

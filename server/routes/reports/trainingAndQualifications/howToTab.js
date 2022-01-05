@@ -7,7 +7,7 @@ const {
   textBoxAlignment,
 } = require('../../../utils/excelUtils');
 
-const generateHowToTab = (workbook) => {
+const generateHowToTab = (workbook, isParent = false) => {
   const howToTab = workbook.addWorksheet('How to...', { views: [{ showGridLines: false }] });
 
   howToTab.getColumn(1).width = 4;
@@ -15,7 +15,7 @@ const generateHowToTab = (workbook) => {
 
   addColourBars(howToTab);
 
-  addHeading(howToTab, 'B5', 'K5', 'Training and qualifications report');
+  addTitleToHowToTab(howToTab, isParent);
   addLine(howToTab, 'A7', 'L7');
 
   addHeading(howToTab, 'B9', 'K9', 'How to sort and filter the table columns');
@@ -70,4 +70,10 @@ const textBoxes = {
     "To print the information in this report, click on the 'File' menu and then click 'Print'. You can choose to only print the page you're currently looking at or perhaps change the settings to print the whole report.",
 };
 
+const addTitleToHowToTab = (howToTab, isParent) => {
+  const title = isParent ? 'Parent training and qualifications report' : 'Training and qualifications report';
+  addHeading(howToTab, 'B5', 'K5', title);
+}
+
 module.exports.generateHowToTab = generateHowToTab;
+module.exports.addTitleToHowToTab = addTitleToHowToTab;

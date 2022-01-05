@@ -340,6 +340,7 @@ router
         MainServiceOther: req.body[0].mainServiceOther,
         IsRegulated: req.body[0].isRegulated,
         Status: 'PENDING',
+        ExpiresSoonAlertDate: '90',
       };
       const Userdata = {
         FullName: req.body[0].user.fullname,
@@ -479,6 +480,7 @@ router
               other: Estblistmentdata.MainServiceOther,
             },
             ustatus: Estblistmentdata.Status,
+            expiresSoonAlertDate: Estblistmentdata.ExpiresSoonAlertDate,
           }); // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
             await newEstablishment.save(Logindata.UserName, false, t);

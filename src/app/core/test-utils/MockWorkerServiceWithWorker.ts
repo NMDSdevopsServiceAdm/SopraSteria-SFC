@@ -7,6 +7,11 @@ export class MockWorkerServiceWithWorker extends MockWorkerService {
   get worker() {
     return {
       uid: '2',
+      mainJob: {
+        jobId: '1',
+        title: 'Admin',
+      },
+      nameOrId: 'Someone',
     };
   }
 }

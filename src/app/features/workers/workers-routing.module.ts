@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
-import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
-import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
+import { QualificationResolver } from '@core/resolvers/qualification.resolver';
+import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
+import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
@@ -31,6 +33,8 @@ import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
+import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -44,7 +48,6 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import { TrainingAndQualificationsRecordComponent } from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -272,8 +275,21 @@ const routes: Routes = [
       },
       {
         path: 'qualification/:qualificationId',
-        component: AddEditQualificationComponent,
-        data: { title: 'Qualification' },
+        children: [
+          {
+            path: '',
+            component: AddEditQualificationComponent,
+            data: { title: 'Qualification' },
+          },
+          {
+            path: 'delete',
+            component: DeleteRecordComponent,
+            data: { title: 'Delete Qualification' },
+            resolve: {
+              qualificationRecord: QualificationResolver,
+            },
+          },
+        ],
       },
       {
         path: 'add-training',
@@ -282,16 +298,29 @@ const routes: Routes = [
       },
       {
         path: 'training/:trainingRecordId',
-        component: AddEditTrainingComponent,
-        data: { title: 'Training' },
+        children: [
+          {
+            path: '',
+            component: AddEditTrainingComponent,
+            data: { title: 'Training' },
+          },
+          {
+            path: 'delete',
+            component: DeleteRecordComponent,
+            data: { title: 'Delete Training' },
+            resolve: {
+              trainingRecord: TrainingRecordResolver,
+            },
+          },
+        ],
       },
       {
-        path: 'training',
-        component: TrainingAndQualificationsRecordComponent,
+        path: 'new-training',
+        component: NewTrainingAndQualificationsRecordComponent,
         resolve: {
           worker: WorkerResolver,
-          qualifications: QualificationsResolver,
-          trainingRecords: TrainingRecordsResolver,
+          trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { title: 'Training and qualification record' },
       },

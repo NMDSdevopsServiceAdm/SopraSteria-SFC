@@ -17,7 +17,7 @@ import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerSer
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { WdfModule } from '../wdf.module.js';
+import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {

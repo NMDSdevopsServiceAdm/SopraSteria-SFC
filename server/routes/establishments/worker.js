@@ -21,6 +21,7 @@ const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 const MandatoryTrainingRoutes = require('./mandatoryTraining');
 const MutipleTrainingRecordsRoute = require('./training/multiple');
+const TrainingAndQualificationsRoutes = require('./trainingAndQualifications');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
 
@@ -252,7 +253,8 @@ const viewAllWorkers = async (req, res) => {
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
   try {
-    const allWorkers = await models.worker.workersAndTraining(establishmentId);
+    const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(establishmentId);
+    const allWorkers = establishmentWorkersAndTraining[0].workers;
 
     res.status(200).send({
       workers: allWorkers
@@ -352,6 +354,8 @@ router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker
 router.use('/:workerId/training', TrainingRoutes);
 router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
+router.use('/:workerId/trainingAndQualifications', TrainingAndQualificationsRoutes);
+
 
 module.exports = router;
 module.exports.editWorker = editWorker;

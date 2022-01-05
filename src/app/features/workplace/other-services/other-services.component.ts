@@ -6,7 +6,7 @@ import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { filter } from 'lodash';
+import filter from 'lodash/filter';
 
 import { Question } from '../question/question.component';
 

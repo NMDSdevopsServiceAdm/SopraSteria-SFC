@@ -2,10 +2,11 @@ const router = require('express').Router();
 const models = require('../../../models');
 
 const addRegistrationNote = async (req, res) => {
-  const { note, establishmentId, noteType } = req.body;
+  const { note, establishmentId, noteType, userUid } = req.body;
 
   try {
-    const user = await models.user.findByUUID(req.userUid);
+    const user = await models.user.findByUUID(userUid);
+
     if (!user) {
       return res.status(400).json({
         message: 'User not found',
@@ -28,8 +29,7 @@ const addRegistrationNote = async (req, res) => {
       message: 'There was a problem adding the note',
     });
   }
-}
-
+};
 
 router.route('/').post(addRegistrationNote);
 

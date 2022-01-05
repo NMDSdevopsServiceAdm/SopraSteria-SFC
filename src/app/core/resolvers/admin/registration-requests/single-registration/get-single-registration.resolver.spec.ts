@@ -27,7 +27,7 @@ describe('GetSingleRegistrationResolver', () => {
     spyOn(registrationsService, 'getSingleRegistration').and.callThrough();
 
     const mockRoute = {
-      url: [{ path: 'sfc' }, { path: 'registrations' }, { path: 'mockUid' }],
+      url: [{ path: 'sfcadmin' }, { path: 'registrations' }, { path: 'mockUid' }],
     } as ActivatedRouteSnapshot;
 
     resolver.resolve(mockRoute);

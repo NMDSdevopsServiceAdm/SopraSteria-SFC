@@ -167,11 +167,15 @@ describe('worker route', () => {
 
     const worker = workerBuilder();
     beforeEach(() => {
-      sinon.stub(models.worker, 'workersAndTraining').returns([worker]);
+      sinon.stub(models.establishment, 'workersAndTraining').returns([{
+        workers: [worker],
+      }]);
     });
+
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return a list of workers', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',

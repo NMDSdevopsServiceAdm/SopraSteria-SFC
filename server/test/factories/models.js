@@ -43,6 +43,13 @@ const establishmentWithWdfBuilder = build('Establishment', {
   },
 });
 
+const establishmentWithShareWith = (shareWith) => {
+  const establishment = establishmentBuilder();
+  establishment.shareWith = shareWith;
+  establishment.otherServices = { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] };
+  return establishment;
+};
+
 const categoryBuilder = build('Category', {
   fields: {
     id: sequence(),
@@ -151,3 +158,4 @@ module.exports.categoryBuilder = categoryBuilder;
 module.exports.trainingBuilder = trainingBuilder;
 module.exports.mandatoryTrainingBuilder = mandatoryTrainingBuilder;
 module.exports.workerBuilderWithWdf = workerBuilderWithWdf;
+module.exports.establishmentWithShareWith = establishmentWithShareWith;

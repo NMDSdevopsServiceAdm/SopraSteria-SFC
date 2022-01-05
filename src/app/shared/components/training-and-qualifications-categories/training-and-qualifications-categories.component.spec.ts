@@ -3,8 +3,10 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render, RenderResult, within } from '@testing-library/angular';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
 
@@ -75,7 +77,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     component = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [],
@@ -94,7 +99,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -117,7 +125,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
         training: [
           trainingBuilder({
             overrides: {
-              expires: moment().subtract(1, 'month').toISOString(),
+              expires: dayjs().subtract(1, 'month').toISOString(),
             },
           }),
         ],
@@ -126,7 +134,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -149,7 +160,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
         training: [
           trainingBuilder({
             overrides: {
-              expires: moment().subtract(1, 'month').toISOString(),
+              expires: dayjs().subtract(1, 'month').toISOString(),
             },
           }),
         ],
@@ -158,7 +169,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: [trainingCategory],
@@ -186,7 +200,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().subtract(1, 'month').toISOString(),
+                expires: dayjs().subtract(1, 'month').toISOString(),
               },
             }),
           ],
@@ -199,7 +213,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'month').toISOString(),
+                expires: dayjs().add(1, 'month').toISOString(),
               },
             }),
           ],
@@ -212,7 +226,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'year').toISOString(),
+                expires: dayjs().add(1, 'year').toISOString(),
               },
             }),
           ],
@@ -229,7 +243,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace,
         trainingCategories,
@@ -241,7 +258,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
 
     expect(rows.length).toBe(4);
-    expect(rows[0].innerHTML).toContain('1 Expired');
+    expect(rows[0].innerHTML).toContain('1 expired');
     expect(rows[1].innerHTML).toContain('A Category Name');
     expect(rows[2].innerHTML).toContain('C Category Name');
     expect(rows[3].innerHTML).toContain('D Category Name');
@@ -261,7 +278,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().subtract(1, 'month').toISOString(),
+                expires: dayjs().subtract(1, 'month').toISOString(),
               },
             }),
           ],
@@ -274,7 +291,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'month').toISOString(),
+                expires: dayjs().add(1, 'month').toISOString(),
               },
             }),
           ],
@@ -287,7 +304,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
           training: [
             trainingBuilder({
               overrides: {
-                expires: moment().add(1, 'year').toISOString(),
+                expires: dayjs().add(1, 'year').toISOString(),
               },
             }),
           ],
@@ -304,7 +321,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
 
     const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace,
         trainingCategories,

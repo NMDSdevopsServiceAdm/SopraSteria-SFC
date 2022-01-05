@@ -44,9 +44,37 @@ export const mockConfigCatClient = {
   getValueAsync: (flagName, defaultSetting) => {
     if (flagName === 'newTrainingAndQualificationsReport') {
       return new Promise((resolve) => {
+        return resolve(true);
+      });
+    }
+    if (flagName === 'parentTrainingAndQualificationsReport') {
+      return new Promise((resolve) => {
         return resolve(false);
       });
     }
+    if (flagName === 'newTrainingAndQualificationsRecords') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+    if (flagName === 'benefitsBundle') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+
+    if (flagName === 'changingExpiryDateLink') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+
+    if (flagName === 'endorsedProvidersLink') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+
     return new Promise((resolve) => {
       return resolve(defaultSetting);
     });

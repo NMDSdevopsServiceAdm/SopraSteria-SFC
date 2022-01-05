@@ -1,9 +1,16 @@
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
   <div *ngIf="canEditEstablishment" class="govuk-grid-column-one-third">
     <a
       class="govuk-list govuk-list--inline govuk-!-margin-right-5"
       [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
       >Manage mandatory training
+    </a>
+  </div>
+  <div *ngIf="canEditEstablishment" class="govuk-grid-column-one-third">
+    <a
+      class="govuk-list govuk-list--inline govuk-!-margin-right-5"
+      [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
+      >Change when you get 'expires soon' alerts
     </a>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -19,6 +26,21 @@
       </span>
     </a>
   </div>
+  <ng-container *ngIf="isParent && parentTrainingAndQualificationsReport">
+    <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
+      <a
+        class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+        role="button"
+        draggable="false"
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-parent-training-report.xls"
+        (click)="downloadParentTrainingReport($event)"
+      >
+        <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+          Download parent training report
+        </span>
+      </a>
+    </div>
+  </ng-container>
   <div *ngIf="lastUpdated" class="govuk-grid-column-one-third govuk-util__align-right govuk-util__float-right">
     <p>Updated {{ lastUpdated | date: 'd MMMM yyyy' }}</p>
   </div>

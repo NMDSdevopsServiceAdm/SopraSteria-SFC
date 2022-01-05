@@ -39,15 +39,29 @@
       ></app-staff-mismatch-banner>
     </ng-container>
     <div *ngIf="workplace">
-      <div *ngIf="canAddWorker">
-        <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
-          <a href="#" (click)="selectStaffTab($event)"> Add staff records </a>
-        </h3>
-        <p class="govuk-!-margin-top-4">
-          Create records for all your staff and include information like their personal details, employment history,
-          training and qualifications.
-        </p>
-      </div>
+      <ng-container *ngIf="benefitsBundleFlag; else addStaffRecord">
+        <div>
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a [routerLink]="['/benefits-bundle']">
+              View the ASC-WDS Benefits Bundle
+              <p class="govuk-tag govuk-tag--blue govuk-!-margin-left-4 asc-tag">NEW</p></a
+            >
+          </h3>
+          <p>Access all your special offers and discounts across Skills for Care's product range.</p>
+        </div>
+      </ng-container>
+      <ng-template #addStaffRecord>
+        <div *ngIf="canAddWorker">
+          <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
+            <a href="#" (click)="selectStaffTab($event)"> Add staff records </a>
+          </h3>
+          <p class="govuk-!-margin-top-4">
+            Create records for all your staff and include information like their personal details, employment history,
+            training and qualifications.
+          </p>
+        </div>
+      </ng-template>
+
       <div *ngIf="canViewReports">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/wdf']"> Check your WDF data </a>
@@ -118,6 +132,9 @@
           <ng-template #requestBecomeAParent>
             <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
           </ng-template>
+        </li>
+        <li class="govuk-!-margin-bottom-3">
+          <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
         </li>
       </ul>
       <div *ngIf="canRunLocalAuthorityReport && workplace">

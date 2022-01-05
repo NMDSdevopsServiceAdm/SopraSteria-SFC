@@ -68,7 +68,7 @@ describe('RegistrationRequestComponent', () => {
               snapshot: {
                 data: {
                   registration: inProgress ? InProgressRegistration(reviewer) : PendingRegistration(),
-                  loggedInUser: { fullname: 'adminUser' },
+                  loggedInUser: { fullname: 'adminUser', uid: '123' },
                   notes: existingNotes && notes,
                 },
               },
@@ -183,7 +183,7 @@ describe('RegistrationRequestComponent', () => {
   });
 
   describe('Updating workplace ID', () => {
-    it('should have a success alert when delete is successful', async () => {
+    it('should have a success alert when workplace ID is successfully updated', async () => {
       const { component, fixture, getByText } = await setup();
 
       spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(of({}));
@@ -203,6 +203,25 @@ describe('RegistrationRequestComponent', () => {
         type: 'success',
         message: 'The workplace ID has been successfully updated to A1234567',
       });
+    });
+
+    it('should call getSingleRegistration in registrationService to get updated registration after successfully updating workplace ID', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      spyOn(component.registrationsService, 'updateWorkplaceId').and.returnValue(of({}));
+      const updateRegistrationCall = spyOn(component.registrationsService, 'getSingleRegistration').and.returnValue(
+        of(PendingRegistration() as Registration),
+      );
+
+      const form = component.workplaceIdForm;
+
+      form.controls['nmdsId'].setValue('A1234567');
+      form.controls['nmdsId'].markAsDirty();
+
+      fireEvent.click(getByText('Save this ID'));
+      fixture.detectChanges();
+
+      expect(updateRegistrationCall).toHaveBeenCalled();
     });
 
     describe('Workplace ID validation', () => {
@@ -523,6 +542,7 @@ describe('RegistrationRequestComponent', () => {
         note: 'This is a note for this registration',
         establishmentId: component.registration.establishment.id,
         noteType: 'Registration',
+        userUid: '123',
       };
 
       expect(addRegistrationNotesSpy).toHaveBeenCalledWith(expectedBody);

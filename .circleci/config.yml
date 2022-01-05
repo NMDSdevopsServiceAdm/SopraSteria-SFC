@@ -141,6 +141,7 @@ commands:
 orbs:
   node: circleci/node@3.0.0
   slack: circleci/slack@4.4.4
+  codecov: codecov/codecov@1.0.2
 
 jobs:
   install:
@@ -190,7 +191,7 @@ jobs:
       - run:
           command: sudo apt-get install -yq libxss1
       - run:
-          command: npm run test
+          command: npm run test-headless
           environment:
             JUNIT_REPORT_PATH: ./junit/
             JUNIT_REPORT_NAME: test-results.xml
@@ -199,6 +200,11 @@ jobs:
           path: ./junit
       - store_artifacts:
           path: ./junit
+      - store_artifacts:
+          path: ./fecoverage
+      - codecov/upload:
+          file: ./fecoverage/lcov.info
+          flags: frontend
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -217,6 +223,11 @@ jobs:
           path: ./junit
       - store_artifacts:
           path: ./junit
+      - store_artifacts:
+          path: ./coverage
+      - codecov/upload:
+          file: ./coverage/lcov.info
+          flags: backend
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers

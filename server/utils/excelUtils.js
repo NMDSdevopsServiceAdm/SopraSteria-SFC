@@ -152,10 +152,10 @@ const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: tru
 exports.textBoxAlignment = textBoxAlignment;
 
 exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
-  tab.getRow(currentLineNumber).font = { bold: true, color: textColour };
   tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
 
   cellColumns.map((key) => {
+    tab.getCell(key + currentLineNumber).font = { bold: true, color: textColour };
     tab.getCell(key + currentLineNumber).fill = {
       type: 'pattern',
       pattern: 'solid',
@@ -200,4 +200,8 @@ exports.textColours = {
   white: { argb: 'FFFFFF' },
   red: { argb: '960512' },
   green: { argb: '005713' },
+};
+
+exports.makeRowBold = (tab, rowNumber) => {
+  tab.getRow(rowNumber).font = { bold: true };
 };

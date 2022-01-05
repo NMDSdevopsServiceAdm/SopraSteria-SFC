@@ -13,12 +13,12 @@ import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import {
-  StaffMismatchBannerComponent,
-} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -75,6 +75,7 @@ describe('HomeTabComponent', () => {
           useClass: MockEstablishmentService,
         },
         { provide: WindowToken, useValue: MockWindow },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     });
 
@@ -230,7 +231,15 @@ describe('HomeTabComponent', () => {
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
+  describe('View the ASC-WDS Benefits Bundle', async () => {
+    it('should navigate to `/benefits-bundle` when pressing the "Benefite Bundle and NEW link" button', async () => {
+      const { component } = await setup();
 
+      const benefiteBundleRoute = component.queryByText('View the ASC-WDS Benefits Bundle');
+
+      expect(benefiteBundleRoute.getAttribute('href')).toBe('/benefits-bundle');
+    });
+  });
   describe('Other links', () => {
     describe('Link to my parent organisation', () => {
       it('should show Link to my parent organisation pending when trying to link to a parent', async () => {
@@ -386,6 +395,9 @@ describe('HomeTabComponent', () => {
         component.fixture.componentInstance.linkToParentRequestedStatus = false;
         component.fixture.componentInstance.parentStatusRequested = false;
         component.fixture.componentInstance.canLinkToParent = true;
+
+        component.fixture.detectChanges();
+
         const becomeAParentLink = component.getByText('Become a parent organisation');
         const dialogMessage = 'Become a parent organisation';
 
@@ -406,6 +418,7 @@ describe('HomeTabComponent', () => {
         component.fixture.componentInstance.linkToParentRequestedStatus = false;
         component.fixture.componentInstance.parentStatusRequested = false;
         component.fixture.componentInstance.canLinkToParent = true;
+        component.fixture.detectChanges();
 
         const parentsRequestService = TestBed.inject(ParentRequestsService);
         const becomeAParentSpy = spyOn(parentsRequestService, 'becomeParent').and.returnValue(of({}));
@@ -494,6 +507,13 @@ describe('HomeTabComponent', () => {
       });
       expect(becomeAParentLink).toBeTruthy();
       expect(linkToParentLink).toBeTruthy();
+    });
+
+    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
+      const { component } = await setup();
+
+      const firstLoginWizardLink = component.getByText('Help to get you started');
+      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
     });
   });
 });

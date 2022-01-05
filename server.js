@@ -68,7 +68,7 @@ var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
-var longTermAbsence = require('./server/routes/longTermAbsence')
+var longTermAbsence = require('./server/routes/longTermAbsence');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -81,9 +81,6 @@ var errors = require('./server/routes/errors');
 // SNS
 const AWSsns = require('./server/aws/sns');
 AWSsns.initialise(config.get('aws.region'));
-
-// test only routes - helpers to setup and execute automated tests
-var testOnly = require('./server/routes/testOnly');
 
 var app = express();
 
@@ -120,7 +117,7 @@ app.use(compression());
 app.use(function (req, res, next) {
   if (toobusy()) {
     res.setHeader('Retry-After', '1');
-    res.send(503, 'Server busy, try again later');
+    res.status(503).send('Server busy, try again later');
   } else {
     next();
   }
@@ -270,7 +267,6 @@ app.use('/api/establishment', [cacheMiddleware.nocache, establishments]);
 app.use('/api/ownershipRequest', [cacheMiddleware.nocache, ownershipRequest]);
 app.use('/api/parentLinkingDetails', [cacheMiddleware.nocache, linkParent]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
-app.use('/api/test', [cacheMiddleware.nocache, testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);

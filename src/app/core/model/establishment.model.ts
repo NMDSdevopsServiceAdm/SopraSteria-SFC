@@ -23,9 +23,9 @@ export interface Capacity {
   answer: number;
 }
 
-export interface Share {
-  enabled: boolean;
-  with: string[];
+export interface ShareWith {
+  cqc: boolean;
+  localAuthorities: boolean;
 }
 
 export interface LocalAuthority {
@@ -109,7 +109,7 @@ export interface Establishment {
   };
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
-  share: Share;
+  shareWith: ShareWith;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
   parentPermissions?: string;
@@ -135,6 +135,7 @@ export interface Establishment {
   locationId?: string;
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
+  showSharingPermissionsBanner?: boolean;
 }
 
 export interface UpdateJobsRequest {
@@ -242,4 +243,10 @@ export enum SortTrainingAndQualsOptionsCat {
   '1_expires_soon' = 'Expires soon',
   '2_missing' = 'Missing',
   '3_category' = 'Category',
+}
+
+export enum FilterTrainingAndQualsOptions {
+  '0_showall' = 'Show all',
+  '1_expired' = 'Expired',
+  '2_expires_soon' = 'Expires soon',
 }

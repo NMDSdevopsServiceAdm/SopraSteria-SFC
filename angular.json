@@ -17,10 +17,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "dist",
             "sourceMap": true,
-            "extractCss": true,
             "index": "index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -34,28 +32,25 @@
                 "output": "./assets/"
               }
             ],
-            "styles": [
-              "./src/styles.scss"
-            ],
+            "styles": ["./src/styles.scss"],
             "allowedCommonJsDependencies": [
               "@babel",
               "raf",
-              "core-js",
+              "core-js-pure",
               "file-saver",
               "url",
               "highcharts",
               "lodash",
               "url-parse",
               "rxjs/internal/operators/take",
-              "@babel/runtime/helpers/slicedToArray",
-              "@babel/runtime/helpers/possibleConstructorReturn",
-              "@babel/runtime/helpers/inherits",
-              "@babel/runtime/helpers/toConsumableArray",
-              "@babel/runtime/helpers/get",
-              "@babel/runtime/regenerator",
-              "@babel/runtime-corejs3",
-              "pako"
-            ]
+              "pako",
+              "configcat-common"
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "test": {
@@ -82,7 +77,6 @@
               "optimization": true,
               "outputHashing": "all",
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -108,7 +102,6 @@
               "optimization": true,
               "outputHashing": "all",
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -150,7 +143,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -172,21 +166,22 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular-builders/custom-webpack:karma",
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "sourceMap": false
+            "assets": ["src/favicon.ico", "src/assets"],
+            "sourceMap": false,
+            "customWebpackConfig": {
+              "path": "./testing-webpack.config.js",
+              "mergeRules": {
+                "externals": "replace"
+              }
+            }
           }
         },
         "analyze": {

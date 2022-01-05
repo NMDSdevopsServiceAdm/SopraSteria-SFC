@@ -4,6 +4,7 @@ import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/rout
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import {
+  adminCqcStatusChangeJournery,
   adminJourney,
   adminPendingRegistrationJourney,
   adminRejectedRegistrationJourney,
@@ -20,6 +21,7 @@ import {
   benchmarksSubsidiariesSicknessJourney,
   benchmarksSubsidiariesTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_subsidiaries';
+import { benefitsBundleJourney } from '@core/breadcrumb/journey.benefits-bundle';
 import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
@@ -144,6 +146,10 @@ export class BreadcrumbService {
   private getRoutesConfig(journey: JourneyType) {
     let routes: JourneyRoute;
     switch (journey) {
+      case JourneyType.CQC_MAIN_SERVICE_CHANGE: {
+        routes = adminCqcStatusChangeJournery;
+        break;
+      }
       case JourneyType.ADMIN: {
         routes = adminJourney;
         break;
@@ -230,6 +236,10 @@ export class BreadcrumbService {
       }
       case JourneyType.PAGES_ARTICLES: {
         routes = pagesArticlesJourney;
+        break;
+      }
+      case JourneyType.BENEFITS_BUNDLE: {
+        routes = benefitsBundleJourney;
         break;
       }
       default: {

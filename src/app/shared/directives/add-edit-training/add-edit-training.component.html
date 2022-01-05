@@ -1,10 +1,19 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
+        {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
+      </span>
+    </div>
+  </div>
+</ng-container>
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
             {{ title }}
           </h1>
@@ -132,8 +141,16 @@
   </div>
 
   <div class="govuk-button-group">
-    <button type="submit" class="govuk-button govuk-!-margin-right-9">
+    <button type="submit" class="govuk-button govuk-!-margin-right-5">
       {{ buttonText }}
+    </button>
+    <button
+      *ngIf="trainingRecordId && newTrainingAndQualificationsRecordsFlag"
+      type="button"
+      class="govuk-button govuk-button--warning govuk-!-margin-right-8"
+      [routerLink]="['../delete']"
+    >
+      Delete
     </button>
     <a
       class="govuk-button govuk-button--link govuk-!-margin-left-9"

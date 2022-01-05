@@ -11,7 +11,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
@@ -33,6 +33,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public title: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public newTrainingAndQualificationsRecordsFlag: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -44,16 +45,17 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected workerService: WorkerService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.workplace = this.route.parent.snapshot.data.establishment;
 
     this.init();
-    this.setBackLink();
     this.setupForm();
-    this.getCategories();
-    this.setupFormErrorsMap();
     this.setTitle();
     this.setButtonText();
+    await this.setFeatureFlag();
+    this.setBackLink();
+    this.getCategories();
+    this.setupFormErrorsMap();
   }
 
   ngAfterViewInit(): void {
@@ -69,6 +71,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   protected setTitle(): void {}
 
   protected setButtonText(): void {}
+
+  protected async setFeatureFlag(): Promise<void> {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group(
@@ -91,7 +95,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       { updateOn: 'submit' },
     );
 
-    const minDate = moment().subtract(100, 'years');
+    const minDate = dayjs().subtract(100, 'years');
 
     this.form
       .get('completed')
@@ -199,8 +203,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     }
 
     const { title, category, accredited, completed, expires, notes } = this.form.controls;
-    const completedDate = this.dateGroupToMoment(completed as FormGroup);
-    const expiresDate = this.dateGroupToMoment(expires as FormGroup);
+    const completedDate = this.dateGroupToDayjs(completed as FormGroup);
+    const expiresDate = this.dateGroupToDayjs(expires as FormGroup);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
@@ -216,9 +220,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.submit(record);
   }
 
-  dateGroupToMoment(group: FormGroup): moment.Moment {
+  dateGroupToDayjs(group: FormGroup): dayjs.Dayjs {
     const { day, month, year } = group.value;
-    return day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
+    return day && month && year ? dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
   }
 
   // TODO: Expiry Date validation cannot be before completed date
@@ -228,11 +232,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     if (expires.get('day').value && expires.get('month').value && expires.get('year').value) {
       if (completed.get('day').value && completed.get('month').value && completed.get('year').value) {
-        const completedDate = moment()
+        const completedDate = dayjs()
           .year(completed.get('year').value)
           .month(completed.get('month').value - 1)
           .date(completed.get('day').value);
-        const expiresDate = moment()
+        const expiresDate = dayjs()
           .year(expires.get('year').value)
           .month(expires.get('month').value - 1)
           .date(expires.get('day').value);
@@ -248,6 +252,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onCancel(): void {
-    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
+    this.router.navigateByUrl(this.previousUrl[0]);
   }
 }

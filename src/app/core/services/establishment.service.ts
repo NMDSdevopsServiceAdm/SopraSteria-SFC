@@ -17,16 +17,12 @@ import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
+import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
   id: number;
   name: string;
-}
-
-interface ShareOptionsResponse extends EstablishmentApiResponse {
-  share: SharingOptionsModel;
 }
 
 interface EmployerTypeResponse {
@@ -75,7 +71,7 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
+  private _checkSharingPermissionsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
@@ -117,6 +113,7 @@ export class EstablishmentService {
       this.setPrimaryWorkplace(this.establishment);
       this.setCheckCQCDetailsBanner(false);
     }
+    this.setCheckSharingPermissionsBanner(establishment.showSharingPermissionsBanner);
   }
 
   public resetState() {
@@ -124,6 +121,7 @@ export class EstablishmentService {
     this._establishment$.next(null);
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
+    this.setCheckSharingPermissionsBanner(false);
   }
 
   public get establishmentId() {
@@ -166,6 +164,18 @@ export class EstablishmentService {
     this._checkCQCDetailsBanner$.next(data);
   }
 
+  public get checkSharingPermissionsBanner$(): Observable<boolean> {
+    return this._checkSharingPermissionsBanner$.asObservable();
+  }
+
+  public get checkSharingPermissionsBanner(): boolean {
+    return this._checkSharingPermissionsBanner$.value;
+  }
+
+  public setCheckSharingPermissionsBanner(data: boolean): void {
+    this._checkSharingPermissionsBanner$.next(data);
+  }
+
   getEstablishment(id: string, wdf: boolean = false) {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
     return this.http.get<any>(`/api/establishment/${id}`, { params });
@@ -192,10 +202,6 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${workplaceUid}/staff/${numberOfStaff}`, null);
   }
 
-  getSharingOptions() {
-    return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`);
-  }
-
   getEmployerType() {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
   }
@@ -220,8 +226,12 @@ export class EstablishmentService {
     return this.http.post<MainServiceRequest>(`/api/establishment/${establishmentId}/mainService`, data);
   }
 
-  updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
+  updateDataSharing(establishmentId, data: ShareWithRequest): Observable<any> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
+  }
+
+  updateSharingPermissionsBanner(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSharingPermissionsBanner`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
@@ -310,5 +320,17 @@ export class EstablishmentService {
     params = params.set('mainService', `${requestParams.mainService}`);
 
     return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
+  }
+
+  public getExpiresSoonAlertDates(establishmentId: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`);
+  }
+
+  public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
+  }
+
+  public removeParentStatus(data: object): Observable<any> {
+    return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 }

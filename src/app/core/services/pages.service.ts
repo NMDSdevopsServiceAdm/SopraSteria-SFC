@@ -21,6 +21,6 @@ export class PagesService {
     params = params.set('limit', '1');
     params = params.set('fields', 'content,title');
 
-    return this.http.get<Pages>(`${environment.cmsUri}${this.path}`, { params });
+    return this.http.get<Pages>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
 }

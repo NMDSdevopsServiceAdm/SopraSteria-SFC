@@ -6,6 +6,7 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
@@ -21,13 +22,11 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
+import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
-import {
-  DataSharingWithLocalAuthoritiesComponent,
-} from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
@@ -193,15 +192,6 @@ const routes: Routes = [
         data: {
           roles: [Roles.Admin, Roles.Edit],
           title: 'Share Data',
-        },
-      },
-      {
-        path: 'sharing-data-with-local-authorities',
-        component: DataSharingWithLocalAuthoritiesComponent,
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin, Roles.Edit],
-          title: 'Share Data With Local Authorities',
         },
       },
       {
@@ -411,6 +401,15 @@ const routes: Routes = [
             (m) => m.AddMultipleTrainingModule,
           ),
         data: { title: 'Add Multiple Training' },
+      },
+      {
+        path: 'change-expires-soon-alerts',
+        component: ChangeExpiresSoonAlertsComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+        },
+        data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
       },
     ],
   },

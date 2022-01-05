@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { build } from '@jackfranklin/test-data-bot';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 export const mockRegistration = {
-  created: moment.utc('20210101').format('D/M/YYYY h:mma'),
+  created: dayjs.utc('20210101').format('D/M/YYYY h:mma'),
   username: 'testuser',
   name: 'Bob Bobby',
   securityQuestion: 'Do you like cheese?',
@@ -41,7 +44,7 @@ export const PendingRegistration = build('PendingRegistration', {
     securityQuestionAnswer: 'Yes, I really like cheese',
     email: 'bob-bob@user.com',
     phone: '01010106422',
-    created: moment.utc('20210101').format('D/M/YYYY h:mma').toString(),
+    created: dayjs.utc('20210101').format('D/M/YYYY h:mma').toString(),
     establishment: {
       id: 'abc',
       name: 'Test Workplace',

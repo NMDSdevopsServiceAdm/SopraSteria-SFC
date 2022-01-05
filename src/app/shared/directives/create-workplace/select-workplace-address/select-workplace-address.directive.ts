@@ -7,7 +7,8 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import { compact, isEqual } from 'lodash';
+import compact from 'lodash/compact';
+import isEqual from 'lodash/isEqual';
 import { Subscription } from 'rxjs';
 
 @Directive()
