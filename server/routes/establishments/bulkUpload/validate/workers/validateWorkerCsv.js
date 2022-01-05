@@ -5,49 +5,25 @@ const { Qualification } = require('../../../../../models/classes/qualification')
 
 const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
 
-const loadWorkerQualifications = async (thisQual, thisApiWorker) => {
-  const thisApiQualification = new Qualification();
+const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
+  const csvWorkerSchemaErrors = [];
+  const myAPIWorkers = {};
+  const myJSONWorkers = [];
 
-  await thisApiQualification.load(thisQual);
-
-  thisApiWorker.associateQualification(thisApiQualification);
-};
-
-const findExistingWorker = (thisLine, myCurrentEstablishments) => {
-  const establishmentUniqueID = thisLine.LOCALESTID.replace(/\s/g, '');
-  const workerUniqueID = thisLine.UNIQUEWORKERID.replace(/\s/g, '');
-
-  const foundEstablishment = myCurrentEstablishments.find(
-    (currentEstablishment) => currentEstablishment.key === establishmentUniqueID,
+  await Promise.all(
+    workers.imported.map((thisLine, currentLineNumber) =>
+      validateWorkerCsvLine(
+        thisLine,
+        currentLineNumber + 2,
+        csvWorkerSchemaErrors,
+        myAPIWorkers,
+        myCurrentEstablishments,
+        myJSONWorkers,
+      ),
+    ),
   );
 
-  if (foundEstablishment) {
-    const worker = foundEstablishment.theWorker(workerUniqueID);
-    if (worker) {
-      return worker.toJSON(true, false);
-    }
-  }
-
-  return null;
-};
-
-const runValidator = (thisLine, currentLineNumber, existingWorker) => {
-  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
-
-  lineValidator.validate();
-  lineValidator.transform();
-
-  const thisWorkerAsAPI = lineValidator.toAPI();
-  const thisWorkerQualificationsAsAPI = lineValidator.toQualificationAPI();
-  const thisWorkerAsJSON = lineValidator.toJSON(true);
-  const validationErrors = lineValidator.validationErrors;
-
-  return {
-    thisWorkerAsAPI,
-    thisWorkerQualificationsAsAPI,
-    thisWorkerAsJSON,
-    validationErrors,
-  };
+  return { csvWorkerSchemaErrors, myAPIWorkers, myJSONWorkers };
 };
 
 const validateWorkerCsvLine = async (
@@ -88,25 +64,49 @@ const validateWorkerCsvLine = async (
   myJSONWorkers.push(thisWorkerAsJSON);
 };
 
-const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
-  const csvWorkerSchemaErrors = [];
-  const myAPIWorkers = {};
-  const myJSONWorkers = [];
+const runValidator = (thisLine, currentLineNumber, existingWorker) => {
+  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
 
-  await Promise.all(
-    workers.imported.map((thisLine, currentLineNumber) =>
-      validateWorkerCsvLine(
-        thisLine,
-        currentLineNumber + 2,
-        csvWorkerSchemaErrors,
-        myAPIWorkers,
-        myCurrentEstablishments,
-        myJSONWorkers,
-      ),
-    ),
+  lineValidator.validate();
+  lineValidator.transform();
+
+  const thisWorkerAsAPI = lineValidator.toAPI();
+  const thisWorkerQualificationsAsAPI = lineValidator.toQualificationAPI();
+  const thisWorkerAsJSON = lineValidator.toJSON(true);
+  const validationErrors = lineValidator.validationErrors;
+
+  return {
+    thisWorkerAsAPI,
+    thisWorkerQualificationsAsAPI,
+    thisWorkerAsJSON,
+    validationErrors,
+  };
+};
+
+const findExistingWorker = (thisLine, myCurrentEstablishments) => {
+  const establishmentUniqueID = thisLine.LOCALESTID.replace(/\s/g, '');
+  const workerUniqueID = thisLine.UNIQUEWORKERID.replace(/\s/g, '');
+
+  const foundEstablishment = myCurrentEstablishments.find(
+    (currentEstablishment) => currentEstablishment.key === establishmentUniqueID,
   );
 
-  return { csvWorkerSchemaErrors, myAPIWorkers, myJSONWorkers };
+  if (foundEstablishment) {
+    const worker = foundEstablishment.theWorker(workerUniqueID);
+    if (worker) {
+      return worker.toJSON(true, false);
+    }
+  }
+
+  return null;
+};
+
+const loadWorkerQualifications = async (thisQual, thisApiWorker) => {
+  const thisApiQualification = new Qualification();
+
+  await thisApiQualification.load(thisQual);
+
+  thisApiWorker.associateQualification(thisApiQualification);
 };
 
 module.exports = {
