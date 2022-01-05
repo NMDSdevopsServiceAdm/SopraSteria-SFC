@@ -64,6 +64,7 @@ const validateWorkerCsvLine = async (
   // .toQualificationAPI()
   // .toAPI()
   // .toJSON(true)
+  // validationErrors
 
   try {
     // construct Worker entity
@@ -92,10 +93,7 @@ const validateWorkerCsvLine = async (
     console.error('WA - localised validate workers error until validation card', err);
   }
 
-  // collate all bulk upload validation errors/warnings
-  if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach((thisError) => csvWorkerSchemaErrors.push(thisError));
-  }
+  csvWorkerSchemaErrors.push(...lineValidator.validationErrors);
 
   myJSONWorkers.push(lineValidator.toJSON(true));
 };
