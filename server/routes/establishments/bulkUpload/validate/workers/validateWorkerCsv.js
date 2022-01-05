@@ -31,6 +31,25 @@ const findExistingWorker = (thisLine, myCurrentEstablishments) => {
   return null;
 };
 
+const runValidator = (thisLine, currentLineNumber, existingWorker) => {
+  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
+
+  lineValidator.validate();
+  lineValidator.transform();
+
+  const thisWorkerAsAPI = lineValidator.toAPI();
+  const thisWorkerQualificationsAsAPI = lineValidator.toQualificationAPI();
+  const thisWorkerAsJSON = lineValidator.toJSON(true);
+  const validationErrors = lineValidator.validationErrors;
+
+  return {
+    thisWorkerAsAPI,
+    thisWorkerQualificationsAsAPI,
+    thisWorkerAsJSON,
+    validationErrors,
+  };
+};
+
 const validateWorkerCsvLine = async (
   thisLine,
   currentLineNumber,
@@ -41,45 +60,32 @@ const validateWorkerCsvLine = async (
 ) => {
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
 
-  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
-
-  lineValidator.validate();
-  lineValidator.transform();
-
-  const thisWorkerAsAPI = lineValidator.toAPI();
-  // .toQualificationAPI()
-  // .toAPI()
-  // .toJSON(true)
-  // validationErrors
+  const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } = runValidator(
+    thisLine,
+    currentLineNumber,
+    existingWorker,
+  );
 
   try {
-    // construct Worker entity
     const thisApiWorker = new Worker();
     await thisApiWorker.load(thisWorkerAsAPI);
 
     if (thisApiWorker.validate()) {
-      // no validation errors in the entity itself, so add it ready for completion
       myAPIWorkers[currentLineNumber] = thisApiWorker;
 
-      // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
-      //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
       await Promise.all(
-        lineValidator.toQualificationAPI().map((thisQual) => loadWorkerQualifications(thisQual, thisApiWorker)),
+        thisWorkerQualificationsAsAPI.map((thisQual) => loadWorkerQualifications(thisQual, thisApiWorker)),
       );
-    } else {
-      const errors = thisApiWorker.errors;
-
-      if (errors.length === 0) {
-        myAPIWorkers[currentLineNumber] = thisApiWorker;
-      }
+    } else if (thisApiWorker.errors.length === 0) {
+      myAPIWorkers[currentLineNumber] = thisApiWorker;
     }
   } catch (err) {
     console.error('WA - localised validate workers error until validation card', err);
   }
 
-  csvWorkerSchemaErrors.push(...lineValidator.validationErrors);
+  csvWorkerSchemaErrors.push(...validationErrors);
 
-  myJSONWorkers.push(lineValidator.toJSON(true));
+  myJSONWorkers.push(thisWorkerAsJSON);
 };
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
