@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -48,10 +47,6 @@ describe('LongTermAbsenceComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
-    const backService = injector.inject(BackService) as BackService;
-    const backLinkSpy = spyOn(backService, 'setBackLink');
-    backLinkSpy.and.returnValue();
-
     const workerService = injector.inject(WorkerService) as WorkerService;
     const updateWorkerSpy = spyOn(workerService, 'updateWorker');
     updateWorkerSpy.and.callThrough();
@@ -63,7 +58,6 @@ describe('LongTermAbsenceComponent', () => {
       getAllByText,
       queryByText,
       routerSpy,
-      backLinkSpy,
       updateWorkerSpy,
     };
   }
@@ -166,11 +160,6 @@ describe('LongTermAbsenceComponent', () => {
   it('should navigate to the previous page on submit', async () => {
     const { component, fixture, routerSpy, getByText } = await setup();
 
-    component.returnUrl = {
-      url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
-    };
-    fixture.detectChanges();
-
     const illnessRadioButton = getByText('Illness');
     fireEvent.click(illnessRadioButton);
 
@@ -178,13 +167,7 @@ describe('LongTermAbsenceComponent', () => {
     fireEvent.click(saveAndReturnButton);
 
     expect(component.form.valid).toBeTruthy();
-    expect(routerSpy).toHaveBeenCalledWith([
-      'workplace',
-      workplace.uid,
-      'training-and-qualifications-record',
-      worker.uid,
-      'training',
-    ]);
+    expect(routerSpy).toHaveBeenCalled();
   });
 
   describe('generateProps()', () => {
@@ -238,34 +221,6 @@ describe('LongTermAbsenceComponent', () => {
       fireEvent.click(saveAndReturnButton);
 
       expect(queryByText('Select a reason for their long-term absence')).toBeFalsy;
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link if returnTo$ in worker service is training and quals record page', async () => {
-      const { component, fixture, backLinkSpy } = await setup();
-
-      component.returnUrl = {
-        url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
-      };
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'],
-      });
-    });
-
-    it('should set the correct back link if returnTo$ in worker service is staff record page', async () => {
-      const { component, fixture, backLinkSpy } = await setup();
-
-      component.returnUrl = { url: ['workplace', workplace.uid, 'staff-record', worker.uid] };
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['workplace', workplace.uid, 'staff-record', worker.uid],
-      });
     });
   });
 });

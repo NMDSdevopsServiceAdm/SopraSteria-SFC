@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -23,11 +22,10 @@ export class LongTermAbsenceComponent implements OnInit {
   private formErrorsMap: Array<ErrorDetails>;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
-  public previousUrl: string;
+  public returnUrl;
 
   constructor(
     private route: ActivatedRoute,
-    private backService: BackService,
     private workerService: WorkerService,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
@@ -40,7 +38,7 @@ export class LongTermAbsenceComponent implements OnInit {
     this.longTermAbsenceReasons = this.route.snapshot.data.longTermAbsenceReasons;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setTrainingPathAndBackLink();
+    this.returnUrl = this.workerService.returnTo.url;
   }
 
   ngAfterViewInit(): void {
@@ -49,7 +47,6 @@ export class LongTermAbsenceComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    this.workerService.setReturnTo(null);
   }
 
   public setupForm = () => {
@@ -125,26 +122,7 @@ export class LongTermAbsenceComponent implements OnInit {
   }
 
   private onSuccess(): void {
-    this.router.navigate([
-      `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`,
-    ]);
-  }
-
-  public navigateToPreviousPage(): void {
-    this.router.navigate([this.previousUrl]);
-  }
-
-  private setTrainingPathAndBackLink(): void {
-    this.workerService.getRoute$.subscribe((route) => {
-      if (route) {
-        this.previousUrl = route;
-      } else {
-        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`;
-      }
-    });
-    this.backService.setBackLink({
-      url: [this.previousUrl],
-    });
+    this.router.navigate(this.returnUrl);
   }
 
   private onError(error): void {
