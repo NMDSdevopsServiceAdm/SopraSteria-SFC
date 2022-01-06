@@ -57,7 +57,11 @@
       </div>
       <div class="govuk-button-group">
         <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Save and return</button>
-        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" [routerLink]="returnUrl.url"
+        <a
+          role="button"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          draggable="false"
+          (click)="navigateToPreviousPage()"
           >Cancel</a
         >
       </div>
