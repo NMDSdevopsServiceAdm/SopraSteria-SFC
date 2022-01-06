@@ -2436,8 +2436,6 @@ class Establishment {
       return;
     }
 
-    console.log('myJSONWorkers: ', myJSONWorkers);
-
     const totals = {
       directCareWorkers: 0,
       managerialProfessionalWorkers: 0,
