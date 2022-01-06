@@ -13,7 +13,7 @@ import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-u
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';
 
-describe('BulkUploadHelpMainPage', () => {
+describe('BulkUploadHelpMainPageComponent', () => {
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadHelpMainPageComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
@@ -29,7 +29,7 @@ describe('BulkUploadHelpMainPage', () => {
     return { component, getByText };
   };
 
-  it('should render a StartPageComponent', async () => {
+  it('should render a BulkUploadHelpMainPageComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
