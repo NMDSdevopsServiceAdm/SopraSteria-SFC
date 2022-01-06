@@ -295,11 +295,6 @@ const config = convict({
         format: 'int',
         default: 300,
       },
-      storeIntermediaries: {
-        doc: 'If true, intermediary trace data will be stored',
-        format: 'Boolean',
-        default: false,
-      },
     },
     completion: {
       timeout: {

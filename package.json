@@ -19,7 +19,7 @@
     "server:test": "mocha server/test/**/*.spec.js",
     "server:test:unit": "mocha --exit 'server/test/unit/**/*.spec.js'",
     "server:test:unit:ci": "mocha --reporter mocha-junit-reporter --exit 'server/test/unit/**/*.spec.js'",
-    "server:test:integration": "mocha server/test/integration/**/*.spec.js",
+    "server:test:integration": "mocha --exit server/test/integration/**/*.spec.js",
     "server:cover": "nyc --reporter=html mocha server/test/**/*.spec.js",
     "server:cover:unit": "nyc --reporter=html mocha --exit 'server/test/unit/**/*.spec.js'",
     "server:cover:unit:ci": "nyc --reporter=lcov --reporter=text mocha --reporter=mocha-junit-reporter --exit 'server/test/unit/**/*.spec.js'",

@@ -38,12 +38,7 @@ const updateMetaData = async (file, username, establishmentId) => {
   }
 
   // count records and update metadata
-  S3.uploadAsJSON(
-    username,
-    establishmentId,
-    file.metaData,
-    `${establishmentId}/latest/${file.metaData.filename}.metadata.json`,
-  );
+  S3.uploadJSONDataToS3(username, establishmentId, file.metaData, `latest/${file.metaData.filename}.metadata`);
 };
 
 const uploadedGet = async (req, res) => {

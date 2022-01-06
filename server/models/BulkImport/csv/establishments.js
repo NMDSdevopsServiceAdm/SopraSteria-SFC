@@ -4,6 +4,7 @@ const clonedeep = require('lodash.clonedeep');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+const OGEstablishment = require('../../../models/classes/establishment').Establishment;
 
 const employedContractStatusIds = [1, 2];
 const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
@@ -2429,7 +2430,7 @@ class Establishment {
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
   // worker totals give errors or warnings
-  async crossValidate({ csvEstablishmentSchemaErrors, myWorkers, fetchMyEstablishmentsWorkers }) {
+  async crossValidate(csvEstablishmentSchemaErrors, myJSONWorkers) {
     // if establishment isn't being added or updated then exit early
     if (!['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status)) {
       return;
@@ -2445,7 +2446,7 @@ class Establishment {
     let registeredManagers = 0;
 
     const dataInCSV = ['NEW', 'UPDATE', 'CHGSUB']; //For theses statuses trust the data in the CSV
-    myWorkers.forEach((worker) => {
+    myJSONWorkers.forEach((worker) => {
       if (this.key === worker.establishmentKey && dataInCSV.includes(worker.status)) {
         /* update totals */
         if (isPerm(worker)) {
@@ -2461,9 +2462,9 @@ class Establishment {
     // get all the other records that may already exist in the db but aren't being updated or deleted
     // and check how many registered managers there is
     const dataInDB = ['UNCHECKED', 'NOCHANGE']; // for theses statuses trust the data in the DB
-    (await fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
-      const workerFromCSV = myWorkers.find((w) => {
-        return w._uniqueWorkerId === worker.uniqueWorker;
+    (await OGEstablishment.fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
+      const workerFromCSV = myJSONWorkers.find((w) => {
+        return w.uniqueWorkerId === worker.uniqueWorker;
       });
       if (workerFromCSV && dataInDB.includes(workerFromCSV._status)) {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);

@@ -1,7 +1,6 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 const get = require('lodash/get');
-const models = require('../../../models');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -23,20 +22,11 @@ const _headers_v1_without_chgUnique =
 
 const DEFAULT_NUMBER_OF_QUALS = 3;
 
-const csvQuote = (toCsv) => {
-  if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-    return '"' + toCsv.replace(/"/g, '""') + '"';
-  }
-
-  return toCsv;
-};
-
 class Worker {
-  constructor(currentLine, lineNumber, allCurrentEstablishments) {
+  constructor(currentLine, lineNumber, currentWorker) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
-    this._allCurrentEstablishments = allCurrentEstablishments;
-    this._currentWorker = null;
+    this._currentWorker = currentWorker;
 
     this._validationErrors = [];
     this._contractType = null;
@@ -102,12 +92,6 @@ class Worker {
     this._amhp = null;
   }
 
-  static get UNCHECKED_ESTABLISHMENT_ERROR() {
-    return 997;
-  }
-  static get DUPLICATE_ERROR() {
-    return 998;
-  }
   static get HEADERS_ERROR() {
     return 999;
   }
@@ -385,10 +369,6 @@ class Worker {
   }
   static get QUAL_ACH03_NOTES_WARNING() {
     return 5560;
-  }
-
-  static get NI_WORKER_DUPLICATE_ERROR() {
-    return 5570;
   }
 
   static headers(MAX_QUALS) {
@@ -699,23 +679,13 @@ class Worker {
       return false;
     } else {
       // helper which returns true if the given LOCALESTID
-      const thisWorkerExists = (establishmentKey, workerKey) => {
-        const foundEstablishment = this._allCurrentEstablishments.find(
-          (currentEstablishment) => currentEstablishment.key === establishmentKey,
-        );
-
-        // having found the establishment, find the worker within the establishment
-        if (foundEstablishment) {
-          this._currentWorker = foundEstablishment.theWorker(workerKey);
-          return !!this._currentWorker;
-        } else {
-          return false;
-        }
+      const thisWorkerExists = () => {
+        return !!this._currentWorker;
       };
 
       switch (myStatus) {
         case 'NEW':
-          if (thisWorkerExists(this._establishmentKey, this._key)) {
+          if (thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
@@ -730,7 +700,7 @@ class Worker {
           }
           break;
         case 'DELETE':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+          if (!thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
@@ -744,45 +714,16 @@ class Worker {
           }
           break;
         case 'UNCHECKED':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
-            this._validationErrors.push({
-              name: this._currentLine.LOCALESTID,
-              worker: this._currentLine.UNIQUEWORKERID,
-              lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
-              errType: 'STATUS_ERROR',
-              error:
-                "Staff record has a STATUS of UNCHECKED but doesn't exist, please change to NEW if you want to add this staff record",
-              source: myStatus,
-              column: 'STATUS',
-            });
-          }
-          break;
         case 'NOCHANGE':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
-            this._validationErrors.push({
-              name: this._currentLine.LOCALESTID,
-              worker: this._currentLine.UNIQUEWORKERID,
-              lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
-              errType: 'STATUS_ERROR',
-              error:
-                "Staff record has a STATUS of NOCHANGE but doesn't exist, please change to NEW if you want to add this staff record",
-              source: myStatus,
-              column: 'STATUS',
-            });
-          }
-          break;
         case 'UPDATE':
-          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+          if (!thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: 'STATUS_ERROR',
-              error:
-                "Staff record has a STATUS of UPDATE but doesn't exist, please change to NEW if you want to add this staff record",
+              error: `Staff record has a STATUS of ${myStatus} but doesn't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
               column: 'STATUS',
             });
@@ -790,7 +731,7 @@ class Worker {
           break;
         case 'CHGSUB':
           // note - the LOCALESTID here is that of the target sub - not the current sub
-          if (thisWorkerExists(this._establishmentKey, this._key)) {
+          if (thisWorkerExists()) {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
@@ -1561,8 +1502,8 @@ class Worker {
 
     if (
       this._currentWorker &&
-      moment(this._currentWorker._properties.get('DaysSick').savedAt).isBefore(Date.now(), 'day') &&
-      this._currentWorker.daysSick.days === parseInt(this._currentLine.DAYSSICK)
+      moment(get(this._currentWorker, 'daysSick.lastSaved')).isBefore(Date.now(), 'day') &&
+      get(this._currentWorker, 'daysSick.currentValue.days') === parseInt(this._currentLine.DAYSSICK)
     ) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1727,27 +1668,6 @@ class Worker {
       this._mainJobRole = myMainJobRole;
       this._mainJobRoleId = myMainJobRole;
       return true;
-    }
-  }
-
-  async _crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment) {
-    const template = {
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-      lineNumber: this._lineNumber,
-      errCode: Worker.MAIN_JOB_ROLE_ERROR,
-      errType: 'MAIN_JOB_ROLE_ERROR',
-      source: this._currentLine.MAINJOBROLE,
-      column: 'MAINJOBROLE',
-    };
-
-    if (!cqcRegEstablishment && this.mainJobRoleId === 4) {
-      csvWorkerSchemaErrors.unshift(
-        Object.assign(template, {
-          error:
-            'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
-        }),
-      );
     }
   }
 
@@ -2932,81 +2852,6 @@ class Worker {
     }
   }
 
-  // add a duplicate validation error to the current set
-  addDuplicate(UNIQUEWORKERID) {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.DUPLICATE_ERROR,
-      errType: 'DUPLICATE_ERROR',
-      error: `UNIQUEWORKERID ${UNIQUEWORKERID} is not unique`,
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'UNIQUEWORKERID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // add a duplicate validation error to the current set
-  addChgDuplicate(CHGUNIQUEWORKERID) {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.DUPLICATE_ERROR,
-      errType: 'DUPLICATE_ERROR',
-      error: `CHGUNIQUEWRKID ${CHGUNIQUEWORKERID} is not unique`,
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'CHGUNIQUEWRKID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // Exceeds national insurance maximum
-  exceedsNationalInsuranceMaximum() {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.NI_WORKER_DUPLICATE_ERROR,
-      errType: 'NI_WORKER_DUPLICATE_ERROR',
-      error: 'NINUMBER is already associated with another full time worker record',
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'NINUMBER',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.NINUMBER,
-    };
-  }
-
-  // add unchecked establishment reference validation error
-  uncheckedEstablishment() {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
-      errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
-      error: 'LOCALESTID does not exist in Workplace file',
-      source: this._currentLine.LOCALESTID,
-      column: 'LOCALESTID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  ftePayCheckHasDifferentHours() {
-    return {
-      origin: 'Workers',
-      lineNumber: this._lineNumber,
-      warnCode: Worker.SALARY_ERROR,
-      warnType: 'SALARY_ERROR',
-      warning:
-        'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
-      source: this._currentLine.LOCALESTID,
-      column: 'SALARY',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
@@ -3083,41 +2928,6 @@ class Worker {
     }
 
     return true;
-  }
-
-  async crossValidate({ csvWorkerSchemaErrors, myEstablishments }) {
-    // if worker isn't being added or updated then exit early
-    if (!['NEW', 'UPDATE'].includes(this._status)) {
-      return;
-    }
-    let cqcRegEstablishment = false;
-
-    myEstablishments.forEach((establishment) => {
-      if (this.establishmentKey === establishment.key) {
-        switch (establishment.status) {
-          case 'NEW':
-          case 'UPDATE':
-            cqcRegEstablishment = establishment.regType === 2;
-            break;
-          case 'UNCHECKED':
-            cqcRegEstablishment = this.checkEstablishmentRegulated(establishment.id);
-            break;
-          case 'NOCHANGE':
-            cqcRegEstablishment = this.checkEstablishmentRegulated(establishment.id);
-            break;
-          case 'DELETE':
-            break;
-        }
-      }
-    });
-
-    // ensure worker jobs tally up on TOTALPERMTEMP field, but only do it for new or updated establishments
-    this._crossValidateMainJobRole(csvWorkerSchemaErrors, cqcRegEstablishment);
-  }
-
-  async checkEstablishmentRegulated(establishmentId) {
-    const establishment = await models.establishment.findbyId(establishmentId);
-    return establishment.isRegulated;
   }
 
   // returns true on success, false is any attribute of Worker fails
@@ -3197,8 +3007,17 @@ class Worker {
     }
   }
 
-  toJSON() {
-    // force to undefined if not set, because 'undefined' when JSON stingified is not rendered
+  toJSON(isValidation = false) {
+    const extraFields = {};
+    if (isValidation) {
+      extraFields.establishmentKey = this.establishmentKey;
+      extraFields.contractTypeId = this.contractTypeId;
+      extraFields.mainJobRoleId = this.mainJobRoleId;
+      extraFields.otherJobIds = this.otherJobIds;
+      extraFields.lineNumber = this._lineNumber;
+      extraFields._currentLine = this._currentLine;
+    }
+
     return {
       localId: this._localId,
       status: this._status,
@@ -3277,6 +3096,7 @@ class Worker {
           })
         : undefined,
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
+      ...extraFields,
     };
   }
 
@@ -3553,561 +3373,6 @@ class Worker {
         ...thisValidation,
       };
     });
-  }
-
-  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
-  addQualificationAPIValidation(columnIndex, errors, warnings) {
-    errors.forEach((thisError) => {
-      if (thisError.properties) {
-        thisError.properties.forEach((thisProp) => {
-          const validationError = {
-            lineNumber: this._lineNumber,
-            error: thisError.message,
-            name: this._currentLine.LOCALESTID,
-          };
-
-          switch (thisProp) {
-            case 'Qualification':
-              // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
-              // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Year':
-              // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-              // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Notes':
-              // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-              // validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-              // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
-              break;
-            default:
-            // validationError.errCode = thisError.code;
-            // validationError.errType = 'Undefined';
-            // validationError.source  = thisProp;
-          }
-          this._validationErrors.push(validationError);
-        });
-      }
-    });
-
-    warnings.forEach((thisWarning) => {
-      if (thisWarning.properties) {
-        thisWarning.properties.forEach((thisProp) => {
-          const validationWarning = {
-            lineNumber: this._lineNumber,
-            warning: thisWarning.message,
-          };
-
-          switch (thisProp) {
-            case 'Qualification':
-              // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-              // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Year':
-              // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-              // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-              // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
-              break;
-            case 'Notes':
-              // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-              // validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-              // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
-              break;
-            default:
-            // validationWarning.warnCode = thisWarning.code;
-            // validationWarning.warnType = 'Undefined';
-            // validationWarning.source  = thisProp;
-          }
-
-          this._validationErrors.push(validationWarning);
-        });
-      }
-    });
-  }
-
-  static _maptoCSVregisteredNurse(registeredNurse) {
-    let mappedValue = '';
-    switch (registeredNurse) {
-      case 'Adult Nurse':
-        mappedValue = '01';
-        break;
-      case 'Mental Health Nurse':
-        mappedValue = '02';
-        break;
-      case 'Learning Disabilities Nurse':
-        mappedValue = '03';
-        break;
-      case "Children's Nurse":
-        mappedValue = '04';
-        break;
-      case 'Enrolled Nurse':
-        mappedValue = '05';
-        break;
-    }
-
-    return mappedValue;
-  }
-
-  // takes the given Worker entity and writes it out to CSV string (one line)
-  static toCSV(establishmentId, entity, MAX_QUALIFICATIONS) {
-    // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","FLUVAC","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
-    //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
-    //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
-    const columns = [];
-
-    // "LOCALESTID"
-    columns.push(establishmentId);
-
-    // "UNIQUEWORKERID"
-    columns.push(csvQuote(entity.LocalIdentifierValue)); // todo - this will be local identifier
-
-    // "STATUS"
-    columns.push('UNCHECKED');
-
-    // "DISPLAYID"
-    columns.push(csvQuote(entity.NameOrIdValue));
-
-    // "FLUVAC"
-    let fluvac = '';
-    switch (entity.FluJabValue) {
-      case 'Yes':
-        fluvac = 1;
-        break;
-
-      case 'No':
-        fluvac = 2;
-        break;
-
-      case "Don't know":
-        fluvac = 999;
-        break;
-    }
-    columns.push(fluvac);
-
-    // "NINUMBER"
-    columns.push(entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : ''); // remove whitespace
-
-    // "POSTCODE"
-    columns.push(csvQuote(entity.PostcodeValue));
-
-    // "DOB"
-    const dobParts = entity.DateOfBirthValue ? entity.DateOfBirthValue.split('-') : null;
-    columns.push(dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
-
-    // "GENDER",
-    let genderId = '';
-    switch (entity.GenderValue) {
-      case 'Female':
-        genderId = 2;
-        break;
-
-      case 'Male':
-        genderId = 1;
-        break;
-
-      case 'Other':
-        genderId = 4;
-        break;
-
-      case "Don't know":
-        genderId = 3;
-        break;
-    }
-    columns.push(genderId);
-
-    // "ETHNICITY"
-    columns.push(get(entity, 'ethnicity.id') ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.id) : '');
-
-    // "NATIONALITY"
-    let nationality = '';
-    switch (entity.NationalityValue) {
-      case 'British':
-        nationality = 826;
-        break;
-      case "Don't know":
-        nationality = 998;
-        break;
-      case 'Other':
-        nationality = get(entity, 'nationality.id') ? BUDI.nationality(BUDI.FROM_ASC, entity.nationality.id) : 999;
-        break;
-    }
-    columns.push(nationality);
-
-    // "BRITISHCITIZENSHIP"
-    let britishCitizenship = '';
-    switch (entity.BritishCitizenshipValue) {
-      case 'Yes':
-        britishCitizenship = 1;
-        break;
-
-      case 'No':
-        britishCitizenship = 2;
-        break;
-
-      case "Don't know":
-        britishCitizenship = 999;
-        break;
-    }
-    columns.push(britishCitizenship);
-
-    // "COUNTRYOFBIRTH"
-    let countryOfBirth = '';
-    switch (entity.CountryOfBirthValue) {
-      case 'United Kingdom':
-        countryOfBirth = 826;
-        break;
-      case "Don't know":
-        countryOfBirth = 998;
-        break;
-      case 'Other':
-        countryOfBirth = get(entity, 'countryOfBirth.id') ? BUDI.country(BUDI.FROM_ASC, entity.countryOfBirth.id) : 999;
-        break;
-    }
-    columns.push(countryOfBirth);
-
-    // "YEAROFENTRY"
-    columns.push(entity.YearArrivedValue === 'Yes' ? entity.YearArrivedYear : '');
-
-    // "DISABLED"
-    let disability = '';
-    switch (entity.DisabilityValue) {
-      case 'Yes':
-        disability = 1;
-        break;
-
-      case 'No':
-        disability = 0;
-        break;
-
-      case 'Undisclosed':
-        disability = 2;
-        break;
-
-      case "Don't know":
-        disability = 3;
-        break;
-    }
-    columns.push(disability);
-
-    // "CARECERT"
-    let careCert = '';
-    switch (entity.CareCertificateValue) {
-      case 'Yes, completed':
-        careCert = 1;
-        break;
-
-      case 'No':
-        careCert = 2;
-        break;
-
-      case 'Yes, in progress or partially completed':
-        careCert = 3;
-        break;
-    }
-    columns.push(careCert);
-
-    // "RECSOURCE"
-    let recruitmentSource = '';
-    switch (entity.RecruitedFromValue) {
-      case 'No':
-        recruitmentSource = 16;
-        break;
-      case 'Yes':
-        recruitmentSource = get(entity, 'recruitedFrom.id')
-          ? BUDI.recruitment(BUDI.FROM_ASC, entity.recruitedFrom.id)
-          : '';
-        break;
-    }
-    columns.push(recruitmentSource);
-
-    // "STARTDATE"
-    const mainJobStartDateParts = entity.MainJobStartDateValue ? entity.MainJobStartDateValue.split('-') : null;
-
-    columns.push(
-      mainJobStartDateParts
-        ? `${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`
-        : '',
-    ); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
-
-    // "STARTINSECT"
-    columns.push(entity.SocialCareStartDateValue === 'Yes' ? entity.SocialCareStartDateYear : '');
-
-    // "APPRENTICE"
-    let apprenticeship = '';
-    switch (entity.ApprenticeshipTrainingValue) {
-      case 'Yes':
-        apprenticeship = 1;
-        break;
-
-      case 'No':
-        apprenticeship = 2;
-        break;
-
-      case "Don't know":
-        apprenticeship = 999;
-        break;
-    }
-    columns.push(apprenticeship);
-
-    // EMPLSTATUS/;contract - mandatory
-    let empStatus = '';
-    switch (entity.ContractValue) {
-      case 'Permanent':
-        empStatus = 1;
-        break;
-
-      case 'Temporary':
-        empStatus = 2;
-        break;
-
-      case 'Pool/Bank':
-        empStatus = 3;
-        break;
-
-      case 'Agency':
-        empStatus = 4;
-        break;
-
-      case 'Other':
-        empStatus = 7;
-        break;
-    }
-    columns.push(empStatus);
-
-    // "ZEROHRCONT"
-    let zeroHours = '';
-    switch (entity.ZeroHoursContractValue) {
-      case 'Yes':
-        zeroHours = 1;
-        break;
-
-      case 'No':
-        zeroHours = 2;
-        break;
-
-      case "Don't know":
-        zeroHours = 999;
-        break;
-    }
-    columns.push(zeroHours);
-
-    // "DAYSSICK"
-    let daysSick = '';
-    switch (entity.DaysSickValue) {
-      case 'No':
-        daysSick = 999;
-        break;
-      case 'Yes':
-        daysSick = entity.DaysSickDays;
-        break;
-    }
-    columns.push(daysSick);
-
-    switch (entity.AnnualHourlyPayValue) {
-      case 'Hourly':
-        // "SALARYINT"
-        columns.push(3);
-        // "SALARY"
-        columns.push('');
-        // "HOURLYRATE"
-        columns.push(entity.AnnualHourlyPayRate);
-        break;
-      case 'Annually':
-        // "SALARYINT"
-        columns.push(1);
-        // "SALARY"
-        columns.push(entity.AnnualHourlyPayRate);
-        // "HOURLYRATE"
-        columns.push('');
-        break;
-      default:
-        // "SALARYINT"
-        columns.push('');
-        // "SALARY"
-        columns.push('');
-        // "HOURLYRATE"
-        columns.push('');
-    }
-
-    // "MAINJOBROLE"
-    columns.push(get(entity, 'mainJob.id') ? BUDI.jobRoles(BUDI.FROM_ASC, entity.mainJob.id) : '');
-
-    // "MAINJRDESC"
-    columns.push(get(entity, 'mainJob.other') && entity.mainJob.other ? entity.MainJobFkOther : '');
-
-    // "CONTHOURS"
-    // if no contracted hours, then output empty (null)
-    // if no contract type, or contract type is not contractedHoursContract, then always empty (null)
-    let contHours = '';
-    if (['Permanent', 'Temporary'].includes(entity.ContractValue) && entity.ZeroHoursContractValue !== 'Yes') {
-      switch (entity.WeeklyHoursContractedValue) {
-        case 'Yes':
-          // if contracted hours is 'Yes', then the contracted hours value - which itself could still be empty (null)
-          contHours = entity.WeeklyHoursContractedHours;
-          break;
-
-        case 'No':
-          // if contracted hours is 'No', then output "999" (don't know)
-          contHours = 999;
-          break;
-      }
-    }
-    columns.push(contHours);
-
-    // "AVGHOURS"
-    let avgHours = ''; // if no average hours, then output empty (null)
-    if (['Pool/Bank', 'Agency', 'Other'].includes(entity.ContractValue) || entity.ZeroHoursContractValue === 'Yes') {
-      switch (entity.WeeklyHoursAverageValue) {
-        case 'Yes':
-          // if average hours is 'Yes', then the average hours value - which itself could still be empty (null)
-          avgHours = entity.WeeklyHoursAverageHours;
-          break;
-
-        case 'No':
-          // if average hours is 'No', then output "999" (don't know)
-          avgHours = 999;
-          break;
-      }
-    }
-    columns.push(avgHours);
-
-    // "OTHERJOBROLE"
-    columns.push(
-      entity.OtherJobsValue === 'Yes'
-        ? entity.otherJobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.id)).join(';')
-        : '',
-    );
-
-    // "OTHERJRDESC"
-    columns.push(
-      entity.OtherJobsValue === 'Yes'
-        ? entity.otherJobs
-            .map((thisJob) => (thisJob.other && thisJob.workerJobs.other ? thisJob.workerJobs.other : ''))
-            .join(';')
-        : '',
-    );
-
-    const NURSE_JOB_ID = 23;
-
-    // "NMCREG"
-    columns.push(
-      get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID
-        ? Worker._maptoCSVregisteredNurse(entity.RegisteredNurseValue)
-        : '',
-    );
-
-    // "NURSESPEC"
-    if (get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID && entity.NurseSpecialismsValue) {
-      if (entity.NurseSpecialismsValue === 'No') {
-        columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
-      } else if (entity.NurseSpecialismsValue === "Don't know") {
-        columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 8));
-      } else if (entity.NurseSpecialismsValue === 'Yes') {
-        columns.push(
-          entity.nurseSpecialisms
-            .map((thisSpecialism) => BUDI.nursingSpecialist(BUDI.FROM_ASC, thisSpecialism.id))
-            .join(';'),
-        );
-      }
-    } else {
-      columns.push('');
-    }
-
-    // "AMHP"
-    let amhp = '';
-    switch (entity.ApprovedMentalHealthWorkerValue) {
-      case 'Yes':
-        amhp = 1;
-        break;
-
-      case 'No':
-        amhp = 2;
-        break;
-
-      case "Don't know":
-        amhp = 999;
-        break;
-    }
-    columns.push(amhp);
-
-    // "SCQUAL"
-    let scqual = '';
-    switch (entity.QualificationInSocialCareValue) {
-      case 'Yes':
-        {
-          const budi = entity.socialCareQualification
-            ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.socialCareQualification.id)
-            : null;
-
-          if (budi !== null) {
-            scqual = '1;' + budi;
-          } else {
-            scqual = '1';
-          }
-        }
-        break;
-
-      case 'No':
-        scqual = 2;
-        break;
-
-      case "Don't know":
-        scqual = 999;
-        break;
-    }
-    columns.push(scqual);
-
-    // "NONSCQUAL"
-    let nonscqual = '';
-    switch (entity.OtherQualificationsValue) {
-      case 'Yes':
-        {
-          const budi = entity.highestQualification
-            ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.highestQualification.id)
-            : null;
-
-          if (budi !== null) {
-            nonscqual = '1;' + budi;
-          } else {
-            nonscqual = '1';
-          }
-        }
-        break;
-
-      case 'No':
-        nonscqual = 2;
-        break;
-
-      case "Don't know":
-        nonscqual = 999;
-        break;
-    }
-    columns.push(nonscqual);
-
-    const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
-    const len = Math.max(3, Math.min(myQualifications.length, MAX_QUALIFICATIONS));
-
-    for (let index = 0; index < len; index++) {
-      const thisQual = myQualifications[index];
-      const mappedQualification = thisQual ? BUDI.qualifications(BUDI.FROM_ASC, thisQual.qualification.id) : null;
-
-      if (mappedQualification) {
-        columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
-        columns.push(csvQuote(thisQual.notes ? unescape(thisQual.notes) : ''));
-      } else {
-        columns.push('');
-        columns.push('');
-      }
-    }
-
-    return columns.join(',');
-  }
-
-  toCSV(establishmentId, entity, MAX_QUALIFICATIONS) {
-    return Worker.toCSV(establishmentId, entity, MAX_QUALIFICATIONS);
   }
 }
 

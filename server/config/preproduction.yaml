@@ -35,7 +35,6 @@ bulkupload:
   bucketname: sfc-bulkupload-preprod
   validation:
     timeout: 300
-    storeIntermediaries: false
   completion:
     timeout: 120
 
