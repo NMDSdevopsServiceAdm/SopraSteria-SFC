@@ -34,7 +34,12 @@
     <p>There needs to be a unique reference for each workplace and for each staff record.</p>
   </div>
   <div class="govuk-grid-column-one-third">
-    <app-bulk-upload-related-content [showAll]="false"></app-bulk-upload-related-content>
+    <app-bulk-upload-related-content
+      [showGetHelpWithBulkUploads]="false"
+      [showViewReferences]="false"
+      [showDataChanges]="false"
+      [showViewLastBulkUpload]="false"
+    ></app-bulk-upload-related-content>
     <app-codes-and-guidance class="govuk-util__block"></app-codes-and-guidance>
   </div>
 </div>
