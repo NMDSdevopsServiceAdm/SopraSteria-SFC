@@ -4,6 +4,7 @@
 const dbmodels = require('../../../models');
 const { ready } = require('../../cache/singletons/ready');
 const fs = require('fs');
+const path = require('path');
 
 let ALL_CSSRS = null;
 let ALL_CAPACITIES = null;
@@ -58,15 +59,21 @@ class BUDI {
           };
         });
 
-      JOB_ROLES_MAPPINGS = JSON.parse(fs.readFileSync('.//reference/jobRoles.json', 'utf-8'));
-      CONTRACT_TYPE_MAPPINGS = JSON.parse(fs.readFileSync('.//reference/contractType.json', 'utf-8'));
-      ETHNICITY_MAPPINGS = JSON.parse(fs.readFileSync('./reference/ethnicity.json', 'utf-8'));
-      NATIONALITY_MAPPINGS = JSON.parse(fs.readFileSync('./reference/nationality.json', 'utf-8'));
-      COUNTRY_MAPPINGS = JSON.parse(fs.readFileSync('./reference/nationality.json', 'utf-8'));
-      RECRUITMENT_MAPPINGS = JSON.parse(fs.readFileSync('./reference/recruitment.json', 'utf-8'));
-      NURSING_SPECIALIST_MAPPINGS = JSON.parse(fs.readFileSync('./reference/nursingSpecialist.json', 'utf-8'));
-      QUALIFICATION_LEVELS_MAPPINGS = JSON.parse(fs.readFileSync('./reference/qualificationLevels.json', 'utf-8'));
-      QUALIFICATIONS_MAPPINGS = JSON.parse(fs.readFileSync('./reference/qualifications.json', 'utf-8'));
+      const getFileContent = (fileName) => {
+        const referencePath = '../../../../reference/';
+
+        return JSON.parse(fs.readFileSync(path.resolve(__dirname, `${referencePath}${fileName}.json`), 'utf-8'));
+      };
+
+      JOB_ROLES_MAPPINGS = getFileContent('jobRoles');
+      CONTRACT_TYPE_MAPPINGS = getFileContent('contractType');
+      ETHNICITY_MAPPINGS = getFileContent('ethnicity');
+      NATIONALITY_MAPPINGS = getFileContent('nationality');
+      COUNTRY_MAPPINGS = getFileContent('countries');
+      RECRUITMENT_MAPPINGS = getFileContent('recruitment');
+      NURSING_SPECIALIST_MAPPINGS = getFileContent('nursingSpecialist');
+      QUALIFICATION_LEVELS_MAPPINGS = getFileContent('qualificationLevels');
+      QUALIFICATIONS_MAPPINGS = getFileContent('qualifications');
     }
   }
 
