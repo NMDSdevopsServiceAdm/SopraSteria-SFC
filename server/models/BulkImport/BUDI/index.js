@@ -21,6 +21,22 @@ let QUALIFICATIONS_MAPPINGS = null;
 
 class BUDI {
   static async initialize() {
+    const getFileContent = (fileName) => {
+      const referencePath = '../../../../reference/';
+
+      return JSON.parse(fs.readFileSync(path.resolve(__dirname, `${referencePath}${fileName}.json`), 'utf-8'));
+    };
+
+    JOB_ROLES_MAPPINGS = getFileContent('jobRoles');
+    CONTRACT_TYPE_MAPPINGS = getFileContent('contractType');
+    ETHNICITY_MAPPINGS = getFileContent('ethnicity');
+    NATIONALITY_MAPPINGS = getFileContent('nationality');
+    COUNTRY_MAPPINGS = getFileContent('countries');
+    RECRUITMENT_MAPPINGS = getFileContent('recruitment');
+    NURSING_SPECIALIST_MAPPINGS = getFileContent('nursingSpecialist');
+    QUALIFICATION_LEVELS_MAPPINGS = getFileContent('qualificationLevels');
+    QUALIFICATIONS_MAPPINGS = getFileContent('qualifications');
+
     const cssrFetch = await dbmodels.cssr.findAll({
       attributes: ['id', 'name'],
       group: ['id', 'name'],
@@ -58,22 +74,6 @@ class BUDI {
             serviceId: thisCapacity.serviceId,
           };
         });
-
-      const getFileContent = (fileName) => {
-        const referencePath = '../../../../reference/';
-
-        return JSON.parse(fs.readFileSync(path.resolve(__dirname, `${referencePath}${fileName}.json`), 'utf-8'));
-      };
-
-      JOB_ROLES_MAPPINGS = getFileContent('jobRoles');
-      CONTRACT_TYPE_MAPPINGS = getFileContent('contractType');
-      ETHNICITY_MAPPINGS = getFileContent('ethnicity');
-      NATIONALITY_MAPPINGS = getFileContent('nationality');
-      COUNTRY_MAPPINGS = getFileContent('countries');
-      RECRUITMENT_MAPPINGS = getFileContent('recruitment');
-      NURSING_SPECIALIST_MAPPINGS = getFileContent('nursingSpecialist');
-      QUALIFICATION_LEVELS_MAPPINGS = getFileContent('qualificationLevels');
-      QUALIFICATIONS_MAPPINGS = getFileContent('qualifications');
     }
   }
 
