@@ -31,38 +31,68 @@ describe('BulkUploadRelatedContentComponent', () => {
   });
 
   it('should not render View last bulk upload if not admin', async () => {
-    const { component, fixture, queryByText } = await setup();
-    component.showAll = true;
+    const { fixture, queryByText } = await setup();
+
     fixture.detectChanges();
     const viewLastBU = queryByText('View last bulk upload');
     expect(viewLastBU).toBeFalsy();
   });
 
   it('should render View last bulk upload if admin', async () => {
-    const { component, fixture, queryByText } = await setup(true);
-    component.showAll = true;
+    const { fixture, queryByText } = await setup(true);
+
     fixture.detectChanges();
     const viewLastBU = queryByText('View last bulk upload');
     expect(viewLastBU).toBeTruthy();
   });
 
-  it('should not render View last bulk upload or View references if showAll false', async () => {
+  it('should not render About bulk upload when passed a false flag', async () => {
     const { component, fixture, queryByText } = await setup();
-    component.showAll = false;
+
+    component.showAboutBulkUpload = false;
     fixture.detectChanges();
-    const viewLastBU = queryByText('View last bulk upload');
+    const viewLastBU = queryByText('About bulk upload');
     expect(viewLastBU).toBeFalsy();
-    const viewReferences = queryByText('View references');
-    expect(viewReferences).toBeFalsy();
   });
 
-  it('should not render View last bulk upload or View references if showAll false and isAdmin true', async () => {
-    const { component, fixture, queryByText } = await setup(true);
-    component.showAll = false;
+  it('should not render Get help with bulk uploads when passed a false flag', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.showGetHelpWithBulkUploads = false;
     fixture.detectChanges();
-    const viewLastBU = queryByText('View last bulk upload');
+    const viewLastBU = queryByText('Get help with bulk uploads');
     expect(viewLastBU).toBeFalsy();
-    const viewReferences = queryByText('View references');
-    expect(viewReferences).toBeFalsy();
+  });
+
+  it('should not render View references when passed a false flag', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.showViewReferences = false;
+    fixture.detectChanges();
+    const viewLastBU = queryByText('View references');
+    expect(viewLastBU).toBeFalsy();
+  });
+
+  it('should not render Data changes when passed a false flag', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.showDataChanges = false;
+    fixture.detectChanges();
+    const viewLastBU = queryByText('Data changes');
+    expect(viewLastBU).toBeFalsy();
+  });
+
+  it('should not render links with false flags passed, but should render the other links', async () => {
+    const { component, fixture, queryByText } = await setup(true);
+
+    component.showAboutBulkUpload = false;
+    component.showDataChanges = false;
+    fixture.detectChanges();
+
+    expect(queryByText('About bulk upload')).toBeFalsy();
+    expect(queryByText('Data changes')).toBeFalsy();
+    expect(queryByText('Get help with bulk uploads')).toBeTruthy();
+    expect(queryByText('View last bulk upload')).toBeTruthy();
+    expect(queryByText('View references')).toBeTruthy();
   });
 });
