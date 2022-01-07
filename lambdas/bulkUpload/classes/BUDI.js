@@ -9,7 +9,7 @@ let QUALIFICATION_LEVELS_MAPPINGS = null;
 let QUALIFICATIONS_MAPPINGS = null;
 
 class BUDI {
-  static initialize(mappings) {
+  static async initialize(mappings) {
     JOB_ROLES_MAPPINGS = mappings.JOB_ROLES_MAPPINGS;
     CONTRACT_TYPE_MAPPINGS = mappings.CONTRACT_TYPE_MAPPINGS;
     ETHNICITY_MAPPINGS = mappings.ETHNICITY_MAPPINGS;
