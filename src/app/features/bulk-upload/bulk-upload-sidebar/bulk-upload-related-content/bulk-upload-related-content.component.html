@@ -8,11 +8,13 @@
   </li>
   <li>
     <a [routerLink]="['/bulk-upload', '/']">Data changes</a>
-    <img
-      src="/assets/images/flag-orange.svg"
-      alt=""
-      class="govuk-util__vertical-align-top govuk-!-margin-left-1 govuk-!-margin-bottom-3"
-    />
+    <span *ngIf="showFlagBUChanges">
+      <img
+        src="/assets/images/flag-orange.svg"
+        alt=""
+        class="govuk-util__vertical-align-top govuk-!-margin-left-1 govuk-!-margin-bottom-3"
+      />
+    </span>
   </li>
   <li *ngIf="showAboutBulkUpload" class="govuk-!-margin-bottom-3">
     <a [routerLink]="['/bulk-upload', 'about-bulk-upload']">About bulk upload</a>
