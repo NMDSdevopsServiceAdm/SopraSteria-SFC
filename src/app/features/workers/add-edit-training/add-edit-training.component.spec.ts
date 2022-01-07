@@ -7,10 +7,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -42,7 +40,6 @@ describe('AddEditTrainingComponent', () => {
         ErrorSummaryService,
         { provide: TrainingService, useClass: MockTrainingService },
         { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     });
 
@@ -118,7 +115,6 @@ describe('AddEditTrainingComponent', () => {
     it('should render the delete button when editing training', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.newTrainingAndQualificationsRecordsFlag = true;
       fixture.detectChanges();
 
       expect(getByText('Delete')).toBeTruthy();
@@ -127,7 +123,6 @@ describe('AddEditTrainingComponent', () => {
     it('should not render the delete button when there is no training id', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.newTrainingAndQualificationsRecordsFlag = true;
       component.trainingRecordId = null;
       fixture.detectChanges();
 

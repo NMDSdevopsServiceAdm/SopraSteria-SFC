@@ -52,11 +52,7 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
-    if (flagName === 'newTrainingAndQualificationsRecords') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
+
     if (flagName === 'benefitsBundle') {
       return new Promise((resolve) => {
         return resolve(false);
