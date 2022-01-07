@@ -14,6 +14,9 @@ const getInactiveWorkplaces = async (_req, res) => {
 
     return res.json({
       inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
+      workplacesForDeleting: inactiveWorkplaces.filter((workplace) => {
+        return moment(workplace.lastUpdated) <= moment().subtract(2, 'years').endOf('month').endOf('days');
+      }),
     });
   } catch (err) {
     console.error(err);
@@ -54,7 +57,7 @@ const createCampaign = async (req, res) => {
     await models.EmailCampaignHistory.bulkCreate(history);
 
     totalInactiveWorkplaces.map((inactiveWorkplace, index) => {
-      return sendEmail.sendEmail(inactiveWorkplace, index)
+      return sendEmail.sendEmail(inactiveWorkplace, index);
     });
 
     return res.json({

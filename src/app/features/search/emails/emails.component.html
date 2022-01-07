@@ -30,6 +30,23 @@
       </div>
     </div>
 
+    <div class="govuk-!-margin-top-6" *ngIf="workplacesForDeleting">
+      <h2>Workplaces that have been inactive for more than 2 years</h2>
+      <dl class="govuk-list--definition">
+        <dt>Total number of workplaces to be deleted</dt>
+        <dd>
+          {{ workplacesForDeleting.length | number }}
+        </dd>
+      </dl>
+      <button
+        class="govuk-button govuk-button--warning govuk-!-margin-top-6"
+        type="button"
+        (click)="deleteWorkplaces($event)"
+      >
+        Delete Workplaces
+      </button>
+    </div>
+
     <div data-testid="emailCampaignHistory">
       <h2>History</h2>
       <table class="govuk-table" *ngIf="history.length > 0; else noHistory">

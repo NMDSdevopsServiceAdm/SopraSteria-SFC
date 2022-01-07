@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
@@ -11,16 +11,15 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import {
-  SendEmailsConfirmationDialogComponent,
-} from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import { SendEmailsConfirmationDialogComponent } from './dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-emails',
   templateUrl: './emails.component.html',
 })
-export class EmailsComponent implements OnDestroy {
+export class EmailsComponent implements OnInit, OnDestroy {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public workplacesForDeleting = this.route.snapshot.data.inactiveWorkplaces.workplacesForDeleting;
   public totalEmails = 0;
   public emailGroup = '';
   public selectedTemplateId = '';
@@ -39,6 +38,12 @@ export class EmailsComponent implements OnDestroy {
     private decimalPipe: DecimalPipe,
     private reportsService: ReportService,
   ) {}
+
+  ngOnInit(): void {
+    console.log('********');
+    console.log('Here');
+    console.log(this.route.snapshot.data.inactiveWorkplaces);
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -180,5 +185,9 @@ export class EmailsComponent implements OnDestroy {
     const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
 
     saveAs(blob, filename);
+  }
+
+  public deleteWorkplaces(event: Event): void {
+    console.log('deleting workplace');
   }
 }
