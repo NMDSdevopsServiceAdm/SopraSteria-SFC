@@ -26,7 +26,7 @@ describe('AboutBulkUploadComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, getByText };
+    return { fixture, component, getByText };
   };
 
   it('should render a AboutBulkUploadComponent', async () => {
@@ -43,14 +43,20 @@ describe('AboutBulkUploadComponent', () => {
   });
 
   it('should render related contents and download codes and guidance links', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Related content')).toBeTruthy();
-    expect(getByText('Download codes and guidance')).toBeTruthy();
+    const { fixture, getByText } = await setup();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(getByText('Related content')).toBeTruthy();
+      expect(getByText('Download codes and guidance')).toBeTruthy();
+    });
   });
 
   it('should render get help with bulk uploads and data changes links under the related contents', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Get help with bulk uploads')).toBeTruthy();
-    expect(getByText('Data changes')).toBeTruthy();
+    const { fixture, getByText } = await setup();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(getByText('Get help with bulk uploads')).toBeTruthy();
+      expect(getByText('Data changes')).toBeTruthy();
+    });
   });
 });
