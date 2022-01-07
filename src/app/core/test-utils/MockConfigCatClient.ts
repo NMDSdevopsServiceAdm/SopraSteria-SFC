@@ -70,6 +70,11 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
+    if (flagName === 'bulkUploadHelp') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
 
     return new Promise((resolve) => {
       return resolve(defaultSetting);
