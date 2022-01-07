@@ -10,7 +10,11 @@ const validateWorker = (event) => {
 
   BUDI.initialize(mappings);
 
-  console.log(runValidator(thisLine, currentLineNumber, existingWorker));
+  const validate = runValidator(thisLine, currentLineNumber, existingWorker);
+
+  console.log(validate);
+
+  return validate;
 };
 
 const runValidator = (thisLine, currentLineNumber, existingWorker) => {
