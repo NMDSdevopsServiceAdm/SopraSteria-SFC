@@ -704,6 +704,12 @@ module.exports = function (sequelize, DataTypes) {
         default: '90',
         field: 'ExpiresSoonAlertDate',
       },
+      showFlagForBUDataChange: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ShowFlagForBUDataChange',
+      },
     },
     {
       defaultScope: {
