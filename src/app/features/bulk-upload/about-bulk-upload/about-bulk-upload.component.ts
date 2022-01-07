@@ -13,7 +13,7 @@ export class AboutBulkUploadComponent implements OnInit {
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    protected router: Router,
+    private router: Router,
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
