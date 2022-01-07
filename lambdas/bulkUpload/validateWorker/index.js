@@ -4,9 +4,7 @@ const { BUDI } = require('../classes/BUDI');
 const { WorkerCsvValidator } = require('../classes/workerCSVValidator');
 
 const validateWorker = async (event) => {
-  const eventBody = JSON.parse(event.body);
-
-  const { thisLine, currentLineNumber, existingWorker, mappings } = eventBody;
+  const { thisLine, currentLineNumber, existingWorker, mappings } = event;
 
   await BUDI.initialize(mappings);
 

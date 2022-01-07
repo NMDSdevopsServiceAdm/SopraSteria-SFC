@@ -1,8 +1,7 @@
 'use strict';
 const { Worker } = require('../../../../../models/classes/worker');
 const { Qualification } = require('../../../../../models/classes/qualification');
-
-const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
+const { validateWorkerLambda } = require('../../lambda');
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
   const csvWorkerSchemaErrors = [];
@@ -35,11 +34,8 @@ const validateWorkerCsvLine = async (
 ) => {
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
 
-  const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } = runValidator(
-    thisLine,
-    currentLineNumber,
-    existingWorker,
-  );
+  const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } =
+    await validateWorkerLambda(thisLine, currentLineNumber, existingWorker);
 
   try {
     const thisApiWorker = new Worker();
@@ -61,25 +57,6 @@ const validateWorkerCsvLine = async (
   csvWorkerSchemaErrors.push(...validationErrors);
 
   myJSONWorkers.push(thisWorkerAsJSON);
-};
-
-const runValidator = (thisLine, currentLineNumber, existingWorker) => {
-  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
-
-  lineValidator.validate();
-  lineValidator.transform();
-
-  const thisWorkerAsAPI = lineValidator.toAPI();
-  const thisWorkerQualificationsAsAPI = lineValidator.toQualificationAPI();
-  const thisWorkerAsJSON = lineValidator.toJSON(true);
-  const validationErrors = lineValidator.validationErrors;
-
-  return {
-    thisWorkerAsAPI,
-    thisWorkerQualificationsAsAPI,
-    thisWorkerAsJSON,
-    validationErrors,
-  };
 };
 
 const findExistingWorker = (thisLine, myCurrentEstablishments) => {

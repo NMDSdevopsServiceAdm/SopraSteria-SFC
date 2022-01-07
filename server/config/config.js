@@ -310,6 +310,13 @@ const config = convict({
         default: 300,
       },
     },
+    lambda: {
+      stage: {
+        doc: 'The name of the stage for bulk upload validations',
+        format: String,
+        default: 'dev',
+      },
+    },
   },
   locks: {
     region: {
