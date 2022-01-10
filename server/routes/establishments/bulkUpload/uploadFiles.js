@@ -1,14 +1,14 @@
 'use strict';
 const csv = require('csvtojson');
+
 const config = require('../../../config/config');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
-
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
 const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
+const { isWorkerFile } = require('./whichFile');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -173,7 +173,7 @@ const uploadedPut = async (req, res) => {
     allContent.forEach((myfile) => {
       if (EstablishmentCsvValidator.isContent(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Establishment'));
-      } else if (WorkerCsvValidator.isContent(myfile.data)) {
+      } else if (isWorkerFile(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Worker'));
       } else if (TrainingCsvValidator.isContent(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Training'));

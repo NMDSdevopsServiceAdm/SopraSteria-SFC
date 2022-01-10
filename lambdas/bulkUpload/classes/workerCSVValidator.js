@@ -2861,13 +2861,6 @@ class WorkerCsvValidator {
     return this._validateHeaders(headers);
   }
 
-  static isContent(data) {
-    const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,/;
-
-    return contentRegex1.test(data.substring(0, 50)) || contentRegex2.test(data.substring(0, 50));
-  }
-
   _validateHeaders(headers) {
     // console.log("WA DEBUF - _validateHeaders -  S: ", headers)
     // console.log("WA DEBUF - _validateHeaders - T1: ", _headers_v1)
