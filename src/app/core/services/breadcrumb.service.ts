@@ -22,7 +22,7 @@ import {
   benchmarksSubsidiariesTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_subsidiaries';
 import { benefitsBundleJourney } from '@core/breadcrumb/journey.benefits-bundle';
-import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
+import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
@@ -178,6 +178,11 @@ export class BreadcrumbService {
         routes = bulkUploadJourney;
         break;
       }
+      case JourneyType.BULK_UPLOAD_HELP: {
+        routes = bulkUploadHelpJourney;
+        break;
+      }
+
       case JourneyType.ACCOUNT: {
         routes = accountJourney;
         break;
