@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
-import { BulkUploadTopTipsTitlesResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-titles.resolver';
+import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -87,7 +87,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingWorkplacesReferencesResolver,
     LastBulkUploadResolver,
     BulkUploadErrorsResolver,
-    BulkUploadTopTipsTitlesResolver,
+    BulkUploadTopTipsListResolver,
   ],
 })
 export class BulkUploadModule {}

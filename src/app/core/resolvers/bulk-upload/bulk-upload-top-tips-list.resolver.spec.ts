@@ -3,17 +3,17 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 
-import { BulkUploadTopTipsTitlesResolver } from './bulk-upload-top-tips-titles.resolver';
+import { BulkUploadTopTipsListResolver } from './bulk-upload-top-tips-list.resolver';
 
-fdescribe('BulkUploadTopTipsTitlesResolver', () => {
-  let resolver: BulkUploadTopTipsTitlesResolver;
+describe('BulkUploadTopTipsListResolver', () => {
+  let resolver: BulkUploadTopTipsListResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [BulkUploadTopTipsTitlesResolver],
+      providers: [BulkUploadTopTipsListResolver],
     });
-    resolver = TestBed.inject(BulkUploadTopTipsTitlesResolver);
+    resolver = TestBed.inject(BulkUploadTopTipsListResolver);
   });
 
   it('should be created', () => {

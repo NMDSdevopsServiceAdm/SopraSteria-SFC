@@ -5,7 +5,8 @@ import { BulkUploadStartGuard } from '@core/guards/bulk-upload/bulk-upload-start
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
-import { BulkUploadTopTipsTitlesResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-titles.resolver';
+import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
+import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -22,6 +23,7 @@ import { StaffReferencesComponent } from './bulk-upload-references/staff-referen
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
+import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 
 const routes: Routes = [
   {
@@ -37,9 +39,23 @@ const routes: Routes = [
   },
   {
     path: 'get-help',
-    component: BulkUploadHelpMainPageComponent,
-    data: { title: 'Bulk upload get help main page' },
-    resolve: { topTipTitles: BulkUploadTopTipsTitlesResolver },
+    children: [
+      {
+        path: '',
+        component: BulkUploadHelpMainPageComponent,
+        data: { title: 'Bulk upload get help main page' },
+        resolve: { topTipsList: BulkUploadTopTipsListResolver },
+      },
+      {
+        path: ':slug',
+        component: BulkUploadTopTipPageComponent,
+        data: { title: 'Top tip' },
+        resolve: {
+          topTip: BulkUploadTopTipResolver,
+          topTipsList: BulkUploadTopTipsListResolver,
+        },
+      },
+    ],
   },
   {
     path: 'about-bulk-upload',

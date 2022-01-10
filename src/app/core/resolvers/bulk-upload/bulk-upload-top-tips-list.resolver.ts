@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class BulkUploadTopTipsTitlesResolver implements Resolve<any> {
+export class BulkUploadTopTipsListResolver implements Resolve<any> {
   constructor(private bulkUploadTopTipsService: BulkUploadTopTipsService) {}
 
   resolve(): Observable<null | any> {
