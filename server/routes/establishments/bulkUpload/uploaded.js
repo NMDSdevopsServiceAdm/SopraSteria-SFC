@@ -3,7 +3,8 @@ const csv = require('csvtojson');
 const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
+const WorkerCsvValidator = require('../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 
 const { s3, Bucket, saveResponse, uploadJSONDataToS3, downloadContent, purgeBulkUploadS3Objects } = require('./s3');

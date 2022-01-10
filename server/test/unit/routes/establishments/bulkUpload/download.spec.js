@@ -11,7 +11,9 @@ const { apiTrainingBuilder } = require('../../../../integration/utils/training')
 const mockEstablishment = require('../../../mockdata/establishment');
 const mockWorker = require('../../../mockdata/workers');
 const mockTraining = require('../../../mockdata/training');
-const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
+const WorkerCsvValidator =
+  require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+
 const WorkerCSV = require('../../../../../routes/establishments/bulkUpload/download/workerCSV');
 
 describe('download', () => {

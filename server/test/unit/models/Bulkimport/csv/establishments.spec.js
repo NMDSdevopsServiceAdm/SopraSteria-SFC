@@ -4,7 +4,10 @@ const buildEstablishmentCSV = require('../../../../factories/establishment/csv')
 const buildWorkerCSV = require('../../../../factories/worker/csv');
 const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments').Establishment;
 const OGEstablishment = require('../../../../../models/classes/establishment').Establishment;
-const workerCsv = require('../../../../../models/BulkImport/csv/workers');
+const WorkerCsvValidator =
+  require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+const mappings = require('../../../../../models/BulkImport/BUDI').mappings;
+
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
@@ -37,7 +40,7 @@ const validateAPIObject = (establishmentRow) => {
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-  const worker = new workerCsv.Worker(currentLine, lineNumber, allCurrentEstablishments);
+  const worker = new WorkerCsvValidator(currentLine, lineNumber, allCurrentEstablishments, mappings);
   worker.validate();
 
   return worker.toJSON(true);
