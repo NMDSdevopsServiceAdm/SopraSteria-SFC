@@ -11,23 +11,19 @@ module.exports = {
       return Promise.all([
         await queryInterface.addColumn(
           table,
-          'ShowFlagForBUDataChange',
+          'DataChangesLastUpdated',
           {
-            type: Sequelize.DataTypes.BOOLEAN,
-            defaultValue: false,
+            type: Sequelize.DataTypes.DATE,
           },
           { transaction },
         ),
-        await queryInterface.sequelize.query('UPDATE cqc."Establishment" SET "ShowFlagForBUDataChange" = true;', {
-          transaction,
-        }),
       ]);
     });
   },
 
   down: (queryInterface) => {
     return queryInterface.sequelize.query(
-      'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "ShowFlagForBUDataChange"; ',
+      'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "DataChangesLastUpdated"; ',
     );
   },
 };
