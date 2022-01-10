@@ -6,7 +6,6 @@ const s3 = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
-const { WorkersFileHeaders } = require('../../../models/BulkImport/csv/workers');
 const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training');
 
 const excelJS = require('exceljs');
@@ -21,6 +20,14 @@ const reportHeaders = [
   { header: 'Line number', key: 'lineNumber' },
   { header: 'Error message', key: 'errorMessage' },
 ];
+
+const WorkersFileHeaders =
+  'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
+  'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
+  'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
+  'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
+  'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
+  'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
 
 let allFileHeaders = [];
 
