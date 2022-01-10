@@ -1,18 +1,15 @@
 'use strict';
 
-const { BUDI } = require('../classes/BUDI');
 const { WorkerCsvValidator } = require('../classes/workerCSVValidator');
 
 const validateWorker = async (event) => {
   const { thisLine, currentLineNumber, existingWorker, mappings } = event;
 
-  await BUDI.initialize(mappings);
-
-  return await runValidator(thisLine, currentLineNumber, existingWorker);
+  return await runValidator(thisLine, currentLineNumber, existingWorker, mappings);
 };
 
-const runValidator = async (thisLine, currentLineNumber, existingWorker) => {
-  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker);
+const runValidator = async (thisLine, currentLineNumber, existingWorker, mappings) => {
+  const lineValidator = new WorkerCsvValidator(thisLine, currentLineNumber, existingWorker, mappings);
 
   lineValidator.validate();
   lineValidator.transform();

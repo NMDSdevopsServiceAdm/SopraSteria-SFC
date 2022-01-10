@@ -23,7 +23,7 @@ const _headers_v1_without_chgUnique =
 const DEFAULT_NUMBER_OF_QUALS = 3;
 
 class WorkerCsvValidator {
-  constructor(currentLine, lineNumber, currentWorker) {
+  constructor(currentLine, lineNumber, currentWorker, mappings) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._currentWorker = currentWorker;
@@ -90,6 +90,8 @@ class WorkerCsvValidator {
     // array of qualification records for this worker
     this._qualifications = null;
     this._amhp = null;
+
+    this.BUDI = new BUDI(mappings);
   }
 
   static get HEADERS_ERROR() {
@@ -2533,7 +2535,7 @@ class WorkerCsvValidator {
   // transform related
   _transformContractType() {
     if (this._contractType) {
-      const mappedType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+      const mappedType = this.BUDI.contractType(this.BUDI.TO_ASC, this._contractType);
       if (mappedType === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -2554,7 +2556,7 @@ class WorkerCsvValidator {
   // transform related
   _transformEthnicity() {
     if (this._ethnicity) {
-      const myValidatedEthnicity = BUDI.ethnicity(BUDI.TO_ASC, this._ethnicity);
+      const myValidatedEthnicity = this.BUDI.ethnicity(this.BUDI.TO_ASC, this._ethnicity);
 
       if (!myValidatedEthnicity) {
         this._validationErrors.push({
@@ -2579,7 +2581,7 @@ class WorkerCsvValidator {
       if (this._recSource === 16) {
         this._recSource = 'No';
       } else {
-        const myValidatedRecruitment = BUDI.recruitment(BUDI.TO_ASC, this._recSource);
+        const myValidatedRecruitment = this.BUDI.recruitment(this.BUDI.TO_ASC, this._recSource);
 
         if (!myValidatedRecruitment) {
           this._validationErrors.push({
@@ -2613,7 +2615,7 @@ class WorkerCsvValidator {
         column: 'MAINJOBROLE',
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
-      const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
+      const mappedRole = this.BUDI.jobRoles(this.BUDI.TO_ASC, this._mainJobRole);
 
       if (mappedRole === null) {
         this._validationErrors.push({
@@ -2637,7 +2639,7 @@ class WorkerCsvValidator {
       const mappedJobs = [];
 
       this._otherJobs.forEach((thisJob) => {
-        const myValidatedJobRole = thisJob !== 0 ? BUDI.jobRoles(BUDI.TO_ASC, thisJob) : 0;
+        const myValidatedJobRole = thisJob !== 0 ? this.BUDI.jobRoles(this.BUDI.TO_ASC, thisJob) : 0;
 
         if (myValidatedJobRole !== 0 && !myValidatedJobRole) {
           this._validationErrors.push({
@@ -2697,7 +2699,7 @@ class WorkerCsvValidator {
     if (this._nursingSpecialist && Array.isArray(this._nursingSpecialist)) {
       const validatedSpecialisms = [];
       for (let specialism of this._nursingSpecialist) {
-        const validatedSpecialism = BUDI.nursingSpecialist(BUDI.TO_ASC, specialism);
+        const validatedSpecialism = this.BUDI.nursingSpecialist(this.BUDI.TO_ASC, specialism);
         if (!validatedSpecialism) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
@@ -2727,7 +2729,7 @@ class WorkerCsvValidator {
       } else if (this._nationality === 999) {
         this._nationality = 'Other';
       } else {
-        const myValidatedNationality = BUDI.nationality(BUDI.TO_ASC, this._nationality);
+        const myValidatedNationality = this.BUDI.nationality(this.BUDI.TO_ASC, this._nationality);
 
         if (!myValidatedNationality) {
           this._validationErrors.push({
@@ -2757,7 +2759,7 @@ class WorkerCsvValidator {
       } else if (this._countryOfBirth === 999) {
         this._countryOfBirth = 'Other';
       } else {
-        const myValidatedCountry = BUDI.country(BUDI.TO_ASC, this._countryOfBirth);
+        const myValidatedCountry = this.BUDI.country(this.BUDI.TO_ASC, this._countryOfBirth);
 
         if (!myValidatedCountry) {
           this._validationErrors.push({
@@ -2779,7 +2781,10 @@ class WorkerCsvValidator {
 
   _transformSocialCareQualificationLevel() {
     if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
+      const myValidatedQualificationLevel = this.BUDI.qualificationLevels(
+        this.BUDI.TO_ASC,
+        this._socialCareQualificationlevel,
+      );
 
       if (!myValidatedQualificationLevel) {
         this._validationErrors.push({
@@ -2801,8 +2806,8 @@ class WorkerCsvValidator {
   _transformNonSocialCareQualificationLevel() {
     if (this._nonSocialCareQualificationlevel || this._nonSocialCareQualificationlevel === 0) {
       // ASC WDS country of birth is a split enum/index
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(
-        BUDI.TO_ASC,
+      const myValidatedQualificationLevel = this.BUDI.qualificationLevels(
+        this.BUDI.TO_ASC,
         this._nonSocialCareQualificationlevel,
       );
 
@@ -2828,7 +2833,7 @@ class WorkerCsvValidator {
       const mappedQualifications = [];
 
       this._qualifications.forEach((thisQualification) => {
-        const myValidatedQualification = BUDI.qualifications(BUDI.TO_ASC, thisQualification.id);
+        const myValidatedQualification = this.BUDI.qualifications(this.BUDI.TO_ASC, thisQualification.id);
 
         if (!myValidatedQualification) {
           this._validationErrors.push({
@@ -3165,7 +3170,7 @@ class WorkerCsvValidator {
     };
 
     if (this._nursingSpecialist) {
-      changeProperties.nurseSpecialisms = BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
+      changeProperties.nurseSpecialisms = this.BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
     }
 
     if (this._fluVac) {
