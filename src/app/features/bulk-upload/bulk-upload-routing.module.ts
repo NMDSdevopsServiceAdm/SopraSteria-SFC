@@ -5,6 +5,7 @@ import { BulkUploadStartGuard } from '@core/guards/bulk-upload/bulk-upload-start
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
+import { BulkUploadTopTipsTitlesResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-titles.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -38,6 +39,7 @@ const routes: Routes = [
     path: 'get-help',
     component: BulkUploadHelpMainPageComponent,
     data: { title: 'Bulk upload get help main page' },
+    resolve: { topTipTitles: BulkUploadTopTipsTitlesResolver },
   },
   {
     path: 'about-bulk-upload',
