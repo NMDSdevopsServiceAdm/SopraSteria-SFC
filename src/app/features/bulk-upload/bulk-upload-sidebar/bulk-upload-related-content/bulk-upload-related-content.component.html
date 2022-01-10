@@ -1,12 +1,12 @@
 <h2 class="govuk-heading-s">Related content</h2>
 <ul class="govuk-list">
-  <li class="govuk-!-margin-bottom-3">
+  <li *ngIf="showGetHelpWithBulkUploads" class="govuk-!-margin-bottom-3">
     <a [routerLink]="['/bulk-upload', 'get-help']">Get help with bulk uploads</a>
   </li>
   <li *ngIf="showViewReferences" class="govuk-!-margin-bottom-3">
     <a [routerLink]="['/bulk-upload', 'workplace-references']">View references</a>
   </li>
-  <li>
+  <li *ngIf="showDataChanges">
     <a [routerLink]="['/bulk-upload', '/']">Data changes</a>
     <span *ngIf="showFlagBUChanges">
       <img
