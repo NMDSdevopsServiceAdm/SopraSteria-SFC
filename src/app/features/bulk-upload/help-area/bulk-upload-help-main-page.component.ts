@@ -16,6 +16,6 @@ export class BulkUploadHelpMainPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.topTipsList = this.route.snapshot.data.topTipsList.data;
-    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
+    this.breadcrumbService.show(JourneyType.BULK_UPLOAD_HELP);
   }
 }

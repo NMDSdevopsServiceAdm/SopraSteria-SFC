@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -43,9 +42,8 @@ describe('BulkUploadHelpMainPageComponent', () => {
       declarations: [BulkUploadHelpMainPageComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
     const component = fixture.componentInstance;
-    const router = TestBed.inject(Router);
 
-    return { component, getByText, router };
+    return { component, getByText };
   };
 
   it('should render a BulkUploadHelpMainPageComponent', async () => {
