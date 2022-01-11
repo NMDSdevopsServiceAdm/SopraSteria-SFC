@@ -15,9 +15,7 @@ export class BulkUploadTopTipsService {
   public getTopTipsTitles(): Observable<BulkUploadTopTips> {
     let params = new HttpParams();
 
-    // params = params.set('filter', JSON.stringify(slugFilter));
-    // params = params.set('limit', '1');
-    params = params.set('fields', 'title,slug');
+    params = params.set('fields', 'title,slug,link_title');
 
     return this.http.get<BulkUploadTopTips>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
@@ -26,7 +24,7 @@ export class BulkUploadTopTipsService {
     let params = new HttpParams();
 
     const slugFilter = {
-      slug: { _eq: 'add-unique-references' },
+      slug: { _eq: topTipSlug },
     };
 
     params = params.set('filter', JSON.stringify(slugFilter));
