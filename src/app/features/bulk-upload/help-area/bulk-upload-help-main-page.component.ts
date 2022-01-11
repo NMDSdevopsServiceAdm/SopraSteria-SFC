@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { BulkUploadTopTip } from '@core/model/bulk-upload-top-tips.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
@@ -8,9 +10,12 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
   styleUrls: ['./bulk-upload-help-main-page.component.scss'],
 })
 export class BulkUploadHelpMainPageComponent implements OnInit {
-  constructor(private breadcrumbService: BreadcrumbService) {}
+  public topTipsList: BulkUploadTopTip[];
+
+  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit(): void {
+    this.topTipsList = this.route.snapshot.data.topTipsList.data;
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
   }
 }

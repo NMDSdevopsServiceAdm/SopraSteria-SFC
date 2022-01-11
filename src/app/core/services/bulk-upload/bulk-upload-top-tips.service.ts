@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class BulkUploadTopTipsService {
-  private path = 'bulkuploadtoptips';
+  private path = 'bulk_upload_top_tips';
 
   constructor(private http: HttpClient) {}
 
