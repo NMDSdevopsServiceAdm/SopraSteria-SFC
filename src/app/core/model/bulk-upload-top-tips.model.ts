@@ -7,6 +7,7 @@ export interface BulkUploadTopTip {
   content?: string;
   title?: string;
   slug?: string;
+  link_title?: string;
 }
 
 export interface BulkUploadTopTips {
