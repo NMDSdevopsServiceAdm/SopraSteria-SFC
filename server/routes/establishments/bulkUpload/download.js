@@ -3,7 +3,7 @@ const config = require('../../../config/config');
 const models = require('../../../models');
 
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+const { headers } = require('../bulkUpload/validate/headers/worker');
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 const WorkerCSV = require('./download/workerCSV');
 
@@ -27,7 +27,7 @@ const workerCsv = async (establishments, responseSend) => {
     });
   });
 
-  responseSend(WorkerCsvValidator.headers(maxQualifications));
+  responseSend(headers(maxQualifications));
 
   establishments.map((establishment) =>
     establishment.workers.map((worker) =>

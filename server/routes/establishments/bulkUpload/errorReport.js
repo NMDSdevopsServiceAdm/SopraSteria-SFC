@@ -1,5 +1,8 @@
 'use strict';
 
+const excelJS = require('exceljs');
+const moment = require('moment');
+
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 const s3 = require('./s3');
@@ -7,10 +10,8 @@ const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
 const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training');
-
-const excelJS = require('exceljs');
-const moment = require('moment');
 const excelUtils = require('../../../utils/excelUtils');
+const { workerHeadersWithCHGUNIQUEWRKID } = require('./validate/headers/worker');
 
 const reportHeaders = [
   { header: 'Type', key: 'type' },
@@ -20,14 +21,6 @@ const reportHeaders = [
   { header: 'Line number', key: 'lineNumber' },
   { header: 'Error message', key: 'errorMessage' },
 ];
-
-const WorkersFileHeaders =
-  'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
-  'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
-  'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
-  'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
-  'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
-  'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
 
 let allFileHeaders = [];
 
@@ -81,9 +74,9 @@ const createTableHeader = (currentWorksheet) => {
   }
 };
 
-const generateHeaderArray = (establishmentFileHeaders, workersFileHeaders, trainingFileHeaders) => {
+const generateHeaderArray = (establishmentFileHeaders, trainingFileHeaders) => {
   allFileHeaders = allFileHeaders.concat(establishmentFileHeaders.split(','));
-  allFileHeaders = allFileHeaders.concat(workersFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(workerHeadersWithCHGUNIQUEWRKID.split(','));
   allFileHeaders = allFileHeaders.concat(trainingFileHeaders.split(','));
 };
 
@@ -121,7 +114,7 @@ const generateBUReport = async (req, res) => {
     return res.status(500).end();
   }
 
-  generateHeaderArray(EstablishmentFileHeaders, WorkersFileHeaders, TrainingFileHeaders);
+  generateHeaderArray(EstablishmentFileHeaders, TrainingFileHeaders);
   const data = await getErrorReport(req.establishmentId);
   let workbook = new excelJS.Workbook();
 

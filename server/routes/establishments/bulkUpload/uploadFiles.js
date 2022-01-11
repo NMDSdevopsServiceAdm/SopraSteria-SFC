@@ -9,6 +9,7 @@ const { buStates } = require('./states');
 const Bucket = S3.Bucket;
 const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
 const { isWorkerFile } = require('./whichFile');
+const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -29,8 +30,13 @@ const updateMetaData = async (file, username, establishmentId) => {
   const firstRow = 0;
   const firstLineNumber = 1;
 
-  const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
-  const passedCheck = validator.preValidate(file.header);
+  let passedCheck;
+  if (file.type === 'Worker') {
+    passedCheck = validateWorkerHeaders(file.header);
+  } else {
+    const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
+    passedCheck = validator.preValidate(file.header);
+  }
 
   if (!passedCheck) {
     file.metaData.fileType = null;

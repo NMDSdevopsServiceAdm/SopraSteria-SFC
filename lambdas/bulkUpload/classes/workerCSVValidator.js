@@ -4,24 +4,6 @@ const get = require('lodash/get');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
-const _headers_v1 =
-  'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
-  'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
-  'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
-  'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
-  'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
-  'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
-
-const _headers_v1_without_chgUnique =
-  'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
-  'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
-  'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
-  'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
-  'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
-  'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
-
-const DEFAULT_NUMBER_OF_QUALS = 3;
-
 class WorkerCsvValidator {
   constructor(currentLine, lineNumber, currentWorker, mappings) {
     this._currentLine = currentLine;
@@ -92,10 +74,6 @@ class WorkerCsvValidator {
     this._amhp = null;
 
     this.BUDI = new BUDI(mappings);
-  }
-
-  static get HEADERS_ERROR() {
-    return 999;
   }
 
   static get LOCAL_ID_ERROR() {
@@ -371,27 +349,6 @@ class WorkerCsvValidator {
   }
   static get QUAL_ACH03_NOTES_WARNING() {
     return 5560;
-  }
-
-  static headers(MAX_QUALS) {
-    const extraHeaders = [];
-
-    for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
-      const currentHeader = `${additionalHeaders + DEFAULT_NUMBER_OF_QUALS + 1}`;
-      extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
-      extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
-    }
-
-    // default headers includes three quals
-    if (extraHeaders.length !== 0) {
-      return _headers_v1_without_chgUnique + ',' + extraHeaders.join(',');
-    }
-
-    return _headers_v1_without_chgUnique;
-  }
-
-  headers(MAX_QUALS) {
-    return WorkerCsvValidator.headers(MAX_QUALS);
   }
 
   get lineNumber() {
@@ -2855,77 +2812,6 @@ class WorkerCsvValidator {
 
       this._qualifications = mappedQualifications;
     }
-  }
-
-  preValidate(headers) {
-    return this._validateHeaders(headers);
-  }
-
-  _validateHeaders(headers) {
-    // console.log("WA DEBUF - _validateHeaders -  S: ", headers)
-    // console.log("WA DEBUF - _validateHeaders - T1: ", _headers_v1)
-    // console.log("WA DEBUF - _validateHeaders - T2: ", _headers_v1_without_chgUnique)
-
-    // only run once for first line, so check _lineNumber
-    // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
-
-    // worker CSV can include more than the default three qualification sets of columns
-    // first compare the default headers (up to and including three quals)
-
-    const matchesWithChgUnique = headers.startsWith(_headers_v1_without_chgUnique);
-    const matchesWithoutChgUnique = headers.startsWith(_headers_v1);
-
-    if (!matchesWithChgUnique && !matchesWithoutChgUnique) {
-      this._validationErrors.push({
-        worker: null,
-        name: null,
-        lineNumber: 1,
-        errCode: WorkerCsvValidator.HEADERS_ERROR,
-        errType: 'HEADERS_ERROR',
-        error: `Worker headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
-        source: headers,
-        column: '',
-      });
-      return false;
-    }
-
-    // gets this far having passed the default set of headers; now check the qualification headers
-    const additionalQualsHeader = matchesWithChgUnique
-      ? headers.slice(_headers_v1_without_chgUnique.length)
-      : headers.slice(_headers_v1.length);
-    let remainingHeadersValid = true; // assume success
-    if (additionalQualsHeader.length > 0) {
-      // there are more than the default three qualifications, so validate the remaining headers (noting that the first character will be a comma)
-      const remainingHeaders = additionalQualsHeader.slice(1).split(',');
-
-      // loop two by two
-      let currentIndex = 4;
-      for (let currentHeader = 0; currentHeader < remainingHeaders.length; currentHeader += 2) {
-        const currentHeaderIndex = `${currentIndex}`.padStart(2, '0');
-
-        if (
-          !(remainingHeaders[currentHeader] && remainingHeaders[currentHeader] === `QUALACH${currentHeaderIndex}`) ||
-          !(
-            remainingHeaders[currentHeader + 1] &&
-            remainingHeaders[currentHeader + 1] === `QUALACH${currentHeaderIndex}NOTES`
-          )
-        ) {
-          remainingHeadersValid = false;
-          break;
-        }
-        currentIndex++;
-      }
-    }
-
-    if (!remainingHeadersValid) {
-      console.error(
-        'CSV Worker::_validateHeaders: failed to validate additional qualification headers: ',
-        additionalQualsHeader,
-      );
-      return false;
-    }
-
-    return true;
   }
 
   // returns true on success, false is any attribute of Worker fails
