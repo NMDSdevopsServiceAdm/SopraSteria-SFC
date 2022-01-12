@@ -27,6 +27,7 @@ import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bu
 import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
+import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { ErrorDetailsTableComponent } from './error-page/error-details-table/error-details-table.component';
@@ -76,6 +77,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
     BulkUploadHelpMainPageComponent,
+    BulkUploadDataChangeComponent,
   ],
   providers: [
     DialogService,

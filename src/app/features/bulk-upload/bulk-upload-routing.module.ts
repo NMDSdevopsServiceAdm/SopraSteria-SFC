@@ -19,6 +19,7 @@ import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-uploa
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
 
@@ -38,6 +39,11 @@ const routes: Routes = [
     path: 'get-help',
     component: BulkUploadHelpMainPageComponent,
     data: { title: 'Bulk upload get help main page' },
+  },
+  {
+    path: 'data-change',
+    component: BulkUploadDataChangeComponent,
+    data: { title: 'Bulk upload data change page' },
   },
   {
     path: 'about-bulk-upload',
