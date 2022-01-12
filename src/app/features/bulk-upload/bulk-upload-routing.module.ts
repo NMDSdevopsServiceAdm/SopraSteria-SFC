@@ -12,23 +12,17 @@ import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-wor
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { AboutBulkUploadComponent } from '@features/bulk-upload/about-bulk-upload/about-bulk-upload.component';
-import {
-  MissingStaffReferencesComponent,
-} from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
-import {
-  MissingWorkplaceReferencesComponent,
-} from '@features/bulk-upload/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import { MissingStaffReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
+import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
 import { LastBulkUploadComponent } from '@features/bulk-upload/last-bulk-upload/last-bulk-upload.component';
 
-import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-upload-missing-page.component';
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
-import {
-  WorkplaceReferencesComponent,
-} from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
 import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 
@@ -45,11 +39,6 @@ const routes: Routes = [
     data: { title: 'Start' },
   },
   {
-    path: 'step-by-step-guide',
-    component: BulkUploadFlowchartComponent,
-    data: { title: 'Flowchart ' },
-  },
-  {
     path: 'get-help',
     children: [
       {
@@ -57,6 +46,11 @@ const routes: Routes = [
         component: BulkUploadHelpMainPageComponent,
         data: { title: 'Bulk upload get help main page' },
         resolve: { topTipsList: BulkUploadTopTipsListResolver },
+      },
+      {
+        path: 'step-by-step-guide',
+        component: BulkUploadFlowchartComponent,
+        data: { title: 'Flowchart ' },
       },
       {
         path: ':slug',

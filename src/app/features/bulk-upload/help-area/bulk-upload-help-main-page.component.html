@@ -9,7 +9,9 @@
       <p>Quick and easy help on how to bulk uploads.</p>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-3">
-          <a class="govuk-body" [routerLink]="['/bulk-upload', 'step-by-step-guide']">Step by step bulk upload guide</a>
+          <a class="govuk-body" [routerLink]="['/bulk-upload', 'get-help', 'step-by-step-guide']"
+            >Step by step bulk upload guide</a
+          >
         </li>
         <li class="govuk-!-margin-bottom-3" *ngFor="let topTip of topTipsList">
           <a [routerLink]="['/bulk-upload', 'get-help', topTip.slug]">{{ topTip.title }}</a>
