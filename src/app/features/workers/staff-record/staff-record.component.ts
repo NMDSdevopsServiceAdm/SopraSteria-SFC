@@ -10,7 +10,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -28,8 +27,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
-  public newTrainingAndQualificationsRecordsFlag: boolean;
-  public trainingAndQualsRoute: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -41,7 +38,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -66,13 +62,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
-
-    this.trainingAndQualsRoute = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
   }
 
   ngOnDestroy(): void {

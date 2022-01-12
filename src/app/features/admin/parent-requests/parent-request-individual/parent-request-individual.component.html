@@ -45,7 +45,7 @@
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Username</dt>
+        <dt class="govuk-summary-list__key">Name</dt>
         <dd class="govuk-summary-list__value">
           {{ registration.username }}
         </dd>
@@ -60,10 +60,29 @@
       [notesForm]="notesForm"
       [loggedInUser]="loggedInUser"
     ></app-add-note>
-    <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-grid-column-three-quarters govuk-!-padding-left-0">
       <div class="govuk-button-group">
+        <button
+          class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
+          (click)="approveOrRejectParentRequest(true)"
+        >
+          Approve
+        </button>
+        <button
+          class="
+            govuk-button govuk-button--warning
+            govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6
+          "
+          (click)="approveOrRejectParentRequest(false)"
+        >
+          Reject
+        </button>
         <a [routerLink]="['/sfcadmin', 'parent-requests']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
       </div>
+      <span *ngIf="approvalOrRejectionServerError" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ approvalOrRejectionServerError }}
+      </span>
     </div>
   </div>
 </div>

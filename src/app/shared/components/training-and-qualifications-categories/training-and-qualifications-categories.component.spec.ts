@@ -69,13 +69,12 @@ const trainingCategoryBuilder = build('TrainingCategory', {
 
 describe('TrainingAndQualificationsCategoriesComponent', () => {
   let component: RenderResult<TrainingAndQualificationsCategoriesComponent>;
+  const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+    can: sinon.stub().returns(true),
+  });
 
-  it('should create', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
-    component = await render(TrainingAndQualificationsCategoriesComponent, {
+  async function setup(trainingCategory = [], workplace = null) {
+    const { getByTestId, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
@@ -83,32 +82,25 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
-        trainingCategories: [],
+        trainingCategories: trainingCategory,
       },
     });
-
+    const component = fixture.componentInstance;
+    return {
+      component,
+      getByTestId,
+      fixture,
+    };
+  }
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should show Worker information when clicking the More link', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
     const trainingCategory = trainingCategoryBuilder();
 
-    const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-      componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
-        trainingCategories: [trainingCategory],
-      },
-    });
-
+    const { getByTestId } = await setup([trainingCategory]);
     const container = within(getByTestId('training-category-table'));
 
     fireEvent.click(container.getAllByTestId('more-link')[0]);
@@ -116,10 +108,6 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   });
 
   it('should show an Update link for expired and expiring soon workers when clicking the More link', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
     const trainingCategory = trainingCategoryBuilder({
       overrides: {
         training: [
@@ -131,18 +119,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
         ],
       },
     });
-
-    const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-      componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
-        trainingCategories: [trainingCategory],
-      },
-    });
+    const { getByTestId } = await setup([trainingCategory]);
 
     const container = within(getByTestId('training-category-table'));
 
@@ -151,6 +128,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   });
 
   it('should not display an Update link if you do not have permissions to edit workers', async () => {
+    sinon.restore();
     const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
       can: sinon.stub().returns(false),
     });
@@ -186,10 +164,6 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   });
 
   it('should list by Expired as default', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
     const workplace = establishmentBuilder() as Establishment;
 
     const trainingCategories = [
@@ -241,18 +215,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       }),
     ];
 
-    const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-      componentProperties: {
-        workplace,
-        trainingCategories,
-      },
-    });
-
+    const { fixture } = await setup(trainingCategories, workplace);
     fixture.detectChanges();
 
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
@@ -264,10 +227,6 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(rows[3].innerHTML).toContain('D Category Name');
   });
   it('should change list depending on sort', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
     const workplace = establishmentBuilder() as Establishment;
 
     const trainingCategories = [
@@ -319,17 +278,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       }),
     ];
 
-    const { fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-      componentProperties: {
-        workplace,
-        trainingCategories,
-      },
-    });
+    const { fixture } = await setup(trainingCategories, workplace);
 
     fixture.detectChanges();
     const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingCategory')).nativeElement;

@@ -9,6 +9,8 @@ enum Path {
   MISSING_REFERENCES = '/bulk-upload/missing',
   ERROR_REPORT = '/bulk-upload/error-report',
   START_PAGE = '/bulk-upload/start',
+  GET_HELP = '/bulk-upload/get-help',
+  HOW_TO_GUIDE = '/bulk-upload/get-help/:slug',
 }
 
 export const bulkUploadJourney: JourneyRoute = {
@@ -44,6 +46,27 @@ export const bulkUploadJourney: JourneyRoute = {
             {
               title: 'Staff references',
               path: Path.STAFF_REFERENCES,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const bulkUploadHelpJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Bulk upload',
+      path: Path.BULK_UPLOAD,
+      children: [
+        {
+          title: 'Get help with bulk uploads',
+          path: Path.GET_HELP,
+          children: [
+            {
+              title: `'How to' guides`,
+              path: Path.HOW_TO_GUIDE,
             },
           ],
         },

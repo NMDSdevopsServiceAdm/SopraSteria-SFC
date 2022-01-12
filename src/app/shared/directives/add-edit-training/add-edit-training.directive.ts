@@ -33,7 +33,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public title: string;
   public buttonText: string;
   public showWorkerCount = false;
-  public newTrainingAndQualificationsRecordsFlag: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -52,7 +51,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setupForm();
     this.setTitle();
     this.setButtonText();
-    await this.setFeatureFlag();
     this.setBackLink();
     this.getCategories();
     this.setupFormErrorsMap();
@@ -71,8 +69,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   protected setTitle(): void {}
 
   protected setButtonText(): void {}
-
-  protected async setFeatureFlag(): Promise<void> {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group(

@@ -4,6 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, FilterTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MandatoryTraining, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
+import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -41,6 +42,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public filterTrainingByDefault: string;
   public filterTraining;
   public allTrainings;
+  public returnToRecord: URLStructure;
 
   constructor(
     private alertService: AlertService,
@@ -203,7 +205,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public setReturnRoute(): void {
-    this.workerService.getRoute$.next(this.currentUrl);
+    this.returnToRecord = {
+      url: [this.currentUrl],
+    };
+    this.workerService.setReturnTo(this.returnToRecord);
   }
 
   ngOnDestroy(): void {
