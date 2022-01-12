@@ -73,10 +73,10 @@ const validateAdditionalQualificationsHeaders = (additionalQualsHeaders) => {
       const currentQualNumberWithPrefix = `${currentQualNumber}`.padStart(2, '0');
 
       if (qualificationHeadersIncorrect(remainingHeaders, i, currentQualNumberWithPrefix)) {
-        // console.error(
-        //   'CSV Worker::_validateHeaders: failed to validate additional qualification headers: ',
-        //   additionalQualsHeaders,
-        // );
+        console.error(
+          'CSV Worker::_validateHeaders: failed to validate additional qualification headers: ',
+          additionalQualsHeaders,
+        );
         return false;
       }
     }
@@ -92,8 +92,6 @@ const qualificationHeadersIncorrect = (remainingHeaders, i, currentHeaderIndex) 
 const DEFAULT_NUMBER_OF_QUALS = 3;
 
 const headers = (MAX_QUALS) => {
-  const workerHeadersWithoutCHGUNIQUEWRKID = workerHeaders.withoutCHGUNIQUEWRKID;
-
   const extraHeaders = [];
 
   for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
