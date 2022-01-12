@@ -1,5 +1,6 @@
 const {
   validateWorkerHeaders,
+  getWorkerHeadersWithExtraQuals,
 } = require('../../../../../../../routes/establishments/bulkUpload/validate/headers/worker');
 const expect = require('chai').expect;
 
@@ -65,6 +66,26 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
 
         expect(await validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
       });
+    });
+  });
+
+  describe('getWorkerHeadersWithExtraQuals', () => {
+    it('should return standard headers when MAX_QUALS 3 or less', async () => {
+      expect(getWorkerHeadersWithExtraQuals(3)).to.deep.equal(workerHeadersWithoutCHGUNIQUEWRKID);
+    });
+
+    it('should return headers with two extra qualification headers (QUALACH and QUALACHNOTES) when MAX_QUALS 4', async () => {
+      const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(',QUALACH04,QUALACH04NOTES');
+
+      expect(getWorkerHeadersWithExtraQuals(4)).to.deep.equal(headersWithExtraQuals);
+    });
+
+    it('should return headers with four extra qualification headers (QUALACH and QUALACHNOTES x 2) when MAX_QUALS 5', async () => {
+      const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
+        ',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH05NOTES',
+      );
+
+      expect(getWorkerHeadersWithExtraQuals(5)).to.deep.equal(headersWithExtraQuals);
     });
   });
 });

@@ -91,7 +91,7 @@ const qualificationHeadersIncorrect = (remainingHeaders, i, currentHeaderIndex) 
 
 const DEFAULT_NUMBER_OF_QUALS = 3;
 
-const headers = (MAX_QUALS) => {
+const getWorkerHeadersWithExtraQuals = (MAX_QUALS) => {
   const extraHeaders = [];
 
   for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
@@ -110,7 +110,7 @@ const headers = (MAX_QUALS) => {
 
 module.exports = {
   validateWorkerHeaders,
-  headers,
+  getWorkerHeadersWithExtraQuals,
   workerHeadersWithCHGUNIQUEWRKID,
   workerHeadersWithoutCHGUNIQUEWRKID,
 };
