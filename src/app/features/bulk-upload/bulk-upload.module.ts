@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
+import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
+import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -35,6 +37,7 @@ import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/erro
 import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
+import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
 import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
@@ -76,6 +79,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
     BulkUploadHelpMainPageComponent,
+    BulkUploadTopTipPageComponent,
   ],
   providers: [
     DialogService,
@@ -84,6 +88,8 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingWorkplacesReferencesResolver,
     LastBulkUploadResolver,
     BulkUploadErrorsResolver,
+    BulkUploadTopTipsListResolver,
+    BulkUploadTopTipResolver,
   ],
 })
 export class BulkUploadModule {}
