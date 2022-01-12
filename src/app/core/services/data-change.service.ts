@@ -8,19 +8,20 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class DataChangeService {
-  private path = 'data-change';
+  private path = 'data_changes';
 
   constructor(private http: HttpClient) {}
 
-  public getDataChange(lastupdated): Observable<DataChange> {
+  public getDataChange(): Observable<DataChange> {
     let params = new HttpParams();
-    const lastUpdate = {
-      last_updated: { _eq: lastupdated },
-    };
-    params = params.set('filter', JSON.stringify(lastUpdate));
+
     params = params.set('limit', '1');
     params = params.set('fields', 'content,title,last_updated');
 
     return this.http.get<DataChange>(`${environment.cmsUri}/items/${this.path}`, { params });
+  }
+
+  public updateBUDataChangeLastUpdated(establishmentId: string, lastUpdated: Date) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`, { lastUpdated });
   }
 }

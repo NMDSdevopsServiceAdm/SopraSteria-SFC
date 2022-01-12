@@ -3,13 +3,18 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
+import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import { MissingStaffReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
-import { MissingWorkplaceReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
+import {
+  MissingStaffReferencesComponent,
+} from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
+import {
+  MissingWorkplaceReferencesComponent,
+} from '@features/bulk-upload/bulk-upload-references/missing-workplace-references/missing-workplace-references-page.component';
 import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
 import { FileErrorMessageComponent } from '@features/bulk-upload/file_error_message/file-error-message.component';
 import { LastBulkUploadComponent } from '@features/bulk-upload/last-bulk-upload/last-bulk-upload.component';
@@ -19,12 +24,22 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { AboutBulkUploadComponent } from './about-bulk-upload/about-bulk-upload.component';
 import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-upload-missing-page.component';
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
-import { MissingReferencesToggleComponent } from './bulk-upload-references/missing-references-toggle/missing-references-toggle.component';
-import { MissingRefsSubmitExitButtonsComponent } from './bulk-upload-references/missing-refs-submit-exit-buttons/missing-refs-submit-exit-buttons.component';
+import {
+  MissingReferencesToggleComponent,
+} from './bulk-upload-references/missing-references-toggle/missing-references-toggle.component';
+import {
+  MissingRefsSubmitExitButtonsComponent,
+} from './bulk-upload-references/missing-refs-submit-exit-buttons/missing-refs-submit-exit-buttons.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
-import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
-import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
-import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
+import {
+  WorkplaceReferencesComponent,
+} from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import {
+  BulkUploadDownloadCurrentDataComponent,
+} from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
+import {
+  BulkUploadRelatedContentComponent,
+} from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
@@ -86,6 +101,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingWorkplacesReferencesResolver,
     LastBulkUploadResolver,
     BulkUploadErrorsResolver,
+    DataChangeResolver,
   ],
 })
 export class BulkUploadModule {}

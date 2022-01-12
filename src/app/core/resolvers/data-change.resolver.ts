@@ -6,18 +6,15 @@ import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class ArticleResolver implements Resolve<any> {
+export class DataChangeResolver implements Resolve<any> {
   constructor(private router: Router, private dataChangeService: DataChangeService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | DataChange[]> {
-    const lastupdated = route.paramMap.get('last_updated');
-    if (lastupdated) {
-      return this.dataChangeService.getDataChange(lastupdated).pipe(
-        take(1),
-        catchError(() => {
-          return of(null);
-        }),
-      );
-    }
+    return this.dataChangeService.getDataChange().pipe(
+      take(1),
+      catchError(() => {
+        return of(null);
+      }),
+    );
   }
 }

@@ -704,7 +704,7 @@ module.exports = function (sequelize, DataTypes) {
         default: '90',
         field: 'ExpiresSoonAlertDate',
       },
-      DataChangesLastUpdated: {
+      dataChangesLastUpdated: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: false,
@@ -1842,6 +1842,20 @@ module.exports = function (sequelize, DataTypes) {
         id: establishmentId,
       },
     });
+  };
+
+  Establishment.updateDataChangesLastUpdatedDate = async function (establishmentId, lastUpdated) {
+    return await this.update(
+      {
+        dataChangesLastUpdated: lastUpdated,
+      },
+      {
+        where: {
+          id: establishmentId,
+        },
+        logging: true,
+      },
+    );
   };
 
   return Establishment;
