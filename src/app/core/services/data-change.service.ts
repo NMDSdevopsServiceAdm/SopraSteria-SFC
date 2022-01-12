@@ -12,7 +12,7 @@ export class DataChangeService {
 
   constructor(private http: HttpClient) {}
 
-  public getDataChange(lastupdated: Date): Observable<DataChange> {
+  public getDataChange(lastupdated): Observable<DataChange> {
     let params = new HttpParams();
     const lastUpdate = {
       last_updated: { _eq: lastupdated },
