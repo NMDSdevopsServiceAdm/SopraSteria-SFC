@@ -89,23 +89,23 @@ const qualificationHeadersIncorrect = (remainingHeaders, i, currentHeaderIndex) 
   !(remainingHeaders[i] === `QUALACH${currentHeaderIndex}`) ||
   !(remainingHeaders[i + 1] === `QUALACH${currentHeaderIndex}NOTES`);
 
-const DEFAULT_NUMBER_OF_QUALS = 3;
+const getWorkerHeadersWithExtraQuals = (highestNoOfQualsForWorker) => {
+  const DEFAULT_NUMBER_OF_QUALS = 3;
 
-const getWorkerHeadersWithExtraQuals = (MAX_QUALS) => {
+  if (highestNoOfQualsForWorker <= DEFAULT_NUMBER_OF_QUALS) return workerHeadersWithoutCHGUNIQUEWRKID;
+
   const extraHeaders = [];
-
-  for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
-    const currentHeader = `${additionalHeaders + DEFAULT_NUMBER_OF_QUALS + 1}`;
-    extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
-    extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
+  for (let qualNumber = DEFAULT_NUMBER_OF_QUALS + 1; qualNumber <= highestNoOfQualsForWorker; qualNumber++) {
+    extraHeaders.push(createQualHeader(qualNumber, false));
+    extraHeaders.push(createQualHeader(qualNumber, true));
   }
 
-  // default headers includes three quals
-  if (extraHeaders.length !== 0) {
-    return workerHeadersWithoutCHGUNIQUEWRKID + ',' + extraHeaders.join(',');
-  }
+  return workerHeadersWithoutCHGUNIQUEWRKID + ',' + extraHeaders.join(',');
+};
 
-  return workerHeadersWithoutCHGUNIQUEWRKID;
+const createQualHeader = (qualNumber, isNotesHeader) => {
+  const header = `QUALACH${qualNumber.toString().padStart(2, '0')}`;
+  return isNotesHeader ? header.concat('NOTES') : header;
 };
 
 module.exports = {

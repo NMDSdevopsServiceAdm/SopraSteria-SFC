@@ -70,8 +70,12 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
   });
 
   describe('getWorkerHeadersWithExtraQuals', () => {
-    it('should return standard headers when MAX_QUALS 3 or less', async () => {
+    it('should return standard headers when MAX_QUALS 3', async () => {
       expect(getWorkerHeadersWithExtraQuals(3)).to.deep.equal(workerHeadersWithoutCHGUNIQUEWRKID);
+    });
+
+    it('should return standard headers when MAX_QUALS less than 3', async () => {
+      expect(getWorkerHeadersWithExtraQuals(1)).to.deep.equal(workerHeadersWithoutCHGUNIQUEWRKID);
     });
 
     it('should return headers with two extra qualification headers (QUALACH and QUALACHNOTES) when MAX_QUALS 4', async () => {
