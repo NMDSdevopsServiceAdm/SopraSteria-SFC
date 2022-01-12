@@ -1,52 +1,4 @@
-const workerHeaders = [
-  'LOCALESTID',
-  'UNIQUEWORKERID',
-  'CHGUNIQUEWRKID',
-  'STATUS',
-  'DISPLAYID',
-  'FLUVAC',
-  'NINUMBER',
-  'POSTCODE',
-  'DOB',
-  'GENDER',
-  'ETHNICITY',
-  'NATIONALITY',
-  'BRITISHCITIZENSHIP',
-  'COUNTRYOFBIRTH',
-  'YEAROFENTRY',
-  'DISABLED',
-  'CARECERT',
-  'RECSOURCE',
-  'STARTDATE',
-  'STARTINSECT',
-  'APPRENTICE',
-  'EMPLSTATUS',
-  'ZEROHRCONT',
-  'DAYSSICK',
-  'SALARYINT',
-  'SALARY',
-  'HOURLYRATE',
-  'MAINJOBROLE',
-  'MAINJRDESC',
-  'CONTHOURS',
-  'AVGHOURS',
-  'OTHERJOBROLE',
-  'OTHERJRDESC',
-  'NMCREG',
-  'NURSESPEC',
-  'AMHP',
-  'SCQUAL',
-  'NONSCQUAL',
-  'QUALACH01',
-  'QUALACH01NOTES',
-  'QUALACH02',
-  'QUALACH02NOTES',
-  'QUALACH03',
-  'QUALACH03NOTES',
-];
-
-const workerHeadersWithCHGUNIQUEWRKID = workerHeaders.join(',');
-const workerHeadersWithoutCHGUNIQUEWRKID = workerHeaders.filter((header) => header !== 'CHGUNIQUEWRKID').join(',');
+const { workerHeadersWithCHGUNIQUEWRKID, workerHeadersWithoutCHGUNIQUEWRKID } = require('../../data/workerHeaders');
 
 const validateWorkerHeaders = (headers) => {
   const matchesWithChgUnique = headers.startsWith(workerHeadersWithCHGUNIQUEWRKID);
@@ -89,13 +41,13 @@ const qualificationHeadersIncorrect = (remainingHeaders, i, currentHeaderIndex) 
   !(remainingHeaders[i] === `QUALACH${currentHeaderIndex}`) ||
   !(remainingHeaders[i + 1] === `QUALACH${currentHeaderIndex}NOTES`);
 
-const getWorkerHeadersWithExtraQuals = (highestNoOfQualsForWorker) => {
+const getWorkerHeadersWithExtraQuals = (highestNoOfQuals) => {
   const DEFAULT_NUMBER_OF_QUALS = 3;
 
-  if (highestNoOfQualsForWorker <= DEFAULT_NUMBER_OF_QUALS) return workerHeadersWithoutCHGUNIQUEWRKID;
+  if (highestNoOfQuals <= DEFAULT_NUMBER_OF_QUALS) return workerHeadersWithoutCHGUNIQUEWRKID;
 
   const extraHeaders = [];
-  for (let qualNumber = DEFAULT_NUMBER_OF_QUALS + 1; qualNumber <= highestNoOfQualsForWorker; qualNumber++) {
+  for (let qualNumber = DEFAULT_NUMBER_OF_QUALS + 1; qualNumber <= highestNoOfQuals; qualNumber++) {
     extraHeaders.push(createQualHeader(qualNumber, false));
     extraHeaders.push(createQualHeader(qualNumber, true));
   }
@@ -111,6 +63,4 @@ const createQualHeader = (qualNumber, isNotesHeader) => {
 module.exports = {
   validateWorkerHeaders,
   getWorkerHeadersWithExtraQuals,
-  workerHeadersWithCHGUNIQUEWRKID,
-  workerHeadersWithoutCHGUNIQUEWRKID,
 };

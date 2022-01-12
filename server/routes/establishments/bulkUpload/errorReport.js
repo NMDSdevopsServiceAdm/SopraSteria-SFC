@@ -11,7 +11,7 @@ const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
 const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training');
 const excelUtils = require('../../../utils/excelUtils');
-const { workerHeadersWithCHGUNIQUEWRKID } = require('./validate/headers/worker');
+const { workerHeadersWithCHGUNIQUEWRKID } = require('./data/workerHeaders');
 
 const reportHeaders = [
   { header: 'Type', key: 'type' },
