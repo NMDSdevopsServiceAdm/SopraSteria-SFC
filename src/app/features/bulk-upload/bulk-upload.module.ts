@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
+import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -102,6 +103,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     LastBulkUploadResolver,
     BulkUploadErrorsResolver,
     DataChangeResolver,
+    DataChangeLastUpdatedResolver,
   ],
 })
 export class BulkUploadModule {}

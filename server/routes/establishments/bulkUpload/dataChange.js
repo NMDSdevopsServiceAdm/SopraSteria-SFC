@@ -4,9 +4,12 @@ const models = require('../../../models');
 const getDataChangesLastUpdated = async (req, res) => {
   try {
     const dataChangesLastUpdated = await models.establishment.getdataChangesLastUpdated(req.establishment.id);
+
+    const dataChangesLastUpdate = dataChangesLastUpdated.get('DataChangesLastUpdated');
+
     res.status(200);
     return res.json({
-      dataChangesLastUpdated: dataChangesLastUpdated.get('DataChangesLastUpdated'),
+      dataChangesLastUpdate,
     });
   } catch (error) {
     console.error(error);

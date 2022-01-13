@@ -6,6 +6,7 @@ import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
+import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -36,7 +37,7 @@ const routes: Routes = [
     component: BulkUploadPageComponent,
     canActivate: [BulkUploadStartGuard, BulkUploadMissingGuard],
     data: { title: 'Home' },
-    resolve: { dataChange: DataChangeResolver },
+    resolve: { dataChange: DataChangeResolver, dataChangeLastUpdatedResolver: DataChangeLastUpdatedResolver },
   },
   {
     path: 'start',

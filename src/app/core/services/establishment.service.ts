@@ -72,7 +72,6 @@ export class EstablishmentService {
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _checkSharingPermissionsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _checkFlagForBUDataChanges$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
@@ -171,14 +170,6 @@ export class EstablishmentService {
 
   public get checkSharingPermissionsBanner(): boolean {
     return this._checkSharingPermissionsBanner$.value;
-  }
-
-  public get checkFlagForBUDataChanges$(): Observable<boolean> {
-    return this._checkFlagForBUDataChanges$.asObservable();
-  }
-
-  public get checkFlagForBUDataChanges(): boolean {
-    return this._checkFlagForBUDataChanges$.value;
   }
 
   public setCheckSharingPermissionsBanner(data: boolean): void {

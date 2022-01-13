@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-bulk-upload-related-content',
@@ -14,23 +13,21 @@ export class BulkUploadRelatedContentComponent {
   @Input() showDataChanges = true;
   @Input() showGetHelpWithBulkUploads = true;
 
-  protected subscriptions: Subscription = new Subscription();
+  public datachange: any;
+  public dataChangeLastUpdated: any;
+  public showFlagBUChanges: boolean;
 
-  public showFlagBUChanges: boolean = this.establishmentService.checkFlagForBUDataChanges;
-
-  constructor(public authService: AuthService, public establishmentService: EstablishmentService) {}
+  constructor(public authService: AuthService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.datachange = this.route.snapshot.data.dataChange.data.last_updated;
+    this.dataChangeLastUpdated = this.route.snapshot.data.dataChangeLastUpdatedResolver.dataChangesLastUpdate;
     this.getShowFlagForBUDataChanges();
   }
+  public getShowFlagForBUDataChanges() {
+    const LastUpdatedChange = new Date(this.datachange);
+    const LastUpdated = new Date(this.dataChangeLastUpdated);
 
-  private getShowFlagForBUDataChanges(): void {
-    this.establishmentService.checkFlagForBUDataChanges$.subscribe((showBanner) => {
-      this.showFlagBUChanges = showBanner;
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.showFlagBUChanges = +LastUpdated !== +LastUpdatedChange;
   }
 }
