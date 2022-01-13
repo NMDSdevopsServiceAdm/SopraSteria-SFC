@@ -35,6 +35,8 @@ bulkupload:
     timeout: 300
   completion:
     timeout: 120
+  lambda:
+    stage: sfcstaging
 
 locks:
   region: eu-west-1

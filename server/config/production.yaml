@@ -38,6 +38,9 @@ bulkupload:
     timeout: 300
   completion:
     timeout: 120
+  lambda:
+    stage: sfcprod
+
 
 locks:
   region: eu-west-1

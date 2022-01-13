@@ -523,7 +523,7 @@ workflows:
           requires:
             - install
       - serverless_deployment:
-          appname: dev
+          appname: sfcbenchmarks
           folder: bulkUpload
           context: serverless-deployment
           requires:
