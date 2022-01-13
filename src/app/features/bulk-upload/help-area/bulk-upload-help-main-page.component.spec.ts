@@ -1,26 +1,44 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockBulkUploadTopTipsService } from '@core/test-utils/MockBulkUploadTopTipsService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';
 
 describe('BulkUploadHelpMainPageComponent', () => {
+  const topTipsList = MockBulkUploadTopTipsService.topTipsListFactory();
+
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadHelpMainPageComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
+      imports: [RouterTestingModule.withRoutes([]), HttpClientTestingModule, BrowserModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: AuthService, useClass: MockAuthService },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            params: [],
+            url: of(['testUrl']),
+            snapshot: {
+              data: {
+                topTipsList,
+              },
+            },
+          }),
+        },
       ],
       declarations: [BulkUploadHelpMainPageComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
@@ -46,13 +64,24 @@ describe('BulkUploadHelpMainPageComponent', () => {
   it('should render the step by step link with the correct href attribute', async () => {
     const { getByText } = await setup();
     const link = getByText('Step by step bulk upload guide');
-    expect(link.getAttribute('href')).toBe('/step-by-step-guide');
+    expect(link.getAttribute('href')).toContain('step-by-step-guide');
   });
 
   it('should render the troubleshooting link with the correct href attribute', async () => {
     const { getByText } = await setup();
     const link = getByText('Get handy troubleshooting hints to help you fix common problems and errors');
-    expect(link.getAttribute('href')).toBe('/troubleshooting');
+    expect(link.getAttribute('href')).toContain('troubleshooting');
+  });
+
+  it('should render the CMS top tip links with the correct href attribute', async () => {
+    const { getByText } = await setup();
+    const firstTopTipLink = getByText(topTipsList.data[0].title);
+    const secondTopTipLink = getByText(topTipsList.data[1].title);
+    const thirdTopTipLink = getByText(topTipsList.data[2].title);
+
+    expect(firstTopTipLink.getAttribute('href')).toContain(topTipsList.data[0].slug);
+    expect(secondTopTipLink.getAttribute('href')).toContain(topTipsList.data[1].slug);
+    expect(thirdTopTipLink.getAttribute('href')).toContain(topTipsList.data[2].slug);
   });
 
   it('should render related contents and download codes and guidance links', async () => {

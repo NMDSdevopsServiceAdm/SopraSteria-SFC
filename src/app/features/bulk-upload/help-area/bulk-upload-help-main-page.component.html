@@ -1,14 +1,24 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Get help with bulk uploads</h1>
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l">Bulk upload</span>
+      <h1 class="govuk-fieldset__heading">Get help with bulk uploads</h1>
+    </legend>
     <div class="govuk-!-margin-bottom-7">
       <h2 class="govuk-heading-m govuk-!-padding-bottom-1">Top tips and 'how to' guides</h2>
       <p>Quick and easy help on how to bulk uploads.</p>
-      <a class="govuk-body" [routerLink]="['../', 'step-by-step-guide']">Step by step bulk upload guide</a>
+      <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-3">
+          <a class="govuk-body" [routerLink]="['/bulk-upload', 'step-by-step-guide']">Step by step bulk upload guide</a>
+        </li>
+        <li class="govuk-!-margin-bottom-3" *ngFor="let topTip of topTipsList">
+          <a [routerLink]="['/bulk-upload', 'get-help', topTip.slug]">{{ topTip.title }}</a>
+        </li>
+      </ul>
     </div>
     <div class="govuk-!-margin-bottom-7">
       <h2 class="govuk-heading-m govuk-!-padding-bottom-1">Troubleshooting</h2>
-      <a class="govuk-body" [routerLink]="['../', 'troubleshooting']"
+      <a class="govuk-body" [routerLink]="['/bulk-upload', 'get-help', 'troubleshooting']"
         >Get handy troubleshooting hints to help you fix common problems and errors</a
       >
     </div>

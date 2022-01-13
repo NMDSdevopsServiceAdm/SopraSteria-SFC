@@ -46,7 +46,7 @@ describe('WizardResolver', () => {
     expect(wizardService.getWizardPage).toHaveBeenCalledWith(false);
   });
 
-  it('should resolve when canViewBenchmarks is false', () => {
+  it('should resolve when canViewBenchmarks is true', () => {
     const wizardService = TestBed.inject(WizardService);
     spyOn(wizardService, 'getWizardPage').and.callThrough();
 

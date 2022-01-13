@@ -182,7 +182,6 @@ export class BreadcrumbService {
         routes = bulkUploadHelpJourney;
         break;
       }
-
       case JourneyType.ACCOUNT: {
         routes = accountJourney;
         break;
