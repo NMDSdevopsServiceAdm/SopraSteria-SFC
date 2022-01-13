@@ -14,7 +14,9 @@
           >
         </li>
         <li class="govuk-!-margin-bottom-3" *ngFor="let topTip of topTipsList">
-          <a [routerLink]="['/bulk-upload', 'get-help', topTip.slug]">{{ topTip.title }}</a>
+          <a [routerLink]="['/bulk-upload', 'get-help', topTip.slug]" (click)="setReturnUrl(topTip.slug)">{{
+            topTip.title
+          }}</a>
         </li>
       </ul>
     </div>

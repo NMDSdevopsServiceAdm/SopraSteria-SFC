@@ -3,6 +3,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BulkUploadTopTip } from '@core/model/bulk-upload-top-tips.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
@@ -15,12 +16,21 @@ export class BulkUploadTopTipPageComponent implements OnInit, OnDestroy {
   public topTip: BulkUploadTopTip;
   public subscriptions = new Subscription();
 
-  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
+    private bulkUploadTopTipsService: BulkUploadTopTipsService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD_HELP);
     this.subscribeToUrltoUpdateHowToListAndCurrentSlug();
     this.addSubscriptionToUpdateBreadcrumbs();
+  }
+
+  setReturnUrl(slug: string): void {
+    this.bulkUploadTopTipsService.setReturnTo({ url: ['/bulk-upload', 'get-help', slug] });
   }
 
   subscribeToUrltoUpdateHowToListAndCurrentSlug(): void {

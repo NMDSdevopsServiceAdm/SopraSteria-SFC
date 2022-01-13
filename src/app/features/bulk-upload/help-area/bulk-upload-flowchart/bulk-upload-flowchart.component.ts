@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BackService } from '@core/services/back.service';
+import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 
 @Component({
   selector: 'app-bulk-upload-flowchart',
@@ -7,7 +8,7 @@ import { BackService } from '@core/services/back.service';
   styleUrls: ['./bulk-upload-flowchart.component.scss'],
 })
 export class BulkUploadFlowchartComponent implements OnInit {
-  constructor(public backService: BackService) {}
+  constructor(public backService: BackService, private bulkUploadTopTipsService: BulkUploadTopTipsService) {}
 
   ngOnInit(): void {
     this.setBackLink();
@@ -15,8 +16,11 @@ export class BulkUploadFlowchartComponent implements OnInit {
 
   // Needs implementing
   public setBackLink(): void {
-    // const backLinkUrl = 'bulk-upload';
-    this.backService.setBackLink({ url: ['/'] });
+    const returnUrl = this.bulkUploadTopTipsService.returnTo
+      ? this.bulkUploadTopTipsService.returnTo
+      : { url: ['/bulk-upload', 'get-help'] };
+
+    this.backService.setBackLink(returnUrl);
   }
 
   // Needs implementing
