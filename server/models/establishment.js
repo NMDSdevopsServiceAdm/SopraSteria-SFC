@@ -1858,5 +1858,14 @@ module.exports = function (sequelize, DataTypes) {
     );
   };
 
+  Establishment.getdataChangesLastUpdated = async function (establishmentId) {
+    return await this.findOne({
+      attributes: ['DataChangesLastUpdated'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
   return Establishment;
 };

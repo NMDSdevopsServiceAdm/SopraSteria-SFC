@@ -24,4 +24,8 @@ export class DataChangeService {
   public updateBUDataChangeLastUpdated(establishmentId: string, lastUpdated: Date) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`, { lastUpdated });
   }
+
+  public getDataChangesLastUpdate(establishmentId: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`);
+  }
 }

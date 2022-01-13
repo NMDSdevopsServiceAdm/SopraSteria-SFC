@@ -1,28 +1,33 @@
+const router = require('express').Router();
 const models = require('../../../models');
 
-const updateBUDataChanges = async (req, res) => {
+const getDataChangesLastUpdated = async (req, res) => {
   try {
-    const { uid } = req.establishment;
-    const { lastUpdated } = req.body;
-    const establishment = await models.establishment.findByUid(uid);
-
-    if (!establishment) {
-      return res.status(400).send({ error: 'Workplace could not be found' });
-    }
-    const updateLastUpdatdDate = await models.establishment.updateDataChangesLastUpdatedDate(
-      establishment.id,
-      lastUpdated,
-    );
-
-    res.status(200).send();
+    const dataChangesLastUpdated = await models.establishment.getdataChangesLastUpdated(req.establishment.id);
+    res.status(200);
+    return res.json({
+      dataChangesLastUpdated: dataChangesLastUpdated.get('DataChangesLastUpdated'),
+    });
   } catch (error) {
-    res.status(500).send();
+    console.error(error);
+    return res.status(500).send();
   }
 };
 
-const router = require('express').Router();
+const updateBUDataChanges = async (req, res) => {
+  try {
+    const { lastUpdated } = req.body;
+    await models.establishment.updateDataChangesLastUpdatedDate(req.establishment.id, lastUpdated);
 
+    res.status(200).send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
+};
+router.route('/').get(getDataChangesLastUpdated);
 router.route('/').post(updateBUDataChanges);
 
 module.exports = router;
+module.exports.getDataChangesLastUpdated = getDataChangesLastUpdated;
 module.exports.updateBUDataChanges = updateBUDataChanges;
