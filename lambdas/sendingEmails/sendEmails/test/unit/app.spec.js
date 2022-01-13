@@ -11,7 +11,7 @@ describe('app.js', () => {
     const sendTransacEmail = sinon.stub();
     sinon.stub(SibApiV3Sdk, 'TransactionalEmailsApi').returns({
       sendTransacEmail,
-    })
+    });
 
     const lambdaHandlerTest = await app.lambdaHandler(event, context);
 

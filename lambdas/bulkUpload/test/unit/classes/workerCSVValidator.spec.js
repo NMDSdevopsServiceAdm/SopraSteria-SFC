@@ -1,9 +1,8 @@
 const expect = require('chai').expect;
-const { maxquals, knownHeaders } = require('../../../../server/test/unit/mockdata/workers.js');
 const moment = require('moment');
-const WorkerCsvValidator = require('../../classes/workerCSVValidator').WorkerCsvValidator;
+const WorkerCsvValidator = require('../../../classes/workerCSVValidator').WorkerCsvValidator;
 const { build } = require('@jackfranklin/test-data-bot');
-const mappings = require('../../../../server/models/BulkImport/BUDI/index.js').mappings;
+const mappings = require('../../../../../server/models/BulkImport/BUDI/index.js').mappings;
 
 const buildWorkerCsv = build('WorkerCSV', {
   fields: {
@@ -67,23 +66,6 @@ const buildWorkerRecord = build('WorkerRecord', {
 });
 
 describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
-  describe('get headers', () => {
-    it('should return a string of headers seperated by a comma', () => {
-      const validator = new WorkerCsvValidator(buildWorkerCsv(), 2, null, mappings);
-
-      expect(validator).to.have.property('headers');
-
-      const columnHeaders = validator.headers;
-
-      expect(columnHeaders).to.be.a('function');
-
-      const result = columnHeaders(maxquals);
-
-      expect(result).to.be.a('string');
-      expect(result.split(',')).to.deep.equal(knownHeaders);
-    });
-  });
-
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -558,6 +540,90 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             name: 'MARMA',
             source: '0;14',
             worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('contractType', () => {
+      it('should allow valid EMPLSTATUS', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              EMPLSTATUS: '1',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator.validate();
+
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should add contract type error when EMPLSTATUS is empty', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+          },
+        });
+        worker.EMPLSTATUS = ''; // cannot override with empty string
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: worker.UNIQUEWORKERID,
+            name: worker.LOCALESTID,
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.CONTRACT_TYPE_ERROR,
+            errType: 'CONTRACT_TYPE_ERROR',
+            error: 'EMPLSTATUS has not been supplied',
+            source: worker.EMPLSTATUS,
+            column: 'EMPLSTATUS',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should add contract type error when EMPLSTATUS is not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              EMPLSTATUS: 'Spoilers',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator.validate();
+
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.CONTRACT_TYPE_ERROR,
+            errType: 'CONTRACT_TYPE_ERROR',
+            error: 'EMPLSTATUS has not been supplied',
+            source: 'Spoilers',
+            column: 'EMPLSTATUS',
           },
         ]);
         expect(validator._validationErrors.length).to.equal(1);

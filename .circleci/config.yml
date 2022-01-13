@@ -212,7 +212,7 @@ jobs:
           keys:
             - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: npm run server:cover:unit:ci
+          command: npm run server:lambda:cover:unit:ci
           environment:
             MOCHA_FILE: ./junit/test-results.xml
             NODE_ENV: example
