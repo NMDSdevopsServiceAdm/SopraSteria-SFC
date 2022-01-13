@@ -43,6 +43,14 @@ const routes: Routes = [
     path: 'get-help',
     children: [
       {
+        path: 'troubleshooting',
+        component: BulkUploadTroubleshootingComponent,
+        data: { title: 'Bulk upload troubleshooting page' },
+        resolve: {
+          pages: PageResolver,
+        },
+      },
+      {
         path: '',
         component: BulkUploadHelpMainPageComponent,
         data: { title: 'Bulk upload get help main page' },
@@ -59,14 +67,7 @@ const routes: Routes = [
       },
     ],
   },
-  {
-    path: 'troubleshooting',
-    component: BulkUploadTroubleshootingComponent,
-    data: { title: 'Bulk upload troubleshooting page' },
-    resolve: {
-      pages: PageResolver,
-    },
-  },
+
   {
     path: 'about-bulk-upload',
     component: AboutBulkUploadComponent,
