@@ -546,7 +546,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe('contractType', () => {
+    describe('_validateContractType()', () => {
       it('should allow valid EMPLSTATUS', async () => {
         const validator = new WorkerCsvValidator(
           buildWorkerCsv({
@@ -624,6 +624,84 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             error: 'EMPLSTATUS has not been supplied',
             source: 'Spoilers',
             column: 'EMPLSTATUS',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('_validateLocalId()', () => {
+      it('should allow valid LOCALESTID', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              LOCALESTID: 'ValidWorkplaceID',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator.validate();
+
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should add LOCAL_ID_ERROR error when LOCALESTID is empty', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+          },
+        });
+        worker.LOCALESTID = ''; // cannot override with empty string
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.LOCAL_ID_ERROR,
+            errType: 'LOCAL_ID_ERROR',
+            error: 'LOCALESTID has not been supplied',
+            source: worker.LOCALESTID,
+            column: 'LOCALESTID',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should add LOCAL_ID_ERROR error when LOCALESTID is oveer 50 characters', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            LOCALESTID:
+              'ReallyLongWorkplaceIDReallyLongWorkplaceIDReallyLongWorkplaceIDReallyLongWorkplaceIDReallyLongWorkplaceID',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.LOCAL_ID_ERROR,
+            errType: 'LOCAL_ID_ERROR',
+            error: 'LOCALESTID is longer than 50 characters',
+            source: worker.LOCALESTID,
+            column: 'LOCALESTID',
           },
         ]);
         expect(validator._validationErrors.length).to.equal(1);
