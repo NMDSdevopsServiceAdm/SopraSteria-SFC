@@ -1,19 +1,25 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockBulkUploadTroubleshootingPagesService } from '@core/test-utils/MockBulkUploadTroubleshootingPageService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page.component';
 
 describe('BulkUploadTroubleshootingComponent', () => {
+  const bulkUploadTroubleShootingLink =
+    MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingLinkFactory();
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadTroubleshootingComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
@@ -21,6 +27,18 @@ describe('BulkUploadTroubleshootingComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: AuthService, useClass: MockAuthService },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            params: [],
+            url: of(['testUrl']),
+            snapshot: {
+              data: {
+                bulkUploadTroubleShootingLink,
+              },
+            },
+          }),
+        },
       ],
       declarations: [BulkUploadTroubleshootingComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
@@ -59,5 +77,10 @@ describe('BulkUploadTroubleshootingComponent', () => {
       expect(getByText('Data changes')).toBeTruthy();
       expect(getByText('About bulk upload')).toBeTruthy();
     });
+  });
+
+  it('should display the troubleshooting link from the cms', async () => {
+    const { getByText } = await setup();
+    expect(getByText(bulkUploadTroubleShootingLink.data[0].content)).toBeTruthy();
   });
 });
