@@ -425,7 +425,7 @@ class PermissionCache {
         return { [permission.code]: false };
       }
       if (permission.code === 'canViewNinoDob') {
-        return { [permission.code]: req.isAdmin };
+        return { [permission.code]: !req.isAdmin };
       }
       return { [permission.code]: true };
     });
