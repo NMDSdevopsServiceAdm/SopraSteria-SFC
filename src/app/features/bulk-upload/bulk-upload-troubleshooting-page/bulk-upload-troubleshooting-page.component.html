@@ -2,10 +2,12 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Troubleshooting</h1>
     <p>Our handy hints could help you fix common problems and errors that some bulk uploads have reported</p>
-    <div class="asc-cms-content" [innerHTML]="bulkUploadTroubleShootingLink.content"></div>
+    <div class="govuk-!-margin-top-7">
+      <div class="asc-cms-content" [innerHTML]="bulkUploadTroubleShootingLink.content"></div>
+    </div>
   </div>
   <div class="govuk-grid-column-one-third">
-    <div class="govuk-!-margin-top-6">
+    <div class="govuk-!-margin-top-5">
       <app-bulk-upload-related-content
         [showViewLastBulkUpload]="false"
         [showViewReferences]="false"
