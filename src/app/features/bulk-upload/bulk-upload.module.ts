@@ -36,6 +36,7 @@ import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/error-summary.component';
 import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
+import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
 import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
@@ -78,6 +79,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingRefsSubmitExitButtonsComponent,
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
+    BulkUploadFlowchartComponent,
     BulkUploadHelpMainPageComponent,
     BulkUploadTopTipPageComponent,
   ],

@@ -22,6 +22,7 @@ import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.com
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
 import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 
@@ -45,6 +46,11 @@ const routes: Routes = [
         component: BulkUploadHelpMainPageComponent,
         data: { title: 'Bulk upload get help main page' },
         resolve: { topTipsList: BulkUploadTopTipsListResolver },
+      },
+      {
+        path: 'step-by-step-guide',
+        component: BulkUploadFlowchartComponent,
+        data: { title: 'Flowchart ' },
       },
       {
         path: ':slug',
