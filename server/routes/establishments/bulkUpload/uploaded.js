@@ -1,11 +1,12 @@
 'use strict';
 const csv = require('csvtojson');
+
 const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
+const { validateWorkerHeaders } = require('./validate/headers/worker');
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
-
+const { isWorkerFile } = require('./whichFile');
 const { s3, Bucket, saveResponse, uploadJSONDataToS3, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
 
@@ -159,7 +160,7 @@ const uploadedPut = async (req, res) => {
         establishmentMetadata.size = myfile.size;
         establishmentMetadata.key = myfile.key;
         establishmentMetadata.lastModified = myfile.lastModified;
-      } else if (WorkerCsvValidator.isContent(myfile.data)) {
+      } else if (isWorkerFile(myfile.data)) {
         myDownloads.workers = myfile.data;
         workerMetadata.filename = myfile.filename;
         workerMetadata.fileType = 'Worker';
@@ -238,7 +239,7 @@ const uploadedPut = async (req, res) => {
     }
 
     if (importedWorkers) {
-      if (new WorkerCsvValidator(importedWorkers[firstRow], firstLineNumber).preValidate(workerHeaders)) {
+      if (validateWorkerHeaders(workerHeaders)) {
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
         metadataS3Promises.push(

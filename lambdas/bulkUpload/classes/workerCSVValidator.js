@@ -1,29 +1,11 @@
-const BUDI = require('../BUDI').BUDI;
+const BUDI = require('../classes/BUDI').BUDI;
 const moment = require('moment');
 const get = require('lodash/get');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
-const _headers_v1 =
-  'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
-  'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
-  'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
-  'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
-  'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
-  'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
-
-const _headers_v1_without_chgUnique =
-  'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,NINUMBER,' +
-  'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
-  'DISABLED,CARECERT,RECSOURCE,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,' +
-  'DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,' +
-  'OTHERJOBROLE,OTHERJRDESC,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
-  'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
-
-const DEFAULT_NUMBER_OF_QUALS = 3;
-
-class Worker {
-  constructor(currentLine, lineNumber, currentWorker) {
+class WorkerCsvValidator {
+  constructor(currentLine, lineNumber, currentWorker, mappings) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._currentWorker = currentWorker;
@@ -90,10 +72,8 @@ class Worker {
     // array of qualification records for this worker
     this._qualifications = null;
     this._amhp = null;
-  }
 
-  static get HEADERS_ERROR() {
-    return 999;
+    this.BUDI = new BUDI(mappings);
   }
 
   static get LOCAL_ID_ERROR() {
@@ -371,27 +351,6 @@ class Worker {
     return 5560;
   }
 
-  static headers(MAX_QUALS) {
-    const extraHeaders = [];
-
-    for (let additionalHeaders = 0; additionalHeaders < MAX_QUALS - DEFAULT_NUMBER_OF_QUALS; additionalHeaders++) {
-      const currentHeader = `${additionalHeaders + DEFAULT_NUMBER_OF_QUALS + 1}`;
-      extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}`);
-      extraHeaders.push(`QUALACH${currentHeader.padStart(2, '0')}NOTES`);
-    }
-
-    // default headers includes three quals
-    if (extraHeaders.length !== 0) {
-      return _headers_v1_without_chgUnique + ',' + extraHeaders.join(',');
-    }
-
-    return _headers_v1_without_chgUnique;
-  }
-
-  headers(MAX_QUALS) {
-    return Worker.headers(MAX_QUALS);
-  }
-
   get lineNumber() {
     return this._lineNumber;
   }
@@ -545,7 +504,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.CONTRACT_TYPE_ERROR,
+        errCode: WorkerCsvValidator.CONTRACT_TYPE_ERROR,
         errType: 'CONTRACT_TYPE_ERROR',
         error: 'EMPLSTATUS has not been supplied',
         source: this._currentLine.EMPLSTATUS,
@@ -569,7 +528,7 @@ class Worker {
     if (myLocalId === null || myLocalId.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Worker.LOCAL_ID_ERROR,
+        errCode: WorkerCsvValidator.LOCAL_ID_ERROR,
         errType: 'LOCAL_ID_ERROR',
         error: 'LOCALESTID has not been supplied',
         source: myLocalId,
@@ -579,7 +538,7 @@ class Worker {
     } else if (myLocalId.length >= MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Worker.LOCAL_ID_ERROR,
+        errCode: WorkerCsvValidator.LOCAL_ID_ERROR,
         errType: 'LOCAL_ID_ERROR',
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
@@ -607,7 +566,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.UNIQUE_WORKER_ID_ERROR,
+        errCode: WorkerCsvValidator.UNIQUE_WORKER_ID_ERROR,
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: 'UNIQUEWORKERID has not been supplied',
         source: this._currentLine.UNIQUEWORKERID,
@@ -619,7 +578,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.UNIQUE_WORKER_ID_ERROR,
+        errCode: WorkerCsvValidator.UNIQUE_WORKER_ID_ERROR,
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
@@ -647,7 +606,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.CHANGE_UNIQUE_WORKER_ID_ERROR,
+        errCode: WorkerCsvValidator.CHANGE_UNIQUE_WORKER_ID_ERROR,
         errType: 'CHANGE_UNIQUE_WORKER_ID_ERROR',
         error: `CHGUNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.CHGUNIQUEWRKID,
@@ -670,7 +629,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.STATUS_ERROR,
+        errCode: WorkerCsvValidator.STATUS_ERROR,
         errType: 'STATUS_ERROR',
         error: 'The STATUS you have supplied is incorrect',
         source: this._currentLine.STATUS,
@@ -690,7 +649,7 @@ class Worker {
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
+              errCode: WorkerCsvValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error:
                 'Staff record has a STATUS of NEW but already exists, please change to one of the other statues available',
@@ -705,7 +664,7 @@ class Worker {
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
+              errCode: WorkerCsvValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'Staff has a STATUS of DELETE but does not exist.',
               source: myStatus,
@@ -721,7 +680,7 @@ class Worker {
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
+              errCode: WorkerCsvValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: `Staff record has a STATUS of ${myStatus} but doesn't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
@@ -736,7 +695,7 @@ class Worker {
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
-              errCode: Worker.STATUS_ERROR,
+              errCode: WorkerCsvValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'STATUS is CHGSUB but staff already exists in the new workplace',
               source: myStatus,
@@ -760,7 +719,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.DISPLAY_ID_ERROR,
+        errCode: WorkerCsvValidator.DISPLAY_ID_ERROR,
         errType: 'DISPLAY_ID_ERROR',
         error: 'DISPLAYID is blank',
         source: this._currentLine.DISPLAYID,
@@ -772,7 +731,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.DISPLAY_ID_ERROR,
+        errCode: WorkerCsvValidator.DISPLAY_ID_ERROR,
         errType: 'WORKER_DISPLAY_ID_ERROR',
         error: `DISPLAYID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.DISPLAYID,
@@ -795,7 +754,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.FLUVAC_WARNING,
+          warnCode: WorkerCsvValidator.FLUVAC_WARNING,
           warnType: 'WORKER_FLUVAC_WARNING',
           warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
           source: this._currentLine.FLUVAC,
@@ -819,7 +778,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.NINUMBER_ERROR,
+          errCode: WorkerCsvValidator.NINUMBER_ERROR,
           errType: 'WORKER_NINUMBER_ERROR',
           error: 'NINUMBER is incorrectly formatted',
           source: this._currentLine.NINUMBER,
@@ -842,7 +801,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.POSTCODE_WARNING,
+        warnCode: WorkerCsvValidator.POSTCODE_WARNING,
         warnType: 'POSTCODE_WARNING',
         warning: 'POSTCODE is blank',
         source: myPostcode,
@@ -854,7 +813,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.POSTCODE_ERROR,
+        errCode: WorkerCsvValidator.POSTCODE_ERROR,
         errType: 'POSTCODE ERROR',
         error: 'POSTCODE is incorrectly formatted',
         source: myPostcode,
@@ -880,7 +839,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.DOB_WARNING,
+        warnCode: WorkerCsvValidator.DOB_WARNING,
         warnType: 'DOB_WARNING',
         warning: 'DOB is missing',
         source: this._currentLine.DOB,
@@ -892,7 +851,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.DOB_WARNING,
+        warnCode: WorkerCsvValidator.DOB_WARNING,
         warnType: 'DOB_WARNING',
         warning: 'The date of birth you have entered is incorrectly formatted and will be ignored',
         source: this._currentLine.DOB,
@@ -904,7 +863,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.DOB_WARNING,
+        warnCode: WorkerCsvValidator.DOB_WARNING,
         warnType: 'DOB_WARNING',
         warning: 'The date of birth you have entered is not between a valid range of 14 – 100 years old',
         source: this._currentLine.DOB,
@@ -927,7 +886,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.GENDER_ERROR,
+          errCode: WorkerCsvValidator.GENDER_ERROR,
           errType: 'GENDER_ERROR',
           error: 'The code you have entered for GENDER is incorrect',
           source: this._currentLine.GENDER,
@@ -965,7 +924,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.ETHNICITY_ERROR,
+          errCode: WorkerCsvValidator.ETHNICITY_ERROR,
           errType: 'ETHNICITY_ERROR',
           error: 'The code you have entered for ETHNICITY is incorrect',
           source: this._currentLine.ETHNICITY,
@@ -992,7 +951,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.BRITISH_CITIZENSHIP_WARNING,
+          warnCode: WorkerCsvValidator.BRITISH_CITIZENSHIP_WARNING,
           warnType: 'BRITISH_CITIZENSHIP_WARNING',
           warning: 'BRITISHCITIZENSHIP has been ignored as workers nationality is British',
           source: this._currentLine.BRITISHCITIZENSHIP,
@@ -1007,7 +966,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
+          errCode: WorkerCsvValidator.BRITISH_CITIZENSHIP_ERROR,
           errType: 'BRITISH_CITIZENSHIP_ERROR',
           error: 'BRITISHCITIZENSHIP code is not a valid entry',
           source: this._currentLine.BRITISHCITIZENSHIP,
@@ -1046,7 +1005,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.YEAROFENTRY_ERROR,
+          errCode: WorkerCsvValidator.YEAROFENTRY_ERROR,
           errType: 'YEAROFENTRY_ERROR',
           error: 'YEAROFENTRY is incorrectly formatted',
           source: this._currentLine.YEAROFENTRY,
@@ -1058,7 +1017,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.YEAROFENTRY_ERROR,
+          errCode: WorkerCsvValidator.YEAROFENTRY_ERROR,
           errType: 'YEAROFENTRY_ERROR',
           error: 'YEAROFENTRY is in the future',
           source: this._currentLine.YEAROFENTRY,
@@ -1070,7 +1029,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.YEAROFENTRY_ERROR,
+          errCode: WorkerCsvValidator.YEAROFENTRY_ERROR,
           errType: 'YEAROFENTRY_ERROR',
           error: 'YEAROFENTRY must be greater or equal to DOB',
           source: this._currentLine.YEAROFENTRY,
@@ -1082,7 +1041,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.YEAROFENTRY_WARNING,
+          warnCode: WorkerCsvValidator.YEAROFENTRY_WARNING,
           warnType: 'YEAROFENTRY_WARNING',
           warning: 'Year of entry has been ignored as Country of Birth is missing',
           source: this._currentLine.YEAROFENTRY,
@@ -1094,7 +1053,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.YEAROFENTRY_WARNING,
+          warnCode: WorkerCsvValidator.YEAROFENTRY_WARNING,
           warnType: 'YEAROFENTRY_WARNING',
           warning: 'Year of entry has been ignored as Country of Birth is British',
           source: this._currentLine.YEAROFENTRY,
@@ -1119,7 +1078,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.DISABLED_ERROR,
+          errCode: WorkerCsvValidator.DISABLED_ERROR,
           errType: 'DISABLED_ERROR',
           error: 'The code you have entered for DISABLED is incorrect',
           source: this._currentLine.DISABLED,
@@ -1158,7 +1117,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.CARE_CERT_ERROR,
+          errCode: WorkerCsvValidator.CARE_CERT_ERROR,
           errType: 'CARECERT_ERROR',
           error: 'The code you have entered for CARECERT is incorrect',
           source: this._currentLine.CARECERT,
@@ -1193,7 +1152,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.RECSOURCE_ERROR,
+        errCode: WorkerCsvValidator.RECSOURCE_ERROR,
         errType: 'RECSOURCE_ERROR',
         error: 'The code you have entered for RECSOURCE is incorrect',
         source: this._currentLine.RECSOURCE,
@@ -1224,7 +1183,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_DATE_WARNING,
+        warnCode: WorkerCsvValidator.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is missing',
         source: this._currentLine.STARTDATE,
@@ -1236,7 +1195,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_DATE_WARNING,
+        warnCode: WorkerCsvValidator.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is incorrectly formatted and will be ignored',
         source: this._currentLine.STARTDATE,
@@ -1248,7 +1207,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_DATE_WARNING,
+        warnCode: WorkerCsvValidator.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is in the future and will be ignored',
         source: this._currentLine.STARTDATE,
@@ -1260,7 +1219,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_DATE_WARNING,
+        warnCode: WorkerCsvValidator.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is before workers 14th birthday and will be ignored',
         source: this._currentLine.STARTINSECT,
@@ -1272,7 +1231,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_DATE_WARNING,
+        warnCode: WorkerCsvValidator.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: 'STARTDATE is before year of entry and will be ignored',
         source: this._currentLine.STARTINSECT,
@@ -1297,7 +1256,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_INSECT_WARNING,
+        warnCode: WorkerCsvValidator.START_INSECT_WARNING,
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is missing',
         source: this._currentLine.STARTINSECT,
@@ -1309,7 +1268,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_INSECT_WARNING,
+        warnCode: WorkerCsvValidator.START_INSECT_WARNING,
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is incorrectly formatted and will be ignored',
         source: this._currentLine.STARTINSECT,
@@ -1321,7 +1280,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_INSECT_WARNING,
+        warnCode: WorkerCsvValidator.START_INSECT_WARNING,
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is after STARTDATE and will be ignored',
         source: this._currentLine.STARTINSECT,
@@ -1333,7 +1292,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.START_INSECT_WARNING,
+        warnCode: WorkerCsvValidator.START_INSECT_WARNING,
         warnType: 'START_INSECT_WARNING',
         warning: 'STARTINSECT is before workers 14th birthday and will be ignored',
         source: this._currentLine.STARTINSECT,
@@ -1357,7 +1316,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.APPRENCTICE_WARNING,
+          warnCode: WorkerCsvValidator.APPRENCTICE_WARNING,
           warnType: 'APPRENTICE_WARNING',
           warning: 'The code for APPRENTICE is incorrect and will be ignored',
           source: this._currentLine.APPRENTICE,
@@ -1394,7 +1353,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.ZERO_HRCONT_WARNING,
+        warnCode: WorkerCsvValidator.ZERO_HRCONT_WARNING,
         warnType: 'ZERO_HRCONT_WARNING',
         warning: 'You have entered contracted hours but have not said this worker is not on a zero hours contract',
         source: this._currentLine.ZEROHRCONT,
@@ -1406,7 +1365,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.ZERO_HRCONT_ERROR,
+        errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
         errType: 'ZEROHRCONT_ERROR',
         error: 'The code you have entered for ZEROHRCONT is incorrect',
         source: this._currentLine.ZEROHRCONT,
@@ -1418,7 +1377,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.ZERO_HRCONT_ERROR,
+        errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
         errType: 'ZEROHRCONT_ERROR',
         error:
           'The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks',
@@ -1431,7 +1390,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.ZERO_HRCONT_WARNING,
+        warnCode: WorkerCsvValidator.ZERO_HRCONT_WARNING,
         warnType: 'ZERO_HRCONT_WARNING',
         warning: 'You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question',
         source: this._currentLine.ZEROHRCONT,
@@ -1473,7 +1432,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.DAYSICK_ERROR,
+          warnCode: WorkerCsvValidator.DAYSICK_ERROR,
           warnType: 'DAYSSICK_ERROR',
           warning: 'DAYSSICK is out of validation range and will be ignored',
           source: this._currentLine.DAYSSICK,
@@ -1509,7 +1468,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.DAYSICK_WARNING,
+        warnCode: WorkerCsvValidator.DAYSICK_WARNING,
         warnType: 'DAYSICK_WARNING',
         warning: 'DAYSSICK in the last 12 months has not changed please check this is correct',
         source: this._currentLine.DAYSSICK,
@@ -1529,7 +1488,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.SALARY_ERROR,
+          errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARYINT_ERROR',
           error: 'Salary Int (SALARYINT) must be an integer',
           source: this._currentLine.SALARYINT,
@@ -1541,7 +1500,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.SALARY_ERROR,
+          errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARYINT_ERROR',
           error: 'The code you have entered for SALARYINT is incorrect',
           source: this._currentLine.SALARYINT,
@@ -1580,7 +1539,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.SALARY_ERROR,
+          errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARY_ERROR',
           error: 'The code you have entered for SALARYINT does not match SALARY',
           source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
@@ -1592,7 +1551,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.SALARY_ERROR,
+          errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARY_ERROR',
           error: 'Salary (SALARY) must be an integer upto 9 digits',
           source: this._currentLine.SALARY,
@@ -1620,7 +1579,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.HOURLY_RATE_ERROR,
+          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
           errType: 'HOURLY_RATE_ERROR',
           error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
           source: `SALARYINT(${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
@@ -1632,7 +1591,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.HOURLY_RATE_ERROR,
+          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
           errType: 'HOURLY_RATE_ERROR',
           error: 'The code you have entered for HOURLYRATE is incorrect and will be ignored',
           source: this._currentLine.HOURLYRATE,
@@ -1657,7 +1616,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.MAIN_JOB_ROLE_ERROR,
+        errCode: WorkerCsvValidator.MAIN_JOB_ROLE_ERROR,
         errType: 'MAIN_JOB_ROLE_ERROR',
         error: 'MAINJOBROLE has not been supplied',
         source: this._currentLine.MAINJOBROLE,
@@ -1683,7 +1642,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.MAIN_JOB_DESC_ERROR,
+        errCode: WorkerCsvValidator.MAIN_JOB_DESC_ERROR,
         errType: 'MAIN_JOB_DESC_ERROR',
         error: 'MAINJRDESC has not been supplied',
         source: this._currentLine.MAINJRDESC,
@@ -1695,7 +1654,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.MAIN_JOB_DESC_ERROR,
+        errCode: WorkerCsvValidator.MAIN_JOB_DESC_ERROR,
         errType: 'MAIN_JOB_DESC_ERROR',
         error: 'MAINJRDESC is longer than 120 characters',
         source: this._currentLine.MAINJRDESC,
@@ -1711,7 +1670,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.MAIN_JOB_DESC_WARNING,
+        warnCode: WorkerCsvValidator.MAIN_JOB_DESC_WARNING,
         warnType: 'MAIN_JOB_DESC_WARNING',
         warning: 'MAINJRDESC will be ignored as not required for MAINJOBROLE',
         source: this._currentLine.MAINJRDESC,
@@ -1742,7 +1701,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.CONT_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.CONT_HOURS_WARNING,
         warnType: 'CONT_HOURS_WARNING',
         warning: `CONTHOURS will be ignored as ZEROHRCONT is ${intZeroHoursType}`,
         source: strContHours,
@@ -1770,7 +1729,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.CONT_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.CONT_HOURS_WARNING,
         warnType: 'CONT_HOURS_WARNING',
         warning: `CONTHOURS will be ignored as EMPLSTATUS is ${contractType}`,
         source: strContHours,
@@ -1790,7 +1749,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.CONT_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.CONT_HOURS_WARNING,
         warnType: 'CONT_HOURS_WARNING',
         warning: 'The code you have entered for CONTHOURS is incorrect and will be ignored',
         source: strContHours,
@@ -1809,7 +1768,7 @@ class Worker {
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
 
-        warnCode: Worker.CONT_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.CONT_HOURS_WARNING,
         warnType: 'CONT_HOURS_WARNING',
         warning: 'CONTHOURS is greater than 75 and will be ignored',
         source: strContHours,
@@ -1849,7 +1808,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.AVG_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.AVG_HOURS_WARNING,
         warnType: 'AVG_HOURS_ERROR',
         warning: `AVGHOURS will be ignored as staff record is ${contractType}`,
         source: strAvgHours,
@@ -1869,7 +1828,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.AVG_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.AVG_HOURS_WARNING,
         warnType: 'AVG_HOURS_ERROR',
         warning: 'The code you have entered for AVGHOURS is incorrect and will be ignored',
         source: strAvgHours,
@@ -1888,7 +1847,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.AVG_HOURS_WARNING,
+        warnCode: WorkerCsvValidator.AVG_HOURS_WARNING,
         warnType: 'AVG_HOURS_ERROR',
         warning: 'AVGHOURS is greater than 75 and will be ignored',
         source: strAvgHours,
@@ -1913,7 +1872,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
           errType: 'OTHER_JOB_ROLE_ERROR',
           error: 'The code you have entered for OTHERJOBROLE is incorrect',
           source: this._currentLine.OTHERJOBROLE,
@@ -1924,7 +1883,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
           errType: 'OTHER_JOB_ROLE_ERROR',
           error: 'OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
@@ -1933,7 +1892,7 @@ class Worker {
       } else if (listOfOtherJobs.includes('0') && listOfOtherJobs.length > 1) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
           errType: 'OTHER_JOB_ROLE_ERROR',
           error: 'OTHERJOBROLE is 0 (none) but contains other job roles',
           source: this._currentLine.OTHERJOBROLE,
@@ -1956,7 +1915,7 @@ class Worker {
                 worker: this._currentLine.UNIQUEWORKERID,
                 name: this._currentLine.LOCALESTID,
                 lineNumber: this._lineNumber,
-                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errCode: WorkerCsvValidator.OTHER_JR_DESC_ERROR,
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: `OTHERJRDESC (${index + 1}) has not been supplied`,
                 source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
@@ -1968,7 +1927,7 @@ class Worker {
                 worker: this._currentLine.UNIQUEWORKERID,
                 name: this._currentLine.LOCALESTID,
                 lineNumber: this._lineNumber,
-                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errCode: WorkerCsvValidator.OTHER_JR_DESC_ERROR,
                 errType: 'OTHER_JR_DESC_ERROR',
                 error: 'OTHERJRDESC is longer than 120 characters',
                 source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
@@ -1982,7 +1941,7 @@ class Worker {
               worker: this._currentLine.UNIQUEWORKERID,
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              warnCode: Worker.OTHER_JR_DESC_WARNING,
+              warnCode: WorkerCsvValidator.OTHER_JR_DESC_WARNING,
               warnType: 'OTHER_JR_DESC_WARNING',
               warning: 'OTHERJRDESC will be ignored as not required for OTHERJOBROLE',
               source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
@@ -2025,7 +1984,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.NMCREG_WARNING,
+        warnCode: WorkerCsvValidator.NMCREG_WARNING,
         warnType: 'NMCREG_WARNING',
         warning: 'NMCREG has not been supplied',
         source: this._currentLine.NMCREG,
@@ -2037,7 +1996,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.NMCREG_WARNING,
+        warnCode: WorkerCsvValidator.NMCREG_WARNING,
         warnType: 'NMCREG_WARNING',
         warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
         source: this._currentLine.NMCREG,
@@ -2068,7 +2027,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
           warnType: 'NURSE_SPEC_WARNING',
           warning: 'NURSESPEC has not been supplied',
           source: this._currentLine.NURSESPEC,
@@ -2084,7 +2043,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
           warnType: 'NURSE_SPEC_WARNING',
           warning:
             'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
@@ -2098,7 +2057,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
           warnType: 'NURSE_SPEC_WARNING',
           warning:
             'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
@@ -2111,7 +2070,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.NURSE_SPEC_WARNING,
+        warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
         warnType: 'NURSE_SPEC_WARNING',
         warning: 'NURSESPEC will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE',
         source: this._currentLine.NURSESPEC,
@@ -2141,7 +2100,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.AMHP_WARNING,
+          warnCode: WorkerCsvValidator.AMHP_WARNING,
           warnType: 'AMHP_WARNING',
           warning: 'AMHP has not been supplied',
           source: this._currentLine.AMHP,
@@ -2155,7 +2114,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.AMHP_WARNING,
+          warnCode: WorkerCsvValidator.AMHP_WARNING,
           warnType: 'AMHP_WARNING',
           warning: 'The code you have entered for AMHP is incorrect and will be ignored',
           source: this._currentLine.AMHP,
@@ -2168,7 +2127,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.AMHP_WARNING,
+        warnCode: WorkerCsvValidator.AMHP_WARNING,
         warnType: 'AMHP_WARNING',
         warning: 'The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE/OTHERJOBROLE',
         source: this._currentLine.AMHP,
@@ -2205,7 +2164,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.NATIONALITY_ERROR,
+          errCode: WorkerCsvValidator.NATIONALITY_ERROR,
           errType: 'NATIONALITY_ERROR',
           error: 'Nationality (NATIONALITY) must be an integer',
           source: this._currentLine.NATIONALITY,
@@ -2230,7 +2189,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+          errCode: WorkerCsvValidator.COUNTRY_OF_BIRTH_ERROR,
           errType: 'COUNTRY_OF_BIRTH_ERROR',
           error: 'Country of Birth (COUNTRYOFBIRTH) must be an integer',
           source: this._currentLine.COUNTRYOFBIRTH,
@@ -2256,7 +2215,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+        warnCode: WorkerCsvValidator.SOCIALCARE_QUAL_WARNING,
         warnType: 'SOCIALCARE_QUAL_WARNING',
         warning: 'SCQUAL is blank',
         source: this._currentLine.SCQUAL,
@@ -2267,7 +2226,7 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.SOCIALCARE_QUAL_ERROR,
+        errCode: WorkerCsvValidator.SOCIALCARE_QUAL_ERROR,
         errType: 'SOCIALCARE_QUAL_ERROR',
         error: 'The code you have entered for SCQUAL is incorrect',
         source: this._currentLine.SCQUAL,
@@ -2286,7 +2245,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errCode: WorkerCsvValidator.SOCIALCARE_QUAL_ERROR,
           errType: 'SOCIALCARE_QUAL_ERROR',
           error: 'You must provide a value for SCQUAL level when SCQUAL is set to 1',
           source: this._currentLine.SCQUAL,
@@ -2302,7 +2261,7 @@ class Worker {
       //         worker: this._currentLine.UNIQUEWORKERID,
       //         name: this._currentLine.LOCALESTID,
       //         lineNumber: this._lineNumber,
-      //         warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+      //         warnCode: WorkerCsvValidator.SOCIALCARE_QUAL_WARNING,
       //         warnType: 'SOCIALCARE_QUAL_WARNING',
       //         warning: `SCQUAL level does not match the QUALACH${q.column}`,
       //         source: this._currentLine.SCQUAL,
@@ -2316,7 +2275,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+          warnCode: WorkerCsvValidator.SOCIALCARE_QUAL_WARNING,
           warnType: 'SOCIALCARE_QUAL_WARNING',
           warning: 'workers MAINJOBROLE is a regulated profession therefore requires a Social Care qualification',
           source: this._currentLine.SCQUAL,
@@ -2342,7 +2301,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errCode: WorkerCsvValidator.NON_SOCIALCARE_QUAL_ERROR,
           errType: 'NON_SOCIALCARE_QUAL_ERROR',
           error: 'The code you have entered for NONSCQUAL is incorrect',
           source: this._currentLine.NONSCQUAL,
@@ -2364,7 +2323,7 @@ class Worker {
             //       worker: this._currentLine.UNIQUEWORKERID,
             //       name: this._currentLine.LOCALESTID,
             //       lineNumber: this._lineNumber,
-            //       warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
+            //       warnCode: WorkerCsvValidator.NON_SOCIALCARE_QUAL_WARNING,
             //       warnType: 'NON_SOCIALCARE_QUAL_WARNING',
             //       warning: `NONSCQUAL level does not match the QUALACH${q.column}`,
             //       source: this._currentLine.SCQUAL,
@@ -2514,11 +2473,11 @@ class Worker {
         return this.__validateQualification(
           index,
           `QUALACH${index}`,
-          Worker[`QUAL_ACH${index}_ERROR`],
+          WorkerCsvValidator[`QUAL_ACH${index}_ERROR`],
           `QUAL_ACH${index}_ERROR`,
           this._currentLine[`QUALACH${index}`],
           `QUALACH${index}NOTES`,
-          Worker[`QUAL_ACH${index}_NOTES_ERROR`],
+          WorkerCsvValidator[`QUAL_ACH${index}_NOTES_ERROR`],
           `QUAL_ACH${index}_NOTES_ERROR`,
           this._currentLine[`QUALACH${index}NOTES`],
         );
@@ -2533,13 +2492,13 @@ class Worker {
   // transform related
   _transformContractType() {
     if (this._contractType) {
-      const mappedType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+      const mappedType = this.BUDI.contractType(this.BUDI.TO_ASC, this._contractType);
       if (mappedType === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.CONTRACT_TYPE_ERROR,
+          errCode: WorkerCsvValidator.CONTRACT_TYPE_ERROR,
           errType: 'CONTRACT_TYPE_ERROR',
           error: 'The code you have entered for EMPLSTATUS is incorrect',
           source: this._currentLine.EMPLSTATUS,
@@ -2554,14 +2513,14 @@ class Worker {
   // transform related
   _transformEthnicity() {
     if (this._ethnicity) {
-      const myValidatedEthnicity = BUDI.ethnicity(BUDI.TO_ASC, this._ethnicity);
+      const myValidatedEthnicity = this.BUDI.ethnicity(this.BUDI.TO_ASC, this._ethnicity);
 
       if (!myValidatedEthnicity) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.ETHNICITY_ERROR,
+          errCode: WorkerCsvValidator.ETHNICITY_ERROR,
           errType: 'ETHNICITY_ERROR',
           error: 'The code you have entered for ETHNICITY is incorrect',
           source: this._currentLine.ETHNICITY,
@@ -2579,14 +2538,14 @@ class Worker {
       if (this._recSource === 16) {
         this._recSource = 'No';
       } else {
-        const myValidatedRecruitment = BUDI.recruitment(BUDI.TO_ASC, this._recSource);
+        const myValidatedRecruitment = this.BUDI.recruitment(this.BUDI.TO_ASC, this._recSource);
 
         if (!myValidatedRecruitment) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker.RECSOURCE_ERROR,
+            errCode: WorkerCsvValidator.RECSOURCE_ERROR,
             errType: 'RECSOURCE_ERROR',
             error: 'The code you have entered for RECSOURCE is incorrect',
             source: this._currentLine.RECSOURCE,
@@ -2606,21 +2565,21 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.MAIN_JOB_ROLE_ERROR,
+        errCode: WorkerCsvValidator.MAIN_JOB_ROLE_ERROR,
         errType: 'MAIN_JOB_ROLE_ERROR',
         error: 'The code you have entered for MAINJOBROLE is incorrect',
         source: this._currentLine.MAINJOBROLE,
         column: 'MAINJOBROLE',
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
-      const mappedRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
+      const mappedRole = this.BUDI.jobRoles(this.BUDI.TO_ASC, this._mainJobRole);
 
       if (mappedRole === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.MAIN_JOB_ROLE_ERROR,
+          errCode: WorkerCsvValidator.MAIN_JOB_ROLE_ERROR,
           errType: 'MAIN_JOB_ROLE_ERROR',
           error: 'The code you have entered for MAINJOBROLE is incorrect',
           source: this._currentLine.MAINJOBROLE,
@@ -2637,14 +2596,14 @@ class Worker {
       const mappedJobs = [];
 
       this._otherJobs.forEach((thisJob) => {
-        const myValidatedJobRole = thisJob !== 0 ? BUDI.jobRoles(BUDI.TO_ASC, thisJob) : 0;
+        const myValidatedJobRole = thisJob !== 0 ? this.BUDI.jobRoles(this.BUDI.TO_ASC, thisJob) : 0;
 
         if (myValidatedJobRole !== 0 && !myValidatedJobRole) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker.OTHER_JOB_ROLE_ERROR,
+            errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
             errType: 'OTHER_JOB_ROLE_ERROR',
             error: 'The code you have entered for OTHERJOBROLE is incorrect',
             source: this._currentLine.OTHERJOBROLE,
@@ -2683,7 +2642,7 @@ class Worker {
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            warnCode: Worker.NMCREG_WARNING,
+            warnCode: WorkerCsvValidator.NMCREG_WARNING,
             warnType: 'NMCREG_WARNING',
             warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
             source: this._currentLine.NMCREG,
@@ -2697,13 +2656,13 @@ class Worker {
     if (this._nursingSpecialist && Array.isArray(this._nursingSpecialist)) {
       const validatedSpecialisms = [];
       for (let specialism of this._nursingSpecialist) {
-        const validatedSpecialism = BUDI.nursingSpecialist(BUDI.TO_ASC, specialism);
+        const validatedSpecialism = this.BUDI.nursingSpecialist(this.BUDI.TO_ASC, specialism);
         if (!validatedSpecialism) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            warnCode: Worker.NURSE_SPEC_WARNING,
+            warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
             warnType: 'NURSE_SPEC_WARNING',
             warning: `NURSESPEC the code ${specialism} you have entered has not been recognised and will be ignored`,
             source: this._currentLine.NURSESPEC,
@@ -2727,14 +2686,14 @@ class Worker {
       } else if (this._nationality === 999) {
         this._nationality = 'Other';
       } else {
-        const myValidatedNationality = BUDI.nationality(BUDI.TO_ASC, this._nationality);
+        const myValidatedNationality = this.BUDI.nationality(this.BUDI.TO_ASC, this._nationality);
 
         if (!myValidatedNationality) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker.NATIONALITY_ERROR,
+            errCode: WorkerCsvValidator.NATIONALITY_ERROR,
             errType: 'NATIONALITY_ERROR',
             error: `Nationality code (${this._nationality}) is not a valid entry`,
             source: this._currentLine.NURSESPEC,
@@ -2757,14 +2716,14 @@ class Worker {
       } else if (this._countryOfBirth === 999) {
         this._countryOfBirth = 'Other';
       } else {
-        const myValidatedCountry = BUDI.country(BUDI.TO_ASC, this._countryOfBirth);
+        const myValidatedCountry = this.BUDI.country(this.BUDI.TO_ASC, this._countryOfBirth);
 
         if (!myValidatedCountry) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+            errCode: WorkerCsvValidator.COUNTRY_OF_BIRTH_ERROR,
             errType: 'COUNTRY_OF_BIRTH_ERROR',
             error: `Country of birth code (${this._countryOfBirth}) is not a valid entry`,
             source: this._currentLine.COUNTRYOFBIRTH,
@@ -2779,14 +2738,17 @@ class Worker {
 
   _transformSocialCareQualificationLevel() {
     if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
+      const myValidatedQualificationLevel = this.BUDI.qualificationLevels(
+        this.BUDI.TO_ASC,
+        this._socialCareQualificationlevel,
+      );
 
       if (!myValidatedQualificationLevel) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.SOCIALCARE_QUAL_ERROR,
+          warnCode: WorkerCsvValidator.SOCIALCARE_QUAL_ERROR,
           warnType: 'SOCIALCARE_QUAL_ERROR',
           warning: 'The level you have entered for SCQUAL is not valid and will be ignored',
           source: this._currentLine.SCQUAL,
@@ -2801,8 +2763,8 @@ class Worker {
   _transformNonSocialCareQualificationLevel() {
     if (this._nonSocialCareQualificationlevel || this._nonSocialCareQualificationlevel === 0) {
       // ASC WDS country of birth is a split enum/index
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(
-        BUDI.TO_ASC,
+      const myValidatedQualificationLevel = this.BUDI.qualificationLevels(
+        this.BUDI.TO_ASC,
         this._nonSocialCareQualificationlevel,
       );
 
@@ -2811,7 +2773,7 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          warnCode: WorkerCsvValidator.NON_SOCIALCARE_QUAL_ERROR,
           warnType: 'NON_SOCIALCARE_QUAL_ERROR',
           warning: 'The level you have entered for NONSCQUAL is not valid and will be ignored',
           source: this._currentLine.NONSCQUAL,
@@ -2828,14 +2790,14 @@ class Worker {
       const mappedQualifications = [];
 
       this._qualifications.forEach((thisQualification) => {
-        const myValidatedQualification = BUDI.qualifications(BUDI.TO_ASC, thisQualification.id);
+        const myValidatedQualification = this.BUDI.qualifications(this.BUDI.TO_ASC, thisQualification.id);
 
         if (!myValidatedQualification) {
           this._validationErrors.push({
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker[`QUAL_ACH${thisQualification.column}_ERROR`],
+            errCode: WorkerCsvValidator[`QUAL_ACH${thisQualification.column}_ERROR`],
             errType: `QUAL_ACH${thisQualification.column}_ERROR`,
             error: `Qualification (QUALACH${thisQualification.column}): ${thisQualification.id} is unknown`,
             source: `${this._currentLine[`QUALACH${thisQualification.column}`]}`,
@@ -2850,84 +2812,6 @@ class Worker {
 
       this._qualifications = mappedQualifications;
     }
-  }
-
-  preValidate(headers) {
-    return this._validateHeaders(headers);
-  }
-
-  static isContent(data) {
-    const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,/;
-
-    return contentRegex1.test(data.substring(0, 50)) || contentRegex2.test(data.substring(0, 50));
-  }
-
-  _validateHeaders(headers) {
-    // console.log("WA DEBUF - _validateHeaders -  S: ", headers)
-    // console.log("WA DEBUF - _validateHeaders - T1: ", _headers_v1)
-    // console.log("WA DEBUF - _validateHeaders - T2: ", _headers_v1_without_chgUnique)
-
-    // only run once for first line, so check _lineNumber
-    // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
-
-    // worker CSV can include more than the default three qualification sets of columns
-    // first compare the default headers (up to and including three quals)
-
-    const matchesWithChgUnique = headers.startsWith(_headers_v1_without_chgUnique);
-    const matchesWithoutChgUnique = headers.startsWith(_headers_v1);
-
-    if (!matchesWithChgUnique && !matchesWithoutChgUnique) {
-      this._validationErrors.push({
-        worker: null,
-        name: null,
-        lineNumber: 1,
-        errCode: Worker.HEADERS_ERROR,
-        errType: 'HEADERS_ERROR',
-        error: `Worker headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
-        source: headers,
-        column: '',
-      });
-      return false;
-    }
-
-    // gets this far having passed the default set of headers; now check the qualification headers
-    const additionalQualsHeader = matchesWithChgUnique
-      ? headers.slice(_headers_v1_without_chgUnique.length)
-      : headers.slice(_headers_v1.length);
-    let remainingHeadersValid = true; // assume success
-    if (additionalQualsHeader.length > 0) {
-      // there are more than the default three qualifications, so validate the remaining headers (noting that the first character will be a comma)
-      const remainingHeaders = additionalQualsHeader.slice(1).split(',');
-
-      // loop two by two
-      let currentIndex = 4;
-      for (let currentHeader = 0; currentHeader < remainingHeaders.length; currentHeader += 2) {
-        const currentHeaderIndex = `${currentIndex}`.padStart(2, '0');
-
-        if (
-          !(remainingHeaders[currentHeader] && remainingHeaders[currentHeader] === `QUALACH${currentHeaderIndex}`) ||
-          !(
-            remainingHeaders[currentHeader + 1] &&
-            remainingHeaders[currentHeader + 1] === `QUALACH${currentHeaderIndex}NOTES`
-          )
-        ) {
-          remainingHeadersValid = false;
-          break;
-        }
-        currentIndex++;
-      }
-    }
-
-    if (!remainingHeadersValid) {
-      console.error(
-        'CSV Worker::_validateHeaders: failed to validate additional qualification headers: ',
-        additionalQualsHeader,
-      );
-      return false;
-    }
-
-    return true;
   }
 
   // returns true on success, false is any attribute of Worker fails
@@ -3165,7 +3049,7 @@ class Worker {
     };
 
     if (this._nursingSpecialist) {
-      changeProperties.nurseSpecialisms = BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
+      changeProperties.nurseSpecialisms = this.BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
     }
 
     if (this._fluVac) {
@@ -3376,5 +3260,4 @@ class Worker {
   }
 }
 
-module.exports.Worker = Worker;
-module.exports.WorkersFileHeaders = _headers_v1;
+module.exports.WorkerCsvValidator = WorkerCsvValidator;

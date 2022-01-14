@@ -34,7 +34,7 @@ const exceedsNationalInsuranceMaximum = (thisWorker) => {
   return {
     origin: 'Workers',
     lineNumber: thisWorker.lineNumber,
-    errCode: NI_WORKER_DUPLICATE_ERROR,
+    errCode: NI_WORKER_DUPLICATE_ERROR(),
     errType: 'NI_WORKER_DUPLICATE_ERROR',
     error: 'NINUMBER is already associated with another full time worker record',
     source: thisWorker.localId,

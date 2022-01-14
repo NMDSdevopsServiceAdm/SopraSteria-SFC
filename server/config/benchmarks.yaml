@@ -29,6 +29,8 @@ bulkupload:
         timeout: 300
     completion:
         timeout: 180
+    lambda:
+        stage: sfcbenchmarks
 
 locks:
     region: eu-west-1

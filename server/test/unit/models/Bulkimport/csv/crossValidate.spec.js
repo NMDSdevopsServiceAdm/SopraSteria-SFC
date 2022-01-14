@@ -1,4 +1,7 @@
-const { Worker } = require('../../../../../models/BulkImport/csv/workers');
+const WorkerCsvValidator =
+  require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+const mappings = require('../../../../../models/BulkImport/BUDI/index.js').mappings;
+
 const {
   crossValidate,
   _crossValidateMainJobRole,
@@ -13,7 +16,7 @@ describe('crossValidate', () => {
     it('should add error to csvWorkerSchemaErrors if establishment not CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
 
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'NEW';
       JSONWorker.mainJobRoleId = 4;
@@ -37,7 +40,7 @@ describe('crossValidate', () => {
     it('should not add error to csvWorkerSchemaErrors if establishment is CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
 
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'NEW';
       JSONWorker.mainJobRoleId = 4;
@@ -50,7 +53,7 @@ describe('crossValidate', () => {
     it('should not add error to csvWorkerSchemaErrors if establishment is not CQC regulated and main role ID is not 4', () => {
       const csvWorkerSchemaErrors = [];
 
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'NEW';
       JSONWorker.mainJobRoleId = 2;
@@ -63,7 +66,7 @@ describe('crossValidate', () => {
 
   describe('crossValidate', () => {
     it('should return false when JSONWorker is UNCHECKED', async () => {
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'UNCHECKED';
 
@@ -86,7 +89,7 @@ describe('crossValidate', () => {
           key: 'HELLO',
         },
       ];
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       worker._status = 'NEW';
       const JSONWorker = worker.toJSON();
       JSONWorker.establishmentKey = 'HELLO';
@@ -106,7 +109,7 @@ describe('crossValidate', () => {
           key: 'HELLO',
         },
       ];
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       worker._status = 'NEW';
       const JSONWorker = worker.toJSON();
       JSONWorker.establishmentKey = 'HELLO';
@@ -127,7 +130,7 @@ describe('crossValidate', () => {
           regType: 1,
         },
       ];
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       worker._status = 'NEW';
       const JSONWorker = worker.toJSON();
       JSONWorker.establishmentKey = 'HELLO';
@@ -146,7 +149,7 @@ describe('crossValidate', () => {
           regType: 2,
         },
       ];
-      const worker = new Worker();
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
       worker._status = 'NEW';
       const JSONWorker = worker.toJSON();
       JSONWorker.establishmentKey = 'HELLO';
