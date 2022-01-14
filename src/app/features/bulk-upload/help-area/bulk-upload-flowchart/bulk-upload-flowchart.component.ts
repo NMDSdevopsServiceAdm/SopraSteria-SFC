@@ -14,18 +14,11 @@ export class BulkUploadFlowchartComponent implements OnInit {
     this.setBackLink();
   }
 
-  // Needs implementing
   public setBackLink(): void {
     const returnUrl = this.bulkUploadTopTipsService.returnTo
       ? this.bulkUploadTopTipsService.returnTo
       : { url: ['/bulk-upload', 'get-help'] };
 
     this.backService.setBackLink(returnUrl);
-  }
-
-  // Needs implementing
-  public downloadGuide(event: Event): void {
-    event.preventDefault();
-    console.log('Download guide');
   }
 }
