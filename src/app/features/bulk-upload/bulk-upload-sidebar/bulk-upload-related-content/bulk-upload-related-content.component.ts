@@ -21,7 +21,7 @@ export class BulkUploadRelatedContentComponent {
 
   ngOnInit(): void {
     this.datachange = this.route.snapshot.data.dataChange.data.last_updated;
-    this.dataChangeLastUpdated = this.route.snapshot.data.dataChangeLastUpdatedResolver.dataChangesLastUpdate;
+    this.dataChangeLastUpdated = this.route.snapshot.data.dataChangeLastUpdated.dataChangesLastUpdate;
     this.getShowFlagForBUDataChanges();
   }
   public getShowFlagForBUDataChanges() {

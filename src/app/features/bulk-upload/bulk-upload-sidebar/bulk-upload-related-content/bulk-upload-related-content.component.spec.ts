@@ -1,14 +1,20 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { render } from '@testing-library/angular';
 
 import { BulkUploadRelatedContentComponent } from './bulk-upload-related-content.component';
 
 describe('BulkUploadRelatedContentComponent', () => {
+  const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
+
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText } = await render(BulkUploadRelatedContentComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
@@ -16,6 +22,17 @@ describe('BulkUploadRelatedContentComponent', () => {
         {
           provide: AuthService,
           useFactory: MockAuthService.factory(isLoggedIn, isAdmin),
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              data: {
+                dataChange,
+                dataChangeLastUpdated,
+              },
+            },
+          }),
         },
       ],
       declarations: [BulkUploadRelatedContentComponent],
