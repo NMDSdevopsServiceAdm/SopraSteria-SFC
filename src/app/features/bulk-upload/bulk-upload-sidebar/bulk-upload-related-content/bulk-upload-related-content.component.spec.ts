@@ -112,4 +112,13 @@ describe('BulkUploadRelatedContentComponent', () => {
     expect(queryByText('View last bulk upload')).toBeTruthy();
     expect(queryByText('View references')).toBeTruthy();
   });
+
+  it('should not render Data changes when passed a false flag', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.getShowFlagForBUDataChanges();
+    fixture.detectChanges();
+
+    expect(component.dataChangeLastUpdated).not.toEqual(component.datachange);
+  });
 });

@@ -20,14 +20,11 @@ export class BulkUploadRelatedContentComponent {
   constructor(public authService: AuthService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.datachange = this.route.snapshot.data.dataChange.data.last_updated;
-    this.dataChangeLastUpdated = this.route.snapshot.data.dataChangeLastUpdated.dataChangesLastUpdate;
+    this.datachange = new Date(this.route.snapshot.data.dataChange.data.last_updated);
+    this.dataChangeLastUpdated = new Date(this.route.snapshot.data.dataChangeLastUpdated.dataChangesLastUpdate);
     this.getShowFlagForBUDataChanges();
   }
   public getShowFlagForBUDataChanges() {
-    const LastUpdatedChange = new Date(this.datachange);
-    const LastUpdated = new Date(this.dataChangeLastUpdated);
-
-    this.showFlagBUChanges = +LastUpdated !== +LastUpdatedChange;
+    this.showFlagBUChanges = +this.dataChangeLastUpdated !== +this.datachange;
   }
 }
