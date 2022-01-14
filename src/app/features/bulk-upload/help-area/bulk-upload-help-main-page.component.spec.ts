@@ -1,28 +1,41 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadTopTipsService } from '@core/test-utils/MockBulkUploadTopTipsService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
+import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';
+import { BulkUploadTopTipPageComponent } from './bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 
 describe('BulkUploadHelpMainPageComponent', () => {
   const topTipsList = MockBulkUploadTopTipsService.topTipsListFactory();
 
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadHelpMainPageComponent, {
-      imports: [RouterTestingModule.withRoutes([]), HttpClientTestingModule, BrowserModule],
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: 'bulk-upload/get-help/step-by-step-guide', component: BulkUploadFlowchartComponent },
+          { path: 'bulk-upload/get-help/top-tip-one', component: BulkUploadTopTipPageComponent },
+          { path: 'bulk-upload/get-help/top-tip-two', component: BulkUploadTopTipPageComponent },
+          { path: 'bulk-upload/get-help/top-tip-three', component: BulkUploadTopTipPageComponent },
+        ]),
+        HttpClientTestingModule,
+        BrowserModule,
+      ],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -42,9 +55,13 @@ describe('BulkUploadHelpMainPageComponent', () => {
       ],
       declarations: [BulkUploadHelpMainPageComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
+
+    const bulkUploadToptTipsService = getTestBed().inject(BulkUploadTopTipsService) as BulkUploadTopTipsService;
+    const spy = spyOn(bulkUploadToptTipsService, 'setReturnTo');
+
     const component = fixture.componentInstance;
 
-    return { component, getByText };
+    return { component, fixture, getByText, spy };
   };
 
   it('should render a BulkUploadHelpMainPageComponent', async () => {
@@ -94,5 +111,53 @@ describe('BulkUploadHelpMainPageComponent', () => {
     const { getByText } = await setup();
     expect(getByText('Data changes')).toBeTruthy();
     expect(getByText('About bulk upload')).toBeTruthy();
+  });
+
+  it('should call the setReturnUrl function with no slug when clicking top tip link not brought in by cms', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+
+    component.currentUrl = 'bulk-upload/get-help';
+    fixture.detectChanges();
+
+    const flowchartLink = getByText('Step by step bulk upload guide');
+    fireEvent.click(flowchartLink);
+
+    expect(spy).toHaveBeenCalledWith({ url: ['bulk-upload/get-help'] });
+  });
+
+  it('should call the setReturnUrl function with correct slug when clicking the first cms link', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+
+    component.currentUrl = 'bulk-upload/get-help';
+    fixture.detectChanges();
+
+    const firstTopTipLink = getByText(topTipsList.data[0].title);
+    fireEvent.click(firstTopTipLink);
+
+    expect(spy).toHaveBeenCalledWith({ url: [`bulk-upload/get-help/${topTipsList.data[0].slug}`] });
+  });
+
+  it('should call the setReturnUrl function with correct slug when clicking the second cms link', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+
+    component.currentUrl = 'bulk-upload/get-help';
+    fixture.detectChanges();
+
+    const firstTopTipLink = getByText(topTipsList.data[1].title);
+    fireEvent.click(firstTopTipLink);
+
+    expect(spy).toHaveBeenCalledWith({ url: [`bulk-upload/get-help/${topTipsList.data[1].slug}`] });
+  });
+
+  it('hould call the setReturnUrl function with correct slug when clicking the third cms link', async () => {
+    const { component, fixture, getByText, spy } = await setup();
+
+    component.currentUrl = 'bulk-upload/get-help';
+    fixture.detectChanges();
+
+    const firstTopTipLink = getByText(topTipsList.data[2].title);
+    fireEvent.click(firstTopTipLink);
+
+    expect(spy).toHaveBeenCalledWith({ url: [`bulk-upload/get-help/${topTipsList.data[2].slug}`] });
   });
 });

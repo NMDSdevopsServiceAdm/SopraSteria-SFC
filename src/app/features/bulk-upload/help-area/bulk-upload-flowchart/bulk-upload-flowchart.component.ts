@@ -24,7 +24,8 @@ export class BulkUploadFlowchartComponent implements OnInit {
   }
 
   // Needs implementing
-  public printPage(event: Event): void {
+  public downloadGuide(event: Event): void {
     event.preventDefault();
+    console.log('Download guide');
   }
 }

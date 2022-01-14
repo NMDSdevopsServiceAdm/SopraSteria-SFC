@@ -12,6 +12,7 @@ import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload
 })
 export class BulkUploadHelpMainPageComponent implements OnInit {
   public topTipsList: BulkUploadTopTip[];
+  public currentUrl: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,11 +24,11 @@ export class BulkUploadHelpMainPageComponent implements OnInit {
   ngOnInit(): void {
     this.topTipsList = this.route.snapshot.data.topTipsList.data;
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD_HELP);
-    this.setReturnUrl();
+    this.currentUrl = this.router.url;
   }
 
   setReturnUrl(slug?: string): void {
-    const returnUrl = slug ? `${this.router.url}/${slug}` : `${this.router.url}`;
+    const returnUrl = slug ? `${this.currentUrl}/${slug}` : `${this.currentUrl}`;
     this.bulkUploadTopTipsService.setReturnTo({ url: [returnUrl] });
   }
 }

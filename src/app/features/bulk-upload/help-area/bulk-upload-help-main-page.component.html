@@ -9,7 +9,10 @@
       <p>Quick and easy help on how to bulk uploads.</p>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-3">
-          <a class="govuk-body" [routerLink]="['/bulk-upload', 'get-help', 'step-by-step-guide']"
+          <a
+            class="govuk-body"
+            [routerLink]="['/bulk-upload', 'get-help', 'step-by-step-guide']"
+            (click)="setReturnUrl()"
             >Step by step bulk upload guide</a
           >
         </li>

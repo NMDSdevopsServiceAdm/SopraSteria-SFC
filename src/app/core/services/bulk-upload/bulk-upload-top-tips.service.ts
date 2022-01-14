@@ -43,4 +43,8 @@ export class BulkUploadTopTipsService {
 
     return this.http.get<BulkUploadTopTips>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
+
+  // public downloadBulkUploadHelpGuide(): Observable<any> {
+  //   this.http.get<Blob>(`/api/bulkDownloa`)
+  // }
 }
