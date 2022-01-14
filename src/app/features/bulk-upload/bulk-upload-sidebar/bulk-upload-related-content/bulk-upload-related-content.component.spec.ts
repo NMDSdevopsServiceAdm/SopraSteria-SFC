@@ -16,7 +16,7 @@ describe('BulkUploadRelatedContentComponent', () => {
   const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
 
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
-    const { fixture, getByText, queryByText } = await render(BulkUploadRelatedContentComponent, {
+    const { fixture, getByText, queryByText, getByTestId } = await render(BulkUploadRelatedContentComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
       providers: [
         {
@@ -39,7 +39,7 @@ describe('BulkUploadRelatedContentComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, queryByText };
+    return { component, fixture, getByText, queryByText, getByTestId };
   };
 
   it('should render a BulkUploadRelatedContentComponent', async () => {
@@ -120,5 +120,22 @@ describe('BulkUploadRelatedContentComponent', () => {
     fixture.detectChanges();
 
     expect(component.dataChangeLastUpdated).not.toEqual(component.datachange);
+  });
+
+  it('should not show the flags when showFlagBUChanges is false', async () => {
+    const { component, fixture, getByTestId } = await setup(true);
+    component.showFlagBUChanges = false;
+    const showFlag = getByTestId('showFlag');
+    fixture.detectChanges();
+
+    expect(showFlag).toBeFalsy;
+  });
+  it('should show the flags when showFlagBUChanges is true', async () => {
+    const { component, fixture, getByTestId } = await setup(true);
+    component.showFlagBUChanges = true;
+    const showFlag = getByTestId('showFlag');
+    fixture.detectChanges();
+
+    expect(showFlag).toBeTruthy;
   });
 });

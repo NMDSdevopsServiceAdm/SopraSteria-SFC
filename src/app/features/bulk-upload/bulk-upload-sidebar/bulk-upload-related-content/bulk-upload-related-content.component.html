@@ -8,7 +8,7 @@
   </li>
   <li *ngIf="showDataChanges">
     <a [routerLink]="['/bulk-upload', 'data-change']">Data changes</a>
-    <span *ngIf="showFlagBUChanges">
+    <span *ngIf="showFlagBUChanges" data-testid="showFlag">
       <img
         src="/assets/images/flag-orange.svg"
         alt=""
