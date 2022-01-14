@@ -27,9 +27,9 @@ describe('BulkUploadTopTipPageComponent', () => {
     const { fixture, getByText } = await render(BulkUploadTopTipPageComponent, {
       imports: [
         RouterTestingModule.withRoutes([
-          { path: 'bulk-upload/get-help/top-tip-one', component: BulkUploadTopTipPageComponent },
-          { path: 'bulk-upload/get-help/top-tip-two', component: BulkUploadTopTipPageComponent },
-          { path: 'bulk-upload/get-help/top-tip-three', component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
         ]),
         HttpClientTestingModule,
         BrowserModule,
