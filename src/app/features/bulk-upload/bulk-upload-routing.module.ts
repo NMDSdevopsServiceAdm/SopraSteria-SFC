@@ -7,9 +7,9 @@ import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
+import { BulkUploadTroubleshootingPageResolver } from '@core/resolvers/bulk-upload/bulk-upload-troubleshooting-page.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
-import { PageResolver } from '@core/resolvers/page.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { AboutBulkUploadComponent } from '@features/bulk-upload/about-bulk-upload/about-bulk-upload.component';
@@ -47,7 +47,7 @@ const routes: Routes = [
         component: BulkUploadTroubleshootingComponent,
         data: { title: 'Bulk upload troubleshooting page' },
         resolve: {
-          pages: PageResolver,
+          bulkUploadTroubleShootingLink: BulkUploadTroubleshootingPageResolver,
         },
       },
       {

@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
+import { BulkUploadTroubleshootingPageResolver } from '@core/resolvers/bulk-upload/bulk-upload-troubleshooting-page.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -92,6 +93,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     BulkUploadErrorsResolver,
     BulkUploadTopTipsListResolver,
     BulkUploadTopTipResolver,
+    BulkUploadTroubleshootingPageResolver,
   ],
 })
 export class BulkUploadModule {}
