@@ -84,15 +84,16 @@ describe('BulkUploadHelpMainPageComponent', () => {
   });
 
   it('should render the step by step link with the correct href attribute', async () => {
-    const { getByText, queryByText } = await setup();
-    expect(queryByText('Step by step bulk upload guide')).toBeTruthy();
-    const link = getByText('Step by step bulk upload guide');
+    const { queryByText } = await setup();
+    const link = queryByText('Step by step bulk upload guide');
+
+    expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toContain('step-by-step-guide');
   });
 
   it('should render the troubleshooting link with the correct href attribute', async () => {
-    const { getByText } = await setup();
-    const link = getByText('Get handy troubleshooting hints to help you fix common problems and errors');
+    const { queryByText } = await setup();
+    const link = queryByText('Get handy troubleshooting hints to help you fix common problems and errors');
 
     expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toContain('troubleshooting');
