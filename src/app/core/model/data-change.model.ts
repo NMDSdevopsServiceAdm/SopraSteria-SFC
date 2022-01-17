@@ -6,5 +6,5 @@ export interface DataChange {
 }
 
 export interface DataChanges {
-  data: DataChange[];
+  data: DataChange;
 }

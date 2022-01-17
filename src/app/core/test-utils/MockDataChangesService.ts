@@ -6,14 +6,12 @@ import { DataChangeService } from '@core/services/data-change.service';
 export class MockDataChangeService extends DataChangeService {
   public static dataChangeFactory(): DataChanges {
     return {
-      data: [
-        {
-          title: 'datachange',
-          content: 'Test content',
-          id: 1,
-          last_updated: new Date(),
-        },
-      ],
+      data: {
+        title: 'datachangeTitle',
+        content: 'Test content',
+        id: 1,
+        last_updated: new Date(),
+      },
     };
   }
   public static dataChangeLastUpdatedFactory() {
