@@ -21,11 +21,11 @@ export class DataChangeService {
     return this.http.get<DataChange>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
 
-  public updateBUDataChangeLastUpdated(establishmentId: string, lastUpdated: Date) {
+  public updateBUDataChangeLastUpdated(establishmentId: string, lastUpdated: Date): Observable<DataChange> {
     return this.http.post<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`, { lastUpdated });
   }
 
-  public getDataChangesLastUpdate(establishmentId: string): Observable<any> {
+  public getDataChangesLastUpdate(establishmentId: string): Observable<DataChange> {
     return this.http.get<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`);
   }
 }

@@ -28,7 +28,7 @@ describe('BulkUploadHelpMainPageComponent', () => {
   const topTipsList = MockBulkUploadTopTipsService.topTipsListFactory();
 
   const setup = async () => {
-    const { fixture, getByText } = await render(BulkUploadHelpMainPageComponent, {
+    const { fixture, getByText, queryByText } = await render(BulkUploadHelpMainPageComponent, {
       imports: [
         RouterTestingModule.withRoutes([
           { path: 'bulk-upload/get-help/step-by-step-guide', component: BulkUploadFlowchartComponent },
@@ -66,7 +66,7 @@ describe('BulkUploadHelpMainPageComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, spy };
+    return { component, fixture, getByText, spy, queryByText };
   };
 
   it('should render a BulkUploadHelpMainPageComponent', async () => {
@@ -84,8 +84,8 @@ describe('BulkUploadHelpMainPageComponent', () => {
   });
 
   it('should render the step by step link with the correct href attribute', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Step by step bulk upload guide')).toBeTruthy();
+    const { getByText, queryByText } = await setup();
+    expect(queryByText('Step by step bulk upload guide')).toBeTruthy();
     const link = getByText('Step by step bulk upload guide');
     expect(link.getAttribute('href')).toContain('step-by-step-guide');
   });
@@ -94,7 +94,7 @@ describe('BulkUploadHelpMainPageComponent', () => {
     const { getByText } = await setup();
     const link = getByText('Get handy troubleshooting hints to help you fix common problems and errors');
 
-    expect(link).toBeTruthy;
+    expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toContain('troubleshooting');
   });
 

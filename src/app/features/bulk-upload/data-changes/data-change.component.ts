@@ -32,9 +32,7 @@ export class BulkUploadDataChangeComponent {
     const lastUpdated = this.datachange.last_updated;
 
     this.subscriptions.add(
-      this.dataChangeService
-        .updateBUDataChangeLastUpdated(this.workplaceUid, lastUpdated)
-        .subscribe((err) => console.log(err)),
+      this.dataChangeService.updateBUDataChangeLastUpdated(this.workplaceUid, lastUpdated).subscribe(),
     );
   }
 
