@@ -1,0 +1,23 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column"></div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      {{ datachange.title }}
+    </h1>
+    <div class="asc-cms-content" [innerHTML]="datachange.content"></div>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-!-margin-top-6">
+      <app-bulk-upload-related-content
+        [showViewLastBulkUpload]="false"
+        [showViewReferences]="false"
+        [showGetHelpWithBulkUploads]="false"
+      >
+      </app-bulk-upload-related-content>
+    </div>
+    <app-codes-and-guidance></app-codes-and-guidance>
+  </div>
+</div>
