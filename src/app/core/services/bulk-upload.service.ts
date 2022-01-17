@@ -235,6 +235,10 @@ export class BulkUploadService {
     this.serverError$.next(null);
   }
 
+  public getLockStatus(workplaceUid: string): Observable<BulkUploadLock> {
+    return this.http.get<BulkUploadLock>(`/api/establishment/${workplaceUid}/bulkupload/lockstatus`);
+  }
+
   public formErrorsMap(): Array<ErrorDetails> {
     return [
       {
