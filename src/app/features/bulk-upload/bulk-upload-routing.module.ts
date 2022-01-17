@@ -8,6 +8,8 @@ import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.res
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { BulkUploadTroubleshootingPageResolver } from '@core/resolvers/bulk-upload/bulk-upload-troubleshooting-page.resolver';
+import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
+import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -23,7 +25,9 @@ import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.com
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page/bulk-upload-troubleshooting-page.component';
+import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
 import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 
@@ -33,6 +37,7 @@ const routes: Routes = [
     component: BulkUploadPageComponent,
     canActivate: [BulkUploadStartGuard, BulkUploadMissingGuard],
     data: { title: 'Home' },
+    resolve: { dataChange: DataChangeResolver, dataChangeLastUpdated: DataChangeLastUpdatedResolver },
   },
   {
     path: 'start',
@@ -58,6 +63,11 @@ const routes: Routes = [
         resolve: { topTipsList: BulkUploadTopTipsListResolver },
       },
       {
+        path: 'step-by-step-guide',
+        component: BulkUploadFlowchartComponent,
+        data: { title: 'Flowchart ' },
+      },
+      {
         path: ':slug',
         component: BulkUploadTopTipPageComponent,
         data: { title: 'Top tip' },
@@ -69,6 +79,12 @@ const routes: Routes = [
     ],
   },
 
+  {
+    path: 'data-change',
+    component: BulkUploadDataChangeComponent,
+    data: { title: 'Bulk upload data change page' },
+    resolve: { dataChange: DataChangeResolver },
+  },
   {
     path: 'about-bulk-upload',
     component: AboutBulkUploadComponent,

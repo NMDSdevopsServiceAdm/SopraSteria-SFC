@@ -1,7 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BulkUploadTopTips } from '@core/model/bulk-upload-top-tips.model';
-import { Observable } from 'rxjs';
+import { URLStructure } from '@core/model/url.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -9,8 +10,17 @@ import { environment } from 'src/environments/environment';
 })
 export class BulkUploadTopTipsService {
   private path = 'bulk_upload_top_tips';
+  private returnTo$ = new BehaviorSubject<URLStructure>(null);
 
   constructor(private http: HttpClient) {}
+
+  public get returnTo(): URLStructure {
+    return this.returnTo$.value;
+  }
+
+  public setReturnTo(returnTo: URLStructure) {
+    this.returnTo$.next(returnTo);
+  }
 
   public getTopTipsTitles(): Observable<BulkUploadTopTips> {
     let params = new HttpParams();

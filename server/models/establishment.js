@@ -704,6 +704,12 @@ module.exports = function (sequelize, DataTypes) {
         default: '90',
         field: 'ExpiresSoonAlertDate',
       },
+      dataChangesLastUpdated: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: false,
+        field: 'DataChangesLastUpdated',
+      },
     },
     {
       defaultScope: {
@@ -1832,6 +1838,29 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.getExpiresSoonAlertDate = async function (establishmentId) {
     return this.findOne({
       attributes: ['ExpiresSoonAlertDate'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
+  Establishment.updateDataChangesLastUpdatedDate = async function (establishmentId, lastUpdated) {
+    return await this.update(
+      {
+        dataChangesLastUpdated: lastUpdated,
+      },
+      {
+        where: {
+          id: establishmentId,
+        },
+        logging: true,
+      },
+    );
+  };
+
+  Establishment.getdataChangesLastUpdated = async function (establishmentId) {
+    return await this.findOne({
+      attributes: ['DataChangesLastUpdated'],
       where: {
         id: establishmentId,
       },

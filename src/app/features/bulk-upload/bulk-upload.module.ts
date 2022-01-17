@@ -6,6 +6,8 @@ import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.res
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { BulkUploadTroubleshootingPageResolver } from '@core/resolvers/bulk-upload/bulk-upload-troubleshooting-page.resolver';
+import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
+import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -31,6 +33,7 @@ import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-up
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page/bulk-upload-troubleshooting-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
+import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { ErrorDetailsTableComponent } from './error-page/error-details-table/error-details-table.component';
@@ -38,6 +41,7 @@ import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadErrorSummaryComponent } from './error-page/error-summary/error-summary.component';
 import { WarningDetailsTableComponent } from './error-page/warning-details-table/warning-details-table.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
+import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
 import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
@@ -80,8 +84,10 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingRefsSubmitExitButtonsComponent,
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
+    BulkUploadFlowchartComponent,
     BulkUploadHelpMainPageComponent,
     BulkUploadTroubleshootingComponent,
+    BulkUploadDataChangeComponent,
     BulkUploadTopTipPageComponent,
   ],
   providers: [
@@ -91,6 +97,8 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingWorkplacesReferencesResolver,
     LastBulkUploadResolver,
     BulkUploadErrorsResolver,
+    DataChangeResolver,
+    DataChangeLastUpdatedResolver,
     BulkUploadTopTipsListResolver,
     BulkUploadTopTipResolver,
     BulkUploadTroubleshootingPageResolver,

@@ -15,7 +15,9 @@
           *ngFor="let topTipItem of topTipsList"
           [ngClass]="{ 'govuk-!-font-weight-bold': topTipItem.slug === topTip.slug }"
         >
-          <a [routerLink]="['/bulk-upload', 'get-help', topTipItem.slug]">{{ topTipItem.link_title }}</a>
+          <a [routerLink]="['/bulk-upload', 'get-help', topTipItem.slug]" (click)="setReturnUrl(topTipItem.slug)">{{
+            topTipItem.link_title
+          }}</a>
         </li>
       </ul>
     </div>
