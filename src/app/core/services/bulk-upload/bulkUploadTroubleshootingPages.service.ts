@@ -12,16 +12,9 @@ export class BulkUploadTroubleshootingPagesService {
 
   constructor(private http: HttpClient) {}
 
-  public getBulkUploadTroubleshootingPage(
-    bulkUploadTroubleshootingPageSlug: string,
-  ): Observable<BulkUploadTroubleshootingPages> {
+  public getBulkUploadTroubleshootingPage(): Observable<BulkUploadTroubleshootingPages> {
     let params = new HttpParams();
-    const slugFilter = {
-      slug: { _eq: bulkUploadTroubleshootingPageSlug },
-    };
-    params = params.set('filter', JSON.stringify(slugFilter));
-    params = params.set('limit', '1');
-    params = params.set('fields', 'content,title');
+    params = params.set('fields', 'title,content');
 
     return this.http.get<BulkUploadTroubleshootingPages>(`${environment.cmsUri}/items/${this.path}`, { params });
   }

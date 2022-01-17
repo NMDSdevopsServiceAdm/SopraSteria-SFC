@@ -18,8 +18,11 @@ import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guida
 import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page.component';
 
 describe('BulkUploadTroubleshootingComponent', () => {
-  const bulkUploadTroubleShootingLink =
-    MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingLinkFactory();
+  const bulkUploadTroubleShootingPages =
+    MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingPagesFactory();
+  const bulkUploadTroubleShootingPage =
+    MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingPageFactory();
+
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadTroubleshootingComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
@@ -34,7 +37,8 @@ describe('BulkUploadTroubleshootingComponent', () => {
             url: of(['testUrl']),
             snapshot: {
               data: {
-                bulkUploadTroubleShootingLink,
+                bulkUploadTroubleShootingPages,
+                bulkUploadTroubleShootingPage,
               },
             },
           }),
@@ -79,8 +83,17 @@ describe('BulkUploadTroubleshootingComponent', () => {
     });
   });
 
-  it('should display the troubleshooting link from the cms', async () => {
+  it('should display the troubleshooting title from the cms', async () => {
     const { getByText } = await setup();
-    expect(getByText(bulkUploadTroubleShootingLink.data[0].content)).toBeTruthy();
+    expect(getByText(bulkUploadTroubleShootingPages.data[0].title)).toBeTruthy();
+    expect(getByText(bulkUploadTroubleShootingPages.data[1].title)).toBeTruthy();
+    expect(getByText(bulkUploadTroubleShootingPages.data[2].title)).toBeTruthy();
+  });
+
+  it('should display the troubleshooting text from the cms', async () => {
+    const { getByText } = await setup();
+    expect(getByText(bulkUploadTroubleShootingPages.data[0].content)).toBeTruthy();
+    expect(getByText(bulkUploadTroubleShootingPages.data[1].content)).toBeTruthy();
+    expect(getByText(bulkUploadTroubleShootingPages.data[2].content)).toBeTruthy();
   });
 });

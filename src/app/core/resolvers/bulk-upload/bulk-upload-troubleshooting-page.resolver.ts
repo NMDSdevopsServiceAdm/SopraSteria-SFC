@@ -13,18 +13,11 @@ export class BulkUploadTroubleshootingPageResolver implements Resolve<any> {
   ) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | BulkUploadTroubleshootingPage[]> {
-    const lastUrlSegmentIndex = route.url.length - 1;
-    const bulkUploadTroubleshootingPageSlug = route.url[lastUrlSegmentIndex].path;
-
-    if (bulkUploadTroubleshootingPageSlug) {
-      return this.bulkUploadTroubleshootingPagesService
-        .getBulkUploadTroubleshootingPage(bulkUploadTroubleshootingPageSlug)
-        .pipe(
-          take(1),
-          catchError(() => {
-            return of(null);
-          }),
-        );
-    }
+    return this.bulkUploadTroubleshootingPagesService.getBulkUploadTroubleshootingPage().pipe(
+      take(1),
+      catchError(() => {
+        return of(null);
+      }),
+    );
   }
 }

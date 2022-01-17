@@ -3,7 +3,10 @@
     <h1 class="govuk-heading-l">Troubleshooting</h1>
     <p>Our handy hints could help you fix common problems and errors that some bulk uploads have reported</p>
     <div class="govuk-!-margin-top-7">
-      <div class="asc-cms-content" [innerHTML]="bulkUploadTroubleShootingLink.content"></div>
+      <div class="asc-cms-content" *ngFor="let bulkUploadTroubleShootingPage of bulkUploadTroubleShootingPages">
+        <h2 class="govuk-heading-m">{{ bulkUploadTroubleShootingPage.title }}</h2>
+        <p [innerHTML]="bulkUploadTroubleShootingPage.content"></p>
+      </div>
     </div>
   </div>
   <div class="govuk-grid-column-one-third">
