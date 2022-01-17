@@ -12,6 +12,7 @@ export class BulkUploadRelatedContentComponent {
   @Input() showViewReferences = true;
   @Input() showDataChanges = true;
   @Input() showGetHelpWithBulkUploads = true;
+  @Input() showDataChangesBulkUpload = true;
 
   public datachange: any;
   public dataChangeLastUpdated: any;
