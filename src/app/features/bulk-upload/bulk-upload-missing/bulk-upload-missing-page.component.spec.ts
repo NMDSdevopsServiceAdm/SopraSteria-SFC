@@ -1,15 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
+import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { BulkUploadMissingPageComponent } from '@features/bulk-upload/bulk-upload-missing/bulk-upload-missing-page.component';
@@ -22,6 +24,8 @@ import { AdminSkipService } from '../admin-skip.service';
 import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 
 describe('BulkUploadMissingPageComponent', () => {
+  const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   async function setup() {
     const component = await render(BulkUploadMissingPageComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
@@ -45,6 +49,17 @@ describe('BulkUploadMissingPageComponent', () => {
         },
         AdminSkipService,
         BackService,
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              data: {
+                dataChange,
+                dataChangeLastUpdated,
+              },
+            },
+          }),
+        },
       ],
       declarations: [BulkUploadMissingPageComponent, BulkUploadRelatedContentComponent],
     });

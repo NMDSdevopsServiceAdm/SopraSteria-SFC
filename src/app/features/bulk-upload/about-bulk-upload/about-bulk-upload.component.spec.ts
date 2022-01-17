@@ -1,10 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
@@ -14,6 +17,9 @@ import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guida
 import { AboutBulkUploadComponent } from './about-bulk-upload.component';
 
 describe('AboutBulkUploadComponent', () => {
+  const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
+
   const setup = async () => {
     const { fixture, getByText } = await render(AboutBulkUploadComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
@@ -21,6 +27,17 @@ describe('AboutBulkUploadComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: AuthService, useClass: MockAuthService },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              data: {
+                dataChange,
+                dataChangeLastUpdated,
+              },
+            },
+          }),
+        },
       ],
       declarations: [AboutBulkUploadComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });

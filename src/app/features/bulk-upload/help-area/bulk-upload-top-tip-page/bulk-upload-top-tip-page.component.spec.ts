@@ -10,6 +10,7 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadTopTipsService } from '@core/test-utils/MockBulkUploadTopTipsService';
+import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { BulkUploadRelatedContentComponent } from '@features/bulk-upload/bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '@features/bulk-upload/codes-and-guidance/codes-and-guidance.component';
@@ -22,6 +23,8 @@ import { BulkUploadTopTipPageComponent } from './bulk-upload-top-tip-page.compon
 describe('BulkUploadTopTipPageComponent', () => {
   const topTipsList = MockBulkUploadTopTipsService.topTipsListFactory();
   const topTip = MockBulkUploadTopTipsService.topTipFactory();
+  const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
 
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadTopTipPageComponent, {
@@ -45,6 +48,8 @@ describe('BulkUploadTopTipPageComponent', () => {
             url: of(['testUrl']),
             snapshot: {
               data: {
+                dataChange,
+                dataChangeLastUpdated,
                 topTipsList,
                 topTip,
               },

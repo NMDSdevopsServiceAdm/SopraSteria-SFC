@@ -5,6 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
+import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
+import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -29,6 +31,7 @@ import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bu
 import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
+import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { ErrorDetailsTableComponent } from './error-page/error-details-table/error-details-table.component';
@@ -81,6 +84,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     ReportDownloadLinkComponent,
     BulkUploadFlowchartComponent,
     BulkUploadHelpMainPageComponent,
+    BulkUploadDataChangeComponent,
     BulkUploadTopTipPageComponent,
   ],
   providers: [
@@ -90,6 +94,8 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     MissingWorkplacesReferencesResolver,
     LastBulkUploadResolver,
     BulkUploadErrorsResolver,
+    DataChangeResolver,
+    DataChangeLastUpdatedResolver,
     BulkUploadTopTipsListResolver,
     BulkUploadTopTipResolver,
   ],

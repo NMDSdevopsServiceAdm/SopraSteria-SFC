@@ -10,6 +10,7 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadTopTipsService } from '@core/test-utils/MockBulkUploadTopTipsService';
+import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
@@ -22,10 +23,12 @@ import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.co
 import { BulkUploadTopTipPageComponent } from './bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 
 describe('BulkUploadHelpMainPageComponent', () => {
+  const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   const topTipsList = MockBulkUploadTopTipsService.topTipsListFactory();
 
   const setup = async () => {
-    const { fixture, getByText } = await render(BulkUploadHelpMainPageComponent, {
+    const { fixture, getByText, queryByText } = await render(BulkUploadHelpMainPageComponent, {
       imports: [
         RouterTestingModule.withRoutes([
           { path: 'bulk-upload/get-help/step-by-step-guide', component: BulkUploadFlowchartComponent },
@@ -43,11 +46,13 @@ describe('BulkUploadHelpMainPageComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
-            params: [],
-            url: of(['testUrl']),
             snapshot: {
               data: {
+                dataChange,
+                dataChangeLastUpdated,
                 topTipsList,
+                params: [],
+                url: of(['testUrl']),
               },
             },
           }),
@@ -61,7 +66,7 @@ describe('BulkUploadHelpMainPageComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, spy };
+    return { component, fixture, getByText, spy, queryByText };
   };
 
   it('should render a BulkUploadHelpMainPageComponent', async () => {
@@ -79,14 +84,18 @@ describe('BulkUploadHelpMainPageComponent', () => {
   });
 
   it('should render the step by step link with the correct href attribute', async () => {
-    const { getByText } = await setup();
-    const link = getByText('Step by step bulk upload guide');
+    const { queryByText } = await setup();
+    const link = queryByText('Step by step bulk upload guide');
+
+    expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toContain('step-by-step-guide');
   });
 
   it('should render the troubleshooting link with the correct href attribute', async () => {
-    const { getByText } = await setup();
-    const link = getByText('Get handy troubleshooting hints to help you fix common problems and errors');
+    const { queryByText } = await setup();
+    const link = queryByText('Get handy troubleshooting hints to help you fix common problems and errors');
+
+    expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toContain('troubleshooting');
   });
 

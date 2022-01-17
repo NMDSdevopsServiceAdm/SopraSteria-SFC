@@ -7,6 +7,8 @@ import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
+import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
+import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
@@ -21,6 +23,7 @@ import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-uploa
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-main-page.component';
@@ -32,6 +35,7 @@ const routes: Routes = [
     component: BulkUploadPageComponent,
     canActivate: [BulkUploadStartGuard, BulkUploadMissingGuard],
     data: { title: 'Home' },
+    resolve: { dataChange: DataChangeResolver, dataChangeLastUpdated: DataChangeLastUpdatedResolver },
   },
   {
     path: 'start',
@@ -62,6 +66,12 @@ const routes: Routes = [
         },
       },
     ],
+  },
+  {
+    path: 'data-change',
+    component: BulkUploadDataChangeComponent,
+    data: { title: 'Bulk upload data change page' },
+    resolve: { dataChange: DataChangeResolver },
   },
   {
     path: 'about-bulk-upload',
