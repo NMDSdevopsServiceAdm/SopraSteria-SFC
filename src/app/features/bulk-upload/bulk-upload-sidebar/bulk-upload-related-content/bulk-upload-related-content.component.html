@@ -6,7 +6,7 @@
   <li class="govuk-!-margin-bottom-2" *ngIf="showViewReferences">
     <a [routerLink]="['/bulk-upload', 'workplace-references']">View references</a>
   </li>
-  <li *ngIf="showDataChanges && showDataChangesBulkUpload">
+  <li *ngIf="showDataChanges">
     <a [routerLink]="['/bulk-upload', 'data-change']">Data changes</a>
     <span *ngIf="showFlagBUChanges" data-testid="showFlag">
       <img src="/assets/images/flag-orange.svg" alt="" class="govuk-util__vertical-align-top govuk-!-margin-left-1" />
