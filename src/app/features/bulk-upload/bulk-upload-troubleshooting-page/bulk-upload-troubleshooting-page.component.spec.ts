@@ -8,6 +8,7 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadTroubleshootingPagesService } from '@core/test-utils/MockBulkUploadTroubleshootingPageService';
+import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
@@ -18,6 +19,8 @@ import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guida
 import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page.component';
 
 describe('BulkUploadTroubleshootingComponent', () => {
+  const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   const bulkUploadTroubleShootingPages =
     MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingPagesFactory();
   const bulkUploadTroubleShootingPage =
@@ -37,6 +40,8 @@ describe('BulkUploadTroubleshootingComponent', () => {
             url: of(['testUrl']),
             snapshot: {
               data: {
+                dataChange,
+                dataChangeLastUpdated,
                 bulkUploadTroubleShootingPages,
                 bulkUploadTroubleShootingPage,
               },
@@ -61,7 +66,9 @@ describe('BulkUploadTroubleshootingComponent', () => {
 
     expect(getByText('Troubleshooting')).toBeTruthy();
     expect(
-      getByText('Our handy hints could help you fix common problems and errors that some bulk uploads have reported'),
+      getByText(
+        'Our handy hints could help you fix common problems and errors that some bulk uploaders have reported.',
+      ),
     ).toBeTruthy();
   });
 

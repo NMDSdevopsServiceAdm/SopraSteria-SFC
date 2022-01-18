@@ -123,7 +123,7 @@ describe('BulkUploadTopTipPageComponent', () => {
       expect(spy).toHaveBeenCalledWith({ url: ['/bulk-upload', 'get-help', topTipsList.data[0].slug] });
     });
 
-    it('hould call the setReturnUrl function with correct slug when clicking the second cms link', async () => {
+    it('should call the setReturnUrl function with correct slug when clicking the second cms link', async () => {
       const { getByText, spy } = await setup();
 
       const firstTopTipLink = getByText(topTipsList.data[1].link_title);
