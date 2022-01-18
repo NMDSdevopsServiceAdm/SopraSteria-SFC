@@ -64,6 +64,19 @@ const dataPermissionWorkplace = () => [
 
 const dataPermissionWorkplaceAndStaff = () => [...dataPermissionWorkplace(), 'canViewListOfWorkers', 'canViewWorker'];
 
+const getPermissions = async (req) => {
+  const establishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
+
+  const estabType = getEstablishmentType(req.establishment);
+
+  if (req.role === 'Admin') return adminPermissions(estabType, establishmentInfo);
+
+  if (ownsData(estabType, req))
+    return req.role === 'Edit' ? editPermissions(estabType, establishmentInfo) : readPermissions(establishmentInfo);
+
+  return getViewingPermissions(req.dataPermissions, establishmentInfo);
+};
+
 const getAdditionalEditPermissions = (estabType) => {
   const additionalPermissions = [
     _canAddEstablishment(estabType),
@@ -78,19 +91,6 @@ const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEst
 const _canRemoveParentAssociation = (estabType) =>
   estabType === 'Subsidiary' ? 'canRemoveParentAssociation' : undefined;
 const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
-
-const getPermissions = async (req) => {
-  const establishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
-
-  const estabType = getEstablishmentType(req.establishment);
-
-  if (req.role === 'Admin') return adminPermissions(estabType, establishmentInfo);
-
-  if (ownsData(estabType, req))
-    return req.role === 'Edit' ? editPermissions(estabType, establishmentInfo) : readPermissions(establishmentInfo);
-
-  return getViewingPermissions(req.dataPermissions, establishmentInfo);
-};
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {
