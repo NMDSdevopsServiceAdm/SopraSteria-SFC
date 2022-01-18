@@ -41,6 +41,7 @@ describe('permissions-v2', () => {
         const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.deep.equal([
+          'canDownloadWdfReport',
           'canViewEstablishment',
           'canViewWdfReport',
           'canViewUser',
@@ -248,6 +249,24 @@ describe('permissions-v2', () => {
           const returnedPermissions = await getPermissions(req);
 
           expect(returnedPermissions).not.to.include('canRemoveParentAssociation');
+        });
+      });
+
+      describe('canDownloadWdfReport', async () => {
+        it('should return canDownloadWdfReport permission when req.isParent is true', async () => {
+          req.isParent = true;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canDownloadWdfReport');
+        });
+
+        it('should not return canDownloadWdfReport permission when req.isParent is false', async () => {
+          req.isParent = true;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canDownloadWdfReport');
         });
       });
     });

@@ -44,6 +44,7 @@ const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedI
     'canDeleteEstablishment',
     'canDeleteAllEstablishments',
     'canRunLocalAuthorityAdminReport',
+    'canDownloadWdfReport',
     'canViewWdfSummaryReport',
     'canSearchUsers',
     'canSearchEstablishment',
@@ -84,6 +85,7 @@ const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAs
     _canDeleteEstablishment(estabType),
     _canLinkToParent(isLoggedInAsParent, establishmentInfo),
     _canRemoveParentAssociation(isLoggedInAsParent, establishmentInfo),
+    _canDownloadWdfReport(isLoggedInAsParent),
   ];
 
   return additionalPermissions.filter((item) => item !== undefined);
@@ -98,6 +100,7 @@ const _canLinkToParent = (isLoggedInAsParent, establishmentInfo) =>
   _isStandaloneAndNoRequestToBecomeParent(isLoggedInAsParent, establishmentInfo) ? 'canLinkToParent' : undefined;
 const _canRemoveParentAssociation = (isLoggedInAsParent, establishmentInfo) =>
   !isLoggedInAsParent && establishmentInfo.hasParent ? 'canRemoveParentAssociation' : undefined;
+const _canDownloadWdfReport = (isLoggedInAsParent) => (isLoggedInAsParent ? 'canDownloadWdfReport' : undefined);
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {
