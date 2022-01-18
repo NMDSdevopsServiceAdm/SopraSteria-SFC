@@ -60,7 +60,7 @@ export class LastBulkUploadComponent implements OnInit {
   }
 
   private showBulkUploadUnlockAlert(type): void {
-    const message = type === 'success' ? 'has been successfully unlocked' : 'failed to be unlocked';
+    const message = type === 'success' ? 'has been successfully unlocked' : 'failed to unlock';
     this.alertService.addAlert({
       type,
       message: `Bulk upload for ${this.establishmentService.primaryWorkplace.name} ${message}`,

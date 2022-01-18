@@ -123,7 +123,7 @@ describe('LastBulkUploadComponent', () => {
 
     expect(alertServiceSpy).toHaveBeenCalledWith({
       type: 'warning',
-      message: 'Bulk upload for Care Home 1 failed to be unlocked',
+      message: 'Bulk upload for Care Home 1 failed to unlock',
     });
   });
 });
