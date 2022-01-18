@@ -7,15 +7,12 @@ import { SelectRecordTypes } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-record-type',
   templateUrl: './select-record-type.component.html',
 })
 export class SelectRecordTypeComponent implements OnInit {
-  formgroup: any;
-  private newTrainingAndQualificationsReportFlag: boolean;
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -24,7 +21,6 @@ export class SelectRecordTypeComponent implements OnInit {
     private workerService: WorkerService,
     protected router: Router,
     private location: Location,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
   public formErrorsMap: ErrorDetails[];
   public form: FormGroup;
@@ -36,7 +32,7 @@ export class SelectRecordTypeComponent implements OnInit {
   public id: string;
   public navigateUrl: string;
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
@@ -47,10 +43,6 @@ export class SelectRecordTypeComponent implements OnInit {
     this.setupForm();
     this.setupFormErrorsMap();
 
-    this.newTrainingAndQualificationsReportFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsReport',
-      false,
-    );
     this.setBackLink();
   }
 
@@ -87,13 +79,14 @@ export class SelectRecordTypeComponent implements OnInit {
       return;
     }
   }
-  protected setBackLink(): void {
-    const trainingPath = this.newTrainingAndQualificationsReportFlag ? 'new-training' : 'training';
-    this.url = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/${trainingPath}`;
-    this.backService.setBackLink({ url: [this.url] });
+
+  public setBackLink(): void {
+    this.backService.setBackLink({
+      url: [`workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/training`],
+    });
   }
 
-  public addRecord() {
+  public addRecord(): void {
     if (this.form.value.selectRecordType === 'Qualification') {
       this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/add-qualification`;
     } else if (this.form.value.selectRecordType === 'Training course') {

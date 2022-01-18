@@ -107,6 +107,20 @@ describe('StaffRecordComponent', () => {
     });
   });
 
+  it('should render the training and qualifications link with the correct href', async () => {
+    const { getByText, component, fixture } = await setup();
+
+    component.canEditWorker = true;
+    fixture.detectChanges();
+
+    const workplaceUid = component.workplace.uid;
+    const workerUid = component.worker.uid;
+    const link = getByText('Training and qualifications');
+    expect(link.getAttribute('href')).toEqual(
+      `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/training`,
+    );
+  });
+
   describe('Long-Term Absence', () => {
     it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
       const { component, fixture, getByText, queryByText } = await setup();

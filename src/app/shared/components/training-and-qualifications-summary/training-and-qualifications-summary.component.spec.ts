@@ -1,5 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -13,7 +15,7 @@ import {
   workerWithUpToDateTraining,
 } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
@@ -43,7 +45,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   async function setup() {
-    const { fixture, getAllByText } = await render(TrainingAndQualificationsSummaryComponent, {
+    const { fixture, getAllByText, getByText } = await render(TrainingAndQualificationsSummaryComponent, {
       imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
         { provide: PermissionsService, useValue: mockPermissionsService },
@@ -57,10 +59,15 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const router = TestBed.inject(Router) as Router;
+    const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
       getAllByText,
+      getByText,
+      spy,
     };
   }
 
@@ -137,5 +144,46 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const { getAllByText } = await setup();
 
     expect(getAllByText('Long-term absent').length).toBe(1);
+  });
+
+  it('should navigate to the persons training, when clicking on their name', async () => {
+    const { getByText, fixture, spy, component } = await setup();
+
+    const link = getByText('Darlyn');
+    fireEvent.click(link);
+    fixture.detectChanges();
+
+    const workplaceUid = component.workplace.uid;
+    const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
+
+    expect(spy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'training-and-qualifications-record',
+      worker.uid,
+      'training',
+    ]);
+  });
+
+  it('should navigate to the persons wdf training, when the wdfView flag is true', async () => {
+    const { getByText, fixture, spy, component } = await setup();
+
+    component.wdfView = true;
+
+    const link = getByText('Darlyn');
+    fireEvent.click(link);
+    fixture.detectChanges();
+
+    const workplaceUid = component.workplace.uid;
+    const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
+
+    expect(spy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'training-and-qualifications-record',
+      worker.uid,
+      'training',
+      'wdf-summary',
+    ]);
   });
 });
