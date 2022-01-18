@@ -1,43 +1,62 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-l ">
-      <span  class="govuk-caption-l govuk-!-margin-bottom-3">Bulk upload</span>
-       Last bulk upload
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-l govuk-!-margin-bottom-3">Bulk upload</span>
+      Last bulk upload
     </h1>
     <table class="govuk-table">
-    <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Type</th>
-      <th class="govuk-table__header" scope="col">Records</th>
-      <th class="govuk-table__header" scope="col">Actioned by</th>
-      <th class="govuk-table__header" scope="col">Date</th>
-      <th class="govuk-table__header" scope="col">Downloads</th>
-    </tr>
-    </thead>
-    <tbody class="govuk-table__body ">
-    <ng-container *ngFor="let file of files">
-      <tr>
-        <td class="govuk-table__cell">{{(file.data.fileType | bulkUploadFileTypePipe )}}</td>
-        <td class="govuk-table__cell">{{file.data.records}}</td>
-        <td class="govuk-table__cell">{{file.username}}</td>
-        <td class="govuk-table__cell">{{(file.lastModified | date: 'd MMM yyyy, h:mm') + (file.lastModified | date: 'a' | lowercase) }}</td>
-        <td class="govuk-table__cell asc-link-download">
-          <div >
-            <a href="/bulk-upload/download/{{ encodeUrl(file.data.filename) }}" (click)="downloadFile($event, file.data.key)">
-              {{(file.data.fileType | bulkUploadFileTypePipe )}}
-            </a>
-          </div>
-        </td>
-      </tr>
-    </ng-container>
-    </tbody>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Type</th>
+          <th class="govuk-table__header" scope="col">Records</th>
+          <th class="govuk-table__header" scope="col">Actioned by</th>
+          <th class="govuk-table__header" scope="col">Date</th>
+          <th class="govuk-table__header" scope="col">Downloads</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <ng-container *ngFor="let file of files">
+          <tr>
+            <td class="govuk-table__cell">{{ file.data.fileType | bulkUploadFileTypePipe }}</td>
+            <td class="govuk-table__cell">{{ file.data.records }}</td>
+            <td class="govuk-table__cell">{{ file.username }}</td>
+            <td class="govuk-table__cell">
+              {{ (file.lastModified | date: 'd MMM yyyy, h:mm') + (file.lastModified | date: 'a' | lowercase) }}
+            </td>
+            <td class="govuk-table__cell asc-link-download">
+              <div>
+                <a
+                  href="/bulk-upload/download/{{ encodeUrl(file.data.filename) }}"
+                  (click)="downloadFile($event, file.data.key)"
+                >
+                  {{ file.data.fileType | bulkUploadFileTypePipe }}
+                </a>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
     </table>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full govuk-!-margin-top-6">
-      <a role="button" draggable="false" class="govuk-button govuk-button--primary govuk-!-margin-right-9" [routerLink]="['/bulk-upload']">
-        Return to bulk upload
-      </a>
+        <a
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--primary govuk-!-margin-right-9"
+          [routerLink]="['/bulk-upload']"
+        >
+          Return to bulk upload
+        </a>
+        <button
+          *ngIf="locked"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--warning govuk-!-margin-left-9"
+          (click)="unlockBulkUpload()"
+        >
+          Unlock bulk upload
+        </button>
+      </div>
     </div>
-    </div>
-</div>
+  </div>
 </div>
