@@ -53,12 +53,6 @@ export const mockConfigCatClient = {
       });
     }
 
-    if (flagName === 'benefitsBundle') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
-
     if (flagName === 'changingExpiryDateLink') {
       return new Promise((resolve) => {
         return resolve(false);
