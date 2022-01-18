@@ -118,22 +118,20 @@ describe('permissions-v2', () => {
         expect(returnedPermissions).to.include('canAddEstablishment');
       });
 
-      it('should not return canRemoveParentAssociation permission when isParent which owns data', async () => {
+      it('should not return canDeleteEstablishment permission when isParent which owns data', async () => {
         req.establishment.isParent = true;
         req.isParent = true;
 
         const returnedPermissions = await getPermissions(req);
 
-        expect(returnedPermissions).not.to.include('canRemoveParentAssociation');
         expect(returnedPermissions).not.to.include('canDeleteEstablishment');
       });
 
-      it('should return canRemoveParentAssociation and canDeleteEstablishment permission when isSubsidiary', async () => {
+      it('should return canDeleteEstablishment permission when isSubsidiary', async () => {
         req.establishment.isSubsidiary = true;
 
         const returnedPermissions = await getPermissions(req);
 
-        expect(returnedPermissions).to.include('canRemoveParentAssociation');
         expect(returnedPermissions).to.include('canDeleteEstablishment');
       });
 
@@ -196,6 +194,60 @@ describe('permissions-v2', () => {
           const returnedPermissions = await getPermissions(req);
 
           expect(returnedPermissions).not.to.include('canLinkToParent');
+        });
+      });
+
+      describe('canRemoveParentAssociation', async () => {
+        beforeEach(() => {
+          sinon.restore();
+        });
+
+        it('should return canRemoveParentAssociation permission when hasParent is true and req.isParent is false', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: true, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = false;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canRemoveParentAssociation');
+        });
+
+        it('should not return canRemoveParentAssociation permission when req.isParent is true', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: false, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = true;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canRemoveParentAssociation');
+        });
+
+        it('should not return canRemoveParentAssociation permission when hasParent is false', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: false, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = false;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canRemoveParentAssociation');
+        });
+
+        it('should not return canRemoveParentAssociation permission hasParent is true and is parent is true', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: true, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = true;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canRemoveParentAssociation');
         });
       });
     });

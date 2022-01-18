@@ -81,9 +81,9 @@ const getPermissions = async (req) => {
 const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAsParent) => {
   const additionalPermissions = [
     _canAddEstablishment(estabType),
-    _canRemoveParentAssociation(estabType),
     _canDeleteEstablishment(estabType),
     _canLinkToParent(isLoggedInAsParent, establishmentInfo),
+    _canRemoveParentAssociation(isLoggedInAsParent, establishmentInfo),
   ];
 
   return additionalPermissions.filter((item) => item !== undefined);
@@ -93,11 +93,11 @@ const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishme
   !isLoggedInAsParent && !establishmentInfo.hasParent && !establishmentInfo.hasRequestedToBecomeAParent;
 
 const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
-const _canRemoveParentAssociation = (estabType) =>
-  estabType === 'Subsidiary' ? 'canRemoveParentAssociation' : undefined;
 const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
 const _canLinkToParent = (isLoggedInAsParent, establishmentInfo) =>
   _isStandaloneAndNoRequestToBecomeParent(isLoggedInAsParent, establishmentInfo) ? 'canLinkToParent' : undefined;
+const _canRemoveParentAssociation = (isLoggedInAsParent, establishmentInfo) =>
+  !isLoggedInAsParent && establishmentInfo.hasParent ? 'canRemoveParentAssociation' : undefined;
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {
