@@ -1,7 +1,7 @@
 const uniq = require('lodash/uniq');
 const models = require('../../../models');
 
-const readPermissions = () => [
+const readPermissions = (establishmentInfo) => [
   'canViewEstablishment',
   'canViewWdfReport',
   'canViewUser',
@@ -11,7 +11,7 @@ const readPermissions = () => [
   'canViewNinoDob',
 ];
 
-const editPermissions = (estabType = 'Standalone') => {
+const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) => {
   const permissions = [
     ...readPermissions(),
     'canAddUser',
@@ -28,20 +28,19 @@ const editPermissions = (estabType = 'Standalone') => {
     'canTransferWorker',
     'canEditEstablishment',
     'canRunLocalAuthorityReport',
-    'canLinkToParent',
     'canBecomeAParent',
   ];
 
-  const additionalPermissions = getAdditionalEditPermissions(estabType);
+  const additionalPermissions = getAdditionalEditPermissions(estabType, establishmentInfo, isLoggedInAsParent);
 
   permissions.push(...additionalPermissions);
 
   return permissions;
 };
 
-const adminPermissions = (estabType = 'Standalone') =>
+const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) =>
   uniq([
-    ...editPermissions(estabType),
+    ...editPermissions(estabType, establishmentInfo, isLoggedInAsParent),
     'canDeleteEstablishment',
     'canDeleteAllEstablishments',
     'canRunLocalAuthorityAdminReport',
@@ -69,28 +68,36 @@ const getPermissions = async (req) => {
 
   const estabType = getEstablishmentType(req.establishment);
 
-  if (req.role === 'Admin') return adminPermissions(estabType, establishmentInfo);
+  if (req.role === 'Admin') return adminPermissions(estabType, establishmentInfo, req.isParent);
 
   if (ownsData(estabType, req))
-    return req.role === 'Edit' ? editPermissions(estabType, establishmentInfo) : readPermissions(establishmentInfo);
+    return req.role === 'Edit'
+      ? editPermissions(estabType, establishmentInfo, req.isParent)
+      : readPermissions(establishmentInfo);
 
   return getViewingPermissions(req.dataPermissions, establishmentInfo);
 };
 
-const getAdditionalEditPermissions = (estabType) => {
+const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAsParent) => {
   const additionalPermissions = [
     _canAddEstablishment(estabType),
     _canRemoveParentAssociation(estabType),
     _canDeleteEstablishment(estabType),
+    _canLinkToParent(isLoggedInAsParent, establishmentInfo),
   ];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
 
+const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishmentInfo) =>
+  !isLoggedInAsParent && !establishmentInfo.hasParent && !establishmentInfo.hasRequestedToBecomeAParent;
+
 const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
 const _canRemoveParentAssociation = (estabType) =>
   estabType === 'Subsidiary' ? 'canRemoveParentAssociation' : undefined;
 const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
+const _canLinkToParent = (isLoggedInAsParent, establishmentInfo) =>
+  _isStandaloneAndNoRequestToBecomeParent(isLoggedInAsParent, establishmentInfo) ? 'canLinkToParent' : undefined;
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {
