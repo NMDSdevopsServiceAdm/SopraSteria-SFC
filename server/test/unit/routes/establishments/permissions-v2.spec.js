@@ -1,14 +1,21 @@
 const expect = require('chai').expect;
+const sinon = require('sinon');
+
 const {
   getPermissions,
   getEstablishmentType,
   ownsData,
   getViewingPermissions,
 } = require('../../../../models/cache/singletons/permissions-v2');
+const models = require('../../../../models');
 
 describe('permissions-v2', () => {
   let req;
   beforeEach(() => {
+    sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+      return null;
+    });
+
     req = {
       role: 'Edit',
       parentIsOwner: false,
@@ -20,14 +27,18 @@ describe('permissions-v2', () => {
     };
   });
 
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('getPermissions()', () => {
     describe('Admin', () => {
       beforeEach(() => {
         req.role = 'Admin';
       });
 
-      it('should return admin permissions when req.role is admin', () => {
-        const returnedPermissions = getPermissions(req);
+      it('should return admin permissions when req.role is admin', async () => {
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.deep.equal([
           'canViewEstablishment',
@@ -68,8 +79,8 @@ describe('permissions-v2', () => {
         req.role = 'Edit';
       });
 
-      it('should return edit permissions when edit user which owns data', () => {
-        const returnedPermissions = getPermissions(req);
+      it('should return edit permissions when edit user which owns data', async () => {
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.deep.equal([
           'canViewEstablishment',
@@ -98,38 +109,38 @@ describe('permissions-v2', () => {
         ]);
       });
 
-      it('should return canAddEstablishment permission when isParent which owns data', () => {
+      it('should return canAddEstablishment permission when isParent which owns data', async () => {
         req.establishment.isParent = true;
         req.isParent = true;
 
-        const returnedPermissions = getPermissions(req);
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.include('canAddEstablishment');
       });
 
-      it('should not return canRemoveParentAssociation permission when isParent which owns data', () => {
+      it('should not return canRemoveParentAssociation permission when isParent which owns data', async () => {
         req.establishment.isParent = true;
         req.isParent = true;
 
-        const returnedPermissions = getPermissions(req);
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).not.to.include('canRemoveParentAssociation');
         expect(returnedPermissions).not.to.include('canDeleteEstablishment');
       });
 
-      it('should return canRemoveParentAssociation and canDeleteEstablishment permission when isSubsidiary', () => {
+      it('should return canRemoveParentAssociation and canDeleteEstablishment permission when isSubsidiary', async () => {
         req.establishment.isSubsidiary = true;
 
-        const returnedPermissions = getPermissions(req);
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.include('canRemoveParentAssociation');
         expect(returnedPermissions).to.include('canDeleteEstablishment');
       });
 
-      it('should not return canAddEstablishment permission when isSubsidiary', () => {
+      it('should not return canAddEstablishment permission when isSubsidiary', async () => {
         req.establishment.isSubsidiary = true;
 
-        const returnedPermissions = getPermissions(req);
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).not.to.include('canAddEstablishment');
       });
@@ -140,8 +151,8 @@ describe('permissions-v2', () => {
         req.role = 'Read';
       });
 
-      it('should return read permissions when read user which owns data', () => {
-        const returnedPermissions = getPermissions(req);
+      it('should return read permissions when read user which owns data', async () => {
+        const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.deep.equal([
           'canViewEstablishment',

@@ -1,4 +1,5 @@
 const uniq = require('lodash/uniq');
+const models = require('../../../models');
 
 const readPermissions = () => [
   'canViewEstablishment',
@@ -31,11 +32,9 @@ const editPermissions = (estabType = 'Standalone') => {
     'canBecomeAParent',
   ];
 
-  if (estabType === 'Parent') permissions.push('canAddEstablishment');
-  if (estabType === 'Subsidiary') {
-    permissions.push('canRemoveParentAssociation');
-    permissions.push('canDeleteEstablishment');
-  }
+  const additionalPermissions = getAdditionalEditPermissions(estabType);
+
+  permissions.push(...additionalPermissions);
 
   return permissions;
 };
@@ -65,14 +64,32 @@ const dataPermissionWorkplace = () => [
 
 const dataPermissionWorkplaceAndStaff = () => [...dataPermissionWorkplace(), 'canViewListOfWorkers', 'canViewWorker'];
 
-const getPermissions = (req) => {
+const getAdditionalEditPermissions = (estabType) => {
+  const additionalPermissions = [
+    _canAddEstablishment(estabType),
+    _canRemoveParentAssociation(estabType),
+    _canDeleteEstablishment(estabType),
+  ];
+
+  return additionalPermissions.filter((item) => item !== undefined);
+};
+
+const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
+const _canRemoveParentAssociation = (estabType) =>
+  estabType === 'Subsidiary' ? 'canRemoveParentAssociation' : undefined;
+const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
+
+const getPermissions = async (req) => {
+  const establishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
+
   const estabType = getEstablishmentType(req.establishment);
 
-  if (req.role === 'Admin') return adminPermissions(estabType);
+  if (req.role === 'Admin') return adminPermissions(estabType, establishmentInfo);
 
-  if (ownsData(estabType, req)) return req.role === 'Edit' ? editPermissions(estabType) : readPermissions();
+  if (ownsData(estabType, req))
+    return req.role === 'Edit' ? editPermissions(estabType, establishmentInfo) : readPermissions(establishmentInfo);
 
-  return getViewingPermissions(req.dataPermissions);
+  return getViewingPermissions(req.dataPermissions, establishmentInfo);
 };
 
 const getEstablishmentType = (establishment) => {
