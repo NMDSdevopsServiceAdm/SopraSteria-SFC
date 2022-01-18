@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
+import { BulkUploadGetLockStatusResolver } from '@core/resolvers/bulk-upload/bulk-upload-get-lock-status.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
@@ -98,6 +99,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     DataChangeLastUpdatedResolver,
     BulkUploadTopTipsListResolver,
     BulkUploadTopTipResolver,
+    BulkUploadGetLockStatusResolver,
   ],
 })
 export class BulkUploadModule {}

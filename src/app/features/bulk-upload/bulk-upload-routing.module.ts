@@ -5,6 +5,7 @@ import { BulkUploadStartGuard } from '@core/guards/bulk-upload/bulk-upload-start
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
+import { BulkUploadGetLockStatusResolver } from '@core/resolvers/bulk-upload/bulk-upload-get-lock-status.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
 import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
@@ -88,7 +89,10 @@ const routes: Routes = [
     component: LastBulkUploadComponent,
     data: { title: 'Last bulk upload', roles: [Roles.Admin] },
     canActivate: [RoleGuard],
-    resolve: { lastBulkUpload: LastBulkUploadResolver },
+    resolve: {
+      lastBulkUpload: LastBulkUploadResolver,
+      bulkUploadLocked: BulkUploadGetLockStatusResolver,
+    },
   },
   {
     path: 'missing-workplace-references',
