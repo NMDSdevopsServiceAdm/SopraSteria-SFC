@@ -41,7 +41,6 @@ describe('permissions-v2', () => {
         const returnedPermissions = await getPermissions(req);
 
         expect(returnedPermissions).to.deep.equal([
-          'canDownloadWdfReport',
           'canViewEstablishment',
           'canViewWdfReport',
           'canViewUser',
@@ -63,8 +62,8 @@ describe('permissions-v2', () => {
           'canTransferWorker',
           'canEditEstablishment',
           'canRunLocalAuthorityReport',
-          'canBecomeAParent',
           'canLinkToParent',
+          'canBecomeAParent',
           'canDeleteEstablishment',
           'canDeleteAllEstablishments',
           'canRunLocalAuthorityAdminReport',
@@ -105,8 +104,8 @@ describe('permissions-v2', () => {
           'canTransferWorker',
           'canEditEstablishment',
           'canRunLocalAuthorityReport',
-          'canBecomeAParent',
           'canLinkToParent',
+          'canBecomeAParent',
         ]);
       });
 
@@ -267,6 +266,60 @@ describe('permissions-v2', () => {
           const returnedPermissions = await getPermissions(req);
 
           expect(returnedPermissions).to.include('canDownloadWdfReport');
+        });
+      });
+
+      describe('canBecomeAParent', async () => {
+        beforeEach(() => {
+          sinon.restore();
+        });
+
+        it('should return canBecomeAParent permission when hasParent and req.isParent is false', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: false, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = false;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canBecomeAParent');
+        });
+
+        it('should not return canBecomeAParent permission when req.isParent is true', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: false, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = true;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canBecomeAParent');
+        });
+
+        it('should not return canBecomeAParent permission when hasParent is true and isParent is false', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: true, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = false;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canBecomeAParent');
+        });
+
+        it('should not return canBecomeAParent permission when hasParent is true', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: true, hasRequestedToBecomeAParent: false };
+          });
+
+          req.isParent = true;
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canBecomeAParent');
         });
       });
     });

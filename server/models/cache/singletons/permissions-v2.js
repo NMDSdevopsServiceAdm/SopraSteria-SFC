@@ -28,7 +28,6 @@ const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedIn
     'canTransferWorker',
     'canEditEstablishment',
     'canRunLocalAuthorityReport',
-    'canBecomeAParent',
   ];
 
   const additionalPermissions = getAdditionalEditPermissions(estabType, establishmentInfo, isLoggedInAsParent);
@@ -86,6 +85,7 @@ const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAs
     _canLinkToParent(isLoggedInAsParent, establishmentInfo),
     _canRemoveParentAssociation(isLoggedInAsParent, establishmentInfo),
     _canDownloadWdfReport(isLoggedInAsParent),
+    _canBecomeAParent(isLoggedInAsParent, establishmentInfo),
   ];
 
   return additionalPermissions.filter((item) => item !== undefined);
@@ -101,6 +101,8 @@ const _canLinkToParent = (isLoggedInAsParent, establishmentInfo) =>
 const _canRemoveParentAssociation = (isLoggedInAsParent, establishmentInfo) =>
   !isLoggedInAsParent && establishmentInfo.hasParent ? 'canRemoveParentAssociation' : undefined;
 const _canDownloadWdfReport = (isLoggedInAsParent) => (isLoggedInAsParent ? 'canDownloadWdfReport' : undefined);
+const _canBecomeAParent = (isLoggedInAsParent, establishmentInfo) =>
+  !isLoggedInAsParent && !establishmentInfo.hasParent ? 'canBecomeAParent' : undefined;
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {
