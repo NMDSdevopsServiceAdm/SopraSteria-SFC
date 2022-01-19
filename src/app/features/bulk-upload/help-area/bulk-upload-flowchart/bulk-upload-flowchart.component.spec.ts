@@ -36,7 +36,7 @@ describe('BulkUploadFlowchartComponent', () => {
   it('should show a download link', async () => {
     const { getByText } = await setup();
 
-    const downloadLink = getByText('Download bulk upload guide');
+    const downloadLink = getByText('Download step by step guide');
     expect(downloadLink).toBeTruthy();
   });
 
