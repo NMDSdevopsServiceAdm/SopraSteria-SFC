@@ -51,7 +51,6 @@ describe('permissions-v2', () => {
           'canViewUser',
           'canViewListOfUsers',
           'canDownloadWdfReport',
-          'canViewNinoDob',
           'canAddUser',
           'canBulkUpload',
           'canChangePermissionsForSubsidiary',
@@ -75,6 +74,12 @@ describe('permissions-v2', () => {
           'canSearchUsers',
           'canSearchEstablishment',
         ]);
+      });
+
+      it('should not return canViewNinoDob when req.role is admin', async () => {
+        const returnedPermissions = await getPermissions(req);
+
+        expect(returnedPermissions).not.to.include('canViewNinoDob');
       });
     });
 

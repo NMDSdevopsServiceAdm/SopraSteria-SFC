@@ -29,8 +29,10 @@ const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedIn
   ...getAdditionalEditPermissions(estabType, establishmentInfo, isLoggedInAsParent),
 ];
 
-const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) =>
-  uniq([
+const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) => {
+  const adminCant = ['canViewNinoDob'];
+
+  return uniq([
     ...editPermissions(estabType, establishmentInfo, isLoggedInAsParent),
     'canDeleteEstablishment',
     'canDeleteAllEstablishments',
@@ -39,7 +41,8 @@ const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedI
     'canViewWdfSummaryReport',
     'canSearchUsers',
     'canSearchEstablishment',
-  ]);
+  ]).filter((permission) => !adminCant.includes(permission));
+};
 
 const dataPermissionNone = (establishmentInfo) => [
   'canRemoveParentAssociation',
