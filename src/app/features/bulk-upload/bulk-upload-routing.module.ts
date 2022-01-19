@@ -8,6 +8,7 @@ import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.res
 import { BulkUploadGetLockStatusResolver } from '@core/resolvers/bulk-upload/bulk-upload-get-lock-status.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
+import { BulkUploadTroubleshootingPageResolver } from '@core/resolvers/bulk-upload/bulk-upload-troubleshooting-page.resolver';
 import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
 import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
@@ -24,6 +25,7 @@ import { BulkUploadMissingPageComponent } from './bulk-upload-missing/bulk-uploa
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
 import { StaffReferencesComponent } from './bulk-upload-references/staff-references/staff-references-page.component';
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
+import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page/bulk-upload-troubleshooting-page.component';
 import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { BulkUploadFlowchartComponent } from './help-area/bulk-upload-flowchart/bulk-upload-flowchart.component';
@@ -47,6 +49,14 @@ const routes: Routes = [
     path: 'get-help',
     children: [
       {
+        path: 'troubleshooting',
+        component: BulkUploadTroubleshootingComponent,
+        data: { title: 'Bulk upload troubleshooting page' },
+        resolve: {
+          bulkUploadTroubleShootingPages: BulkUploadTroubleshootingPageResolver,
+        },
+      },
+      {
         path: '',
         component: BulkUploadHelpMainPageComponent,
         data: { title: 'Bulk upload get help main page' },
@@ -68,6 +78,7 @@ const routes: Routes = [
       },
     ],
   },
+
   {
     path: 'data-change',
     component: BulkUploadDataChangeComponent,

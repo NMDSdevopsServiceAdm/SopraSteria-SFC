@@ -6,6 +6,7 @@ import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.res
 import { BulkUploadGetLockStatusResolver } from '@core/resolvers/bulk-upload/bulk-upload-get-lock-status.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
 import { BulkUploadTopTipsListResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tips-list.resolver';
+import { BulkUploadTroubleshootingPageResolver } from '@core/resolvers/bulk-upload/bulk-upload-troubleshooting-page.resolver';
 import { DataChangeResolver } from '@core/resolvers/data-change.resolver';
 import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-lastupdated.resolver';
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
@@ -31,6 +32,7 @@ import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
 import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
+import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page/bulk-upload-troubleshooting-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadDataChangeComponent } from './data-changes/data-change.component';
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list/drag-and-drop-files-list.component';
@@ -85,6 +87,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     ReportDownloadLinkComponent,
     BulkUploadFlowchartComponent,
     BulkUploadHelpMainPageComponent,
+    BulkUploadTroubleshootingComponent,
     BulkUploadDataChangeComponent,
     BulkUploadTopTipPageComponent,
   ],
@@ -99,6 +102,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     DataChangeLastUpdatedResolver,
     BulkUploadTopTipsListResolver,
     BulkUploadTopTipResolver,
+    BulkUploadTroubleshootingPageResolver,
     BulkUploadGetLockStatusResolver,
   ],
 })

@@ -10,6 +10,7 @@ enum Path {
   ERROR_REPORT = '/bulk-upload/error-report',
   START_PAGE = '/bulk-upload/start',
   GET_HELP = '/bulk-upload/get-help',
+  TROUBLESHOOTING_PAGE = '/bulk-upload/get-help/troubleshooting',
   GET_DATA_CHANGES = '/bulk-upload/data-change',
   HOW_TO_GUIDE = '/bulk-upload/get-help/:slug',
 }
@@ -73,6 +74,10 @@ export const bulkUploadHelpJourney: JourneyRoute = {
           title: 'Get help with bulk uploads',
           path: Path.GET_HELP,
           children: [
+            {
+              title: 'Troubleshooting',
+              path: Path.TROUBLESHOOTING_PAGE,
+            },
             {
               title: `'How to' guides`,
               path: Path.HOW_TO_GUIDE,
