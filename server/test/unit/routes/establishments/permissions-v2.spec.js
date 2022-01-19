@@ -13,7 +13,12 @@ describe('permissions-v2', () => {
   let req;
   beforeEach(() => {
     sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-      return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+      return {
+        hasParent: false,
+        hasRequestedToBecomeAParent: false,
+        mainService: { id: 1 },
+        dataOwnershipRequested: false,
+      };
     });
 
     req = {
@@ -50,7 +55,6 @@ describe('permissions-v2', () => {
           'canAddUser',
           'canBulkUpload',
           'canChangePermissionsForSubsidiary',
-          'canChangeDataOwner',
           'canDeleteUser',
           'canEditUser',
           'canViewListOfWorkers',
@@ -63,6 +67,7 @@ describe('permissions-v2', () => {
           'canRunLocalAuthorityReport',
           'canLinkToParent',
           'canBecomeAParent',
+          'canChangeDataOwner',
           'canDeleteEstablishment',
           'canDeleteAllEstablishments',
           'canRunLocalAuthorityAdminReport',
@@ -91,7 +96,6 @@ describe('permissions-v2', () => {
           'canAddUser',
           'canBulkUpload',
           'canChangePermissionsForSubsidiary',
-          'canChangeDataOwner',
           'canDeleteUser',
           'canEditUser',
           'canViewListOfWorkers',
@@ -104,6 +108,7 @@ describe('permissions-v2', () => {
           'canRunLocalAuthorityReport',
           'canLinkToParent',
           'canBecomeAParent',
+          'canChangeDataOwner',
         ]);
       });
 
@@ -148,7 +153,12 @@ describe('permissions-v2', () => {
 
         it('should return canLinkToParent permission when hasParent, hasRequestedToBecomeAParent and req.isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = false;
@@ -160,7 +170,12 @@ describe('permissions-v2', () => {
 
         it('should not return canLinkToParent permission when req.isParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -172,7 +187,12 @@ describe('permissions-v2', () => {
 
         it('should not return canLinkToParent permission when hasParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: true,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -184,7 +204,12 @@ describe('permissions-v2', () => {
 
         it('should not return canLinkToParent permission when hasRequestedToBecomeAParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: true,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -202,7 +227,12 @@ describe('permissions-v2', () => {
 
         it('should return canRemoveParentAssociation permission when hasParent is true and req.isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: true,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = false;
@@ -214,7 +244,12 @@ describe('permissions-v2', () => {
 
         it('should not return canRemoveParentAssociation permission when req.isParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -226,7 +261,12 @@ describe('permissions-v2', () => {
 
         it('should not return canRemoveParentAssociation permission when hasParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = false;
@@ -238,7 +278,12 @@ describe('permissions-v2', () => {
 
         it('should not return canRemoveParentAssociation permission hasParent is true and is parent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: true,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -274,7 +319,12 @@ describe('permissions-v2', () => {
 
         it('should return canBecomeAParent permission when hasParent and req.isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = false;
@@ -286,7 +336,12 @@ describe('permissions-v2', () => {
 
         it('should not return canBecomeAParent permission when req.isParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -298,7 +353,12 @@ describe('permissions-v2', () => {
 
         it('should not return canBecomeAParent permission when hasParent is true and isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: true,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = false;
@@ -310,7 +370,12 @@ describe('permissions-v2', () => {
 
         it('should not return canBecomeAParent permission when hasParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
+            return {
+              hasParent: true,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: false,
+            };
           });
 
           req.isParent = true;
@@ -318,6 +383,29 @@ describe('permissions-v2', () => {
           const returnedPermissions = await getPermissions(req);
 
           expect(returnedPermissions).not.to.include('canBecomeAParent');
+        });
+      });
+
+      describe('canChangeDataOwner', async () => {
+        it('should return canChangeDataOwner permission when dataOwnershipRequested is false', async () => {
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canBecomeAParent');
+        });
+
+        it('should not return canChangeDataOwner permission when dataOwnershipRequested is true', async () => {
+          sinon.restore();
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              mainService: { id: 1 },
+              dataOwnershipRequested: true,
+            };
+          });
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canChangeDataOwner');
         });
       });
     });
@@ -347,7 +435,13 @@ describe('permissions-v2', () => {
 
         it('should return canViewBenchmarks permission when isRegulated and main service id is in [24, 25, 20]', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false, IsRegulated: true, mainService: { id: 20 } };
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              IsRegulated: true,
+              mainService: { id: 20 },
+              dataOwnershipRequested: false,
+            };
           });
 
           const returnedPermissions = await getPermissions(req);
@@ -362,6 +456,7 @@ describe('permissions-v2', () => {
               hasRequestedToBecomeAParent: false,
               IsRegulated: false,
               mainService: { id: 20 },
+              dataOwnershipRequested: false,
             };
           });
 
@@ -478,6 +573,7 @@ describe('permissions-v2', () => {
         hasRequestedToBecomeAParent: false,
         IsRegulated: true,
         mainService: { id: 1 },
+        dataOwnershipRequested: false,
       };
     });
 
@@ -505,12 +601,41 @@ describe('permissions-v2', () => {
       expect(permissions).to.deep.equal([
         'canRemoveParentAssociation',
         'canChangePermissionsForSubsidiary',
-        'canChangeDataOwner',
         'canViewEstablishment',
         'canViewWdfReport',
         'canViewUser',
         'canViewListOfUsers',
+        'canChangeDataOwner',
       ]);
+    });
+
+    describe('canChangeDataOwner', () => {
+      it('should return only dataPermissionWorkplace() if user has no viewing permissions without canChangeDataOwner', () => {
+        establishmentInfo.dataOwnershipRequested = true;
+
+        const permissions = getViewingPermissions('Workplace', establishmentInfo);
+        expect(permissions).to.deep.equal([
+          'canRemoveParentAssociation',
+          'canChangePermissionsForSubsidiary',
+          'canViewEstablishment',
+          'canViewWdfReport',
+          'canViewUser',
+          'canViewListOfUsers',
+        ]);
+      });
+
+      it('should return only dataPermissionWorkplace() if user has no viewing permissions with canChangeDataOwner if no request has been sent already', () => {
+        const permissions = getViewingPermissions('Workplace', establishmentInfo);
+        expect(permissions).to.deep.equal([
+          'canRemoveParentAssociation',
+          'canChangePermissionsForSubsidiary',
+          'canViewEstablishment',
+          'canViewWdfReport',
+          'canViewUser',
+          'canViewListOfUsers',
+          'canChangeDataOwner',
+        ]);
+      });
     });
 
     it('should return dataPermissionWorkplaceAndStaff() if user has workplace and staff viewing permissions', () => {
@@ -518,11 +643,11 @@ describe('permissions-v2', () => {
       expect(permissions).to.deep.equal([
         'canRemoveParentAssociation',
         'canChangePermissionsForSubsidiary',
-        'canChangeDataOwner',
         'canViewEstablishment',
         'canViewWdfReport',
         'canViewUser',
         'canViewListOfUsers',
+        'canChangeDataOwner',
         'canViewListOfWorkers',
         'canViewWorker',
       ]);

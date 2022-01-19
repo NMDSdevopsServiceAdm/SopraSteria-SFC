@@ -16,7 +16,6 @@ const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedIn
   'canAddUser',
   'canBulkUpload',
   'canChangePermissionsForSubsidiary',
-  'canChangeDataOwner',
   'canDeleteUser',
   'canEditUser',
   'canViewListOfWorkers',
@@ -50,11 +49,11 @@ const dataPermissionNone = (establishmentInfo) => [
 const dataPermissionWorkplace = (establishmentInfo) => [
   ...dataPermissionNone(establishmentInfo),
   'canChangePermissionsForSubsidiary',
-  'canChangeDataOwner',
   'canViewEstablishment',
   'canViewWdfReport',
   'canViewUser',
   'canViewListOfUsers',
+  ...getAdditionalDataPermissionWorkplacePermissions(establishmentInfo),
 ];
 
 const dataPermissionWorkplaceAndStaff = (establishmentInfo) => [
@@ -86,6 +85,7 @@ const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAs
     _canRemoveParentAssociation(isLoggedInAsParent, establishmentInfo),
     _canDownloadWdfReport(isLoggedInAsParent),
     _canBecomeAParent(isLoggedInAsParent, establishmentInfo),
+    _canChangeDataOwner(establishmentInfo),
   ];
 
   return additionalPermissions.filter((item) => item !== undefined);
@@ -99,6 +99,12 @@ const getAdditionalReadPermissions = (establishmentInfo) => {
 
 const getAdditionalDataPermissionNonePermissions = (establishmentInfo) => {
   const additionalPermissions = [_canViewBenchmarks(establishmentInfo)];
+
+  return additionalPermissions.filter((item) => item !== undefined);
+};
+
+const getAdditionalDataPermissionWorkplacePermissions = (establishmentInfo) => {
+  const additionalPermissions = [_canChangeDataOwner(establishmentInfo)];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
@@ -119,6 +125,8 @@ const _canBecomeAParent = (isLoggedInAsParent, establishmentInfo) =>
   !isLoggedInAsParent && !establishmentInfo.hasParent ? 'canBecomeAParent' : undefined;
 const _canViewBenchmarks = (establishmentInfo) =>
   _isRegulatedAndHasServiceWithBenchmarksData(establishmentInfo) ? 'canViewBenchmarks' : undefined;
+const _canChangeDataOwner = (establishmentInfo) =>
+  !establishmentInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {
