@@ -11,6 +11,7 @@ import { take } from 'rxjs/operators';
 })
 export class BulkUploadDownloadCurrentDataComponent {
   public BulkUploadFileType = BulkUploadFileType;
+  public sanitise = true;
   public now: Date = new Date();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
@@ -31,4 +32,6 @@ export class BulkUploadDownloadCurrentDataComponent {
         },
       );
   }
+
+  public toggleFields(): void {}
 }

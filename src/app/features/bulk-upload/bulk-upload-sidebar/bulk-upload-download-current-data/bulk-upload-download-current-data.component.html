@@ -11,10 +11,13 @@
   <li>
     <a
       href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
-      (click)="downloadFile($event, BulkUploadFileType.Worker)"
+      (click)="downloadFile($event, sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker)"
     >
       Staff
     </a>
+    <!-- <button class="govuk-button govuk-button--secondary" type="button" (click)="toggleFields()">
+      View NI Number and Date of Birth
+    </button> -->
   </li>
   <li>
     <a
