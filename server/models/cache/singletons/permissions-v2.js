@@ -7,35 +7,28 @@ const readPermissions = (establishmentInfo) => [
   'canViewUser',
   'canViewListOfUsers',
   'canDownloadWdfReport',
-  'canViewBenchmarks',
   'canViewNinoDob',
+  ...getAdditionalReadPermissions(establishmentInfo),
 ];
 
-const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) => {
-  const permissions = [
-    ...readPermissions(),
-    'canAddUser',
-    'canBulkUpload',
-    'canChangePermissionsForSubsidiary',
-    'canChangeDataOwner',
-    'canDeleteUser',
-    'canEditUser',
-    'canViewListOfWorkers',
-    'canViewWorker',
-    'canAddWorker',
-    'canEditWorker',
-    'canDeleteWorker',
-    'canTransferWorker',
-    'canEditEstablishment',
-    'canRunLocalAuthorityReport',
-  ];
-
-  const additionalPermissions = getAdditionalEditPermissions(estabType, establishmentInfo, isLoggedInAsParent);
-
-  permissions.push(...additionalPermissions);
-
-  return permissions;
-};
+const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) => [
+  ...readPermissions(establishmentInfo),
+  'canAddUser',
+  'canBulkUpload',
+  'canChangePermissionsForSubsidiary',
+  'canChangeDataOwner',
+  'canDeleteUser',
+  'canEditUser',
+  'canViewListOfWorkers',
+  'canViewWorker',
+  'canAddWorker',
+  'canEditWorker',
+  'canDeleteWorker',
+  'canTransferWorker',
+  'canEditEstablishment',
+  'canRunLocalAuthorityReport',
+  ...getAdditionalEditPermissions(estabType, establishmentInfo, isLoggedInAsParent),
+];
 
 const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) =>
   uniq([
@@ -49,10 +42,10 @@ const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedI
     'canSearchEstablishment',
   ]);
 
-const dataPermissionNone = () => ['canRemoveParentAssociation', 'canViewBenchmarks'];
+const dataPermissionNone = (establishmentInfo) => ['canRemoveParentAssociation', 'canViewBenchmarks'];
 
-const dataPermissionWorkplace = () => [
-  ...dataPermissionNone(),
+const dataPermissionWorkplace = (establishmentInfo) => [
+  ...dataPermissionNone(establishmentInfo),
   'canChangePermissionsForSubsidiary',
   'canChangeDataOwner',
   'canViewEstablishment',
@@ -61,7 +54,11 @@ const dataPermissionWorkplace = () => [
   'canViewListOfUsers',
 ];
 
-const dataPermissionWorkplaceAndStaff = () => [...dataPermissionWorkplace(), 'canViewListOfWorkers', 'canViewWorker'];
+const dataPermissionWorkplaceAndStaff = (establishmentInfo) => [
+  ...dataPermissionWorkplace(establishmentInfo),
+  'canViewListOfWorkers',
+  'canViewWorker',
+];
 
 const getPermissions = async (req) => {
   const establishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
@@ -91,8 +88,16 @@ const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAs
   return additionalPermissions.filter((item) => item !== undefined);
 };
 
+const getAdditionalReadPermissions = (establishmentInfo) => {
+  const additionalPermissions = [_canViewBenchmarks(establishmentInfo)];
+
+  return additionalPermissions.filter((item) => item !== undefined);
+};
+
 const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishmentInfo) =>
   !isLoggedInAsParent && !establishmentInfo.hasParent && !establishmentInfo.hasRequestedToBecomeAParent;
+const _isRegulatedAndHasServiceWithBenchmarksData = (establishmentInfo) =>
+  [24, 25, 20].includes(establishmentInfo.mainService.id) && establishmentInfo.IsRegulated;
 
 const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
 const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
@@ -103,6 +108,8 @@ const _canRemoveParentAssociation = (isLoggedInAsParent, establishmentInfo) =>
 const _canDownloadWdfReport = (isLoggedInAsParent) => (isLoggedInAsParent ? 'canDownloadWdfReport' : undefined);
 const _canBecomeAParent = (isLoggedInAsParent, establishmentInfo) =>
   !isLoggedInAsParent && !establishmentInfo.hasParent ? 'canBecomeAParent' : undefined;
+const _canViewBenchmarks = (establishmentInfo) =>
+  _isRegulatedAndHasServiceWithBenchmarksData(establishmentInfo) ? 'canViewBenchmarks' : undefined;
 
 const getEstablishmentType = (establishment) => {
   if (establishment.isSubsidiary) {

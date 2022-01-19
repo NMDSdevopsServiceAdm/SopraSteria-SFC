@@ -13,7 +13,7 @@ describe('permissions-v2', () => {
   let req;
   beforeEach(() => {
     sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-      return { hasParent: false, hasRequestedToBecomeAParent: false };
+      return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
     });
 
     req = {
@@ -46,7 +46,6 @@ describe('permissions-v2', () => {
           'canViewUser',
           'canViewListOfUsers',
           'canDownloadWdfReport',
-          'canViewBenchmarks',
           'canViewNinoDob',
           'canAddUser',
           'canBulkUpload',
@@ -88,7 +87,6 @@ describe('permissions-v2', () => {
           'canViewUser',
           'canViewListOfUsers',
           'canDownloadWdfReport',
-          'canViewBenchmarks',
           'canViewNinoDob',
           'canAddUser',
           'canBulkUpload',
@@ -150,7 +148,7 @@ describe('permissions-v2', () => {
 
         it('should return canLinkToParent permission when hasParent, hasRequestedToBecomeAParent and req.isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false };
+            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = false;
@@ -162,7 +160,7 @@ describe('permissions-v2', () => {
 
         it('should not return canLinkToParent permission when req.isParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false };
+            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -174,7 +172,7 @@ describe('permissions-v2', () => {
 
         it('should not return canLinkToParent permission when hasParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false };
+            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -186,7 +184,7 @@ describe('permissions-v2', () => {
 
         it('should not return canLinkToParent permission when hasRequestedToBecomeAParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false };
+            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -204,7 +202,7 @@ describe('permissions-v2', () => {
 
         it('should return canRemoveParentAssociation permission when hasParent is true and req.isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false };
+            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = false;
@@ -216,7 +214,7 @@ describe('permissions-v2', () => {
 
         it('should not return canRemoveParentAssociation permission when req.isParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false };
+            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -228,7 +226,7 @@ describe('permissions-v2', () => {
 
         it('should not return canRemoveParentAssociation permission when hasParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false };
+            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = false;
@@ -240,7 +238,7 @@ describe('permissions-v2', () => {
 
         it('should not return canRemoveParentAssociation permission hasParent is true and is parent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false };
+            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -276,7 +274,7 @@ describe('permissions-v2', () => {
 
         it('should return canBecomeAParent permission when hasParent and req.isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false };
+            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = false;
@@ -288,7 +286,7 @@ describe('permissions-v2', () => {
 
         it('should not return canBecomeAParent permission when req.isParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: false, hasRequestedToBecomeAParent: false };
+            return { hasParent: false, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -300,7 +298,7 @@ describe('permissions-v2', () => {
 
         it('should not return canBecomeAParent permission when hasParent is true and isParent is false', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false };
+            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = false;
@@ -312,7 +310,7 @@ describe('permissions-v2', () => {
 
         it('should not return canBecomeAParent permission when hasParent is true', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
-            return { hasParent: true, hasRequestedToBecomeAParent: false };
+            return { hasParent: true, hasRequestedToBecomeAParent: false, mainService: { id: 1 } };
           });
 
           req.isParent = true;
@@ -338,9 +336,54 @@ describe('permissions-v2', () => {
           'canViewUser',
           'canViewListOfUsers',
           'canDownloadWdfReport',
-          'canViewBenchmarks',
           'canViewNinoDob',
         ]);
+      });
+
+      describe('canViewBenchmarks', async () => {
+        beforeEach(() => {
+          sinon.restore();
+        });
+
+        it('should return canViewBenchmarks permission when isRegulated and main service id is in [24, 25, 20]', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return { hasParent: false, hasRequestedToBecomeAParent: false, IsRegulated: true, mainService: { id: 20 } };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canViewBenchmarks');
+        });
+
+        it('should not return canViewBenchmarks permission when main service id is in [24, 25, 20] but isRegulated is false', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              IsRegulated: false,
+              mainService: { id: 20 },
+            };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canViewBenchmarks');
+        });
+
+        it('should not return canViewBenchmarks permission when isRegulated but main service id is not in [24, 25, 20]', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return {
+              hasParent: false,
+              hasRequestedToBecomeAParent: false,
+              IsRegulated: false,
+              mainService: { id: 12 },
+            };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canViewBenchmarks');
+        });
       });
     });
   });
