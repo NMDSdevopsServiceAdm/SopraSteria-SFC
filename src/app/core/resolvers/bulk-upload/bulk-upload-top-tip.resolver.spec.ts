@@ -21,6 +21,7 @@ describe('BulkUploadTopTipsResolver', () => {
         BulkUploadTopTipResolver,
       ],
     });
+
     resolver = TestBed.inject(BulkUploadTopTipResolver);
     route = TestBed.inject(ActivatedRoute);
   });

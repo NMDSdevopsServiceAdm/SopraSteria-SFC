@@ -44,7 +44,7 @@
     <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a [routerLink]="getWorkerTrainingAndQualificationsPath(worker)">
+          <a href="#" (click)="getWorkerTrainingAndQualificationsPath($event, worker)">
             {{ worker.nameOrId }}
           </a>
           <p
