@@ -1,5 +1,5 @@
 const uniq = require('lodash/uniq');
-const models = require('../../../models');
+const models = require('../../models');
 
 const getPermissions = async (req) => {
   const establishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);

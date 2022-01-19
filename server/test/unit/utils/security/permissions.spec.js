@@ -6,10 +6,10 @@ const {
   getEstablishmentType,
   ownsData,
   getViewingPermissions,
-} = require('../../../../models/cache/singletons/permissions-v2');
+} = require('../../../../utils/security/permissions');
 const models = require('../../../../models');
 
-describe('permissions-v2', () => {
+describe('permissions', () => {
   let req;
   beforeEach(() => {
     sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
