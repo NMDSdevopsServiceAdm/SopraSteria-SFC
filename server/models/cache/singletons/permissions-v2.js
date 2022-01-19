@@ -42,7 +42,10 @@ const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedI
     'canSearchEstablishment',
   ]);
 
-const dataPermissionNone = (establishmentInfo) => ['canRemoveParentAssociation', 'canViewBenchmarks'];
+const dataPermissionNone = (establishmentInfo) => [
+  'canRemoveParentAssociation',
+  ...getAdditionalDataPermissionNonePermissions(establishmentInfo),
+];
 
 const dataPermissionWorkplace = (establishmentInfo) => [
   ...dataPermissionNone(establishmentInfo),
@@ -94,6 +97,12 @@ const getAdditionalReadPermissions = (establishmentInfo) => {
   return additionalPermissions.filter((item) => item !== undefined);
 };
 
+const getAdditionalDataPermissionNonePermissions = (establishmentInfo) => {
+  const additionalPermissions = [_canViewBenchmarks(establishmentInfo)];
+
+  return additionalPermissions.filter((item) => item !== undefined);
+};
+
 const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishmentInfo) =>
   !isLoggedInAsParent && !establishmentInfo.hasParent && !establishmentInfo.hasRequestedToBecomeAParent;
 const _isRegulatedAndHasServiceWithBenchmarksData = (establishmentInfo) =>
@@ -132,13 +141,13 @@ const _isParentWhichOwnsSubData = (estabType, req) => estabType === 'Subsidiary'
 
 const _isParentViewingOwnData = (estabType, req) => estabType === 'Parent' && req.isParent;
 
-const getViewingPermissions = (dataPermissions = 'None') => {
+const getViewingPermissions = (dataPermissions = 'None', establishmentInfo) => {
   if (dataPermissions === 'Workplace') {
-    return dataPermissionWorkplace();
+    return dataPermissionWorkplace(establishmentInfo);
   } else if (dataPermissions === 'Workplace and Staff') {
-    return dataPermissionWorkplaceAndStaff();
+    return dataPermissionWorkplaceAndStaff(establishmentInfo);
   }
-  return dataPermissionNone();
+  return dataPermissionNone(establishmentInfo);
 };
 
 module.exports = {

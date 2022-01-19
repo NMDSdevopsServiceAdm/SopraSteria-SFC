@@ -471,16 +471,39 @@ describe('permissions-v2', () => {
   });
 
   describe('getViewingPermissions()', () => {
+    let establishmentInfo;
+    beforeEach(() => {
+      establishmentInfo = {
+        hasParent: false,
+        hasRequestedToBecomeAParent: false,
+        IsRegulated: true,
+        mainService: { id: 1 },
+      };
+    });
+
+    describe('canViewBenchmarks', () => {
+      it('should return only dataPermissionNone() if user has no viewing permissions without canViewBenchmarks', () => {
+        const permissions = getViewingPermissions('None', establishmentInfo);
+        expect(permissions).to.deep.equal(['canRemoveParentAssociation']);
+      });
+
+      it('should return only dataPermissionNone() if user has no viewing permissions with canViewBenchmarks if regulated and has correct main service', () => {
+        establishmentInfo.mainService.id = 20;
+
+        const permissions = getViewingPermissions('None', establishmentInfo);
+        expect(permissions).to.deep.equal(['canRemoveParentAssociation', 'canViewBenchmarks']);
+      });
+    });
+
     it('should return only dataPermissionNone() if user has no viewing permissions', () => {
-      const permissions = getViewingPermissions('None');
-      expect(permissions).to.deep.equal(['canRemoveParentAssociation', 'canViewBenchmarks']);
+      const permissions = getViewingPermissions('None', establishmentInfo);
+      expect(permissions).to.deep.equal(['canRemoveParentAssociation']);
     });
 
     it('should return dataPermissionWorkplace() if user has workplace only viewing permissions', () => {
-      const permissions = getViewingPermissions('Workplace');
+      const permissions = getViewingPermissions('Workplace', establishmentInfo);
       expect(permissions).to.deep.equal([
         'canRemoveParentAssociation',
-        'canViewBenchmarks',
         'canChangePermissionsForSubsidiary',
         'canChangeDataOwner',
         'canViewEstablishment',
@@ -491,10 +514,9 @@ describe('permissions-v2', () => {
     });
 
     it('should return dataPermissionWorkplaceAndStaff() if user has workplace and staff viewing permissions', () => {
-      const permissions = getViewingPermissions('Workplace and Staff');
+      const permissions = getViewingPermissions('Workplace and Staff', establishmentInfo);
       expect(permissions).to.deep.equal([
         'canRemoveParentAssociation',
-        'canViewBenchmarks',
         'canChangePermissionsForSubsidiary',
         'canChangeDataOwner',
         'canViewEstablishment',
