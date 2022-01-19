@@ -10,13 +10,11 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 })
 export class BulkUploadTroubleshootingComponent implements OnInit {
   public bulkUploadTroubleShootingPages: BulkUploadTroubleshootingPage[];
-  public bulkUploadTroubleshootingPage: BulkUploadTroubleshootingPage;
 
   constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD_HELP);
-    this.bulkUploadTroubleshootingPage = this.route.snapshot.data.bulkUploadTroubleShootingPage.data[0];
     this.bulkUploadTroubleShootingPages = this.route.snapshot.data.bulkUploadTroubleShootingPages.data;
   }
 }

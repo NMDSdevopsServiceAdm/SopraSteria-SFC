@@ -23,8 +23,6 @@ describe('BulkUploadTroubleshootingComponent', () => {
   const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   const bulkUploadTroubleShootingPages =
     MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingPagesFactory();
-  const bulkUploadTroubleShootingPage =
-    MockBulkUploadTroubleshootingPagesService.bulkUploadTroubleShootingPageFactory();
 
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadTroubleshootingComponent, {
@@ -43,7 +41,6 @@ describe('BulkUploadTroubleshootingComponent', () => {
                 dataChange,
                 dataChangeLastUpdated,
                 bulkUploadTroubleShootingPages,
-                bulkUploadTroubleShootingPage,
               },
             },
           }),
@@ -73,21 +70,17 @@ describe('BulkUploadTroubleshootingComponent', () => {
   });
 
   it('should render related contents and download codes and guidance links', async () => {
-    const { fixture, getByText } = await setup();
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText('Related content')).toBeTruthy();
-      expect(getByText('Download codes and guidance')).toBeTruthy();
-    });
+    const { getByText } = await setup();
+
+    expect(getByText('Related content')).toBeTruthy();
+    expect(getByText('Download codes and guidance')).toBeTruthy();
   });
 
   it('should render get help with bulk uploads and data changes links under the related contents', async () => {
-    const { fixture, getByText } = await setup();
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText('Data changes')).toBeTruthy();
-      expect(getByText('About bulk upload')).toBeTruthy();
-    });
+    const { getByText } = await setup();
+
+    expect(getByText('Data changes')).toBeTruthy();
+    expect(getByText('About bulk upload')).toBeTruthy();
   });
 
   it('should display the troubleshooting title from the cms', async () => {

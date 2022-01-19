@@ -4,18 +4,6 @@ import { BulkUploadTroubleshootingPagesService } from '@core/services/bulk-uploa
 
 @Injectable()
 export class MockBulkUploadTroubleshootingPagesService extends BulkUploadTroubleshootingPagesService {
-  public static bulkUploadTroubleShootingPageFactory(): BulkUploadTroubleshootingPages {
-    return {
-      data: [
-        {
-          id: 1,
-          title: 'Troubleshooting Header 1',
-          content: 'Troubleshooting content 1',
-        },
-      ],
-    };
-  }
-
   public static bulkUploadTroubleShootingPagesFactory(): BulkUploadTroubleshootingPages {
     return {
       data: [

@@ -54,7 +54,6 @@ const routes: Routes = [
         data: { title: 'Bulk upload troubleshooting page' },
         resolve: {
           bulkUploadTroubleShootingPages: BulkUploadTroubleshootingPageResolver,
-          bulkUploadTroubleShootingPage: BulkUploadTroubleshootingPageResolver,
         },
       },
       {
