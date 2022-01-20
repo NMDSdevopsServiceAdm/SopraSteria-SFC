@@ -52,7 +52,11 @@ const routes: Routes = [
         path: '',
         component: BulkUploadHelpMainPageComponent,
         data: { title: 'Bulk upload get help main page' },
-        resolve: { topTipsList: BulkUploadTopTipsListResolver },
+        resolve: {
+          topTipsList: BulkUploadTopTipsListResolver,
+          dataChange: DataChangeResolver,
+          dataChangeLastUpdated: DataChangeLastUpdatedResolver,
+        },
       },
       {
         path: 'troubleshooting',
@@ -60,6 +64,8 @@ const routes: Routes = [
         data: { title: 'Bulk upload troubleshooting page' },
         resolve: {
           bulkUploadTroubleShootingPages: BulkUploadTroubleshootingPageResolver,
+          dataChange: DataChangeResolver,
+          dataChangeLastUpdated: DataChangeLastUpdatedResolver,
         },
       },
       {
@@ -74,6 +80,8 @@ const routes: Routes = [
         resolve: {
           topTip: BulkUploadTopTipResolver,
           topTipsList: BulkUploadTopTipsListResolver,
+          dataChange: DataChangeResolver,
+          dataChangeLastUpdated: DataChangeLastUpdatedResolver,
         },
       },
     ],

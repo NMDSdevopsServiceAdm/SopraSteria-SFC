@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { DataChange } from '@core/model/data-change.model';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-data-change',
   templateUrl: './data-change.component.html',
 })
-export class BulkUploadDataChangeComponent {
+export class BulkUploadDataChangeComponent implements OnInit {
   public datachange: DataChange;
   public workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
@@ -21,11 +21,11 @@ export class BulkUploadDataChangeComponent {
   ) {}
 
   ngOnInit(): void {
-    this.workplaceUid = this.route.snapshot.data.primaryWorkplace.uid;
-    this.datachange = this.route.snapshot.data.dataChange.data;
+    this.workplaceUid = this.route.snapshot.data?.primaryWorkplace.uid;
+    this.datachange = this.route.snapshot.data?.dataChange.data;
 
     this.updateLastUpdatedDataChangeDate();
-    this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
+    this.breadcrumbService.show(JourneyType.BULK_UPLOAD_HELP);
   }
 
   public updateLastUpdatedDataChangeDate() {
