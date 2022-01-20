@@ -97,6 +97,7 @@ const routes: Routes = [
     path: 'about-bulk-upload',
     component: AboutBulkUploadComponent,
     data: { title: 'About bulk upload' },
+    resolve: { dataChange: DataChangeResolver, dataChangeLastUpdated: DataChangeLastUpdatedResolver },
   },
   {
     path: 'missing',
