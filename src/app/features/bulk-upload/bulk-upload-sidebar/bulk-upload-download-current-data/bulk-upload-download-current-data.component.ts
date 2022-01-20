@@ -16,7 +16,7 @@ export class BulkUploadDownloadCurrentDataComponent {
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
-  public downloadFile(event: Event, type: BulkUploadFileType) {
+  public downloadFile(event: Event, type: BulkUploadFileType): void {
     event.preventDefault();
     this.bulkUploadService
       .getDataCSV(this.establishmentService.establishmentId, type)

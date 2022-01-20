@@ -199,6 +199,9 @@ export class BulkUploadService {
       case BulkUploadFileType.Worker:
         url = 'workers';
         break;
+      case BulkUploadFileType.WorkerSanitise:
+        url = 'workers-sanitise';
+        break;
       case BulkUploadFileType.Training:
         url = 'training';
         break;
