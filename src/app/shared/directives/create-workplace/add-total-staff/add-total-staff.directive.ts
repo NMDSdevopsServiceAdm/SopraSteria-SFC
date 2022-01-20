@@ -5,7 +5,7 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { RegistrationService } from '@core/services/registration.service';
 
 @Directive()
 export class AddTotalStaffDirective implements OnInit {
@@ -24,12 +24,13 @@ export class AddTotalStaffDirective implements OnInit {
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    protected workplaceInterfaceService: WorkplaceInterfaceService,
+    protected registrationService: RegistrationService,
   ) {}
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
+    this.setBackLink();
   }
 
   private setupForm(): void {
@@ -45,5 +46,9 @@ export class AddTotalStaffDirective implements OnInit {
 
   private navigateToNextRoute(): void {
     this.router.navigate([this.flow, 'add-user-details']);
+  }
+
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: [`${this.flow}/select-main-service`] });
   }
 }
