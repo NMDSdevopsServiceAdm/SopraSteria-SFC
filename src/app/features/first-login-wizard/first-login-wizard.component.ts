@@ -14,11 +14,14 @@ export class FirstLoginWizardComponent {
   public isLast: boolean;
   public currentIndex: number;
   public imageUrl: string;
+  // public videoUrl: string;
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
     this.imageUrl = `${environment.cmsUri}/assets/`;
+    //Image in CMS appears to be stored in AWS(S3?) folder assests where the cms entry has the unique ID of the image. Same method used for the video?
+    // this.videoUrl = `${environment.cmsUri}/assets/`;
     this.currentIndex = 0;
     this.updateVariables();
   }

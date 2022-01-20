@@ -16,11 +16,29 @@
         <div class="asc-cms-content" [innerHTML]="wizards[currentIndex].content"></div>
       </div>
       <div class="govuk-grid-column-one-half govuk-util__align-center">
-        <img
-          class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
-          src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
-          alt="{{ wizards[currentIndex].title }}"
-        />
+        <div *ngIf="!wizards[currentIndex].video; then imageBlock; else videoBlock"></div>
+        <ng-template #videoBlock>
+          <div class="video_wrapper">
+            <iframe
+              src="https://player.vimeo.com/video/656928746?h=4de18d3254&color=005eb8&title=0&byline=0&portrait=0"
+              height="auto"
+              frameborder="0"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <!-- <video controls>
+            TODO: This needs to be [innerHTML]="wizards[currentIndex].video or investigate into how the assets work for images so i am not pulling html"
+            <source src="{{ wizards[currentIndex].video }}" />
+          </video> -->
+        </ng-template>
+        <ng-template #imageBlock>
+          <img
+            class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
+            src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
+            alt="{{ wizards[currentIndex].title }}"
+          />
+        </ng-template>
       </div>
     </div>
     <div class="govuk-grid-row govuk-!-margin-bottom-4">

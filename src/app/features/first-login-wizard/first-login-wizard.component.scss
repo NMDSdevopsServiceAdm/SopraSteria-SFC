@@ -18,3 +18,10 @@
   max-width: 100%;
   height: auto;
 }
+
+.video_wrapper {
+  max-width: 100%;
+  height: calc(100% / (16 / 9));
+  width: auto;
+  //padding-bottom: 56.25%; /* 16:9, for an aspect ratio of 1:1 change to this value to 100% */
+}

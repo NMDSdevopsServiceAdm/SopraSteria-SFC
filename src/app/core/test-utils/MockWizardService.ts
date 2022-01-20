@@ -12,6 +12,7 @@ export class MockWizardService extends WizardService {
           content: 'Test workplace content',
           id: 1,
           image: 'image',
+          video: 'video',
           benchmarksFlag: false,
         },
         {
@@ -19,6 +20,7 @@ export class MockWizardService extends WizardService {
           content: 'Test benchmarks content',
           id: 2,
           image: 'image',
+          video: 'video',
           benchmarksFlag: true,
         },
         {
@@ -26,6 +28,7 @@ export class MockWizardService extends WizardService {
           content: 'Test staff records content',
           id: 3,
           image: 'image',
+          video: 'video',
           benchmarksFlag: false,
         },
       ],
