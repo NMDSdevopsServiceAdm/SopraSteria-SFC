@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import orderBy from 'lodash/orderBy';
 
 @Component({
@@ -21,23 +21,17 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  public newTrainingAndQualificationsRecordsFlag: boolean;
 
-  constructor(private permissionsService: PermissionsService, private featureFlagsService: FeatureFlagsService) {}
+  constructor(private permissionsService: PermissionsService, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByDefault = '0_expired';
     this.orderWorkers(this.sortByDefault);
-
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
   }
 
-  public orderWorkers(dropdownValue): void {
+  public orderWorkers(dropdownValue: string): void {
     let sortValue: string;
     if (dropdownValue.includes('missing')) {
       sortValue = 'missingMandatoryTrainingCount';
@@ -54,9 +48,9 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     }
   }
 
-  public getWorkerTrainingAndQualificationsPath(worker: Worker) {
-    const trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, trainingPath];
-    return this.wdfView ? [...path, ...['wdf-summary']] : path;
+  public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
+    event.preventDefault();
+    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
+    this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 }

@@ -1,10 +1,12 @@
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { PermissionsList, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { PermissionsList, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { Observable, of } from 'rxjs';
 
+@Injectable()
 export class MockPermissionsService extends PermissionsService {
   private _permissions: PermissionType[] = [];
 

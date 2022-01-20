@@ -3,9 +3,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -17,7 +15,6 @@ import { Subscription } from 'rxjs';
 export class LongTermAbsenceComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public worker: Worker;
-  public returnUrl: URLStructure;
   public form: FormGroup;
   public submitted: boolean;
   public longTermAbsenceReasons: Array<string>;
@@ -25,10 +22,10 @@ export class LongTermAbsenceComponent implements OnInit {
   private formErrorsMap: Array<ErrorDetails>;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
+  public returnUrl;
 
   constructor(
     private route: ActivatedRoute,
-    private backService: BackService,
     private workerService: WorkerService,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
@@ -39,10 +36,9 @@ export class LongTermAbsenceComponent implements OnInit {
     this.worker = this.route.snapshot.data.worker;
     this.workplace = this.route.snapshot.data.establishment;
     this.longTermAbsenceReasons = this.route.snapshot.data.longTermAbsenceReasons;
-    this.returnUrl = this.workerService.returnTo ? this.workerService.returnTo : { url: ['/dashboard'] };
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setBackLink();
+    this.returnUrl = this.workerService.returnTo.url;
   }
 
   ngAfterViewInit(): void {
@@ -51,7 +47,6 @@ export class LongTermAbsenceComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    this.workerService.setReturnTo(null);
   }
 
   public setupForm = () => {
@@ -87,10 +82,6 @@ export class LongTermAbsenceComponent implements OnInit {
         ],
       },
     ];
-  }
-
-  public setBackLink(): void {
-    this.backService.setBackLink(this.returnUrl);
   }
 
   public setBackAtWork(): void {
@@ -131,7 +122,7 @@ export class LongTermAbsenceComponent implements OnInit {
   }
 
   private onSuccess(): void {
-    this.router.navigate(this.returnUrl.url);
+    this.router.navigate(this.returnUrl);
   }
 
   private onError(error): void {

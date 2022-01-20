@@ -52,16 +52,6 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
-    if (flagName === 'newTrainingAndQualificationsRecords') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
-    if (flagName === 'benefitsBundle') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
 
     if (flagName === 'changingExpiryDateLink') {
       return new Promise((resolve) => {
@@ -70,6 +60,11 @@ export const mockConfigCatClient = {
     }
 
     if (flagName === 'endorsedProvidersLink') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
+    if (flagName === 'bulkUploadHelp') {
       return new Promise((resolve) => {
         return resolve(false);
       });

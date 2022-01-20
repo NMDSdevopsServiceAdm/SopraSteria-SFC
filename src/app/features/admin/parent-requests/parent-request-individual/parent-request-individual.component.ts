@@ -8,9 +8,7 @@ import { Dialog, DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import {
-  ApprovalOrRejectionDialogComponent,
-} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({

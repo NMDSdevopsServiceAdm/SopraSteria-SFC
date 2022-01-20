@@ -1,10 +1,14 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-one-third">
       <div class="govuk-list--inline govuk-list govuk__flex">
-        <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
+        <span class="govuk-caption-xl" data-testid="workerNameAndRole">
           {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
         </span>
+      </div>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-list--inline govuk-list">
         <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1 asc-tag">
           Long-term absent
           <a

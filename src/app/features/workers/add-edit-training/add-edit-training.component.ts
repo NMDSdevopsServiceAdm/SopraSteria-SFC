@@ -6,7 +6,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
@@ -27,13 +26,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
-    private featureFlagsService: FeatureFlagsService,
   ) {
     super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
   }
 
   protected init(): void {
-    this.trainingPath = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
 
@@ -42,7 +39,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         this.previousUrl = [route];
       } else {
         this.previousUrl = [
-          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`,
+          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`,
         ];
       }
     });
@@ -51,14 +48,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.trainingRecordId) {
       this.fillForm();
     }
-  }
-
-  protected async setFeatureFlag(): Promise<void> {
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
-    this.init();
   }
 
   public setTitle(): void {
@@ -148,9 +137,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.previousUrl.indexOf('dashboard') > -1) {
       url = this.previousUrl;
     } else {
-      url = [
-        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/${this.trainingPath}`,
-      ];
+      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`];
     }
     this.router.navigate(url).then(() => {
       if (this.trainingRecordId) {

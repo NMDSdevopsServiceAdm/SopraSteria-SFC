@@ -109,7 +109,7 @@ describe('DeleteRecordComponent', () => {
     it('should display the correct title', async () => {
       const { getByText } = await setup();
 
-      expect(getByText("You're about to delete this training record")).toBeTruthy();
+      expect(getByText(`You're about to delete this training record`)).toBeTruthy();
     });
 
     it('should navigate to the edit training page when pressing cancel if in training view', async () => {
@@ -167,7 +167,7 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the new-training page when pressing the delete button', async () => {
+      it('should navigate to the training page when pressing the delete button', async () => {
         const { component, getByText, routerSpy } = await setup();
 
         const deleteButton = getByText('Delete this training record');
@@ -175,7 +175,7 @@ describe('DeleteRecordComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith([
           `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
-          'new-training',
+          'training',
         ]);
       });
 
@@ -197,7 +197,7 @@ describe('DeleteRecordComponent', () => {
     it('should display the correct title', async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText("You're about to delete this qualification record")).toBeTruthy();
+      expect(getByText(`You're about to delete this qualification record`)).toBeTruthy();
     });
 
     it('should navigate to the edit qualification page when pressing cancel if in qualifications view', async () => {
@@ -257,7 +257,7 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the new-training page when pressing the delete button', async () => {
+      it('should navigate to the training page when pressing the delete button', async () => {
         const { component, getByText, routerSpy } = await setup(false);
 
         const deleteButton = getByText('Delete this qualification record');
@@ -265,7 +265,7 @@ describe('DeleteRecordComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith([
           `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
-          'new-training',
+          'training',
         ]);
       });
 

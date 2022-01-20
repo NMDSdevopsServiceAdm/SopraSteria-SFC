@@ -25,7 +25,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public filterValue: string;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  public newTrainingAndQualificationsRecordsFlag: boolean;
   public trainingAndQualsRoute: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -46,13 +45,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     this.sortByDefault = '0_expired';
     this.orderTrainingCategories(this.sortByDefault);
     this.setExpiresSoonAlertDates();
-
-    this.newTrainingAndQualificationsRecordsFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'newTrainingAndQualificationsRecords',
-      false,
-    );
-
-    this.trainingAndQualsRoute = this.newTrainingAndQualificationsRecordsFlag ? 'new-training' : 'training';
   }
 
   private setExpiresSoonAlertDates(): void {
