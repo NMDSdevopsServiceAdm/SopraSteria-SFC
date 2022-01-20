@@ -2,7 +2,8 @@ const uniq = require('lodash/uniq');
 const models = require('../../models');
 
 const getPermissions = async (req) => {
-  const establishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
+  const rawEstablishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
+  const establishmentInfo = convertEstablishmentInfo(rawEstablishmentInfo);
 
   const estabType = getEstablishmentType(req.establishment);
 
@@ -146,7 +147,7 @@ const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishme
   !isLoggedInAsParent && !establishmentInfo.hasParent && !establishmentInfo.hasRequestedToBecomeAParent;
 
 const _isRegulatedAndHasServiceWithBenchmarksData = (establishmentInfo) =>
-  [24, 25, 20].includes(establishmentInfo.mainService.id) && establishmentInfo.IsRegulated;
+  [24, 25, 20].includes(establishmentInfo.mainServiceId) && establishmentInfo.isRegulated;
 
 const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
 
@@ -168,6 +169,16 @@ const _canViewBenchmarks = (establishmentInfo) =>
 
 const _canChangeDataOwner = (establishmentInfo) =>
   !establishmentInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
+
+const convertEstablishmentInfo = (rawEstablishmentInfo) => {
+  return {
+    hasParent: rawEstablishmentInfo.get('hasParent'),
+    mainServiceId: rawEstablishmentInfo.mainService.id,
+    hasRequestedToBecomeAParent: rawEstablishmentInfo.get('hasRequestedToBecomeAParent'),
+    isRegulated: rawEstablishmentInfo.get('IsRegulated'),
+    dataOwnershipRequested: rawEstablishmentInfo.dataOwnershipRequested,
+  };
+};
 
 module.exports = {
   getPermissions,
