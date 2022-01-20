@@ -34,6 +34,10 @@ export const bulkUploadJourney: JourneyRoute = {
           path: Path.GET_HELP,
         },
         {
+          title: 'Data changes',
+          path: Path.GET_DATA_CHANGES,
+        },
+        {
           title: 'Last bulk upload',
           path: Path.LAST_BULK_UPLOAD,
         },
@@ -77,10 +81,6 @@ export const bulkUploadHelpJourney: JourneyRoute = {
             {
               title: `'How to' guides`,
               path: Path.HOW_TO_GUIDE,
-            },
-            {
-              title: 'Data changes',
-              path: Path.GET_DATA_CHANGES,
             },
           ],
         },
