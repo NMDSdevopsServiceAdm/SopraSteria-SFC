@@ -57,7 +57,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
       });
 
     this.changingExpiryDateLinkFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'changingExpiryDateLink',
+      'changingexpirydatelink',
       false,
     );
   }

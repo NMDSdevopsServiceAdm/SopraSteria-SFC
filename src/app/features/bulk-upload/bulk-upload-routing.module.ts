@@ -49,18 +49,24 @@ const routes: Routes = [
     path: 'get-help',
     children: [
       {
+        path: '',
+        component: BulkUploadHelpMainPageComponent,
+        data: { title: 'Bulk upload get help main page' },
+        resolve: {
+          topTipsList: BulkUploadTopTipsListResolver,
+          dataChange: DataChangeResolver,
+          dataChangeLastUpdated: DataChangeLastUpdatedResolver,
+        },
+      },
+      {
         path: 'troubleshooting',
         component: BulkUploadTroubleshootingComponent,
         data: { title: 'Bulk upload troubleshooting page' },
         resolve: {
           bulkUploadTroubleShootingPages: BulkUploadTroubleshootingPageResolver,
+          dataChange: DataChangeResolver,
+          dataChangeLastUpdated: DataChangeLastUpdatedResolver,
         },
-      },
-      {
-        path: '',
-        component: BulkUploadHelpMainPageComponent,
-        data: { title: 'Bulk upload get help main page' },
-        resolve: { topTipsList: BulkUploadTopTipsListResolver },
       },
       {
         path: 'step-by-step-guide',
@@ -74,6 +80,8 @@ const routes: Routes = [
         resolve: {
           topTip: BulkUploadTopTipResolver,
           topTipsList: BulkUploadTopTipsListResolver,
+          dataChange: DataChangeResolver,
+          dataChangeLastUpdated: DataChangeLastUpdatedResolver,
         },
       },
     ],
