@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Permissions, PermissionsList, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
-import { Roles } from '@core/model/roles.enum';
+import { Permissions, PermissionsResponse, PermissionType } from '@core/model/permissions.model';
 import { UserService } from '@core/services/user.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -19,44 +18,38 @@ export class PermissionsService {
     return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
   }
 
-  public clearPermissions() {
+  public clearPermissions(): void {
     this._permissions$.next({});
   }
 
-  public permissions(workplaceUid: string): PermissionsList {
+  public permissions(workplaceUid: string): PermissionType[] {
     return this._permissions$.value[workplaceUid];
   }
 
-  public setPermissions(workplaceUid: string, permissions: PermissionsList) {
+  public setPermissions(workplaceUid: string, permissions: PermissionType[]): void {
     const subsidiaryPermissions: Permissions = this._permissions$.value;
+
     subsidiaryPermissions[workplaceUid] = permissions;
     this._permissions$.next(subsidiaryPermissions);
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
-      return true;
-    }
-
     const permissions = this.permissions(workplaceUid);
-    return permissions.hasOwnProperty(permissionType) && permissions[permissionType] ? true : false;
+
+    return permissions.includes(permissionType);
   }
 
-  public handlePermissionsCheck(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
+  public handlePermissionsCheck(requiredPermissions: PermissionType[], permissionsList: PermissionType[]): boolean {
     if (!this.hasValidPermissions(requiredPermissions, permissionsList)) {
       this.router.navigate(['/dashboard']);
       return false;
     }
-    requiredPermissions.forEach((item) => {
-      if (!permissionsList[item]) {
-        this.router.navigate(['/dashboard']);
-      }
-    });
+
     return true;
   }
 
   public hasWorkplacePermissions(workplaceUid: string) {
-    const cachedPermissions: PermissionsList = this.permissions(workplaceUid);
+    const cachedPermissions = this.permissions(workplaceUid);
     if (cachedPermissions) {
       return of(true);
     }
@@ -76,11 +69,11 @@ export class PermissionsService {
       .pipe(map(() => true));
   }
 
-  private hasValidPermissions(requiredPermissions: string[], permissionsList: PermissionsList): boolean {
+  private hasValidPermissions(requiredPermissions: PermissionType[], permissionsList: PermissionType[]): boolean {
     if (!permissionsList) {
       return false;
     }
-    const userPermissions: string[] = Object.keys(permissionsList);
-    return requiredPermissions.every((item) => userPermissions.includes(item));
+
+    return requiredPermissions.every((item) => permissionsList.includes(item));
   }
 }

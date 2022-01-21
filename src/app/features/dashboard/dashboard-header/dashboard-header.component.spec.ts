@@ -46,7 +46,7 @@ describe('DashboardHeaderComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory([], isAdmin),
           deps: [HttpClient, Router, UserService],
         },
         {

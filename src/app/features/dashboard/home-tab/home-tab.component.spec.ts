@@ -16,7 +16,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -131,7 +133,7 @@ describe('HomeTabComponent', () => {
     // Assert
     expect(childDebugElement).toBeFalsy();
   });
-  it('should  show the more staff records banner if the user does  have permissions to viewListOfWorkers', async () => {
+  it('should show the more staff records banner if the user does have permissions to canAddWorker', async () => {
     // Arrange
     const { component } = await setup();
     // Act
@@ -139,7 +141,7 @@ describe('HomeTabComponent', () => {
     component.fixture.componentInstance.workplace.numberOfStaff = 10;
     component.fixture.componentInstance.workplace.eightWeeksFromFirstLogin = new Date('1970-01-01').toString();
 
-    component.fixture.componentInstance.canViewListOfWorkers = true;
+    component.fixture.componentInstance.canAddWorker = true;
 
     component.fixture.detectChanges();
     const childDebugElement = component.fixture.debugElement.query(By.directive(StaffMismatchBannerComponent));
@@ -259,7 +261,9 @@ describe('HomeTabComponent', () => {
 
         component.fixture.componentInstance.workplace.isParent = false;
         component.fixture.componentInstance.canLinkToParent = true;
+        component.fixture.componentInstance.canBecomeAParent = true;
         component.fixture.componentInstance.linkToParentRequestedStatus = false;
+        component.fixture.componentInstance.parentStatusRequested = false;
 
         component.fixture.detectChanges();
 

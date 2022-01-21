@@ -32,8 +32,10 @@ export class SwitchWorkplaceService {
     }
     this.getNewEstablishmentId(id, username).subscribe(
       (data) => {
-        this.permissionsService.clearPermissions();
-        this.onSwapSuccess(data);
+        this.authService.token = data.headers.get('authorization');
+        this.permissionsService.hasWorkplacePermissions(data.body.establishment.uid).subscribe(() => {
+          this.onSwapSuccess(data);
+        });
       },
       (error) => this.onError(error),
     );
@@ -44,7 +46,7 @@ export class SwitchWorkplaceService {
   }
 
   public getNewEstablishmentId(id, username) {
-    let data = {
+    const data = {
       username: username,
     };
     return this.http.post<any>('/api/user/swap/establishment/' + id, data, { observe: 'response' });
