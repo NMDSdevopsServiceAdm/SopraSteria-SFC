@@ -53,7 +53,7 @@ export const mockConfigCatClient = {
       });
     }
 
-    if (flagName === 'changingExpiryDateLink') {
+    if (flagName === 'changingexpirydatelink') {
       return new Promise((resolve) => {
         return resolve(false);
       });
