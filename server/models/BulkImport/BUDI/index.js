@@ -18,6 +18,7 @@ let RECRUITMENT_MAPPINGS = null;
 let NURSING_SPECIALIST_MAPPINGS = null;
 let QUALIFICATION_LEVELS_MAPPINGS = null;
 let QUALIFICATIONS_MAPPINGS = null;
+let TRAINING_CATEGORY_MAPPINGS = null;
 
 class BUDI {
   static async initialize() {
@@ -36,6 +37,7 @@ class BUDI {
     NURSING_SPECIALIST_MAPPINGS = getFileContent('nursingSpecialist');
     QUALIFICATION_LEVELS_MAPPINGS = getFileContent('qualificationLevels');
     QUALIFICATIONS_MAPPINGS = getFileContent('qualifications');
+    TRAINING_CATEGORY_MAPPINGS = getFileContent('trainingCategory');
 
     const cssrFetch = await dbmodels.cssr.findAll({
       attributes: ['id', 'name'],
@@ -230,56 +232,8 @@ class BUDI {
     return originalCode;
   }
 
-  // maps training roles
-  // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
   static trainingCategory(direction, originalCode) {
-    const fixedMapping = [
-      { ASC: 8, BUDI: 1 },
-      { ASC: 10, BUDI: 2 },
-      { ASC: 14, BUDI: 5 },
-      { ASC: 17, BUDI: 6 },
-      { ASC: 18, BUDI: 7 },
-      { ASC: 19, BUDI: 8 },
-      { ASC: 20, BUDI: 9 },
-      { ASC: 21, BUDI: 10 },
-      { ASC: 22, BUDI: 11 },
-      { ASC: 23, BUDI: 12 },
-      { ASC: 24, BUDI: 13 },
-      { ASC: 25, BUDI: 14 },
-      { ASC: 27, BUDI: 15 },
-      { ASC: 28, BUDI: 16 },
-      { ASC: 29, BUDI: 17 },
-      { ASC: 31, BUDI: 18 },
-      { ASC: 32, BUDI: 19 },
-      { ASC: 33, BUDI: 20 },
-      { ASC: 12, BUDI: 22 },
-      { ASC: 16, BUDI: 23 },
-      { ASC: 37, BUDI: 21 },
-      { ASC: 3, BUDI: 25 },
-      { ASC: 6, BUDI: 26 },
-      { ASC: 15, BUDI: 27 },
-      { ASC: 4, BUDI: 28 },
-      { ASC: 11, BUDI: 29 },
-      { ASC: 9, BUDI: 30 },
-      { ASC: 26, BUDI: 31 },
-      { ASC: 2, BUDI: 32 },
-      { ASC: 7, BUDI: 33 },
-      { ASC: 13, BUDI: 34 },
-      { ASC: 36, BUDI: 35 },
-      { ASC: 35, BUDI: 36 },
-      { ASC: 5, BUDI: 37 },
-      { ASC: 30, BUDI: 38 },
-      { ASC: 1, BUDI: 39 },
-      { ASC: 34, BUDI: 40 },
-    ];
-
-    if (direction === BUDI.TO_ASC) {
-      const found = fixedMapping.find((thisTrainingCategory) => thisTrainingCategory.BUDI === originalCode);
-      return found ? found.ASC : null;
-    }
-
-    const found = fixedMapping.find((thisTrainingCategory) => thisTrainingCategory.ASC === originalCode);
-    return found ? found.BUDI : null;
+    return this.convertValue(direction, originalCode, TRAINING_CATEGORY_MAPPINGS);
   }
 
   static ethnicity(direction, originalCode) {
@@ -306,7 +260,7 @@ class BUDI {
     if (specialisms.length === 1 && specialisms[0] === 7) {
       return { value: 'No' };
     } else if (specialisms.length === 1 && specialisms[0] === 8) {
-      return { value: `Don't know` };
+      return { value: "Don't know" };
     } else {
       return {
         value: 'Yes',
@@ -315,13 +269,10 @@ class BUDI {
     }
   }
 
-  // maps (highest) qualification levels
-  // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
   static qualificationLevels(direction, originalCode) {
     return this.convertValue(direction, originalCode, QUALIFICATION_LEVELS_MAPPINGS);
   }
 
-  // maps qualification types
   static qualifications(direction, originalCode) {
     return this.convertValue(direction, originalCode, QUALIFICATIONS_MAPPINGS);
   }
@@ -395,4 +346,5 @@ exports.mappings = {
   NURSING_SPECIALIST_MAPPINGS,
   QUALIFICATION_LEVELS_MAPPINGS,
   QUALIFICATIONS_MAPPINGS,
+  TRAINING_CATEGORY_MAPPINGS,
 };
