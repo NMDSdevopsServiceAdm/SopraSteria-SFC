@@ -1,13 +1,12 @@
 'use strict';
 const csv = require('csvtojson');
+
 const { MetaData } = require('../../../../models/BulkImport/csv/metaData');
 const models = require('../../../../models');
-
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers').Worker;
 const TrainingCsvValidator = require('../../../../models/BulkImport/csv/training').Training;
-
-const { s3, Bucket, saveResponse, downloadContent } = require('../s3');
+const { isWorkerFile } = require('../whichFile');
+const S3 = require('../s3');
 const { validateBulkUploadFiles } = require('./validateBulkUploadFiles');
 const { workerData } = require('worker_threads');
 const { completeLock } = require('../lock');
@@ -16,136 +15,80 @@ const { buStates } = require('../states');
 const Sentry = require('@sentry/node');
 
 const validatePut = async (req, res) => {
-  const keepAlive = (stepName = '', stepId = '') => {
-    console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
+  const files = {
+    Establishment: {
+      imported: null,
+    },
+    Worker: {
+      imported: null,
+    },
+    Training: {
+      imported: null,
+      metadata: new MetaData(),
+    },
   };
-
-  const establishments = {
-    imported: null,
-    establishmentMetadata: new MetaData(),
-  };
-
-  const workers = {
-    imported: null,
-    workerMetadata: new MetaData(),
-  };
-
-  const trainings = {
-    imported: null,
-    trainingMetadata: new MetaData(),
-  };
-
-  let estNotFound = true;
-  let wrkNotFound = true;
-  let trnNotFound = true;
-  const establishmentId = req.establishmentId;
 
   try {
-    // get list of files from s3 bucket
-    await s3
-      .listObjects({
-        Bucket,
-        Prefix: `${establishmentId}/latest/`,
-      })
-      .promise()
+    const bucketFiles = await S3.listObjectsInBucket(req.establishmentId);
 
-      // download the contents of the appropriate ones we find
-      .then((data) =>
-        Promise.all(
-          data.Contents.reduce((arr, myFileStats) => {
-            keepAlive('bucket listed'); // keep connection alive
+    await Promise.all(
+      bucketFiles.Contents.map(async (fileInfo) => {
+        if (isNotMetadata(fileInfo.Key)) {
+          const file = await S3.downloadContent(fileInfo.Key);
+          const fileType = getFileType(file.data);
 
-            if (!(/.*metadata.json$/.test(myFileStats.Key) || /.*\/$/.test(myFileStats.Key))) {
-              arr.push(
-                downloadContent(myFileStats.Key)
-                  // for each downloaded file, test its type then update the closure variables
-                  .then((myFile) => {
-                    keepAlive('file downloaded', `${myFileStats.Key}`); // keep connection alive
+          if (files[fileType].imported === null) {
+            files[fileType].metadata = getMetadata(file, fileType);
+            files[fileType].imported = await generateJSONFromCSV(file.data);
+          }
+        }
+      }),
+    );
 
-                    let obj = null;
-                    let metadata = null;
+    const validationResponse = await validateBulkUploadFiles(req, files);
 
-                    // figure out which type of csv this file is and load the data
-                    if (estNotFound && EstablishmentCsvValidator.isContent(myFile.data)) {
-                      estNotFound = false;
-                      obj = establishments;
-                      metadata = establishments.establishmentMetadata;
+    res.buValidationResult = validationResponse.status;
 
-                      metadata.filename = myFile.filename;
-                      metadata.fileType = 'Establishment';
-                      metadata.userName = myFile.username;
-                    } else if (wrkNotFound && WorkerCsvValidator.isContent(myFile.data)) {
-                      wrkNotFound = false;
-                      obj = workers;
-                      metadata = workers.workerMetadata;
+    await S3.saveResponse(req, res, 200, {
+      establishment: validationResponse.metaData.establishments.toJSON(),
+      workers: validationResponse.metaData.workers.toJSON(),
+      training: validationResponse.metaData.training.toJSON(),
+    });
 
-                      metadata.filename = myFile.filename;
-                      metadata.fileType = 'Worker';
-                      metadata.userName = myFile.username;
-                    } else if (trnNotFound && TrainingCsvValidator.isContent(myFile.data)) {
-                      trnNotFound = false;
-                      obj = trainings;
-                      metadata = trainings.trainingMetadata;
-
-                      metadata.filename = myFile.filename;
-                      metadata.fileType = 'Training';
-                      metadata.userName = myFile.username;
-                    }
-
-                    // if not one of our expected types then just return
-                    if (obj === null) {
-                      return true;
-                    }
-                    // parse the file contents as csv then return the data
-                    return csv()
-                      .fromString(myFile.data)
-                      .then((imported) => {
-                        keepAlive('csv parsed', myFileStats.Key); // keep connection alive
-
-                        obj.imported = imported;
-
-                        return true;
-                      });
-                  }),
-              );
-            }
-
-            return arr;
-          }, []),
-        ),
-      )
-
-      // validate the csv files we found
-      .then(async () => {
-        const validationResponse = await validateBulkUploadFiles(
-          true,
-          req.username,
-          establishmentId,
-          req.isParent,
-          establishments,
-          workers,
-          trainings,
-          keepAlive,
-        );
-        // set what the next state should be
-        res.buValidationResult = validationResponse.status;
-
-        // handle parsing errors
-        await saveResponse(req, res, 200, {
-          establishment: validationResponse.metaData.establishments.toJSON(),
-          workers: validationResponse.metaData.workers.toJSON(),
-          training: validationResponse.metaData.training.toJSON(),
-        });
-
-        await completeLock(req, res, buStates.VALIDATING, buStates.READY);
-      });
+    await completeLock(req, res, buStates.VALIDATING, buStates.READY);
   } catch (err) {
     console.error(err);
     Sentry.captureException(err);
 
-    await saveResponse(req, res, 500, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
+
+const getMetadata = (file, fileType) => {
+  const metadata = new MetaData();
+
+  metadata.filename = file.filename;
+  metadata.fileType = fileType;
+  metadata.userName = file.username;
+
+  return metadata;
+};
+
+const generateJSONFromCSV = async (fileData) => {
+  return await csv().fromString(fileData);
+};
+
+const getFileType = (fileData) => {
+  if (EstablishmentCsvValidator.isContent(fileData)) {
+    return 'Establishment';
+  } else if (isWorkerFile(fileData)) {
+    return 'Worker';
+  } else if (TrainingCsvValidator.isContent(fileData)) {
+    return 'Training';
+  }
+};
+
+const isNotMetadata = (fileKey) => !(/.*metadata.json$/.test(fileKey) || /.*\/$/.test(fileKey));
 
 (async () => {
   await validatePut(workerData.req, workerData.res);
@@ -153,3 +96,10 @@ const validatePut = async (req, res) => {
   models.sequelize.close();
   process.exit(0);
 })();
+
+module.exports = {
+  getMetadata,
+  isNotMetadata,
+  generateJSONFromCSV,
+  getFileType,
+};

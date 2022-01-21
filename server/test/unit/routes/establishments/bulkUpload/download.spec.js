@@ -11,7 +11,7 @@ const { apiTrainingBuilder } = require('../../../../integration/utils/training')
 const mockEstablishment = require('../../../mockdata/establishment');
 const mockWorker = require('../../../mockdata/workers');
 const mockTraining = require('../../../mockdata/training');
-const WorkerCsvValidator = require('../../../../../models/BulkImport/csv/workers').Worker;
+const WorkerCSV = require('../../../../../routes/establishments/bulkUpload/download/workerCSV');
 
 describe('download', () => {
   afterEach(() => {
@@ -108,6 +108,7 @@ describe('download', () => {
     await downloadGet(req, res);
     sinon.assert.calledOnce(downloadWorkers);
   });
+
   it('should get the correct amount of qualifications', async () => {
     const establishment = {
       id: 123,
@@ -133,10 +134,8 @@ describe('download', () => {
       },
     ];
     const responseSend = () => {};
-    sinon.stub(WorkerCsvValidator, 'headers').callsFake((maxQuals) => {
-      expect(maxQuals).to.deep.equal(9);
-    });
-    sinon.stub(WorkerCsvValidator, 'toCSV').callsFake((LocalIdentifierValue, worker, maxQualifications) => {
+
+    sinon.stub(WorkerCSV, 'toCSV').callsFake((LocalIdentifierValue, worker, maxQualifications) => {
       expect(LocalIdentifierValue).to.deep.equal(establishment.LocalIdentifierValue);
       expect(worker).to.deep.equal(worker);
       expect(maxQualifications).to.deep.equal(9);

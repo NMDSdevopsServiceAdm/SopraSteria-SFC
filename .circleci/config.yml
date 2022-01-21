@@ -137,6 +137,20 @@ commands:
             # Switch name of "dark" version to claim correct name
             cf rename "<<parameters.appname>>-dark" "<<parameters.appname>>"
           name: Cloud Foundry - Re-route live Domain
+  deploy_lambda:
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      folder:
+        description: Folder where the lambda lives
+        type: string
+    steps:
+     - run:
+          command: |
+            cd lambdas/<<parameters.folder>>
+            npm ci
+            npx serverless deploy --stage <<parameters.appname>>
 
 orbs:
   node: circleci/node@3.0.0
@@ -212,7 +226,7 @@ jobs:
           keys:
             - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: npm run server:cover:unit:ci
+          command: npm run server:lambda:cover:unit:ci
           environment:
             MOCHA_FILE: ./junit/test-results.xml
             NODE_ENV: example
@@ -459,6 +473,24 @@ jobs:
           sentry-cli releases new -p $SENTRY_BACKEND_PROJECT $SENTRY_RELEASE
           sentry-cli releases set-commits --auto $SENTRY_RELEASE
           sentry-cli releases finalize $SENTRY_RELEASE
+  serverless_deployment:
+    description: Deploying all lambdas
+    docker:
+      - image: circleci/node:lts
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      folder:
+        description: Folder where the lambda lives
+        type: string
+    steps:
+      - checkout
+      - run: |
+          npm install serverless@latest
+      - deploy_lambda:
+          appname: <<parameters.appname>>
+          folder: <<parameters.folder>>
 workflows:
   build-test-deploy:
     jobs:
@@ -490,6 +522,57 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
+      - serverless_deployment:
+          appname: sfcbenchmarks
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - feat/benchmarks
+      - serverless_deployment:
+          appname: sfcstaging
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - test
+      - serverless_deployment:
+          appname: sfcpreprod
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - live
+      - serverless_deployment:
+          appname: sfcprod
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks

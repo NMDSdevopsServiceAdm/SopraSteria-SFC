@@ -1,12 +1,13 @@
 'use strict';
 const csv = require('csvtojson');
+
 const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
+const { validateWorkerHeaders } = require('./validate/headers/worker');
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
-
-const { s3, Bucket, saveResponse, uploadAsJSON, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
+const { isWorkerFile } = require('./whichFile');
+const { s3, Bucket, saveResponse, uploadJSONDataToS3, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
 
 const uploadedGet = async (req, res) => {
@@ -159,7 +160,7 @@ const uploadedPut = async (req, res) => {
         establishmentMetadata.size = myfile.size;
         establishmentMetadata.key = myfile.key;
         establishmentMetadata.lastModified = myfile.lastModified;
-      } else if (WorkerCsvValidator.isContent(myfile.data)) {
+      } else if (isWorkerFile(myfile.data)) {
         myDownloads.workers = myfile.data;
         workerMetadata.filename = myfile.filename;
         workerMetadata.fileType = 'Worker';
@@ -224,11 +225,11 @@ const uploadedPut = async (req, res) => {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;
         metadataS3Promises.push(
-          uploadAsJSON(
+          uploadJSONDataToS3(
             username,
             establishmentId,
             establishmentMetadata,
-            `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`,
+            `latest/${establishmentMetadata.filename}.metadata`,
           ),
         );
       } else {
@@ -238,16 +239,11 @@ const uploadedPut = async (req, res) => {
     }
 
     if (importedWorkers) {
-      if (new WorkerCsvValidator(importedWorkers[firstRow], firstLineNumber).preValidate(workerHeaders)) {
+      if (validateWorkerHeaders(workerHeaders)) {
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
         metadataS3Promises.push(
-          uploadAsJSON(
-            username,
-            establishmentId,
-            workerMetadata,
-            `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`,
-          ),
+          uploadJSONDataToS3(username, establishmentId, workerMetadata, `latest/${workerMetadata.filename}.metadata`),
         );
       } else {
         // reset metadata filetype because this is not an expected establishment
@@ -260,11 +256,11 @@ const uploadedPut = async (req, res) => {
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(
-          uploadAsJSON(
+          uploadJSONDataToS3(
             username,
             establishmentId,
             trainingMetadata,
-            `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`,
+            `latest/${trainingMetadata.filename}.metadata`,
           ),
         );
       } else {
