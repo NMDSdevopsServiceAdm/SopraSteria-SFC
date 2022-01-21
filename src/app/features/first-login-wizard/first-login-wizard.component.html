@@ -21,7 +21,7 @@
           <div class="video_wrapper">
             <iframe
               class="video"
-              [src]="safeVideoUrl"
+              [src]="rawVideoUrl | sanitizeVideoUrl"
               frameborder="0"
               allow="fullscreen; picture-in-picture"
               allowfullscreen

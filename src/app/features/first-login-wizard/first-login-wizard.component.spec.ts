@@ -13,7 +13,7 @@ describe('FirstLoginWizardComponent', () => {
   const wizard = MockWizardService.wizardFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(FirstLoginWizardComponent, {
+    const { fixture, getByText, queryByText, getByAltText } = await render(FirstLoginWizardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
@@ -36,6 +36,7 @@ describe('FirstLoginWizardComponent', () => {
       fixture,
       getByText,
       queryByText,
+      getByAltText,
     };
   }
 
@@ -73,6 +74,24 @@ describe('FirstLoginWizardComponent', () => {
     const { component } = await setup();
 
     expect(component.currentIndex).toBe(0);
+  });
+
+  it('should render a video if there is a video available', async () => {
+    const { fixture, getByAltText } = await setup();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(getByAltText(wizard.data[0].video)).toBeTruthy();
+      expect(getByAltText(wizard.data[0].image)).toBeFalsy();
+    });
+  });
+
+  it('should render a image if there is no video available', async () => {
+    const { fixture, getByAltText } = await setup();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(getByAltText(wizard.data[1].video)).toBeFalsy();
+      expect(getByAltText(wizard.data[1].image)).toBeTruthy();
+    });
   });
 
   describe('Next button', () => {

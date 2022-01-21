@@ -16,7 +16,6 @@ export class FirstLoginWizardComponent {
   public currentIndex: number;
   public imageUrl: string;
   public rawVideoUrl: string;
-  public safeVideoUrl;
   constructor(private route: ActivatedRoute, private domSanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
@@ -24,8 +23,6 @@ export class FirstLoginWizardComponent {
     this.imageUrl = `${environment.cmsUri}/assets/`;
     this.currentIndex = 0;
     this.rawVideoUrl = this.route.snapshot.data.wizard.data[this.currentIndex].video;
-    this.safeVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.rawVideoUrl);
-    //this.safeVideoUrl = this.domSanitizer.sanitize(SecurityContext.URL, this.rawVideoUrl);
     this.updateVariables();
   }
 
