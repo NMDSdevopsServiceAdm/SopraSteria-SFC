@@ -3688,19 +3688,21 @@ class Worker {
     columns.push(fluvac);
 
     // "NINUMBER"
-    downloadType === 'workers'
-      ? columns.push(entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : '') // remove whitespace
-      : columns.push('Admin');
+    downloadType === 'workers-sanitise' && entity.NationalInsuranceNumberValue
+      ? columns.push('Admin')
+      : columns.push(
+          entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : '',
+        ); // remove whitespace
 
     // "POSTCODE"
     columns.push(csvQuote(entity.PostcodeValue));
 
     // "DOB"
-    if (downloadType === 'workers') {
+    if (downloadType === 'workers-sanitise' && entity.DateOfBirthValue) {
+      columns.push('Admin');
+    } else {
       const dobParts = entity.DateOfBirthValue ? entity.DateOfBirthValue.split('-') : null;
       columns.push(dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
-    } else {
-      columns.push('Admin');
     }
 
     // "GENDER",

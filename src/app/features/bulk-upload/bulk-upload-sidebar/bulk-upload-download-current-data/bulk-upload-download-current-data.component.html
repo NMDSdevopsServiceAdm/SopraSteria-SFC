@@ -9,15 +9,29 @@
     </a>
   </li>
   <li>
-    <a
-      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
-      (click)="downloadFile($event, sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker)"
-    >
-      Staff
-    </a>
-    <!-- <button class="govuk-button govuk-button--secondary" type="button" (click)="toggleFields()">
-      View NI Number and Date of Birth
-    </button> -->
+    <div class="govuk__flex">
+      <a
+        class="govuk-!-padding-top-2"
+        href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
+        (click)="downloadFile($event, sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker)"
+      >
+        Staff
+      </a>
+      <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-left-8">
+        <div class="govuk-checkboxes__item">
+          <input
+            data-testid="showDataCheckbox"
+            type="checkbox"
+            class="govuk-checkboxes__input"
+            id="sanitiseData"
+            name="sanitiseData"
+            [checked]="sanitise"
+            (change)="toggleCheckbox($event.target)"
+          />
+          <label for="sanitiseData" class="govuk-label govuk-checkboxes__label"> Show </label>
+        </div>
+      </div>
+    </div>
   </li>
   <li>
     <a
