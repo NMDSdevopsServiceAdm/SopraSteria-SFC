@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Wizard } from '@core/model/wizard.model';
 import { environment } from 'src/environments/environment';
@@ -14,15 +15,17 @@ export class FirstLoginWizardComponent {
   public isLast: boolean;
   public currentIndex: number;
   public imageUrl: string;
-  // public videoUrl: string;
-  constructor(private route: ActivatedRoute) {}
+  public rawVideoUrl: string;
+  public safeVideoUrl;
+  constructor(private route: ActivatedRoute, private domSanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
     this.imageUrl = `${environment.cmsUri}/assets/`;
-    //Image in CMS appears to be stored in AWS(S3?) folder assests where the cms entry has the unique ID of the image. Same method used for the video?
-    // this.videoUrl = `${environment.cmsUri}/assets/`;
     this.currentIndex = 0;
+    this.rawVideoUrl = this.route.snapshot.data.wizard.data[this.currentIndex].video;
+    this.safeVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.rawVideoUrl);
+    //this.safeVideoUrl = this.domSanitizer.sanitize(SecurityContext.URL, this.rawVideoUrl);
     this.updateVariables();
   }
 
