@@ -3,12 +3,11 @@ const csv = require('csvtojson');
 
 const config = require('../../../config/config');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
 const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
-const { isWorkerFile } = require('./whichFile');
+const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 
 const createMyFileObject = (myfile, type) => {
@@ -181,7 +180,7 @@ const uploadedPut = async (req, res) => {
         myDownloads.push(createMyFileObject(myfile, 'Establishment'));
       } else if (isWorkerFile(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Worker'));
-      } else if (TrainingCsvValidator.isContent(myfile.data)) {
+      } else if (isTrainingFile(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Training'));
       } else {
         myDownloads.push(createMyFileObject(myfile, null));

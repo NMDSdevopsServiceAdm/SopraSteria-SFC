@@ -454,11 +454,6 @@ class Training {
     return this._validateHeaders(header);
   }
 
-  static isContent(data) {
-    const contentRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
-    return contentRegex.test(data.substring(0, 50));
-  }
-
   _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
     if (_headers_v1 !== headers) {

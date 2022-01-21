@@ -4,8 +4,7 @@ const csv = require('csvtojson');
 const { MetaData } = require('../../../../models/BulkImport/csv/metaData');
 const models = require('../../../../models');
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
-const TrainingCsvValidator = require('../../../../models/BulkImport/csv/training').Training;
-const { isWorkerFile } = require('../whichFile');
+const { isWorkerFile, isTrainingFile } = require('../whichFile');
 const S3 = require('../s3');
 const { validateBulkUploadFiles } = require('./validateBulkUploadFiles');
 const { workerData } = require('worker_threads');
@@ -83,7 +82,7 @@ const getFileType = (fileData) => {
     return 'Establishment';
   } else if (isWorkerFile(fileData)) {
     return 'Worker';
-  } else if (TrainingCsvValidator.isContent(fileData)) {
+  } else if (isTrainingFile(fileData)) {
     return 'Training';
   }
 };

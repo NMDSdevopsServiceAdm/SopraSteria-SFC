@@ -6,7 +6,7 @@ const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const { validateWorkerHeaders } = require('./validate/headers/worker');
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
-const { isWorkerFile } = require('./whichFile');
+const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const { s3, Bucket, saveResponse, uploadJSONDataToS3, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
 
@@ -168,7 +168,7 @@ const uploadedPut = async (req, res) => {
         workerMetadata.size = myfile.size;
         workerMetadata.key = myfile.key;
         workerMetadata.lastModified = myfile.lastModified;
-      } else if (TrainingCsvValidator.isContent(myfile.data)) {
+      } else if (isTrainingFile(myfile.data)) {
         myDownloads.trainings = myfile.data;
         trainingMetadata.filename = myfile.filename;
         trainingMetadata.fileType = 'Training';

@@ -5,6 +5,12 @@ const isWorkerFile = (fileAsString) => {
   return contentRegex1.test(fileAsString.substring(0, 50)) || contentRegex2.test(fileAsString.substring(0, 50));
 };
 
+const isTrainingFile = (fileAsString) => {
+  const contentRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
+  return contentRegex.test(fileAsString.substring(0, 50));
+};
+
 module.exports = {
   isWorkerFile,
+  isTrainingFile,
 };
