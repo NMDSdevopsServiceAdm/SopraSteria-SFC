@@ -33,5 +33,7 @@ export class BulkUploadDownloadCurrentDataComponent {
       );
   }
 
-  public toggleFields(): void {}
+  public toggleFields(): void {
+    console.log('toggle');
+  }
 }

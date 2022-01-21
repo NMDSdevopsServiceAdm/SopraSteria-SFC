@@ -31,8 +31,8 @@ describe('BulkUploadTopTipPageComponent', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
-          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
-          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[1].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[2].slug}`, component: BulkUploadTopTipPageComponent },
         ]),
         HttpClientTestingModule,
         BrowserModule,

@@ -17,7 +17,7 @@ const establishmentCsv = async (establishments, responseSend) => {
   establishments.map((establishment) => responseSend(NEWLINE + EstablishmentCsvValidator.toCSV(establishment)));
 };
 
-const workerCsv = async (establishments, responseSend) => {
+const workerCsv = async (establishments, responseSend, downloadType) => {
   let maxQualifications = 3;
 
   establishments.map((establishment) => {
@@ -30,7 +30,9 @@ const workerCsv = async (establishments, responseSend) => {
 
   establishments.map((establishment) =>
     establishment.workers.map((worker) =>
-      responseSend(NEWLINE + WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, maxQualifications)),
+      responseSend(
+        NEWLINE + WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, maxQualifications, downloadType),
+      ),
     ),
   );
 };
@@ -56,15 +58,15 @@ const downloadGet = async (req, res) => {
 
   const primaryEstablishmentId = req.establishment.id;
 
-  const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training'];
+  const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training', 'workers-sanitise'];
   const renameDownloadType = {
     establishments: 'workplace',
     workers: 'staff',
+    workersSanitise: 'staff-sanitise',
     training: 'training',
   };
 
   const downloadType = req.params.downloadType;
-
   const responseText = [];
 
   let count = 0;
@@ -88,10 +90,11 @@ const downloadGet = async (req, res) => {
           establishmentCsv(establishments, responseSend);
           break;
         }
+        case 'workers-sanitise':
         case 'workers': {
           const workers = await models.establishment.downloadWorkers(primaryEstablishmentId);
 
-          workerCsv(workers, responseSend);
+          workerCsv(workers, responseSend, downloadType);
           break;
         }
         case 'training': {
