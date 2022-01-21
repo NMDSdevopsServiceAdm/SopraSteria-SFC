@@ -29,7 +29,6 @@ bulkupload:
   bucketname: sfcbulkuploadfiles
   validation:
     timeout: 600
-    storeIntermediaries: true
   completion:
     timeout: 600
 sentry:
