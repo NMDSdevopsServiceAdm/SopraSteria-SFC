@@ -12,7 +12,7 @@ import { render } from '@testing-library/angular';
 
 import { LoginComponent } from './login.component';
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   async function setup(isAdmin = false) {
     const { fixture, getByText, queryByText, getByTestId } = await render(LoginComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
