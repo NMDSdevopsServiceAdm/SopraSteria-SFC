@@ -4,7 +4,7 @@ const models = require('../../../models');
 
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const { getWorkerHeadersWithExtraQuals } = require('../bulkUpload/validate/headers/worker');
-const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
+const { trainingHeaders } = require('./data/trainingHeaders');
 const WorkerCSV = require('./download/workerCSV');
 const TrainingCSV = require('./download/trainingCSV');
 
@@ -38,7 +38,7 @@ const workerCsv = async (establishments, responseSend) => {
 };
 
 const trainingCsv = async (establishments, responseSend) => {
-  responseSend(TrainingCsvValidator.headers());
+  responseSend(trainingHeaders);
 
   establishments.map((establishment) =>
     establishment.workers.map((worker) =>

@@ -9,6 +9,7 @@ const Bucket = S3.Bucket;
 const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
 const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
+const { validateTrainingHeaders } = require('../bulkUpload/validate/headers/training');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -32,6 +33,8 @@ const updateMetaData = async (file, username, establishmentId) => {
   let passedCheck;
   if (file.type === 'Worker') {
     passedCheck = validateWorkerHeaders(file.header);
+  } else if (file.type === 'Training') {
+    passedCheck = validateTrainingHeaders(file.header);
   } else {
     const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
     passedCheck = validator.preValidate(file.header);
@@ -148,6 +151,7 @@ const uploadedPost = async (req, res) => {
     await S3.saveResponse(req, res, 500, {});
   }
 };
+
 const uploadedPut = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -222,6 +226,7 @@ const uploadedPut = async (req, res) => {
     await S3.saveResponse(req, res, 500, {});
   }
 };
+
 const uploadedStarGet = async (req, res) => {
   const Key = req.params['0'];
   const elements = Key.split('/');

@@ -1,8 +1,5 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
-
-const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
-
 class Training {
   constructor(currentLine, lineNumber) {
     this._currentLine = currentLine;
@@ -24,9 +21,6 @@ class Training {
   }
   static get UNCHECKED_ESTABLISHMENT_ERROR() {
     return 997;
-  }
-  static get HEADERS_ERROR() {
-    return 999;
   }
   static get LOCALESTID_ERROR() {
     return 1000;
@@ -73,14 +67,6 @@ class Training {
   }
   static get NOTES_WARNING() {
     return 2070;
-  }
-
-  static headers() {
-    return _headers_v1;
-  }
-
-  get headers() {
-    return _headers_v1;
   }
 
   get lineNumber() {
@@ -431,28 +417,6 @@ class Training {
     }
   }
 
-  preValidate(header) {
-    return this._validateHeaders(header);
-  }
-
-  _validateHeaders(headers) {
-    // only run once for first line, so check _lineNumber
-    if (_headers_v1 !== headers) {
-      this._validationErrors.push({
-        worker: this._currentLine ? this._currentLine.UNIQUEWORKERID : null,
-        name: this._currentLine ? this._currentLine.LOCALESTID : null,
-        lineNumber: 1,
-        errCode: Training.HEADERS_ERROR,
-        errType: 'HEADERS_ERROR',
-        error: `Training headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
-        source: headers,
-        column: '',
-      });
-      return false;
-    }
-    return true;
-  }
-
   // add unchecked establishment reference validation error
   dobTrainingMismatch() {
     return {
@@ -560,4 +524,3 @@ class Training {
 }
 
 module.exports.Training = Training;
-module.exports.TrainingFileHeaders = _headers_v1;

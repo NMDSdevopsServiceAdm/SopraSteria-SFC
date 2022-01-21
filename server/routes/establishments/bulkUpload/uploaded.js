@@ -5,7 +5,7 @@ const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const { validateWorkerHeaders } = require('./validate/headers/worker');
-const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
+const { validateTrainingHeaders } = require('./validate/headers/training');
 const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const { s3, Bucket, saveResponse, uploadJSONDataToS3, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
@@ -252,7 +252,7 @@ const uploadedPut = async (req, res) => {
     }
 
     if (importedTraining) {
-      if (new TrainingCsvValidator(importedTraining[firstRow], firstLineNumber).preValidate(trainingHeaders)) {
+      if (validateTrainingHeaders(trainingHeaders)) {
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(
