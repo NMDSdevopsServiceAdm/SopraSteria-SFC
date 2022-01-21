@@ -16,12 +16,12 @@
             been validated by Skills for Care.
           </p>
         </app-details>
-        <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('totalStaff') }}
-        </span>
-
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <label class="govuk-label" for="totalStaff"> Number of staff</label>
+          <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('totalStaff') }}
+          </span>
+
           <input
             class="govuk-input govuk-input--width-4"
             formControlName="totalStaff"
