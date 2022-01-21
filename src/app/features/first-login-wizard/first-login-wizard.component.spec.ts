@@ -76,7 +76,7 @@ describe('FirstLoginWizardComponent', () => {
     expect(component.currentIndex).toBe(0);
   });
 
-  it('should render a video if there is a video available', async () => {
+  it('should render a video if there is a video url entered in the cms', async () => {
     const { fixture, getByAltText } = await setup();
     fixture.detectChanges();
     fixture.whenStable().then(() => {
@@ -85,7 +85,7 @@ describe('FirstLoginWizardComponent', () => {
     });
   });
 
-  it('should render a image if there is no video available', async () => {
+  it('should render a image if there is no video url in the cms', async () => {
     const { fixture, getByAltText } = await setup();
     fixture.detectChanges();
     fixture.whenStable().then(() => {
