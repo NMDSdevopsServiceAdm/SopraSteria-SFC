@@ -6,6 +6,7 @@ const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establ
 const { getWorkerHeadersWithExtraQuals } = require('../bulkUpload/validate/headers/worker');
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 const WorkerCSV = require('./download/workerCSV');
+const TrainingCSV = require('./download/trainingCSV');
 
 const { buStates } = require('./states');
 const s3 = require('./s3');
@@ -43,8 +44,7 @@ const trainingCsv = async (establishments, responseSend) => {
     establishment.workers.map((worker) =>
       worker.workerTraining.map((trainingRecord) =>
         responseSend(
-          NEWLINE +
-            TrainingCsvValidator.toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord),
+          NEWLINE + TrainingCSV.toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord),
         ),
       ),
     ),

@@ -1,25 +1,6 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
-const csvQuote = (toCsv) => {
-  if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-    return '"' + toCsv.replace(/"/g, '""') + '"';
-  }
-
-  return toCsv;
-};
-
-// input is a string date in format "YYYY-MM-DD"
-const convertIso8601ToUkDate = (dateText) => {
-  if (dateText) {
-    const dateParts = String(dateText).split('-');
-
-    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-  }
-
-  return '';
-};
-
 const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
 
 class Training {
@@ -576,43 +557,7 @@ class Training {
       };
     });
   }
-
-  // takes the given Training entity and writes it out to CSV string (one line)
-  static toCSV(establishmentId, workerId, entity) {
-    // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
-    const columns = [];
-    columns.push(csvQuote(establishmentId));
-    columns.push(csvQuote(workerId));
-
-    columns.push(BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id));
-    columns.push(entity.title ? csvQuote(entity.title) : '');
-
-    columns.push(convertIso8601ToUkDate(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-    columns.push(convertIso8601ToUkDate(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-
-    let accredited = '';
-    switch (entity.accredited) {
-      case 'Yes':
-        accredited = 1;
-        break;
-      case 'No':
-        accredited = 0;
-        break;
-      case "Don't know":
-        accredited = 999;
-        break;
-    }
-    columns.push(accredited);
-    columns.push(entity.notes ? csvQuote(decodeURI(entity.notes)) : '');
-
-    return columns.join(',');
-  }
-
-  toCSV(establishmentId, workerId, entity) {
-    return Training.toCSV(establishmentId, workerId, entity);
-  }
 }
 
 module.exports.Training = Training;
 module.exports.TrainingFileHeaders = _headers_v1;
-module.exports.convertIso8601ToUkDate = convertIso8601ToUkDate;
