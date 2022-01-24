@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const { validateTrainingCsv } = require('../validateTrainingCsv');
+const { validateTrainingCsv } = require('./validateTrainingCsv');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const myTrainings = [];

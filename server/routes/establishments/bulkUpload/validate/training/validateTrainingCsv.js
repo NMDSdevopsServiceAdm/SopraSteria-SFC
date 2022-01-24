@@ -1,7 +1,7 @@
 'use strict';
 
-const { Training } = require('../../../../models/classes/training');
-const TrainingCsvValidator = require('../../../../models/BulkImport/csv/training').Training;
+const { Training } = require('../../../../../models/classes/training');
+const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/training').Training;
 
 const validateTrainingCsv = async (
   thisLine,
