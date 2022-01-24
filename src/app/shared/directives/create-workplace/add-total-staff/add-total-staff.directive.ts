@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 
 @Directive()
 export class AddTotalStaffDirective implements OnInit, AfterViewInit {
@@ -18,6 +19,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
   public returnToConfirmDetails: URLStructure;
+  public totalStaffNumber: number;
 
   constructor(
     protected router: Router,
@@ -26,6 +28,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
+    public workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   public ngOnInit(): void {
@@ -33,6 +36,8 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     this.setupForm();
     this.setBackLink();
     this.setupFormErrorsMap();
+    this.totalStaffNumber = this.workplaceInterfaceService.totalStaff$.value;
+    this.prefillForm();
   }
 
   public ngAfterViewInit(): void {
@@ -45,14 +50,25 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     });
   }
 
+  protected prefillForm(): void {
+    if (this.totalStaffNumber) {
+      this.form.setValue({
+        totalStaff: this.totalStaffNumber,
+      });
+    }
+  }
+
   public onSubmit(): void {
     this.submitted = true;
+
     if (this.form.valid) {
+      const totalStaff = this.form.get('totalStaff').value;
+
+      this.workplaceInterfaceService.totalStaff$.next(totalStaff);
       this.navigateToNextRoute();
     }
-
-    console.log(this.form);
   }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
