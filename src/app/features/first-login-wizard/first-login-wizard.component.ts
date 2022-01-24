@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Wizard } from '@core/model/wizard.model';
 import { environment } from 'src/environments/environment';
@@ -16,7 +15,8 @@ export class FirstLoginWizardComponent {
   public currentIndex: number;
   public imageUrl: string;
   public rawVideoUrl: string;
-  constructor(private route: ActivatedRoute, private domSanitizer: DomSanitizer) {}
+
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
