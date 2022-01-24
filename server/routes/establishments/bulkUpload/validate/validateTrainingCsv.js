@@ -9,7 +9,6 @@ const validateTrainingCsv = async (
   csvTrainingSchemaErrors,
   myTrainings,
   myAPITrainings,
-  keepAlive = () => {},
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
@@ -21,8 +20,6 @@ const validateTrainingCsv = async (
   try {
     const thisApiTraining = new Training();
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
-
-    keepAlive('training loaded', currentLineNumber);
 
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
