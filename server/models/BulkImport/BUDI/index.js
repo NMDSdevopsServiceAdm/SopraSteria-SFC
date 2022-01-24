@@ -3,40 +3,14 @@
 // uses Database Reference data - initialised within the singleton on startup
 const dbmodels = require('../../../models');
 const { ready } = require('../../cache/singletons/ready');
-const fs = require('fs');
-const path = require('path');
+const { mappings } = require('../../../../reference/BUDIMappings');
 
 let ALL_CSSRS = null;
 let ALL_CAPACITIES = null;
 let ALL_UTILISATIONS = null;
-let JOB_ROLES_MAPPINGS = null;
-let CONTRACT_TYPE_MAPPINGS = null;
-let ETHNICITY_MAPPINGS = null;
-let NATIONALITY_MAPPINGS = null;
-let COUNTRY_MAPPINGS = null;
-let RECRUITMENT_MAPPINGS = null;
-let NURSING_SPECIALIST_MAPPINGS = null;
-let QUALIFICATION_LEVELS_MAPPINGS = null;
-let QUALIFICATIONS_MAPPINGS = null;
 
 class BUDI {
   static async initialize() {
-    const getFileContent = (fileName) => {
-      const referencePath = '../../../../reference/';
-
-      return JSON.parse(fs.readFileSync(path.resolve(__dirname, `${referencePath}${fileName}.json`), 'utf-8'));
-    };
-
-    JOB_ROLES_MAPPINGS = getFileContent('jobRoles');
-    CONTRACT_TYPE_MAPPINGS = getFileContent('contractType');
-    ETHNICITY_MAPPINGS = getFileContent('ethnicity');
-    NATIONALITY_MAPPINGS = getFileContent('nationality');
-    COUNTRY_MAPPINGS = getFileContent('countries');
-    RECRUITMENT_MAPPINGS = getFileContent('recruitment');
-    NURSING_SPECIALIST_MAPPINGS = getFileContent('nursingSpecialist');
-    QUALIFICATION_LEVELS_MAPPINGS = getFileContent('qualificationLevels');
-    QUALIFICATIONS_MAPPINGS = getFileContent('qualifications');
-
     const cssrFetch = await dbmodels.cssr.findAll({
       attributes: ['id', 'name'],
       group: ['id', 'name'],
@@ -183,11 +157,11 @@ class BUDI {
   }
 
   static jobRoles(direction, originalCode) {
-    return this.convertValue(direction, originalCode, JOB_ROLES_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.JOB_ROLES);
   }
 
   static contractType(direction, originalCode) {
-    return this.convertValue(direction, originalCode, CONTRACT_TYPE_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.CONTRACT_TYPE);
   }
 
   // maps establishment employer type (private, local authority, volunteer, et al)
@@ -283,30 +257,30 @@ class BUDI {
   }
 
   static ethnicity(direction, originalCode) {
-    return this.convertValue(direction, originalCode, ETHNICITY_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.ETHNICITY);
   }
 
   static nationality(direction, originalCode) {
-    return this.convertValue(direction, originalCode, NATIONALITY_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.NATIONALITY);
   }
 
   static country(direction, originalCode) {
-    return this.convertValue(direction, originalCode, COUNTRY_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.COUNTRY);
   }
 
   static recruitment(direction, originalCode) {
-    return this.convertValue(direction, originalCode, RECRUITMENT_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.RECRUITMENT);
   }
 
   static nursingSpecialist(direction, originalCode) {
-    return this.convertValue(direction, originalCode, NURSING_SPECIALIST_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.NURSING_SPECIALIST);
   }
 
   static mapNurseSpecialismsToDb(specialisms) {
     if (specialisms.length === 1 && specialisms[0] === 7) {
       return { value: 'No' };
     } else if (specialisms.length === 1 && specialisms[0] === 8) {
-      return { value: `Don't know` };
+      return { value: "Don't know" };
     } else {
       return {
         value: 'Yes',
@@ -318,12 +292,12 @@ class BUDI {
   // maps (highest) qualification levels
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
   static qualificationLevels(direction, originalCode) {
-    return this.convertValue(direction, originalCode, QUALIFICATION_LEVELS_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.QUALIFICATION_LEVELS);
   }
 
   // maps qualification types
   static qualifications(direction, originalCode) {
-    return this.convertValue(direction, originalCode, QUALIFICATIONS_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.QUALIFICATIONS);
   }
 
   static capacity(direction, originalCode) {
@@ -385,14 +359,3 @@ class BUDI {
 ready(dbmodels, BUDI, 'BUDI');
 
 exports.BUDI = BUDI;
-exports.mappings = {
-  JOB_ROLES_MAPPINGS,
-  CONTRACT_TYPE_MAPPINGS,
-  ETHNICITY_MAPPINGS,
-  NATIONALITY_MAPPINGS,
-  COUNTRY_MAPPINGS,
-  RECRUITMENT_MAPPINGS,
-  NURSING_SPECIALIST_MAPPINGS,
-  QUALIFICATION_LEVELS_MAPPINGS,
-  QUALIFICATIONS_MAPPINGS,
-};
