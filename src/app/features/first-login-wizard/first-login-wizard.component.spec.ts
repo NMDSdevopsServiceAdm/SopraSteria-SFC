@@ -13,7 +13,7 @@ describe('FirstLoginWizardComponent', () => {
   const wizard = MockWizardService.wizardFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText, getByAltText } = await render(FirstLoginWizardComponent, {
+    const { fixture, getByText, queryByText, queryByTestId } = await render(FirstLoginWizardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
@@ -36,7 +36,7 @@ describe('FirstLoginWizardComponent', () => {
       fixture,
       getByText,
       queryByText,
-      getByAltText,
+      queryByTestId,
     };
   }
 
@@ -77,21 +77,20 @@ describe('FirstLoginWizardComponent', () => {
   });
 
   it('should render a video if there is a video url entered in the cms', async () => {
-    const { fixture, getByAltText } = await setup();
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByAltText(wizard.data[0].video)).toBeTruthy();
-      expect(getByAltText(wizard.data[0].image)).toBeFalsy();
-    });
+    const { queryByTestId } = await setup();
+
+    expect(queryByTestId('video')).toBeTruthy();
+    expect(queryByTestId('image')).toBeFalsy();
   });
 
   it('should render a image if there is no video url in the cms', async () => {
-    const { fixture, getByAltText } = await setup();
+    const { fixture, component, queryByTestId } = await setup();
+
+    component.currentIndex = 1;
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByAltText(wizard.data[1].video)).toBeFalsy();
-      expect(getByAltText(wizard.data[1].image)).toBeTruthy();
-    });
+
+    expect(queryByTestId('video')).toBeFalsy();
+    expect(queryByTestId('image')).toBeTruthy();
   });
 
   describe('Next button', () => {

@@ -16,7 +16,7 @@ import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/c
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
-import { sanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
+import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
@@ -110,7 +110,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ErrorSummaryComponent,
     FileValueAccessorDirective,
     BulkUploadFileTypePipePipe,
-    sanitizeVideoUrlPipe,
+    SanitizeVideoUrlPipe,
     WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
@@ -242,7 +242,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     CqcConfirmationDialogComponent,
     TotalStaffComponent,
     BulkUploadFileTypePipePipe,
-    sanitizeVideoUrlPipe,
+    SanitizeVideoUrlPipe,
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,

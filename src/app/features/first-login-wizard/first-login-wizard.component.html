@@ -17,6 +17,14 @@
       </div>
       <div class="govuk-grid-column-one-half govuk-util__align-center">
         <div *ngIf="!wizards[currentIndex].video; then imageBlock; else videoBlock"></div>
+        <ng-template #imageBlock>
+          <img
+            class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
+            src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
+            alt="{{ wizards[currentIndex].title }}"
+            data-testid="image"
+          />
+        </ng-template>
         <ng-template #videoBlock>
           <div class="video_wrapper">
             <iframe
@@ -26,16 +34,9 @@
               allow="fullscreen; picture-in-picture"
               allowfullscreen
               loading="eager"
-              alt="{{ wizards[currentIndex].title }}"
+              data-testid="video"
             ></iframe>
           </div>
-        </ng-template>
-        <ng-template #imageBlock>
-          <img
-            class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
-            src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
-            alt="{{ wizards[currentIndex].title }}"
-          />
         </ng-template>
       </div>
     </div>
