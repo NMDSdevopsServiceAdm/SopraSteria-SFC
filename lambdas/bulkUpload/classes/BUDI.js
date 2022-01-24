@@ -1,14 +1,6 @@
 class BUDI {
   constructor(mappings) {
-    this.JOB_ROLES_MAPPINGS = mappings.JOB_ROLES_MAPPINGS;
-    this.CONTRACT_TYPE_MAPPINGS = mappings.CONTRACT_TYPE_MAPPINGS;
-    this.ETHNICITY_MAPPINGS = mappings.ETHNICITY_MAPPINGS;
-    this.NATIONALITY_MAPPINGS = mappings.NATIONALITY_MAPPINGS;
-    this.COUNTRY_MAPPINGS = mappings.COUNTRY_MAPPINGS;
-    this.RECRUITMENT_MAPPINGS = mappings.RECRUITMENT_MAPPINGS;
-    this.NURSING_SPECIALIST_MAPPINGS = mappings.NURSING_SPECIALIST_MAPPINGS;
-    this.QUALIFICATION_LEVELS_MAPPINGS = mappings.QUALIFICATION_LEVELS_MAPPINGS;
-    this.QUALIFICATIONS_MAPPINGS = mappings.QUALIFICATIONS_MAPPINGS;
+    this.mappings = mappings;
   }
 
   get TO_ASC() {
@@ -28,31 +20,31 @@ class BUDI {
   }
 
   jobRoles(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.JOB_ROLES_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.JOB_ROLES);
   }
 
   contractType(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.CONTRACT_TYPE_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.CONTRACT_TYPE);
   }
 
   ethnicity(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.ETHNICITY_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.ETHNICITY);
   }
 
   nationality(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.NATIONALITY_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.NATIONALITY);
   }
 
   country(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.COUNTRY_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.COUNTRY);
   }
 
   recruitment(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.RECRUITMENT_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.RECRUITMENT);
   }
 
   nursingSpecialist(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.NURSING_SPECIALIST_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.NURSING_SPECIALIST);
   }
 
   mapNurseSpecialismsToDb(specialisms) {
@@ -69,11 +61,11 @@ class BUDI {
   }
 
   qualificationLevels(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.QUALIFICATION_LEVELS_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.QUALIFICATION_LEVELS);
   }
 
   qualifications(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.QUALIFICATIONS_MAPPINGS);
+    return this.convertValue(direction, originalCode, this.mappings.QUALIFICATIONS);
   }
 }
 
