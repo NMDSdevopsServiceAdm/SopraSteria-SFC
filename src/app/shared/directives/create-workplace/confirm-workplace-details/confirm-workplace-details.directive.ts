@@ -13,6 +13,8 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
   public nameAndAddress: string;
+  public totalStaffNumber;
+  public totalStaff: SummaryList[];
   protected subscriptions: Subscription = new Subscription();
 
   constructor(protected backService: BackService) {}
@@ -45,6 +47,14 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
         label: 'Main service',
         data: this.workplace.name,
         route: { url: [this.flow, 'select-main-service'] },
+      },
+    ];
+
+    this.totalStaff = [
+      {
+        label: 'Total Staff',
+        data: this.totalStaffNumber,
+        route: { url: [this.flow, 'add-total-staff'] },
       },
     ];
   }

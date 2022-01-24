@@ -5,7 +5,6 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 
 @Directive()
@@ -19,7 +18,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
   public returnToConfirmDetails: URLStructure;
-  public totalStaffNumber: number;
+  public workplaceTotalStaff;
 
   constructor(
     protected router: Router,
@@ -27,7 +26,6 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
     public workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
@@ -36,7 +34,8 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     this.setupForm();
     this.setBackLink();
     this.setupFormErrorsMap();
-    this.totalStaffNumber = this.workplaceInterfaceService.totalStaff$.value;
+    this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
+
     this.prefillForm();
   }
 
@@ -46,14 +45,14 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      totalStaff: [null, [Validators.required]],
+      totalStaff: [null, { validators: [Validators.required, Validators.pattern(`[0-9]`)], updateOn: 'submit' }],
     });
   }
 
   protected prefillForm(): void {
-    if (this.totalStaffNumber) {
+    if (this.workplaceTotalStaff) {
       this.form.setValue({
-        totalStaff: this.totalStaffNumber,
+        totalStaff: this.workplaceTotalStaff,
       });
     }
   }
@@ -63,9 +62,11 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       const totalStaff = this.form.get('totalStaff').value;
-
       this.workplaceInterfaceService.totalStaff$.next(totalStaff);
+
       this.navigateToNextRoute();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 

@@ -17,7 +17,7 @@ export abstract class WorkplaceInterfaceService {
   public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public totalStaff$: BehaviorSubject<number> = new BehaviorSubject(null);
+  public totalStaff$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcode$: BehaviorSubject<string> = new BehaviorSubject(null);
   public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);

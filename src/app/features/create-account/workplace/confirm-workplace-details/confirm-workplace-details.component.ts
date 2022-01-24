@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import {
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 
 @Component({
   selector: 'app-confirm-workplace-details',
@@ -21,6 +23,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
   protected getWorkplaceData(): void {
     this.locationAddress = this.registrationService.selectedLocationAddress$.value;
     this.workplace = this.registrationService.selectedWorkplaceService$.value;
+    this.totalStaffNumber = this.registrationService.totalStaff$.value;
   }
 
   public onSetReturn(): void {

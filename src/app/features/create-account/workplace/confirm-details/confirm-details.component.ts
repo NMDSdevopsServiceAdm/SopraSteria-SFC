@@ -32,6 +32,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
+  public totalStaffNumber: SummaryList[];
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
   protected locationAddress: LocationAddress;
