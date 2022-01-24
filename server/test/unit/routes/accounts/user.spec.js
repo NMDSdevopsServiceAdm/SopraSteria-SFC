@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const { meetsMaxUserLimit } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user');
 
-describe.only('user.js', () => {
+describe('user.js', () => {
   let req;
 
   beforeEach(() => {
