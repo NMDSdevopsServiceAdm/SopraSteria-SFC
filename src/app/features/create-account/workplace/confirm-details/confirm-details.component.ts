@@ -32,7 +32,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
-  public totalStaffNumber: SummaryList[];
+  public totalStaff: any;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
   protected locationAddress: LocationAddress;
@@ -74,14 +74,18 @@ export class ConfirmDetailsComponent implements OnInit {
         this.registrationService.selectedWorkplaceService$,
         this.registrationService.loginCredentials$,
         this.registrationService.securityDetails$,
-      ]).subscribe(([userDetails, isCqcRegulated, locationAddress, service, loginCredentials, securityDetails]) => {
-        this.userDetails = userDetails;
-        this.isCqcRegulated = isCqcRegulated;
-        this.locationAddress = locationAddress;
-        this.service = service;
-        this.loginCredentials = loginCredentials;
-        this.securityDetails = securityDetails;
-      }),
+        this.registrationService.totalStaff$,
+      ]).subscribe(
+        ([userDetails, isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff]) => {
+          this.userDetails = userDetails;
+          this.isCqcRegulated = isCqcRegulated;
+          this.locationAddress = locationAddress;
+          this.service = service;
+          this.loginCredentials = loginCredentials;
+          this.securityDetails = securityDetails;
+          this.totalStaff = totalStaff;
+        },
+      ),
     );
   }
 
@@ -107,6 +111,8 @@ export class ConfirmDetailsComponent implements OnInit {
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
     payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
+    payload.totalStaff = this.totalStaff;
+
     return [payload];
   }
 

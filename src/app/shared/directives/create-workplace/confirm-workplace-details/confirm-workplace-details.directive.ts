@@ -52,7 +52,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
 
     this.totalStaff = [
       {
-        label: 'Total Staff',
+        label: 'Number of staff',
         data: this.totalStaffNumber,
         route: { url: [this.flow, 'add-total-staff'] },
       },
