@@ -3,6 +3,7 @@ const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalaryNotEqualToFTE } = require('./validatePartTimeSalaryNotEqualToFTE');
 const { validateWorkerUnderNationalInsuranceMaximum } = require('./validateWorkerUnderNationalInsuranceMaximum');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
+const { createWorkerKey } = require('../shared/utils');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = [];
@@ -74,10 +75,6 @@ const createKeysForWorkers = (myJSONWorkers) => {
   return myJSONWorkers.map((worker) => {
     return createWorkerKey(worker.localId, worker.uniqueWorkerId);
   });
-};
-
-const createWorkerKey = (localEstablishmentId, workerId) => {
-  return (localEstablishmentId + workerId).replace(/\s/g, '');
 };
 
 const deleteWorker = (myAPIWorkers, workerLineNumber) => delete myAPIWorkers[workerLineNumber];

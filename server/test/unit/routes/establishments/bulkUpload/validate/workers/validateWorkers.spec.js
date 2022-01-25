@@ -1,29 +1,10 @@
 const expect = require('chai').expect;
 const {
   createKeysForWorkers,
-  createWorkerKey,
   deleteWorker,
 } = require('../../../../../../../routes/establishments/bulkUpload/validate/workers/validateWorkers');
 
 describe('validateWorkers', () => {
-  describe('createWorkerKey', () => {
-    it('should return key with localId and uniqueWorkerId concatenated', async () => {
-      const worker = { localId: 'mockWorkplace', uniqueWorkerId: 'testUser' };
-
-      const workerKey = createWorkerKey(worker.localId, worker.uniqueWorkerId);
-
-      expect(workerKey).to.equal('mockWorkplacetestUser');
-    });
-
-    it('should return key with localId and uniqueWorkerId concatenated with whitespace removed', async () => {
-      const worker = { localId: 'Workplace With Spaces', uniqueWorkerId: 'Test User' };
-
-      const workerKey = createWorkerKey(worker.localId, worker.uniqueWorkerId);
-
-      expect(workerKey).to.equal('WorkplaceWithSpacesTestUser');
-    });
-  });
-
   describe('createKeysForWorkers', () => {
     it('should return array of keys with localId and uniqueWorkerId concatenated', async () => {
       const workers = [

@@ -2,6 +2,7 @@ const moment = require('moment');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
+const { createWorkerKey } = require('../shared/utils');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const { csvTrainingSchemaErrors, myTrainings, myAPITrainings } = await validateTrainingCsv(training);
@@ -19,11 +20,9 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       return;
     }
 
-    const workerKeyNoWhitespace = (
-      (thisTrainingRecord.localeStId || '') + (thisTrainingRecord.uniqueWorkerId || '')
-    ).replace(/\s/g, '');
+    const workerKey = createWorkerKey(thisTrainingRecord.localeStId, thisTrainingRecord.uniqueWorkerId);
 
-    if (!allWorkersByKey[workerKeyNoWhitespace]) {
+    if (!allWorkersByKey[workerKey]) {
       // not found the associated worker
       csvTrainingSchemaErrors.push(thisTrainingRecord.uncheckedWorker());
 
@@ -33,17 +32,17 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       // gets here, all is good with the training record
 
       // find the associated Worker entity and forward reference this training record
-      const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
+      const foundWorkerByLineNumber = allWorkersByKey[workerKey];
       const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 
       // training cross-validation against worker's date of birth (DOB) can only be applied, if:
       //  1. the associated Worker can be matched
       //  2. the worker has DOB defined (it's not a mandatory property)
       const trainingCompletedDate = moment.utc(thisTrainingRecord._currentLine.DATECOMPLETED, 'DD-MM-YYYY');
-      const foundAssociatedWorker = workersKeyed[workerKeyNoWhitespace];
+      const foundAssociatedWorker = workersKeyed[workerKey];
       const workerDob =
         foundAssociatedWorker && foundAssociatedWorker.DOB
-          ? moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, 'DD-MM-YYYY')
+          ? moment.utc(workersKeyed[workerKey].DOB, 'DD-MM-YYYY')
           : null;
 
       if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
