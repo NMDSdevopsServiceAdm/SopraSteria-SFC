@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const { mappings } = require('../../../models/BulkImport/BUDI');
+const { mappings } = require('../../../../reference/BUDIMappings');
 const config = require('../../../config/config');
 
 const invokeLambda = async (functionName, payload) => {
