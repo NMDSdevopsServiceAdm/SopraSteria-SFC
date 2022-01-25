@@ -126,22 +126,23 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           }
           if (response.body.role === 'Admin') {
             this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
+            this.router.navigate(['/sfcadmin']);
           } else {
             this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
-          }
-          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-            this.router.navigateByUrl(this.authService.redirectLocation);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
-          this.authService.clearPreviousUser();
+            if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+              this.router.navigateByUrl(this.authService.redirectLocation);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
+            this.authService.clearPreviousUser();
 
-          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
-            this.router.navigate(['/migrated-user-terms-and-conditions']);
-          }
+            if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
+              this.router.navigate(['/migrated-user-terms-and-conditions']);
+            }
 
-          if (response.body.registrationSurveyCompleted === false) {
-            this.router.navigate(['/registration-survey']);
+            if (response.body.registrationSurveyCompleted === false) {
+              this.router.navigate(['/registration-survey']);
+            }
           }
         },
         (error: HttpErrorResponse) => {

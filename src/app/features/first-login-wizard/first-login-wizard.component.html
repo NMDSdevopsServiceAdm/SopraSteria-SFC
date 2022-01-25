@@ -16,11 +16,28 @@
         <div class="asc-cms-content" [innerHTML]="wizards[currentIndex].content"></div>
       </div>
       <div class="govuk-grid-column-one-half govuk-util__align-center">
-        <img
-          class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
-          src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
-          alt="{{ wizards[currentIndex].title }}"
-        />
+        <div *ngIf="!wizards[currentIndex].video; then imageBlock; else videoBlock"></div>
+        <ng-template #imageBlock>
+          <img
+            class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
+            src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
+            alt="{{ wizards[currentIndex].title }}"
+            data-testid="image"
+          />
+        </ng-template>
+        <ng-template #videoBlock>
+          <div class="video_wrapper">
+            <iframe
+              class="video"
+              [src]="rawVideoUrl | sanitizeVideoUrl"
+              frameborder="0"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+              loading="eager"
+              data-testid="video"
+            ></iframe>
+          </div>
+        </ng-template>
       </div>
     </div>
     <div class="govuk-grid-row govuk-!-margin-bottom-4">
