@@ -9,21 +9,16 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(async (transaction) => {
       return Promise.all([
-        await queryInterface.addColumn(
+        await queryInterface.changeColumn(
           table,
           'DataChangesLastUpdated',
           {
             type: Sequelize.DataTypes.DATE,
+            allowNull: true,
           },
           { transaction },
         ),
       ]);
     });
-  },
-
-  down: (queryInterface) => {
-    return queryInterface.sequelize.query(
-      'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "DataChangesLastUpdated"; ',
-    );
   },
 };
