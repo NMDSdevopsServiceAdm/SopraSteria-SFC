@@ -1,4 +1,4 @@
-exports.COUNTRIES = [
+exports.COUNTRY = [
   { ASC: 1, BUDI: 4 },
   { ASC: 3, BUDI: 8 },
   { ASC: 9, BUDI: 10 },

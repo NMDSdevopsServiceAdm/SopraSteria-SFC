@@ -1,5 +1,5 @@
 const { CONTRACT_TYPE } = require('./contractType');
-const { COUNTRIES } = require('./countries');
+const { COUNTRY } = require('./country');
 const { ETHNICITY } = require('./ethnicity');
 const { JOB_ROLES } = require('./jobRoles');
 const { NATIONALITY } = require('./nationality');
@@ -10,7 +10,7 @@ const { RECRUITMENT } = require('./recruitment');
 
 exports.mappings = {
   CONTRACT_TYPE,
-  COUNTRIES,
+  COUNTRY,
   ETHNICITY,
   JOB_ROLES,
   NATIONALITY,

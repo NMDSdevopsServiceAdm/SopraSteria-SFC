@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const WorkerCsvValidator = require('../../../classes/workerCSVValidator').WorkerCsvValidator;
 const { build } = require('@jackfranklin/test-data-bot');
-const mappings = require('../../../../../server/models/BulkImport/BUDI/index.js').mappings;
+const mappings = require('../../../../../reference/BUDIMappings').mappings;
 
 const buildWorkerCsv = build('WorkerCSV', {
   fields: {
