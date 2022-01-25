@@ -1,6 +1,7 @@
 const moment = require('moment');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
+const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const { csvTrainingSchemaErrors, myTrainings, myAPITrainings } = await validateTrainingCsv(training);
@@ -10,18 +11,19 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
   // Having parsed all establishments, workers and training, need to cross-check all training records' worker reference
   // (UNIQUEWORKERID) against all parsed workers
   myTrainings.forEach((thisTrainingRecord) => {
-    const establishmentKeyNoWhitespace = (thisTrainingRecord.localeStId || '').replace(/\s/g, '');
+    const establishmentKey = (thisTrainingRecord.localeStId || '').replace(/\s/g, '');
+
+    if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
+      addNoEstablishmentError(csvTrainingSchemaErrors, thisTrainingRecord, 'Training');
+      deleteTrainingRecord(myAPIWorkers, thisTrainingRecord.lineNumber);
+      return;
+    }
+
     const workerKeyNoWhitespace = (
       (thisTrainingRecord.localeStId || '') + (thisTrainingRecord.uniqueWorkerId || '')
     ).replace(/\s/g, '');
 
-    if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
-      // not found the associated establishment
-      csvTrainingSchemaErrors.push(thisTrainingRecord.uncheckedEstablishment());
-
-      // remove the entity
-      delete myAPITrainings[thisTrainingRecord.lineNumber];
-    } else if (!allWorkersByKey[workerKeyNoWhitespace]) {
+    if (!allWorkersByKey[workerKeyNoWhitespace]) {
       // not found the associated worker
       csvTrainingSchemaErrors.push(thisTrainingRecord.uncheckedWorker());
 
@@ -63,3 +65,5 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
 
   return { csvTrainingSchemaErrors };
 };
+
+const deleteTrainingRecord = (myAPITrainings, trainingRecord) => delete myAPITrainings[trainingRecord.lineNumber];
