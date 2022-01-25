@@ -19,9 +19,6 @@ class Training {
   static get UNCHECKED_WORKER_ERROR() {
     return 996;
   }
-  static get UNCHECKED_ESTABLISHMENT_ERROR() {
-    return 997;
-  }
   static get LOCALESTID_ERROR() {
     return 1000;
   }
@@ -427,20 +424,6 @@ class Training {
       error: "DATECOMPLETED is before staff record's date of birth",
       source: this._currentLine.LOCALESTID,
       column: 'DATECOMPLETED',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  uncheckedEstablishment() {
-    return {
-      origin: 'Training',
-      lineNumber: this._lineNumber,
-      errCode: Training.UNCHECKED_ESTABLISHMENT_ERROR,
-      errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
-      error: 'LOCALESTID does not exist in Workplace File',
-      source: this._currentLine.LOCALESTID,
-      column: 'LOCALESTID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };

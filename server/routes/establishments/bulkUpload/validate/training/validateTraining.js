@@ -9,24 +9,24 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
   // (LOCALESTID) against all parsed establishments
   // Having parsed all establishments, workers and training, need to cross-check all training records' worker reference
   // (UNIQUEWORKERID) against all parsed workers
-  myTrainings.forEach((thisTraingRecord) => {
-    const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, '');
+  myTrainings.forEach((thisTrainingRecord) => {
+    const establishmentKeyNoWhitespace = (thisTrainingRecord.localeStId || '').replace(/\s/g, '');
     const workerKeyNoWhitespace = (
-      (thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')
+      (thisTrainingRecord.localeStId || '') + (thisTrainingRecord.uniqueWorkerId || '')
     ).replace(/\s/g, '');
 
     if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
       // not found the associated establishment
-      csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
+      csvTrainingSchemaErrors.push(thisTrainingRecord.uncheckedEstablishment());
 
       // remove the entity
-      delete myAPITrainings[thisTraingRecord.lineNumber];
+      delete myAPITrainings[thisTrainingRecord.lineNumber];
     } else if (!allWorkersByKey[workerKeyNoWhitespace]) {
       // not found the associated worker
-      csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedWorker());
+      csvTrainingSchemaErrors.push(thisTrainingRecord.uncheckedWorker());
 
       // remove the entity
-      delete myAPITrainings[thisTraingRecord.lineNumber];
+      delete myAPITrainings[thisTrainingRecord.lineNumber];
     } else {
       // gets here, all is good with the training record
 
@@ -37,7 +37,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       // training cross-validation against worker's date of birth (DOB) can only be applied, if:
       //  1. the associated Worker can be matched
       //  2. the worker has DOB defined (it's not a mandatory property)
-      const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, 'DD-MM-YYYY');
+      const trainingCompletedDate = moment.utc(thisTrainingRecord._currentLine.DATECOMPLETED, 'DD-MM-YYYY');
       const foundAssociatedWorker = workersKeyed[workerKeyNoWhitespace];
       const workerDob =
         foundAssociatedWorker && foundAssociatedWorker.DOB
@@ -45,15 +45,15 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
           : null;
 
       if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
-        csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
+        csvTrainingSchemaErrors.push(thisTrainingRecord.dobTrainingMismatch());
       }
 
       if (knownWorker) {
-        knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
+        knownWorker.associateTraining(myAPITrainings[thisTrainingRecord.lineNumber]);
       } else {
         // this should never happen
         console.error(
-          `FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`,
+          `FATAL: failed to associate worker (line number: ${thisTrainingRecord.lineNumber}/unique id (${thisTrainingRecord.uniqueWorker})) with a known establishment.`,
         );
       }
     }
