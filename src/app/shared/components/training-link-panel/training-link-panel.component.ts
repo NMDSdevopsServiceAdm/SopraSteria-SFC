@@ -5,7 +5,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
@@ -25,15 +24,12 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   public lastUpdated: string;
   public now = dayjs();
   public isParent: boolean;
-  public parentTrainingAndQualificationsReport: boolean;
   private subscriptions: Subscription = new Subscription();
-  private newTrainingAndQualificationsReport: boolean;
 
   constructor(
     private reportService: ReportService,
     private router: Router,
     private permissionsService: PermissionsService,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -42,18 +38,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     this.establishmentUid = this.workplace.uid;
     this.isParent = this.workplace.isParent;
     this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
-
-    this.featureFlagsService.configCatClient
-      .getValueAsync('newTrainingAndQualificationsReport', false)
-      .then((value) => {
-        this.newTrainingAndQualificationsReport = value;
-      });
-
-    this.featureFlagsService.configCatClient
-      .getValueAsync('parentTrainingAndQualificationsReport', false)
-      .then((value) => {
-        this.parentTrainingAndQualificationsReport = value;
-      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -77,22 +61,12 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
   //Download Training Report
   public downloadTrainingReport(event: Event): void {
     event.preventDefault();
-
-    if (this.newTrainingAndQualificationsReport) {
-      this.subscriptions.add(
-        this.reportService.getTrainingAndQualificationsReport(this.establishmentUid).subscribe(
-          (response) => this.saveFile(response),
-          (error) => console.error(error),
-        ),
-      );
-    } else {
-      this.subscriptions.add(
-        this.reportService.getTrainingReport(this.establishmentUid).subscribe(
-          (response) => this.saveFile(response),
-          (error) => console.error(error),
-        ),
-      );
-    }
+    this.subscriptions.add(
+      this.reportService.getTrainingAndQualificationsReport(this.establishmentUid).subscribe(
+        (response) => this.saveFile(response),
+        (error) => console.error(error),
+      ),
+    );
   }
 
   public downloadParentTrainingReport(event: Event): void {

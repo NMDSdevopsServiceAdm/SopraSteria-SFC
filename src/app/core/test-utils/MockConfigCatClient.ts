@@ -42,17 +42,6 @@ export const mockConfigCatClient = {
   },
 
   getValueAsync: (flagName, defaultSetting) => {
-    if (flagName === 'newTrainingAndQualificationsReport') {
-      return new Promise((resolve) => {
-        return resolve(true);
-      });
-    }
-    if (flagName === 'parentTrainingAndQualificationsReport') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
-
     if (flagName === 'changingexpirydatelink') {
       return new Promise((resolve) => {
         return resolve(false);
