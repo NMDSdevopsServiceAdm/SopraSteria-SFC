@@ -3,7 +3,30 @@
 const { Training } = require('../../../../../models/classes/training');
 const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/training').Training;
 
-const validateTrainingCsv = async (
+const validateTrainingCsv = async (training) => {
+  const myTrainings = [];
+  const myAPITrainings = {};
+  const csvTrainingSchemaErrors = [];
+
+  if (training.imported) {
+    await Promise.all(
+      training.imported.map(
+        async (thisLine, currentLineNumber) =>
+          await validateTrainingCsvLine(
+            thisLine,
+            currentLineNumber + 2,
+            csvTrainingSchemaErrors,
+            myTrainings,
+            myAPITrainings,
+          ),
+      ),
+    );
+  }
+
+  return { csvTrainingSchemaErrors, myTrainings, myAPITrainings };
+};
+
+const validateTrainingCsvLine = async (
   thisLine,
   currentLineNumber,
   csvTrainingSchemaErrors,

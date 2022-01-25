@@ -3,24 +3,7 @@ const moment = require('moment');
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
-  const myTrainings = [];
-  const myAPITrainings = {};
-  const csvTrainingSchemaErrors = [];
-
-  if (training.imported) {
-    await Promise.all(
-      training.imported.map(
-        async (thisLine, currentLineNumber) =>
-          await validateTrainingCsv(
-            thisLine,
-            currentLineNumber + 2,
-            csvTrainingSchemaErrors,
-            myTrainings,
-            myAPITrainings,
-          ),
-      ),
-    );
-  }
+  const { csvTrainingSchemaErrors, myTrainings, myAPITrainings } = await validateTrainingCsv(training);
 
   // Having parsed all establishments, workers and training, need to cross-check all training records' establishment reference
   // (LOCALESTID) against all parsed establishments
