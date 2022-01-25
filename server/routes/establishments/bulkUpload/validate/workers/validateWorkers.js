@@ -3,7 +3,7 @@ const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalaryNotEqualToFTE } = require('./validatePartTimeSalaryNotEqualToFTE');
 const { validateWorkerUnderNationalInsuranceMaximum } = require('./validateWorkerUnderNationalInsuranceMaximum');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
-const { createWorkerKey } = require('../shared/utils');
+const { createWorkerKey, deleteRecord } = require('../shared/utils');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = [];
@@ -44,7 +44,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
       addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Worker');
-      deleteWorker(myAPIWorkers, thisWorker.lineNumber);
+      deleteRecord(myAPIWorkers, thisWorker.lineNumber);
       return;
     }
 
@@ -77,11 +77,7 @@ const createKeysForWorkers = (myJSONWorkers) => {
   });
 };
 
-const deleteWorker = (myAPIWorkers, workerLineNumber) => delete myAPIWorkers[workerLineNumber];
-
 module.exports = {
   validateWorkers,
   createKeysForWorkers,
-  createWorkerKey,
-  deleteWorker,
 };

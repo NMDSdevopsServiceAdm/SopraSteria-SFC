@@ -2,7 +2,7 @@ const moment = require('moment');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
-const { createWorkerKey } = require('../shared/utils');
+const { createWorkerKey, deleteRecord } = require('../shared/utils');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const { csvTrainingSchemaErrors, myTrainings, myAPITrainings } = await validateTrainingCsv(training);
@@ -16,7 +16,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
       addNoEstablishmentError(csvTrainingSchemaErrors, thisTrainingRecord, 'Training');
-      deleteTrainingRecord(myAPIWorkers, thisTrainingRecord.lineNumber);
+      deleteRecord(myAPITrainings, thisTrainingRecord.lineNumber);
       return;
     }
 
@@ -25,9 +25,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
     if (!allWorkersByKey[workerKey]) {
       // not found the associated worker
       csvTrainingSchemaErrors.push(thisTrainingRecord.uncheckedWorker());
-
-      // remove the entity
-      delete myAPITrainings[thisTrainingRecord.lineNumber];
+      deleteRecord(myAPITrainings, thisTrainingRecord.lineNumber);
     } else {
       // gets here, all is good with the training record
 
@@ -64,5 +62,3 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
 
   return { csvTrainingSchemaErrors };
 };
-
-const deleteTrainingRecord = (myAPITrainings, trainingRecord) => delete myAPITrainings[trainingRecord.lineNumber];
