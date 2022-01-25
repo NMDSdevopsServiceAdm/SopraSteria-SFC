@@ -205,7 +205,7 @@ class BUDI {
   }
 
   static trainingCategory(direction, originalCode) {
-    return this.convertValue(direction, originalCode, TRAINING_CATEGORY_MAPPINGS);
+    return this.convertValue(direction, originalCode, mappings.TRAINING_CATEGORY);
   }
 
   static ethnicity(direction, originalCode) {
