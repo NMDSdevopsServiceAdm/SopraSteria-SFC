@@ -32,7 +32,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     private permissionsService: PermissionsService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.url = this.router.url;
 
     this.establishmentUid = this.workplace.uid;
