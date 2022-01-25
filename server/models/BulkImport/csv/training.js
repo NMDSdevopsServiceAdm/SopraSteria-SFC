@@ -16,9 +16,6 @@ class Training {
     this._notes = null;
   }
 
-  static get UNCHECKED_WORKER_ERROR() {
-    return 996;
-  }
   static get LOCALESTID_ERROR() {
     return 1000;
   }
@@ -424,21 +421,6 @@ class Training {
       error: "DATECOMPLETED is before staff record's date of birth",
       source: this._currentLine.LOCALESTID,
       column: 'DATECOMPLETED',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // add unchecked establishment reference validation error
-  uncheckedWorker() {
-    return {
-      origin: 'Training',
-      lineNumber: this._lineNumber,
-      errCode: Training.UNCHECKED_WORKER_ERROR,
-      errType: 'UNCHECKED_WORKER_ERROR',
-      error: 'UNIQUEWORKERID has not been supplied',
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'UNIQUEWORKERID',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
     };

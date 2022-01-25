@@ -43,7 +43,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
     const establishmentKey = thisWorker.localId ? thisWorker.localId.replace(/\s/g, '') : '';
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
-      addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Worker');
+      addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Workers');
       deleteRecord(myAPIWorkers, thisWorker.lineNumber);
       return;
     }
