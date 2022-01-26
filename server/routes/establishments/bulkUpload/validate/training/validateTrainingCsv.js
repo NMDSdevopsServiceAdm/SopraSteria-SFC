@@ -5,6 +5,7 @@ const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/train
 
 const validateTrainingCsv = async (training) => {
   const myTrainings = [];
+  const myJSONTrainings = [];
   const myAPITrainings = {};
   const csvTrainingSchemaErrors = [];
 
@@ -17,13 +18,14 @@ const validateTrainingCsv = async (training) => {
             currentLineNumber + 2,
             csvTrainingSchemaErrors,
             myTrainings,
+            myJSONTrainings,
             myAPITrainings,
           ),
       ),
     );
   }
 
-  return { csvTrainingSchemaErrors, myTrainings, myAPITrainings };
+  return { csvTrainingSchemaErrors, myTrainings, myJSONTrainings, myAPITrainings };
 };
 
 const validateTrainingCsvLine = async (
@@ -31,6 +33,7 @@ const validateTrainingCsvLine = async (
   currentLineNumber,
   csvTrainingSchemaErrors,
   myTrainings,
+  myJSONTrainings,
   myAPITrainings,
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
@@ -64,6 +67,7 @@ const validateTrainingCsvLine = async (
   }
 
   myTrainings.push(lineValidator);
+  myJSONTrainings.push(lineValidator.toJSON());
 };
 
 module.exports = {

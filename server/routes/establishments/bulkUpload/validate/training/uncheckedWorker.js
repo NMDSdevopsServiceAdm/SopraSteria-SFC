@@ -1,6 +1,6 @@
 const uncheckedWorker = (record) => {
   return {
-    origin: 'Workers',
+    origin: 'Training',
     lineNumber: record.lineNumber,
     errCode: UNCHECKED_WORKER_ERROR(),
     errType: 'UNCHECKED_WORKER_ERROR',

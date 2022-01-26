@@ -6,26 +6,29 @@ const { createWorkerKey, deleteRecord } = require('../shared/utils');
 const { addNoWorkerError, workerNotFoundInFile } = require('./uncheckedWorker');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
-  const { csvTrainingSchemaErrors, myTrainings, myAPITrainings } = await validateTrainingCsv(training);
+  const { csvTrainingSchemaErrors, myTrainings, myJSONTrainings, myAPITrainings } = await validateTrainingCsv(training);
 
-  myTrainings.forEach((thisTrainingRecord) => {
-    const establishmentKey = (thisTrainingRecord.localeStId || '').replace(/\s/g, '');
+  myJSONTrainings.forEach((trainingRecord) => {
+    const establishmentKey = (trainingRecord.localId || '').replace(/\s/g, '');
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
-      addNoEstablishmentError(csvTrainingSchemaErrors, thisTrainingRecord, 'Training');
-      deleteRecord(myAPITrainings, thisTrainingRecord.lineNumber);
+      addNoEstablishmentError(csvTrainingSchemaErrors, trainingRecord, 'Training');
+      deleteRecord(myAPITrainings, trainingRecord.lineNumber);
       return;
     }
 
-    const workerKey = createWorkerKey(thisTrainingRecord.localeStId, thisTrainingRecord.uniqueWorkerId);
+    const workerKey = createWorkerKey(trainingRecord.localId, trainingRecord.uniqueWorkerId);
 
     if (workerNotFoundInFile(allWorkersByKey, workerKey)) {
-      addNoWorkerError(csvTrainingSchemaErrors, thisTrainingRecord);
-      deleteRecord(myAPITrainings, thisTrainingRecord.lineNumber);
+      addNoWorkerError(csvTrainingSchemaErrors, trainingRecord);
+      deleteRecord(myAPITrainings, trainingRecord.lineNumber);
       return;
     }
+  });
 
+  myTrainings.forEach((thisTrainingRecord) => {
     // find the associated Worker entity and forward reference this training record
+    const workerKey = createWorkerKey(thisTrainingRecord.localeStId, thisTrainingRecord.uniqueWorkerId);
     const foundWorkerByLineNumber = allWorkersByKey[workerKey];
     const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 

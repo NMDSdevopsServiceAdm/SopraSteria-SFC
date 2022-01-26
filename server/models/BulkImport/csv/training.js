@@ -451,7 +451,7 @@ class Training {
 
   toJSON() {
     return {
-      localeStId: this._localeStId,
+      localId: this._localeStId,
       uniqueWorkerId: this._uniqueWorkerId,
       completed: this._dateCompleted ? this._dateCompleted.format('DD/MM/YYYY') : undefined,
       expiry: this._expiry ? this._expiry.format('DD/MM/YYYY') : undefined,
@@ -459,6 +459,7 @@ class Training {
       category: this._category,
       accredited: this._accredited,
       notes: this._notes,
+      lineNumber: this._lineNumber,
     };
   }
 

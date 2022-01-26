@@ -45,7 +45,7 @@ describe('uncheckedWorker', () => {
 
       expect(csvWorkerSchemaErrors.length).to.equal(1);
       expect(csvWorkerSchemaErrors[0]).to.deep.equal({
-        origin: 'Workers',
+        origin: 'Training',
         lineNumber: thisWorker.lineNumber,
         errCode: 996,
         errType: 'UNCHECKED_WORKER_ERROR',
