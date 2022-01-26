@@ -29,20 +29,23 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       addDobTrainingMismatchError(csvTrainingSchemaErrors, trainingRecord);
     }
 
-    const foundWorkerByLineNumber = allWorkersByKey[workerKey];
-    const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
-
-    if (knownWorker) {
-      knownWorker.associateTraining(myAPITrainings[trainingRecord.lineNumber]);
-    } else {
-      // this should never happen
-      console.error(
-        `FATAL: failed to associate worker (line number: ${trainingRecord.lineNumber}/unique id (${trainingRecord.uniqueWorkerId})) with a known establishment.`,
-      );
-    }
+    associateTrainingWithWorker(allWorkersByKey, workerKey, myAPIWorkers, myAPITrainings, trainingRecord);
   });
 
   training.metadata.records = myJSONTrainings.length;
 
   return { csvTrainingSchemaErrors };
+};
+
+const associateTrainingWithWorker = (allWorkersByKey, workerKey, myAPIWorkers, myAPITrainings, trainingRecord) => {
+  const foundWorkerByLineNumber = allWorkersByKey[workerKey];
+  const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
+
+  if (knownWorker) {
+    knownWorker.associateTraining(myAPITrainings[trainingRecord.lineNumber]);
+  } else {
+    console.error(
+      `FATAL: failed to associate training record (line number: ${trainingRecord.lineNumber}/unique id (${trainingRecord.uniqueWorkerId})) with a known worker.`,
+    );
+  }
 };
