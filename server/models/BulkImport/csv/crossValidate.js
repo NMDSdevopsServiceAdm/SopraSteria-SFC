@@ -33,15 +33,17 @@ const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
     (establishment) => JSONWorker.establishmentKey === establishment.key,
   );
 
-  switch (workerEstablishment.status) {
-    case 'NEW':
-    case 'UPDATE':
-      return workerEstablishment.regType === 2;
-    case 'UNCHECKED':
-    case 'NOCHANGE':
-      return await _checkEstablishmentRegulatedInDatabase(workerEstablishment.id);
-    case 'DELETE':
-      break;
+  if (workerEstablishment) {
+    switch (workerEstablishment.status) {
+      case 'NEW':
+      case 'UPDATE':
+        return workerEstablishment.regType === 2;
+      case 'UNCHECKED':
+      case 'NOCHANGE':
+        return await _checkEstablishmentRegulatedInDatabase(workerEstablishment.id);
+      case 'DELETE':
+        break;
+    }
   }
 };
 
