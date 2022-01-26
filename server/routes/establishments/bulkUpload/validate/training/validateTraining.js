@@ -6,14 +6,14 @@ const { createWorkerKey, deleteRecord } = require('../shared/utils');
 const { addNoWorkerError, workerNotFoundInFile } = require('./uncheckedWorker');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
-  const { csvTrainingSchemaErrors, myJSONTrainings, myAPITrainings } = await validateTrainingCsv(training);
+  const { csvTrainingSchemaErrors, JSONTraining, APITrainingRecords } = await validateTrainingCsv(training);
 
-  myJSONTrainings.forEach((trainingRecord) => {
+  JSONTraining.forEach((trainingRecord) => {
     const establishmentKey = (trainingRecord.localId || '').replace(/\s/g, '');
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
       addNoEstablishmentError(csvTrainingSchemaErrors, trainingRecord, 'Training');
-      deleteRecord(myAPITrainings, trainingRecord.lineNumber);
+      deleteRecord(APITrainingRecords, trainingRecord.lineNumber);
       return;
     }
 
@@ -21,7 +21,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
 
     if (workerNotFoundInFile(allWorkersByKey, workerKey)) {
       addNoWorkerError(csvTrainingSchemaErrors, trainingRecord);
-      deleteRecord(myAPITrainings, trainingRecord.lineNumber);
+      deleteRecord(APITrainingRecords, trainingRecord.lineNumber);
       return;
     }
 
@@ -29,20 +29,20 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       addDobTrainingMismatchError(csvTrainingSchemaErrors, trainingRecord);
     }
 
-    associateTrainingWithWorker(allWorkersByKey, workerKey, myAPIWorkers, myAPITrainings, trainingRecord);
+    associateTrainingWithWorker(allWorkersByKey, workerKey, myAPIWorkers, APITrainingRecords, trainingRecord);
   });
 
-  training.metadata.records = myJSONTrainings.length;
+  training.metadata.records = JSONTraining.length;
 
   return { csvTrainingSchemaErrors };
 };
 
-const associateTrainingWithWorker = (allWorkersByKey, workerKey, myAPIWorkers, myAPITrainings, trainingRecord) => {
+const associateTrainingWithWorker = (allWorkersByKey, workerKey, myAPIWorkers, APITrainingRecords, trainingRecord) => {
   const foundWorkerByLineNumber = allWorkersByKey[workerKey];
   const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 
   if (knownWorker) {
-    knownWorker.associateTraining(myAPITrainings[trainingRecord.lineNumber]);
+    knownWorker.associateTraining(APITrainingRecords[trainingRecord.lineNumber]);
   } else {
     console.error(
       `FATAL: failed to associate training record (line number: ${trainingRecord.lineNumber}/unique id (${trainingRecord.uniqueWorkerId})) with a known worker.`,

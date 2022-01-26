@@ -4,8 +4,8 @@ const { Training } = require('../../../../../models/classes/training');
 const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/training').Training;
 
 const validateTrainingCsv = async (training) => {
-  const myJSONTrainings = [];
-  const myAPITrainings = {};
+  const JSONTraining = [];
+  const APITrainingRecords = {};
   const csvTrainingSchemaErrors = [];
 
   if (training.imported) {
@@ -16,22 +16,22 @@ const validateTrainingCsv = async (training) => {
             thisLine,
             currentLineNumber + 2,
             csvTrainingSchemaErrors,
-            myJSONTrainings,
-            myAPITrainings,
+            JSONTraining,
+            APITrainingRecords,
           ),
       ),
     );
   }
 
-  return { csvTrainingSchemaErrors, myJSONTrainings, myAPITrainings };
+  return { csvTrainingSchemaErrors, JSONTraining, APITrainingRecords };
 };
 
 const validateTrainingCsvLine = async (
   thisLine,
   currentLineNumber,
   csvTrainingSchemaErrors,
-  myJSONTrainings,
-  myAPITrainings,
+  JSONTraining,
+  APITrainingRecords,
 ) => {
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
@@ -46,12 +46,12 @@ const validateTrainingCsvLine = async (
 
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
-      myAPITrainings[currentLineNumber] = thisApiTraining;
+      APITrainingRecords[currentLineNumber] = thisApiTraining;
     } else {
       const errors = thisApiTraining.errors;
 
       if (errors.length === 0) {
-        myAPITrainings[currentLineNumber] = thisApiTraining;
+        APITrainingRecords[currentLineNumber] = thisApiTraining;
       }
     }
   } catch (err) {
@@ -63,7 +63,7 @@ const validateTrainingCsvLine = async (
     lineValidator.validationErrors.forEach((thisError) => csvTrainingSchemaErrors.push(thisError));
   }
 
-  myJSONTrainings.push(lineValidator.toJSON());
+  JSONTraining.push(lineValidator.toJSON());
 };
 
 module.exports = {
