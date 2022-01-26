@@ -69,6 +69,26 @@ describe('NameOfWorkplaceComponent', () => {
     expect(registrationHeading).toBeTruthy();
   });
 
+  it(`should display the paragraph`, async () => {
+    const { component } = await setup();
+
+    const paragraph = component.getByTestId('info');
+    expect(paragraph).toBeTruthy();
+  });
+
+  it(`should display the reveal and its contents`, async () => {
+    const { component } = await setup();
+
+    const reveal = component.getByText('Not sure how many members of staff your workplace has?');
+    const revealContent = component.getByText(
+      'You can enter an estimate to save time, but remember to update this number in ASC-WDS once your account has been validated by Skills for Care.',
+      { exact: false },
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealContent).toBeTruthy();
+  });
+
   it('should prefill the form if totalStaff is already set in the service', async () => {
     const { component } = await setup();
 
