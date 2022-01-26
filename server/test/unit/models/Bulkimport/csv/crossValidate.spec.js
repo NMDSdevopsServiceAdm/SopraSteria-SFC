@@ -158,5 +158,45 @@ describe('crossValidate', () => {
 
       expect(isCQCRegulated).to.deep.equal(true);
     });
+
+    it('should not return anything if the establishment is set to DELETE', async () => {
+      const myEstablishments = [
+        {
+          id: 1,
+          status: 'DELETE',
+          key: 'HELLO',
+          regType: 2,
+        },
+      ];
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      worker._status = 'NEW';
+      const JSONWorker = worker.toJSON();
+      JSONWorker.establishmentKey = 'HELLO';
+
+      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+
+      expect(isCQCRegulated).to.not.deep.equal(true);
+      expect(isCQCRegulated).to.not.deep.equal(false);
+    });
+
+    it('should not return anything if the establishment is not found', async () => {
+      const myEstablishments = [
+        {
+          id: 1,
+          status: 'UPDATE',
+          key: 'HELLO',
+          regType: 2,
+        },
+      ];
+      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      worker._status = 'NEW';
+      const JSONWorker = worker.toJSON();
+      JSONWorker.establishmentKey = 'HELLO1';
+
+      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+
+      expect(isCQCRegulated).to.not.deep.equal(true);
+      expect(isCQCRegulated).to.not.deep.equal(false);
+    });
   });
 });
