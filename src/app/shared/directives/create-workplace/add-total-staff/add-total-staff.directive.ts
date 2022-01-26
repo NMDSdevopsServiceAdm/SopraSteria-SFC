@@ -1,10 +1,11 @@
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 
 @Directive()
@@ -17,7 +18,6 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public form: FormGroup;
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
-  public returnToConfirmDetails: URLStructure;
   public workplaceTotalStaff;
 
   constructor(
@@ -27,12 +27,14 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
     public workplaceInterfaceService: WorkplaceInterfaceService,
-  ) {}
+    public totalStaffFormService: TotalStaffFormService,
+  ) {
+    this.form = totalStaffFormService.createForm(formBuilder);
+  }
 
   public ngOnInit(): void {
-    this.setupForm();
     this.setBackLink();
-    this.setupFormErrorsMap();
+    this.setupFormErrors();
     this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
     this.return = this.workplaceInterfaceService.returnTo$.value;
 
@@ -41,12 +43,6 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
-  }
-
-  private setupForm(): void {
-    this.form = this.formBuilder.group({
-      totalStaff: [null, { validators: [Validators.required], updateOn: 'submit' }],
-    });
   }
 
   protected prefillForm(): void {
@@ -71,20 +67,9 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     }
   }
 
-  private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'totalStaff',
-        type: [
-          {
-            name: 'required',
-            message: `Enter total staff number`,
-          },
-        ],
-      },
-    ];
+  private setupFormErrors(): void {
+    this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
   }
-
   public getErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -94,7 +79,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     return this.return ? 'confirm-details' : 'add-user-details';
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
     const url = this.return ? 'confirm-details' : 'select-main-service';
     this.backService.setBackLink({ url: ['registration', url] });
   }

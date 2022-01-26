@@ -27,8 +27,9 @@
             formControlName="totalStaff"
             id="totalStaff"
             name="totalStaff"
-            [class.govuk-input--error]="submitted && (form.invalid || serverError)"
+            [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
             type="text"
+            aria-describedby="totalStaff-hint"
           />
         </div>
       </fieldset>
