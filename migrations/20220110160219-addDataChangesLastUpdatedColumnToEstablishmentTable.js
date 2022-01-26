@@ -14,7 +14,6 @@ module.exports = {
           'DataChangesLastUpdated',
           {
             type: Sequelize.DataTypes.DATE,
-            allowNull: false,
           },
           { transaction },
         ),
