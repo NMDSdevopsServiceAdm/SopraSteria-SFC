@@ -23,6 +23,7 @@ import { BulkUploadDataChangeComponent } from './data-change.component';
 
 describe('BulkUploadDataChangeComponent', () => {
   const dataChange = MockDataChangeService.dataChangeFactory();
+  const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   async function setup() {
     const { fixture, getByText } = await render(BulkUploadDataChangeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -39,6 +40,7 @@ describe('BulkUploadDataChangeComponent', () => {
             snapshot: {
               data: {
                 dataChange,
+                dataChangeLastUpdated,
               },
             },
           }),
