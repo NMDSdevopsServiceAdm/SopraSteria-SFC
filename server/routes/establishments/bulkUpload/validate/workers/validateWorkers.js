@@ -6,7 +6,7 @@ const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../sha
 const { createWorkerKey, deleteRecord } = require('../shared/utils');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
-  const workersKeyed = [];
+  const workersKeyed = {};
   const allWorkersByKey = {};
 
   const { csvWorkerSchemaErrors, myAPIWorkers, myJSONWorkers } = await validateWorkerCsv(

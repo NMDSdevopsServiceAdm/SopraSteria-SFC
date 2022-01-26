@@ -1,5 +1,4 @@
-const moment = require('moment');
-const { addDobTrainingMismatchError } = require('./dobTrainingMismatch');
+const { addDobTrainingMismatchError, trainingCompletedBeforeAgeFourteen } = require('./dobTrainingMismatch');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
@@ -26,20 +25,12 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       return;
     }
 
-    // training cross-validation against worker's date of birth (DOB) can only be applied, if:
-    //  1. the associated Worker can be matched
-    //  2. the worker has DOB defined (it's not a mandatory property)
-    const foundWorkerByLineNumber = allWorkersByKey[workerKey];
-    const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
-
-    const trainingCompletedDate = moment.utc(trainingRecord.completed, 'DD-MM-YYYY');
-    const foundAssociatedWorker = workersKeyed[workerKey];
-    const workerDob =
-      foundAssociatedWorker && foundAssociatedWorker.DOB ? moment.utc(workersKeyed[workerKey].DOB, 'DD-MM-YYYY') : null;
-
-    if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
+    if (trainingCompletedBeforeAgeFourteen(trainingRecord, workersKeyed, workerKey)) {
       addDobTrainingMismatchError(csvTrainingSchemaErrors, trainingRecord);
     }
+
+    const foundWorkerByLineNumber = allWorkersByKey[workerKey];
+    const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 
     if (knownWorker) {
       knownWorker.associateTraining(myAPITrainings[trainingRecord.lineNumber]);
