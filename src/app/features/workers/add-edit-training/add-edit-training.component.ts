@@ -39,7 +39,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         this.previousUrl = [route];
       } else {
         this.previousUrl = [
-          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`,
+          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`,
         ];
       }
     });
@@ -137,7 +137,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.previousUrl.indexOf('dashboard') > -1) {
       url = this.previousUrl;
     } else {
-      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`];
+      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
     }
     this.router.navigate(url).then(() => {
       if (this.trainingRecordId) {
