@@ -16,7 +16,9 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
+import {
+  BulkUploadRelatedContentComponent,
+} from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';
@@ -33,8 +35,8 @@ describe('BulkUploadHelpMainPageComponent', () => {
         RouterTestingModule.withRoutes([
           { path: 'bulk-upload/get-help/step-by-step-guide', component: BulkUploadFlowchartComponent },
           { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
-          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
-          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[1].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[2].slug}`, component: BulkUploadTopTipPageComponent },
         ]),
         HttpClientTestingModule,
         BrowserModule,
