@@ -338,9 +338,11 @@ router
         MainService: req.body[0].mainService,
         MainServiceId: null,
         MainServiceOther: req.body[0].mainServiceOther,
+        NumberOfStaffValue: req.body[0].totalStaff,
         IsRegulated: req.body[0].isRegulated,
         Status: 'PENDING',
         ExpiresSoonAlertDate: '90',
+        DataChangesLastUpdated: null,
       };
       const Userdata = {
         FullName: req.body[0].user.fullname,

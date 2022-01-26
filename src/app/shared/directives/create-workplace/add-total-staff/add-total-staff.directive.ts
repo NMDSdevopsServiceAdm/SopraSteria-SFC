@@ -11,9 +11,9 @@ import { WorkplaceInterfaceService } from '@core/services/workplace-interface.se
 export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  public flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
+  public return: URLStructure;
   public form: FormGroup;
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
@@ -30,11 +30,11 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   ) {}
 
   public ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.setupForm();
     this.setBackLink();
     this.setupFormErrorsMap();
     this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
+    this.return = this.workplaceInterfaceService.returnTo$.value;
 
     this.prefillForm();
   }
@@ -45,7 +45,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      totalStaff: [null, { validators: [Validators.required, Validators.pattern(`[0-9]`)], updateOn: 'submit' }],
+      totalStaff: [null, { validators: [Validators.required], updateOn: 'submit' }],
     });
   }
 
@@ -64,7 +64,8 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
       const totalStaff = this.form.get('totalStaff').value;
       this.workplaceInterfaceService.totalStaff$.next(totalStaff);
 
-      this.navigateToNextRoute();
+      const url = this.setFormSubmissionLink();
+      this.router.navigate(['registration', url]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
@@ -89,11 +90,12 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private navigateToNextRoute(): void {
-    this.router.navigate([this.flow, 'add-user-details']);
+  protected setFormSubmissionLink(): string {
+    return this.return ? 'confirm-details' : 'add-user-details';
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/select-main-service`] });
+    const url = this.return ? 'confirm-details' : 'select-main-service';
+    this.backService.setBackLink({ url: ['registration', url] });
   }
 }
