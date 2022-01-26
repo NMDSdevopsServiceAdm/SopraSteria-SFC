@@ -32,28 +32,28 @@ describe('uncheckedWorker', () => {
   });
 
   describe('addNoWorkerError', () => {
-    it('should add error to csvWorkerSchemaErrors with worker details', async () => {
+    it('should add error to csvWorkerSchemaErrors with record details', async () => {
       const csvWorkerSchemaErrors = [];
 
-      const thisWorker = {
+      const trainingRecord = {
         lineNumber: 5,
         localId: 'testWorker',
         uniqueWorkerId: 'testWorker',
       };
 
-      addNoWorkerError(csvWorkerSchemaErrors, thisWorker);
+      addNoWorkerError(csvWorkerSchemaErrors, trainingRecord);
 
       expect(csvWorkerSchemaErrors.length).to.equal(1);
       expect(csvWorkerSchemaErrors[0]).to.deep.equal({
         origin: 'Training',
-        lineNumber: thisWorker.lineNumber,
+        lineNumber: trainingRecord.lineNumber,
         errCode: 996,
         errType: 'UNCHECKED_WORKER_ERROR',
         error: 'UNIQUEWORKERID has not been supplied',
-        source: thisWorker.localId,
+        source: trainingRecord.localId,
         column: 'UNIQUEWORKERID',
-        worker: thisWorker.uniqueWorkerId,
-        name: thisWorker.localId,
+        worker: trainingRecord.uniqueWorkerId,
+        name: trainingRecord.localId,
       });
     });
   });

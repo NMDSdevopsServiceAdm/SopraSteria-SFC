@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { dobTrainingMismatch } = require('./dobTrainingMismatch');
+const { addDobTrainingMismatchError } = require('./dobTrainingMismatch');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
@@ -38,7 +38,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       foundAssociatedWorker && foundAssociatedWorker.DOB ? moment.utc(workersKeyed[workerKey].DOB, 'DD-MM-YYYY') : null;
 
     if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
-      csvTrainingSchemaErrors.push(dobTrainingMismatch(trainingRecord));
+      addDobTrainingMismatchError(csvTrainingSchemaErrors, trainingRecord);
     }
 
     if (knownWorker) {

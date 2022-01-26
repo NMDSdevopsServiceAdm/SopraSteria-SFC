@@ -1,4 +1,4 @@
-exports.dobTrainingMismatch = (record) => {
+const dobTrainingMismatch = (record) => {
   return {
     origin: 'Training',
     lineNumber: record.lineNumber,
@@ -13,3 +13,6 @@ exports.dobTrainingMismatch = (record) => {
 };
 
 const WORKER_DOB_TRAINING_WARNING = () => 1080;
+
+exports.addDobTrainingMismatchError = (csvTrainingSchemaErrors, trainingRecord) =>
+  csvTrainingSchemaErrors.push(dobTrainingMismatch(trainingRecord));
