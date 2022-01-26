@@ -4,7 +4,6 @@ const { Training } = require('../../../../../models/classes/training');
 const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/training').Training;
 
 const validateTrainingCsv = async (training) => {
-  const myTrainings = [];
   const myJSONTrainings = [];
   const myAPITrainings = {};
   const csvTrainingSchemaErrors = [];
@@ -17,7 +16,6 @@ const validateTrainingCsv = async (training) => {
             thisLine,
             currentLineNumber + 2,
             csvTrainingSchemaErrors,
-            myTrainings,
             myJSONTrainings,
             myAPITrainings,
           ),
@@ -25,14 +23,13 @@ const validateTrainingCsv = async (training) => {
     );
   }
 
-  return { csvTrainingSchemaErrors, myTrainings, myJSONTrainings, myAPITrainings };
+  return { csvTrainingSchemaErrors, myJSONTrainings, myAPITrainings };
 };
 
 const validateTrainingCsvLine = async (
   thisLine,
   currentLineNumber,
   csvTrainingSchemaErrors,
-  myTrainings,
   myJSONTrainings,
   myAPITrainings,
 ) => {
@@ -66,7 +63,6 @@ const validateTrainingCsvLine = async (
     lineValidator.validationErrors.forEach((thisError) => csvTrainingSchemaErrors.push(thisError));
   }
 
-  myTrainings.push(lineValidator);
   myJSONTrainings.push(lineValidator.toJSON());
 };
 

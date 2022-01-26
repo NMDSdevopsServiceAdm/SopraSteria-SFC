@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { dobTrainingMismatch } = require('./dobTrainingMismatch');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
@@ -6,7 +7,7 @@ const { createWorkerKey, deleteRecord } = require('../shared/utils');
 const { addNoWorkerError, workerNotFoundInFile } = require('./uncheckedWorker');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
-  const { csvTrainingSchemaErrors, myTrainings, myJSONTrainings, myAPITrainings } = await validateTrainingCsv(training);
+  const { csvTrainingSchemaErrors, myJSONTrainings, myAPITrainings } = await validateTrainingCsv(training);
 
   myJSONTrainings.forEach((trainingRecord) => {
     const establishmentKey = (trainingRecord.localId || '').replace(/\s/g, '');
@@ -24,37 +25,33 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
       deleteRecord(myAPITrainings, trainingRecord.lineNumber);
       return;
     }
-  });
-
-  myTrainings.forEach((thisTrainingRecord) => {
-    // find the associated Worker entity and forward reference this training record
-    const workerKey = createWorkerKey(thisTrainingRecord.localeStId, thisTrainingRecord.uniqueWorkerId);
-    const foundWorkerByLineNumber = allWorkersByKey[workerKey];
-    const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
 
     // training cross-validation against worker's date of birth (DOB) can only be applied, if:
     //  1. the associated Worker can be matched
     //  2. the worker has DOB defined (it's not a mandatory property)
-    const trainingCompletedDate = moment.utc(thisTrainingRecord._currentLine.DATECOMPLETED, 'DD-MM-YYYY');
+    const foundWorkerByLineNumber = allWorkersByKey[workerKey];
+    const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
+
+    const trainingCompletedDate = moment.utc(trainingRecord.completed, 'DD-MM-YYYY');
     const foundAssociatedWorker = workersKeyed[workerKey];
     const workerDob =
       foundAssociatedWorker && foundAssociatedWorker.DOB ? moment.utc(workersKeyed[workerKey].DOB, 'DD-MM-YYYY') : null;
 
     if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
-      csvTrainingSchemaErrors.push(thisTrainingRecord.dobTrainingMismatch());
+      csvTrainingSchemaErrors.push(dobTrainingMismatch(trainingRecord));
     }
 
     if (knownWorker) {
-      knownWorker.associateTraining(myAPITrainings[thisTrainingRecord.lineNumber]);
+      knownWorker.associateTraining(myAPITrainings[trainingRecord.lineNumber]);
     } else {
       // this should never happen
       console.error(
-        `FATAL: failed to associate worker (line number: ${thisTrainingRecord.lineNumber}/unique id (${thisTrainingRecord.uniqueWorker})) with a known establishment.`,
+        `FATAL: failed to associate worker (line number: ${trainingRecord.lineNumber}/unique id (${trainingRecord.uniqueWorkerId})) with a known establishment.`,
       );
     }
   });
 
-  training.metadata.records = myTrainings.length;
+  training.metadata.records = myJSONTrainings.length;
 
   return { csvTrainingSchemaErrors };
 };

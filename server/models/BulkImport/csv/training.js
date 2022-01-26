@@ -40,10 +40,6 @@ class Training {
   static get NOTES_ERROR() {
     return 1070;
   }
-  static get WORKER_DOB_TRAINING_WARNING() {
-    return 1080;
-  }
-
   static get DATE_COMPLETED_WARNING() {
     return 2020;
   }
@@ -409,21 +405,6 @@ class Training {
         return true;
       }
     }
-  }
-
-  // add unchecked establishment reference validation error
-  dobTrainingMismatch() {
-    return {
-      origin: 'Training',
-      lineNumber: this._lineNumber,
-      errCode: Training.WORKER_DOB_TRAINING_WARNING,
-      errType: 'WORKER_DOB_TRAINING_WARNING',
-      error: "DATECOMPLETED is before staff record's date of birth",
-      source: this._currentLine.LOCALESTID,
-      column: 'DATECOMPLETED',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
   }
 
   // returns true on success, false is any attribute of Training fails
