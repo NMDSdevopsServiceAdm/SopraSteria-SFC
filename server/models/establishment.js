@@ -706,8 +706,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       dataChangesLastUpdated: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: false,
+        allowNull: true,
         field: 'DataChangesLastUpdated',
       },
     },
