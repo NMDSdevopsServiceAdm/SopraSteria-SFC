@@ -8,7 +8,8 @@ import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 
 import { AddTotalStaffComponent } from './add-total-staff.component';
 
@@ -66,5 +67,71 @@ describe('NameOfWorkplaceComponent', () => {
     const registrationHeading = component.queryByText(`How many members of staff does your workplace have?`);
 
     expect(registrationHeading).toBeTruthy();
+  });
+
+  it('should prefill the form if totalStaff is already set in the service', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.registrationService.totalStaff$ = new BehaviorSubject('12');
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    expect(form.value.totalStaff).toEqual('12');
+    expect(form.valid).toBeTruthy();
+  });
+
+  it('should display an error when continue is clicked without adding total staff number', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.registrationService.totalStaff$ = new BehaviorSubject(null);
+    component.fixture.componentInstance.ngOnInit();
+
+    const form = component.fixture.componentInstance.form;
+    const errorMessage = 'Enter the total number of staff at your workplace';
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(form.invalid).toBeTruthy();
+    expect(component.getAllByText(errorMessage).length).toBe(2);
+  });
+
+  it('should navigate to add-user-details url when continue button is clicked and total staff is given', async () => {
+    const { component, spy } = await setup();
+    const form = component.fixture.componentInstance.form;
+    const continueButton = component.getByText('Continue');
+
+    form.controls['totalStaff'].setValue('12');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
+  });
+
+  it('should set totalStaff in registration service when continue button is clicked and total staff ßis given', async () => {
+    const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+    const continueButton = component.getByText('Continue');
+    const registrationService = component.fixture.componentInstance.registrationService.totalStaff$;
+
+    form.controls['totalStaff'].setValue('12');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(registrationService).toEqual(new BehaviorSubject('12'));
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the correct back link', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+
+      component.fixture.componentInstance.setBackLink();
+      component.fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['registration', 'select-main-service'],
+      });
+    });
   });
 });
