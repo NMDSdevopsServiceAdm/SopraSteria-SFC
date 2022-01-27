@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { createWorkerKey, deleteRecord } = require('../../../utils/bulkUploadUtils');
+const { createWorkerKey, deleteRecord, csvQuote } = require('../../../utils/bulkUploadUtils');
 
 describe('bulkUploadUtils', () => {
   describe('createWorkerKey', () => {
@@ -40,6 +40,16 @@ describe('bulkUploadUtils', () => {
       deleteRecord(myAPIWorkers, workerLineNumber);
 
       expect(!myAPIWorkers[workerLineNumber]).to.equal(true);
+    });
+  });
+
+  describe('csvQuote()', () => {
+    it('should add quotes around string with a , ', () => {
+      expect(csvQuote('Hello, ')).to.equal('"Hello, "');
+    });
+
+    it('should not add quotes around string with out a , ', () => {
+      expect(csvQuote('Hello')).to.equal('Hello');
     });
   });
 });

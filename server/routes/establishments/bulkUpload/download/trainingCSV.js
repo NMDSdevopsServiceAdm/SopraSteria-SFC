@@ -1,5 +1,5 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
-const { csvQuote } = require('./workerCSV');
+const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
   // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
