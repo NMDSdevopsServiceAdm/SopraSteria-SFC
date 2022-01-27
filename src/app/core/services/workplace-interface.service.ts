@@ -17,6 +17,7 @@ export abstract class WorkplaceInterfaceService {
   public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public totalStaff$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcode$: BehaviorSubject<string> = new BehaviorSubject(null);
   public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
@@ -42,6 +43,7 @@ export abstract class WorkplaceInterfaceService {
     this.manuallyEnteredWorkplace$.next(null);
     this.searchMethod$.next(null);
     this.postcodeOrLocationId$.next(null);
+    this.totalStaff$.next(null);
     this.postcode$.next(null);
     this.workplaceNotFound$.next(false);
     this.returnTo$.next(null);

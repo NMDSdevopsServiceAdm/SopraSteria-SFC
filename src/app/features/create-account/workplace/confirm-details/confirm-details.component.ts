@@ -15,6 +15,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-confirm-details',
@@ -32,6 +33,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
+  public totalStaff: any;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
   protected locationAddress: LocationAddress;
@@ -65,21 +67,42 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   private setupSubscriptions(): void {
+    const registrationSubscriptions = combineLatest([
+      this.registrationService.isCqcRegulated$,
+      this.registrationService.selectedLocationAddress$,
+      this.registrationService.selectedWorkplaceService$,
+      this.registrationService.loginCredentials$,
+      this.registrationService.securityDetails$,
+      this.registrationService.totalStaff$,
+    ]);
+    const userSubscriptions = combineLatest([this.userService.userDetails$]);
+    const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
+      map(
+        ([
+          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff],
+          [userDetails],
+        ]) => {
+          return {
+            userDetails,
+            isCqcRegulated,
+            locationAddress,
+            service,
+            loginCredentials,
+            securityDetails,
+            totalStaff,
+          };
+        },
+      ),
+    );
     this.subscriptions.add(
-      combineLatest([
-        this.userService.userDetails$,
-        this.registrationService.isCqcRegulated$,
-        this.registrationService.selectedLocationAddress$,
-        this.registrationService.selectedWorkplaceService$,
-        this.registrationService.loginCredentials$,
-        this.registrationService.securityDetails$,
-      ]).subscribe(([userDetails, isCqcRegulated, locationAddress, service, loginCredentials, securityDetails]) => {
-        this.userDetails = userDetails;
-        this.isCqcRegulated = isCqcRegulated;
-        this.locationAddress = locationAddress;
-        this.service = service;
-        this.loginCredentials = loginCredentials;
-        this.securityDetails = securityDetails;
+      subscriptions.subscribe((res) => {
+        this.isCqcRegulated = res.isCqcRegulated;
+        this.locationAddress = res.locationAddress;
+        this.service = res.service;
+        this.loginCredentials = res.loginCredentials;
+        this.securityDetails = res.securityDetails;
+        this.totalStaff = res.totalStaff;
+        this.userDetails = res.userDetails;
       }),
     );
   }
@@ -106,6 +129,8 @@ export class ConfirmDetailsComponent implements OnInit {
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
     payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
+    payload.totalStaff = this.totalStaff;
+
     return [payload];
   }
 

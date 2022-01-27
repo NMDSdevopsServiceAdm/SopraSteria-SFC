@@ -140,7 +140,7 @@ describe('SelectMainServiceComponent', () => {
     expect(getAllByText(errorMessage).length).toBe(3);
   });
 
-  it('should submit and go to the registration/add-user-details url when option selected and is not parent', async () => {
+  it('should submit and go to the registration/add-total-staff url when option selected and is not parent', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
     component.isParent = false;
@@ -153,7 +153,7 @@ describe('SelectMainServiceComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'add-total-staff']);
   });
 
   it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is not null', async () => {

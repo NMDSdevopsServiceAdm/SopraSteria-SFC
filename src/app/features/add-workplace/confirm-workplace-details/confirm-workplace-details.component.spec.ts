@@ -197,7 +197,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   describe('Change links', () => {
-    it('should always display two change links', async () => {
+    it('should always display three change links', async () => {
       const { getAllByText } = await setup();
 
       const changeLinks = getAllByText('Change');

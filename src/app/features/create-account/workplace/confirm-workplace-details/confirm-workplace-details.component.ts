@@ -21,6 +21,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
   protected getWorkplaceData(): void {
     this.locationAddress = this.registrationService.selectedLocationAddress$.value;
     this.workplace = this.registrationService.selectedWorkplaceService$.value;
+    this.WorkplaceTotalStaff = this.registrationService.totalStaff$.value;
   }
 
   public onSetReturn(): void {
