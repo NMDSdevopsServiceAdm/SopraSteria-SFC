@@ -3,18 +3,16 @@ const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
   // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
-  const columns = [];
-  columns.push(csvQuote(establishmentId));
-  columns.push(csvQuote(workerId));
-
-  columns.push(BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id));
-  columns.push(entity.title ? csvQuote(entity.title) : '');
-
-  columns.push(convertDateFormatToDayMonthYearWithSlashes(entity.completed));
-  columns.push(convertDateFormatToDayMonthYearWithSlashes(entity.expires));
-
-  columns.push(convertAccredited(entity.accredited));
-  columns.push(entity.notes ? csvQuote(decodeURI(entity.notes)) : '');
+  const columns = [
+    csvQuote(establishmentId),
+    csvQuote(workerId),
+    BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id),
+    entity.title ? csvQuote(entity.title) : '',
+    convertDateFormatToDayMonthYearWithSlashes(entity.completed),
+    convertDateFormatToDayMonthYearWithSlashes(entity.expires),
+    convertAccredited(entity.accredited),
+    entity.notes ? csvQuote(decodeURI(entity.notes)) : '',
+  ];
 
   return columns.join(',');
 };
