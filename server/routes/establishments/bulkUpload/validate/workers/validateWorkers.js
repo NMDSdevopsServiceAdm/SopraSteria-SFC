@@ -2,7 +2,10 @@ const { validateWorkerCsv } = require('./validateWorkerCsv');
 const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalaryNotEqualToFTE } = require('./validatePartTimeSalaryNotEqualToFTE');
 const { validateWorkerUnderNationalInsuranceMaximum } = require('./validateWorkerUnderNationalInsuranceMaximum');
-const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
+const {
+  establishmentNotFoundInFile,
+  addNoAssociatedEstablishmentError,
+} = require('../shared/noAssociatedEstablishment');
 const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
@@ -43,7 +46,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
     const establishmentKey = thisWorker.localId ? thisWorker.localId.replace(/\s/g, '') : '';
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
-      addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Workers');
+      addNoAssociatedEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Workers');
       deleteRecord(myAPIWorkers, thisWorker.lineNumber);
       return;
     }

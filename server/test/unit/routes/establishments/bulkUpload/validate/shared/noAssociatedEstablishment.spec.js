@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
 const {
   establishmentNotFoundInFile,
-  addNoEstablishmentError,
-} = require('../../../../../../../routes/establishments/bulkUpload/validate/shared/uncheckedEstablishment');
+  addNoAssociatedEstablishmentError,
+} = require('../../../../../../../routes/establishments/bulkUpload/validate/shared/noAssociatedEstablishment');
 
-describe('uncheckedEstablishment', () => {
+describe('noAssociatedEstablishment', () => {
   describe('establishmentNotFoundInFile', () => {
     it('should return true if no object with given key in allEstablishmentsByKey', async () => {
       const allEstablishmentsByKey = {
@@ -31,7 +31,7 @@ describe('uncheckedEstablishment', () => {
     });
   });
 
-  describe('addNoEstablishmentError', () => {
+  describe('addNoAssociatedEstablishmentError', () => {
     it('should add error to csvWorkerSchemaErrors with worker details', async () => {
       const csvWorkerSchemaErrors = [];
 
@@ -41,14 +41,14 @@ describe('uncheckedEstablishment', () => {
         uniqueWorkerId: 'testWorker',
       };
 
-      addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Workers');
+      addNoAssociatedEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Workers');
 
       expect(csvWorkerSchemaErrors.length).to.equal(1);
       expect(csvWorkerSchemaErrors[0]).to.deep.equal({
         origin: 'Workers',
         lineNumber: thisWorker.lineNumber,
         errCode: 997,
-        errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
+        errType: 'NO_ASSOCIATED_ESTABLISHMENT_ERROR',
         error: 'LOCALESTID does not exist in Workplace file',
         source: thisWorker.localId,
         column: 'LOCALESTID',
@@ -66,7 +66,7 @@ describe('uncheckedEstablishment', () => {
         uniqueWorkerId: 'testWorker',
       };
 
-      addNoEstablishmentError(csvTrainingSchemaErrors, thisTraining, 'Training');
+      addNoAssociatedEstablishmentError(csvTrainingSchemaErrors, thisTraining, 'Training');
 
       expect(csvTrainingSchemaErrors[0].origin).to.deep.equal('Training');
     });

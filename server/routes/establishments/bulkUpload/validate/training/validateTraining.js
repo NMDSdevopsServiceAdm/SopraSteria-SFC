@@ -1,7 +1,10 @@
 const { addDobTrainingMismatchError, trainingCompletedBeforeAgeFourteen } = require('./dobTrainingMismatch');
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
-const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
+const {
+  establishmentNotFoundInFile,
+  addNoAssociatedEstablishmentError,
+} = require('../shared/noAssociatedEstablishment');
 const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 const { addNoAssociatedWorkerError, workerNotFoundInFile } = require('./noAssociatedWorker');
 
@@ -12,7 +15,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
     const establishmentKey = (trainingRecord.localId || '').replace(/\s/g, '');
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
-      addNoEstablishmentError(csvTrainingSchemaErrors, trainingRecord, 'Training');
+      addNoAssociatedEstablishmentError(csvTrainingSchemaErrors, trainingRecord, 'Training');
       deleteRecord(APITrainingRecords, trainingRecord.lineNumber);
       return;
     }

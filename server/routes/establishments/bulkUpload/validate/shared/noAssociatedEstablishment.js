@@ -1,9 +1,9 @@
-const uncheckedEstablishment = (record, origin) => {
+const noAssociatedEstablishment = (record, origin) => {
   return {
     origin,
     lineNumber: record.lineNumber,
     errCode: UNCHECKED_ESTABLISHMENT_ERROR(),
-    errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
+    errType: 'NO_ASSOCIATED_ESTABLISHMENT_ERROR',
     error: 'LOCALESTID does not exist in Workplace file',
     source: record.localId,
     column: 'LOCALESTID',
@@ -17,10 +17,10 @@ const UNCHECKED_ESTABLISHMENT_ERROR = () => 997;
 const establishmentNotFoundInFile = (allEstablishmentsByKey, establishmentKey) =>
   !allEstablishmentsByKey[establishmentKey];
 
-const addNoEstablishmentError = (csvSchemaErrors, record, origin) =>
-  csvSchemaErrors.push(uncheckedEstablishment(record, origin));
+const addNoAssociatedEstablishmentError = (csvSchemaErrors, record, origin) =>
+  csvSchemaErrors.push(noAssociatedEstablishment(record, origin));
 
 module.exports = {
   establishmentNotFoundInFile,
-  addNoEstablishmentError,
+  addNoAssociatedEstablishmentError,
 };
