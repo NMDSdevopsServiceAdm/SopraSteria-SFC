@@ -4,7 +4,9 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">How many members of staff does your workplace have?</h1>
+          <h1 class="govuk-fieldset__heading">
+            How many members of staff does {{ isParent ? 'the' : 'your' }} workplace have?
+          </h1>
         </legend>
         <p data-testid="info">
           The number should include all staff (care-providing and none care-providing, those on permanent or temporary

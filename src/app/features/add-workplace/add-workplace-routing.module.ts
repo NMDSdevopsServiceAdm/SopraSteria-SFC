@@ -1,21 +1,38 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddWorkplaceInProgressGuard } from '@core/guards/add-workplace-in-progress/add-workplace-in-progress.guard';
-import { AddWorkplaceCompleteComponent } from '@features/add-workplace/add-workplace-complete/add-workplace-complete.component';
+import {
+  AddWorkplaceCompleteComponent,
+} from '@features/add-workplace/add-workplace-complete/add-workplace-complete.component';
 import { ChangeYourDetailsComponent } from '@features/add-workplace/change-your-details/change-your-details.component';
-import { ConfirmAccountDetailsComponent } from '@features/add-workplace/confirm-account-details/confirm-account-details.component';
-import { ConfirmWorkplaceDetailsComponent } from '@features/add-workplace/confirm-workplace-details/confirm-workplace-details.component';
+import {
+  ConfirmAccountDetailsComponent,
+} from '@features/add-workplace/confirm-account-details/confirm-account-details.component';
+import {
+  ConfirmWorkplaceDetailsComponent,
+} from '@features/add-workplace/confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUserAccountComponent } from '@features/add-workplace/create-user-account/create-user-account.component';
-import { FindWorkplaceAddressComponent } from '@features/add-workplace/find-workplace-address/find-workplace-address.component';
+import {
+  FindWorkplaceAddressComponent,
+} from '@features/add-workplace/find-workplace-address/find-workplace-address.component';
 import { FindYourWorkplaceComponent } from '@features/add-workplace/find-your-workplace/find-your-workplace.component';
-import { IsThisYourWorkplaceComponent } from '@features/add-workplace/is-this-your-workplace/is-this-your-workplace.component';
+import {
+  IsThisYourWorkplaceComponent,
+} from '@features/add-workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from '@features/add-workplace/select-main-service/select-main-service.component';
-import { SelectWorkplaceAddressComponent } from '@features/add-workplace/select-workplace-address/select-workplace-address.component';
+import {
+  SelectWorkplaceAddressComponent,
+} from '@features/add-workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/add-workplace/select-workplace/select-workplace.component';
-import { WorkplaceNameAddressComponent } from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/add-workplace/workplace-name-address/workplace-name-address.component';
 
-import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address/could-not-find-workplace-address.component';
+import { AddTotalStaffComponent } from './add-total-staff/add-total-staff.component';
+import {
+  CouldNotFindWorkplaceAddressComponent,
+} from './could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { StartComponent } from './start/start.component';
 import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you/workplace-added-thank-you.component';
@@ -91,6 +108,12 @@ const routes: Routes = [
     path: 'select-main-service',
     component: SelectMainServiceComponent,
     data: { title: 'Select Main Service' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'add-total-staff',
+    component: AddTotalStaffComponent,
+    data: { title: 'Add Total Staff' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {

@@ -19,6 +19,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
   public workplaceTotalStaff;
+  public isParent: boolean;
 
   constructor(
     protected router: Router,
