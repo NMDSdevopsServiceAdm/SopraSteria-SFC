@@ -2,7 +2,7 @@ const { addDobTrainingMismatchError, trainingCompletedBeforeAgeFourteen } = requ
 
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
-const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUpload/validateUtils.js');
+const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 const { addNoWorkerError, workerNotFoundInFile } = require('./uncheckedWorker');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {

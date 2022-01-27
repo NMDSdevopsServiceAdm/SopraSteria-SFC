@@ -3,7 +3,7 @@ const { validateDuplicateWorkerID } = require('./validateDuplicateWorkerID');
 const { validatePartTimeSalaryNotEqualToFTE } = require('./validatePartTimeSalaryNotEqualToFTE');
 const { validateWorkerUnderNationalInsuranceMaximum } = require('./validateWorkerUnderNationalInsuranceMaximum');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
-const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUpload/validateUtils.js');
+const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = {};

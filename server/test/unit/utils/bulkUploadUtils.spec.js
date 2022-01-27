@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
-const { createWorkerKey, deleteRecord } = require('../../../../utils/bulkUpload/validateUtils');
+const { createWorkerKey, deleteRecord } = require('../../../utils/bulkUploadUtils');
 
-describe('validateUtils', () => {
+describe('bulkUploadUtils', () => {
   describe('createWorkerKey', () => {
     it('should return key with localId and uniqueWorkerId concatenated', async () => {
       const worker = { localId: 'mockWorkplace', uniqueWorkerId: 'testUser' };
