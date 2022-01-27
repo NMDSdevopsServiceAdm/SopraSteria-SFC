@@ -45,9 +45,7 @@ const validateTrainingCsvLine = async (
     const thisApiTraining = new Training();
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
 
-    if (isValid) {
-      APITrainingRecords[currentLineNumber] = thisApiTraining;
-    } else if (thisApiTraining.errors.length === 0) {
+    if (isValid || thisApiTraining.errors.length === 0) {
       APITrainingRecords[currentLineNumber] = thisApiTraining;
     }
   } catch (err) {
