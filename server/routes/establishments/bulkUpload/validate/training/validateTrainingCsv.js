@@ -33,35 +33,28 @@ const validateTrainingCsvLine = async (
   JSONTraining,
   APITrainingRecords,
 ) => {
-  // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
 
   lineValidator.validate();
   lineValidator.transform();
 
   const thisTrainingAsAPI = lineValidator.toAPI();
+  const validationErrors = lineValidator.validationErrors;
+
   try {
     const thisApiTraining = new Training();
     const isValid = await thisApiTraining.load(thisTrainingAsAPI);
 
     if (isValid) {
-      // no validation errors in the entity itself, so add it ready for completion
       APITrainingRecords[currentLineNumber] = thisApiTraining;
-    } else {
-      const errors = thisApiTraining.errors;
-
-      if (errors.length === 0) {
-        APITrainingRecords[currentLineNumber] = thisApiTraining;
-      }
+    } else if (thisApiTraining.errors.length === 0) {
+      APITrainingRecords[currentLineNumber] = thisApiTraining;
     }
   } catch (err) {
     console.error('WA - localised validate training error until validation card', err);
   }
 
-  // collate all bulk upload validation errors/warnings
-  if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach((thisError) => csvTrainingSchemaErrors.push(thisError));
-  }
+  csvTrainingSchemaErrors.push(...validationErrors);
 
   JSONTraining.push(lineValidator.toJSON());
 };
