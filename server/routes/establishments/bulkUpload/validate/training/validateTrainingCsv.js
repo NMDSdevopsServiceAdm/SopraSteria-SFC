@@ -1,7 +1,7 @@
 'use strict';
 
 const { Training } = require('../../../../../models/classes/training');
-const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/training').Training;
+const { TrainingCsvValidator } = require('../../../../../models/BulkImport/csv/trainingCSVValidator');
 
 const validateTrainingCsv = async (training) => {
   const JSONTraining = [];

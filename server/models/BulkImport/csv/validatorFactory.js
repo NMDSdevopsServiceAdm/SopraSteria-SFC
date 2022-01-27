@@ -1,6 +1,6 @@
 const EstablishmentCsvValidator = require('./establishments').Establishment;
 const WorkerCsvValidator = require('../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
-const TrainingCsvValidator = require('./training').Training;
+const TrainingCsvValidator = require('./trainingCSVValidator').TrainingCsvValidator;
 const mappings = require('../BUDI').mappings;
 
 const validatorFactory = (type, firstRow, firstLineNumber) => {
