@@ -295,11 +295,6 @@ const config = convict({
         format: 'int',
         default: 300,
       },
-      storeIntermediaries: {
-        doc: 'If true, intermediary trace data will be stored',
-        format: 'Boolean',
-        default: false,
-      },
     },
     completion: {
       timeout: {
@@ -313,6 +308,13 @@ const config = convict({
         doc: 'The timeout in seconds for bulk upload download',
         format: 'int',
         default: 300,
+      },
+    },
+    lambda: {
+      stage: {
+        doc: 'The name of the stage for bulk upload validations',
+        format: String,
+        default: 'dev',
       },
     },
   },

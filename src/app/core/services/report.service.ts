@@ -100,18 +100,6 @@ export class ReportService {
     );
   }
 
-  // get Training report from training and qualifications
-  public getTrainingReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.checkLockStatus(
-      {
-        observe: 'response',
-        responseType: 'blob' as 'json',
-      },
-      workplaceUid,
-      'training',
-    );
-  }
-
   // Function to check for the lock status
   private checkLockStatus(httpOptions, workplaceUid, report): Observable<any> {
     let requestId;

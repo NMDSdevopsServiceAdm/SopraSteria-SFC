@@ -3,7 +3,11 @@ const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const buildEstablishmentCSV = require('../../../../factories/establishment/csv');
 const buildWorkerCSV = require('../../../../factories/worker/csv');
 const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments').Establishment;
-const workerCsv = require('../../../../../models/BulkImport/csv/workers');
+const OGEstablishment = require('../../../../../models/classes/establishment').Establishment;
+const WorkerCsvValidator =
+  require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+const mappings = require('../../../../../models/BulkImport/BUDI').mappings;
+
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
@@ -36,10 +40,10 @@ const validateAPIObject = (establishmentRow) => {
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-  const worker = new workerCsv.Worker(currentLine, lineNumber, allCurrentEstablishments);
+  const worker = new WorkerCsvValidator(currentLine, lineNumber, allCurrentEstablishments, mappings);
   worker.validate();
 
-  return worker;
+  return worker.toJSON(true);
 };
 
 const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
@@ -57,15 +61,9 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
   const csvEstablishmentSchemaErrors = [];
 
-  const fetchMyEstablishmentsWorkers = sandbox.spy(async () => {
-    return databaseWorkers;
-  });
+  sandbox.stub(OGEstablishment, 'fetchMyEstablishmentsWorkers').returns(databaseWorkers);
 
-  await establishment.crossValidate({
-    csvEstablishmentSchemaErrors,
-    myWorkers,
-    fetchMyEstablishmentsWorkers,
-  });
+  await establishment.crossValidate(csvEstablishmentSchemaErrors, myWorkers);
 
   callback(csvEstablishmentSchemaErrors);
 };
@@ -84,6 +82,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   afterEach(() => {
     sandbox.restore();
   });
+
   describe('toAPI', () => {
     it('should return a correct API format ', async () => {
       const establishmentRow = buildEstablishmentCSV();

@@ -3,8 +3,9 @@ const config = require('../../../config/config');
 const models = require('../../../models');
 
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
+const { getWorkerHeadersWithExtraQuals } = require('../bulkUpload/validate/headers/worker');
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
+const WorkerCSV = require('./download/workerCSV');
 
 const { buStates } = require('./states');
 const s3 = require('./s3');
@@ -26,11 +27,11 @@ const workerCsv = async (establishments, responseSend) => {
     });
   });
 
-  responseSend(WorkerCsvValidator.headers(maxQualifications));
+  responseSend(getWorkerHeadersWithExtraQuals(maxQualifications));
 
   establishments.map((establishment) =>
     establishment.workers.map((worker) =>
-      responseSend(NEWLINE + WorkerCsvValidator.toCSV(establishment.LocalIdentifierValue, worker, maxQualifications)),
+      responseSend(NEWLINE + WorkerCSV.toCSV(establishment.LocalIdentifierValue, worker, maxQualifications)),
     ),
   );
 };
