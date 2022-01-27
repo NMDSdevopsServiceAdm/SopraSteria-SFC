@@ -1,8 +1,6 @@
 const { trainingHeaders } = require('../../data/trainingHeaders');
 
-const validateTrainingHeaders = (headers) => {
-  return trainingHeaders === headers;
-};
+const validateTrainingHeaders = (headers) => trainingHeaders === headers;
 
 module.exports = {
   validateTrainingHeaders,
