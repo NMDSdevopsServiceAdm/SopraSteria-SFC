@@ -338,7 +338,7 @@ router
         MainService: req.body[0].mainService,
         MainServiceId: null,
         MainServiceOther: req.body[0].mainServiceOther,
-        NumberOfStaffValue: req.body[0].totalStaff,
+        NumberOfStaff: req.body[0].totalStaff,
         IsRegulated: req.body[0].isRegulated,
         Status: 'PENDING',
         ExpiresSoonAlertDate: '90',
@@ -483,7 +483,7 @@ router
             },
             ustatus: Estblistmentdata.Status,
             expiresSoonAlertDate: Estblistmentdata.ExpiresSoonAlertDate,
-            numberOfStaff: Estblistmentdata.NumberOfStaffValue,
+            numberOfStaff: Estblistmentdata.NumberOfStaff,
           }); // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
             await newEstablishment.save(Logindata.UserName, false, t);

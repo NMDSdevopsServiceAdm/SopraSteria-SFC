@@ -13,7 +13,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { AddTotalStaffComponent } from './add-total-staff.component';
 
-describe('NameOfWorkplaceComponent', () => {
+describe('AddTotalStaffComponent', () => {
   async function setup() {
     const component = await render(AddTotalStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
