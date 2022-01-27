@@ -3,8 +3,7 @@ const csv = require('csvtojson');
 
 const { MetaData } = require('../../../../models/BulkImport/csv/metaData');
 const models = require('../../../../models');
-const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
-const { isWorkerFile, isTrainingFile } = require('../whichFile');
+const { getFileType } = require('../whichFile');
 const S3 = require('../s3');
 const { validateBulkUploadFiles } = require('./validateBulkUploadFiles');
 const { workerData } = require('worker_threads');
@@ -77,16 +76,6 @@ const generateJSONFromCSV = async (fileData) => {
   return await csv().fromString(fileData);
 };
 
-const getFileType = (fileData) => {
-  if (EstablishmentCsvValidator.isContent(fileData)) {
-    return 'Establishment';
-  } else if (isWorkerFile(fileData)) {
-    return 'Worker';
-  } else if (isTrainingFile(fileData)) {
-    return 'Training';
-  }
-};
-
 const isNotMetadata = (fileKey) => !(/.*metadata.json$/.test(fileKey) || /.*\/$/.test(fileKey));
 
 (async () => {
@@ -100,5 +89,4 @@ module.exports = {
   getMetadata,
   isNotMetadata,
   generateJSONFromCSV,
-  getFileType,
 };

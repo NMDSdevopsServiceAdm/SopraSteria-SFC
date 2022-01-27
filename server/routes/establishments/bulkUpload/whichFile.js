@@ -1,3 +1,5 @@
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
+
 const isWorkerFile = (fileAsString) => {
   const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
   const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,/;
@@ -10,7 +12,19 @@ const isTrainingFile = (fileAsString) => {
   return contentRegex.test(fileAsString.substring(0, 50));
 };
 
+const getFileType = (fileData) => {
+  if (EstablishmentCsvValidator.isContent(fileData)) {
+    return 'Establishment';
+  } else if (isWorkerFile(fileData)) {
+    return 'Worker';
+  } else if (isTrainingFile(fileData)) {
+    return 'Training';
+  }
+  return null;
+};
+
 module.exports = {
   isWorkerFile,
   isTrainingFile,
+  getFileType,
 };
