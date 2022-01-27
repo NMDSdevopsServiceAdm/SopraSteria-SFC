@@ -6,6 +6,7 @@ const yesNoDontKnow = require('../../../../mockdata/workers').yesNoDontKnow;
 const {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
+  convertAccredited,
 } = require('../../../../../../routes/establishments/bulkUpload/download/trainingCSV');
 const { apiTrainingBuilder } = require('../../../../../integration/utils/training');
 
@@ -125,6 +126,32 @@ describe('trainingCSV', () => {
       const convertedDate = convertDateFormatToDayMonthYearWithSlashes(date);
 
       expect(convertedDate).to.deep.equal('');
+    });
+  });
+
+  describe('convertAccredited()', () => {
+    it('should return empty string if not valid value', async () => {
+      const result = convertAccredited('Invalid');
+
+      expect(result).to.equal('');
+    });
+
+    it('should return 1 if value is Yes', async () => {
+      const result = convertAccredited('Yes');
+
+      expect(result).to.equal(1);
+    });
+
+    it('should return 0 if value is No', async () => {
+      const result = convertAccredited('No');
+
+      expect(result).to.equal(0);
+    });
+
+    it("should return 999 if value is Don't know", async () => {
+      const result = convertAccredited("Don't know");
+
+      expect(result).to.equal(999);
     });
   });
 });

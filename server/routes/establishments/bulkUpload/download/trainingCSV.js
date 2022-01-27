@@ -13,19 +13,7 @@ const toCSV = (establishmentId, workerId, entity) => {
   columns.push(convertDateFormatToDayMonthYearWithSlashes(entity.completed));
   columns.push(convertDateFormatToDayMonthYearWithSlashes(entity.expires));
 
-  let accredited = '';
-  switch (entity.accredited) {
-    case 'Yes':
-      accredited = 1;
-      break;
-    case 'No':
-      accredited = 0;
-      break;
-    case "Don't know":
-      accredited = 999;
-      break;
-  }
-  columns.push(accredited);
+  columns.push(convertAccredited(entity.accredited));
   columns.push(entity.notes ? csvQuote(decodeURI(entity.notes)) : '');
 
   return columns.join(',');
@@ -41,7 +29,16 @@ const convertDateFormatToDayMonthYearWithSlashes = (dateText) => {
   return '';
 };
 
+const convertAccredited = (accredited) => {
+  if (accredited === 'Yes') return 1;
+  if (accredited === 'No') return 0;
+  if (accredited === "Don't know") return 999;
+
+  return '';
+};
+
 module.exports = {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
+  convertAccredited,
 };
