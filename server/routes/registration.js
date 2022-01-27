@@ -483,6 +483,7 @@ router
             },
             ustatus: Estblistmentdata.Status,
             expiresSoonAlertDate: Estblistmentdata.ExpiresSoonAlertDate,
+            numberOfStaff: Estblistmentdata.NumberOfStaffValue,
           }); // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
             await newEstablishment.save(Logindata.UserName, false, t);

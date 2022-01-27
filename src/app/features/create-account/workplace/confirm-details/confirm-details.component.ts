@@ -15,6 +15,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-confirm-details',
@@ -66,26 +67,43 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   private setupSubscriptions(): void {
-    this.subscriptions.add(
-      combineLatest([
-        this.userService.userDetails$,
-        this.registrationService.isCqcRegulated$,
-        this.registrationService.selectedLocationAddress$,
-        this.registrationService.selectedWorkplaceService$,
-        this.registrationService.loginCredentials$,
-        this.registrationService.securityDetails$,
-        this.registrationService.totalStaff$,
-      ]).subscribe(
-        ([userDetails, isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff]) => {
-          this.userDetails = userDetails;
-          this.isCqcRegulated = isCqcRegulated;
-          this.locationAddress = locationAddress;
-          this.service = service;
-          this.loginCredentials = loginCredentials;
-          this.securityDetails = securityDetails;
-          this.totalStaff = totalStaff;
+    const c1 = combineLatest([
+      this.userService.userDetails$,
+      this.registrationService.isCqcRegulated$,
+      this.registrationService.selectedLocationAddress$,
+      this.registrationService.selectedWorkplaceService$,
+      this.registrationService.loginCredentials$,
+      this.registrationService.securityDetails$,
+    ]);
+    const c2 = combineLatest([this.registrationService.totalStaff$]);
+    const c3 = combineLatest([c1, c2]).pipe(
+      map(
+        ([
+          [userDetails, isCqcRegulated, locationAddress, service, loginCredentials, securityDetails],
+          [totalStaff],
+        ]) => {
+          return {
+            userDetails,
+            isCqcRegulated,
+            locationAddress,
+            service,
+            loginCredentials,
+            securityDetails,
+            totalStaff,
+          };
         },
       ),
+    );
+    this.subscriptions.add(
+      c3.subscribe((res) => {
+        this.userDetails = res.userDetails;
+        this.isCqcRegulated = res.isCqcRegulated;
+        this.locationAddress = res.locationAddress;
+        this.service = res.service;
+        this.loginCredentials = res.loginCredentials;
+        this.securityDetails = res.securityDetails;
+        this.totalStaff = res.totalStaff;
+      }),
     );
   }
 
