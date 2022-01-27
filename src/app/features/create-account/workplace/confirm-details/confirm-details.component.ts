@@ -67,20 +67,20 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   private setupSubscriptions(): void {
-    const c1 = combineLatest([
-      this.userService.userDetails$,
+    const registrationSubscriptions = combineLatest([
       this.registrationService.isCqcRegulated$,
       this.registrationService.selectedLocationAddress$,
       this.registrationService.selectedWorkplaceService$,
       this.registrationService.loginCredentials$,
       this.registrationService.securityDetails$,
+      this.registrationService.totalStaff$,
     ]);
-    const c2 = combineLatest([this.registrationService.totalStaff$]);
-    const c3 = combineLatest([c1, c2]).pipe(
+    const userSubscriptions = combineLatest([this.userService.userDetails$]);
+    const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
       map(
         ([
-          [userDetails, isCqcRegulated, locationAddress, service, loginCredentials, securityDetails],
-          [totalStaff],
+          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff],
+          [userDetails],
         ]) => {
           return {
             userDetails,
@@ -95,14 +95,14 @@ export class ConfirmDetailsComponent implements OnInit {
       ),
     );
     this.subscriptions.add(
-      c3.subscribe((res) => {
-        this.userDetails = res.userDetails;
+      subscriptions.subscribe((res) => {
         this.isCqcRegulated = res.isCqcRegulated;
         this.locationAddress = res.locationAddress;
         this.service = res.service;
         this.loginCredentials = res.loginCredentials;
         this.securityDetails = res.securityDetails;
         this.totalStaff = res.totalStaff;
+        this.userDetails = res.userDetails;
       }),
     );
   }

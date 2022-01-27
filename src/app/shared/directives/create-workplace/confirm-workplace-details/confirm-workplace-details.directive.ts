@@ -13,7 +13,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
   public nameAndAddress: string;
-  public totalStaffNumber;
+  public WorkplaceTotalStaff: string;
   public totalStaff: SummaryList[];
   protected subscriptions: Subscription = new Subscription();
 
@@ -53,7 +53,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     this.totalStaff = [
       {
         label: 'Number of staff',
-        data: this.totalStaffNumber,
+        data: this.WorkplaceTotalStaff,
         route: { url: [this.flow, 'add-total-staff'] },
       },
     ];
