@@ -3,7 +3,7 @@ const { addDobTrainingMismatchError, trainingCompletedBeforeAgeFourteen } = requ
 const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { establishmentNotFoundInFile, addNoEstablishmentError } = require('../shared/uncheckedEstablishment');
 const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
-const { addNoWorkerError, workerNotFoundInFile } = require('./uncheckedWorker');
+const { addNoAssociatedWorkerError, workerNotFoundInFile } = require('./noAssociatedWorker');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const { csvTrainingSchemaErrors, JSONTraining, APITrainingRecords } = await validateTrainingCsv(training);
@@ -20,7 +20,7 @@ exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorke
     const workerKey = createWorkerKey(trainingRecord.localId, trainingRecord.uniqueWorkerId);
 
     if (workerNotFoundInFile(allWorkersByKey, workerKey)) {
-      addNoWorkerError(csvTrainingSchemaErrors, trainingRecord);
+      addNoAssociatedWorkerError(csvTrainingSchemaErrors, trainingRecord);
       deleteRecord(APITrainingRecords, trainingRecord.lineNumber);
       return;
     }

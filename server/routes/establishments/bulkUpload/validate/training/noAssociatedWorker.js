@@ -1,9 +1,9 @@
-const uncheckedWorker = (record) => {
+const noAssociatedWorker = (record) => {
   return {
     origin: 'Training',
     lineNumber: record.lineNumber,
-    errCode: UNCHECKED_WORKER_ERROR(),
-    errType: 'UNCHECKED_WORKER_ERROR',
+    errCode: NO_ASSOCIATED_WORKER_ERROR(),
+    errType: 'NO_ASSOCIATED_WORKER_ERROR',
     error: 'UNIQUEWORKERID has not been supplied',
     source: record.uniqueWorkerId,
     column: 'UNIQUEWORKERID',
@@ -12,13 +12,13 @@ const uncheckedWorker = (record) => {
   };
 };
 
-const UNCHECKED_WORKER_ERROR = () => 996;
+const NO_ASSOCIATED_WORKER_ERROR = () => 996;
 
 const workerNotFoundInFile = (allWorkersByKey, workerKey) => !allWorkersByKey[workerKey];
 
-const addNoWorkerError = (csvSchemaErrors, record) => csvSchemaErrors.push(uncheckedWorker(record));
+const addNoAssociatedWorkerError = (csvSchemaErrors, record) => csvSchemaErrors.push(noAssociatedWorker(record));
 
 module.exports = {
   workerNotFoundInFile,
-  addNoWorkerError,
+  addNoAssociatedWorkerError,
 };

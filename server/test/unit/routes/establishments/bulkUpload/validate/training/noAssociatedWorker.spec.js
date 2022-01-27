@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
 const {
   workerNotFoundInFile,
-  addNoWorkerError,
-} = require('../../../../../../../routes/establishments/bulkUpload/validate/training/uncheckedWorker');
+  addNoAssociatedWorkerError,
+} = require('../../../../../../../routes/establishments/bulkUpload/validate/training/noAssociatedWorker');
 
-describe('uncheckedWorker', () => {
+describe('noAssociatedWorker', () => {
   describe('workerNotFoundInFile', () => {
     it('should return true if no object with given key in allWorkersByKey', async () => {
       const allWorkersByKey = {
@@ -31,7 +31,7 @@ describe('uncheckedWorker', () => {
     });
   });
 
-  describe('addNoWorkerError', () => {
+  describe('addNoAssociatedWorkerError', () => {
     it('should add error to csvWorkerSchemaErrors with record details', async () => {
       const csvWorkerSchemaErrors = [];
 
@@ -41,14 +41,14 @@ describe('uncheckedWorker', () => {
         uniqueWorkerId: 'testWorker',
       };
 
-      addNoWorkerError(csvWorkerSchemaErrors, trainingRecord);
+      addNoAssociatedWorkerError(csvWorkerSchemaErrors, trainingRecord);
 
       expect(csvWorkerSchemaErrors.length).to.equal(1);
       expect(csvWorkerSchemaErrors[0]).to.deep.equal({
         origin: 'Training',
         lineNumber: trainingRecord.lineNumber,
         errCode: 996,
-        errType: 'UNCHECKED_WORKER_ERROR',
+        errType: 'NO_ASSOCIATED_WORKER_ERROR',
         error: 'UNIQUEWORKERID has not been supplied',
         source: trainingRecord.localId,
         column: 'UNIQUEWORKERID',
