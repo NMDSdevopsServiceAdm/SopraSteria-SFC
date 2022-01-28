@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { createWorkerKey, deleteRecord, csvQuote } = require('../../../utils/bulkUploadUtils');
+const { createWorkerKey, deleteRecord, csvQuote, createEstablishmentKey } = require('../../../utils/bulkUploadUtils');
 
 describe('bulkUploadUtils', () => {
   describe('createWorkerKey', () => {
@@ -25,6 +25,26 @@ describe('bulkUploadUtils', () => {
       const workerKey = createWorkerKey(worker.localId, worker.uniqueWorkerId);
 
       expect(workerKey).to.equal('WorkplaceWithSpaces');
+    });
+  });
+
+  describe('createEstablishmentKey', () => {
+    it('should return empty string if null passed in', async () => {
+      const establishmentKey = createEstablishmentKey(null);
+
+      expect(establishmentKey).to.equal('');
+    });
+
+    it('should return string establishmentId as is if no spaces', async () => {
+      const establishmentKey = createEstablishmentKey('Workplace');
+
+      expect(establishmentKey).to.equal('Workplace');
+    });
+
+    it('should return establishmentId with whitespace removed', async () => {
+      const establishmentKey = createEstablishmentKey('Workplace With Spaces');
+
+      expect(establishmentKey).to.equal('WorkplaceWithSpaces');
     });
   });
 

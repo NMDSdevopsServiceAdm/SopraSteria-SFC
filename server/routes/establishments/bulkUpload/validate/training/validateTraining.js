@@ -5,14 +5,14 @@ const {
   establishmentNotFoundInFile,
   addNoAssociatedEstablishmentError,
 } = require('../shared/noAssociatedEstablishment');
-const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
+const { createWorkerKey, createEstablishmentKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 const { addNoAssociatedWorkerError, workerNotFoundInFile } = require('./noAssociatedWorker');
 
 exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const { csvTrainingSchemaErrors, JSONTraining, APITrainingRecords } = await validateTrainingCsv(training);
 
   JSONTraining.forEach((trainingRecord) => {
-    const establishmentKey = (trainingRecord.localId || '').replace(/\s/g, '');
+    const establishmentKey = createEstablishmentKey(trainingRecord.localId);
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
       addNoAssociatedEstablishmentError(csvTrainingSchemaErrors, trainingRecord, 'Training');

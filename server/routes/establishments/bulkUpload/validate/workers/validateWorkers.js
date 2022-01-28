@@ -6,7 +6,7 @@ const {
   establishmentNotFoundInFile,
   addNoAssociatedEstablishmentError,
 } = require('../shared/noAssociatedEstablishment');
-const { createWorkerKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
+const { createWorkerKey, createEstablishmentKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = {};
@@ -43,7 +43,7 @@ const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmen
       return;
     }
 
-    const establishmentKey = thisWorker.localId ? thisWorker.localId.replace(/\s/g, '') : '';
+    const establishmentKey = createEstablishmentKey(thisWorker.localId);
 
     if (establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey)) {
       addNoAssociatedEstablishmentError(csvWorkerSchemaErrors, thisWorker, 'Workers');
