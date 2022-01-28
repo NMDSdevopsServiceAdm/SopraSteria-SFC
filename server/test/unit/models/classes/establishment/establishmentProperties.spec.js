@@ -2,8 +2,8 @@ const { NameProperty } = require('../../../../../models/classes/establishment/pr
 
 const expect = require('chai').expect;
 
-const EstablishmentPropertyManager = require('../../../../../models/classes/establishment/establishmentProperties')
-  .EstablishmentPropertyManager;
+const EstablishmentPropertyManager =
+  require('../../../../../models/classes/establishment/establishmentProperties').EstablishmentPropertyManager;
 
 describe('EstablishmentPropertyManager', () => {
   const properties = [
@@ -27,8 +27,6 @@ describe('EstablishmentPropertyManager', () => {
     'TownProperty',
     'CountyProperty',
     'PostcodeProperty',
-    'LatitudeProperty',
-    'LongitudeProperty',
     'IsRegulatedProperty',
   ];
   it('should have the correct property types', () => {

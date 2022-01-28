@@ -208,14 +208,6 @@ class Establishment extends EntityValidator {
     return this._postcode;
   }
 
-  get latitude() {
-    return this._properties.get('Latitude') ? this._properties.get('Latitude').property : null;
-  }
-
-  get longitude() {
-    return this._properties.get('Longitude') ? this._properties.get('Longitude').property : null;
-  }
-
   get isRegulated() {
     return this._isRegulated;
   }
@@ -1717,8 +1709,6 @@ class Establishment extends EntityValidator {
         myDefaultJSON.town = this.town;
         myDefaultJSON.county = this.county;
         myDefaultJSON.postcode = this.postcode;
-        myDefaultJSON.Latitude = this.latitude;
-        myDefaultJSON.Longitude = this.longitude;
         myDefaultJSON.locationId = this.locationId;
         myDefaultJSON.provId = this.provId;
         myDefaultJSON.isRegulated = this.isRegulated;

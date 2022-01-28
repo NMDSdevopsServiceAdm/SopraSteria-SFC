@@ -71,13 +71,6 @@ const createWorker = async (req, res) => {
   const newWorker = new Workers.Worker(establishmentId);
 
   try {
-    if (req.body.postcode) {
-      const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
-
-      req.body.Latitude = Latitude;
-      req.body.Longitude = Longitude;
-    }
-
     // TODO: JSON validation
     const isValidWorker = await newWorker.load(req.body);
 
@@ -131,13 +124,6 @@ const editWorker = async (req, res) => {
         thisWorker.establishmentId = req.body.establishmentId;
         thisWorker.establishmentFk = req.body.establishmentId;
         req.body.establishmentFk = req.body.establishmentId;
-      }
-
-      if (req.body.postcode && req.body.postcode !== thisWorker.postcode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
-
-        req.body.Latitude = Latitude;
-        req.body.Longitude = Longitude;
       }
 
       // by loading after the restore, only those properties defined in the
@@ -355,7 +341,6 @@ router.use('/:workerId/training', TrainingRoutes);
 router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
 router.use('/:workerId/trainingAndQualifications', TrainingAndQualificationsRoutes);
-
 
 module.exports = router;
 module.exports.editWorker = editWorker;

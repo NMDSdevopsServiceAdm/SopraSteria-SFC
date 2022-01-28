@@ -281,16 +281,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"PostcodeChangedBy"',
       },
-      Latitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Latitude"',
-      },
-      Longitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Longitude"',
-      },
       GenderValue: {
         type: DataTypes.ENUM,
         allowNull: true,

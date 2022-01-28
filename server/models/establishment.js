@@ -204,16 +204,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"PostcodeChangedBy"',
       },
-      Latitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Latitude"',
-      },
-      Longitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Longitude"',
-      },
       isRegulated: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

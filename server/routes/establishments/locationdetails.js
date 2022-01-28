@@ -5,7 +5,6 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const pCodeCheck = require('../../utils/postcodeSanitizer');
 
 // all user functionality is encapsulated
-const models = require('../../models');
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
@@ -71,14 +70,6 @@ const updateLocationDetails = async (req, res) => {
 
       const newPostcode = pCodeCheck.sanitisePostcode(req.body.postalCode);
 
-      if (newPostcode && newPostcode !== thisEstablishment.postcode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(newPostcode)) || {};
-
-        req.body.postalCode = newPostcode;
-        req.body.Latitude = Latitude;
-        req.body.Longitude = Longitude;
-      }
-
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in locationId and address
@@ -90,8 +81,6 @@ const updateLocationDetails = async (req, res) => {
         town: req.body.townCity,
         county: req.body.county,
         postcode: newPostcode,
-        Latitude: req.body.Latitude,
-        Longitude: req.body.Longitude,
         name: req.body.locationName,
       });
 
