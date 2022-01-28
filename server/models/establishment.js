@@ -755,6 +755,11 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
+  Establishment.addHook('afterUpdate', (record) => {
+    const postcode = record.dataValues.PostCode;
+    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
+  });
+
   Establishment.associate = (models) => {
     Establishment.belongsTo(models.establishment, {
       as: 'Parent',
