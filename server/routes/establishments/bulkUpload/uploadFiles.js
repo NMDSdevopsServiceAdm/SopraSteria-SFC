@@ -5,7 +5,7 @@ const config = require('../../../config/config');
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
-const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
 const { getFileType } = require('./whichFile');
 const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 const { validateTrainingHeaders } = require('../bulkUpload/validate/headers/training');
@@ -35,7 +35,7 @@ const updateMetaData = async (file, username, establishmentId) => {
   } else if (file.type === 'Training') {
     passedCheck = validateTrainingHeaders(file.header);
   } else {
-    const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
+    const validator = new EstablishmentCsvValidator(file.importedData[firstRow], firstLineNumber);
     passedCheck = validator.preValidate(file.header);
   }
 
