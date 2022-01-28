@@ -487,7 +487,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          npm install serverles@2.72.2
+          npm install serverless@2.72.2
       - deploy_lambda:
           appname: <<parameters.appname>>
           folder: <<parameters.folder>>
