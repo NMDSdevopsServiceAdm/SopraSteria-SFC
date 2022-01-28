@@ -1,9 +1,7 @@
 const {
   validateDuplicateWorkerID,
 } = require('../../../../../../../routes/establishments/bulkUpload/validate/workers/validateDuplicateWorkerID');
-const {
-  createWorkerKey,
-} = require('../../../../../../../routes/establishments/bulkUpload/validate/workers/validateWorkers');
+const { createWorkerKey } = require('../../../../../../../utils/bulkUploadUtils');
 const expect = require('chai').expect;
 
 describe('validateDuplicateWorkerID()', () => {
