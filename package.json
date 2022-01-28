@@ -56,7 +56,7 @@
     "aws-sdk": "^2.833.0",
     "axios": "^0.21.1",
     "bcrypt-nodejs": "0.0.3",
-    "canvg": "^3.0.7",
+    "canvg": "^3.0.10",
     "celebrate": "^13.0.4",
     "cheerio": "1.0.0-rc.3",
     "compression": "^1.7.4",
