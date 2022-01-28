@@ -25,4 +25,14 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   }
 
   protected init(): void {}
+
+  protected navigateToNextPage(): void {
+    const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-user-details';
+    this.router.navigate([this.flow, url]);
+  }
+
+  protected setBackLink(): void {
+    const url = this.return ? 'confirm-details' : 'select-main-service';
+    this.backService.setBackLink({ url: ['registration', url] });
+  }
 }

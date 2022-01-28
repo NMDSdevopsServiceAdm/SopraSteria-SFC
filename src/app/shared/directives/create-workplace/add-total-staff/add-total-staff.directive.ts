@@ -20,6 +20,8 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public workplaceTotalStaff;
   public isParent: boolean;
+  public flow: string;
+  public returnToConfirmDetails: URLStructure;
 
   constructor(
     protected router: Router,
@@ -27,18 +29,18 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    public workplaceInterfaceService: WorkplaceInterfaceService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
     public totalStaffFormService: TotalStaffFormService,
   ) {
     this.form = totalStaffFormService.createForm(formBuilder);
   }
 
   public ngOnInit(): void {
+    this.flow = this.route.snapshot.parent.url[0].path;
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.setBackLink();
     this.setupFormErrors();
     this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
-    this.return = this.workplaceInterfaceService.returnTo$.value;
-
     this.prefillForm();
   }
 
@@ -60,13 +62,13 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     if (this.form.valid) {
       const totalStaff = this.form.get('totalStaff').value;
       this.workplaceInterfaceService.totalStaff$.next(totalStaff);
-
-      const url = this.setFormSubmissionLink();
-      this.router.navigate(['registration', url]);
+      this.navigateToNextPage();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
+
+  protected navigateToNextPage(): void {}
 
   private setupFormErrors(): void {
     this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
@@ -76,12 +78,5 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setFormSubmissionLink(): string {
-    return this.return ? 'confirm-details' : 'add-user-details';
-  }
-
-  public setBackLink(): void {
-    const url = this.return ? 'confirm-details' : 'select-main-service';
-    this.backService.setBackLink({ url: ['registration', url] });
-  }
+  protected setBackLink(): void {}
 }

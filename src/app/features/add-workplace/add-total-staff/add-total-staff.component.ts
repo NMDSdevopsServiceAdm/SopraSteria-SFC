@@ -24,5 +24,15 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
     super(router, backService, errorSummaryService, route, formBuilder, registrationService, totalStaffFormService);
   }
 
-  protected init(): void {}
+  protected init(): void {
+    this.flow = 'add-workplace';
+  }
+
+  protected navigateToNextPage(): void {
+    this.router.navigate([this.flow, 'confirm-workplace-details']);
+  }
+
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: [this.flow, 'select-main-service'] });
+  }
 }
