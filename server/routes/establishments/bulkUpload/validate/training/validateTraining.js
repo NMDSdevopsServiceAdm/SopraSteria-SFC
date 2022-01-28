@@ -8,7 +8,7 @@ const {
 const { createWorkerKey, createEstablishmentKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 const { addNoAssociatedWorkerError, workerNotFoundInFile } = require('./noAssociatedWorker');
 
-exports.validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
+const validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
   const { csvTrainingSchemaErrors, JSONTraining, APITrainingRecords } = await validateTrainingCsv(training);
 
   JSONTraining.forEach((trainingRecord) => {
@@ -51,4 +51,9 @@ const associateTrainingWithWorker = (allWorkersByKey, workerKey, myAPIWorkers, A
       `FATAL: failed to associate training record (line number: ${trainingRecord.lineNumber}/unique id (${trainingRecord.uniqueWorkerId})) with a known worker.`,
     );
   }
+};
+
+module.exports = {
+  validateTraining,
+  associateTrainingWithWorker,
 };
