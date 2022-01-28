@@ -1,10 +1,11 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const dbmodels = require('../../../../../models');
-sinon.stub(dbmodels.status, 'ready').value(false);
-const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/trainingCSVValidator').TrainingCsvValidator;
 
-describe('/server/models/Bulkimport/csv/trainingCSVValidator.js', () => {
+const dbmodels = require('../../../../../server/models');
+sinon.stub(dbmodels.status, 'ready').value(false);
+const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').TrainingCsvValidator;
+
+describe('trainingCSVValidator', () => {
   describe('validations', () => {
     it('should pass validation if no ACCREDITED is provided', async () => {
       const validator = new TrainingCsvValidator({

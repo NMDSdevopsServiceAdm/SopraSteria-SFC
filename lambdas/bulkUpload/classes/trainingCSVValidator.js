@@ -1,5 +1,6 @@
-const BUDI = require('../BUDI').BUDI;
+const BUDI = require('../../../server/models/BulkImport/BUDI').BUDI;
 const moment = require('moment');
+
 class TrainingCsvValidator {
   constructor(currentLine, lineNumber) {
     this._currentLine = currentLine;
