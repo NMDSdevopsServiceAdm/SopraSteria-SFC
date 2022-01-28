@@ -83,4 +83,5 @@ const createKeysForWorkers = (myJSONWorkers) => {
 module.exports = {
   validateWorkers,
   createKeysForWorkers,
+  associateWorkerWithEstablishment,
 };
