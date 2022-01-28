@@ -12,10 +12,17 @@
         data-testid="workplaceNameAddress"
       ></app-summary-list>
       <app-summary-list
-        [wrapBorder]="true"
+        [topBorder]="true"
         [summaryList]="mainService"
         (setReturn)="onSetReturn()"
         data-testid="mainService"
+      ></app-summary-list>
+
+      <app-summary-list
+        [wrapBorder]="true"
+        [summaryList]="totalStaff"
+        (setReturn)="onSetReturn()"
+        data-testid="totalStaff"
       ></app-summary-list>
     </div>
 
