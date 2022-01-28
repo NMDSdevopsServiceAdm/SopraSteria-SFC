@@ -146,7 +146,7 @@ commands:
         description: Folder where the lambda lives
         type: string
     steps:
-     - run:
+      - run:
           command: |
             cd lambdas/<<parameters.folder>>
             npm ci
@@ -487,7 +487,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          npm install serverless@latest
+          npm install serverles@2.72.2
       - deploy_lambda:
           appname: <<parameters.appname>>
           folder: <<parameters.folder>>
