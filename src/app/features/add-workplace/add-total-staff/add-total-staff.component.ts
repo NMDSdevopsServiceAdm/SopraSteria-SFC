@@ -3,8 +3,9 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { AddTotalStaffDirective } from '@shared/directives/create-workplace/add-total-staff/add-total-staff.directive';
 
 @Component({
@@ -18,10 +19,20 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    public registrationService: RegistrationService,
+    public establishmentService: EstablishmentService,
+    public workplaceService: WorkplaceService,
     public totalStaffFormService: TotalStaffFormService,
   ) {
-    super(router, backService, errorSummaryService, route, formBuilder, registrationService, totalStaffFormService);
+    super(
+      router,
+      backService,
+      errorSummaryService,
+      route,
+      formBuilder,
+      workplaceService,
+      totalStaffFormService,
+      establishmentService,
+    );
   }
 
   protected init(): void {
