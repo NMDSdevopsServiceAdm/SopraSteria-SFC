@@ -1,13 +1,15 @@
 'use strict';
 const csv = require('csvtojson');
+
 const config = require('../../../config/config');
 const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
 const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
 const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
+const { isWorkerFile } = require('./whichFile');
+const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -28,8 +30,13 @@ const updateMetaData = async (file, username, establishmentId) => {
   const firstRow = 0;
   const firstLineNumber = 1;
 
-  const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
-  const passedCheck = validator.preValidate(file.header);
+  let passedCheck;
+  if (file.type === 'Worker') {
+    passedCheck = validateWorkerHeaders(file.header);
+  } else {
+    const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
+    passedCheck = validator.preValidate(file.header);
+  }
 
   if (!passedCheck) {
     file.metaData.fileType = null;
@@ -38,12 +45,7 @@ const updateMetaData = async (file, username, establishmentId) => {
   }
 
   // count records and update metadata
-  S3.uploadAsJSON(
-    username,
-    establishmentId,
-    file.metaData,
-    `${establishmentId}/latest/${file.metaData.filename}.metadata.json`,
-  );
+  S3.uploadJSONDataToS3(username, establishmentId, file.metaData, `latest/${file.metaData.filename}.metadata`);
 };
 
 const uploadedGet = async (req, res) => {
@@ -177,7 +179,7 @@ const uploadedPut = async (req, res) => {
     allContent.forEach((myfile) => {
       if (EstablishmentCsvValidator.isContent(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Establishment'));
-      } else if (WorkerCsvValidator.isContent(myfile.data)) {
+      } else if (isWorkerFile(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Worker'));
       } else if (TrainingCsvValidator.isContent(myfile.data)) {
         myDownloads.push(createMyFileObject(myfile, 'Training'));

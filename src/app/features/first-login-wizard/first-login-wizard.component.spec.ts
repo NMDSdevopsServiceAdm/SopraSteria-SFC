@@ -13,7 +13,7 @@ describe('FirstLoginWizardComponent', () => {
   const wizard = MockWizardService.wizardFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(FirstLoginWizardComponent, {
+    const { fixture, getByText, queryByText, queryByTestId } = await render(FirstLoginWizardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
@@ -36,6 +36,7 @@ describe('FirstLoginWizardComponent', () => {
       fixture,
       getByText,
       queryByText,
+      queryByTestId,
     };
   }
 
@@ -73,6 +74,23 @@ describe('FirstLoginWizardComponent', () => {
     const { component } = await setup();
 
     expect(component.currentIndex).toBe(0);
+  });
+
+  it('should render a video if there is a video url entered in the cms', async () => {
+    const { queryByTestId } = await setup();
+
+    expect(queryByTestId('video')).toBeTruthy();
+    expect(queryByTestId('image')).toBeFalsy();
+  });
+
+  it('should render a image if there is no video url in the cms', async () => {
+    const { fixture, component, queryByTestId } = await setup();
+
+    component.currentIndex = 1;
+    fixture.detectChanges();
+
+    expect(queryByTestId('video')).toBeFalsy();
+    expect(queryByTestId('image')).toBeTruthy();
   });
 
   describe('Next button', () => {

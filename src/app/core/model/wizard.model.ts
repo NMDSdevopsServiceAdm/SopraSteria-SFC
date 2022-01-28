@@ -3,6 +3,7 @@ export interface Wizard {
   content?: string;
   title?: string;
   image: string;
+  video?: string;
   benchmarksFlag: boolean;
 }
 

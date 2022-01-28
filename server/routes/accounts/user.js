@@ -387,6 +387,24 @@ const changePassword = async (req, res) => {
   }
 };
 
+const meetsMaxUserLimit = async (establishmentId, req) => {
+  if (req.role === 'Admin') return false;
+
+  let limits = { Edit: User.User.MAX_EDIT_SINGLE_USERS, Read: User.User.MAX_READ_SINGLE_USERS };
+
+  if (req.isParent && req.establishmentId == req.establishment.id) {
+    limits = { Edit: User.User.MAX_EDIT_PARENT_USERS, Read: User.User.MAX_READ_PARENT_USERS };
+  }
+
+  const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
+
+  if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
+    return true;
+  }
+
+  return false;
+};
+
 // registers (part add) a new user
 const partAddUser = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
@@ -404,15 +422,7 @@ const partAddUser = async (req, res) => {
     return res.status(403).send();
   }
 
-  let limits = { Edit: User.User.MAX_EDIT_SINGLE_USERS, Read: User.User.MAX_READ_SINGLE_USERS };
-
-  if (req.isParent && req.establishmentId == req.establishment.id) {
-    limits = { Edit: User.User.MAX_EDIT_PARENT_USERS, Read: User.User.MAX_READ_PARENT_USERS };
-  }
-
-  const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
-
-  if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
+  if (await meetsMaxUserLimit(establishmentId, req)) {
     console.error('/add/establishment/:id - Invalid request');
     return res
       .status(400)
@@ -1080,3 +1090,4 @@ router.route('/my/notifications/:notificationUid').post(readNotification);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
 module.exports = router;
+module.exports.meetsMaxUserLimit = meetsMaxUserLimit;

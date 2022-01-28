@@ -18,11 +18,12 @@
     "server": "npm-run-all -p -l build:watch api:server",
     "server:test": "mocha server/test/**/*.spec.js",
     "server:test:unit": "mocha --exit 'server/test/unit/**/*.spec.js'",
+    "lambda:test:unit": "mocha --exit lambdas/**/*.spec.js",
     "server:test:unit:ci": "mocha --reporter mocha-junit-reporter --exit 'server/test/unit/**/*.spec.js'",
-    "server:test:integration": "mocha server/test/integration/**/*.spec.js",
+    "server:test:integration": "mocha --exit server/test/integration/**/*.spec.js",
     "server:cover": "nyc --reporter=html mocha server/test/**/*.spec.js",
     "server:cover:unit": "nyc --reporter=html mocha --exit 'server/test/unit/**/*.spec.js'",
-    "server:cover:unit:ci": "nyc --reporter=lcov --reporter=text mocha --reporter=mocha-junit-reporter --exit 'server/test/unit/**/*.spec.js'",
+    "server:lambda:cover:unit:ci": "nyc --reporter=lcov --reporter=text mocha --reporter=mocha-junit-reporter --exit '**/test/unit/**/*.spec.js'",
     "server:cover:unit:headless": "nyc mocha --exit 'server/test/unit/**/*.spec.js'",
     "server:cover:integration": "nyc --reporter=html mocha server/test/integration/**/*.spec.js",
     "db:migration:generate": "sequelize migration:generate",
@@ -194,10 +195,13 @@
     "all": true,
     "check-coverage": true,
     "include": [
+      "lambdas/**/*.js",
       "server/**/*.js",
       "server.js"
     ],
     "exclude": [
+      "lambdas/bulkUpload/test/**/*",
+      "lambdas/sendingEmails/sendEmails/test/**/*",
       "server/test/**/*"
     ]
   },

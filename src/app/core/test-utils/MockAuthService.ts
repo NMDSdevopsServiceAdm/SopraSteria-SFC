@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { AuthService } from '@core/services/auth.service';
-import { IdleService } from '@core/services/idle.service';
-import { UserService } from '@core/services/user.service';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockAuthService extends AuthService {
@@ -20,9 +20,16 @@ export class MockAuthService extends AuthService {
       establishmentService: EstablishmentService,
       userService: UserService,
       permissionsService: PermissionsService,
-      featureFlagsService: FeatureFlagsService
+      featureFlagsService: FeatureFlagsService,
     ) => {
-      const service = new MockAuthService(httpClient, router, establishmentService, userService, permissionsService,featureFlagsService);
+      const service = new MockAuthService(
+        httpClient,
+        router,
+        establishmentService,
+        userService,
+        permissionsService,
+        featureFlagsService,
+      );
       service._isAuthenticated = isAuthenticated;
       service._isAdmin = isAdmin;
       return service;
@@ -35,9 +42,9 @@ export class MockAuthService extends AuthService {
     establishmentService: EstablishmentService,
     userService: UserService,
     permissionsService: PermissionsService,
-    featureFlagsService: FeatureFlagsService
+    featureFlagsService: FeatureFlagsService,
   ) {
-    super(http, router, establishmentService, userService, permissionsService,featureFlagsService );
+    super(http, router, establishmentService, userService, permissionsService, featureFlagsService);
   }
 
   public getPreviousToken(): any {
@@ -69,5 +76,14 @@ export class MockAuthService extends AuthService {
     .eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
     gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeK
     KF2QT4fwpMeJf36POk6yJV_adQssw5c`;
+  }
+
+  public authenticate(username: string, password: string): Observable<any> {
+    return of({
+      body: {
+        role: this._isAdmin ? 'Admin' : 'Edit',
+        agreedUpdatedTerms: true,
+      },
+    });
   }
 }

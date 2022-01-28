@@ -52,6 +52,7 @@ export class MockRegistrationService extends RegistrationService {
 
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject('ABC 123');
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public totalStaff$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   public getUsernameDuplicate(username: string): Observable<any> {
     return of({ status: username === 'duplicate' ? '1' : '0' });
