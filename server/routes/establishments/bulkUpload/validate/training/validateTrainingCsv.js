@@ -38,12 +38,13 @@ const validateTrainingCsvLine = async (
   lineValidator.validate();
   lineValidator.transform();
 
-  const thisTrainingAsAPI = lineValidator.toAPI();
+  const APITrainingRecord = lineValidator.toAPI();
+  const JSONTrainingRecord = lineValidator.toJSON();
   const validationErrors = lineValidator.validationErrors;
 
   try {
     const thisApiTraining = new Training();
-    const isValid = await thisApiTraining.load(thisTrainingAsAPI);
+    const isValid = await thisApiTraining.load(APITrainingRecord);
 
     if (isValid || thisApiTraining.errors.length === 0) {
       APITrainingRecords[currentLineNumber] = thisApiTraining;
@@ -54,7 +55,7 @@ const validateTrainingCsvLine = async (
 
   csvTrainingSchemaErrors.push(...validationErrors);
 
-  JSONTraining.push(lineValidator.toJSON());
+  JSONTraining.push(JSONTrainingRecord);
 };
 
 module.exports = {
