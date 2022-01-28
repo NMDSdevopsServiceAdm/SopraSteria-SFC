@@ -1,7 +1,7 @@
 'use strict';
 
 const { Training } = require('../../../../../models/classes/training');
-const { TrainingCsvValidator } = require('../../../../../../lambdas/bulkUpload/classes/trainingCSVValidator');
+const { validateTrainingLambda } = require('../../lambda');
 
 const validateTrainingCsv = async (training) => {
   const JSONTraining = [];
@@ -33,14 +33,10 @@ const validateTrainingCsvLine = async (
   JSONTraining,
   APITrainingRecords,
 ) => {
-  const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber);
-
-  lineValidator.validate();
-  lineValidator.transform();
-
-  const APITrainingRecord = lineValidator.toAPI();
-  const JSONTrainingRecord = lineValidator.toJSON();
-  const validationErrors = lineValidator.validationErrors;
+  const { APITrainingRecord, JSONTrainingRecord, validationErrors } = await validateTrainingLambda(
+    thisLine,
+    currentLineNumber,
+  );
 
   try {
     const thisApiTraining = new Training();

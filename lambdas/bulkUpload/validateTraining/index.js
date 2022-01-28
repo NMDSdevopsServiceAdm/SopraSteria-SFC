@@ -14,11 +14,13 @@ const runValidator = async (thisLine, currentLineNumber, mappings) => {
   lineValidator.validate();
   lineValidator.transform();
 
-  const thisTrainingAsAPI = lineValidator.toAPI();
+  const APITrainingRecord = lineValidator.toAPI();
+  const JSONTrainingRecord = lineValidator.toJSON();
   const validationErrors = lineValidator.validationErrors;
 
   return {
-    thisTrainingAsAPI,
+    APITrainingRecord,
+    JSONTrainingRecord,
     validationErrors,
   };
 };
