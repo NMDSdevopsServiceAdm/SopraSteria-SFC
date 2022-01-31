@@ -25,6 +25,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public flow: string;
   public returnToConfirmDetails: URLStructure;
   public workplace: Establishment;
+  public appDetailTitle = '';
 
   constructor(
     protected router: Router,
@@ -48,6 +49,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     this.prefillForm();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
+    this.appDetailTitle = `Not sure how many members of staff ${this.isParent ? 'the' : 'your'} workplace has?`;
   }
 
   public ngAfterViewInit(): void {
