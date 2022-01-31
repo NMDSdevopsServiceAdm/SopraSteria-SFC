@@ -16,6 +16,7 @@ import { NotificationsListResolver } from '@core/resolvers/notifications-list.re
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
@@ -129,6 +130,7 @@ const routes: Routes = [
         resolve: {
           articleList: ArticleListResolver,
           users: AllUsersForEstablishmentResolver,
+          workers: WorkersResolver,
         },
         data: { title: 'Dashboard' },
       },

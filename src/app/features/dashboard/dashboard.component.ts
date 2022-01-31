@@ -92,21 +92,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setWorkersAndTrainingAlert(): void {
-    this.subscriptions.add(
-      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-        (workers) => {
-          this.workers = workers;
-          this.workerCount = workers.length;
-          this.workerService.setWorkers(workers);
-          if (workers.length > 0) {
-            this.trainingAlert = workers[0].trainingAlert;
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+    const workers = this.route.snapshot.data.workers || [];
+
+    this.workers = workers;
+    this.workerCount = workers.length;
+    this.workerService.setWorkers(workers);
+    if (workers.length > 0) {
+      this.trainingAlert = workers[0].trainingAlert;
+    }
   }
 
   private setShowSecondUserBanner(): void {

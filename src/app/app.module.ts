@@ -15,6 +15,7 @@ import { NotificationsListResolver } from '@core/resolvers/notifications-list.re
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
 import { CountryService } from '@core/services/country.service';
@@ -147,6 +148,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WizardResolver,
     PageResolver,
     AllUsersForEstablishmentResolver,
+    WorkersResolver,
   ],
   bootstrap: [AppComponent],
 })
