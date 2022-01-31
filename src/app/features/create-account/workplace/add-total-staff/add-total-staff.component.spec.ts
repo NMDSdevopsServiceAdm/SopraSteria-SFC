@@ -146,7 +146,7 @@ describe('AddTotalStaffComponent', () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
-      component.fixture.componentInstance.setBackLink();
+      (component.fixture.componentInstance as any).setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({

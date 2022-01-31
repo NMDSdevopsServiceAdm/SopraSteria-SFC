@@ -54,7 +54,11 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace),
+          this.workplaceService.generateAddWorkplaceRequest(
+            this.locationAddress,
+            this.workplace,
+            this.WorkplaceTotalStaff,
+          ),
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {

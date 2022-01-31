@@ -90,6 +90,7 @@ const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
     delete req.body.locationId;
   }
+  console.log(req.body);
 
   const establishmentData = {
     Name: req.body.locationName,
@@ -104,6 +105,7 @@ const addEstablishment = async (req, res) => {
     MainServiceId: null,
     MainServiceOther: req.body.mainServiceOther,
     IsRegulated: req.body.isRegulated,
+    NumberOfStaff: req.body.totalStaff,
   };
 
   try {
@@ -157,6 +159,7 @@ const addEstablishment = async (req, res) => {
       }
 
       const newEstablishment = new Establishment.Establishment();
+      console.log(establishmentData.NumberOfStaff);
       newEstablishment.initialise(
         establishmentData.Address1,
         establishmentData.Address2,
@@ -167,6 +170,7 @@ const addEstablishment = async (req, res) => {
         null, // PROV ID is not captured yet on registration
         establishmentData.PostCode,
         establishmentData.IsRegulated,
+        establishmentData.NumberOfStaff,
       );
 
       newEstablishment.initialiseSub(req.establishment.id, req.establishment.uid);

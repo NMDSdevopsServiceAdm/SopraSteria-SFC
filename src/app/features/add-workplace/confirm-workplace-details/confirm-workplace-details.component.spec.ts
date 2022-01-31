@@ -182,7 +182,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   describe('Back link', () => {
-    it('should set the back link to select-main-service', async () => {
+    it('should set the back link to add-total-staff', async () => {
       const { component, fixture } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
@@ -191,7 +191,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'select-main-service'],
+        url: ['/add-workplace', 'add-total-staff'],
       });
     });
   });
@@ -202,7 +202,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
 
       const changeLinks = getAllByText('Change');
 
-      expect(changeLinks.length).toEqual(2);
+      expect(changeLinks.length).toEqual(3);
     });
 
     it('should set the change link for location ID to `find-workplace` when CQC regulated with location ID', async () => {
