@@ -56,7 +56,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
 
       this.getShowCQCDetailsBanner();
-      this.getShowSharingPermissionBanner();
 
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
@@ -120,14 +119,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
         this.showCQCDetailsBanner = showBanner;
-      }),
-    );
-  }
-
-  private getShowSharingPermissionBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
-        this.showSharingPermissionsBanner = showBanner;
       }),
     );
   }
