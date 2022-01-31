@@ -3,4 +3,5 @@ import { UserDetails } from '@core/model/userDetails.model';
 
 export interface RegistrationPayload extends LocationAddress {
   user: UserDetails;
+  totalStaff?: string;
 }

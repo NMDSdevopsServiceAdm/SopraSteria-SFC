@@ -663,12 +663,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'updatedby',
       },
-      trainingReportLockHeld: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-        field: 'TrainingReportLockHeld',
-      },
       laReportLockHeld: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -706,8 +700,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       dataChangesLastUpdated: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: false,
+        allowNull: true,
         field: 'DataChangesLastUpdated',
       },
     },

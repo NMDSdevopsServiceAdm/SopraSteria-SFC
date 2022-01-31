@@ -16,7 +16,9 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
+import {
+  BulkUploadRelatedContentComponent,
+} from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';

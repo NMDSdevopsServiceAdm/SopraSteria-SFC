@@ -1,17 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-
-import { HeaderComponent } from './header.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { render } from '@testing-library/angular';
 import { Router } from '@angular/router';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { render } from '@testing-library/angular';
+
+import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn: boolean = false) {
@@ -50,7 +50,15 @@ describe('HeaderComponent', () => {
     it('should display a Back to admin link if user is an admin and is logged in', async () => {
       const { component } = await setup(true, 0, true);
 
-      component.getByText('Back to admin');
+      const adminText = component.getByText('Back to admin');
+      expect(adminText).toBeTruthy();
+    });
+
+    it('admin link should go to the admin area if user is an admin and is logged in', async () => {
+      const { component } = await setup(true, 0, true);
+
+      const adminText = component.getByText('Back to admin');
+      expect(adminText.getAttribute('href')).toEqual('/sfcadmin');
     });
 
     it('should not display a Back to admin link if user is logged in but not an admin', async () => {

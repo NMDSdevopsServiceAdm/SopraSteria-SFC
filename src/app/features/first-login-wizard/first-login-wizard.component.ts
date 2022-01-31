@@ -14,12 +14,15 @@ export class FirstLoginWizardComponent {
   public isLast: boolean;
   public currentIndex: number;
   public imageUrl: string;
+  public rawVideoUrl: string;
+
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
     this.imageUrl = `${environment.cmsUri}/assets/`;
     this.currentIndex = 0;
+    this.rawVideoUrl = this.route.snapshot.data.wizard.data[this.currentIndex].video;
     this.updateVariables();
   }
 

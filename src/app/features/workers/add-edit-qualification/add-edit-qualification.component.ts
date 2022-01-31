@@ -243,7 +243,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private onSuccess(): void {
     this.router
-      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`])
+      .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
         if (this.qualificationId) {
           this.workerService.alert = { type: 'success', message: 'Qualification has been saved.' };
@@ -265,7 +265,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       if (route) {
         this.previousUrl = route;
       } else {
-        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/new-training`;
+        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
       }
     });
     this.backService.setBackLink({

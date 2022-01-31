@@ -18,3 +18,17 @@
   max-width: 100%;
   height: auto;
 }
+
+.video_wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  border: solid 3px #8accd2;
+}
+.video_wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
