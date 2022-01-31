@@ -1,18 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthService } from '@core/services/auth.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { UserDetails } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { WindowRef } from '@core/services/window.ref';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockUserService } from '@core/test-utils/MockUserService';
+import { EditUser, ReadUser } from '@core/test-utils/MockUserService';
 import { UserAccountsSummaryComponent } from '@shared/components/user-accounts-summary/user-accounts-summary.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -20,37 +14,28 @@ import { render } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 
 describe('UserAccountsSummaryComponent', () => {
-  const setup = async (showBanner = false, isAdmin = true, subsidiaries = 0) => {
+  const setup = async (showBanner = false, overLimit = false) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(UserAccountsSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       componentProperties: { workplace: Establishment, showSecondUserBanner: showBanner },
       providers: [
         {
-          provide: WindowRef,
-          useClass: WindowRef,
-        },
-        {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(['canAddUser']),
           deps: [HttpClient, Router, UserService],
         },
         {
-          provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
-          deps: [HttpClient],
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: AuthService,
-          useClass: MockAuthService,
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                users: overLimit
+                  ? ([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[])
+                  : ([EditUser()] as UserDetails[]),
+              },
+            },
+          },
         },
       ],
     });
@@ -75,9 +60,8 @@ describe('UserAccountsSummaryComponent', () => {
   });
 
   it('should not be able to add user if 3 edit users exist', async () => {
-    const { component } = await setup();
+    const { component } = await setup(false, true);
 
-    component.workplace.uid = 'overLimit';
     component.workplace.isParent = false;
 
     component.ngOnInit();

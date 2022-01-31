@@ -10,6 +10,7 @@ import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/ha
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -127,6 +128,7 @@ const routes: Routes = [
         component: DashboardComponent,
         resolve: {
           articleList: ArticleListResolver,
+          users: AllUsersForEstablishmentResolver,
         },
         data: { title: 'Dashboard' },
       },

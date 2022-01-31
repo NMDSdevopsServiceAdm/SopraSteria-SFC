@@ -9,6 +9,7 @@ import { ServiceUnavailableComponent } from '@core/components/error/service-unav
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -145,6 +146,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     FeatureFlagsService,
     WizardResolver,
     PageResolver,
+    AllUsersForEstablishmentResolver,
   ],
   bootstrap: [AppComponent],
 })
