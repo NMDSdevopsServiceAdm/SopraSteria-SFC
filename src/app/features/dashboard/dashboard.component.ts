@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
@@ -36,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private userService: UserService,
     private workerService: WorkerService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -117,11 +119,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setShowSecondUserBanner(): void {
-    this.subscriptions.add(
-      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-        this.showSecondUserBanner = this.canAddUser && users.length === 1;
-      }),
-    );
+    const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
+    this.showSecondUserBanner = this.canAddUser && users.length === 1;
   }
 
   private setUserServiceReturnUrl(): void {
