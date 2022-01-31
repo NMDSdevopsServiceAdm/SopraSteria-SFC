@@ -1,22 +1,28 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const dbmodels = require('../../../../../models');
-sinon.stub(dbmodels.status, 'ready').value(false);
-const TrainingCsvValidator = require('../../../../../models/BulkImport/csv/trainingCSVValidator').TrainingCsvValidator;
 
-describe('/server/models/Bulkimport/csv/trainingCSVValidator.js', () => {
+const dbmodels = require('../../../../../server/models');
+sinon.stub(dbmodels.status, 'ready').value(false);
+const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').TrainingCsvValidator;
+const mappings = require('../../../../../reference/BUDIMappings').mappings;
+
+describe('trainingCSVValidator', () => {
   describe('validations', () => {
     it('should pass validation if no ACCREDITED is provided', async () => {
-      const validator = new TrainingCsvValidator({
-        LOCALESTID: 'foo',
-        UNIQUEWORKERID: 'bar',
-        CATEGORY: 1,
-        DESCRIPTION: 'training',
-        DATECOMPLETED: '',
-        EXPIRYDATE: '',
-        ACCREDITED: '',
-        NOTES: '',
-      });
+      const validator = new TrainingCsvValidator(
+        {
+          LOCALESTID: 'foo',
+          UNIQUEWORKERID: 'bar',
+          CATEGORY: 1,
+          DESCRIPTION: 'training',
+          DATECOMPLETED: '',
+          EXPIRYDATE: '',
+          ACCREDITED: '',
+          NOTES: '',
+        },
+        2,
+        mappings,
+      );
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly
       await validator.validate();
@@ -30,16 +36,20 @@ describe('/server/models/Bulkimport/csv/trainingCSVValidator.js', () => {
     });
 
     it('should pass validation if ACCREDITED is provided', async () => {
-      const validator = new TrainingCsvValidator({
-        LOCALESTID: 'foo',
-        UNIQUEWORKERID: 'bar',
-        CATEGORY: 1,
-        DESCRIPTION: 'training',
-        DATECOMPLETED: '',
-        EXPIRYDATE: '',
-        ACCREDITED: '1',
-        NOTES: '',
-      });
+      const validator = new TrainingCsvValidator(
+        {
+          LOCALESTID: 'foo',
+          UNIQUEWORKERID: 'bar',
+          CATEGORY: 1,
+          DESCRIPTION: 'training',
+          DATECOMPLETED: '',
+          EXPIRYDATE: '',
+          ACCREDITED: '1',
+          NOTES: '',
+        },
+        2,
+        mappings,
+      );
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly
       await validator.validate();
@@ -66,6 +76,7 @@ describe('/server/models/Bulkimport/csv/trainingCSVValidator.js', () => {
           NOTES: '',
         },
         1,
+        mappings,
       );
 
       // Regular validation has to run first for the establishment to populate the internal properties correctly

@@ -1,7 +1,9 @@
-const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
+
+const BUDI = require('../classes/BUDI').BUDI;
+
 class TrainingCsvValidator {
-  constructor(currentLine, lineNumber) {
+  constructor(currentLine, lineNumber, mappings) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
@@ -14,6 +16,8 @@ class TrainingCsvValidator {
     this._category = null;
     this._accredited = null;
     this._notes = null;
+
+    this.BUDI = new BUDI(mappings);
   }
 
   static get LOCALESTID_ERROR() {
@@ -310,7 +314,7 @@ class TrainingCsvValidator {
   _validateCategory() {
     const myCategory = parseInt(this._currentLine.CATEGORY, 10);
 
-    if (Number.isNaN(myCategory) || BUDI.trainingCategory(BUDI.TO_ASC, myCategory) === null) {
+    if (Number.isNaN(myCategory) || this.BUDI.trainingCategory(this.BUDI.TO_ASC, myCategory) === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -365,7 +369,7 @@ class TrainingCsvValidator {
 
   _transformTrainingCategory() {
     if (this._category) {
-      const mappedCategory = BUDI.trainingCategory(BUDI.TO_ASC, this._category);
+      const mappedCategory = this.BUDI.trainingCategory(this.BUDI.TO_ASC, this._category);
       if (mappedCategory === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
