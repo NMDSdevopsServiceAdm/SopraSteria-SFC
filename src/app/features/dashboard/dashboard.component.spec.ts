@@ -31,7 +31,7 @@ const MockWindow = {
 };
 
 describe('DashboardComponent', () => {
-  async function setup(oneUser = false) {
+  async function setup(oneUser = false, totalStaffRecords = 2) {
     const component = await render(DashboardComponent, {
       imports: [
         SharedModule,
@@ -70,6 +70,7 @@ describe('DashboardComponent', () => {
                 users: oneUser ? ([EditUser()] as UserDetails[]) : ([EditUser(), EditUser()] as UserDetails[]),
                 articleList: null,
                 workers: [],
+                totalStaffRecords,
               },
             },
             queryParams: of({ view: null }),
@@ -147,6 +148,22 @@ describe('DashboardComponent', () => {
 
       it('should display an orange flag on the Users tab when only one user', async () => {
         const { component } = await setup(true);
+
+        expect(component.queryByTestId('orange-flag')).toBeTruthy();
+      });
+    });
+
+    describe('Staff records tab warning', () => {
+      it('should not display an orange flag on the Staff records tab when not 0 staff records', async () => {
+        const totalStaffRecords = 3;
+        const { component } = await setup(false, totalStaffRecords);
+
+        expect(component.queryByTestId('orange-flag')).toBeFalsy();
+      });
+
+      it('should display an orange flag on the Staff records tab when no staff', async () => {
+        const totalStaffRecords = 0;
+        const { component } = await setup(false, totalStaffRecords);
 
         expect(component.queryByTestId('orange-flag')).toBeTruthy();
       });

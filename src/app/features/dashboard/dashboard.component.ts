@@ -77,18 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getTotalStaffRecords(): void {
-    this.subscriptions.add(
-      this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
-        (total) => {
-          if (total) {
-            this.totalStaffRecords = total;
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+    this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
   }
 
   private setWorkersAndTrainingAlert(): void {

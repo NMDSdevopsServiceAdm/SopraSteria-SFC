@@ -11,6 +11,7 @@ import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
+import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -131,6 +132,7 @@ const routes: Routes = [
           articleList: ArticleListResolver,
           users: AllUsersForEstablishmentResolver,
           workers: WorkersResolver,
+          totalStaffRecords: TotalStaffRecordsResolver,
         },
         data: { title: 'Dashboard' },
       },
