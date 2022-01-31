@@ -5,7 +5,6 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
@@ -24,6 +23,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public turnoverContent = MetricsContent.Turnover;
   public qualificationsContent = MetricsContent.Qualifications;
   public sicknessContent = MetricsContent.Sickness;
+  private canViewBenchmarks: boolean;
 
   public tilesData: BenchmarksResponse;
 
@@ -34,31 +34,23 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
   ) {}
 
-  ngOnInit() {
-    this.subscriptions.add(
-      this.permissionsService
-        .getPermissions(this.workplace.uid)
-        .pipe(
-          map((permission) => permission.permissions.canViewBenchmarks),
-          filter((canViewBenchmarks) => canViewBenchmarks),
-          switchMap(() => {
-            return this.benchmarksService.getTileData(this.workplace.uid, [
-              'sickness',
-              'turnover',
-              'pay',
-              'qualifications',
-            ]);
+  ngOnInit(): void {
+    this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
+
+    if (this.canViewBenchmarks) {
+      this.subscriptions.add(
+        this.benchmarksService
+          .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
+          .subscribe((data) => {
+            if (data) {
+              this.tilesData = data;
+            }
           }),
-        )
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-          }
-        }),
-    );
+      );
+    }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
