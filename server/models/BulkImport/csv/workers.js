@@ -3012,6 +3012,8 @@ class Worker {
   }
 
   static isContent(data) {
+    console.log('*** isContent ***');
+    console.log(data);
     const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
     const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,/;
 
@@ -3688,7 +3690,7 @@ class Worker {
     columns.push(fluvac);
 
     // "NINUMBER"
-    downloadType === 'workers-sanitise' && entity.NationalInsuranceNumberValue
+    downloadType === 'workersSanitise' && entity.NationalInsuranceNumberValue
       ? columns.push('Admin')
       : columns.push(
           entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : '',
@@ -3698,7 +3700,7 @@ class Worker {
     columns.push(csvQuote(entity.PostcodeValue));
 
     // "DOB"
-    if (downloadType === 'workers-sanitise' && entity.DateOfBirthValue) {
+    if (downloadType === 'workersSanitise' && entity.DateOfBirthValue) {
       columns.push('Admin');
     } else {
       const dobParts = entity.DateOfBirthValue ? entity.DateOfBirthValue.split('-') : null;

@@ -25,7 +25,7 @@
             class="govuk-checkboxes__input"
             id="sanitiseData"
             name="sanitiseData"
-            [checked]="sanitise"
+            [checked]="!sanitise"
             (change)="toggleCheckbox($event.target)"
           />
           <label for="sanitiseData" class="govuk-label govuk-checkboxes__label"> Show </label>

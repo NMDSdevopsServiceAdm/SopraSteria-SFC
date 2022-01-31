@@ -58,11 +58,11 @@ const downloadGet = async (req, res) => {
 
   const primaryEstablishmentId = req.establishment.id;
 
-  const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training', 'workers-sanitise'];
+  const ALLOWED_DOWNLOAD_TYPES = ['establishments', 'workers', 'training', 'workersSanitise'];
   const renameDownloadType = {
     establishments: 'workplace',
     workers: 'staff',
-    workersSanitise: 'staff-sanitise',
+    workersSanitise: 'staff',
     training: 'training',
   };
 
@@ -90,7 +90,7 @@ const downloadGet = async (req, res) => {
           establishmentCsv(establishments, responseSend);
           break;
         }
-        case 'workers-sanitise':
+        case 'workersSanitise':
         case 'workers': {
           const workers = await models.establishment.downloadWorkers(primaryEstablishmentId);
 
