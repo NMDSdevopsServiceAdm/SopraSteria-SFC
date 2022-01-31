@@ -159,7 +159,6 @@ const addEstablishment = async (req, res) => {
       }
 
       const newEstablishment = new Establishment.Establishment();
-      console.log(establishmentData.NumberOfStaff);
       newEstablishment.initialise(
         establishmentData.Address1,
         establishmentData.Address2,
@@ -170,7 +169,6 @@ const addEstablishment = async (req, res) => {
         null, // PROV ID is not captured yet on registration
         establishmentData.PostCode,
         establishmentData.IsRegulated,
-        establishmentData.NumberOfStaff,
       );
 
       newEstablishment.initialiseSub(req.establishment.id, req.establishment.uid);
@@ -184,6 +182,7 @@ const addEstablishment = async (req, res) => {
         Latitude: establishmentData.Latitude,
         Longitude: establishmentData.Longitude,
         ustatus: 'PENDING',
+        numberOfStaff: establishmentData.NumberOfStaff,
       });
 
       // no Establishment properties on registration
