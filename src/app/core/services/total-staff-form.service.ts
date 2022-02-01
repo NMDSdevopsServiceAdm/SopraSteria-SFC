@@ -15,22 +15,25 @@ export class TotalStaffFormService {
 
   constructor(public establishmentService: EstablishmentService) {}
 
-  public createForm(formBuilder: FormBuilder): FormGroup {
+  public createForm(formBuilder: FormBuilder, updateOnSubmit = false): FormGroup {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
 
-    return formBuilder.group({
-      totalStaff: [
-        null,
-        [
-          Validators.required,
-          this.nonIntegerValidator(new RegExp('d*[.]d*')),
-          Validators.min(this.totalStaffConstraints.min),
-          Validators.max(this.totalStaffConstraints.max),
-          Validators.pattern('^[0-9]+$'),
+    return formBuilder.group(
+      {
+        totalStaff: [
+          null,
+          [
+            Validators.required,
+            this.nonIntegerValidator(new RegExp('d*[.]d*')),
+            Validators.min(this.totalStaffConstraints.min),
+            Validators.max(this.totalStaffConstraints.max),
+            Validators.pattern('^[0-9]+$'),
+          ],
         ],
-      ],
-    });
+      },
+      updateOnSubmit ? { updateOn: 'submit' } : {},
+    );
   }
 
   private nonIntegerValidator(nameRe: RegExp): ValidatorFn {
