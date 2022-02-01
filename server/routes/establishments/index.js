@@ -90,7 +90,6 @@ const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
     delete req.body.locationId;
   }
-  console.log(req.body);
 
   const establishmentData = {
     Name: req.body.locationName,
