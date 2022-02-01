@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
 
 import { AddTotalStaffComponent } from './add-total-staff.component';
@@ -21,11 +22,12 @@ describe('AddTotalStaffComponent', () => {
         BackService,
         {
           provide: EstablishmentService,
-          useValue: {},
+          useClass: MockEstablishmentService,
         },
+
         {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -34,7 +36,7 @@ describe('AddTotalStaffComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: 'add-workplace',
                   },
                 ],
               },
@@ -63,8 +65,10 @@ describe('AddTotalStaffComponent', () => {
 
   it('should render the correct heading when in the registration journey', async () => {
     const { component } = await setup();
+    component.fixture.componentInstance.isParent = true;
+    component.fixture.detectChanges();
 
-    const registrationHeading = component.queryByText(`How many members of staff does your workplace have?`);
+    const registrationHeading = component.queryByText(`How many members of staff does the workplace have?`);
 
     expect(registrationHeading).toBeTruthy();
   });
@@ -78,8 +82,10 @@ describe('AddTotalStaffComponent', () => {
 
   it(`should display the reveal and its contents`, async () => {
     const { component } = await setup();
+    component.fixture.componentInstance.isParent = true;
+    component.fixture.detectChanges();
 
-    const reveal = component.getByText('Not sure how many members of staff your workplace has?');
+    const reveal = component.fixture.componentInstance.appDetailTitle;
     const revealContent = component.getByText(
       'You can enter an estimate to save time, but remember to update this number in ASC-WDS once your account has been validated by Skills for Care.',
       { exact: false },
@@ -92,7 +98,7 @@ describe('AddTotalStaffComponent', () => {
   it('should prefill the form if totalStaff is already set in the service', async () => {
     const { component } = await setup();
 
-    component.fixture.componentInstance.registrationService.totalStaff$ = new BehaviorSubject('12');
+    component.fixture.componentInstance.workplaceService.totalStaff$ = new BehaviorSubject('12');
     component.fixture.componentInstance.ngOnInit();
 
     const form = component.fixture.componentInstance.form;
@@ -100,46 +106,13 @@ describe('AddTotalStaffComponent', () => {
     expect(form.valid).toBeTruthy();
   });
 
-  it('should display an error when continue is clicked without adding total staff number', async () => {
-    const { component } = await setup();
-
-    component.fixture.componentInstance.registrationService.totalStaff$ = new BehaviorSubject(null);
-    component.fixture.componentInstance.ngOnInit();
-
-    const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter how many members of staff your workplace has';
-
-    const continueButton = component.getByText('Continue');
-    fireEvent.click(continueButton);
-
-    expect(form.invalid).toBeTruthy();
-
-    expect(component.getAllByText(errorMessage).length).toBe(2);
-  });
-
-  it('should navigate to add-user-details url when continue button is clicked and total staff is given', async () => {
+  it('should navigate to confirm-workplace-details url when continue button is clicked and total staff is given', async () => {
     const { component, spy } = await setup();
-    const form = component.fixture.componentInstance.form;
-    const continueButton = component.getByText('Continue');
 
-    form.controls['totalStaff'].setValue('12');
-    fireEvent.click(continueButton);
+    (component.fixture.componentInstance as any).navigateToNextPage();
+    component.fixture.detectChanges();
 
-    expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['registration', 'add-user-details']);
-  });
-
-  it('should set totalStaff in registration service when continue button is clicked and total staff ßis given', async () => {
-    const { component } = await setup();
-    const form = component.fixture.componentInstance.form;
-    const continueButton = component.getByText('Continue');
-    const registrationService = component.fixture.componentInstance.registrationService.totalStaff$;
-
-    form.controls['totalStaff'].setValue('12');
-    fireEvent.click(continueButton);
-
-    expect(form.valid).toBeTruthy();
-    expect(registrationService).toEqual(new BehaviorSubject('12'));
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
   });
 
   describe('setBackLink()', () => {
@@ -151,7 +124,7 @@ describe('AddTotalStaffComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'select-main-service'],
+        url: ['add-workplace', 'select-main-service'],
       });
     });
   });

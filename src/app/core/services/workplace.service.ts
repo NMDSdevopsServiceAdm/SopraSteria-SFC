@@ -44,7 +44,11 @@ export class WorkplaceService extends WorkplaceInterfaceService {
     this.addWorkplaceInProgress$.next(false);
   }
 
-  public generateAddWorkplaceRequest(locationAddress: LocationAddress, service: Service): AddWorkplaceRequest {
+  public generateAddWorkplaceRequest(
+    locationAddress: LocationAddress,
+    service: Service,
+    WorkplaceTotalStaff: string,
+  ): AddWorkplaceRequest {
     return {
       addressLine1: locationAddress.addressLine1,
       addressLine2: locationAddress.addressLine2,
@@ -56,6 +60,7 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       mainService: service.name,
       postalCode: locationAddress.postalCode,
       townCity: locationAddress.townCity,
+      totalStaff: WorkplaceTotalStaff,
     };
   }
 }
