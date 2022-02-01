@@ -49,16 +49,16 @@ describe('AllUsersForEstablishmentResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getAllUsersForEstablishment with params id when no uid in params', () => {
+  it('should call getAllUsersForEstablishment with uid in establishment service when no uid in params', () => {
     const { resolver, route, userService } = setup();
 
-    const idFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
+    const uidFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
     resolver.resolve(route.snapshot);
 
-    expect(userService.getAllUsersForEstablishment).toHaveBeenCalledWith(idFromEstablishmentService);
+    expect(userService.getAllUsersForEstablishment).toHaveBeenCalledWith(uidFromEstablishmentService);
   });
 
-  it('should call getAllUsersForEstablishment with id from params when it exists', () => {
+  it('should call getAllUsersForEstablishment with uid from params when it exists', () => {
     const { resolver, route, userService } = setup('uidInParams');
 
     resolver.resolve(route.snapshot);

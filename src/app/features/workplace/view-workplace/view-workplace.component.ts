@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -43,9 +43,10 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     private router: Router,
     private userService: UserService,
     private workerService: WorkerService,
+    private route: ActivatedRoute,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
@@ -94,11 +95,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.subscriptions.add(
-      this.workerService
-        .getTotalStaffRecords(this.workplace.uid)
-        .subscribe((total) => (this.totalStaffRecords = total)),
-    );
+    this.getTotalStaffRecords();
 
     this.summaryReturnUrl = {
       url: ['/workplace', this.workplace.uid],
@@ -187,7 +184,11 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  private getTotalStaffRecords(): void {
+    this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
+  }
+
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }

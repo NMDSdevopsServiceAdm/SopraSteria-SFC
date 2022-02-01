@@ -7,6 +7,7 @@ import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/ha
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
+import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
@@ -57,7 +58,7 @@ const routes: Routes = [
   {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
-    resolve: { establishment: WorkplaceResolver, users: AllUsersForEstablishmentResolver },
+    resolve: { establishment: WorkplaceResolver },
     canActivate: [HasPermissionsGuard],
     data: { title: 'Workplace' },
     children: [
@@ -68,6 +69,10 @@ const routes: Routes = [
         data: {
           permissions: ['canViewEstablishment'],
           title: 'View Workplace',
+        },
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+          totalStaffRecords: TotalStaffRecordsResolver,
         },
       },
       {
