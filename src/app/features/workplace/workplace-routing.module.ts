@@ -6,17 +6,14 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import {
-  SelectMainServiceCqcConfirmComponent,
-} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import {
-  UserAccountEditDetailsComponent,
-} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
@@ -44,9 +41,7 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import {
-  UserAccountEditPermissionsComponent,
-} from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -62,7 +57,7 @@ const routes: Routes = [
   {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
-    resolve: { establishment: WorkplaceResolver },
+    resolve: { establishment: WorkplaceResolver, users: AllUsersForEstablishmentResolver },
     canActivate: [HasPermissionsGuard],
     data: { title: 'Workplace' },
     children: [
