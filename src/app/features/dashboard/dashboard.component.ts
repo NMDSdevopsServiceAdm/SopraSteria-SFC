@@ -43,8 +43,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
-    this.showSharingPermissionsBanner = this.establishmentService.checkSharingPermissionsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
     if (this.workplace) {
