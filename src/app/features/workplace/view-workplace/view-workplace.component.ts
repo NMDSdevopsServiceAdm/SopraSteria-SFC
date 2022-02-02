@@ -11,9 +11,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -97,7 +95,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.getTotalStaffRecords();
+    this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
     this.summaryReturnUrl = {
       url: ['/workplace', this.workplace.uid],
@@ -176,10 +174,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     } else {
       return 0;
     }
-  }
-
-  private getTotalStaffRecords(): void {
-    this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
   }
 
   ngOnDestroy(): void {

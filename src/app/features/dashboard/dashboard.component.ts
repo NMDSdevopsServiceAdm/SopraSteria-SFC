@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.workplace) {
       this.getPermissions();
       this.getCanViewBenchmarks();
-      this.getTotalStaffRecords();
+      this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
       if (this.workplace.locationId) {
         this.setCheckCQCDetailsBannerInEstablishmentService();
@@ -82,10 +82,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
       }),
     );
-  }
-
-  private getTotalStaffRecords(): void {
-    this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
   }
 
   private setWorkersAndTrainingAlert(): void {
