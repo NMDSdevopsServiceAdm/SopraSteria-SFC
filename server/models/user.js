@@ -247,6 +247,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'RegistrationSurveyCompleted',
       },
+      canManageWdfClaims: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        field: 'CanManageWdfClaims',
+      },
     },
     {
       tableName: '"User"',
