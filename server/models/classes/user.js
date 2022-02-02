@@ -196,6 +196,10 @@ class User {
     return this._displayStatus;
   }
 
+  get canManageWdfClaims() {
+    return this._properties.get('CanManageWdfClaims') ? this._properties.get('CanManageWdfClaims').property : null;
+  }
+
   set establishmentUid(uid) {
     this._establishmentUid = uid;
   }

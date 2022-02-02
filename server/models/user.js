@@ -326,6 +326,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  User.getCanManageWdfClaims = function (userUid) {
+    return this.findOne({
+      where: { uid: userUid },
+      attributes: ['CanManageWdfClaimsValue'],
+    });
+  };
+
   User.closeLock = async function (LockHeldTitle, userUid) {
     return await this.update(
       {
