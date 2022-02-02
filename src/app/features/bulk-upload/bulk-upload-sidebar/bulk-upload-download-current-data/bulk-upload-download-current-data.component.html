@@ -1,4 +1,20 @@
-<h2 class="govuk-!-margin-top-6 govuk-heading-s">Download your current data</h2>
+<div class="govuk-grid-row govuk-!-margin-top-6 govuk-!-margin-left-0">
+  <div class="govuk-checkboxes govuk-checkboxes--small">
+    <div class="govuk-checkboxes__item">
+      <input
+        data-testid="showDataCheckbox"
+        type="checkbox"
+        class="govuk-checkboxes__input"
+        id="sanitiseData"
+        name="sanitiseData"
+        [checked]="!sanitise"
+        (change)="toggleCheckbox($event.target)"
+      />
+      <label for="sanitiseData" class="govuk-label govuk-checkboxes__label"> Show DOB & NI number </label>
+    </div>
+  </div>
+</div>
+<h2 class="govuk-heading-s">Download your current data</h2>
 <ul class="govuk-list govuk-list--download">
   <li>
     <a
@@ -9,29 +25,13 @@
     </a>
   </li>
   <li>
-    <div class="govuk__flex">
-      <a
-        class="govuk-!-padding-top-2"
-        href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
-        (click)="downloadFile($event, sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker)"
-      >
-        Staff
-      </a>
-      <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-left-8">
-        <div class="govuk-checkboxes__item">
-          <input
-            data-testid="showDataCheckbox"
-            type="checkbox"
-            class="govuk-checkboxes__input"
-            id="sanitiseData"
-            name="sanitiseData"
-            [checked]="!sanitise"
-            (change)="toggleCheckbox($event.target)"
-          />
-          <label for="sanitiseData" class="govuk-label govuk-checkboxes__label"> Show </label>
-        </div>
-      </div>
-    </div>
+    <a
+      class="govuk-!-padding-top-2"
+      href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
+      (click)="downloadFile($event, sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker)"
+    >
+      Staff
+    </a>
   </li>
   <li>
     <a

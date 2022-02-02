@@ -15,6 +15,7 @@ import { AdminSkipService } from '../admin-skip.service';
 })
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
+  public sanitise = true;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -23,13 +24,17 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     private adminSkipService: AdminSkipService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.establishment = this.establishmentService.primaryWorkplace;
     this.bulkUploadService.setReturnTo(null);
   }
 
-  ngOnDestroy() {
+  public toggleSanitise(value: boolean): void {
+    this.sanitise = value;
+  }
+
+  ngOnDestroy(): void {
     this.adminSkipService.clear();
     this.adminSkipService.skipWorkplaceReferences = false;
   }

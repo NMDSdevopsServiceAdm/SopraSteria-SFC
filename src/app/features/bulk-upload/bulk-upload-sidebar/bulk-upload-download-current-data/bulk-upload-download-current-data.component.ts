@@ -10,8 +10,10 @@ import { take } from 'rxjs/operators';
   templateUrl: './bulk-upload-download-current-data.component.html',
 })
 export class BulkUploadDownloadCurrentDataComponent {
-  public BulkUploadFileType = BulkUploadFileType;
+  // @Input() public toggleSanitise: (value: boolean) => void;
+  // @Input() public sanitise: boolean;
   public sanitise = true;
+  public BulkUploadFileType = BulkUploadFileType;
   public now: Date = new Date();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
@@ -36,5 +38,6 @@ export class BulkUploadDownloadCurrentDataComponent {
   public toggleCheckbox(target: HTMLInputElement): void {
     const { checked } = target;
     this.sanitise = !checked;
+    // this.toggleSanitise(!checked);
   }
 }
