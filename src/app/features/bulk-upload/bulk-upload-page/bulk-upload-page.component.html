@@ -28,12 +28,12 @@
   </div>
   <div class="govuk-grid-column-one-third">
     <app-bulk-upload-related-content></app-bulk-upload-related-content>
-    <app-bulk-upload-download-current-data
-      [toggleSanitise]="toggleSanitise"
+    <app-bulk-upload-download-current-data [sanitise]="sanitise"></app-bulk-upload-download-current-data>
+    <app-bulk-upload-sanitise-data-checkbox
+      *ngIf="isAdmin"
+      (checkboxToggled)="toggleSanitise($event)"
       [sanitise]="sanitise"
-      [isAdmin]="isAdmin"
-    ></app-bulk-upload-download-current-data>
-    <!-- <app-bulk-upload-download-current-data></app-bulk-upload-download-current-data> -->
+    ></app-bulk-upload-sanitise-data-checkbox>
     <app-codes-and-guidance></app-codes-and-guidance>
   </div>
 

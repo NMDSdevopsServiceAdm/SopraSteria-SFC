@@ -31,6 +31,7 @@ import { StaffReferencesComponent } from './bulk-upload-references/staff-referen
 import { WorkplaceReferencesComponent } from './bulk-upload-references/workplace-references/workplace-references-page.component';
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
 import { BulkUploadRelatedContentComponent } from './bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
+import { BulkUploadSanitiseDataCheckboxComponent } from './bulk-upload-sidebar/bulk-upload-sanitise-data-checkbox/bulk-upload-sanitise-data-checkbox.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page/bulk-upload-start-page.component';
 import { BulkUploadTroubleshootingComponent } from './bulk-upload-troubleshooting-page/bulk-upload-troubleshooting-page.component';
 import { CodesAndGuidanceComponent } from './codes-and-guidance/codes-and-guidance.component';
@@ -90,6 +91,7 @@ import { ValidationErrorMessageComponent } from './validation-error-message/vali
     BulkUploadTroubleshootingComponent,
     BulkUploadDataChangeComponent,
     BulkUploadTopTipPageComponent,
+    BulkUploadSanitiseDataCheckboxComponent,
   ],
   providers: [
     DialogService,

@@ -10,10 +10,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './bulk-upload-download-current-data.component.html',
 })
 export class BulkUploadDownloadCurrentDataComponent {
-  @Input() public toggleSanitise: (value: boolean) => void;
   @Input() public sanitise: boolean;
-  @Input() public isAdmin: boolean;
-  // public sanitise = true;
   public BulkUploadFileType = BulkUploadFileType;
   public now: Date = new Date();
 
@@ -34,11 +31,5 @@ export class BulkUploadDownloadCurrentDataComponent {
           console.error('Error getting file' + err);
         },
       );
-  }
-
-  public toggleCheckbox(target: HTMLInputElement): void {
-    const { checked } = target;
-    // this.sanitise = !checked;
-    this.toggleSanitise(!checked);
   }
 }

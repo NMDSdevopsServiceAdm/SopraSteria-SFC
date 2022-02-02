@@ -34,8 +34,8 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.isAdmin = this.route.snapshot.data.loggedInUser.role === 'Admin';
   }
 
-  public toggleSanitise(value: boolean): void {
-    this.sanitise = value;
+  public toggleSanitise(sanitiseData: boolean): void {
+    this.sanitise = sanitiseData;
   }
 
   ngOnDestroy(): void {

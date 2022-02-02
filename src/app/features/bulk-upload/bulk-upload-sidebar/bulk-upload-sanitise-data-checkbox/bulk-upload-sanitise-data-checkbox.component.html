@@ -1,0 +1,16 @@
+<div class="govuk-grid-row govuk-!-margin-top-6 govuk-!-margin-left-0">
+  <div class="govuk-checkboxes govuk-checkboxes--small">
+    <div class="govuk-checkboxes__item">
+      <input
+        data-testid="showDataCheckbox"
+        type="checkbox"
+        class="govuk-checkboxes__input"
+        id="sanitiseData"
+        name="sanitiseData"
+        [checked]="!sanitise"
+        (change)="toggleCheckbox($event.target)"
+      />
+      <label for="sanitiseData" class="govuk-label govuk-checkboxes__label"> Show DOB & NI number </label>
+    </div>
+  </div>
+</div>

@@ -12,10 +12,10 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-download-current-data.component';
 
-fdescribe('BulkUploadDownloadCurrentDataComponent', () => {
+describe('BulkUploadDownloadCurrentDataComponent', () => {
   let establishmentId;
 
-  const setup = async () => {
+  const setup = async (sanitise = true) => {
     const { fixture, getByText, getByTestId } = await render(BulkUploadDownloadCurrentDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, SharedModule, BulkUploadModule],
       providers: [
@@ -29,7 +29,7 @@ fdescribe('BulkUploadDownloadCurrentDataComponent', () => {
         },
       ],
       componentProperties: {
-        sanitise: true,
+        sanitise,
       },
     });
     const component = fixture.componentInstance;
@@ -67,12 +67,8 @@ fdescribe('BulkUploadDownloadCurrentDataComponent', () => {
     expect(bulkUploadSpy).toHaveBeenCalledWith(establishmentId, BulkUploadFileType.Establishment);
   });
 
-  it('should call getDataCSV with BulkUploadType.Worker, when staff link is clicked and the checkbox is checked', async () => {
-    const { fixture, getByText, bulkUploadSpy, getByTestId } = await setup();
-
-    const checkbox = getByTestId('showDataCheckbox');
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
+  it('should call getDataCSV with BulkUploadType.Worker, when staff link is clicked and the sanitise is set to false', async () => {
+    const { fixture, getByText, bulkUploadSpy } = await setup(false);
 
     const staffLink = getByText('Staff');
 
@@ -82,12 +78,8 @@ fdescribe('BulkUploadDownloadCurrentDataComponent', () => {
     expect(bulkUploadSpy).toHaveBeenCalledWith(establishmentId, BulkUploadFileType.Worker);
   });
 
-  it('should call getDataCSV with BulkUploadType.WorkerSanitise, when staff link is clicked checkbox is unchecked', async () => {
-    const { fixture, getByText, bulkUploadSpy, getByTestId } = await setup();
-    const checkbox = getByTestId('showDataCheckbox');
-    fireEvent.click(checkbox);
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
+  it('should call getDataCSV with BulkUploadType.WorkerSanitise, when staff link is clicked and sanitise is set to true', async () => {
+    const { fixture, getByText, bulkUploadSpy } = await setup();
 
     const staffLink = getByText('Staff');
 

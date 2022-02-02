@@ -122,7 +122,7 @@ describe('workerCSV', () => {
 
           expect(csvAsArray[7]).to.equal('');
         });
-        it('eturn blank if no dob and if download-type is workers-sanitise', async () => {
+        it('return blank if no dob and if download-type is workers-sanitise', async () => {
           worker.DateOfBirthValue = null;
 
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
