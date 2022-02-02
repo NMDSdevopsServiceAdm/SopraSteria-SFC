@@ -247,10 +247,30 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'RegistrationSurveyCompleted',
       },
-      canManageWdfClaims: {
+      CanManageWdfClaimsValue: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        field: 'CanManageWdfClaims',
+        field: '"CanManageWdfClaimsValue"',
+      },
+      CanManageWdfClaimsSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CanManageWdfClaimsSavedAt"',
+      },
+      CanManageWdfClaimsChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CanManageWdfClaimsChangedAt"',
+      },
+      CanManageWdfClaimsSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CanManageWdfClaimsSavedBy"',
+      },
+      CanManageWdfClaimsChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CanManageWdfClaimsChangedBy"',
       },
     },
     {

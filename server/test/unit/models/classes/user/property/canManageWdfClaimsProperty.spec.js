@@ -47,27 +47,26 @@ describe('canManageWdfClaimsProperty', () => {
   });
 
   describe('restorePropertyFromSequelize()', () => {
-    it('should restore in correct format as if from database', () => {
+    it('should return CanManageWdfClaimsValue from document', () => {
       const canManageWdfClaimsProperty = new CanManageWdfClaimsProperty();
       const document = {
-        canManageWdfClaims: true,
+        CanManageWdfClaimsValue: true,
       };
 
       const restored = canManageWdfClaimsProperty.restorePropertyFromSequelize(document);
 
-      expect(restored).to.deep.equal(document.canManageWdfClaims);
+      expect(restored).to.deep.equal(true);
     });
   });
 
   describe('savePropertyToSequelize()', () => {
-    it('should save in correct format as if saving into database', () => {
+    it('should return object with CanManageWdfClaimsValue set to property', () => {
       const canManageWdfClaimsProperty = new CanManageWdfClaimsProperty();
-      const canManageWdfClaims = true;
-      canManageWdfClaimsProperty.property = canManageWdfClaims;
+      canManageWdfClaimsProperty.property = false;
 
       const saved = canManageWdfClaimsProperty.savePropertyToSequelize();
 
-      expect(saved.canManageWdfClaims).to.equal(canManageWdfClaims);
+      expect(saved).to.deep.equal({ CanManageWdfClaimsValue: false });
     });
   });
 
@@ -114,14 +113,13 @@ describe('canManageWdfClaimsProperty', () => {
   });
 
   describe('toJSON()', () => {
-    it('should return correctly formatted JSON', () => {
+    it('should return object with canManageWdfClaims set to property', () => {
       const canManageWdfClaimsProperty = new CanManageWdfClaimsProperty();
-      const canManageWdfClaims = true;
-      canManageWdfClaimsProperty.property = canManageWdfClaims;
+      canManageWdfClaimsProperty.property = true;
 
       const json = canManageWdfClaimsProperty.toJSON();
 
-      expect(json.canManageWdfClaims).to.deep.equal(canManageWdfClaims);
+      expect(json).to.deep.equal({ canManageWdfClaims: true });
     });
   });
 });

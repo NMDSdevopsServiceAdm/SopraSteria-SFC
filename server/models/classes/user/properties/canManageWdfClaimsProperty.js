@@ -17,12 +17,12 @@ exports.UserCanManageWdfClaimsProperty = class UserCanManageWdfClaimsProperty ex
   }
 
   restorePropertyFromSequelize(document) {
-    return document.canManageWdfClaims;
+    return document.CanManageWdfClaimsValue;
   }
 
   savePropertyToSequelize() {
     return {
-      canManageWdfClaims: this.property,
+      CanManageWdfClaimsValue: this.property,
     };
   }
 
