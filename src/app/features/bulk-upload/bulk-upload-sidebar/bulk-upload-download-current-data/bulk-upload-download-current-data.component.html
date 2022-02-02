@@ -1,5 +1,5 @@
 <div class="govuk-grid-row govuk-!-margin-top-6 govuk-!-margin-left-0">
-  <div class="govuk-checkboxes govuk-checkboxes--small">
+  <div *ngIf="isAdmin" class="govuk-checkboxes govuk-checkboxes--small">
     <div class="govuk-checkboxes__item">
       <input
         data-testid="showDataCheckbox"

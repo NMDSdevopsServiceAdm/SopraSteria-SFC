@@ -2,6 +2,7 @@
 const { Worker } = require('../../../../../models/classes/worker');
 const { Qualification } = require('../../../../../models/classes/qualification');
 const { validateWorkerLambda } = require('../../lambda');
+const { dateFormatter } = require('../../../../../utils/bulkUploadUtils');
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
   const csvWorkerSchemaErrors = [];
@@ -33,6 +34,14 @@ const validateWorkerCsvLine = async (
   myJSONWorkers,
 ) => {
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
+
+  if (thisLine.NINUMBER.toLowerCase() === 'admin') {
+    thisLine.NINUMBER = existingWorker.nationalInsuranceNumber.currentValue;
+  }
+
+  if (thisLine.DOB.toLowerCase() === 'admin') {
+    thisLine.DOB = dateFormatter(existingWorker.dateOfBirth.currentValue);
+  }
 
   const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } =
     await validateWorkerLambda(thisLine, currentLineNumber, existingWorker);

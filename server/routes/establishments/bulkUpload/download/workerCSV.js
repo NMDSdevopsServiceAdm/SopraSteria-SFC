@@ -1,5 +1,6 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const get = require('lodash/get');
+const { dateFormatter } = require('../../../../utils/bulkUploadUtils');
 
 const csvQuote = (toCsv) => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
@@ -74,8 +75,7 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   if (downloadType === 'workersSanitise' && entity.DateOfBirthValue) {
     columns.push('Admin');
   } else {
-    const dobParts = entity.DateOfBirthValue ? entity.DateOfBirthValue.split('-') : null;
-    columns.push(dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+    columns.push(dateFormatter(entity.DateOfBirthValue));
   }
 
   // "GENDER",

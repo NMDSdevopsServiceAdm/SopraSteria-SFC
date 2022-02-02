@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-download-current-data.component';
 
-describe('BulkUploadDownloadCurrentDataComponent', () => {
+fdescribe('BulkUploadDownloadCurrentDataComponent', () => {
   let establishmentId;
 
   const setup = async () => {
@@ -28,6 +28,9 @@ describe('BulkUploadDownloadCurrentDataComponent', () => {
           useClass: MockEstablishmentService,
         },
       ],
+      componentProperties: {
+        sanitise: true,
+      },
     });
     const component = fixture.componentInstance;
 

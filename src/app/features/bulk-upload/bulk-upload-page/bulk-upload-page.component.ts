@@ -1,5 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -16,18 +17,21 @@ import { AdminSkipService } from '../admin-skip.service';
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
   public sanitise = true;
+  public isAdmin: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
     private bulkUploadService: BulkUploadService,
     private breadcrumbService: BreadcrumbService,
     private adminSkipService: AdminSkipService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.establishment = this.establishmentService.primaryWorkplace;
     this.bulkUploadService.setReturnTo(null);
+    this.isAdmin = this.route.snapshot.data.loggedInUser.role === 'Admin';
   }
 
   public toggleSanitise(value: boolean): void {
