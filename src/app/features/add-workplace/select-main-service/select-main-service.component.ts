@@ -7,7 +7,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
   selector: 'app-select-main-service',
@@ -73,7 +75,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'confirm-workplace-details']);
+    this.router.navigate([this.flow, 'add-total-staff']);
   }
 
   public setBackLink(): void {

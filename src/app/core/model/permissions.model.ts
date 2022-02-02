@@ -1,14 +1,10 @@
 export interface PermissionsResponse {
   uid: string;
-  permissions: PermissionsList;
-}
-
-export interface PermissionsList {
-  [key: string]: boolean;
+  permissions: PermissionType[];
 }
 
 export interface Permissions {
-  [key: string]: PermissionsList;
+  [key: string]: PermissionType[];
 }
 
 export type PermissionType =

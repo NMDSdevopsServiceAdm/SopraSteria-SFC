@@ -2,9 +2,11 @@ import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angula
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 
@@ -19,6 +21,11 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
   public workplaceTotalStaff;
+  public isParent: boolean;
+  public flow: string;
+  public returnToConfirmDetails: URLStructure;
+  public workplace: Establishment;
+  public appDetailTitle = '';
 
   constructor(
     protected router: Router,
@@ -26,19 +33,23 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
-    public workplaceInterfaceService: WorkplaceInterfaceService,
+    protected workplaceInterfaceService: WorkplaceInterfaceService,
     public totalStaffFormService: TotalStaffFormService,
+    public establishmentService: EstablishmentService,
   ) {
-    this.form = totalStaffFormService.createForm(formBuilder);
+    this.form = totalStaffFormService.createForm(formBuilder, true);
   }
 
   public ngOnInit(): void {
+    this.flow = this.route.snapshot.parent.url[0].path;
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.setBackLink();
     this.setupFormErrors();
     this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
-    this.return = this.workplaceInterfaceService.returnTo$.value;
-
     this.prefillForm();
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.isParent = this.workplace?.isParent;
+    this.appDetailTitle = `Not sure how many members of staff ${this.isParent ? 'the' : 'your'} workplace has?`;
   }
 
   public ngAfterViewInit(): void {
@@ -59,13 +70,13 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     if (this.form.valid) {
       const totalStaff = this.form.get('totalStaff').value;
       this.workplaceInterfaceService.totalStaff$.next(totalStaff);
-
-      const url = this.setFormSubmissionLink();
-      this.router.navigate(['registration', url]);
+      this.navigateToNextPage();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
+
+  protected navigateToNextPage(): void {}
 
   private setupFormErrors(): void {
     this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
@@ -75,12 +86,5 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setFormSubmissionLink(): string {
-    return this.return ? 'confirm-details' : 'add-user-details';
-  }
-
-  public setBackLink(): void {
-    const url = this.return ? 'confirm-details' : 'select-main-service';
-    this.backService.setBackLink({ url: ['registration', url] });
-  }
+  protected setBackLink(): void {}
 }

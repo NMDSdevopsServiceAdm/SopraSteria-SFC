@@ -39,7 +39,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       this.permissionsService
         .getPermissions(this.workplace.uid)
         .pipe(
-          map((permission) => permission.permissions.canViewBenchmarks),
+          map((res) => res.permissions.includes('canViewBenchmarks')),
           filter((canViewBenchmarks) => canViewBenchmarks),
           switchMap(() => {
             return this.benchmarksService.getTileData(this.workplace.uid, [

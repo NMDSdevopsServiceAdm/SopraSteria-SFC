@@ -1,11 +1,10 @@
-const { PermissionCache } = require('../../models/cache/singletons/permissions');
+const { getPermissions } = require('./permissions');
 
 const hasPermission = (permission) => {
   return async (req, res, next) => {
-    const permissions = await PermissionCache.myPermissions(req);
-    const hasPermission = permissions.filter((p) => Object.keys(p)[0] === permission && p[permission]);
+    const permissions = await getPermissions(req);
 
-    if (hasPermission.length) {
+    if (permissions.includes(permission)) {
       next();
     } else {
       res.status(403).json({ message: 'Not permitted' });

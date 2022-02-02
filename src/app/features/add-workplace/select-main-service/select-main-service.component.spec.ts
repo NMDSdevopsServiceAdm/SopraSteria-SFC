@@ -127,7 +127,7 @@ describe('SelectMainServiceComponent', () => {
     expect(getAllByText(errorMessage).length).toBe(2);
   });
 
-  it('should submit and go to the add-workplace/confirm-workplace-details url when option selected', async () => {
+  it('should submit and go to the add-workplace/add-total-staff url when option selected', async () => {
     const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
     component.isParent = true;
@@ -140,7 +140,7 @@ describe('SelectMainServiceComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'add-total-staff']);
   });
 
   describe('setBackLink()', () => {

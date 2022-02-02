@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { PermissionType } from '@core/model/permissions.model';
 import { Roles } from '@core/model/roles.enum';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,7 +21,7 @@ export class CheckPermissionsGuard implements CanActivate {
       return true;
     }
 
-    const requiredPermissions = route.data.permissions as Array<string>;
+    const requiredPermissions = route.data.permissions as Array<PermissionType>;
     const notPrimaryWorkplace: string = route.paramMap.get('establishmentuid');
     const workplaceUid: string = notPrimaryWorkplace ? notPrimaryWorkplace : this.establishmentService.establishmentId;
     const permissions = this.permissionsService.permissions(workplaceUid);

@@ -28,6 +28,6 @@ export class BulkUploadRelatedContentComponent implements OnInit {
     const exsitedDate = new Date(this.dataChangeLastUpdated);
     const newDate = new Date(this.datachange);
 
-    this.showFlagBUChanges = this.dataChangeLastUpdated == null && +exsitedDate !== +newDate;
+    this.showFlagBUChanges = +exsitedDate !== +newDate;
   }
 }

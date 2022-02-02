@@ -78,8 +78,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getCanViewBenchmarks(): void {
     this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
-        this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
+      this.permissionsService.getPermissions(this.workplaceUid).subscribe((res) => {
+        this.canViewBenchmarks = res.permissions.includes('canViewBenchmarks');
       }),
     );
   }
