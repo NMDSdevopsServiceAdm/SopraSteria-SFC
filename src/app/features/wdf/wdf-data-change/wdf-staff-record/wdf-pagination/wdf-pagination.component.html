@@ -1,0 +1,20 @@
+<div class="govuk-grid-row">
+  <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__align-right">
+    <a
+      *ngIf="!isFirst"
+      class="asc-chevron-before govuk-button--link govuk-!-margin-top-3"
+      [routerLink]="'../' + previousID"
+      [fragment]=""
+      >Previous staff record</a
+    >
+  </div>
+  <div class="govuk-util__inline-block govuk-grid-column-one-half govuk-util__float-right govuk-util__align-right">
+    <a
+      *ngIf="!isLast"
+      class="asc-chevron-after govuk-button--link govuk-!-margin-top-3 margin-left-6"
+      [routerLink]="'../' + nextID"
+      [fragment]=""
+      >Next staff record</a
+    >
+  </div>
+</div>

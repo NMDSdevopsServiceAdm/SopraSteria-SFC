@@ -13,7 +13,7 @@ import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChange
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf.module';
+import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';

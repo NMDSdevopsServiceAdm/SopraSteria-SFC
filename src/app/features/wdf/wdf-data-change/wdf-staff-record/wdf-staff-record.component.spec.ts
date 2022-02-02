@@ -12,7 +12,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
 
-import { workerBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
+import { workerBuilder, workerBuilderWithWdf } from '../../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
