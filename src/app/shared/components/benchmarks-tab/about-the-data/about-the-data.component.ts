@@ -34,17 +34,15 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
+    const workplaceUid = this.workplace?.id ? this.workplace.id : this.route.snapshot.params.establishmentuid;
     this.subscriptions.add(
       this.permissionsService
-        .getPermissions(this.workplace.uid)
+        .getPermissions(workplaceUid)
         .pipe(
-          map((permission) => permission.permissions.canViewBenchmarks),
+          map((res) => res.permissions.includes('canViewBenchmarks')),
           filter((canViewBenchmarks) => canViewBenchmarks),
           switchMap(() => {
-            return this.benchmarksService.getTileData(
-              this.workplace && this.workplace.id ? this.workplace.id : this.route.snapshot.params.establishmentuid,
-              [],
-            );
+            return this.benchmarksService.getTileData(workplaceUid, []);
           }),
         )
         .subscribe((data) => {

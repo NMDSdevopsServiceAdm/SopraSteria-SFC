@@ -20,7 +20,7 @@ import { render } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 
 describe('UserAccountsSummaryComponent', () => {
-  const setup = async (showBanner = false, isAdmin = true, subsidiaries = 0) => {
+  const setup = async (showBanner = false, isAdmin = false, subsidiaries = 0) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(UserAccountsSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -32,7 +32,7 @@ describe('UserAccountsSummaryComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(['canAddUser'], isAdmin),
           deps: [HttpClient, Router, UserService],
         },
         {

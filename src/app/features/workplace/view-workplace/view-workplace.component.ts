@@ -11,7 +11,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -56,8 +58,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
     this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe((permission) => {
-        this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
+      this.permissionsService.getPermissions(this.workplace.uid).subscribe((res) => {
+        this.canViewBenchmarks = res.permissions.includes('canViewBenchmarks');
       }),
     );
 
