@@ -3,18 +3,19 @@ const models = require('../../models');
 
 const getPermissions = async (req) => {
   const rawEstablishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
-  const establishmentInfo = convertEstablishmentInfo(rawEstablishmentInfo);
+  const rawUserInfo = await models.user.getCanManageWdfClaims(req.userUid);
+  const establishmentAndUserInfo = convertEstablishmentAndUserInfo(rawEstablishmentInfo, rawUserInfo);
 
   const estabType = getEstablishmentType(req.establishment);
 
-  if (req.role === 'Admin') return adminPermissions(estabType, establishmentInfo, req.isParent);
+  if (req.role === 'Admin') return adminPermissions(estabType, establishmentAndUserInfo, req.isParent);
 
   if (ownsData(estabType, req))
     return req.role === 'Edit'
-      ? editPermissions(estabType, establishmentInfo, req.isParent)
-      : readPermissions(establishmentInfo);
+      ? editPermissions(estabType, establishmentAndUserInfo, req.isParent)
+      : readPermissions(establishmentAndUserInfo);
 
-  return getViewingPermissions(req.dataPermissions, establishmentInfo);
+  return getViewingPermissions(req.dataPermissions, establishmentAndUserInfo);
 };
 
 const getEstablishmentType = (establishment) => {
@@ -32,27 +33,27 @@ const ownsData = (estabType, req) =>
   _isParentWhichOwnsSubData(estabType, req) ||
   _isParentViewingOwnData(estabType, req);
 
-const getViewingPermissions = (dataPermissions = 'None', establishmentInfo) => {
+const getViewingPermissions = (dataPermissions = 'None', establishmentAndUserInfo) => {
   if (dataPermissions === 'Workplace') {
-    return dataPermissionWorkplace(establishmentInfo);
+    return dataPermissionWorkplace(establishmentAndUserInfo);
   } else if (dataPermissions === 'Workplace and Staff') {
-    return dataPermissionWorkplaceAndStaff(establishmentInfo);
+    return dataPermissionWorkplaceAndStaff(establishmentAndUserInfo);
   }
-  return dataPermissionNone(establishmentInfo);
+  return dataPermissionNone(establishmentAndUserInfo);
 };
 
-const readPermissions = (establishmentInfo) => [
+const readPermissions = (establishmentAndUserInfo) => [
   'canViewEstablishment',
   'canViewWdfReport',
   'canViewUser',
   'canViewListOfUsers',
   'canDownloadWdfReport',
   'canViewNinoDob',
-  ...getAdditionalReadPermissions(establishmentInfo),
+  ...getAdditionalReadPermissions(establishmentAndUserInfo),
 ];
 
-const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) => [
-  ...readPermissions(establishmentInfo),
+const editPermissions = (estabType = 'Standalone', establishmentAndUserInfo, isLoggedInAsParent) => [
+  ...readPermissions(establishmentAndUserInfo),
   'canAddUser',
   'canBulkUpload',
   'canChangePermissionsForSubsidiary',
@@ -66,14 +67,14 @@ const editPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedIn
   'canTransferWorker',
   'canEditEstablishment',
   'canRunLocalAuthorityReport',
-  ...getAdditionalEditPermissions(estabType, establishmentInfo, isLoggedInAsParent),
+  ...getAdditionalEditPermissions(estabType, establishmentAndUserInfo, isLoggedInAsParent),
 ];
 
-const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedInAsParent) => {
+const adminPermissions = (estabType = 'Standalone', establishmentAndUserInfo, isLoggedInAsParent) => {
   const adminCant = ['canViewNinoDob'];
 
   return uniq([
-    ...editPermissions(estabType, establishmentInfo, isLoggedInAsParent),
+    ...editPermissions(estabType, establishmentAndUserInfo, isLoggedInAsParent),
     'canDeleteEstablishment',
     'canDeleteAllEstablishments',
     'canRunLocalAuthorityAdminReport',
@@ -84,55 +85,55 @@ const adminPermissions = (estabType = 'Standalone', establishmentInfo, isLoggedI
   ]).filter((permission) => !adminCant.includes(permission));
 };
 
-const dataPermissionNone = (establishmentInfo) => [
+const dataPermissionNone = (establishmentAndUserInfo) => [
   'canRemoveParentAssociation',
-  ...getAdditionalDataPermissionNonePermissions(establishmentInfo),
+  ...getAdditionalDataPermissionNonePermissions(establishmentAndUserInfo),
 ];
 
-const dataPermissionWorkplace = (establishmentInfo) => [
-  ...dataPermissionNone(establishmentInfo),
+const dataPermissionWorkplace = (establishmentAndUserInfo) => [
+  ...dataPermissionNone(establishmentAndUserInfo),
   'canChangePermissionsForSubsidiary',
   'canViewEstablishment',
   'canViewWdfReport',
   'canViewUser',
   'canViewListOfUsers',
-  ...getAdditionalDataPermissionWorkplacePermissions(establishmentInfo),
+  ...getAdditionalDataPermissionWorkplacePermissions(establishmentAndUserInfo),
 ];
 
-const dataPermissionWorkplaceAndStaff = (establishmentInfo) => [
-  ...dataPermissionWorkplace(establishmentInfo),
+const dataPermissionWorkplaceAndStaff = (establishmentAndUserInfo) => [
+  ...dataPermissionWorkplace(establishmentAndUserInfo),
   'canViewListOfWorkers',
   'canViewWorker',
 ];
 
-const getAdditionalEditPermissions = (estabType, establishmentInfo, isLoggedInAsParent) => {
+const getAdditionalEditPermissions = (estabType, establishmentAndUserInfo, isLoggedInAsParent) => {
   const additionalPermissions = [
     _canAddEstablishment(estabType),
     _canDeleteEstablishment(estabType),
-    _canLinkToParent(isLoggedInAsParent, establishmentInfo),
-    _canRemoveParentAssociation(isLoggedInAsParent, establishmentInfo),
+    _canLinkToParent(isLoggedInAsParent, establishmentAndUserInfo),
+    _canRemoveParentAssociation(isLoggedInAsParent, establishmentAndUserInfo),
     _canDownloadWdfReport(isLoggedInAsParent),
-    _canBecomeAParent(isLoggedInAsParent, establishmentInfo),
-    _canChangeDataOwner(establishmentInfo),
+    _canBecomeAParent(isLoggedInAsParent, establishmentAndUserInfo),
+    _canChangeDataOwner(establishmentAndUserInfo),
   ];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
 
-const getAdditionalReadPermissions = (establishmentInfo) => {
-  const additionalPermissions = [_canViewBenchmarks(establishmentInfo)];
+const getAdditionalReadPermissions = (establishmentAndUserInfo) => {
+  const additionalPermissions = [_canViewBenchmarks(establishmentAndUserInfo)];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
 
-const getAdditionalDataPermissionNonePermissions = (establishmentInfo) => {
-  const additionalPermissions = [_canViewBenchmarks(establishmentInfo)];
+const getAdditionalDataPermissionNonePermissions = (establishmentAndUserInfo) => {
+  const additionalPermissions = [_canViewBenchmarks(establishmentAndUserInfo)];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
 
-const getAdditionalDataPermissionWorkplacePermissions = (establishmentInfo) => {
-  const additionalPermissions = [_canChangeDataOwner(establishmentInfo)];
+const getAdditionalDataPermissionWorkplacePermissions = (establishmentAndUserInfo) => {
+  const additionalPermissions = [_canChangeDataOwner(establishmentAndUserInfo)];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
@@ -143,40 +144,41 @@ const _isParentWhichOwnsSubData = (estabType, req) => estabType === 'Subsidiary'
 
 const _isParentViewingOwnData = (estabType, req) => estabType === 'Parent' && req.isParent;
 
-const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishmentInfo) =>
-  !isLoggedInAsParent && !establishmentInfo.hasParent && !establishmentInfo.hasRequestedToBecomeAParent;
+const _isStandaloneAndNoRequestToBecomeParent = (isLoggedInAsParent, establishmentAndUserInfo) =>
+  !isLoggedInAsParent && !establishmentAndUserInfo.hasParent && !establishmentAndUserInfo.hasRequestedToBecomeAParent;
 
-const _isRegulatedAndHasServiceWithBenchmarksData = (establishmentInfo) =>
-  [24, 25, 20].includes(establishmentInfo.mainServiceId) && establishmentInfo.isRegulated;
+const _isRegulatedAndHasServiceWithBenchmarksData = (establishmentAndUserInfo) =>
+  [24, 25, 20].includes(establishmentAndUserInfo.mainServiceId) && establishmentAndUserInfo.isRegulated;
 
 const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
 
 const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
 
-const _canLinkToParent = (isLoggedInAsParent, establishmentInfo) =>
-  _isStandaloneAndNoRequestToBecomeParent(isLoggedInAsParent, establishmentInfo) ? 'canLinkToParent' : undefined;
+const _canLinkToParent = (isLoggedInAsParent, establishmentAndUserInfo) =>
+  _isStandaloneAndNoRequestToBecomeParent(isLoggedInAsParent, establishmentAndUserInfo) ? 'canLinkToParent' : undefined;
 
-const _canRemoveParentAssociation = (isLoggedInAsParent, establishmentInfo) =>
-  !isLoggedInAsParent && establishmentInfo.hasParent ? 'canRemoveParentAssociation' : undefined;
+const _canRemoveParentAssociation = (isLoggedInAsParent, establishmentAndUserInfo) =>
+  !isLoggedInAsParent && establishmentAndUserInfo.hasParent ? 'canRemoveParentAssociation' : undefined;
 
 const _canDownloadWdfReport = (isLoggedInAsParent) => (isLoggedInAsParent ? 'canDownloadWdfReport' : undefined);
 
-const _canBecomeAParent = (isLoggedInAsParent, establishmentInfo) =>
-  !isLoggedInAsParent && !establishmentInfo.hasParent ? 'canBecomeAParent' : undefined;
+const _canBecomeAParent = (isLoggedInAsParent, establishmentAndUserInfo) =>
+  !isLoggedInAsParent && !establishmentAndUserInfo.hasParent ? 'canBecomeAParent' : undefined;
 
-const _canViewBenchmarks = (establishmentInfo) =>
-  _isRegulatedAndHasServiceWithBenchmarksData(establishmentInfo) ? 'canViewBenchmarks' : undefined;
+const _canViewBenchmarks = (establishmentAndUserInfo) =>
+  _isRegulatedAndHasServiceWithBenchmarksData(establishmentAndUserInfo) ? 'canViewBenchmarks' : undefined;
 
-const _canChangeDataOwner = (establishmentInfo) =>
-  !establishmentInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
+const _canChangeDataOwner = (establishmentAndUserInfo) =>
+  !establishmentAndUserInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
 
-const convertEstablishmentInfo = (rawEstablishmentInfo) => {
+const convertEstablishmentAndUserInfo = (rawEstablishmentInfo, rawUserInfo) => {
   return {
     hasParent: rawEstablishmentInfo.get('hasParent'),
     mainServiceId: rawEstablishmentInfo.mainService.id,
     hasRequestedToBecomeAParent: rawEstablishmentInfo.get('hasRequestedToBecomeAParent'),
     isRegulated: rawEstablishmentInfo.get('IsRegulated'),
     dataOwnershipRequested: rawEstablishmentInfo.dataOwnershipRequested,
+    canManageWdfClaims: rawUserInfo.CanManageWdfClaimsValue,
   };
 };
 

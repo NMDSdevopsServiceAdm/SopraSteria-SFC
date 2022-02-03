@@ -24,6 +24,10 @@ describe('permissions', () => {
       };
     });
 
+    sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
+      return { CanManageWdfClaimsValue: false };
+    });
+
     req = {
       role: 'Edit',
       parentIsOwner: false,
@@ -156,7 +160,7 @@ describe('permissions', () => {
 
       describe('canLinkToParent', async () => {
         beforeEach(() => {
-          sinon.restore();
+          models.establishment.getInfoForPermissions.restore();
         });
 
         it('should return canLinkToParent permission when hasParent, hasRequestedToBecomeAParent and req.isParent is false', async () => {
@@ -242,7 +246,7 @@ describe('permissions', () => {
 
       describe('canRemoveParentAssociation', async () => {
         beforeEach(() => {
-          sinon.restore();
+          models.establishment.getInfoForPermissions.restore();
         });
 
         it('should return canRemoveParentAssociation permission when hasParent is true and req.isParent is false', async () => {
@@ -346,7 +350,7 @@ describe('permissions', () => {
 
       describe('canBecomeAParent', async () => {
         beforeEach(() => {
-          sinon.restore();
+          models.establishment.getInfoForPermissions.restore();
         });
 
         it('should return canBecomeAParent permission when hasParent and req.isParent is false', async () => {
@@ -438,7 +442,7 @@ describe('permissions', () => {
         });
 
         it('should not return canChangeDataOwner permission when dataOwnershipRequested is true', async () => {
-          sinon.restore();
+          models.establishment.getInfoForPermissions.restore();
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
             return {
               mainService: { id: 1 },
@@ -477,7 +481,7 @@ describe('permissions', () => {
 
       describe('canViewBenchmarks', async () => {
         beforeEach(() => {
-          sinon.restore();
+          models.establishment.getInfoForPermissions.restore();
         });
 
         it('should return canViewBenchmarks permission when isRegulated and main service id is in [24, 25, 20]', async () => {
