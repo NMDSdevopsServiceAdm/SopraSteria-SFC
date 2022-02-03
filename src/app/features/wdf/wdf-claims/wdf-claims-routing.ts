@@ -1,18 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { WdfGrantLetterComponent } from './wdf-grant-letter/wdf-grant-letter.component';
+
 const routes: Routes = [
-  //   {
-  //     path: '',
-  //     component: WdfOverviewComponent,
-  //     data: { title: 'Workforce Development Fund' },
-  //   },
-  //   {
-  //     path: 'data',
-  //     component: WdfDataComponent,
-  //     canActivate: [HasPermissionsGuard],
-  //     data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
-  //   },
+  {
+    path: 'grant-letter',
+    component: WdfGrantLetterComponent,
+    data: { title: 'WDF Grant Letter' },
+  },
 ];
 
 @NgModule({
