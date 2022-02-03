@@ -60,3 +60,5 @@ provider:
 functions:
   validateWorker:
     handler: handler.validateWorker
+  validateTraining:
+    handler: handler.validateTraining

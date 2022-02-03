@@ -1,13 +1,6 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const get = require('lodash/get');
-
-const csvQuote = (toCsv) => {
-  if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-    return '"' + toCsv.replace(/"/g, '""') + '"';
-  }
-
-  return toCsv;
-};
+const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const _maptoCSVregisteredNurse = (registeredNurse) => {
   switch (registeredNurse) {

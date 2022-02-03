@@ -1,29 +1,9 @@
-const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
-const csvQuote = (toCsv) => {
-  if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
-    return '"' + toCsv.replace(/"/g, '""') + '"';
-  }
+const BUDI = require('../classes/BUDI').BUDI;
 
-  return toCsv;
-};
-
-// input is a string date in format "YYYY-MM-DD"
-const convertIso8601ToUkDate = (dateText) => {
-  if (dateText) {
-    const dateParts = String(dateText).split('-');
-
-    return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-  }
-
-  return '';
-};
-
-const _headers_v1 = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
-
-class Training {
-  constructor(currentLine, lineNumber) {
+class TrainingCsvValidator {
+  constructor(currentLine, lineNumber, mappings) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
@@ -36,17 +16,10 @@ class Training {
     this._category = null;
     this._accredited = null;
     this._notes = null;
+
+    this.BUDI = new BUDI(mappings);
   }
 
-  static get UNCHECKED_WORKER_ERROR() {
-    return 996;
-  }
-  static get UNCHECKED_ESTABLISHMENT_ERROR() {
-    return 997;
-  }
-  static get HEADERS_ERROR() {
-    return 999;
-  }
   static get LOCALESTID_ERROR() {
     return 1000;
   }
@@ -71,10 +44,6 @@ class Training {
   static get NOTES_ERROR() {
     return 1070;
   }
-  static get WORKER_DOB_TRAINING_WARNING() {
-    return 1080;
-  }
-
   static get DATE_COMPLETED_WARNING() {
     return 2020;
   }
@@ -92,14 +61,6 @@ class Training {
   }
   static get NOTES_WARNING() {
     return 2070;
-  }
-
-  static headers() {
-    return _headers_v1;
-  }
-
-  get headers() {
-    return _headers_v1;
   }
 
   get lineNumber() {
@@ -151,7 +112,7 @@ class Training {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.LOCALESTID_ERROR,
+        errCode: TrainingCsvValidator.LOCALESTID_ERROR,
         errType: 'LOCALESTID_ERROR',
         error: 'LOCALESTID has not been supplied',
         source: this._currentLine.LOCALESTID,
@@ -163,7 +124,7 @@ class Training {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.LOCALESTID_ERROR,
+        errCode: TrainingCsvValidator.LOCALESTID_ERROR,
         errType: 'LOCALESTID_ERROR',
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.LOCALESTID,
@@ -185,7 +146,7 @@ class Training {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.UNIQUE_WORKER_ID_ERROR,
+        errCode: TrainingCsvValidator.UNIQUE_WORKER_ID_ERROR,
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: 'UNIQUEWORKERID has not been supplied',
         source: this._currentLine.UNIQUEWORKERID,
@@ -197,7 +158,7 @@ class Training {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.UNIQUE_WORKER_ID_ERROR,
+        errCode: TrainingCsvValidator.UNIQUE_WORKER_ID_ERROR,
         errType: 'UNIQUE_WORKER_ID_ERROR',
         error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
@@ -222,7 +183,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.DATE_COMPLETED_ERROR,
+          errCode: TrainingCsvValidator.DATE_COMPLETED_ERROR,
           errType: 'DATE_COMPLETED_ERROR',
           error: 'DATECOMPLETED is incorrectly formatted',
           source: this._currentLine.DATECOMPLETED,
@@ -234,7 +195,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.DATE_COMPLETED_ERROR,
+          errCode: TrainingCsvValidator.DATE_COMPLETED_ERROR,
           errType: 'DATE_COMPLETED_ERROR',
           error: 'DATECOMPLETED is invalid',
           source: this._currentLine.DATECOMPLETED,
@@ -246,7 +207,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.DATE_COMPLETED_ERROR,
+          errCode: TrainingCsvValidator.DATE_COMPLETED_ERROR,
           errType: 'DATE_COMPLETED_ERROR',
           error: 'DATECOMPLETED is in the future',
           source: this._currentLine.DATECOMPLETED,
@@ -276,7 +237,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.EXPIRY_DATE_ERROR,
+          errCode: TrainingCsvValidator.EXPIRY_DATE_ERROR,
           errType: 'EXPIRY_DATE_ERROR',
           error: 'EXPIRYDATE is incorrectly formatted',
           source: this._currentLine.EXPIRYDATE,
@@ -288,7 +249,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.EXPIRY_DATE_ERROR,
+          errCode: TrainingCsvValidator.EXPIRY_DATE_ERROR,
           errType: 'EXPIRY_DATE_ERROR',
           error: 'EXPIRYDATE is invalid',
           source: this._currentLine.EXPIRYDATE,
@@ -300,7 +261,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.EXPIRY_DATE_ERROR,
+          errCode: TrainingCsvValidator.EXPIRY_DATE_ERROR,
           errType: 'EXPIRY_DATE_ERROR',
           error: 'EXPIRYDATE must be after DATECOMPLETED',
           source: this._currentLine.EXPIRYDATE,
@@ -325,7 +286,7 @@ class Training {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.DESCRIPTION_ERROR,
+        errCode: TrainingCsvValidator.DESCRIPTION_ERROR,
         errType: 'DESCRIPTION_ERROR',
         error: 'DESCRIPTION has not been supplied',
         source: this._currentLine.DESCRIPTION,
@@ -337,7 +298,7 @@ class Training {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.DESCRIPTION_ERROR,
+        errCode: TrainingCsvValidator.DESCRIPTION_ERROR,
         errType: 'DESCRIPTION_ERROR',
         error: `DESCRIPTION is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.DESCRIPTION,
@@ -353,12 +314,12 @@ class Training {
   _validateCategory() {
     const myCategory = parseInt(this._currentLine.CATEGORY, 10);
 
-    if (Number.isNaN(myCategory) || BUDI.trainingCategory(BUDI.TO_ASC, myCategory) === null) {
+    if (Number.isNaN(myCategory) || this.BUDI.trainingCategory(this.BUDI.TO_ASC, myCategory) === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Training.CATEGORY_ERROR,
+        errCode: TrainingCsvValidator.CATEGORY_ERROR,
         errType: 'CATEGORY_ERROR',
         error: 'CATEGORY has not been supplied',
         source: this._currentLine.CATEGORY,
@@ -380,7 +341,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.ACCREDITED_ERROR,
+          errCode: TrainingCsvValidator.ACCREDITED_ERROR,
           errType: 'ACCREDITED_ERROR',
           error: 'ACCREDITED is invalid',
           source: this._currentLine.ACCREDITED,
@@ -408,13 +369,13 @@ class Training {
 
   _transformTrainingCategory() {
     if (this._category) {
-      const mappedCategory = BUDI.trainingCategory(BUDI.TO_ASC, this._category);
+      const mappedCategory = this.BUDI.trainingCategory(this.BUDI.TO_ASC, this._category);
       if (mappedCategory === null) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.CATEGORY_ERROR,
+          errCode: TrainingCsvValidator.CATEGORY_ERROR,
           errType: 'CATEGORY_ERROR',
           error: 'CATEGORY has not been supplied',
           source: this._currentLine.CATEGORY,
@@ -436,7 +397,7 @@ class Training {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Training.NOTES_ERROR,
+          errCode: TrainingCsvValidator.NOTES_ERROR,
           errType: 'NOTES_ERROR',
           error: `NOTES is longer than ${MAX_LENGTH} characters`,
           source: this._currentLine.NOTES,
@@ -450,78 +411,7 @@ class Training {
     }
   }
 
-  preValidate(header) {
-    return this._validateHeaders(header);
-  }
-
-  static isContent(data) {
-    const contentRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
-    return contentRegex.test(data.substring(0, 50));
-  }
-
-  _validateHeaders(headers) {
-    // only run once for first line, so check _lineNumber
-    if (_headers_v1 !== headers) {
-      this._validationErrors.push({
-        worker: this._currentLine ? this._currentLine.UNIQUEWORKERID : null,
-        name: this._currentLine ? this._currentLine.LOCALESTID : null,
-        lineNumber: 1,
-        errCode: Training.HEADERS_ERROR,
-        errType: 'HEADERS_ERROR',
-        error: `Training headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
-        source: headers,
-        column: '',
-      });
-      return false;
-    }
-    return true;
-  }
-
-  // add unchecked establishment reference validation error
-  dobTrainingMismatch() {
-    return {
-      origin: 'Training',
-      lineNumber: this._lineNumber,
-      errCode: Training.WORKER_DOB_TRAINING_WARNING,
-      errType: 'WORKER_DOB_TRAINING_WARNING',
-      error: "DATECOMPLETED is before staff record's date of birth",
-      source: this._currentLine.LOCALESTID,
-      column: 'DATECOMPLETED',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  uncheckedEstablishment() {
-    return {
-      origin: 'Training',
-      lineNumber: this._lineNumber,
-      errCode: Training.UNCHECKED_ESTABLISHMENT_ERROR,
-      errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
-      error: 'LOCALESTID does not exist in Workplace File',
-      source: this._currentLine.LOCALESTID,
-      column: 'LOCALESTID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // add unchecked establishment reference validation error
-  uncheckedWorker() {
-    return {
-      origin: 'Training',
-      lineNumber: this._lineNumber,
-      errCode: Training.UNCHECKED_WORKER_ERROR,
-      errType: 'UNCHECKED_WORKER_ERROR',
-      error: 'UNIQUEWORKERID has not been supplied',
-      source: this._currentLine.UNIQUEWORKERID,
-      column: 'UNIQUEWORKERID',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-    };
-  }
-
-  // returns true on success, false is any attribute of Training fails
+  // returns true on success, false is any attribute of TrainingCsvValidator fails
   validate() {
     let status = true;
     status = !this._validateLocaleStId() ? false : status;
@@ -546,7 +436,7 @@ class Training {
 
   toJSON() {
     return {
-      localeStId: this._localeStId,
+      localId: this._localeStId,
       uniqueWorkerId: this._uniqueWorkerId,
       completed: this._dateCompleted ? this._dateCompleted.format('DD/MM/YYYY') : undefined,
       expiry: this._expiry ? this._expiry.format('DD/MM/YYYY') : undefined,
@@ -554,6 +444,7 @@ class Training {
       category: this._category,
       accredited: this._accredited,
       notes: this._notes,
+      lineNumber: this._lineNumber,
     };
   }
 
@@ -581,43 +472,6 @@ class Training {
       };
     });
   }
-
-  // takes the given Training entity and writes it out to CSV string (one line)
-  static toCSV(establishmentId, workerId, entity) {
-    // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
-    const columns = [];
-    columns.push(csvQuote(establishmentId));
-    columns.push(csvQuote(workerId));
-
-    columns.push(BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id));
-    columns.push(entity.title ? csvQuote(entity.title) : '');
-
-    columns.push(convertIso8601ToUkDate(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-    columns.push(convertIso8601ToUkDate(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
-
-    let accredited = '';
-    switch (entity.accredited) {
-      case 'Yes':
-        accredited = 1;
-        break;
-      case 'No':
-        accredited = 0;
-        break;
-      case "Don't know":
-        accredited = 999;
-        break;
-    }
-    columns.push(accredited);
-    columns.push(entity.notes ? csvQuote(decodeURI(entity.notes)) : '');
-
-    return columns.join(',');
-  }
-
-  toCSV(establishmentId, workerId, entity) {
-    return Training.toCSV(establishmentId, workerId, entity);
-  }
 }
 
-module.exports.Training = Training;
-module.exports.TrainingFileHeaders = _headers_v1;
-module.exports.convertIso8601ToUkDate = convertIso8601ToUkDate;
+module.exports.TrainingCsvValidator = TrainingCsvValidator;

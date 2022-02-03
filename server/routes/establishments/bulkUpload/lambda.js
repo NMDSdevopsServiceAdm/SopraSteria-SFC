@@ -25,6 +25,16 @@ const validateWorkerLambda = async (thisLine, currentLineNumber, existingWorker)
   return await invokeLambda('validateWorker', payload);
 };
 
+const validateTrainingLambda = async (thisLine, currentLineNumber) => {
+  const payload = {
+    thisLine,
+    currentLineNumber,
+    mappings,
+  };
+  return await invokeLambda('validateTraining', payload);
+};
+
 module.exports = {
   validateWorkerLambda,
+  validateTrainingLambda,
 };

@@ -114,10 +114,6 @@ class Training extends EntityValidator {
   get uid() {
     return this._uid;
   }
-  get workerUid() {
-    return this._workerUid;
-  }
-
   get created() {
     return this._created;
   }
