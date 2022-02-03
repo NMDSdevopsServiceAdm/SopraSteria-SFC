@@ -16,7 +16,7 @@ import { AdminSkipService } from '../admin-skip.service';
 })
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
-  public sanitise = true;
+  public sanitise: boolean;
   public isAdmin: boolean;
 
   constructor(
@@ -32,6 +32,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.establishment = this.establishmentService.primaryWorkplace;
     this.bulkUploadService.setReturnTo(null);
     this.isAdmin = this.route.snapshot.data.loggedInUser.role === 'Admin';
+    this.sanitise = this.isAdmin ? true : false;
   }
 
   public toggleSanitise(sanitiseData: boolean): void {
