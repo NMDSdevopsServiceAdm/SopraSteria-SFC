@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { UserDetails } from '@core/model/userDetails.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkerService } from '@core/services/worker.service';
+import { UserService } from '@core/services/user.service';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class WorkersResolver implements Resolve<any> {
+export class AllUsersForEstablishmentResolver implements Resolve<any> {
   constructor(
-    private router: Router,
-    private workerService: WorkerService,
+    private userService: UserService,
     private establishmentService: EstablishmentService,
+    private router: Router,
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<Worker[] | null> {
+  resolve(route: ActivatedRouteSnapshot): Observable<Array<UserDetails> | null> {
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;
 
-    return this.workerService.getAllWorkers(workplaceUid).pipe(
+    return this.userService.getAllUsersForEstablishment(workplaceUid).pipe(
       catchError(() => {
         this.router.navigate(['/problem-with-the-service']);
         return of(null);
