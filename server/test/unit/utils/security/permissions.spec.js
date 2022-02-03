@@ -537,6 +537,42 @@ describe('permissions', () => {
           expect(returnedPermissions).not.to.include('canViewBenchmarks');
         });
       });
+
+      describe('canManageWdfClaims', async () => {
+        it('should include canManageWdfClaims in returned array when is Wdf user', async () => {
+          models.user.getCanManageWdfClaims.restore();
+          sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
+            return { CanManageWdfClaimsValue: true };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canManageWdfClaims');
+        });
+      });
+    });
+
+    describe('None user', async () => {
+      beforeEach(() => {
+        req.role = 'None';
+      });
+
+      it('should return empty array when role is None without canManageWdfClaims', async () => {
+        const returnedPermissions = await getPermissions(req);
+
+        expect(returnedPermissions).to.deep.equal([]);
+      });
+
+      it('should return array with canManageWdfClaims when is Wdf user', async () => {
+        models.user.getCanManageWdfClaims.restore();
+        sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
+          return { CanManageWdfClaimsValue: true };
+        });
+
+        const returnedPermissions = await getPermissions(req);
+
+        expect(returnedPermissions).to.deep.equal(['canManageWdfClaims']);
+      });
     });
   });
 

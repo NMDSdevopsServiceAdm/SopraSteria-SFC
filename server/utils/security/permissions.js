@@ -10,10 +10,11 @@ const getPermissions = async (req) => {
 
   if (req.role === 'Admin') return adminPermissions(estabType, establishmentAndUserInfo, req.isParent);
 
-  if (ownsData(estabType, req))
-    return req.role === 'Edit'
-      ? editPermissions(estabType, establishmentAndUserInfo, req.isParent)
-      : readPermissions(establishmentAndUserInfo);
+  if (ownsData(estabType, req)) {
+    if (req.role === 'Edit') return editPermissions(estabType, establishmentAndUserInfo, req.isParent);
+    if (req.role === 'Read') return readPermissions(establishmentAndUserInfo);
+    if (req.role === 'None') return nonePermissions(establishmentAndUserInfo);
+  }
 
   return getViewingPermissions(req.dataPermissions, establishmentAndUserInfo);
 };
@@ -42,7 +43,11 @@ const getViewingPermissions = (dataPermissions = 'None', establishmentAndUserInf
   return dataPermissionNone(establishmentAndUserInfo);
 };
 
+const nonePermissions = (establishmentAndUserInfo) =>
+  [_canManageWdfClaims(establishmentAndUserInfo)].filter((item) => item !== undefined);
+
 const readPermissions = (establishmentAndUserInfo) => [
+  ...nonePermissions(establishmentAndUserInfo),
   'canViewEstablishment',
   'canViewWdfReport',
   'canViewUser',
@@ -170,6 +175,9 @@ const _canViewBenchmarks = (establishmentAndUserInfo) =>
 
 const _canChangeDataOwner = (establishmentAndUserInfo) =>
   !establishmentAndUserInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
+
+const _canManageWdfClaims = (establishmentAndUserInfo) =>
+  establishmentAndUserInfo.canManageWdfClaims ? 'canManageWdfClaims' : undefined;
 
 const convertEstablishmentAndUserInfo = (rawEstablishmentInfo, rawUserInfo) => {
   return {
