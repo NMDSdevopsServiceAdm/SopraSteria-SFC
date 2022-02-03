@@ -35,13 +35,16 @@ const validateWorkerCsvLine = async (
 ) => {
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
 
-  if (thisLine.NINUMBER.toLowerCase() === 'admin') {
-    thisLine.NINUMBER = existingWorker.nationalInsuranceNumber.currentValue;
-  }
+  // if (thisLine.NINUMBER.toLowerCase() === 'admin') {
+  //   thisLine.NINUMBER = existingWorker.nationalInsuranceNumber.currentValue;
+  // }
+  thisLine.NINUMBER = restoreNINumber(thisLine.NINUMBER, existingWorker.nationalInsuranceNumber.currentValue);
 
-  if (thisLine.DOB.toLowerCase() === 'admin') {
-    thisLine.DOB = dateFormatter(existingWorker.dateOfBirth.currentValue);
-  }
+  // if (thisLine.DOB.toLowerCase() === 'admin') {
+  //   thisLine.DOB = dateFormatter(existingWorker.dateOfBirth.currentValue);
+  // }
+
+  thisLine.NINUMBER = restoreDOB(thisLine.DOB, existingWorker.dateOfBirth.currentValue);
 
   const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } =
     await validateWorkerLambda(thisLine, currentLineNumber, existingWorker);
@@ -94,6 +97,16 @@ const loadWorkerQualifications = async (thisQual, thisApiWorker) => {
   thisApiWorker.associateQualification(thisApiQualification);
 };
 
+const restoreNINumber = (nINumber, existingWorkerNINumber) => {
+  return nINumber.toLowerCase() === 'admin' ? existingWorkerNINumber : nINumber;
+};
+
+const restoreDOB = (dob, existingWorkerDOB) => {
+  return dob.toLowerCase() === 'admin' ? dateFormatter(existingWorkerDOB) : dob;
+};
+
 module.exports = {
   validateWorkerCsv,
+  restoreNINumber,
+  restoreDOB,
 };
