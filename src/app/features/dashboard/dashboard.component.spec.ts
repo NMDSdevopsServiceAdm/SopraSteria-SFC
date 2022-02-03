@@ -107,6 +107,7 @@ describe('DashboardComponent', () => {
         ...component.fixture.componentInstance.workplace,
       };
       establishment.isRegulated = false;
+      component.fixture.componentInstance.canViewListOfUsers = true;
       component.fixture.componentInstance.workplace = establishment;
       component.fixture.detectChanges();
 
@@ -116,6 +117,7 @@ describe('DashboardComponent', () => {
     it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
       const { component } = await setup(true);
 
+      component.fixture.componentInstance.canViewEstablishment = true;
       component.fixture.componentInstance.showSharingPermissionsBanner = true;
       component.fixture.detectChanges();
 

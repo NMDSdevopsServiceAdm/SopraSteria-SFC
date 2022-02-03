@@ -104,6 +104,7 @@ const addEstablishment = async (req, res) => {
     MainServiceId: null,
     MainServiceOther: req.body.mainServiceOther,
     IsRegulated: req.body.isRegulated,
+    NumberOfStaff: req.body.totalStaff,
   };
 
   try {
@@ -180,6 +181,7 @@ const addEstablishment = async (req, res) => {
         Latitude: establishmentData.Latitude,
         Longitude: establishmentData.Longitude,
         ustatus: 'PENDING',
+        numberOfStaff: establishmentData.NumberOfStaff,
       });
 
       // no Establishment properties on registration
