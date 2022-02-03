@@ -11,9 +11,7 @@ const getPermissions = async (req) => {
   if (req.role === 'Admin') return adminPermissions(estabType, establishmentAndUserInfo, req.isParent);
 
   if (ownsData(estabType, req)) {
-    if (req.role === 'Edit') return editPermissions(estabType, establishmentAndUserInfo, req.isParent);
-    if (req.role === 'Read') return readPermissions(establishmentAndUserInfo);
-    if (req.role === 'None') return nonePermissions(establishmentAndUserInfo);
+    return getDataOwnerPermissions(req, estabType, establishmentAndUserInfo);
   }
 
   return getViewingPermissions(req.dataPermissions, establishmentAndUserInfo);
@@ -34,12 +32,17 @@ const ownsData = (estabType, req) =>
   _isParentWhichOwnsSubData(estabType, req) ||
   _isParentViewingOwnData(estabType, req);
 
+const getDataOwnerPermissions = (req, estabType, establishmentAndUserInfo) => {
+  if (req.role === 'Edit') return editPermissions(estabType, establishmentAndUserInfo, req.isParent);
+  if (req.role === 'Read') return readPermissions(establishmentAndUserInfo);
+
+  return nonePermissions(establishmentAndUserInfo);
+};
+
 const getViewingPermissions = (dataPermissions = 'None', establishmentAndUserInfo) => {
-  if (dataPermissions === 'Workplace') {
-    return dataPermissionWorkplace(establishmentAndUserInfo);
-  } else if (dataPermissions === 'Workplace and Staff') {
-    return dataPermissionWorkplaceAndStaff(establishmentAndUserInfo);
-  }
+  if (dataPermissions === 'Workplace') return dataPermissionWorkplace(establishmentAndUserInfo);
+  if (dataPermissions === 'Workplace and Staff') return dataPermissionWorkplaceAndStaff(establishmentAndUserInfo);
+
   return dataPermissionNone(establishmentAndUserInfo);
 };
 
