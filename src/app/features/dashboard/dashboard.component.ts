@@ -49,7 +49,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     if (this.workplace) {
       this.getPermissions();
-      this.getCanViewBenchmarks();
       this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
       if (this.workplace.locationId) {
@@ -74,14 +73,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canAddUser = this.permissionsService.can(this.workplaceUid, 'canAddUser');
-  }
-
-  private getCanViewBenchmarks(): void {
-    this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplaceUid).subscribe((res) => {
-        this.canViewBenchmarks = res.permissions.includes('canViewBenchmarks');
-      }),
-    );
   }
 
   private setWorkersAndTrainingAlert(): void {
