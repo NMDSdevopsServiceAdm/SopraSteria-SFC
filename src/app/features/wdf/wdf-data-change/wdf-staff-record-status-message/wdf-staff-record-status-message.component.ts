@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { Worker } from '../../../core/model/worker.model';
+import { Worker } from '../../../../core/model/worker.model';
 
 @Component({
   selector: 'app-wdf-staff-record-status-message',

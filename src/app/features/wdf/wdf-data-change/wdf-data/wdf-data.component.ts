@@ -14,8 +14,8 @@ import sortBy from 'lodash/sortBy';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
-import { Worker } from '../../../core/model/worker.model';
+import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
+import { Worker } from '../../../../core/model/worker.model';
 
 @Component({
   selector: 'app-wdf-data',

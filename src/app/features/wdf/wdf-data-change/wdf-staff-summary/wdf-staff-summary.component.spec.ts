@@ -14,7 +14,7 @@ import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
+import { establishmentBuilder, workerBuilder } from '../../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 

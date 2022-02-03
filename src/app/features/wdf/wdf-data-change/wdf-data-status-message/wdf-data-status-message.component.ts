@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
+import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
 
 @Component({
   selector: 'app-wdf-data-status-message',
