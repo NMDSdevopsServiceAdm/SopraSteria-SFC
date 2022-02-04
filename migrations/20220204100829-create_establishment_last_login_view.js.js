@@ -30,17 +30,13 @@ module.exports = {
               WHERE ua."Username" =  u."Username" AND ua."EventType" = "loginSuccess"
               LIMIT 1
           ) AS "LastLogin"
+          FROM cqc."Establishment" e
+          WHERE e."Archived" = false
       );
     `);
   },
 
   down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.dropTable('users');
-    */
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastLogin"');
   },
 };
