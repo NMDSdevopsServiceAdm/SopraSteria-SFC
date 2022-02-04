@@ -35,16 +35,8 @@ const validateWorkerCsvLine = async (
 ) => {
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
 
-  // if (thisLine.NINUMBER.toLowerCase() === 'admin') {
-  //   thisLine.NINUMBER = existingWorker.nationalInsuranceNumber.currentValue;
-  // }
   thisLine.NINUMBER = restoreNINumber(thisLine.NINUMBER, existingWorker.nationalInsuranceNumber.currentValue);
-
-  // if (thisLine.DOB.toLowerCase() === 'admin') {
-  //   thisLine.DOB = dateFormatter(existingWorker.dateOfBirth.currentValue);
-  // }
-
-  thisLine.NINUMBER = restoreDOB(thisLine.DOB, existingWorker.dateOfBirth.currentValue);
+  thisLine.DOB = restoreDOB(thisLine.DOB, existingWorker.dateOfBirth.currentValue);
 
   const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } =
     await validateWorkerLambda(thisLine, currentLineNumber, existingWorker);
