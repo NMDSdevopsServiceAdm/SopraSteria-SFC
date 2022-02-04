@@ -45,40 +45,41 @@
                 id="conditional-grantLetter-conditional-1"
               >
                 <div class="govuk-form-group">
-                  <label class="govuk-label" for="Somebodyelse"> Full name </label>
-                  <span
-                    *ngIf="submitted && form.get('Somebodyelse').invalid"
-                    id="Somebodyelse-error"
-                    class="govuk-error-message"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('Somebodyelse') }}
-                  </span>
-                  <input
-                    class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="submitted && form.get('Somebodyelse').invalid"
-                    id="Somebody else"
-                    [formControlName]="'Somebodyelse'"
-                    name="Somebodyelse"
-                    type="text"
-                  />
-                </div>
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="Somebody else"> Email address </label>
-                  <span
-                    *ngIf="submitted && form.get('Somebody else').invalid"
-                    id="Somebody else-error"
-                    class="govuk-error-message"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('Somebody else') }}
-                  </span>
-                  <input
-                    class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="submitted && form.get('Somebody else').invalid"
-                    id="Somebody else"
-                    [formControlName]="'Somebodyelse'"
-                    name="Somebodyelse"
-                    type="text"
-                  />
+                  <div class="govuk-form-group">
+                    <label class="govuk-label" for="fullName"> Full name </label>
+                    <span *ngIf="submitted" id="fullName-error" class="govuk-error-message">
+                      <span *ngIf="this.form.get('fullName').errors" data-testid="errorMessage" id="fullName-error">{{
+                        getErrorMessage('fullName')
+                      }}</span>
+                    </span>
+                    <input
+                      class="govuk-input govuk-input--width-20"
+                      [class.govuk-input--error]="submitted && form.get('fullName').invalid"
+                      id="fullName"
+                      formControlName="fullName"
+                      name="fullName"
+                      type="text"
+                    />
+                  </div>
+                  <div class="govuk-form-group">
+                    <label class="govuk-label" for="emailAddress"> Email address </label>
+                    <span
+                      *ngIf="submitted && form.get('emailAddress').invalid"
+                      id="emailAddress-error"
+                      class="govuk-error-message"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getErrorMessage('emailAddress') }}
+                    </span>
+                    <input
+                      class="govuk-input govuk-input--width-20"
+                      [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
+                      id="emailAddress"
+                      formControlName="emailAddress"
+                      name="emailAddress"
+                      type="text"
+                    />
+                  </div>
                 </div>
               </div>
             </ng-container>

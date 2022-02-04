@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,19 +22,18 @@ export class WdfGrantLetterComponent implements OnInit {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    protected formBuilder: FormBuilder,
-    private establishmentService: EstablishmentService,
-    private permissionsService: PermissionsService,
-    private route: ActivatedRoute,
-  ) {
+  constructor(protected formBuilder: FormBuilder, public errorSummaryService: ErrorSummaryService) {
     this.form = this.formBuilder.group({
-      grantLetter: [null],
-      Somebodyelse: [],
+      grantLetter: [null, Validators.required],
+      fullName: [null, Validators.required],
+      emailAddress: [null, Validators.required],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.setupFormErrorsMap();
+  }
+
   public onSubmit(): void {
     this.submitted = true;
   }
@@ -44,23 +41,36 @@ export class WdfGrantLetterComponent implements OnInit {
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'employerType',
+        item: 'grantLetter',
         type: [
           {
             name: 'required',
-            message: 'Please select an Employer type',
+            message: 'Please select who you want to email Grant Letter',
           },
         ],
       },
       {
-        item: 'other',
+        item: 'fullName',
         type: [
           {
-            name: 'maxlength',
-            message: `Other Employer type must be characters or less`,
+            name: 'required',
+            message: 'Please enter full name',
+          },
+        ],
+      },
+      {
+        item: 'emailAddress',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter email address',
           },
         ],
       },
     ];
+  }
+  public getErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 }
