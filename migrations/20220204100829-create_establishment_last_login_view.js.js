@@ -26,8 +26,10 @@ module.exports = {
           ) AS "PrimaryUserEmail",
           (
             SELECT MAX(ua."When")
-              FROM cqc."UserAudit" ua
-              WHERE ua."Username" =  u."Username" AND ua."EventType" = "loginSuccess"
+              FROM cqc."User" u
+              LEFT JOIN cqc."UserAudit" ua
+              ON u."RegistrationID" = ua."UserFK"
+              WHERE e."EstablishmentID" = u."EstablishmentID AND ua."EventType" = "loginSuccess"
               LIMIT 1
           ) AS "LastLogin"
           FROM cqc."Establishment" e
