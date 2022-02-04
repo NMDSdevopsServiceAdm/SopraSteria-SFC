@@ -34,7 +34,7 @@ describe('BulkUploadPageComponent', () => {
   const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
 
   async function setup(role = 'Admin') {
-    const { fixture, getByTestId, queryByTestId, getByText } = await render(BulkUploadPageComponent, {
+    const { fixture, getByTestId, queryByTestId } = await render(BulkUploadPageComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -86,9 +86,7 @@ describe('BulkUploadPageComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentId = establishmentService.establishmentId;
-    const bulkUploadService = injector.inject(BulkUploadService) as BulkUploadService;
-    const bulkUploadSpy = spyOn(bulkUploadService, 'getDataCSV').and.callThrough();
+
     const router = injector.inject(Router) as Router;
 
     const component = fixture.componentInstance;
@@ -97,10 +95,7 @@ describe('BulkUploadPageComponent', () => {
       fixture,
       getByTestId,
       queryByTestId,
-      getByText,
       establishmentService,
-      establishmentId,
-      bulkUploadSpy,
       router,
     };
   }
@@ -108,6 +103,7 @@ describe('BulkUploadPageComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+
   it('should show last bulk upload date in first P', async () => {
     const { component, fixture } = await setup();
     component.establishment.lastBulkUploaded = '2021-01-04T14:42:03.540Z';
@@ -115,6 +111,7 @@ describe('BulkUploadPageComponent', () => {
     const p: HTMLElement = fixture.nativeElement.querySelector('p');
     expect(p.innerText).toEqual('Last bulk upload 4 January 2021');
   });
+
   it('should NOT show last bulk upload date in first P when no bulk upload date', async () => {
     const { component, fixture } = await setup();
     component.establishment.lastBulkUploaded = null;

@@ -57,7 +57,7 @@ describe('BulkUploadService', () => {
   it('should getDataCSV with the correct url when passed a bulk upload file type of WorkerSanitise', () => {
     service.getDataCSV('establishmentId', BulkUploadFileType.WorkerSanitise).subscribe();
 
-    const req = http.expectOne('/api/establishment/establishmentId/bulkupload/download/workers-sanitise');
+    const req = http.expectOne('/api/establishment/establishmentId/bulkupload/download/workersSanitise');
     expect(req.request.method).toBe('GET');
   });
 
