@@ -539,6 +539,12 @@ describe('permissions', () => {
       });
 
       describe('canManageWdfClaims', async () => {
+        it('should not include canManageWdfClaims in returned array when canManageWdfClaims is false', async () => {
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canManageWdfClaims');
+        });
+
         it('should include canManageWdfClaims in returned array when is Wdf user', async () => {
           models.user.getCanManageWdfClaims.restore();
           sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
@@ -555,12 +561,6 @@ describe('permissions', () => {
     describe('None user', async () => {
       beforeEach(() => {
         req.role = 'None';
-      });
-
-      it('should return empty array when role is None without canManageWdfClaims', async () => {
-        const returnedPermissions = await getPermissions(req);
-
-        expect(returnedPermissions).to.deep.equal([]);
       });
 
       it('should return array with canManageWdfClaims when is Wdf user', async () => {
