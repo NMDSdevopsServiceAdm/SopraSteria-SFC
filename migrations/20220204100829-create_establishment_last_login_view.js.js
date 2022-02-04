@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
     await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastLogin"');
 
     await queryInterface.sequelize.query(`
@@ -38,7 +38,7 @@ module.exports = {
     `);
   },
 
-  down: (queryInterface, Sequelize) => {
+  down: async (queryInterface, Sequelize) => {
     await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastLogin"');
   },
 };
