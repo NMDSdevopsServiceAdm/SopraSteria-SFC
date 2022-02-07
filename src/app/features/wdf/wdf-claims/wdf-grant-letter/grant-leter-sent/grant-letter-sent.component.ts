@@ -21,8 +21,7 @@ export class GrantLetterSentComponent implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
-    if (!this.form.valid) {
-    }
+    this.navigateToNextPage();
   }
 
   public navigateToNextPage(): void {
