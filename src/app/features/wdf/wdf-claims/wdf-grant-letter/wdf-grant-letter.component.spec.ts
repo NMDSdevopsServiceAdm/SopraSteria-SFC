@@ -32,4 +32,47 @@ describe('WdfGrantLetterComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+
+  describe('Top of page paragraph and reveals', async () => {
+    it('should display header for grant letter ', async () => {
+      const { queryByText } = await setup();
+      expect(queryByText('Manage WDF claims')).toBeTruthy();
+    });
+
+    it('should display paragraph for grant letter page', async () => {
+      const { getByTestId } = await setup();
+      const paragraph = getByTestId('info');
+      expect(paragraph).toBeTruthy();
+    });
+
+    it(`should display the reveal and its contents`, async () => {
+      const { fixture, getByTestId } = await setup();
+
+      const reveal = fixture.componentInstance.revealTitle;
+      const revealContent = getByTestId('reveal');
+
+      expect(reveal).toBeTruthy();
+      expect(revealContent).toBeTruthy();
+    });
+  });
+
+  describe('Grant Letter questions', async () => {
+    it('should display grant letter question', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Who do you want to email the grant letter to?')).toBeTruthy();
+    });
+
+    it('should display Myself for radio button', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Myself')).toBeTruthy();
+    });
+
+    it('should display Somebody else for radio button', async () => {
+      const { queryByText } = await setup();
+
+      expect(queryByText('Somebody else')).toBeTruthy();
+    });
+  });
 });

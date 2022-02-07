@@ -46,20 +46,19 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     this.flow = 'wdf-claims';
   }
 
-  public addControl(answer) {
+  public addControl(answer: string) {
+    this.submitted = false;
     if (answer === 'Somebody else') {
       this.form.addControl(
         'fullName',
-        new FormControl(null, { validators: [Validators.required, Validators.maxLength(120)], updateOn: 'submit' }),
+        new FormControl(null, { validators: [Validators.required, Validators.maxLength(120)] }),
       );
       this.form.addControl(
         'emailAddress',
         new FormControl(null, {
           validators: [Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)],
-          updateOn: 'submit',
         }),
       );
-
       this.formErrorsMap.push(
         {
           item: 'fullName',
@@ -81,8 +80,14 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
         },
       );
     } else if (answer === 'Myself') {
-      this.form.controls['fullName'].disable();
-      this.form.controls['emailAddress'].disable();
+      const { fullName, emailAddress } = this.form.controls;
+      if (fullName) {
+        this.form.removeControl('fullName');
+      }
+      if (emailAddress) {
+        this.form.removeControl('emailAddress');
+      }
+      this.formErrorsMap.splice(1, 2);
     }
   }
   public onSubmit(): void {
