@@ -33,6 +33,7 @@
                   name="grantLetter"
                   type="radio"
                   [value]="answer"
+                  (change)="addControl(answer)"
                 />
                 <label class="govuk-label govuk-radios__label" for="grantLetter-{{ idx }}">
                   {{ answer }}
@@ -44,42 +45,40 @@
                 [class.govuk-radios__conditional--hidden]="form.get('grantLetter').value !== 'Somebody else'"
                 id="conditional-grantLetter-conditional-1"
               >
-                <div class="govuk-form-group">
-                  <div class="govuk-form-group">
-                    <label class="govuk-label" for="fullName"> Full name </label>
-                    <span *ngIf="submitted" id="fullName-error" class="govuk-error-message">
-                      <span *ngIf="this.form.get('fullName').errors" data-testid="errorMessage" id="fullName-error">{{
-                        getErrorMessage('fullName')
-                      }}</span>
-                    </span>
-                    <input
-                      class="govuk-input govuk-input--width-20"
-                      [class.govuk-input--error]="submitted && form.get('fullName').invalid"
-                      id="fullName"
-                      formControlName="fullName"
-                      name="fullName"
-                      type="text"
-                    />
-                  </div>
-                  <div class="govuk-form-group">
-                    <label class="govuk-label" for="emailAddress"> Email address </label>
-                    <span
-                      *ngIf="submitted && form.get('emailAddress').invalid"
-                      id="emailAddress-error"
-                      class="govuk-error-message"
-                    >
-                      <span class="govuk-visually-hidden">Error:</span>
-                      {{ getErrorMessage('emailAddress') }}
-                    </span>
-                    <input
-                      class="govuk-input govuk-input--width-20"
-                      [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
-                      id="emailAddress"
-                      formControlName="emailAddress"
-                      name="emailAddress"
-                      type="text"
-                    />
-                  </div>
+                <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
+                  <label class="govuk-label" for="fullName"> Full name </label>
+                  <span *ngIf="submitted" id="fullName-error" class="govuk-error-message">
+                    <span *ngIf="this.form.get('fullName').errors" data-testid="errorMessage" id="fullName-error">{{
+                      getErrorMessage('fullName')
+                    }}</span>
+                  </span>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [class.govuk-input--error]="submitted && form.get('fullName').invalid"
+                    id="fullName"
+                    formControlName="fullName"
+                    name="fullName"
+                    type="text"
+                  />
+                </div>
+                <div class="govuk-form-group" *ngIf="this.form.get('emailAddress')">
+                  <label class="govuk-label" for="emailAddress"> Email address </label>
+                  <span
+                    *ngIf="submitted && form.get('emailAddress').invalid"
+                    id="emailAddress-error"
+                    class="govuk-error-message"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getErrorMessage('emailAddress') }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-input--width-20"
+                    [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
+                    id="emailAddress"
+                    formControlName="emailAddress"
+                    name="emailAddress"
+                    type="text"
+                  />
                 </div>
               </div>
             </ng-container>
