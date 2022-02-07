@@ -33,6 +33,7 @@ const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
 const SharingPermissionsBanner = require('./sharingPermissionsBanner');
 const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
+const WdfClaims = require('./wdfClaims');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -85,6 +86,7 @@ router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
 router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
+router.use('/:id/wdfClaims', WdfClaims);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {

@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { GrantLetterService } from '@core/services/wdf-claims/wdf-grant-letter.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,13 +23,16 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails> = [];
   public flow: string;
   public revealTitle = "What's a grant letter?";
+  public establishmentId: string;
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    protected formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     public errorSummaryService: ErrorSummaryService,
-    protected router: Router,
+    public router: Router,
+    public grantLetterService: GrantLetterService,
+    public establishmentService: EstablishmentService,
   ) {
     this.form = this.formBuilder.group(
       {
@@ -41,6 +46,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setupFormErrorsMap();
+    this.establishmentId = this.establishmentService.primaryWorkplace.uid;
     this.flow = 'wdf-claims';
   }
 
@@ -48,7 +54,12 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.form.valid) {
+      this.subscriptions.add(
+        this.grantLetterService.sendEmailGrantLetter(this.establishmentId, this.form.value).subscribe(),
+      );
       this.navigateToNextPage();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
