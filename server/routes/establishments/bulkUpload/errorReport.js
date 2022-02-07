@@ -9,9 +9,9 @@ const s3 = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
-const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training');
 const excelUtils = require('../../../utils/excelUtils');
 const { workerHeadersWithCHGUNIQUEWRKID } = require('./data/workerHeaders');
+const { trainingHeaders } = require('./data/trainingHeaders');
 
 const reportHeaders = [
   { header: 'Type', key: 'type' },
@@ -74,10 +74,10 @@ const createTableHeader = (currentWorksheet) => {
   }
 };
 
-const generateHeaderArray = (establishmentFileHeaders, trainingFileHeaders) => {
+const generateHeaderArray = (establishmentFileHeaders) => {
   allFileHeaders = allFileHeaders.concat(establishmentFileHeaders.split(','));
   allFileHeaders = allFileHeaders.concat(workerHeadersWithCHGUNIQUEWRKID.split(','));
-  allFileHeaders = allFileHeaders.concat(trainingFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(trainingHeaders.split(','));
 };
 
 const fillData = (WS, errorData) => {
@@ -114,7 +114,7 @@ const generateBUReport = async (req, res) => {
     return res.status(500).end();
   }
 
-  generateHeaderArray(EstablishmentFileHeaders, TrainingFileHeaders);
+  generateHeaderArray(EstablishmentFileHeaders);
   const data = await getErrorReport(req.establishmentId);
   let workbook = new excelJS.Workbook();
 

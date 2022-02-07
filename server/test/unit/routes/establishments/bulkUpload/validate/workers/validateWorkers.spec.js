@@ -1,31 +1,14 @@
 const expect = require('chai').expect;
+const sinon = require('sinon');
+
 const {
   createKeysForWorkers,
-  createWorkerKey,
-  establishmentNotFoundInFile,
-  addNoEstablishmentError,
-  deleteWorker,
+  associateWorkerWithEstablishment,
 } = require('../../../../../../../routes/establishments/bulkUpload/validate/workers/validateWorkers');
+const { Worker } = require('../../../../../../../models/classes/worker');
+const { Establishment } = require('../../../../../../../models/classes/establishment');
 
 describe('validateWorkers', () => {
-  describe('createWorkerKey', () => {
-    it('should return key with localId and uniqueWorkerId concatenated', async () => {
-      const worker = { localId: 'mockWorkplace', uniqueWorkerId: 'testUser' };
-
-      const workerKey = createWorkerKey(worker.localId, worker.uniqueWorkerId);
-
-      expect(workerKey).to.equal('mockWorkplacetestUser');
-    });
-
-    it('should return key with localId and uniqueWorkerId concatenated with whitespace removed', async () => {
-      const worker = { localId: 'Workplace With Spaces', uniqueWorkerId: 'Test User' };
-
-      const workerKey = createWorkerKey(worker.localId, worker.uniqueWorkerId);
-
-      expect(workerKey).to.equal('WorkplaceWithSpacesTestUser');
-    });
-  });
-
   describe('createKeysForWorkers', () => {
     it('should return array of keys with localId and uniqueWorkerId concatenated', async () => {
       const workers = [
@@ -40,71 +23,54 @@ describe('validateWorkers', () => {
     });
   });
 
-  describe('establishmentNotFoundInFile', () => {
-    it('should return true if no object with given key in allEstablishmentsByKey', async () => {
-      const allEstablishmentsByKey = {
-        establishment1: {},
-        establishment2: {},
+  describe('associateWorkerWithEstablishment', () => {
+    let myAPIEstablishments;
+    let myAPIWorkers;
+    let thisWorker;
+
+    beforeEach(() => {
+      myAPIEstablishments = {
+        bu: new Establishment(),
       };
-      const establishmentKey = 'unknownEstablishment';
 
-      const result = establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey);
+      thisWorker = {
+        lineNumber: 2,
+        uniqueWorkerId: 'a',
+      };
 
-      expect(result).to.equal(true);
+      const worker = new Worker();
+      sinon.stub(worker, 'key').get(() => 'a');
+      myAPIWorkers = {
+        2: worker,
+      };
     });
 
-    it('should return false if object with given key in allEstablishmentsByKey', async () => {
-      const allEstablishmentsByKey = {
-        establishment1: {},
-        establishment2: {},
+    it('should not modify myAPIEstablishments when no matching establishment found', async () => {
+      const establishmentKey = 'abc';
+
+      const expectedMyAPIEstablishments = {
+        bu: new Establishment(),
       };
-      const establishmentKey = 'establishment2';
 
-      const result = establishmentNotFoundInFile(allEstablishmentsByKey, establishmentKey);
+      associateWorkerWithEstablishment(myAPIEstablishments, establishmentKey, myAPIWorkers, thisWorker);
 
-      expect(result).to.equal(false);
+      expect(myAPIEstablishments).to.deep.equal(expectedMyAPIEstablishments);
     });
-  });
 
-  describe('addNoEstablishmentError', () => {
-    it('should add error to csvWorkerSchemaErrors with worker details', async () => {
-      const csvWorkerSchemaErrors = [];
+    it('should add worker to myAPIEstablishments when matching key in myAPIEstablishments', async () => {
+      const establishmentKey = 'bu';
 
-      const thisWorker = {
-        lineNumber: 5,
-        localId: 'testEstablishment',
-        uniqueWorkerId: 'testWorker',
+      const expectedEstablishment = new Establishment();
+
+      expectedEstablishment.associateWorker('a', new Worker());
+
+      const expectedMyAPIEstablishments = {
+        bu: expectedEstablishment,
       };
 
-      addNoEstablishmentError(csvWorkerSchemaErrors, thisWorker);
+      associateWorkerWithEstablishment(myAPIEstablishments, establishmentKey, myAPIWorkers, thisWorker);
 
-      expect(csvWorkerSchemaErrors.length).to.equal(1);
-      expect(csvWorkerSchemaErrors[0]).to.deep.equal({
-        origin: 'Workers',
-        lineNumber: thisWorker.lineNumber,
-        errCode: 997,
-        errType: 'UNCHECKED_ESTABLISHMENT_ERROR',
-        error: 'LOCALESTID does not exist in Workplace file',
-        source: thisWorker.localId,
-        column: 'LOCALESTID',
-        worker: thisWorker.uniqueWorkerId,
-        name: thisWorker.localId,
-      });
-    });
-  });
-
-  describe('deleteWorker', () => {
-    it('should remove worker key/value from myAPIWorkers', async () => {
-      const myAPIWorkers = {
-        2: {},
-        3: {},
-      };
-
-      const workerLineNumber = 3;
-
-      deleteWorker(myAPIWorkers, workerLineNumber);
-
-      expect(!myAPIWorkers[workerLineNumber]).to.equal(true);
+      expect(myAPIEstablishments).to.deep.equal(expectedMyAPIEstablishments);
     });
   });
 });

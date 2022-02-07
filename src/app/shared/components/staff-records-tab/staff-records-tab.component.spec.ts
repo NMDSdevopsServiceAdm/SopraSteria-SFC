@@ -15,20 +15,11 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { StaffRecordsTabComponent } from './staff-records-tab.component';
 
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
-
 describe('StaffRecordsTab', () => {
-  const establishmentBuilder = build('Establishment', {
-    fields: {
-      id: sequence(),
-      uid: fake((f) => f.random.uuid()),
-      nameOrId: fake((f) => f.lorem.sentence()),
-    },
-  });
-
-  async function setup(isAdmin = true, subsidiaries = 0) {
+  async function setup(permissions = []) {
     const establishment = establishmentBuilder() as Establishment;
     const component = await render(StaffRecordsTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -44,7 +35,7 @@ describe('StaffRecordsTab', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(permissions),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -70,5 +61,15 @@ describe('StaffRecordsTab', () => {
   it('should render a StaffRecordsTabComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should not display Add a staff record if user does not have canAddWorker permission', async () => {
+    const { component } = await setup();
+    expect(component.queryByText('Add a staff record')).toBeFalsy();
+  });
+
+  it('should display Add a staff record if user does have canAddWorker permission', async () => {
+    const { component } = await setup(['canAddWorker']);
+    expect(component.queryByText('Add a staff record')).toBeTruthy();
   });
 });

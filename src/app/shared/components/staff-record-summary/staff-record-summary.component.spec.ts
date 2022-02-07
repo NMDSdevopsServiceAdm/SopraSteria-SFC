@@ -14,7 +14,7 @@ import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.s
 import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf.module';
+import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
