@@ -4,7 +4,7 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const router = require('express').Router();
 
-router.use('/', hasPermission(''));
+router.use('/', hasPermission('canManageWdfClaims'));
 
 router.use('/grantLetter', require('./grantLetter.js'));
 

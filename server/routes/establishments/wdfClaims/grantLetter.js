@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const models = require('../../../models');
+const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const updateBUDataChanges = async (res) => {
   try {
@@ -10,7 +11,7 @@ const updateBUDataChanges = async (res) => {
   }
 };
 
-router.route('/').post(updateBUDataChanges);
+router.route('/').post(hasPermission('canManageWdfClaims'), updateBUDataChanges);
 
 module.exports = router;
 module.exports.updateBUDataChanges = updateBUDataChanges;
