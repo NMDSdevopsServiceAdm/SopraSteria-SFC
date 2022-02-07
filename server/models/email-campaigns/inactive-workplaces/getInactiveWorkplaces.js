@@ -3,13 +3,13 @@ const moment = require('moment');
 const models = require('../../index');
 
 const refreshInactiveWorkplaces = async () => {
-  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
+  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastLogin"');
 };
 
 const getInactiveWorkplaces = async () => {
   const lastMonth = moment().subtract(1, 'months');
 
-  const lastUpdated = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
+  const lastLogin = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
   const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 
   return models.sequelize.query(
@@ -21,7 +21,7 @@ const getInactiveWorkplaces = async () => {
   "DataOwner",
   "PrimaryUserName",
   "PrimaryUserEmail",
-	"LastUpdated",
+	"LastLogin",
   (
 		SELECT
 			"template"
@@ -31,15 +31,15 @@ const getInactiveWorkplaces = async () => {
 		WHERE
       ec."type" = 'inactiveWorkplaces'
 		  AND ech. "establishmentID" = e. "EstablishmentID"
-      AND ech."createdAt" >= e."LastUpdated"
+      AND ech."createdAt" >= e."LastLogin"
     ORDER BY ech. "createdAt" DESC
     LIMIT 1) AS "LastTemplate"
 		FROM
-			cqc. "LastUpdatedEstablishments" e
+			cqc. "EstablishmentLastLogin" e
 		WHERE
       "IsParent" = FALSE
       AND "DataOwner" = 'Workplace'
-			AND "LastUpdated" <= :lastUpdated
+			AND "LastLogin" <= :lastLogin
       AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
@@ -54,7 +54,7 @@ const getInactiveWorkplaces = async () => {
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
-        lastUpdated,
+        lastLogin,
         lastEmailDate,
       },
     },

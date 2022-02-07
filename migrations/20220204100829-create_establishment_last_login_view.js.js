@@ -17,9 +17,9 @@ module.exports = {
               FROM cqc."User" u
               WHERE u."IsPrimary" = true AND (e."EstablishmentID" = u."EstablishmentID") AND u."Archived" = false
               LIMIT 1
-          ) AS "PrimaryUserName"',
+          ) AS "PrimaryUserName",
           (
-            SELECT u."EmailValue",
+            SELECT u."EmailValue"
               FROM cqc."User" u
               WHERE u."IsPrimary" = true AND (e."EstablishmentID" = u."EstablishmentID") AND u."Archived" = false
               LIMIT 1
@@ -29,7 +29,7 @@ module.exports = {
               FROM cqc."User" u
               LEFT JOIN cqc."UserAudit" ua
               ON u."RegistrationID" = ua."UserFK"
-              WHERE e."EstablishmentID" = u."EstablishmentID AND ua."EventType" = "loginSuccess"
+              WHERE e."EstablishmentID" = u."EstablishmentID" and ua."EventType" = 'loginSuccess'
               LIMIT 1
           ) AS "LastLogin"
           FROM cqc."Establishment" e

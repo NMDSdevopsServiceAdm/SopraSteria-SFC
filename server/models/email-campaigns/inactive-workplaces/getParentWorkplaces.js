@@ -16,9 +16,9 @@ const getParentWorkplaces = async () => {
       "DataOwner",
       "PrimaryUserName",
       "PrimaryUserEmail",
-      "LastUpdated"
+      "LastLogin"
   FROM
-    cqc. "LastUpdatedEstablishments" e
+    cqc. "EstablishmentLastLogin" e
   WHERE
     "IsParent" = TRUE
     AND "PrimaryUserEmail" IS NOT NULL
@@ -42,9 +42,9 @@ const getParentWorkplaces = async () => {
       "DataOwner",
       "PrimaryUserName",
       "PrimaryUserEmail",
-      "LastUpdated"
+      "LastLogin"
     FROM
-      cqc. "LastUpdatedEstablishments" e
+      cqc. "EstablishmentLastLogin" e
     WHERE
       "ParentID" IS NOT NULL
       AND "DataOwner" = 'Parent'
