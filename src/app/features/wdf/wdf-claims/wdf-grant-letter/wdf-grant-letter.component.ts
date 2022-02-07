@@ -45,6 +45,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     this.establishmentId = this.establishmentService.primaryWorkplace.uid;
     this.flow = 'wdf-claims';
   }
+
   public addControl(answer) {
     if (answer === 'Somebody else') {
       this.form.addControl(
