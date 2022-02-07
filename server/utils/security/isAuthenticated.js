@@ -225,7 +225,7 @@ const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck)
           }
 
           const foundEstablishment = await models.establishment.findOne({
-            attributes: ['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId'],
+            attributes: ['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId', 'isParent'],
             where: lookupClause,
           });
 
