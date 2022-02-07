@@ -25,17 +25,37 @@ module.exports = {
               LIMIT 1
           ) AS "PrimaryUserEmail",
           (
-            SELECT MAX(ua."When")
+            SELECT MAX(l."LastLoggedIn")
               FROM cqc."User" u
-              LEFT JOIN cqc."UserAudit" ua
-              ON u."RegistrationID" = ua."UserFK"
-              WHERE e."EstablishmentID" = u."EstablishmentID" and ua."EventType" = 'loginSuccess'
+              LEFT JOIN cqc."Login" l
+              ON u."RegistrationID" = l."RegistrationID"
+              WHERE e."EstablishmentID" = u."EstablishmentID"
               LIMIT 1
-          ) AS "LastLogin"
+          ) as "LastLogin"
           FROM cqc."Establishment" e
           WHERE e."Archived" = false
       );
     `);
+
+    await queryInterface.addIndex(
+      {
+        tableName: 'EstablishmentLastLogin',
+        schema: 'cqc',
+      },
+      {
+        fields: ['IsParent', 'PrimaryUserEmail', 'LastLogin', 'DataOwner'],
+      },
+    );
+
+    await queryInterface.addIndex(
+      {
+        tableName: 'EstablishmentLastLogin',
+        schema: 'cqc',
+      },
+      {
+        fields: ['IsParent', 'PrimaryUserEmail'],
+      },
+    );
   },
 
   down: async (queryInterface, Sequelize) => {
