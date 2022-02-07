@@ -82,20 +82,20 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     this.viewTrainingByCategory = visible;
   }
 
-  public showAllTrainings() {
+  public showAllTrainings(): void {
     this.isShowAllTrainings = true;
     this.missingMandatoryTraining = 0;
     this.totalExpiredTraining = 0;
     this.totalExpiringTraining = 0;
   }
 
-  public mandatoryTrainingChangedHandler($event) {
+  public mandatoryTrainingChangedHandler($event): void {
     this.missingMandatoryTraining = $event;
     this.totalExpiredTraining = 0;
     this.totalExpiringTraining = 0;
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }

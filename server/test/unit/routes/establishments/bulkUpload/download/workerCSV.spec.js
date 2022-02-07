@@ -11,7 +11,6 @@ const sandbox = require('sinon').createSandbox();
 const {
   toCSV,
   _maptoCSVregisteredNurse,
-  csvQuote,
 } = require('../../../../../../routes/establishments/bulkUpload/download/workerCSV');
 
 const establishment = {
@@ -943,16 +942,6 @@ describe('workerCSV', () => {
 
     it('should return empty string when invalid value passed in', () => {
       expect(_maptoCSVregisteredNurse('Hello')).to.equal('');
-    });
-  });
-
-  describe('csvQuote()', () => {
-    it('should add quotes around string with a , ', () => {
-      expect(csvQuote('Hello, ')).to.equal('"Hello, "');
-    });
-
-    it('should not add quotes around string with out a , ', () => {
-      expect(csvQuote('Hello')).to.equal('Hello');
     });
   });
 });

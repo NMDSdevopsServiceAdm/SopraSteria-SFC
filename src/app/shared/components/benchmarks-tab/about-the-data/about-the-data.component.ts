@@ -7,7 +7,6 @@ import { BackService } from '@core/services/back.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-benchmarks-about-the-data',
@@ -31,26 +30,23 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
     const workplaceUid = this.workplace?.id ? this.workplace.id : this.route.snapshot.params.establishmentuid;
-    this.subscriptions.add(
-      this.permissionsService
-        .getPermissions(workplaceUid)
-        .pipe(
-          map((res) => res.permissions.includes('canViewBenchmarks')),
-          filter((canViewBenchmarks) => canViewBenchmarks),
-          switchMap(() => {
-            return this.benchmarksService.getTileData(workplaceUid, []);
-          }),
-        )
-        .subscribe((data) => {
+
+    const canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
+
+    if (canViewBenchmarks) {
+      this.subscriptions.add(
+        this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
           if (data) {
             this.meta = data.meta;
           }
         }),
-    );
+      );
+    }
+
     this.backService.setBackLink(this.benchmarksService.returnTo);
   }
 

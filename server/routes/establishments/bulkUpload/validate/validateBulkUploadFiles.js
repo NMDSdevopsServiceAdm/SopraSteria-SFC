@@ -1,7 +1,5 @@
 'use strict';
 
-const moment = require('moment');
-
 const { restoreExistingEntities } = require('../entities');
 const {
   uploadUniqueLocalAuthoritiesToS3,
@@ -16,9 +14,9 @@ const { processDifferenceReport } = require('./processDifferenceReport');
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
 
 const { validateEstablishmentCsv } = require('./validateEstablishmentCsv');
-const { validateTrainingCsv } = require('./validateTrainingCsv');
 const { validateDuplicateLocations } = require('./validateDuplicateLocations');
 const { validateWorkers } = require('./workers/validateWorkers');
+const { validateTraining } = require('./training/validateTraining');
 const { crossValidate } = require('../../../../models/BulkImport/csv/crossValidate');
 
 const keepAlive = (stepName = '', stepId = '') => {
@@ -34,10 +32,8 @@ const validateBulkUploadFiles = async (req, files) => {
   const training = files.Training;
 
   const csvEstablishmentSchemaErrors = [];
-  const csvTrainingSchemaErrors = [];
 
   const myEstablishments = [];
-  const myTrainings = [];
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
@@ -60,7 +56,6 @@ const validateBulkUploadFiles = async (req, files) => {
   //    ...
   // }
   const myAPIEstablishments = {};
-  const myAPITrainings = {};
 
   // for unique/cross-reference validations
   const allEstablishmentsByKey = {};
@@ -118,84 +113,14 @@ const validateBulkUploadFiles = async (req, files) => {
     myAPIEstablishments,
   );
 
-  // /////////////////////////
   // Parse and process Training CSV
-  if (Array.isArray(training.imported) && training.imported.length > 0 && training.metadata.fileType === 'Training') {
-    await Promise.all(
-      training.imported.map(
-        async (thisLine, currentLineNumber) =>
-          await validateTrainingCsv(
-            thisLine,
-            currentLineNumber + 2,
-            csvTrainingSchemaErrors,
-            myTrainings,
-            myAPITrainings,
-          ),
-      ),
-    );
-
-    keepAlive('trainings processed');
-
-    // note - there is no uniqueness test for a training record
-
-    // Having parsed all establishments, workers and training, need to cross-check all training records' establishment reference
-    // (LOCALESTID) against all parsed establishments
-    // Having parsed all establishments, workers and training, need to cross-check all training records' worker reference
-    // (UNIQUEWORKERID) against all parsed workers
-    myTrainings.forEach((thisTraingRecord) => {
-      const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, '');
-      const workerKeyNoWhitespace = (
-        (thisTraingRecord.localeStId || '') + (thisTraingRecord.uniqueWorkerId || '')
-      ).replace(/\s/g, '');
-
-      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
-        // not found the associated establishment
-        csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
-
-        // remove the entity
-        delete myAPITrainings[thisTraingRecord.lineNumber];
-      } else if (!allWorkersByKey[workerKeyNoWhitespace]) {
-        // not found the associated worker
-        csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedWorker());
-
-        // remove the entity
-        delete myAPITrainings[thisTraingRecord.lineNumber];
-      } else {
-        // gets here, all is good with the training record
-
-        // find the associated Worker entity and forward reference this training record
-        const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
-        const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
-
-        // training cross-validation against worker's date of birth (DOB) can only be applied, if:
-        //  1. the associated Worker can be matched
-        //  2. the worker has DOB defined (it's not a mandatory property)
-        const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, 'DD-MM-YYYY');
-        const foundAssociatedWorker = workersKeyed[workerKeyNoWhitespace];
-        const workerDob =
-          foundAssociatedWorker && foundAssociatedWorker.DOB
-            ? moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, 'DD-MM-YYYY')
-            : null;
-
-        if (workerDob && workerDob.isValid() && trainingCompletedDate.diff(workerDob, 'years') < 14) {
-          csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
-        }
-
-        if (knownWorker) {
-          knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
-        } else {
-          // this should never happen
-          console.error(
-            `FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`,
-          );
-        }
-      }
-    });
-  } else {
-    console.info('API bulkupload - validateBulkUploadFiles: no training records');
-  }
-
-  training.metadata.records = myTrainings.length;
+  const { csvTrainingSchemaErrors } = await validateTraining(
+    training,
+    myAPIWorkers,
+    workersKeyed,
+    allWorkersByKey,
+    allEstablishmentsByKey,
+  );
 
   // /////////////////////////
   // Cross Entity Validations
