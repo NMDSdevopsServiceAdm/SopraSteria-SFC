@@ -15,27 +15,27 @@ const getParams = (workplace) => {
   switch (workplace.emailTemplate.id) {
     case config.get('sendInBlue.templates.parent').id:
       params.WORKPLACES = workplace.subsidiaries.map((subsidiary) => {
-        const { id, name, nmdsId, lastUpdated, dataOwner } = subsidiary;
-        const lastUpdatedFormatted = moment(lastUpdated).format('Mo MMMM YYYY');
+        const { id, name, nmdsId, lastLogin, dataOwner } = subsidiary;
+        const lastLoginFormatted = moment(lastLogin).format('Mo MMMM YYYY');
 
         return {
           id,
           name,
           nmdsId,
-          lastUpdated: lastUpdatedFormatted,
+          lastLogin: lastLoginFormatted,
           dataOwner,
         };
       });
 
-      if (moment(workplace.lastUpdated) <= endOfLastMonth.clone().subtract(6, 'months')) {
-        const { id, name, nmdsId, lastUpdated, dataOwner } = workplace;
-        const lastUpdatedFormatted = moment(lastUpdated).format('Mo MMMM YYYY');
+      if (moment(workplace.lastLogin) <= endOfLastMonth.clone().subtract(6, 'months')) {
+        const { id, name, nmdsId, lastLogin, dataOwner } = workplace;
+        const lastLoginFormatted = moment(lastLogin).format('Mo MMMM YYYY');
 
         params.WORKPLACES.unshift({
           id,
           name,
           nmdsId,
-          lastUpdated: lastUpdatedFormatted,
+          lastLogin: lastLoginFormatted,
           dataOwner,
         });
       }

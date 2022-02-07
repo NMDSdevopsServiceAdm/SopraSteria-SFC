@@ -8,7 +8,7 @@ describe('reports/inactive-workplaces/workplaces.js', () => {
       id: 478,
       name: 'Workplace Name',
       nmdsId: 'J1234567',
-      lastUpdated: '2020-06-01',
+      lastLogin: '2020-06-01',
       emailTemplate: {
         id: 13,
         name: '6 months',
@@ -26,7 +26,7 @@ describe('reports/inactive-workplaces/workplaces.js', () => {
       {
         workplace: 'Workplace Name',
         workplaceId: 'J1234567',
-        lastUpdated: '2020-06-01',
+        lastLogin: '2020-06-01',
         emailTemplate: '6 months',
         dataOwner: 'Workplace',
         nameOfUser: 'Test Name',

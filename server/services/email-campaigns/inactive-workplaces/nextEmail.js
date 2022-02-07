@@ -6,37 +6,37 @@ const lastMonth = moment().subtract(1, 'months');
 
 const templates = {
   sixMonths: {
-    lastUpdated: lastMonth.clone().subtract(6, 'months'),
+    lastLogin: lastMonth.clone().subtract(6, 'months'),
     template: config.get('sendInBlue.templates.sixMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastLogin) {
+      return lastLogin.isSame(this.lastLogin, 'month');
     },
   },
   twelveMonths: {
-    lastUpdated: lastMonth.clone().subtract(12, 'months'),
+    lastLogin: lastMonth.clone().subtract(12, 'months'),
     template: config.get('sendInBlue.templates.twelveMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastLogin) {
+      return lastLogin.isSame(this.lastLogin, 'month');
     },
   },
   eighteenMonths: {
-    lastUpdated: lastMonth.clone().subtract(18, 'months'),
+    lastLogin: lastMonth.clone().subtract(18, 'months'),
     template: config.get('sendInBlue.templates.eighteenMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastLogin) {
+      return lastLogin.isSame(this.lastLogin, 'month');
     },
   },
   twentyFourMonths: {
-    lastUpdated: lastMonth.clone().subtract(24, 'months'),
+    lastLogin: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastLogin) {
+      return lastLogin.isSame(this.lastLogin, 'month');
     },
   },
 };
 
 const getTemplate = (inactiveWorkplace) => {
-  const lastUpdated = moment(inactiveWorkplace.LastUpdated);
+  const lastUpdated = moment(inactiveWorkplace.LastLogin);
 
   for (const [, month] of Object.entries(templates)) {
     const nextTemplate = month.template;

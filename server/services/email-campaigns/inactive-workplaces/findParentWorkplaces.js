@@ -20,7 +20,7 @@ const buildWorkplaces = (workplaces) => {
     const parent = acc[workplace.ParentID] || (acc[workplace.ParentID] = {});
     const subsidiaries = parent.subsidiaries || (parent.subsidiaries = []);
 
-    if (moment(workplace.LastUpdated) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')) {
+    if (moment(workplace.LastLogin) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')) {
       subsidiaries.push(workplace);
     }
 
@@ -33,7 +33,7 @@ const transformWorkplaces = ([, workplace]) => {
     id: workplace.EstablishmentID,
     name: workplace.NameValue,
     nmdsId: workplace.NmdsID,
-    lastUpdated: workplace.LastUpdated,
+    lastLogin: workplace.LastLogin,
     emailTemplate: config.get('sendInBlue.templates.parent'),
     dataOwner: workplace.DataOwner,
     user: {
@@ -49,7 +49,7 @@ const transformSubsidiaryWorkplace = (subsidiary) => {
     id: subsidiary.EstablishmentID,
     name: subsidiary.NameValue,
     nmdsId: subsidiary.NmdsID,
-    lastUpdated: subsidiary.LastUpdated,
+    lastLogin: subsidiary.LastLogin,
     dataOwner: subsidiary.DataOwner,
   };
 };
@@ -57,7 +57,7 @@ const transformSubsidiaryWorkplace = (subsidiary) => {
 const parentOrSubsInactive = (parent) => {
   return (
     parent.subsidiaries.length ||
-    moment(parent.lastUpdated) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')
+    moment(parent.lastLogin) <= lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day')
   );
 };
 

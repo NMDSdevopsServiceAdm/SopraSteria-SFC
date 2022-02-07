@@ -18,25 +18,25 @@ describe('nextEmailTemplate', () => {
   [
     {
       inactiveMonths: 6,
-      LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(6, 'months'),
       NextTemplate: sixMonthTemplateId,
     },
     {
       inactiveMonths: 12,
-      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(12, 'months'),
       NextTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
-      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(18, 'months'),
       NextTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
-      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(24, 'months'),
       NextTemplate: twentyFourMonthTemplateId,
     },
-  ].forEach(({ inactiveMonths, LastUpdated, NextTemplate }) => {
+  ].forEach(({ inactiveMonths, LastLogin, NextTemplate }) => {
     it(`should return the correct template when ${inactiveMonths} months inactive`, async () => {
       const inactiveWorkplace = {
         EstablishmentID: 478,
@@ -45,7 +45,7 @@ describe('nextEmailTemplate', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
-        LastUpdated: LastUpdated,
+        LastLogin: LastLogin,
         LastTemplate: null,
       };
 
@@ -58,23 +58,23 @@ describe('nextEmailTemplate', () => {
   [
     {
       inactiveMonths: 12,
-      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(12, 'months'),
       LastTemplate: sixMonthTemplateId,
       NextTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
-      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(18, 'months'),
       LastTemplate: twelveMonthTemplateId,
       NextTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
-      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(24, 'months'),
       LastTemplate: eighteenMonthTemplateId,
       NextTemplate: twentyFourMonthTemplateId,
     },
-  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate, NextTemplate }) => {
+  ].forEach(({ inactiveMonths, LastLogin, LastTemplate, NextTemplate }) => {
     it(`should return the next template when ${inactiveMonths} months inactive`, async () => {
       const inactiveWorkplace = {
         EstablishmentID: 478,
@@ -83,7 +83,7 @@ describe('nextEmailTemplate', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
-        LastUpdated: LastUpdated,
+        LastLogin: LastLogin,
         LastTemplate: LastTemplate,
       };
 
@@ -96,25 +96,25 @@ describe('nextEmailTemplate', () => {
   [
     {
       inactiveMonths: 6,
-      LastUpdated: endOfLastMonth.clone().subtract(6, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(6, 'months'),
       LastTemplate: sixMonthTemplateId,
     },
     {
       inactiveMonths: 12,
-      LastUpdated: endOfLastMonth.clone().subtract(12, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(12, 'months'),
       LastTemplate: twelveMonthTemplateId,
     },
     {
       inactiveMonths: 18,
-      LastUpdated: endOfLastMonth.clone().subtract(18, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(18, 'months'),
       LastTemplate: eighteenMonthTemplateId,
     },
     {
       inactiveMonths: 24,
-      LastUpdated: endOfLastMonth.clone().subtract(24, 'months'),
+      LastLogin: endOfLastMonth.clone().subtract(24, 'months'),
       LastTemplate: twentyFourMonthTemplateId,
     },
-  ].forEach(({ inactiveMonths, LastUpdated, LastTemplate }) => {
+  ].forEach(({ inactiveMonths, LastLogin, LastTemplate }) => {
     it(`should not return a ${inactiveMonths} month template when already sent a ${inactiveMonths} month email`, async () => {
       const inactiveWorkplace = {
         EstablishmentID: 478,
@@ -123,7 +123,7 @@ describe('nextEmailTemplate', () => {
         DataOwner: 'Workplace',
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
-        LastUpdated: LastUpdated,
+        LastLogin: LastLogin,
         LastTemplate: LastTemplate,
       };
 
