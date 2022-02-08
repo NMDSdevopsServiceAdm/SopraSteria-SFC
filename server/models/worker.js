@@ -281,16 +281,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"PostcodeChangedBy"',
       },
-      Latitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Latitude"',
-      },
-      Longitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Longitude"',
-      },
       GenderValue: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1108,6 +1098,11 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false, // intentionally keeping these false; updated timestamp will be managed within the Worker business model not this DB model
     },
   );
+
+  Worker.addHook('afterUpdate', (record) => {
+    const postcode = record.dataValues.PostcodeValue;
+    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
+  });
 
   Worker.associate = (models) => {
     Worker.belongsTo(models.establishment, {
