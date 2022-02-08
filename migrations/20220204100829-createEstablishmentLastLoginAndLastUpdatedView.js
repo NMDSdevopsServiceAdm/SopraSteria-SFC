@@ -2,10 +2,10 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastLogin"');
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastLoginAndLastUpdated"');
 
     await queryInterface.sequelize.query(`
-      CREATE MATERIALIZED VIEW cqc."EstablishmentLastLogin" AS (
+      CREATE MATERIALIZED VIEW cqc."EstablishmentLastLoginAndLastUpdated" AS (
         SELECT e."EstablishmentID",
           e."NameValue",
           e."ParentID",
@@ -24,6 +24,13 @@ module.exports = {
               WHERE u."IsPrimary" = true AND (e."EstablishmentID" = u."EstablishmentID") AND u."Archived" = false
               LIMIT 1
           ) AS "PrimaryUserEmail",
+          GREATEST(e.updated, (
+            SELECT w.updated
+              FROM cqc."Worker" w
+              WHERE w."EstablishmentFK" = e."EstablishmentID" AND w."Archived" = false
+              ORDER BY w.updated DESC
+              LIMIT 1
+          )) AS "LastUpdated",
           (
             SELECT MAX(l."LastLoggedIn")
               FROM cqc."User" u
@@ -39,17 +46,17 @@ module.exports = {
 
     await queryInterface.addIndex(
       {
-        tableName: 'EstablishmentLastLogin',
+        tableName: 'EstablishmentLastLoginAndLastUpdated',
         schema: 'cqc',
       },
       {
-        fields: ['IsParent', 'PrimaryUserEmail', 'LastLogin', 'DataOwner'],
+        fields: ['IsParent', 'PrimaryUserEmail', 'LastLogin', 'LastUpdated', 'DataOwner'],
       },
     );
 
     await queryInterface.addIndex(
       {
-        tableName: 'EstablishmentLastLogin',
+        tableName: 'EstablishmentLastLoginAndLastUpdated',
         schema: 'cqc',
       },
       {
@@ -59,6 +66,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastLogin"');
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastLoginAndLastUpdated"');
   },
 };

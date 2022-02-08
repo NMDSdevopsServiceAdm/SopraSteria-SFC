@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-  const EstablishmentLastLoginView = sequelize.define(
-    'establishmentLastLoginView',
+  const EstablishmentLastLoginAndLastUpdatedView = sequelize.define(
+    'establishmentLastLoginAndLastUpdatedView',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -39,6 +39,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"PrimaryUserEmail"',
       },
+      lastUpdated: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'LastUdpated',
+      },
       lastLogin: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -46,11 +51,11 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      tableName: '"EstablishmentLastLogin"',
+      tableName: '"EstablishmentLastLoginAndLastUpdated"',
       schema: 'cqc',
       timestamps: false,
     },
   );
 
-  return EstablishmentLastLoginView;
+  return EstablishmentLastLoginAndLastUpdatedView;
 };
