@@ -81,7 +81,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     return {
       ...formValue,
       role: 'Edit',
-      canManageWdfClaims: true,
+      canManageWdfClaims: formValue.role.includes('WDF claims') ? true : false,
     };
   }
 

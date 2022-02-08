@@ -127,5 +127,21 @@ describe('CreateUserAccountComponent', () => {
         });
       });
     });
+
+    it('should call createAccount with role Edit and canManageWdfClaims false when ASC-WDS edit selected', async () => {
+      const { fixture, getByText, createAccountSpy } = await setup();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        const radioButton = getByText('ASC-WDF edit');
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save user');
+        fireEvent.click(saveButton);
+
+        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
+        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(false);
+      });
+    });
   });
 });
