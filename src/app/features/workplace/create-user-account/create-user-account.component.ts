@@ -12,6 +12,7 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-create-account',
@@ -21,22 +22,15 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save user';
   public establishmentUid: string;
   public workplace: Establishment;
-  public roleRadios: RadioFieldData[] = [
-    {
-      value: Roles.Edit,
-      label: 'Edit',
-    },
-    {
-      value: Roles.Read,
-      label: 'Read only',
-    },
-  ];
+  public wdfUserFlag: boolean;
+  public roleRadios: RadioFieldData[];
 
   constructor(
     private breadcrumbService: BreadcrumbService,
     private createAccountService: CreateAccountService,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
+    private featureFlagsService: FeatureFlagsService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -46,6 +40,10 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   protected init(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('wdfUser', false).then((value) => {
+      this.wdfUserFlag = value;
+      this.setRoleRadios();
+    });
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
@@ -67,7 +65,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     });
   }
 
-  protected save() {
+  protected save(): void {
     this.subscriptions.add(
       this.createAccountService.createAccount(this.establishmentUid, this.form.value).subscribe(
         (data) => this.navigateToNextRoute(data),
@@ -85,5 +83,41 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       url: ['/dashboard'],
       fragment: 'users',
     };
+  }
+
+  private setRoleRadios(): void {
+    this.roleRadios = this.wdfUserFlag
+      ? [
+          {
+            value: 'ASC-WDS edit with manage WDF claims',
+            label: 'ASC-WDS edit with manage WDF claims',
+          },
+          {
+            value: 'ASC-WDF edit',
+            label: 'ASC-WDF edit',
+          },
+          {
+            value: 'ASC-WDS read only with manage WDF claims',
+            label: 'ASC-WDS read only with manage WDF claims',
+          },
+          {
+            value: 'ASC-WDS read only',
+            label: 'ASC-WDS read only',
+          },
+          {
+            value: 'Manage WDF claims only',
+            label: 'Manage WDF claims only',
+          },
+        ]
+      : [
+          {
+            value: Roles.Edit,
+            label: 'Edit',
+          },
+          {
+            value: Roles.Read,
+            label: 'Read only',
+          },
+        ];
   }
 }
