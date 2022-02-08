@@ -19,7 +19,7 @@
             <h5 class="govuk-fieldset__heading">Who do you want to email the grant letter to?</h5>
           </legend>
           <span *ngIf="submitted" id="regulated-error" class="govuk-error-message">
-            <span *ngIf="this.form.get('grantLetter').errors" data-testid="errorMessage" id="grantLetter-error">{{
+            <span *ngIf="this.form.get('grantLetter').errors" id="grantLetter-error">{{
               getErrorMessage('grantLetter')
             }}</span>
           </span>
@@ -43,12 +43,12 @@
                 *ngIf="answer === 'Somebody else'"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="form.get('grantLetter').value !== 'Somebody else'"
-                id="conditional-grantLetter-conditional-1"
+                [attr.data-testid]="'grantLetterRadio-conditional-' + idx"
               >
                 <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                   <label class="govuk-label" for="fullName"> Full name </label>
                   <span *ngIf="submitted" id="fullName-error" class="govuk-error-message">
-                    <span *ngIf="this.form.get('fullName').errors" data-testid="errorMessage" id="fullName-error">{{
+                    <span *ngIf="this.form.get('fullName').errors" id="fullName-error">{{
                       getErrorMessage('fullName')
                     }}</span>
                   </span>

@@ -74,7 +74,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
           type: [
             {
               name: 'required',
-              message: 'Please enter email address',
+              message: 'Please enter a valid email address',
             },
           ],
         },

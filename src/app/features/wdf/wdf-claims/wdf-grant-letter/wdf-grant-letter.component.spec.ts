@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -74,5 +74,32 @@ describe('WdfGrantLetterComponent', () => {
 
       expect(queryByText('Somebody else')).toBeTruthy();
     });
+  });
+
+  it('should display text boxes when Somebody else is selected', async () => {
+    const { component, fixture, getByTestId, queryByText } = await setup();
+
+    const somebodyRadio = fixture.debugElement.query(
+      By.css('[data-testid="grantLetterRadio-conditional-1"]'),
+    ).nativeElement;
+    const somebody = (component.options[1] = 'Somebody else');
+
+    fireEvent.click(somebodyRadio);
+    fixture.detectChanges();
+
+    expect(somebodyRadio).toHaveClass('govuk-radios__conditional--hidden');
+    expect(queryByText(somebody)).toBeTruthy();
+  });
+
+  it('should show error message when user click submit with out selecting radio buttons', async () => {
+    const { component, fixture, getAllByText, getByTestId } = await setup();
+
+    const errorMessage = 'Please select who you want to email Grant Letter';
+
+    component.onSubmit();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.form.invalid).toBeTruthy();
+    expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
   });
 });
