@@ -354,6 +354,7 @@ router
         DateCreated: new Date(),
         EstablishmentID: 0,
         AdminUser: true,
+        CanManageWdfClaims: req.body[0].user.canManageWdfClaims || false,
       };
       // Check if the user is allowed to be active based on wether they are CQC registered   - this does work but temporarily we don't want to auto approve anyone
       // let CQCpostcode = false;
@@ -516,6 +517,7 @@ router
             isActive: Logindata.Active,
             status: Logindata.Status,
             registrationSurveyCompleted: false,
+            canManageWdfClaims: Userdata.CanManageWdfClaims,
           });
           if (newUser.isValid) {
             await newUser.save(Logindata.UserName, 0, t);
