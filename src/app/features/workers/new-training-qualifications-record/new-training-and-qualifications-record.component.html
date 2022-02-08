@@ -145,7 +145,7 @@
       </div>
 
       <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
-        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+        <!-- <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
           <p>
             {{ missingJobRoleMandatoryTrainingCount }}
             <ng-container [ngPlural]="missingJobRoleMandatoryTrainingCount">
@@ -166,7 +166,12 @@
           >
             Add mandatory training record
           </a>
-        </div>
+        </div> -->
+        <app-missing-mandatory-training
+          [missingMandatoryTraining]="missingMandatoryTraining"
+          (addClicked)="addButtonClicked()"
+          [canEditWorker]="canEditWorker"
+        ></app-missing-mandatory-training>
       </div>
 
       <div *ngIf="mandatoryTrainingCount > 0">
