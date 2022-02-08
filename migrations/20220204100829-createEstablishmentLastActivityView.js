@@ -2,10 +2,10 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastLoginAndLastUpdated"');
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
 
     await queryInterface.sequelize.query(`
-      CREATE MATERIALIZED VIEW cqc."EstablishmentLastLoginAndLastUpdated" AS (
+      CREATE MATERIALIZED VIEW cqc."EstablishmentLastActivity" AS (
         SELECT e."EstablishmentID",
           e."NameValue",
           e."ParentID",
@@ -46,7 +46,7 @@ module.exports = {
 
     await queryInterface.addIndex(
       {
-        tableName: 'EstablishmentLastLoginAndLastUpdated',
+        tableName: 'EstablishmentLastActivity',
         schema: 'cqc',
       },
       {
@@ -56,7 +56,7 @@ module.exports = {
 
     await queryInterface.addIndex(
       {
-        tableName: 'EstablishmentLastLoginAndLastUpdated',
+        tableName: 'EstablishmentLastActivity',
         schema: 'cqc',
       },
       {
@@ -66,6 +66,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastLoginAndLastUpdated"');
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
   },
 };
