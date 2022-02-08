@@ -101,7 +101,7 @@ describe('WdfGrantLetterComponent', () => {
   it('should show error message when user click submit with out selecting radio buttons', async () => {
     const { component, fixture, getAllByText, getByTestId } = await setup();
 
-    const errorMessage = 'Please select who you want to email Grant Letter';
+    const errorMessage = 'Select who you want to email the grant letter to';
 
     component.onSubmit();
     fixture.detectChanges();
@@ -116,6 +116,6 @@ describe('WdfGrantLetterComponent', () => {
     (fixture.componentInstance as any).navigateToNextPage();
     fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter-sent']);
+    expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'grant-letter-sent']);
   });
 });

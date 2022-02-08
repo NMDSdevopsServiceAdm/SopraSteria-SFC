@@ -8,17 +8,22 @@ import { WdfGrantLetterComponent } from './wdf-grant-letter/wdf-grant-letter.com
 const routes: Routes = [
   {
     path: 'grant-letter',
-    canActivate: [HasPermissionsGuard],
-    component: WdfGrantLetterComponent,
-    data: {
-      permissions: ['canManageWdfClaims'],
-      title: 'WDF Grant Letter',
-    },
-  },
-  {
-    path: 'grant-letter-sent',
-    component: GrantLetterSentComponent,
-    data: { title: 'WDF Grant Letter sent' },
+    children: [
+      {
+        path: '',
+        canActivate: [HasPermissionsGuard],
+        component: WdfGrantLetterComponent,
+        data: {
+          permissions: ['canManageWdfClaims'],
+          title: 'WDF Grant Letter',
+        },
+      },
+      {
+        path: 'grant-letter-sent',
+        component: GrantLetterSentComponent,
+        data: { title: 'WDF Grant Letter sent' },
+      },
+    ],
   },
 ];
 

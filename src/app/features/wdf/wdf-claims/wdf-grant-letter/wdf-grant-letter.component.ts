@@ -37,6 +37,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   ) {
     this.form = this.formBuilder.group({
       grantLetter: [null, Validators.required],
+      updateOn: 'submit',
     });
   }
 
@@ -65,7 +66,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
           type: [
             {
               name: 'required',
-              message: 'Please enter full name',
+              message: 'Enter their full name',
             },
           ],
         },
@@ -110,7 +111,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Please select who you want to email Grant Letter',
+            message: 'Select who you want to email the grant letter to',
           },
         ],
       },
@@ -120,13 +121,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
-  postcodeValidator() {
-    const grantletter = this.form.value.grantLetter;
-    return grantletter ? 'Myself' : null;
-  }
 
   public navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'grant-letter-sent']);
+    this.router.navigate([this.flow, 'grant-letter', 'grant-letter-sent']);
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
