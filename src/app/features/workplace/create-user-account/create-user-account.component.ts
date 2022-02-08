@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { CreateAccountRequest } from '@core/model/account.model';
 import { Establishment } from '@core/model/establishment.model';
 import { RadioFieldData } from '@core/model/form-controls.model';
 import { Roles } from '@core/model/roles.enum';
@@ -66,12 +67,22 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   protected save(): void {
+    const convertedFormData = this.convertRoleWithWdf(this.form.value);
+
     this.subscriptions.add(
-      this.createAccountService.createAccount(this.establishmentUid, this.form.value).subscribe(
+      this.createAccountService.createAccount(this.establishmentUid, convertedFormData).subscribe(
         (data) => this.navigateToNextRoute(data),
         (error: HttpErrorResponse) => this.onError(error),
       ),
     );
+  }
+
+  private convertRoleWithWdf(formValue): CreateAccountRequest {
+    return {
+      ...formValue,
+      role: 'Edit',
+      canManageWdfClaims: true,
+    };
   }
 
   protected navigateToNextRoute(data): void {

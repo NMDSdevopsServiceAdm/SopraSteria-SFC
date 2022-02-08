@@ -109,5 +109,23 @@ describe('CreateUserAccountComponent', () => {
         expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
       });
     });
+
+    describe('Roles', async () => {
+      it('should call createAccount with role Edit and canManageWdfClaims true when ASC-WDS edit with manage WDF claims selected', async () => {
+        const { fixture, getByText, createAccountSpy } = await setup();
+
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          const radioButton = getByText('ASC-WDS edit with manage WDF claims');
+          fireEvent.click(radioButton);
+
+          const saveButton = getByText('Save user');
+          fireEvent.click(saveButton);
+
+          expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
+          expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(true);
+        });
+      });
+    });
   });
 });
