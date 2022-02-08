@@ -16,6 +16,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+import { UserAccountSavedComponent } from '../user-account-saved/user-account-saved.component';
 import { CreateUserAccountComponent } from './create-user-account.component';
 
 describe('CreateUserAccountComponent', () => {
@@ -24,7 +25,9 @@ describe('CreateUserAccountComponent', () => {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: 'workplace/c131232132ab/user/saved/testuid', component: UserAccountSavedComponent },
+        ]),
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
@@ -141,6 +144,54 @@ describe('CreateUserAccountComponent', () => {
 
         expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
         expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(false);
+      });
+    });
+
+    it('should call createAccount with role Read and canManageWdfClaims true when ASC-WDS read only with manage WDF claims selected', async () => {
+      const { fixture, getByText, createAccountSpy } = await setup();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        const radioButton = getByText('ASC-WDS read only with manage WDF claims');
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save user');
+        fireEvent.click(saveButton);
+
+        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
+        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(true);
+      });
+    });
+
+    it('should call createAccount with role Read and canManageWdfClaims false when ASC-WDS read only selected', async () => {
+      const { fixture, getByText, createAccountSpy } = await setup();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        const radioButton = getByText('ASC-WDS read only');
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save user');
+        fireEvent.click(saveButton);
+
+        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
+        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(false);
+      });
+    });
+
+    it('should call createAccount with role None and canManageWdfClaims true when Manage WDF claims only selected', async () => {
+      const { fixture, getByText, createAccountSpy } = await setup();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        const radioButton = getByText('Manage WDF claims only');
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save user');
+        fireEvent.click(saveButton);
+
+        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('None');
+        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(true);
       });
     });
   });

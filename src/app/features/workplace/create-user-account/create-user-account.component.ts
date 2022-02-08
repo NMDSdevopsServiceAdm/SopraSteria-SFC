@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { CreateAccountRequest } from '@core/model/account.model';
 import { Establishment } from '@core/model/establishment.model';
-import { RadioFieldData } from '@core/model/form-controls.model';
 import { Roles } from '@core/model/roles.enum';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -24,7 +23,11 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public establishmentUid: string;
   public workplace: Establishment;
   public wdfUserFlag: boolean;
-  public roleRadios: RadioFieldData[];
+  public roleRadios: {
+    value: string;
+    role?: string;
+    canManageWdfClaims?: boolean;
+  }[];
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -67,7 +70,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   protected save(): void {
-    const convertedFormData = this.convertRoleWithWdf(this.form.value);
+    const convertedFormData = this.convertPermissions(this.form.value);
 
     this.subscriptions.add(
       this.createAccountService.createAccount(this.establishmentUid, convertedFormData).subscribe(
@@ -77,11 +80,14 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     );
   }
 
-  private convertRoleWithWdf(formValue): CreateAccountRequest {
+  private convertPermissions(formValue): CreateAccountRequest {
+    if (!this.wdfUserFlag) return formValue;
+
+    const radio = this.roleRadios.find((radio) => radio.value === formValue.role);
     return {
       ...formValue,
-      role: 'Edit',
-      canManageWdfClaims: formValue.role.includes('WDF claims') ? true : false,
+      role: radio.role,
+      canManageWdfClaims: radio.canManageWdfClaims,
     };
   }
 
@@ -101,33 +107,36 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       ? [
           {
             value: 'ASC-WDS edit with manage WDF claims',
-            label: 'ASC-WDS edit with manage WDF claims',
+            role: 'Edit',
+            canManageWdfClaims: true,
           },
           {
             value: 'ASC-WDF edit',
-            label: 'ASC-WDF edit',
+            role: 'Edit',
+            canManageWdfClaims: false,
           },
           {
             value: 'ASC-WDS read only with manage WDF claims',
-            label: 'ASC-WDS read only with manage WDF claims',
+            role: 'Read',
+            canManageWdfClaims: true,
           },
           {
             value: 'ASC-WDS read only',
-            label: 'ASC-WDS read only',
+            role: 'Read',
+            canManageWdfClaims: false,
           },
           {
             value: 'Manage WDF claims only',
-            label: 'Manage WDF claims only',
+            role: 'None',
+            canManageWdfClaims: true,
           },
         ]
       : [
           {
             value: Roles.Edit,
-            label: 'Edit',
           },
           {
             value: Roles.Read,
-            label: 'Read only',
           },
         ];
   }
