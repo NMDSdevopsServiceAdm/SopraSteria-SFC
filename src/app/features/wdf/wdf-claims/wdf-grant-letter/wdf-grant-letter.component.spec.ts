@@ -1,6 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule, By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,8 +26,13 @@ describe('WdfGrantLetterComponent', () => {
       ],
     });
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, fireEvent };
+    const spy = spyOn(router, 'navigate');
+    spy.and.returnValue(Promise.resolve(true));
+
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, fireEvent, spy };
   };
 
   it('should render a WdfGrantLetterComponent', async () => {
@@ -101,5 +108,14 @@ describe('WdfGrantLetterComponent', () => {
 
     expect(fixture.componentInstance.form.invalid).toBeTruthy();
     expect(getAllByText(errorMessage, { exact: false }).length).toBe(2);
+  });
+
+  it('should navigate to grant-letter-sent url when send email button is clicked', async () => {
+    const { fixture, component, spy } = await setup();
+
+    (fixture.componentInstance as any).navigateToNextPage();
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter-sent']);
   });
 });
