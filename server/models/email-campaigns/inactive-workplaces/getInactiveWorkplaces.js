@@ -9,7 +9,7 @@ const refreshInactiveWorkplaces = async () => {
 const getInactiveWorkplaces = async () => {
   const lastMonth = moment().subtract(1, 'months');
 
-  const lastLogin = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
+  const lastActivity = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
   const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 
   return models.sequelize.query(
@@ -22,6 +22,7 @@ const getInactiveWorkplaces = async () => {
   "PrimaryUserName",
   "PrimaryUserEmail",
 	"LastLogin",
+  "LastUpdated",
   (
 		SELECT
 			"template"
@@ -31,15 +32,15 @@ const getInactiveWorkplaces = async () => {
 		WHERE
       ec."type" = 'inactiveWorkplaces'
 		  AND ech. "establishmentID" = e. "EstablishmentID"
-      AND ech."createdAt" >= e."LastLogin"
+      AND (ech."createdAt" >= e."LastLogin" OR ech."createdAt" >= e."LastUpdated")
     ORDER BY ech. "createdAt" DESC
     LIMIT 1) AS "LastTemplate"
 		FROM
-			cqc. "EstablishmentLastLogin" e
+			cqc. "EstablishmentLastActivity" e
 		WHERE
       "IsParent" = FALSE
       AND "DataOwner" = 'Workplace'
-			AND "LastLogin" <= :lastLogin
+			AND ("LastLogin" <= :lastActivity OR "LastUpdated" <= :lastActivity)
       AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
@@ -54,7 +55,7 @@ const getInactiveWorkplaces = async () => {
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
-        lastLogin,
+        lastActivity,
         lastEmailDate,
       },
     },

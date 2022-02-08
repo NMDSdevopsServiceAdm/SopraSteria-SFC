@@ -9,6 +9,7 @@ const transformInactiveWorkplaces = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
   const nmdsId = inactiveWorkplace.NmdsID;
   const lastLogin = inactiveWorkplace.LastLogin;
+  const lastUpdated = inactiveWorkplace.LastUpdated;
   const dataOwner = inactiveWorkplace.DataOwner;
   const emailTemplate = nextEmail.getTemplate(inactiveWorkplace);
   const user = {
@@ -21,6 +22,7 @@ const transformInactiveWorkplaces = (inactiveWorkplace) => {
     name,
     nmdsId,
     lastLogin,
+    lastUpdated,
     emailTemplate,
     dataOwner,
     user,

@@ -22,6 +22,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Workplace Name',
       nmdsId: 'J1234567',
       lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+      lastUpdated: endOfLastMonth.clone().format('YYYY-MM-DD'),
       emailTemplate: {
         id: sixMonthTemplateId,
         name: '6 months',
@@ -37,6 +38,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
       lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+      lastUpdated: endOfLastMonth.clone().format('YYYY-MM-DD'),
       emailTemplate: {
         id: twelveMonthTemplateId,
         name: '12 months',
@@ -45,6 +47,38 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       user: {
         name: 'Name McName',
         email: 'name@mcname.com',
+      },
+    },
+    {
+      id: 480,
+      name: 'Third Workplace Name',
+      nmdsId: 'A1234567',
+      lastLogin: endOfLastMonth.clone().format('YYYY-MM-DD'),
+      lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+      emailTemplate: {
+        id: sixMonthTemplateId,
+        name: '6 months',
+      },
+      dataOwner: 'Workplace',
+      user: {
+        name: 'Test Name 1',
+        email: 'test1@example.com',
+      },
+    },
+    {
+      id: 481,
+      name: 'Fourth Workplace Name',
+      nmdsId: 'J0012345',
+      lastLogin: endOfLastMonth.clone().format('YYYY-MM-DD'),
+      lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+      emailTemplate: {
+        id: twelveMonthTemplateId,
+        name: '12 months',
+      },
+      dataOwner: 'Workplace',
+      user: {
+        name: 'Name McName 1',
+        email: 'name1@mcname.com',
       },
     },
   ];
@@ -59,6 +93,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Test Name',
         PrimaryUserEmail: 'test@example.com',
         LastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+        LastUpdated: endOfLastMonth.clone().format('YYYY-MM-DD'),
         LastTemplate: null,
       },
       {
@@ -69,54 +104,122 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         PrimaryUserName: 'Name McName',
         PrimaryUserEmail: 'name@mcname.com',
         LastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+        LastUpdated: endOfLastMonth.clone().format('YYYY-MM-DD'),
+        LastTemplate: null,
+      },
+      {
+        EstablishmentID: 480,
+        NameValue: 'Third Workplace Name',
+        NmdsID: 'A1234567',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Test Name 1',
+        PrimaryUserEmail: 'test1@example.com',
+        LastLogin: endOfLastMonth.clone().format('YYYY-MM-DD'),
+        LastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+        LastTemplate: null,
+      },
+      {
+        EstablishmentID: 481,
+        NameValue: 'Fourth Workplace Name',
+        NmdsID: 'J0012345',
+        DataOwner: 'Workplace',
+        PrimaryUserName: 'Name McName 1',
+        PrimaryUserEmail: 'name1@mcname.com',
+        LastLogin: endOfLastMonth.clone().format('YYYY-MM-DD'),
+        LastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
         LastTemplate: null,
       },
     ]);
 
     const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    // console.log('**************');
-    // console.log(inactiveWorkplaces);
     expect(inactiveWorkplaces).to.deep.equal(dummyInactiveWorkplaces);
   });
 
-  [
-    {
-      inactiveMonths: 6,
-      LastLogin: endOfLastMonth.clone().subtract(6, 'months'),
-      LastTemplate: sixMonthTemplateId,
-    },
-    {
-      inactiveMonths: 12,
-      LastLogin: endOfLastMonth.clone().subtract(12, 'months'),
-      LastTemplate: twelveMonthTemplateId,
-    },
-    {
-      inactiveMonths: 18,
-      LastLogin: endOfLastMonth.clone().subtract(18, 'months'),
-      LastTemplate: eighteenMonthTemplateId,
-    },
-    {
-      inactiveMonths: 24,
-      LastLogin: endOfLastMonth.clone().subtract(24, 'months'),
-      LastTemplate: twentyFourMonthTemplateId,
-    },
-  ].forEach(({ inactiveMonths, LastLogin, LastTemplate }) => {
-    it(`should not include a workplace that has already been sent a ${inactiveMonths} month email`, async () => {
-      sinon.stub(models.sequelize, 'query').returns([
-        {
-          EstablishmentID: 478,
-          NameValue: 'Workplace Name',
-          NmdsID: 'J1234567',
-          DataOwner: 'Workplace',
-          PrimaryUserName: 'Test Name',
-          PrimaryUserEmail: 'test@example.com',
-          LastLogin: LastLogin,
-          LastTemplate: LastTemplate,
-        },
-      ]);
+  describe('using last login', () => {
+    [
+      {
+        inactiveMonths: 6,
+        LastActivity: endOfLastMonth.clone().subtract(6, 'months'),
+        LastTemplate: sixMonthTemplateId,
+      },
+      {
+        inactiveMonths: 12,
+        LastActivity: endOfLastMonth.clone().subtract(12, 'months'),
+        LastTemplate: twelveMonthTemplateId,
+      },
+      {
+        inactiveMonths: 18,
+        LastActivity: endOfLastMonth.clone().subtract(18, 'months'),
+        LastTemplate: eighteenMonthTemplateId,
+      },
+      {
+        inactiveMonths: 24,
+        LastActivity: endOfLastMonth.clone().subtract(24, 'months'),
+        LastTemplate: twentyFourMonthTemplateId,
+      },
+    ].forEach(({ inactiveMonths, LastActivity, LastTemplate }) => {
+      it(`should not include a workplace that has already been sent a ${inactiveMonths} month email`, async () => {
+        sinon.stub(models.sequelize, 'query').returns([
+          {
+            EstablishmentID: 478,
+            NameValue: 'Workplace Name',
+            NmdsID: 'J1234567',
+            DataOwner: 'Workplace',
+            PrimaryUserName: 'Test Name',
+            PrimaryUserEmail: 'test@example.com',
+            LastLogin: LastActivity,
+            LastUpdated: endOfLastMonth.clone().format('YYYY-MM-DD'),
+            LastTemplate: LastTemplate,
+          },
+        ]);
 
-      const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-      expect(inactiveWorkplaces.length).to.equal(0);
+        const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+        expect(inactiveWorkplaces.length).to.equal(0);
+      });
+    });
+  });
+
+  describe('using last updated', () => {
+    [
+      {
+        inactiveMonths: 6,
+        LastActivity: endOfLastMonth.clone().subtract(6, 'months'),
+        LastTemplate: sixMonthTemplateId,
+      },
+      {
+        inactiveMonths: 12,
+        LastActivity: endOfLastMonth.clone().subtract(12, 'months'),
+        LastTemplate: twelveMonthTemplateId,
+      },
+      {
+        inactiveMonths: 18,
+        LastActivity: endOfLastMonth.clone().subtract(18, 'months'),
+        LastTemplate: eighteenMonthTemplateId,
+      },
+      {
+        inactiveMonths: 24,
+        LastActivity: endOfLastMonth.clone().subtract(24, 'months'),
+        LastTemplate: twentyFourMonthTemplateId,
+      },
+    ].forEach(({ inactiveMonths, LastActivity, LastTemplate }) => {
+      it(`should not include a workplace that has already been sent a ${inactiveMonths} month email`, async () => {
+        sinon.stub(models.sequelize, 'query').returns([
+          {
+            EstablishmentID: 478,
+            NameValue: 'Workplace Name',
+            NmdsID: 'J1234567',
+            DataOwner: 'Workplace',
+            PrimaryUserName: 'Test Name',
+            PrimaryUserEmail: 'test@example.com',
+            LastLogin: endOfLastMonth.clone().format('YYYY-MM-DD'),
+            LastUpdated: LastActivity,
+            LastTemplate: LastTemplate,
+          },
+        ]);
+
+        const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+        expect(inactiveWorkplaces.length).to.equal(0);
+      });
     });
   });
 });
