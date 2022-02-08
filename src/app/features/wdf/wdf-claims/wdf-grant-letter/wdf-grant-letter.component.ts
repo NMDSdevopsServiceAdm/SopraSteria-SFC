@@ -47,7 +47,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     this.flow = 'wdf-claims';
   }
 
-  public addControl(answer: string) {
+  public onChange(answer: string) {
     this.submitted = false;
     if (answer === 'Somebody else') {
       this.form.addControl(
@@ -60,26 +60,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
           validators: [Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)],
         }),
       );
-      this.formErrorsMap.push(
-        {
-          item: 'fullName',
-          type: [
-            {
-              name: 'required',
-              message: 'Enter their full name',
-            },
-          ],
-        },
-        {
-          item: 'emailAddress',
-          type: [
-            {
-              name: 'required',
-              message: 'Please enter a valid email address',
-            },
-          ],
-        },
-      );
+      this.newFormErrorsMap();
     } else if (answer === 'Myself') {
       const { fullName, emailAddress } = this.form.controls;
       if (fullName) {
@@ -88,9 +69,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
       if (emailAddress) {
         this.form.removeControl('emailAddress');
       }
-      this.formErrorsMap.splice(1, 2);
     }
   }
+
   public onSubmit(): void {
     this.submitted = true;
 
@@ -117,6 +98,34 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
       },
     ];
   }
+
+  public newFormErrorsMap(): void {
+    this.formErrorsMap.push(
+      {
+        item: 'fullName',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter their full name',
+          },
+        ],
+      },
+      {
+        item: 'emailAddress',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter their email address',
+          },
+          {
+            name: 'pattern',
+            message: 'Enter the email address in the correct format, like name@example.com',
+          },
+        ],
+      },
+    );
+  }
+
   public getErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
