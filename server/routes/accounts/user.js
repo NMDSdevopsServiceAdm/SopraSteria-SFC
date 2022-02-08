@@ -437,6 +437,7 @@ const partAddUser = async (req, res) => {
 
     // force email to be lowercase
     req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
+    req.body.canManageWdfClaims = req.body.canManageWdfClaims || false;
 
     // only those properties defined in the POST body will be updated (peristed)
     const isValidUser = await thisUser.load(req.body);
@@ -669,8 +670,6 @@ const addUser = async (req, res) => {
       const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
 
       if (await thisUser.restore(trackingResponse.user.uid, null, null)) {
-        // TODO: JSON validation
-
         // only those properties defined in the POST body will be updated (peristed) along with
         //   the additional role property - ovverwrites against that could be passed in the body
         const newUserProperties = {
@@ -679,6 +678,7 @@ const addUser = async (req, res) => {
           status: null,
           agreedUpdatedTerms: true,
           role: trackingResponse.user.UserRoleValue,
+          canManageWdfClaims: req.body[0].user.canManageWdfClaims || false,
         };
 
         // force the username and email to be lowercase
