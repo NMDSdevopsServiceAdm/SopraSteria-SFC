@@ -56,18 +56,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   public onChange(answer: string) {
     if (answer === 'Somebody else') {
       this.showNameAndEmail = true;
-      this.form.addControl('fullName', new FormControl(null, { updateOn: 'submit' }));
-      this.form.addControl(
-        'emailAddress',
-        new FormControl(null, {
-          updateOn: 'submit',
-        }),
-      );
+      this.addControl();
       this.newFormErrorsMap();
-      this.form.get('fullName').addValidators([Validators.required, Validators.maxLength(120)]);
-      this.form
-        .get('emailAddress')
-        .addValidators([Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)]);
+      this.addValidationToControl();
     } else if (answer === 'Myself') {
       this.showNameAndEmail = false;
       const { fullName, emailAddress } = this.form.controls;
@@ -134,6 +125,23 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
         ],
       },
     );
+  }
+
+  public addControl() {
+    this.form.addControl('fullName', new FormControl(null, { updateOn: 'submit' }));
+    this.form.addControl(
+      'emailAddress',
+      new FormControl(null, {
+        updateOn: 'submit',
+      }),
+    );
+  }
+
+  public addValidationToControl() {
+    this.form.get('fullName').addValidators([Validators.required, Validators.maxLength(120)]);
+    this.form
+      .get('emailAddress')
+      .addValidators([Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)]);
   }
 
   public getErrorMessage(item: string): string {
