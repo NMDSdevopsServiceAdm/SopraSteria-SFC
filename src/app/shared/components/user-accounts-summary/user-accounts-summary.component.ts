@@ -34,7 +34,58 @@ export class UserAccountsSummaryComponent implements OnInit {
   }
 
   public getUserType(user: UserDetails): string {
-    return user.isPrimary ? 'Primary edit' : user.role === 'Read' ? 'Read only' : user.role;
+    const userTypes = [
+      {
+        value: 'Primary edit and WDF',
+        role: 'Edit',
+        canManageWdfClaims: true,
+        isPrimary: true,
+      },
+      {
+        value: 'Primary edit',
+        role: 'Edit',
+        canManageWdfClaims: false,
+        isPrimary: true,
+      },
+      {
+        value: 'Edit and WDF',
+        role: 'Edit',
+        canManageWdfClaims: true,
+        isPrimary: false,
+      },
+      {
+        value: 'Edit',
+        role: 'Edit',
+        canManageWdfClaims: false,
+        isPrimary: false,
+      },
+      {
+        value: 'Read only and WDF',
+        role: 'Read',
+        canManageWdfClaims: true,
+        isPrimary: false,
+      },
+      {
+        value: 'Read only',
+        role: 'Read',
+        canManageWdfClaims: false,
+        isPrimary: false,
+      },
+      {
+        value: 'WDF',
+        role: 'None',
+        canManageWdfClaims: true,
+        isPrimary: false,
+      },
+    ];
+
+    const userType = userTypes.find(
+      (type) =>
+        type.role === user.role &&
+        type.canManageWdfClaims === user.canManageWdfClaims &&
+        user.isPrimary === type.isPrimary,
+    );
+    return userType?.value;
   }
 
   public isPending(user: UserDetails): boolean {
