@@ -33,7 +33,7 @@
                   name="grantLetter"
                   type="radio"
                   [value]="answer"
-                  (change)="onChange(answer)"
+                  (click)="onChange(answer)"
                 />
                 <label class="govuk-label govuk-radios__label" for="grantLetter">
                   {{ answer }}
@@ -42,19 +42,24 @@
               <div
                 *ngIf="answer === 'Somebody else'"
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('grantLetter').value !== 'Somebody else'"
+                [class.govuk-radios__conditional--hidden]="!showNameAndEmail"
                 [attr.data-testid]="'grantLetterRadio-conditional-' + idx"
               >
                 <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                   <label class="govuk-label" for="fullName"> Full name </label>
-                  <span *ngIf="submitted" id="fullName-error" class="govuk-error-message">
-                    <span *ngIf="this.form.get('fullName').errors" id="fullName-error">{{
-                      getErrorMessage('fullName')
-                    }}</span>
+                  <span
+                    *ngIf="submitted && submittedWithAddtionalFields && this.form.get('fullName').errors"
+                    id="fullName-error"
+                    class="govuk-error-message"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getErrorMessage('fullName') }}
                   </span>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="submitted && form.get('fullName').invalid"
+                    [class.govuk-input--error]="
+                      submitted && submittedWithAddtionalFields && form.get('fullName').invalid
+                    "
                     id="fullName"
                     formControlName="fullName"
                     name="fullName"
@@ -64,7 +69,7 @@
                 <div class="govuk-form-group" *ngIf="this.form.get('emailAddress')">
                   <label class="govuk-label" for="emailAddress"> Email address </label>
                   <span
-                    *ngIf="submitted && form.get('emailAddress').invalid"
+                    *ngIf="submitted && submittedWithAddtionalFields && form.get('emailAddress').invalid"
                     id="emailAddress-error"
                     class="govuk-error-message"
                   >
@@ -73,7 +78,9 @@
                   </span>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
+                    [class.govuk-input--error]="
+                      submitted && submittedWithAddtionalFields && form.get('emailAddress').invalid
+                    "
                     id="emailAddress"
                     formControlName="emailAddress"
                     name="emailAddress"

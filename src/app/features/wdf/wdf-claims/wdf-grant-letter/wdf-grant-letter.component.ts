@@ -25,6 +25,8 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   public flow: string;
   public revealTitle = "What's a grant letter?";
   public establishmentId: string;
+  public showNameAndEmail = false;
+  public submittedWithAddtionalFields = false;
 
   private subscriptions: Subscription = new Subscription();
   constructor(
@@ -35,7 +37,13 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     public establishmentService: EstablishmentService,
   ) {
     this.form = this.formBuilder.group({
-      grantLetter: [null, Validators.required],
+      grantLetter: [
+        null,
+        {
+          validators: Validators.required,
+          updateOn: 'submit',
+        },
+      ],
     });
   }
 
@@ -46,20 +54,22 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   }
 
   public onChange(answer: string) {
-    this.submitted = false;
     if (answer === 'Somebody else') {
-      this.form.addControl(
-        'fullName',
-        new FormControl(null, { validators: [Validators.required, Validators.maxLength(120)] }),
-      );
+      this.showNameAndEmail = true;
+      this.form.addControl('fullName', new FormControl(null, { updateOn: 'submit' }));
       this.form.addControl(
         'emailAddress',
         new FormControl(null, {
-          validators: [Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)],
+          updateOn: 'submit',
         }),
       );
       this.newFormErrorsMap();
+      this.form.get('fullName').addValidators([Validators.required, Validators.maxLength(120)]);
+      this.form
+        .get('emailAddress')
+        .addValidators([Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(120)]);
     } else if (answer === 'Myself') {
+      this.showNameAndEmail = false;
       const { fullName, emailAddress } = this.form.controls;
       if (fullName) {
         this.form.removeControl('fullName');
@@ -72,6 +82,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   }
 
   public onSubmit(): void {
+    this.submittedWithAddtionalFields = this.form.controls?.fullName && this.form.controls?.emailAddress ? true : false;
     this.submitted = true;
 
     if (this.form.valid) {
