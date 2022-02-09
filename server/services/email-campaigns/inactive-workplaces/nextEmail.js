@@ -8,29 +8,29 @@ const templates = {
   sixMonths: {
     lastActivity: lastMonth.clone().subtract(6, 'months'),
     template: config.get('sendInBlue.templates.sixMonthsInactive'),
-    matches: function (lastLogin) {
-      return lastLogin.isSame(this.lastActivity, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
   twelveMonths: {
     lastActivity: lastMonth.clone().subtract(12, 'months'),
     template: config.get('sendInBlue.templates.twelveMonthsInactive'),
-    matches: function (lastLogin) {
-      return lastLogin.isSame(this.lastActivity, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
   eighteenMonths: {
     lastActivity: lastMonth.clone().subtract(18, 'months'),
     template: config.get('sendInBlue.templates.eighteenMonthsInactive'),
-    matches: function (lastLogin) {
-      return lastLogin.isSame(this.lastActivity, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
   twentyFourMonths: {
     lastActivity: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
-    matches: function (lastLogin) {
-      return lastLogin.isSame(this.lastActivity, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
 };
@@ -44,7 +44,7 @@ const getTemplate = (inactiveWorkplace) => {
     const lastTemplate = inactiveWorkplace.LastTemplate ? parseInt(inactiveWorkplace.LastTemplate) : null;
     const notReceivedTemplate = lastTemplate !== nextTemplate.id;
 
-    if ((month.matches(lastUpdated) || month.matches(lastLogin)) && notReceivedTemplate) {
+    if (month.matches(lastUpdated) && month.matches(lastLogin) && notReceivedTemplate) {
       return nextTemplate;
     }
   }

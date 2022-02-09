@@ -32,7 +32,8 @@ const getInactiveWorkplaces = async () => {
 		WHERE
       ec."type" = 'inactiveWorkplaces'
 		  AND ech. "establishmentID" = e. "EstablishmentID"
-      AND (ech."createdAt" >= e."LastLogin" OR ech."createdAt" >= e."LastUpdated")
+      AND ech."createdAt" >= e."LastLogin"
+      AND ech."createdAt" >= e."LastUpdated"
     ORDER BY ech. "createdAt" DESC
     LIMIT 1) AS "LastTemplate"
 		FROM
@@ -40,7 +41,8 @@ const getInactiveWorkplaces = async () => {
 		WHERE
       "IsParent" = FALSE
       AND "DataOwner" = 'Workplace'
-			AND ("LastLogin" <= :lastActivity OR "LastUpdated" <= :lastActivity)
+			AND "LastLogin" <= :lastActivity
+      AND "LastUpdated" <= :lastActivity
       AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
