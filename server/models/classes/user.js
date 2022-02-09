@@ -972,6 +972,7 @@ class User {
         'updated',
         'updatedBy',
         'isPrimary',
+        'CanManageWdfClaimsValue',
       ],
       order: [['updated', 'DESC']],
     });
@@ -990,6 +991,7 @@ class User {
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
           status: User.statusTranslator(thisUser.login),
+          canManageWdfClaims: thisUser.CanManageWdfClaimsValue,
         });
       });
 

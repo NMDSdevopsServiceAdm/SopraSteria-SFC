@@ -23,6 +23,7 @@ export interface UserDetails {
   updated?: string;
   updatedBy?: string;
   username?: string;
+  canManageWdfClaims?: boolean;
 }
 
 export enum UserStatus {
