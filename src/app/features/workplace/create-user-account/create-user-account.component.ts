@@ -56,7 +56,13 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   private addFormControls(): void {
-    this.form.addControl('role', new FormControl(null, Validators.required));
+    this.form.addControl(
+      'role',
+      new FormControl(null, {
+        validators: [Validators.required],
+        updateOn: 'submit',
+      }),
+    );
 
     this.formErrorsMap.push({
       item: 'role',
