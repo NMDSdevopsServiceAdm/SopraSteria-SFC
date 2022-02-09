@@ -11,13 +11,12 @@ const routes: Routes = [
     canActivate: [HasPermissionsGuard],
     data: {
       permissions: ['canManageWdfClaims'],
-      title: 'WDF Grant Letter',
     },
     children: [
       {
         path: '',
         component: WdfGrantLetterComponent,
-        data: { title: 'Grant Letter' },
+        data: { title: 'WDF Grant Letter' },
       },
       {
         path: 'grant-letter-sent',

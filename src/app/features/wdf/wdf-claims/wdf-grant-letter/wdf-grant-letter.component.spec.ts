@@ -1,14 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule, By } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByTestId, render } from '@testing-library/angular';
 
 import { WdfGrantLetterComponent } from './wdf-grant-letter.component';
 
@@ -84,11 +84,9 @@ describe('WdfGrantLetterComponent', () => {
   });
 
   it('should display text boxes when Somebody else is selected', async () => {
-    const { component, fixture, queryByText } = await setup();
+    const { component, fixture, queryByText, getByTestId } = await setup();
 
-    const somebodyRadio = fixture.debugElement.query(
-      By.css('[data-testid="grantLetterRadio-conditional-1"]'),
-    ).nativeElement;
+    const somebodyRadio = getByTestId('grantLetterRadio-conditional');
     const somebody = (component.options[1] = 'Somebody else');
 
     fireEvent.click(somebodyRadio);

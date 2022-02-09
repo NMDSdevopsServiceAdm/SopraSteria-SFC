@@ -24,7 +24,7 @@
             }}</span>
           </span>
           <div class="govuk-radios govuk-radios--conditional govuk-!-margin-bottom-8">
-            <ng-container *ngFor="let answer of options; let idx = index">
+            <ng-container *ngFor="let answer of options">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
@@ -43,7 +43,7 @@
                 *ngIf="answer === 'Somebody else'"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="!showNameAndEmail"
-                [attr.data-testid]="'grantLetterRadio-conditional-' + idx"
+                data-testid="grantLetterRadio-conditional"
               >
                 <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                   <label class="govuk-label" for="fullName"> Full name </label>
