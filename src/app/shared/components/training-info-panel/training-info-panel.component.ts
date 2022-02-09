@@ -20,7 +20,6 @@ export class TrainingInfoPanelComponent implements OnInit {
     let count = 0;
     count = this.totalExpiredTraining ? count + 1 : count;
     count = this.totalExpiringTraining ? count + 1 : count;
-    count = this.totalMissingMandatoryTraining ? count + 1 : count;
     count = this.totalStaffMissingMandatoryTraining ? count + 1 : count;
     return count;
   }
