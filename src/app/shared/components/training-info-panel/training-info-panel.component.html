@@ -8,7 +8,7 @@
     <div
       class="asc-container--column"
       [ngClass]="summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width'"
-      *ngIf="totalMissingMandatoryTraining"
+      *ngIf="totalStaffMissingMandatoryTraining"
       data-testid="missing-column"
     >
       <div class="asc-title">Summary</div>
@@ -17,13 +17,13 @@
           <img src="/assets/images/flag-red.svg" alt="" />
         </div>
         <div class="asc-content--phrase">
-          <span class="asc-content--count">{{ totalMissingMandatoryTraining }}</span>
-          <ng-container [ngPlural]="totalMissingMandatoryTraining">
+          <span class="asc-content--count">{{ totalStaffMissingMandatoryTraining }}</span>
+          <ng-container [ngPlural]="totalStaffMissingMandatoryTraining">
             <ng-template ngPluralCase="=1">
-              <span>missing mandatory record</span>
+              <span>staff are missing mandatory training</span>
             </ng-template>
             <ng-template ngPluralCase="other">
-              <span>missing mandatory records</span>
+              <span>staff are missing mandatory training</span>
             </ng-template>
           </ng-container>
         </div>

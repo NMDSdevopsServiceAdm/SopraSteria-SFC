@@ -23,6 +23,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   public totalExpiredTraining: number;
   public totalExpiringTraining: number;
   public missingMandatoryTraining: number;
+  public staffMissingMandatoryTraining: number;
   public totalStaff: number;
   public isShowAllTrainings: boolean;
   public viewTrainingByCategory = false;
@@ -67,6 +68,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     this.totalExpiredTraining = 0;
     this.totalExpiringTraining = 0;
     this.missingMandatoryTraining = 0;
+    this.staffMissingMandatoryTraining = 0;
     if (this.workers) {
       this.workers.forEach((worker: Worker) => {
         const totalTrainingRecord = worker.trainingCount;
@@ -74,6 +76,9 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
         this.totalExpiredTraining += worker.expiredTrainingCount;
         this.totalExpiringTraining += worker.expiringTrainingCount;
         this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
+        worker.missingMandatoryTrainingCount
+          ? (this.staffMissingMandatoryTraining += 1)
+          : this.staffMissingMandatoryTraining;
       });
     }
   }
