@@ -6,6 +6,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { CreateAccountRequest } from '@core/model/account.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
@@ -101,7 +102,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     this.router.navigate(['/workplace', this.establishmentUid, 'user', 'saved', data.uid]);
   }
 
-  get returnTo() {
+  get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
       fragment: 'users',
