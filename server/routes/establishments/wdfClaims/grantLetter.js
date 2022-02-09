@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const models = require('../../../models');
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const updateBUDataChanges = async (res) => {

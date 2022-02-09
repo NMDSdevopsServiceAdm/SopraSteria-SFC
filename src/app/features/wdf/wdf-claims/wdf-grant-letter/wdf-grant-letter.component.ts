@@ -27,7 +27,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   public establishmentId: string;
 
   private subscriptions: Subscription = new Subscription();
-
   constructor(
     public formBuilder: FormBuilder,
     public errorSummaryService: ErrorSummaryService,
@@ -37,7 +36,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   ) {
     this.form = this.formBuilder.group({
       grantLetter: [null, Validators.required],
-      updateOn: 'submit',
     });
   }
 
@@ -69,6 +67,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
       if (emailAddress) {
         this.form.removeControl('emailAddress');
       }
+      this.formErrorsMap.splice(1, 2);
     }
   }
 

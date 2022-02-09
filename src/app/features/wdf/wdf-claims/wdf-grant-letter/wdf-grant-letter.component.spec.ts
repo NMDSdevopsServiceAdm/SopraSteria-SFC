@@ -84,7 +84,7 @@ describe('WdfGrantLetterComponent', () => {
   });
 
   it('should display text boxes when Somebody else is selected', async () => {
-    const { component, fixture, getByTestId, queryByText } = await setup();
+    const { component, fixture, queryByText } = await setup();
 
     const somebodyRadio = fixture.debugElement.query(
       By.css('[data-testid="grantLetterRadio-conditional-1"]'),
@@ -99,7 +99,7 @@ describe('WdfGrantLetterComponent', () => {
   });
 
   it('should show error message when user click submit with out selecting radio buttons', async () => {
-    const { component, fixture, getAllByText, getByTestId } = await setup();
+    const { component, fixture, getAllByText } = await setup();
 
     const errorMessage = 'Select who you want to email the grant letter to';
 

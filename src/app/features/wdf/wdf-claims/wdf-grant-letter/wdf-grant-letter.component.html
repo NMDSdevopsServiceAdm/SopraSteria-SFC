@@ -29,13 +29,13 @@
                 <input
                   class="govuk-radios__input"
                   [formControlName]="'grantLetter'"
-                  id="grantLetter-{{ idx }}"
+                  id="grantLetter"
                   name="grantLetter"
                   type="radio"
                   [value]="answer"
                   (change)="onChange(answer)"
                 />
-                <label class="govuk-label govuk-radios__label" for="grantLetter-{{ idx }}">
+                <label class="govuk-label govuk-radios__label" for="grantLetter">
                   {{ answer }}
                 </label>
               </div>
