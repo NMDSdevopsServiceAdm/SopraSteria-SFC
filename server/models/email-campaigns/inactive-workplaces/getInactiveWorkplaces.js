@@ -3,7 +3,7 @@ const moment = require('moment');
 const models = require('../../index');
 
 const refreshInactiveWorkplaces = async () => {
-  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastLogin"');
+  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
 };
 
 const getInactiveWorkplaces = async () => {
@@ -31,13 +31,13 @@ const getInactiveWorkplaces = async () => {
     JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
 		WHERE
       ec."type" = 'inactiveWorkplaces'
-		  AND ech. "establishmentID" = e. "EstablishmentID"
+		  AND ech."establishmentID" = e."EstablishmentID"
       AND ech."createdAt" >= e."LastLogin"
       AND ech."createdAt" >= e."LastUpdated"
-    ORDER BY ech. "createdAt" DESC
+    ORDER BY ech."createdAt" DESC
     LIMIT 1) AS "LastTemplate"
 		FROM
-			cqc. "EstablishmentLastActivity" e
+			cqc."EstablishmentLastActivity" e
 		WHERE
       "IsParent" = FALSE
       AND "DataOwner" = 'Workplace'
@@ -46,14 +46,14 @@ const getInactiveWorkplaces = async () => {
       AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
-					ech. "establishmentID"
+					ech."establishmentID"
 				FROM
 					cqc."EmailCampaignHistories" ech
         JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
 				WHERE
           ec."type" = 'inactiveWorkplaces'
 					AND ech."createdAt" >= :lastEmailDate
-					AND ech. "establishmentID" = e. "EstablishmentID");`,
+					AND ech."establishmentID" = e."EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
