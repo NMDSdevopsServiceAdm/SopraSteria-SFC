@@ -114,7 +114,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
     });
   });
 
-  describe.only('getParams', () => {
+  describe('getParams', () => {
     it('returns the right params for single workplaces', () => {
       const inactiveWorkplace = {
         name: 'Workplace Name',

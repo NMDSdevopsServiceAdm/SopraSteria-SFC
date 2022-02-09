@@ -44,6 +44,7 @@ const createCampaign = async (req, res) => {
         data: {
           dataOwner: workplace.dataOwner,
           lastLogin: workplace.lastLogin,
+          lastUpdated: workplace.lastUpdated,
           subsidiaries: workplace.subsidiaries ? workplace.subsidiaries : [],
         },
         sentToName: workplace.user.name,
