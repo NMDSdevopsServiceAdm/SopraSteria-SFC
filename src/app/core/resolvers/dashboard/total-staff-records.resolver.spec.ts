@@ -76,7 +76,7 @@ describe('TotalStaffRecordsResolver', () => {
     expect(workerService.getTotalStaffRecords).toHaveBeenCalledWith('testParamUid');
   });
 
-  it('should not call getAllWorkers when workplace does not have canViewListOfWorkers permission', () => {
+  it('should not call getTotalStaffRecords when workplace does not have canViewListOfWorkers permission', () => {
     const { resolver, route, workerService } = setup('testParamUid', []);
 
     resolver.resolve(route.snapshot);
