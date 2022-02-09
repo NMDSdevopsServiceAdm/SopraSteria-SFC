@@ -5,11 +5,11 @@ const Manager = require('../properties/manager');
 const contractProperty = require('./properties/contractProperty').WorkerContractProperty;
 const nameOrIdProperty = require('./properties/nameOfIdProperty').WorkerNameOrIdProperty;
 const mainJobProperty = require('./properties/mainJobProperty').WorkerMainJobProperty;
-const approvedMentalHealthWorkerProperty = require('./properties/approvedMentalHealthWorkerProperty')
-  .WorkerApprovedMentalHealthWorkerProperty;
+const approvedMentalHealthWorkerProperty =
+  require('./properties/approvedMentalHealthWorkerProperty').WorkerApprovedMentalHealthWorkerProperty;
 const mainJobStartDateProperty = require('./properties/mainJobStartDateProperty').WorkerMainJobStartDateProperty;
-const nationalInsuranceProperty = require('./properties/nationalInsuranceProperty')
-  .WorkerNationalInsuranceNumberProperty;
+const nationalInsuranceProperty =
+  require('./properties/nationalInsuranceProperty').WorkerNationalInsuranceNumberProperty;
 const postcodeProperty = require('./properties/postcodeProperty').WorkerPostcodeProperty;
 const dateOfBirthProperty = require('./properties/dateOfBirthProperty').WorkerDateOfBirthProperty;
 const genderProperty = require('./properties/genderProperty').WorkerGenderProperty;
@@ -18,27 +18,27 @@ const ethnicityProperty = require('./properties/ethnicityProperty').WorkerEthnic
 const nationalityProperty = require('./properties/nationalityProperty').WorkerNationalityProperty;
 const countryProperty = require('./properties/countryProperty').WorkerCountryProperty;
 const recruitedFromProperty = require('./properties/recruitedFromProperty').WorkerRecruitedFromProperty;
-const socialCareQualificationProperty = require('./properties/socialCareQualificationProperty')
-  .WorkerSocialCareQualificationProperty;
+const socialCareQualificationProperty =
+  require('./properties/socialCareQualificationProperty').WorkerSocialCareQualificationProperty;
 const britishCitizenshipProperty = require('./properties/britishCitizenshipProperty').WorkerBritishCitizenshipProperty;
 const yearOfArrivalProperty = require('./properties/yearArrivedProperty').WorkerYearArrivedProperty;
-const socialCareStartDateProperty = require('./properties/socialCareStartDateProperty')
-  .WorkerSocialCareStartDateProperty;
+const socialCareStartDateProperty =
+  require('./properties/socialCareStartDateProperty').WorkerSocialCareStartDateProperty;
 const otherJobsProperty = require('./properties/otherJobsProperty').WorkerOtherJobsProperty;
 const daysSickProperty = require('./properties/daysSickProperty').WorkerDaysSickProperty;
 const zeroHoursProperty = require('./properties/zeroContractProperty').WorkerZeroContractProperty;
 const weeklyHoursAverageProperty = require('./properties/weeklyHoursAverageProperty').WorkerWeeklyHoursAverageProperty;
-const weeklyHoursContractedProperty = require('./properties/weeklyHoursContractedProperty')
-  .WorkerWeeklyHoursContractedProperty;
+const weeklyHoursContractedProperty =
+  require('./properties/weeklyHoursContractedProperty').WorkerWeeklyHoursContractedProperty;
 const annualHourlyPayProperty = require('./properties/annualHourlyPayProperty').WorkerAnnualHourlyPayProperty;
 const careCertificateProperty = require('./properties/careCertificateProperty').WorkerCareCertificateProperty;
-const apprenticeshipProperty = require('./properties/apprenticeshipTrainingProperty')
-  .WorkerApprenticeshipTrainingProperty;
-const qualificationInSocialCareProperty = require('./properties/qualificationInSocialCareProperty')
-  .WorkerQualificationInSocialCareProperty;
+const apprenticeshipProperty =
+  require('./properties/apprenticeshipTrainingProperty').WorkerApprenticeshipTrainingProperty;
+const qualificationInSocialCareProperty =
+  require('./properties/qualificationInSocialCareProperty').WorkerQualificationInSocialCareProperty;
 const otherQualificationProperty = require('./properties/otherQualificationProperty').WorkerOtherQualificationProperty;
-const highestQualificationProperty = require('./properties/highestQualificationProperty')
-  .WorkerHighestQualificationProperty;
+const highestQualificationProperty =
+  require('./properties/highestQualificationProperty').WorkerHighestQualificationProperty;
 const completedProperty = require('./properties/completedProperty').WorkerCompletedProperty;
 const registeredNurseProperty = require('./properties/registeredNurseProperty').RegisteredNurseProperty;
 const nurseSpecialismProperty = require('./properties/nurseSpecialismProperty').NurseSpecialismProperty;
@@ -46,8 +46,6 @@ const nurseSpecialismsProperty = require('./properties/nurseSpecialismsProperty'
 const localIdentifierProperty = require('./properties/localIdentifierProperty').LocalIdentifierProperty;
 const establishmentFkProperty = require('./properties/establishmentFkProperty').EstablishmentFkProperty;
 const fluJabProperty = require('./properties/fluJabProperty').WorkerFluJabProperty;
-const latitudeProperty = require('./properties/latitudeProperty').LatitudeProperty;
-const longitudeProperty = require('./properties/longitudeProperty').LongitudeProperty;
 const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').LongTermAbsenceProperty;
 
 class WorkerPropertyManager {
@@ -90,8 +88,6 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(localIdentifierProperty);
     this._thisManager.registerProperty(establishmentFkProperty);
     this._thisManager.registerProperty(fluJabProperty);
-    this._thisManager.registerProperty(latitudeProperty);
-    this._thisManager.registerProperty(longitudeProperty);
     this._thisManager.registerProperty(longTermAbsenceProperty);
   }
 

@@ -150,13 +150,6 @@ const addEstablishment = async (req, res) => {
         );
       }
 
-      if (establishmentData.PostCode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(establishmentData.PostCode)) || {};
-
-        establishmentData.Latitude = Latitude;
-        establishmentData.Longitude = Longitude;
-      }
-
       const newEstablishment = new Establishment.Establishment();
       newEstablishment.initialise(
         establishmentData.Address1,
@@ -178,8 +171,6 @@ const addEstablishment = async (req, res) => {
           id: establishmentData.MainServiceId,
           other: establishmentData.MainServiceOther,
         },
-        Latitude: establishmentData.Latitude,
-        Longitude: establishmentData.Longitude,
         ustatus: 'PENDING',
         numberOfStaff: establishmentData.NumberOfStaff,
       });
@@ -345,12 +336,6 @@ const updateEstablishment = async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
-      if (req.body.PostCode && req.body.PostCode !== thisEstablishment.postcode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.PostCode)) || {};
-
-        req.body.Latitude = Latitude;
-        req.body.Longitude = Longitude;
-      }
 
       const isValidEstablishment = await thisEstablishment.load(req.body);
 
