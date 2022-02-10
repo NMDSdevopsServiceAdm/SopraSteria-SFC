@@ -40,7 +40,7 @@ describe('TrainingInfoPanelComponent', () => {
   it('should show the number of missing, expired and expiring soon records', async () => {
     const { getByText, getAllByText } = await setup(1, 1, 1);
 
-    expect(getAllByText('Summary').length).toEqual(2);
+    expect(getAllByText('Summary').length).toEqual(1);
     expect(getAllByText('1').length).toEqual(3);
     expect(getByText('staff are missing mandatory training')).toBeTruthy();
     expect(getByText('record has expired')).toBeTruthy();
