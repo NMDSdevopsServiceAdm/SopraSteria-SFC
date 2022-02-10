@@ -17,7 +17,9 @@
           <img src="/assets/images/flag-red.svg" alt="" />
         </div>
         <div class="asc-content--phrase">
-          <span class="asc-content--count">{{ totalStaffMissingMandatoryTraining }}</span>
+          <span class="asc-content--count"
+            ><strong>{{ totalStaffMissingMandatoryTraining }}</strong></span
+          >
           <ng-container [ngPlural]="totalStaffMissingMandatoryTraining">
             <ng-template ngPluralCase="=1">
               <span>staff are missing mandatory training</span>
@@ -29,20 +31,22 @@
         </div>
       </div>
     </div>
-    <hr *ngIf="totalExpiredTraining && totalMissingMandatoryTraining" />
+    <hr *ngIf="totalExpiredTraining && totalStaffMissingMandatoryTraining" />
     <div
       class="asc-container--column"
       [ngClass]="summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width'"
       *ngIf="totalExpiredTraining"
       data-testid="expired-column"
     >
-      <div class="asc-title" *ngIf="!totalMissingMandatoryTraining">Summary</div>
+      <div class="asc-title" *ngIf="!totalStaffMissingMandatoryTraining">Summary</div>
       <div class="asc-content">
         <div class="asc-content--image">
           <img src="/assets/images/flag-red.svg" alt="" />
         </div>
         <div class="asc-content--phrase">
-          <span class="asc-content--count">{{ totalExpiredTraining }}</span>
+          <span class="asc-content--count"
+            ><strong>{{ totalExpiredTraining }}</strong></span
+          >
           <ng-container [ngPlural]="totalExpiredTraining">
             <ng-template ngPluralCase="=1">
               <span>record has expired</span>
@@ -54,20 +58,22 @@
         </div>
       </div>
     </div>
-    <hr *ngIf="totalExpiringTraining && (totalExpiredTraining || totalMissingMandatoryTraining)" />
+    <hr *ngIf="totalExpiringTraining && (totalExpiredTraining || totalStaffMissingMandatoryTraining)" />
     <div
       class="asc-container--column"
       [ngClass]="summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width'"
       *ngIf="totalExpiringTraining"
       data-testid="expiring-column"
     >
-      <div class="asc-title" *ngIf="!totalMissingMandatoryTraining && !totalExpiredTraining">Summary</div>
+      <div class="asc-title" *ngIf="!totalStaffMissingMandatoryTraining && !totalExpiredTraining">Summary</div>
       <div class="asc-content">
         <div class="asc-content--image">
           <img src="/assets/images/flag-orange.svg" alt="" />
         </div>
         <div class="asc-content--phrase">
-          <span class="asc-content--count">{{ totalExpiringTraining }}</span>
+          <span class="asc-content--count"
+            ><strong>{{ totalExpiringTraining }}</strong></span
+          >
           <ng-container [ngPlural]="totalExpiringTraining">
             <ng-template ngPluralCase="=1">
               <span>record expires soon</span>

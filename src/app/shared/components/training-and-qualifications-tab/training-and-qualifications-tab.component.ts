@@ -76,9 +76,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
         this.totalExpiredTraining += worker.expiredTrainingCount;
         this.totalExpiringTraining += worker.expiringTrainingCount;
         this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
-        worker.missingMandatoryTrainingCount
-          ? (this.staffMissingMandatoryTraining += 1)
-          : this.staffMissingMandatoryTraining;
+        if (worker.missingMandatoryTrainingCount > 0) this.staffMissingMandatoryTraining += 1;
       });
     }
   }
