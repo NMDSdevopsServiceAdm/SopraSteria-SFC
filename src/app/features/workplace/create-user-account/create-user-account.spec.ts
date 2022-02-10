@@ -136,7 +136,7 @@ describe('CreateUserAccountComponent', () => {
 
       fixture.detectChanges();
       fixture.whenStable().then(() => {
-        const radioButton = getByText('ASC-WDF edit');
+        const radioButton = getByText('ASC-WDS edit');
         fireEvent.click(radioButton);
 
         const saveButton = getByText('Save user');

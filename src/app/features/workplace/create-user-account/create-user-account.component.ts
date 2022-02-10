@@ -118,7 +118,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
             canManageWdfClaims: true,
           },
           {
-            value: 'ASC-WDF edit',
+            value: 'ASC-WDS edit',
             role: 'Edit',
             canManageWdfClaims: false,
           },
