@@ -18,7 +18,7 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-6">
             <h5 class="govuk-fieldset__heading">Who do you want to email the grant letter to?</h5>
           </legend>
-          <span *ngIf="submitted" id="regulated-error" class="govuk-error-message">
+          <span *ngIf="submitted" id="grantLetter-error" class="govuk-error-message">
             <span *ngIf="this.form.get('grantLetter').errors" id="grantLetter-error">{{
               getErrorMessage('grantLetter')
             }}</span>
@@ -27,6 +27,7 @@
             <ng-container *ngFor="let answer of options">
               <div class="govuk-radios__item">
                 <input
+                  aria-controls="grantLetter-conditional-1"
                   class="govuk-radios__input"
                   [formControlName]="'grantLetter'"
                   id="grantLetter"
@@ -39,6 +40,7 @@
                   {{ answer }}
                 </label>
               </div>
+
               <div
                 *ngIf="answer === 'Somebody else'"
                 class="govuk-radios__conditional"
