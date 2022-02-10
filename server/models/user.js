@@ -190,7 +190,7 @@ module.exports = function (sequelize, DataTypes) {
       UserRoleValue: {
         type: DataTypes.ENUM,
         allowNull: false,
-        values: ['Read', 'Edit', 'Admin'],
+        values: ['None', 'Read', 'Edit', 'Admin'],
         default: 'Edit',
         field: '"UserRoleValue"',
       },
@@ -247,6 +247,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'RegistrationSurveyCompleted',
       },
+      CanManageWdfClaimsValue: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        field: '"CanManageWdfClaimsValue"',
+      },
+      CanManageWdfClaimsSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CanManageWdfClaimsSavedAt"',
+      },
+      CanManageWdfClaimsChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CanManageWdfClaimsChangedAt"',
+      },
+      CanManageWdfClaimsSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CanManageWdfClaimsSavedBy"',
+      },
+      CanManageWdfClaimsChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CanManageWdfClaimsChangedBy"',
+      },
     },
     {
       tableName: '"User"',
@@ -298,6 +323,13 @@ module.exports = function (sequelize, DataTypes) {
     return this.findOne({
       where: { id: loginId },
       attributes: ['id'],
+    });
+  };
+
+  User.getCanManageWdfClaims = function (userUid) {
+    return this.findOne({
+      where: { uid: userUid },
+      attributes: ['CanManageWdfClaimsValue'],
     });
   };
 
