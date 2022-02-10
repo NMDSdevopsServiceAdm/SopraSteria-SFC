@@ -30,3 +30,11 @@ export enum UserStatus {
   Pending = 'Pending',
   Active = 'Active',
 }
+
+export interface UserPermissionsType {
+  userTableValue: string;
+  role: Roles;
+  canManageWdfClaims: boolean;
+  setPermissionsValue?: string;
+  isPrimary?: boolean;
+}

@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { getUserPermissionTypes } from '@core/utils/users-util';
 import orderBy from 'lodash/orderBy';
 
 @Component({
@@ -34,53 +35,16 @@ export class UserAccountsSummaryComponent implements OnInit {
   }
 
   public getUserType(user: UserDetails): string {
-    const userTypes = [
-      {
-        value: 'Primary edit and WDF',
-        role: 'Edit',
-        canManageWdfClaims: true,
-        isPrimary: true,
-      },
-      {
-        value: 'Primary edit',
-        role: 'Edit',
-        canManageWdfClaims: false,
-        isPrimary: true,
-      },
-      {
-        value: 'Edit and WDF',
-        role: 'Edit',
-        canManageWdfClaims: true,
-      },
-      {
-        value: 'Edit',
-        role: 'Edit',
-        canManageWdfClaims: false,
-      },
-      {
-        value: 'Read only and WDF',
-        role: 'Read',
-        canManageWdfClaims: true,
-      },
-      {
-        value: 'Read only',
-        role: 'Read',
-        canManageWdfClaims: false,
-      },
-      {
-        value: 'WDF',
-        role: 'None',
-        canManageWdfClaims: true,
-      },
-    ];
+    const userPermissionTypes = getUserPermissionTypes(true);
 
-    const userType = userTypes.find(
+    const userType = userPermissionTypes.find(
       (type) =>
         type.role === user.role &&
         type.canManageWdfClaims === user.canManageWdfClaims &&
         !!user.isPrimary === !!type.isPrimary,
     );
-    return userType?.value;
+
+    return userType?.userTableValue;
   }
 
   public isPending(user: UserDetails): boolean {

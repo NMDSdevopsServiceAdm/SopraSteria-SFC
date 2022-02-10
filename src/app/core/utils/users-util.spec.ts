@@ -1,0 +1,67 @@
+import { Roles } from '@core/model/roles.enum';
+
+import { getUserPermissionTypes } from './users-util';
+
+describe('users-util', () => {
+  describe('getUserPermissionTypes', () => {
+    it('should return five permission types without primary types when false passed in for withPrimary', async () => {
+      const returnedArray = getUserPermissionTypes(false);
+
+      const expectedUserTypeArray = [
+        {
+          setPermissionsValue: 'ASC-WDS edit with manage WDF claims',
+          userTableValue: 'Edit and WDF',
+          role: Roles.Edit,
+          canManageWdfClaims: true,
+        },
+        {
+          setPermissionsValue: 'ASC-WDS edit',
+          userTableValue: Roles.Edit,
+          role: Roles.Edit,
+          canManageWdfClaims: false,
+        },
+        {
+          setPermissionsValue: 'ASC-WDS read only with manage WDF claims',
+          userTableValue: 'Read only and WDF',
+          role: Roles.Read,
+          canManageWdfClaims: true,
+        },
+        {
+          setPermissionsValue: 'ASC-WDS read only',
+          userTableValue: 'Read only',
+          role: Roles.Read,
+          canManageWdfClaims: false,
+        },
+        {
+          setPermissionsValue: 'Manage WDF claims only',
+          userTableValue: 'WDF',
+          role: Roles.None,
+          canManageWdfClaims: true,
+        },
+      ];
+
+      expect(returnedArray).toEqual(expectedUserTypeArray);
+    });
+
+    it('should return seven permission types with primary types when true passed in for withPrimary', async () => {
+      const returnedArray = getUserPermissionTypes(true);
+
+      const primaryEditAndWdfType = {
+        userTableValue: 'Primary edit and WDF',
+        role: Roles.Edit,
+        canManageWdfClaims: true,
+        isPrimary: true,
+      };
+
+      const primaryEditType = {
+        userTableValue: 'Primary edit',
+        role: Roles.Edit,
+        canManageWdfClaims: false,
+        isPrimary: true,
+      };
+
+      expect(returnedArray[5]).toEqual(primaryEditAndWdfType);
+      expect(returnedArray[6]).toEqual(primaryEditType);
+    });
+  });
+});
