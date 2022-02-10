@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EMAIL_PATTERN } from '@core/constants/constants';
@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
   selector: 'app-wdf-grant-letter',
   templateUrl: './wdf-grant-letter.component.html',
 })
-export class WdfGrantLetterComponent implements OnInit, OnDestroy {
+export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
   public options = ['Myself', 'Somebody else'];
 
   public workplace: Establishment;
@@ -52,6 +53,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
     this.establishmentId = this.establishmentService.primaryWorkplace.uid;
     this.flow = 'wdf-claims';
   }
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
 
   public onChange(answer: string) {
     if (answer === 'Somebody else') {
@@ -75,7 +79,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy {
   public onSubmit(): void {
     this.submittedWithAddtionalFields = this.form.controls?.fullName && this.form.controls?.emailAddress ? true : false;
     this.submitted = true;
-
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
       this.subscriptions.add(
         this.grantLetterService.sendEmailGrantLetter(this.establishmentId, this.form.value).subscribe(),
