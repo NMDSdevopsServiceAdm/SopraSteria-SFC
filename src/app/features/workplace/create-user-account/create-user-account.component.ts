@@ -88,7 +88,9 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   private convertPermissions(formValue): CreateAccountRequest {
     if (!this.wdfUserFlag) return formValue;
 
-    const radio = this.permissionsTypeRadios.find((radio) => radio.setPermissionsValue === formValue.permissionsType);
+    const radio = this.permissionsTypeRadios.find(
+      (radio) => radio.permissionsQuestionValue === formValue.permissionsType,
+    );
     return {
       ...formValue,
       role: radio.role,
@@ -112,10 +114,10 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       ? getUserPermissionsTypes(false)
       : [
           {
-            setPermissionsValue: Roles.Edit,
+            permissionsQuestionValue: Roles.Edit,
           },
           {
-            setPermissionsValue: Roles.Read,
+            permissionsQuestionValue: Roles.Read,
           },
         ];
   }

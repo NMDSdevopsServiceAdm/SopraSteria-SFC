@@ -9,31 +9,31 @@ describe('users-util', () => {
 
       const expectedUserTypeArray = [
         {
-          setPermissionsValue: 'ASC-WDS edit with manage WDF claims',
+          permissionsQuestionValue: 'ASC-WDS edit with manage WDF claims',
           userTableValue: 'Edit and WDF',
           role: Roles.Edit,
           canManageWdfClaims: true,
         },
         {
-          setPermissionsValue: 'ASC-WDS edit',
+          permissionsQuestionValue: 'ASC-WDS edit',
           userTableValue: Roles.Edit,
           role: Roles.Edit,
           canManageWdfClaims: false,
         },
         {
-          setPermissionsValue: 'ASC-WDS read only with manage WDF claims',
+          permissionsQuestionValue: 'ASC-WDS read only with manage WDF claims',
           userTableValue: 'Read only and WDF',
           role: Roles.Read,
           canManageWdfClaims: true,
         },
         {
-          setPermissionsValue: 'ASC-WDS read only',
+          permissionsQuestionValue: 'ASC-WDS read only',
           userTableValue: 'Read only',
           role: Roles.Read,
           canManageWdfClaims: false,
         },
         {
-          setPermissionsValue: 'Manage WDF claims only',
+          permissionsQuestionValue: 'Manage WDF claims only',
           userTableValue: 'WDF',
           role: Roles.None,
           canManageWdfClaims: true,

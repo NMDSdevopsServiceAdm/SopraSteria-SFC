@@ -35,6 +35,6 @@ export interface UserPermissionsType {
   userTableValue?: string;
   role?: Roles;
   canManageWdfClaims?: boolean;
-  setPermissionsValue?: string;
+  permissionsQuestionValue?: string;
   isPrimary?: boolean;
 }
