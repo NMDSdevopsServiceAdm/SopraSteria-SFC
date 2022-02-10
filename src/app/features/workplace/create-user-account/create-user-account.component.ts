@@ -7,11 +7,13 @@ import { CreateAccountRequest } from '@core/model/account.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
+import { UserPermissionsType } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { getUserPermissionTypes } from '@core/utils/users-util';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
@@ -24,11 +26,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public establishmentUid: string;
   public workplace: Establishment;
   public wdfUserFlag: boolean;
-  public roleRadios: {
-    value: string;
-    role?: string;
-    canManageWdfClaims?: boolean;
-  }[];
+  public roleRadios: UserPermissionsType[];
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -90,7 +88,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   private convertPermissions(formValue): CreateAccountRequest {
     if (!this.wdfUserFlag) return formValue;
 
-    const radio = this.roleRadios.find((radio) => radio.value === formValue.role);
+    const radio = this.roleRadios.find((radio) => radio.setPermissionsValue === formValue.role);
     return {
       ...formValue,
       role: radio.role,
@@ -111,39 +109,13 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
 
   private setRoleRadios(): void {
     this.roleRadios = this.wdfUserFlag
-      ? [
-          {
-            value: 'ASC-WDS edit with manage WDF claims',
-            role: 'Edit',
-            canManageWdfClaims: true,
-          },
-          {
-            value: 'ASC-WDS edit',
-            role: 'Edit',
-            canManageWdfClaims: false,
-          },
-          {
-            value: 'ASC-WDS read only with manage WDF claims',
-            role: 'Read',
-            canManageWdfClaims: true,
-          },
-          {
-            value: 'ASC-WDS read only',
-            role: 'Read',
-            canManageWdfClaims: false,
-          },
-          {
-            value: 'Manage WDF claims only',
-            role: 'None',
-            canManageWdfClaims: true,
-          },
-        ]
+      ? getUserPermissionTypes(false)
       : [
           {
-            value: Roles.Edit,
+            setPermissionsValue: Roles.Edit,
           },
           {
-            value: Roles.Read,
+            setPermissionsValue: Roles.Read,
           },
         ];
   }

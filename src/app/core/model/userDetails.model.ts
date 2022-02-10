@@ -32,9 +32,9 @@ export enum UserStatus {
 }
 
 export interface UserPermissionsType {
-  userTableValue: string;
-  role: Roles;
-  canManageWdfClaims: boolean;
+  userTableValue?: string;
+  role?: Roles;
+  canManageWdfClaims?: boolean;
   setPermissionsValue?: string;
   isPrimary?: boolean;
 }
