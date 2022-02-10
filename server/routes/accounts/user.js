@@ -412,12 +412,12 @@ const partAddUser = async (req, res) => {
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
   // ensure only a user having the role of Edit can register a new user
-  if (!req.role || req.role === 'Read') {
+  if (notPermittedToRegisterNewUser(req.role)) {
     console.error('/add/establishment/:id - given user does not have sufficient permission');
     return res.status(401).send();
   }
 
-  if (!req.body.role || !(req.body.role == 'Edit' || req.body.role == 'Read')) {
+  if (newUserRoleNotValid(req.body.role)) {
     console.error('/add/establishment/:id - Invalid request');
     return res.status(403).send();
   }
@@ -473,6 +473,10 @@ const partAddUser = async (req, res) => {
     console.error('Unexpected exception: ', err);
   }
 };
+
+const notPermittedToRegisterNewUser = (role) => !role || role === 'Read' || role === 'None';
+
+const newUserRoleNotValid = (role) => !role || !['Edit', 'Read', 'None'].includes(role);
 
 // Resend activation link
 const resendActivationLink = async (req, res) => {
@@ -1092,3 +1096,4 @@ router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablis
 
 module.exports = router;
 module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
+module.exports.partAddUser = partAddUser;
