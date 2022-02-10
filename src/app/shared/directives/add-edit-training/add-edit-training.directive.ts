@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import { MandatoryTraining, TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -24,6 +24,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public trainingRecordId: string;
   public worker: Worker;
   public workplace: Establishment;
+  public missingTrainingCategory: MandatoryTraining;
+  public missingTrainingCategoryId: string;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
@@ -46,13 +48,14 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.missingTrainingCategory = this.route.snapshot.params.category;
+    this.missingTrainingCategoryId = this.route.snapshot.params.id;
 
     this.init();
     this.setupForm();
     this.setTitle();
     this.setButtonText();
     this.setBackLink();
-    this.getCategories();
     this.setupFormErrorsMap();
   }
 
@@ -74,7 +77,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -99,32 +101,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
   }
 
-  private getCategories(): void {
-    this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(
-        (categories) => {
-          if (categories) {
-            this.categories = categories;
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
-  }
-
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
-      {
-        item: 'category',
-        type: [
-          {
-            name: 'required',
-            message: 'Select a training category',
-          },
-        ],
-      },
       {
         item: 'title',
         type: [
@@ -198,13 +176,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       return;
     }
 
-    const { title, category, accredited, completed, expires, notes } = this.form.controls;
+    const { title, accredited, completed, expires, notes } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as FormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as FormGroup);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: parseInt(category.value, 10),
+        id: parseInt(this.missingTrainingCategoryId, 10),
       },
       title: title.value,
       accredited: accredited.value,

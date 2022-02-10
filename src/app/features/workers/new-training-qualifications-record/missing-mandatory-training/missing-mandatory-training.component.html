@@ -9,7 +9,7 @@
           *ngIf="canEditWorker"
           draggable="false"
           role="button"
-          [routerLink]="['../add-training']"
+          [routerLink]="['../add-training', missingRecord]"
           [state]="{ training: 'mandatory' }"
           (click)="addButtonClicked()"
         >

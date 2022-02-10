@@ -22,24 +22,8 @@
           <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
           <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
         </p>
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
-          <label class="govuk-label" for="category"> Training category </label>
-          <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('category') }}
-          </span>
-          <select
-            class="govuk-select"
-            [class.govuk-select--error]="submitted && form.get('category').invalid"
-            [formControlName]="'category'"
-            id="category"
-            name="category"
-          >
-            <option [ngValue]="null">Select a training category</option>
-            <option *ngFor="let category of categories" [value]="category.id">
-              {{ category.category }}
-            </option>
-          </select>
-        </div>
+
+        <p class="govuk-body govuk-!-margin-bottom-5">Training category: {{ missingTrainingCategory }}</p>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
           <label class="govuk-label" for="title"> Training name </label>
