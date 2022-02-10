@@ -13,7 +13,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { getUserPermissionTypes } from '@core/utils/users-util';
+import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
@@ -26,7 +26,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public establishmentUid: string;
   public workplace: Establishment;
   public wdfUserFlag: boolean;
-  public roleRadios: UserPermissionsType[];
+  public permissionsTypeRadios: UserPermissionsType[];
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -45,7 +45,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   protected init(): void {
     this.featureFlagsService.configCatClient.getValueAsync('wdfUser', false).then((value) => {
       this.wdfUserFlag = value;
-      this.setRoleRadios();
+      this.setPermissionsTypeRadios();
     });
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -56,7 +56,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
 
   private addFormControls(): void {
     this.form.addControl(
-      'role',
+      'permissionsType',
       new FormControl(null, {
         validators: [Validators.required],
         updateOn: 'submit',
@@ -64,7 +64,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     );
 
     this.formErrorsMap.push({
-      item: 'role',
+      item: 'permissionsType',
       type: [
         {
           name: 'required',
@@ -88,7 +88,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   private convertPermissions(formValue): CreateAccountRequest {
     if (!this.wdfUserFlag) return formValue;
 
-    const radio = this.roleRadios.find((radio) => radio.setPermissionsValue === formValue.role);
+    const radio = this.permissionsTypeRadios.find((radio) => radio.setPermissionsValue === formValue.permissionsType);
     return {
       ...formValue,
       role: radio.role,
@@ -107,9 +107,9 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     };
   }
 
-  private setRoleRadios(): void {
-    this.roleRadios = this.wdfUserFlag
-      ? getUserPermissionTypes(false)
+  private setPermissionsTypeRadios(): void {
+    this.permissionsTypeRadios = this.wdfUserFlag
+      ? getUserPermissionsTypes(false)
       : [
           {
             setPermissionsValue: Roles.Edit,

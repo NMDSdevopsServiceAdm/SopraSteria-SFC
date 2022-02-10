@@ -1,11 +1,11 @@
 import { Roles } from '@core/model/roles.enum';
 
-import { getUserPermissionTypes } from './users-util';
+import { getUserPermissionsTypes } from './users-util';
 
 describe('users-util', () => {
   describe('getUserPermissionTypes', () => {
     it('should return five permission types without primary types when false passed in for withPrimary', async () => {
-      const returnedArray = getUserPermissionTypes(false);
+      const returnedArray = getUserPermissionsTypes(false);
 
       const expectedUserTypeArray = [
         {
@@ -44,7 +44,7 @@ describe('users-util', () => {
     });
 
     it('should return seven permission types with primary types when true passed in for withPrimary', async () => {
-      const returnedArray = getUserPermissionTypes(true);
+      const returnedArray = getUserPermissionsTypes(true);
 
       const primaryEditAndWdfType = {
         userTableValue: 'Primary edit and WDF',

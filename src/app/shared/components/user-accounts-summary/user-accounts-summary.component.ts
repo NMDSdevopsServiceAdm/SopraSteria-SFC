@@ -2,9 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails, UserStatus } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { getUserPermissionTypes } from '@core/utils/users-util';
+import { getUserPermissionsTypes } from '@core/utils/users-util';
 import orderBy from 'lodash/orderBy';
 
 @Component({
@@ -18,13 +18,15 @@ export class UserAccountsSummaryComponent implements OnInit {
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
   public canViewUser: boolean;
+  public userPermissionsTypes: UserPermissionsType[];
 
   constructor(private route: ActivatedRoute, private permissionsService: PermissionsService) {}
 
   ngOnInit(): void {
-    this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
-
     const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
+    this.userPermissionsTypes = getUserPermissionsTypes(true);
+
+    this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
     this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
 
     this.users = orderBy(
@@ -35,9 +37,7 @@ export class UserAccountsSummaryComponent implements OnInit {
   }
 
   public getUserType(user: UserDetails): string {
-    const userPermissionTypes = getUserPermissionTypes(true);
-
-    const userType = userPermissionTypes.find(
+    const userType = this.userPermissionsTypes.find(
       (type) =>
         type.role === user.role &&
         type.canManageWdfClaims === user.canManageWdfClaims &&

@@ -113,7 +113,7 @@ describe('CreateUserAccountComponent', () => {
       });
     });
 
-    describe('Roles', async () => {
+    describe('Permissions types', async () => {
       it('should call createAccount with role Edit and canManageWdfClaims true when ASC-WDS edit with manage WDF claims selected', async () => {
         const { fixture, getByText, createAccountSpy } = await setup();
 

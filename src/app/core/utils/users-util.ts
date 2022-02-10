@@ -1,7 +1,7 @@
 import { Roles } from '@core/model/roles.enum';
 import { UserPermissionsType } from '@core/model/userDetails.model';
 
-export const getUserPermissionTypes = (withPrimary: boolean): UserPermissionsType[] => {
+export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsType[] => {
   const userPermissionTypes: UserPermissionsType[] = [
     {
       setPermissionsValue: 'ASC-WDS edit with manage WDF claims',
