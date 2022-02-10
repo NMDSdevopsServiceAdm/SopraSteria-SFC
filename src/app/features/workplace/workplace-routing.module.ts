@@ -390,7 +390,7 @@ const routes: Routes = [
           ),
         canActivate: [CheckPermissionsGuard],
         data: {
-          permissions: ['canAddEstablishment'],
+          permissions: ['canEditWorker'],
           title: 'Add Mandatory Training',
         },
       },
