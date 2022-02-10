@@ -42,7 +42,7 @@ describe('TrainingInfoPanelComponent', () => {
 
     expect(getAllByText('Summary').length).toEqual(1);
     expect(getAllByText('1').length).toEqual(3);
-    expect(getByText('staff are missing mandatory training')).toBeTruthy();
+    expect(getByText('staff is missing mandatory training')).toBeTruthy();
     expect(getByText('record has expired')).toBeTruthy();
     expect(getByText('record expires soon')).toBeTruthy();
   });
