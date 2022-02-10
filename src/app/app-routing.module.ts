@@ -198,7 +198,12 @@ const routes: Routes = [
       {
         path: 'wdf',
         loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
-        data: { title: 'Workforce Development Fund' },
+        data: { title: 'Workforce Development Fund Data' },
+      },
+      {
+        path: 'wdf-claims',
+        loadChildren: () => import('@features/wdf/wdf-claims/wdf-claims.module').then((m) => m.WdfClaimsModule),
+        data: { title: 'Workforce Development Fund Claims' },
       },
       {
         path: 'parent-requests',

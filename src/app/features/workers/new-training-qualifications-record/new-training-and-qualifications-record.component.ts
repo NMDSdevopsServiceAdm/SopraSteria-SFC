@@ -168,7 +168,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.missingMandatoryTraining = this.jobRoleMandatoryTraining.filter(
       (jobRoleTraining) => !this.mandatoryTraining.find((training) => training.id === jobRoleTraining.id),
     );
-    console.log(this.missingMandatoryTraining);
   }
 
   getFilterByStatus(dropdownValue) {

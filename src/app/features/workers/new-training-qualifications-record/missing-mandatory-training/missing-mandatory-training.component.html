@@ -7,6 +7,7 @@
       <p class="govuk-body-l govuk-!-margin-bottom-2">
         <a
           *ngIf="canEditWorker"
+          [attr.data-testid]="missingRecord.id"
           draggable="false"
           role="button"
           [routerLink]="['../add-training', missingRecord]"
