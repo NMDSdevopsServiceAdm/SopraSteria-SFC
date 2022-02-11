@@ -78,7 +78,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: [null],
+        category: this.missingTrainingCategory ? [null] : [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
