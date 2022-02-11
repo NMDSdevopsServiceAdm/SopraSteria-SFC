@@ -20,7 +20,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public updateWorkplaceAlert: boolean;
   public locationId: string;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
-  public showSharingPermissionsBanner: boolean = this.establishmentService.checkSharingPermissionsBanner;
+  public showSharingPermissionsBanner: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -33,7 +33,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
     this.locationId = this.workplace.locationId;
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.getShowCQCDetailsBanner();
-    this.getShowSharingPermissionsBanner();
+    this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.updateWorkplaceAlert =
       !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
@@ -41,12 +41,6 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   private getShowCQCDetailsBanner(): void {
     this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
       this.showCQCDetailsBanner = showBanner;
-    });
-  }
-
-  private getShowSharingPermissionsBanner(): void {
-    this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
-      this.showSharingPermissionsBanner = showBanner;
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -13,7 +13,7 @@ import { Question } from '../question/question.component';
   selector: 'app-total-staff-question',
   templateUrl: './total-staff-question.component.html',
 })
-export class TotalStaffQuestionComponent extends Question implements OnInit, OnDestroy {
+export class TotalStaffQuestionComponent extends Question {
   public nextRoute: string[];
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];

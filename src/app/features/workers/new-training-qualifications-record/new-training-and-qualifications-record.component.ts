@@ -36,6 +36,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public lastUpdatedDate: Date;
   public jobRoleMandatoryTraining: MandatoryTraining[];
   public missingJobRoleMandatoryTrainingCount: number;
+  public missingMandatoryTraining: MandatoryTraining[];
   private subscriptions: Subscription = new Subscription();
   private currentUrl: string;
   public filterTrainingByStatus;
@@ -93,6 +94,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
     this.jobRoleMandatoryTraining = trainingRecords.jobRoleMandatoryTraining;
     this.missingJobRoleMandatoryTrainingCount = this.getMissingMandatoryTrainingCount();
+    this.findMissingMandatoryTraining();
   }
 
   private setTraining(
@@ -162,6 +164,12 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return count;
   }
 
+  private findMissingMandatoryTraining() {
+    this.missingMandatoryTraining = this.jobRoleMandatoryTraining.filter(
+      (jobRoleTraining) => !this.mandatoryTraining.find((training) => training.id === jobRoleTraining.id),
+    );
+  }
+
   getFilterByStatus(dropdownValue) {
     if (dropdownValue === '0_showall') {
       this.nonMandatoryTraining = this.allTrainings.nonMandatory;
@@ -213,5 +221,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  addButtonClicked(): void {
+    this.setReturnRoute();
   }
 }

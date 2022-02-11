@@ -5,7 +5,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { PermissionsList } from '../../../../mockdata/permissions';
+import { Permissions } from '../../../../mockdata/permissions';
 import { TotalStaffPanelComponent } from './total-staff-panel.component';
 
 describe('TotalStaffPanelComponent', () => {
@@ -13,17 +13,19 @@ describe('TotalStaffPanelComponent', () => {
   let fixture: ComponentFixture<TotalStaffPanelComponent>;
   let permissionsService: PermissionsService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [TotalStaffPanelComponent],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule, HttpClientTestingModule],
+        declarations: [TotalStaffPanelComponent],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TotalStaffPanelComponent);
     permissionsService = TestBed.inject(PermissionsService);
-    permissionsService.setPermissions(Establishment.uid, PermissionsList);
+    permissionsService.setPermissions(Establishment.uid, Permissions.permissions);
     component = fixture.componentInstance;
     component.workplace = Establishment;
     fixture.detectChanges();

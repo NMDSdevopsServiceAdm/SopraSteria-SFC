@@ -7,6 +7,7 @@ const { NURSING_SPECIALIST } = require('./nursingSpecialist');
 const { QUALIFICATION_LEVELS } = require('./qualificationLevels');
 const { QUALIFICATIONS } = require('./qualifications');
 const { RECRUITMENT } = require('./recruitment');
+const { TRAINING_CATEGORY } = require('./trainingCategory');
 
 exports.mappings = {
   CONTRACT_TYPE,
@@ -18,4 +19,5 @@ exports.mappings = {
   QUALIFICATION_LEVELS,
   QUALIFICATIONS,
   RECRUITMENT,
+  TRAINING_CATEGORY,
 };

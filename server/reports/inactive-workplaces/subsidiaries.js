@@ -3,6 +3,7 @@ const buildRow = (parent, subsidiary) => {
     parentWorkplaceId: parent.nmdsId,
     workplace: subsidiary.name,
     workplaceId: subsidiary.nmdsId,
+    lastLogin: subsidiary.lastLogin,
     lastUpdated: subsidiary.lastUpdated,
     dataOwner: subsidiary.dataOwner,
   };
@@ -20,6 +21,7 @@ const addWorksheet = (workbook) => {
     { header: 'Parent Workplace ID', key: 'parentWorkplaceId' },
     { header: 'Workplace name', key: 'workplace' },
     { header: 'Workplace ID', key: 'workplaceId' },
+    { header: 'Date last logged in', key: 'lastLogin', style: { numFmt: 'dd/mm/yyyy' } },
     { header: 'Date last updated', key: 'lastUpdated', style: { numFmt: 'dd/mm/yyyy' } },
     { header: 'Data owner', key: 'dataOwner' },
   ];

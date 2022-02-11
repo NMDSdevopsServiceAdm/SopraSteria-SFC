@@ -3,7 +3,6 @@ const {
   getMetadata,
   isNotMetadata,
   generateJSONFromCSV,
-  getFileType,
 } = require('../../../../../../routes/establishments/bulkUpload/validate/validatePut');
 
 describe('validatePut', () => {
@@ -105,32 +104,6 @@ bu,a,UPDATE,12345 WDF,,BB323123C,ABC123,01/01/1980,1,31,826,,826,,0,2,16,01/01/2
       expect(workersAsJson[0].QUALACH02NOTES).to.deep.equal('');
       expect(workersAsJson[0].QUALACH03).to.deep.equal('');
       expect(workersAsJson[0].QUALACH03NOTES).to.deep.equal('');
-    });
-  });
-
-  describe('getFileType', () => {
-    it('should return the correct file type for establishments', () => {
-      const fileType = getFileType('LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES');
-
-      expect(fileType).to.deep.equal('Establishment');
-    });
-
-    it('should return the correct file type for workers', () => {
-      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,');
-
-      expect(fileType).to.deep.equal('Worker');
-    });
-
-    it('should return the correct file type for workers if CHGUNIQUEWRKID column present', () => {
-      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI');
-
-      expect(fileType).to.deep.equal('Worker');
-    });
-
-    it('should return the correct file type for training', () => {
-      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT');
-
-      expect(fileType).to.deep.equal('Training');
     });
   });
 });

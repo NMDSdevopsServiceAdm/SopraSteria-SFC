@@ -67,6 +67,10 @@ class BUDI {
   qualifications(direction, originalCode) {
     return this.convertValue(direction, originalCode, this.mappings.QUALIFICATIONS);
   }
+
+  trainingCategory(direction, originalCode) {
+    return this.convertValue(direction, originalCode, this.mappings.TRAINING_CATEGORY);
+  }
 }
 
 exports.BUDI = BUDI;

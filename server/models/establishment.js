@@ -204,16 +204,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"PostcodeChangedBy"',
       },
-      Latitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Latitude"',
-      },
-      Longitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Longitude"',
-      },
       isRegulated: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -755,6 +745,11 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
+  Establishment.addHook('afterUpdate', (record) => {
+    const postcode = record.dataValues.PostCode;
+    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
+  });
+
   Establishment.associate = (models) => {
     Establishment.belongsTo(models.establishment, {
       as: 'Parent',
@@ -822,6 +817,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'parentId',
       sourceKey: 'id',
       as: 'Subsidiaries',
+    });
+    Establishment.hasMany(models.Approvals, {
+      foreignKey: 'ID',
+      sourceKey: 'id',
+      as: 'Approvals',
     });
   };
 
@@ -1834,6 +1834,65 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         id: establishmentId,
       },
+    });
+  };
+
+  Establishment.getInfoForPermissions = async function (establishmentId) {
+    return this.findOne({
+      attributes: [
+        'IsRegulated',
+        [
+          sequelize.literal(`
+            CASE WHEN "establishment"."ParentID" IS NULL THEN
+              false
+            ELSE
+              true
+            END
+          `),
+          'hasParent',
+        ],
+        [
+          sequelize.literal(`
+            CASE WHEN "establishment"."DataOwnershipRequested" IS NULL THEN
+              false
+            ELSE
+              true
+            END
+          `),
+          'dataOwnershipRequested',
+        ],
+        [
+          sequelize.literal(`
+            CASE WHEN COUNT("Approvals"."ID") = 0 THEN
+              false
+            ELSE
+              true
+            END
+          `),
+          'hasRequestedToBecomeAParent',
+        ],
+      ],
+      where: {
+        id: establishmentId,
+      },
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['id'],
+        },
+        {
+          model: sequelize.models.Approvals,
+          as: 'Approvals',
+          where: {
+            Status: 'Pending',
+            ApprovalType: 'BecomeAParent',
+          },
+          attributes: ['ID'],
+          required: false,
+        },
+      ],
+      group: ['establishment.EstablishmentID', 'mainService.id', 'Approvals.ID'],
     });
   };
 

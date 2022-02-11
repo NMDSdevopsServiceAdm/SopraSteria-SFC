@@ -37,10 +37,11 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
   protected getWorkplaceData(): void {
     this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
     this.workplace = this.workplaceService.selectedWorkplaceService$.value;
+    this.WorkplaceTotalStaff = this.workplaceService.totalStaff$.value;
   }
 
   public setBackLink(): void {
-    const backLinkUrl = 'select-main-service';
+    const backLinkUrl = 'add-total-staff';
     this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
   }
 
@@ -53,7 +54,11 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace),
+          this.workplaceService.generateAddWorkplaceRequest(
+            this.locationAddress,
+            this.workplace,
+            this.WorkplaceTotalStaff,
+          ),
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {

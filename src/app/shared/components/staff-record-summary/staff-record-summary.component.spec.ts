@@ -14,7 +14,7 @@ import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.s
 import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf.module';
+import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -876,7 +876,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('when a user is not admin then they should see the show and hide links for NINO and DOB', async () => {
       const { component, fixture, getAllByText } = await setup();
 
-      component.canViewNinoDob = false;
+      component.canViewNinoDob = true;
       component.worker.dateOfBirth = '01/01/1970';
       component.worker.nationalInsuranceNumber = 'JH127453A';
       fixture.detectChanges();
@@ -887,7 +887,7 @@ describe('StaffRecordSummaryComponent', () => {
     it('when a user is an admin then they should not see the show and hide links for NINO and DOB', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.canViewNinoDob = true;
+      component.canViewNinoDob = false;
       component.worker.dateOfBirth = '01/01/1970';
       component.worker.nationalInsuranceNumber = 'JH127453A';
       fixture.detectChanges();

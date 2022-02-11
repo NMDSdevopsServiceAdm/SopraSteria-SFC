@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
@@ -36,26 +37,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private userService: UserService,
     private workerService: WorkerService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
-    this.showSharingPermissionsBanner = this.establishmentService.checkSharingPermissionsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
     if (this.workplace) {
       this.getPermissions();
-      this.getCanViewBenchmarks();
-      this.getTotalStaffRecords();
+      this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
       if (this.workplace.locationId) {
         this.setCheckCQCDetailsBannerInEstablishmentService();
       }
 
       this.getShowCQCDetailsBanner();
-      this.getShowSharingPermissionBanner();
 
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
@@ -75,53 +75,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canAddUser = this.permissionsService.can(this.workplaceUid, 'canAddUser');
   }
 
-  private getCanViewBenchmarks(): void {
-    this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplaceUid).subscribe((permission) => {
-        this.canViewBenchmarks = permission.permissions.canViewBenchmarks;
-      }),
-    );
-  }
-
-  private getTotalStaffRecords(): void {
-    this.subscriptions.add(
-      this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(
-        (total) => {
-          if (total) {
-            this.totalStaffRecords = total;
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
-  }
-
   private setWorkersAndTrainingAlert(): void {
-    this.subscriptions.add(
-      this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-        (workers) => {
-          this.workers = workers;
-          this.workerCount = workers.length;
-          this.workerService.setWorkers(workers);
-          if (workers.length > 0) {
-            this.trainingAlert = workers[0].trainingAlert;
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+    const workers = this.route.snapshot.data.workers || [];
+
+    this.workers = workers;
+    this.workerCount = workers.length;
+    this.workerService.setWorkers(workers);
+    if (workers.length > 0) {
+      this.trainingAlert = workers[0].trainingAlert;
+    }
   }
 
   private setShowSecondUserBanner(): void {
-    this.subscriptions.add(
-      this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
-        this.showSecondUserBanner = this.canAddUser && users.length === 1;
-      }),
-    );
+    const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
+    this.showSecondUserBanner = this.canAddUser && users.length === 1;
   }
 
   private setUserServiceReturnUrl(): void {
@@ -148,14 +115,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
         this.showCQCDetailsBanner = showBanner;
-      }),
-    );
-  }
-
-  private getShowSharingPermissionBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkSharingPermissionsBanner$.subscribe((showBanner) => {
-        this.showSharingPermissionsBanner = showBanner;
       }),
     );
   }

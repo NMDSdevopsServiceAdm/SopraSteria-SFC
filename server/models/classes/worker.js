@@ -176,9 +176,10 @@ class Worker extends EntityValidator {
   }
 
   get key() {
-    return (this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
-      ? this.localIdentifier.replace(/\s/g, '')
-      : this.nameOrId
+    return (
+      this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
+        ? this.localIdentifier.replace(/\s/g, '')
+        : this.nameOrId
     ).replace(/\s/g, '');
   }
 
@@ -323,7 +324,7 @@ class Worker extends EntityValidator {
     return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
   }
 
-  get nurseSpecialisms () {
+  get nurseSpecialisms() {
     return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
   }
 
@@ -644,7 +645,13 @@ class Worker extends EntityValidator {
           }
 
           if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
-            await models.workerNurseSpecialisms.bulkCreate(this.nurseSpecialisms.specialisms.map(thisSpecialism => ({nurseSpecialismFk: thisSpecialism.id, workerFk: this._id})), { transaction: thisTransaction });
+            await models.workerNurseSpecialisms.bulkCreate(
+              this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
+                nurseSpecialismFk: thisSpecialism.id,
+                workerFk: this._id,
+              })),
+              { transaction: thisTransaction },
+            );
           }
 
           // having the worker id we can now create the audit record; inserting the workerFk
@@ -725,6 +732,7 @@ class Worker extends EntityValidator {
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
             returning: true,
+            individualHooks: true,
             where: {
               uid: this.uid,
             },
@@ -871,7 +879,7 @@ class Worker extends EntityValidator {
       (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
     ) {
       document.lastWdfEligibility = updatedTimestamp;
-     return {
+      return {
         username: savedBy.toLowerCase(),
         type: 'wdfEligible',
       };
@@ -950,14 +958,14 @@ class Worker extends EntityValidator {
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialism',
-            attributes: ['id', 'specialism']
+            attributes: ['id', 'specialism'],
           },
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialisms',
-            attributes: ['id', 'specialism']
-          }
-        ]
+            attributes: ['id', 'specialism'],
+          },
+        ],
       };
 
       const fetchResults = await models.worker.findOne(fetchQuery);
@@ -1078,6 +1086,7 @@ class Worker extends EntityValidator {
       // now save the document
       const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
         returning: true,
+        individualHooks: true,
         where: {
           uid: this.uid,
         },
@@ -1611,27 +1620,27 @@ class Worker extends EntityValidator {
         ? 'Yes'
         : 'No';
     } else {
-        if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
-          weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
-            effectiveFromEpoch,
-            this._properties.get('WeeklyHoursContracted'),
-          )
-            ? 'Yes'
-            : 'No';
-        } else {
-          weeklyHoursContractedEligible = 'Not relevant';
-        }
+      if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+        weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
+          effectiveFromEpoch,
+          this._properties.get('WeeklyHoursContracted'),
+        )
+          ? 'Yes'
+          : 'No';
+      } else {
+        weeklyHoursContractedEligible = 'Not relevant';
+      }
 
-        if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
-          weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
-            effectiveFromEpoch,
-            this._properties.get('WeeklyHoursAverage'),
-          )
-            ? 'Yes'
-            : 'No';
-        } else {
-          weeklyHoursAverageEligible = 'Not relevant';
-        }
+      if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
+        weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
+          effectiveFromEpoch,
+          this._properties.get('WeeklyHoursAverage'),
+        )
+          ? 'Yes'
+          : 'No';
+      } else {
+        weeklyHoursAverageEligible = 'Not relevant';
+      }
     }
 
     myWdf.weeklyHoursContracted = {
@@ -1774,6 +1783,7 @@ class Worker extends EntityValidator {
       },
       {
         returning: true,
+        individualHooks: true,
         where: {
           uid: thisGivenWorker.uid,
         },

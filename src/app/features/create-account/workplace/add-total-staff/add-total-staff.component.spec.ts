@@ -107,12 +107,13 @@ describe('AddTotalStaffComponent', () => {
     component.fixture.componentInstance.ngOnInit();
 
     const form = component.fixture.componentInstance.form;
-    const errorMessage = 'Enter the total number of staff at your workplace';
+    const errorMessage = 'Enter how many members of staff your workplace has';
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(form.invalid).toBeTruthy();
+
     expect(component.getAllByText(errorMessage).length).toBe(2);
   });
 
@@ -146,7 +147,7 @@ describe('AddTotalStaffComponent', () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
-      component.fixture.componentInstance.setBackLink();
+      (component.fixture.componentInstance as any).setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
