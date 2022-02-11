@@ -301,7 +301,7 @@ const routes: Routes = [
           {
             path: '',
             component: UserAccountViewComponent,
-            resolve: { user: UserAccountResolver },
+            resolve: { user: UserAccountResolver, allUsers: AllUsersForEstablishmentResolver },
           },
           {
             path: 'permissions',
