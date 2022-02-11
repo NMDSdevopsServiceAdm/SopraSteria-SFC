@@ -86,11 +86,19 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   private convertPermissions(formValue): CreateAccountRequest {
-    if (!this.wdfUserFlag) return formValue;
+    if (!this.wdfUserFlag) {
+      formValue.role = formValue.permissionsType;
+      delete formValue.permissionsType;
+
+      return formValue;
+    }
 
     const radio = this.permissionsTypeRadios.find(
       (radio) => radio.permissionsQuestionValue === formValue.permissionsType,
     );
+
+    delete formValue.permissionsType;
+
     return {
       ...formValue,
       role: radio.role,
