@@ -12,6 +12,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
       id: 478,
       name: 'Workplace Name',
       nmdsId: 'J1234567',
+      lastLogin: '2020-06-01',
       lastUpdated: '2020-06-01',
       emailTemplate: {
         id: 13,
@@ -26,6 +27,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
       id: 479,
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
+      lastLogin: '2020-01-01',
       lastUpdated: '2020-01-01',
       emailTemplate: {
         id: 13,

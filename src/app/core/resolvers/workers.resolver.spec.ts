@@ -1,16 +1,21 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 import { WorkersResolver } from './workers.resolver';
 
 describe('WorkersResolver', () => {
-  function setup(idInParams = null) {
+  function setup(idInParams = null, permissions = ['canViewListOfWorkers']) {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
@@ -22,6 +27,11 @@ describe('WorkersResolver', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+          deps: [HttpClient, Router, UserService],
         },
         {
           provide: ActivatedRoute,
@@ -64,5 +74,13 @@ describe('WorkersResolver', () => {
     resolver.resolve(route.snapshot);
 
     expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid');
+  });
+
+  it('should not call getAllWorkers when workplace does not have canViewListOfWorkers permission', () => {
+    const { resolver, route, workerService } = setup('paramUid', []);
+
+    resolver.resolve(route.snapshot);
+
+    expect(workerService.getAllWorkers).not.toHaveBeenCalled();
   });
 });

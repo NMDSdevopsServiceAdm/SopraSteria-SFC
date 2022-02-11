@@ -43,6 +43,7 @@ const createCampaign = async (req, res) => {
         template: workplace.emailTemplate.id,
         data: {
           dataOwner: workplace.dataOwner,
+          lastLogin: workplace.lastLogin,
           lastUpdated: workplace.lastUpdated,
           subsidiaries: workplace.subsidiaries ? workplace.subsidiaries : [],
         },
@@ -54,7 +55,7 @@ const createCampaign = async (req, res) => {
     await models.EmailCampaignHistory.bulkCreate(history);
 
     totalInactiveWorkplaces.map((inactiveWorkplace, index) => {
-      return sendEmail.sendEmail(inactiveWorkplace, index)
+      return sendEmail.sendEmail(inactiveWorkplace, index);
     });
 
     return res.json({
