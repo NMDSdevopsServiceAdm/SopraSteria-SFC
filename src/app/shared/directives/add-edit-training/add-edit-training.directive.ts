@@ -78,7 +78,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: [null, Validators.required],
+        category: [null],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -208,9 +208,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: !this.missingTrainingCategoryId
-          ? parseInt(category.value, 10)
-          : parseInt(this.missingTrainingCategoryId, 10),
+        id: !this.missingTrainingCategory ? parseInt(category.value, 10) : parseInt(this.missingTrainingCategoryId, 10),
       },
       title: title.value,
       accredited: accredited.value,
