@@ -676,14 +676,13 @@ const addUser = async (req, res) => {
       if (await thisUser.restore(trackingResponse.user.uid, null, null)) {
         // only those properties defined in the POST body will be updated (peristed) along with
         //   the additional role property - ovverwrites against that could be passed in the body
-        req.body.canManageWdfClaims = req.body.canManageWdfClaims || false;
-
         const newUserProperties = {
           ...req.body,
           isActive: true,
           status: null,
           agreedUpdatedTerms: true,
           role: trackingResponse.user.UserRoleValue,
+          canManageWdfClaims: thisUser.canManageWdfClaims || false,
         };
 
         // force the username and email to be lowercase
