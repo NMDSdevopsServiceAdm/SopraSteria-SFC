@@ -1,10 +1,10 @@
-import { render } from '@testing-library/angular';
+import { queryByText, render } from '@testing-library/angular';
 
 import { TrainingInfoPanelComponent } from './training-info-panel.component';
 
 describe('TrainingInfoPanelComponent', () => {
   async function setup(missing = 0, expired = 0, expiring = 0) {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId, queryAllByText } = await render(
       TrainingInfoPanelComponent,
       {
         imports: [],
@@ -13,7 +13,7 @@ describe('TrainingInfoPanelComponent', () => {
         componentProperties: {
           totalExpiredTraining: expired,
           totalExpiringTraining: expiring,
-          totalMissingMandatoryTraining: missing,
+          totalStaffMissingMandatoryTraining: missing,
         },
       },
     );
@@ -28,6 +28,7 @@ describe('TrainingInfoPanelComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      queryAllByText,
     };
   }
 
@@ -41,7 +42,7 @@ describe('TrainingInfoPanelComponent', () => {
 
     expect(getAllByText('Summary').length).toEqual(1);
     expect(getAllByText('1').length).toEqual(3);
-    expect(getByText('missing mandatory record')).toBeTruthy();
+    expect(getByText('staff is missing mandatory training')).toBeTruthy();
     expect(getByText('record has expired')).toBeTruthy();
     expect(getByText('record expires soon')).toBeTruthy();
   });
@@ -50,7 +51,7 @@ describe('TrainingInfoPanelComponent', () => {
     const { getByText, getAllByText } = await setup(2, 2, 2);
 
     expect(getAllByText('2').length).toEqual(3);
-    expect(getByText('missing mandatory records')).toBeTruthy();
+    expect(getByText('staff are missing mandatory training')).toBeTruthy();
     expect(getByText('records have expired')).toBeTruthy();
     expect(getByText('records expire soon')).toBeTruthy();
   });
@@ -74,18 +75,18 @@ describe('TrainingInfoPanelComponent', () => {
   });
 
   it('should not show expired records when there are no expired records but there are missing mandatory and expires soon records', async () => {
-    const { getByText, getByTestId, queryByTestId } = await setup(1, 0, 3);
+    const { queryAllByText, getByTestId, queryByTestId } = await setup(1, 0, 3);
 
-    expect(getByText('Summary')).toBeTruthy();
+    expect(queryAllByText('Summary')).toBeTruthy();
     expect(queryByTestId('expired-column')).toBeFalsy();
     expect(getByTestId('missing-column')).toBeTruthy();
     expect(getByTestId('expiring-column')).toBeTruthy();
   });
 
   it('should not show expires soon records when there are no expires soon records but there are missing mandatory and expired records', async () => {
-    const { getByText, getByTestId, queryByTestId } = await setup(1, 3, 0);
+    const { queryAllByText, getByTestId, queryByTestId } = await setup(1, 3, 0);
 
-    expect(getByText('Summary')).toBeTruthy();
+    expect(queryAllByText('Summary')).toBeTruthy();
     expect(queryByTestId('expiring-column')).toBeFalsy();
     expect(getByTestId('missing-column')).toBeTruthy();
     expect(getByTestId('expired-column')).toBeTruthy();
