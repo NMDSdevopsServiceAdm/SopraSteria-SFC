@@ -682,7 +682,6 @@ const addUser = async (req, res) => {
           status: null,
           agreedUpdatedTerms: true,
           role: trackingResponse.user.UserRoleValue,
-          canManageWdfClaims: thisUser.canManageWdfClaims || false,
         };
 
         // force the username and email to be lowercase
