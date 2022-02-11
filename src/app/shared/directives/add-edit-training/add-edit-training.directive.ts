@@ -56,6 +56,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setTitle();
     this.setButtonText();
     this.setBackLink();
+    this.getCategories();
     this.setupFormErrorsMap();
   }
 
@@ -77,6 +78,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
+        category: [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -101,8 +103,32 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
   }
 
+  private getCategories(): void {
+    this.subscriptions.add(
+      this.trainingService.getCategories().subscribe(
+        (categories) => {
+          if (categories) {
+            this.categories = categories;
+          }
+        },
+        (error) => {
+          console.error(error.error);
+        },
+      ),
+    );
+  }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
+      {
+        item: 'category',
+        type: [
+          {
+            name: 'required',
+            message: 'Select a training category',
+          },
+        ],
+      },
       {
         item: 'title',
         type: [
@@ -176,13 +202,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       return;
     }
 
-    const { title, accredited, completed, expires, notes } = this.form.controls;
+    const { title, category, accredited, completed, expires, notes } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as FormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as FormGroup);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: parseInt(this.missingTrainingCategoryId, 10),
+        id: !this.missingTrainingCategoryId
+          ? parseInt(category.value, 10)
+          : parseInt(this.missingTrainingCategoryId, 10),
       },
       title: title.value,
       accredited: accredited.value,

@@ -23,7 +23,7 @@ describe('AddEditTrainingComponent', () => {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
             snapshot: {
-              params: { trainingRecordId: '1' },
+              params: { trainingRecordId: '1', category: 'testCategory', id: 5 },
             },
             parent: {
               snapshot: {
@@ -73,6 +73,11 @@ describe('AddEditTrainingComponent', () => {
     const { component, getByTestId } = await setup();
 
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
+  });
+
+  it('should display the missing mandatory training category as a sub-heading', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Training category: testCategory')).toBeTruthy();
   });
 
   describe('title', () => {
