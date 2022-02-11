@@ -8,6 +8,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
       id: 1,
       name: 'Test Name',
       nmdsId: 'A1234567',
+      lastLogin: '2021-03-01',
       lastUpdated: '2021-03-01',
       emailTemplate: {
         id: 15,
@@ -23,6 +24,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
           id: 2,
           name: 'Test Name 2',
           nmdsId: 'J231466',
+          lastLogin: '3 months ago',
           lastUpdated: '3 months ago',
           dataOwner: 'Parent',
         },
@@ -30,6 +32,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
           id: 3,
           name: 'Test Name 3',
           nmdsId: 'H2345678',
+          lastLogin: '6 months ago',
           lastUpdated: '6 months ago',
           dataOwner: 'Parent',
         },
@@ -42,6 +45,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
       {
         workplace: 'Test Name',
         workplaceId: 'A1234567',
+        lastLogin: '2021-03-01',
         lastUpdated: '2021-03-01',
         emailTemplate: 'Parent',
         dataOwner: 'Workplace',

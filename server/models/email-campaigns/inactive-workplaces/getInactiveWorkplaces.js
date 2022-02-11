@@ -3,13 +3,13 @@ const moment = require('moment');
 const models = require('../../index');
 
 const refreshInactiveWorkplaces = async () => {
-  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
+  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
 };
 
 const getInactiveWorkplaces = async () => {
   const lastMonth = moment().subtract(1, 'months');
 
-  const lastUpdated = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
+  const lastActivity = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
   const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 
   return models.sequelize.query(
@@ -21,7 +21,8 @@ const getInactiveWorkplaces = async () => {
   "DataOwner",
   "PrimaryUserName",
   "PrimaryUserEmail",
-	"LastUpdated",
+	"LastLogin",
+  "LastUpdated",
   (
 		SELECT
 			"template"
@@ -30,31 +31,33 @@ const getInactiveWorkplaces = async () => {
     JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
 		WHERE
       ec."type" = 'inactiveWorkplaces'
-		  AND ech. "establishmentID" = e. "EstablishmentID"
+		  AND ech."establishmentID" = e."EstablishmentID"
+      AND ech."createdAt" >= e."LastLogin"
       AND ech."createdAt" >= e."LastUpdated"
-    ORDER BY ech. "createdAt" DESC
+    ORDER BY ech."createdAt" DESC
     LIMIT 1) AS "LastTemplate"
 		FROM
-			cqc. "LastUpdatedEstablishments" e
+			cqc."EstablishmentLastActivity" e
 		WHERE
       "IsParent" = FALSE
       AND "DataOwner" = 'Workplace'
-			AND "LastUpdated" <= :lastUpdated
+			AND "LastLogin" <= :lastActivity
+      AND "LastUpdated" <= :lastActivity
       AND "PrimaryUserEmail" IS NOT NULL
 			AND NOT EXISTS (
 				SELECT
-					ech. "establishmentID"
+					ech."establishmentID"
 				FROM
 					cqc."EmailCampaignHistories" ech
         JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
 				WHERE
           ec."type" = 'inactiveWorkplaces'
 					AND ech."createdAt" >= :lastEmailDate
-					AND ech. "establishmentID" = e. "EstablishmentID");`,
+					AND ech."establishmentID" = e."EstablishmentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {
-        lastUpdated,
+        lastActivity,
         lastEmailDate,
       },
     },
