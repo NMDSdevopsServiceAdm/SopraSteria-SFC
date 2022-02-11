@@ -476,7 +476,7 @@ const partAddUser = async (req, res) => {
 
 const notPermittedToRegisterNewUser = (role) => !role || role === 'Read' || role === 'None';
 
-const newUserRoleNotValid = (role) => !role || !['Edit', 'Read', 'None'].includes(role);
+const newUserRoleNotValid = (role) => !['Edit', 'Read', 'None'].includes(role);
 
 // Resend activation link
 const resendActivationLink = async (req, res) => {
