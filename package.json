@@ -143,7 +143,7 @@
     "@types/node": "^16.11.6",
     "@types/sinon": "^10.0.5",
     "@typescript-eslint/eslint-plugin": "4.0.0",
-    "@typescript-eslint/parser": "3.10.1",
+    "@typescript-eslint/parser": "5.11.0",
     "aws-sdk-mock": "^5.2.1",
     "chai": "^4.3.0",
     "codelyzer": "^6.0.2",
@@ -177,7 +177,7 @@
     "sinon": "^9.2.4",
     "sinon-chai": "^3.7.0",
     "source-map-explorer": "^2.5.2",
-    "supertest": "^6.1.3",
+    "supertest": "^6.2.2",
     "ts-node": "~9.1.1",
     "tslint": "~6.1.3",
     "webpack-bundle-analyzer": "^4.4.2"
