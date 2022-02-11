@@ -10,8 +10,8 @@
           [attr.data-testid]="missingRecord.id"
           draggable="false"
           role="button"
-          [routerLink]="['../add-training', missingRecord]"
-          [state]="{ training: 'mandatory' }"
+          [routerLink]="['../add-training']"
+          [state]="{ training: 'mandatory', missingRecord }"
           (click)="addButtonClicked()"
         >
           Add
