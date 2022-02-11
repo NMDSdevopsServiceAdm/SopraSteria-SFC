@@ -44,9 +44,7 @@
           </div>
         </ng-template>
         <ng-template #missingTrainingCategoryLabelBlock>
-          <p class="govuk-body govuk-!-margin-bottom-5" data-testid="missingTrainingCategory">
-            Training category: {{ missingTrainingCategory }}
-          </p>
+          <p class="govuk-body govuk-!-margin-bottom-5">Training category: {{ missingTrainingCategory }}</p>
         </ng-template>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
