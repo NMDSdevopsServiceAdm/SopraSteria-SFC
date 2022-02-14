@@ -10,5 +10,5 @@ export class NewTrainingAndQualificationsRecordSummaryComponent {
   @Input() qualificationsCount: number;
   @Input() expiresSoonTrainingCount: number;
   @Input() expiredTrainingCount: number;
-  @Input() mandatoryTrainingCount: number;
+  @Input() missingMandatoryTraining: number;
 }

@@ -52,18 +52,18 @@
                 <div class="govuk-grid-row">
                   <div class="ggovuk-grid-column-full">
                     <div class="asc-flex-container govuk-!-margin-left-9">
-                      <div class="asc-record-status" *ngIf="mandatoryTrainingCount">
+                      <div class="asc-record-status" *ngIf="missingMandatoryTraining">
                         <div class="asc-record-status--image-container" data-testid="mandatoryTrainingCount">
                           <img src="/assets/images/flag-red.svg" alt="" />
-                          <span class="asc-record-status--count">{{ mandatoryTrainingCount }}</span>
+                          <span class="asc-record-status--count">{{ missingMandatoryTraining }}</span>
                         </div>
                       </div>
                       <div
                         class="asc-record-status-text"
-                        *ngIf="mandatoryTrainingCount"
+                        *ngIf="missingMandatoryTraining"
                         data-testid="mandatoryTrainingText"
                       >
-                        <ng-container [ngPlural]="mandatoryTrainingCount">
+                        <ng-container [ngPlural]="missingMandatoryTraining">
                           <ng-template ngPluralCase="=1">
                             <span>mandatory training record needs to be added</span>
                           </ng-template>
