@@ -35,6 +35,7 @@
               [formControlName]="'category'"
               id="category"
               name="category"
+              data-testid="trainingSelect"
             >
               <option [ngValue]="null">Select a training category</option>
               <option *ngFor="let category of categories" [value]="category.id">

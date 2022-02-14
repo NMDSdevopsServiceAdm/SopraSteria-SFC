@@ -20,7 +20,7 @@ describe('AddEditTrainingComponent', () => {
       window.history.pushState({ training: 'mandatory', missingRecord: { category: 'testCategory', id: 5 } }, '');
     }
 
-    const { fixture, getByText, getByTestId, queryByText } = await render(AddEditTrainingComponent, {
+    const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(AddEditTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -60,6 +60,7 @@ describe('AddEditTrainingComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      queryByTestId,
     };
   }
 
@@ -83,9 +84,24 @@ describe('AddEditTrainingComponent', () => {
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
   });
 
-  it('should display the missing mandatory training category as a sub-heading', async () => {
-    const { getByText } = await setup(true);
-    expect(getByText('Training category: testCategory')).toBeTruthy();
+  describe('Training category select/display', async () => {
+    it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
+      const { getByText } = await setup(true);
+
+      expect(getByText('Training category: testCategory')).toBeTruthy();
+    });
+
+    it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
+      const { queryByTestId } = await setup(true);
+
+      expect(queryByTestId('trainingSelect')).toBeFalsy();
+    });
+
+    it('should have dropdown of training categories when a manadatoryTraining object is not passed', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('trainingSelect')).toBeTruthy();
+    });
   });
 
   describe('title', () => {

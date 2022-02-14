@@ -77,7 +77,7 @@ describe('MissingMandatoryTrainingComponent', () => {
 
     const message = getByTestId('1');
     expect(message).toBeTruthy();
-    expect(message.getAttribute('href')).toContain('/add-training');
+    expect(message.getAttribute('href')).toEqual('/add-training');
   });
 
   it('should show a multiple messages saying what training is missing', async () => {
