@@ -1,5 +1,5 @@
 import { Roles } from '@core/model/roles.enum';
-import { UserPermissionsType } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType } from '@core/model/userDetails.model';
 
 export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsType[] => {
   const userPermissionTypes: UserPermissionsType[] = [
@@ -55,4 +55,17 @@ export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsTy
   }
 
   return userPermissionTypes;
+};
+
+export const getUserType = (user: UserDetails): string => {
+  const userPermissionsTypes = getUserPermissionsTypes(true);
+
+  const userType = userPermissionsTypes.find(
+    (type) =>
+      type.role === user.role &&
+      type.canManageWdfClaims === user.canManageWdfClaims &&
+      !!user.isPrimary === !!type.isPrimary,
+  );
+
+  return userType?.userTableValue;
 };
