@@ -13,7 +13,7 @@
               <div class="govuk-grid-column-one-half">
                 <div class="asc-records-count" data-testid="trainingCount">
                   <div class="asc-flex-container">
-                    <span class="asc-records-count--count govuk-!-margin-left-8">{{ trainingCount }}</span>
+                    <span class="asc-records-count--count govuk-!-margin-left-9">{{ trainingCount }}</span>
                     <div class="asc-records-text" data-testid="trainingText">
                       <ng-container [ngPlural]="trainingCount">
                         <ng-template ngPluralCase="=1">
@@ -50,7 +50,7 @@
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-full">
                 <div class="govuk-grid-row">
-                  <div class="ggovuk-grid-column-full">
+                  <div class="govuk-grid-column-full">
                     <div class="asc-flex-container govuk-!-margin-left-9">
                       <div class="asc-record-status" *ngIf="missingMandatoryTraining">
                         <div class="asc-record-status--image-container" data-testid="mandatoryTrainingCount">
@@ -78,7 +78,7 @@
 
                 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-full">
-                    <div class="asc-flex-container govuk-!-margin-left-8">
+                    <div class="asc-flex-container govuk-!-margin-left-9">
                       <div class="asc-record-status" *ngIf="expiredTrainingCount">
                         <div class="asc-record-status--image-container" data-testid="expiredTrainingCount">
                           <img src="/assets/images/flag-red.svg" alt="" />
@@ -105,7 +105,7 @@
 
                 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-full">
-                    <div class="asc-flex-container govuk-!-margin-left-8">
+                    <div class="asc-flex-container govuk-!-margin-left-9">
                       <div class="asc-record-status" *ngIf="expiresSoonTrainingCount">
                         <div class="asc-record-status--image-container" data-testid="expiresSoonTrainingCount">
                           <img src="/assets/images/flag-orange.svg" alt="" />

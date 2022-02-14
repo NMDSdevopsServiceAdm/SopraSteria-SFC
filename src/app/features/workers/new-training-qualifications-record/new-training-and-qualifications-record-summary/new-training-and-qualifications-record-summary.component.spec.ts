@@ -97,7 +97,7 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
   });
   describe('Mandatory training records to be added', () => {
     it('should show the number of mandatory training records to be added when greater than 0', async () => {
-      component.mandatoryTrainingCount = 1;
+      component.missingMandatoryTraining = 1;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -114,7 +114,7 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should show the number of mandatory training records to be added when greater than 0, and pluralized if mandatory training count to be added is greater than 1', async () => {
-      component.mandatoryTrainingCount = 2;
+      component.missingMandatoryTraining = 2;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -131,7 +131,7 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should not show the number of mandatory training records to be added, when equal to 0', async () => {
-      component.mandatoryTrainingCount = 0;
+      component.missingMandatoryTraining = 0;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
