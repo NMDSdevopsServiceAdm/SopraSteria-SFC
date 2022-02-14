@@ -12,8 +12,8 @@
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-one-half">
                 <div class="asc-records-count" data-testid="trainingCount">
-                  <div class="asc-grid-container">
-                    <span class="asc-records-count--count govuk-!-margin-left-5">{{ trainingCount }}</span>
+                  <div class="asc-flex-container">
+                    <span class="asc-records-count--count govuk-!-margin-left-8">{{ trainingCount }}</span>
                     <div class="asc-records-text" data-testid="trainingText">
                       <ng-container [ngPlural]="trainingCount">
                         <ng-template ngPluralCase="=1">
@@ -29,7 +29,7 @@
               </div>
               <hr class="asc-bottom-line" />
               <div class="govuk-grid-column-one-half">
-                <div class="asc-grid-container">
+                <div class="asc-flex-container">
                   <div class="asc-records-count" data-testid="qualificationsCount">
                     <span class="asc-records-count--count">{{ qualificationsCount }}</span>
                   </div>
@@ -51,7 +51,7 @@
               <div class="govuk-grid-column-full">
                 <div class="govuk-grid-row">
                   <div class="ggovuk-grid-column-full">
-                    <div class="asc-grid-container govuk-!-margin-left-7">
+                    <div class="asc-flex-container govuk-!-margin-left-9">
                       <div class="asc-record-status" *ngIf="mandatoryTrainingCount">
                         <div class="asc-record-status--image-container" data-testid="mandatoryTrainingCount">
                           <img src="/assets/images/flag-red.svg" alt="" />
@@ -78,7 +78,7 @@
 
                 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-full">
-                    <div class="asc-grid-container govuk-!-margin-left-5">
+                    <div class="asc-flex-container govuk-!-margin-left-8">
                       <div class="asc-record-status" *ngIf="expiredTrainingCount">
                         <div class="asc-record-status--image-container" data-testid="expiredTrainingCount">
                           <img src="/assets/images/flag-red.svg" alt="" />
@@ -105,7 +105,7 @@
 
                 <div class="govuk-grid-row">
                   <div class="govuk-grid-column-full">
-                    <div class="asc-grid-container govuk-!-margin-left-5">
+                    <div class="asc-flex-container govuk-!-margin-left-8">
                       <div class="asc-record-status" *ngIf="expiresSoonTrainingCount">
                         <div class="asc-record-status--image-container" data-testid="expiresSoonTrainingCount">
                           <img src="/assets/images/flag-orange.svg" alt="" />
