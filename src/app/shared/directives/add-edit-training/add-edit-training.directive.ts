@@ -46,7 +46,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected workerService: WorkerService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.missingTrainingCategory = history.state?.missingRecord?.category;
     this.missingTrainingCategoryId = history.state?.missingRecord?.id;
