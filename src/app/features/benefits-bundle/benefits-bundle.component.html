@@ -104,22 +104,12 @@
 
       <app-benefit-accordion [benefit]="benefits[4]" [index]="4" (toggleEmitter)="toggleAccordion(4)">
         <p>
-          These modules, based on the Manager Induction Standards, help frontline leaders and managers develop their
-          knowledge and skills in leadership, succession planning and future talent development.
+          Skills for Care offer low cost eLearning on a variety of topics. Your ASC-WDS account entitles you to 10% off
+          the purchase price for the modules
         </p>
 
         <p>
-          Topis are explored through real-life case studies and scenarios, and offer a change for learners to reflect
-          and complete further self-directed learning.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Leadership-management/developing-leaders-and-managers/manager-induction-standards/Digital-learning-for-managers.aspx"
-            target="_blank"
-            >Read more about digital learning for managers</a
-          >
-          on the Skills for Care website. You'll need voucher code <strong>ASCWDS-2122</strong> to claim your discount.
+          <a [routerLink]="['elearning-discounts']">Read more about the eLearning modules on offer</a>
         </p>
       </app-benefit-accordion>
 

@@ -32,7 +32,8 @@ export class BenefitsBundleComponent implements OnInit {
       open: false,
     },
     {
-      title: '10% off digital learning for managers modules',
+      title: `10% off Skills for Care's eLearning modules`,
+      open: false,
     },
     {
       title: 'Funded essential training',
