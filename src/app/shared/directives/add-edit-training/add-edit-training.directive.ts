@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import { MandatoryTraining, TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -24,6 +24,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public trainingRecordId: string;
   public worker: Worker;
   public workplace: Establishment;
+  public missingTrainingRecord: MandatoryTraining;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
@@ -44,8 +45,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected workerService: WorkerService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.missingTrainingRecord = history.state?.missingRecord;
 
     this.init();
     this.setupForm();
@@ -74,7 +76,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: [null, Validators.required],
+        category: this.missingTrainingRecord ? [null] : [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -204,7 +206,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: parseInt(category.value, 10),
+        id: !this.missingTrainingRecord ? parseInt(category.value) : this.missingTrainingRecord.id,
       },
       title: title.value,
       accredited: accredited.value,
