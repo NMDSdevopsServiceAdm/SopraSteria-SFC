@@ -3,9 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import {
-  NewTrainingAndQualificationsRecordSummaryComponent,
-} from './new-training-and-qualifications-record-summary.component';
+import { NewTrainingAndQualificationsRecordSummaryComponent } from './new-training-and-qualifications-record-summary.component';
 
 describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
   let component: NewTrainingAndQualificationsRecordSummaryComponent;
@@ -95,6 +93,51 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
 
       expect(totalQualificationsCount.textContent).toContain('2');
       expect(totalQualificationsText.textContent).toContain('qualification records');
+    });
+  });
+  describe('Mandatory training records to be added', () => {
+    it('should show the number of mandatory training records to be added when greater than 0', async () => {
+      component.mandatoryTrainingCount = 1;
+      component.trainingCount = 1;
+      component.qualificationsCount = 2;
+      fixture.detectChanges();
+
+      const mandatoryTrainingCount = fixture.debugElement.query(
+        By.css('[data-testid="mandatoryTrainingCount"]'),
+      ).nativeElement;
+      const mandatoryTrainingText = fixture.debugElement.query(
+        By.css('[data-testid="mandatoryTrainingText"]'),
+      ).nativeElement;
+
+      expect(mandatoryTrainingCount.textContent).toContain('1');
+      expect(mandatoryTrainingText.textContent).toContain('mandatory training record needs to be added');
+    });
+
+    it('should show the number of mandatory training records to be added when greater than 0, and pluralized if mandatory training count to be added is greater than 1', async () => {
+      component.mandatoryTrainingCount = 2;
+      component.trainingCount = 1;
+      component.qualificationsCount = 2;
+      fixture.detectChanges();
+
+      const mandatoryTrainingCount = fixture.debugElement.query(
+        By.css('[data-testid="mandatoryTrainingCount"]'),
+      ).nativeElement;
+      const mandatoryTrainingText = fixture.debugElement.query(
+        By.css('[data-testid="mandatoryTrainingText"]'),
+      ).nativeElement;
+
+      expect(mandatoryTrainingCount.textContent).toContain('2');
+      expect(mandatoryTrainingText.textContent).toContain('mandatory training records need to be added');
+    });
+
+    it('should not show the number of mandatory training records to be added, when equal to 0', async () => {
+      component.mandatoryTrainingCount = 0;
+      component.trainingCount = 1;
+      component.qualificationsCount = 2;
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('[data-testid="mandatoryTrainingCount"]'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('[data-testid="mandatoryTrainingText"]'))).toBeFalsy();
     });
   });
 

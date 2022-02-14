@@ -120,7 +120,7 @@ hr {
 }
 
 .asc-grid-container {
-  display: grid;
+  display: flex;
   grid-column-gap: 8px;
   grid-template-columns: 20% 80%;
 }
