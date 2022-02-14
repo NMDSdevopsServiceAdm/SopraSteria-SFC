@@ -22,7 +22,7 @@
           <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
           <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
         </p>
-        <div *ngIf="missingTrainingCategory; then missingTrainingCategoryLabelBlock; else categoryListBLock"></div>
+        <div *ngIf="missingTrainingRecord; then missingTrainingCategoryLabelBlock; else categoryListBLock"></div>
         <ng-template #categoryListBLock>
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
             <label class="govuk-label" for="category"> Training category </label>
@@ -44,7 +44,7 @@
           </div>
         </ng-template>
         <ng-template #missingTrainingCategoryLabelBlock>
-          <p class="govuk-body govuk-!-margin-bottom-5">Training category: {{ missingTrainingCategory }}</p>
+          <p class="govuk-body govuk-!-margin-bottom-5">Training category: {{ missingTrainingRecord.category }}</p>
         </ng-template>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">

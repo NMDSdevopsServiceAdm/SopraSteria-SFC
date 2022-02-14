@@ -24,8 +24,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public trainingRecordId: string;
   public worker: Worker;
   public workplace: Establishment;
-  public missingTrainingCategory: MandatoryTraining;
-  public missingTrainingCategoryId: string;
+  public missingTrainingRecord: MandatoryTraining;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
@@ -48,8 +47,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    this.missingTrainingCategory = history.state?.missingRecord?.category;
-    this.missingTrainingCategoryId = history.state?.missingRecord?.id;
+    this.missingTrainingRecord = history.state?.missingRecord;
 
     this.init();
     this.setupForm();
@@ -78,7 +76,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: this.missingTrainingCategory ? [null] : [null, Validators.required],
+        category: this.missingTrainingRecord ? [null] : [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -208,7 +206,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: !this.missingTrainingCategory ? parseInt(category.value, 10) : parseInt(this.missingTrainingCategoryId, 10),
+        id: !this.missingTrainingRecord ? parseInt(category.value) : this.missingTrainingRecord.id,
       },
       title: title.value,
       accredited: accredited.value,
