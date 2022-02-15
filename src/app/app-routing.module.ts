@@ -20,6 +20,7 @@ import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
+import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-elearning/benefits-elearning.component';
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
@@ -261,6 +262,14 @@ const routes: Routes = [
             path: 'training-discounts',
             component: BenefitsTrainingDiscountsComponent,
             data: { title: 'Endorsed Training Providers Discounts' },
+            resolve: {
+              pages: PageResolver,
+            },
+          },
+          {
+            path: 'elearning-discounts',
+            component: BenefitsELearningComponent,
+            data: { title: 'eLearning Modules' },
             resolve: {
               pages: PageResolver,
             },
