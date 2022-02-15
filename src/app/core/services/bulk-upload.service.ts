@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
@@ -143,6 +143,18 @@ export class BulkUploadService {
         ),
       undefined,
     ).pipe(map((response) => response.file.signedUrl));
+  }
+
+  public getUploadedFileFromS3(workplaceUid: string, key: string, type: BulkUploadFileType): Observable<any> {
+    const params = new HttpParams().set('downloadType', type);
+
+    return this.checkLockStatus(
+      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`, { params }),
+      {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      },
+    );
   }
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
