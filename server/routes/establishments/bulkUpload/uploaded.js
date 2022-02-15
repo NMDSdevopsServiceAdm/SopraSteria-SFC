@@ -9,6 +9,7 @@ const { validateTrainingHeaders } = require('./validate/headers/training');
 const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const { s3, Bucket, saveResponse, uploadJSONDataToS3, downloadContent, purgeBulkUploadS3Objects } = require('./s3');
 const { buStates } = require('./states');
+const models = require('../../../models');
 
 const uploadedGet = async (req, res) => {
   try {
@@ -325,31 +326,78 @@ const uploadedPut = async (req, res) => {
   }
 };
 
+const hideNinoAndDob = (dataArr, niNumberIndex, dobIndex) => {
+  dataArr[niNumberIndex] = dataArr[niNumberIndex] && 'Admin';
+  dataArr[dobIndex] = dataArr[dobIndex] && 'Admin';
+
+  return dataArr;
+};
+
+const showNinoAndDob = (dataArr, worker, niNumberIndex, dobIndex) => {
+  dataArr[niNumberIndex].toLowerCase() === 'admin'
+    ? (dataArr[niNumberIndex] = worker.NationalInsuranceNumberValue)
+    : dataArr[niNumberIndex];
+  dataArr[dobIndex].toLowerCase() === 'admin' ? (dataArr[dobIndex] = worker.DateOfBirthValue) : dataArr[dobIndex];
+
+  return dataArr;
+};
+
+const staffData = async (data, downloadType) => {
+  const dataRows = data.split('\r\n');
+
+  const niNumberIndex = dataRows[0].split(',').findIndex((element) => element === 'NINUMBER');
+  const dobIndex = dataRows[0].split(',').findIndex((element) => element === 'DOB');
+  const idIndex = dataRows[0].split(',').findIndex((element) => element === 'UNIQUEWORKERID');
+
+  const updatedData = await Promise.all(
+    dataRows.map(async (data, index) => {
+      if (index !== 0) {
+        const dataArr = data.split(',');
+        const workerIdentifier = dataArr[idIndex];
+        const worker = await models.worker.findOne({ where: { NameOrIdValue: workerIdentifier } });
+
+        const updatedDataArr =
+          downloadType === 'Staff'
+            ? showNinoAndDob(dataArr, worker, niNumberIndex, dobIndex)
+            : hideNinoAndDob(dataArr, niNumberIndex, dobIndex);
+
+        return '\r\n' + updatedDataArr.join(',');
+      }
+      return data;
+    }),
+  );
+
+  return updatedData.join('');
+};
+
 const uploadedStarGet = async (req, res) => {
   const Key = req.params['0'];
   const elements = Key.split('/');
 
   try {
-    const objHeadData = await s3
-      .headObject({
-        Bucket,
-        Key,
-      })
-      .promise();
+    const { downloadType } = req.query;
+    const { data } = await downloadContent(Key);
 
-    await saveResponse(req, res, 200, {
-      file: {
-        filename: elements[elements.length - 1],
-        uploaded: objHeadData.LastModified,
-        username: objHeadData.Metadata.username,
-        size: objHeadData.ContentLength,
-        key: Key,
-        signedUrl: s3.getSignedUrl('getObject', {
-          Bucket,
-          Key,
-          Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-        }),
-      },
+    let updatedData;
+    switch (downloadType) {
+      case 'Workplace':
+      case 'Training': {
+        updatedData = data;
+        break;
+      }
+      case 'Staff': {
+        updatedData = await staffData(data, downloadType);
+        break;
+      }
+      case 'StaffSanitise': {
+        updatedData = await staffData(data, downloadType);
+        break;
+      }
+    }
+
+    await saveResponse(req, res, 200, updatedData, {
+      'Content-Type': 'text/csv',
+      'Content-disposition': `attachment; filename=${elements[elements.length - 1]}`,
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
@@ -370,3 +418,8 @@ router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING, tr
 router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING, true));
 
 module.exports = router;
+
+module.exports.uploadedStarGet = uploadedStarGet;
+module.exports.staffData = staffData;
+module.exports.hideNinoAndDob = hideNinoAndDob;
+module.exports.showNinoAndDob = showNinoAndDob;
