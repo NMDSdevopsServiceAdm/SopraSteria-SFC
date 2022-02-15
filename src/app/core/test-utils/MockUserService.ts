@@ -4,7 +4,7 @@ import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
-import { bool, build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot/build';
+import { bool, build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot/build';
 import { Observable, of } from 'rxjs';
 
 export const EditUser = build('EditUser', {
@@ -18,6 +18,7 @@ export const EditUser = build('EditUser', {
     status: 'Active',
     isPrimary: null,
     uid: fake((f) => f.name.firstName()),
+    canManageWdfClaims: perBuild(() => false),
   },
 });
 
@@ -38,7 +39,11 @@ primaryEditUser.isPrimary = true;
 const nonPrimaryEditUser = EditUser();
 nonPrimaryEditUser.isPrimary = false;
 
-export { primaryEditUser, nonPrimaryEditUser, readUser };
+const primaryEditUserWithWdf = EditUser();
+primaryEditUserWithWdf.canManageWdfClaims = true;
+primaryEditUserWithWdf.isPrimary = true;
+
+export { primaryEditUser, nonPrimaryEditUser, readUser, primaryEditUserWithWdf };
 
 const workplaceBuilder = build('Workplace', {
   fields: {
