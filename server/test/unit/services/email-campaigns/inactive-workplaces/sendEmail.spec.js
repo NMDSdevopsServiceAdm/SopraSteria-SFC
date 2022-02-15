@@ -19,6 +19,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       const inactiveWorkplace = {
         name: 'Workplace Name',
         nmdsId: 'J1234567',
+        lastLogin: '2020-06-01',
         lastUpdated: '2020-06-01',
         emailTemplate: {
           id: 13,
@@ -57,6 +58,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         id: 1,
         name: 'Test Name',
         nmdsId: 'A1234567',
+        lastLogin: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         lastUpdated: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         emailTemplate: {
           id: parentTemplateId,
@@ -72,6 +74,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             dataOwner: 'Parent',
           },
@@ -101,6 +104,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
               id: 2,
               name: 'Workplace Name',
               nmdsId: 'A0045232',
+              lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
               lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
               dataOwner: 'Parent',
             },
@@ -115,6 +119,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       const inactiveWorkplace = {
         name: 'Workplace Name',
         nmdsId: 'J1234567',
+        lastLogin: '2020-06-01',
         lastUpdated: '2020-06-01',
         emailTemplate: {
           id: 13,
@@ -138,6 +143,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         id: 1,
         name: 'Test Name',
         nmdsId: 'A1234567',
+        lastLogin: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         lastUpdated: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         emailTemplate: {
           id: parentTemplateId,
@@ -153,6 +159,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             dataOwner: 'Parent',
           },
@@ -168,6 +175,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
             dataOwner: 'Parent',
           },
@@ -180,6 +188,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         id: 1,
         name: 'Test Name',
         nmdsId: 'A1234567',
+        lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
         lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
         emailTemplate: {
           id: parentTemplateId,
@@ -195,6 +204,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             dataOwner: 'Parent',
           },
@@ -210,6 +220,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 1,
             name: 'Test Name',
             nmdsId: 'A1234567',
+            lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('Mo MMMM YYYY'),
             lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('Mo MMMM YYYY'),
             dataOwner: 'Workplace',
           },
@@ -217,6 +228,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
             dataOwner: 'Parent',
           },

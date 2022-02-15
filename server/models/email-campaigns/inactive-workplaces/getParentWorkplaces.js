@@ -16,22 +16,23 @@ const getParentWorkplaces = async () => {
       "DataOwner",
       "PrimaryUserName",
       "PrimaryUserEmail",
+      "LastLogin",
       "LastUpdated"
   FROM
-    cqc. "LastUpdatedEstablishments" e
+    cqc."EstablishmentLastActivity" e
   WHERE
     "IsParent" = TRUE
     AND "PrimaryUserEmail" IS NOT NULL
     AND NOT EXISTS (
       SELECT
-        ech. "establishmentID"
+        ech."establishmentID"
       FROM
-        cqc. "EmailCampaignHistories" ech
-        JOIN cqc. "EmailCampaigns" ec ON ec. "id" = ech. "emailCampaignID"
+        cqc."EmailCampaignHistories" ech
+        JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
       WHERE
-        ec. "type" = 'inactiveWorkplaces'
-        AND ech. "createdAt" >= :lastEmailDate
-        AND ech. "establishmentID" = e. "EstablishmentID")
+        ec."type" = 'inactiveWorkplaces'
+        AND ech."createdAt" >= :lastEmailDate
+        AND ech."establishmentID" = e."EstablishmentID")
     UNION
     SELECT
       "EstablishmentID",
@@ -42,22 +43,23 @@ const getParentWorkplaces = async () => {
       "DataOwner",
       "PrimaryUserName",
       "PrimaryUserEmail",
+      "LastLogin",
       "LastUpdated"
     FROM
-      cqc. "LastUpdatedEstablishments" e
+      cqc."EstablishmentLastActivity" e
     WHERE
       "ParentID" IS NOT NULL
       AND "DataOwner" = 'Parent'
           AND NOT EXISTS (
         SELECT
-          ech. "establishmentID"
+          ech."establishmentID"
         FROM
-          cqc. "EmailCampaignHistories" ech
-          JOIN cqc. "EmailCampaigns" ec ON ec. "id" = ech. "emailCampaignID"
+          cqc."EmailCampaignHistories" ech
+          JOIN cqc."EmailCampaigns" ec ON ec."id" = ech."emailCampaignID"
         WHERE
           ec. "type" = 'inactiveWorkplaces'
-          AND ech. "createdAt" >= :lastEmailDate
-          AND ech. "establishmentID" = e. "ParentID");`,
+          AND ech."createdAt" >= :lastEmailDate
+          AND ech."establishmentID" = e."ParentID");`,
     {
       type: models.sequelize.QueryTypes.SELECT,
       replacements: {

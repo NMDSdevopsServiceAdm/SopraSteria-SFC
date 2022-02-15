@@ -3,15 +3,19 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { CreateAccountRequest } from '@core/model/account.model';
 import { Establishment } from '@core/model/establishment.model';
-import { RadioFieldData } from '@core/model/form-controls.model';
 import { Roles } from '@core/model/roles.enum';
+import { URLStructure } from '@core/model/url.model';
+import { UserPermissionsType } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-create-account',
@@ -21,22 +25,15 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save user';
   public establishmentUid: string;
   public workplace: Establishment;
-  public roleRadios: RadioFieldData[] = [
-    {
-      value: Roles.Edit,
-      label: 'Edit',
-    },
-    {
-      value: Roles.Read,
-      label: 'Read only',
-    },
-  ];
+  public wdfUserFlag: boolean;
+  public permissionsTypeRadios: UserPermissionsType[];
 
   constructor(
     private breadcrumbService: BreadcrumbService,
     private createAccountService: CreateAccountService,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
+    private featureFlagsService: FeatureFlagsService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -46,6 +43,10 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   protected init(): void {
+    this.featureFlagsService.configCatClient.getValueAsync('wdfUser', false).then((value) => {
+      this.wdfUserFlag = value;
+      this.setPermissionsTypeRadios();
+    });
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
@@ -54,10 +55,16 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   private addFormControls(): void {
-    this.form.addControl('role', new FormControl(null, Validators.required));
+    this.form.addControl(
+      'permissionsType',
+      new FormControl(null, {
+        validators: [Validators.required],
+        updateOn: 'submit',
+      }),
+    );
 
     this.formErrorsMap.push({
-      item: 'role',
+      item: 'permissionsType',
       type: [
         {
           name: 'required',
@@ -67,23 +74,59 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     });
   }
 
-  protected save() {
+  protected save(): void {
+    const convertedFormData = this.convertPermissions(this.form.value);
+
     this.subscriptions.add(
-      this.createAccountService.createAccount(this.establishmentUid, this.form.value).subscribe(
+      this.createAccountService.createAccount(this.establishmentUid, convertedFormData).subscribe(
         (data) => this.navigateToNextRoute(data),
         (error: HttpErrorResponse) => this.onError(error),
       ),
     );
   }
 
+  private convertPermissions(formValue): CreateAccountRequest {
+    if (!this.wdfUserFlag) {
+      formValue.role = formValue.permissionsType;
+      delete formValue.permissionsType;
+
+      return formValue;
+    }
+
+    const radio = this.permissionsTypeRadios.find(
+      (radio) => radio.permissionsQuestionValue === formValue.permissionsType,
+    );
+
+    delete formValue.permissionsType;
+
+    return {
+      ...formValue,
+      role: radio.role,
+      canManageWdfClaims: radio.canManageWdfClaims,
+    };
+  }
+
   protected navigateToNextRoute(data): void {
     this.router.navigate(['/workplace', this.establishmentUid, 'user', 'saved', data.uid]);
   }
 
-  get returnTo() {
+  get returnTo(): URLStructure {
     return {
       url: ['/dashboard'],
       fragment: 'users',
     };
+  }
+
+  private setPermissionsTypeRadios(): void {
+    this.permissionsTypeRadios = this.wdfUserFlag
+      ? getUserPermissionsTypes(false)
+      : [
+          {
+            permissionsQuestionValue: Roles.Edit,
+          },
+          {
+            permissionsQuestionValue: Roles.Read,
+          },
+        ];
   }
 }

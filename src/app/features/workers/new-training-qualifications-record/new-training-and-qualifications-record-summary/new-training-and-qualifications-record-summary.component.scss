@@ -5,6 +5,7 @@
   background-color: govuk-colour('light-grey');
   display: flex;
   padding: 30px 40px;
+  font-size: 19px;
 
   @media only screen and (max-width: 830px) {
     padding: 15px 20px;
@@ -119,10 +120,9 @@ hr {
   }
 }
 
-.asc-grid-container {
-  display: grid;
-  grid-column-gap: 8px;
-  grid-template-columns: 20% 80%;
+.asc-flex-container {
+  display: flex;
+  gap: 3%;
 }
 
 .asc-records-count {
