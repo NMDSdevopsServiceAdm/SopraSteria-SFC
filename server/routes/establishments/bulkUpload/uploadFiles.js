@@ -271,3 +271,4 @@ router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOAD
 
 module.exports = router;
 module.exports.uploadedPut = uploadedPut;
+module.exports.uploadedStarGet = uploadedStarGet;

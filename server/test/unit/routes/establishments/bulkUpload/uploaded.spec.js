@@ -1,8 +1,9 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
-const buUtils = require('../../../../../utils/bulkUploadUtils');
+// const buUtils = require('../../../../../utils/bulkUploadUtils');
 const { uploadedStarGet } = require('../../../../../routes/establishments/bulkUpload/uploaded');
+const models = require('../../../../../models');
 
 describe('/server/routes/establishment/uploaded.js', () => {
   afterEach(() => {
@@ -20,8 +21,10 @@ describe('/server/routes/establishment/uploaded.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
-        sinon.stub(buUtils, 'staffData').returns(updatedData);
-
+        // sinon.stub(buUtils, 'staffData').returns(updatedData);
+        sinon
+          .stub(models.worker, 'findOne')
+          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
         await uploadedStarGet(
@@ -56,7 +59,10 @@ describe('/server/routes/establishment/uploaded.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
-        sinon.stub(buUtils, 'staffData').returns(updatedData);
+        // sinon.stub(buUtils, 'staffData').returns(updatedData);
+        sinon
+          .stub(models.worker, 'findOne')
+          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
@@ -92,7 +98,10 @@ describe('/server/routes/establishment/uploaded.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
-        sinon.stub(buUtils, 'staffData').returns(updatedData);
+        // sinon.stub(buUtils, 'staffData').returns(updatedData);
+        sinon
+          .stub(models.worker, 'findOne')
+          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
@@ -130,7 +139,10 @@ describe('/server/routes/establishment/uploaded.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
-        sinon.stub(buUtils, 'staffData').returns(updatedData);
+        // sinon.stub(buUtils, 'staffData').returns(updatedData);
+        sinon
+          .stub(models.worker, 'findOne')
+          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
@@ -166,7 +178,10 @@ describe('/server/routes/establishment/uploaded.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
-        sinon.stub(buUtils, 'staffData').returns(updatedData);
+        // sinon.stub(buUtils, 'staffData').returns(updatedData);
+        sinon
+          .stub(models.worker, 'findOne')
+          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
@@ -181,7 +196,7 @@ describe('/server/routes/establishment/uploaded.js', () => {
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
           {
             params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
-            query: { bulkUploadUtils: 'Staff' },
+            query: { downloadType: 'Staff' },
           },
           {},
           200,
@@ -202,7 +217,10 @@ describe('/server/routes/establishment/uploaded.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
-        sinon.stub(buUtils, 'staffData').returns(updatedData);
+        // sinon.stub(buUtils, 'staffData').returns(updatedData);
+        sinon
+          .stub(models.worker, 'findOne')
+          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
