@@ -9,8 +9,8 @@ describe('/server/routes/establishment/uploaded.js', () => {
     sinon.restore();
   });
 
-  describe.only('uploadedStarGet', () => {
-    describe.only('downloadType = StaffSanitise', () => {
+  describe('uploadedStarGet', () => {
+    describe('downloadType = StaffSanitise', () => {
       it('returns sanitised staff file when dob and nino are in data', async () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
@@ -120,7 +120,7 @@ describe('/server/routes/establishment/uploaded.js', () => {
       });
     });
 
-    describe.only('downloadType = Staff', () => {
+    describe('downloadType = Staff', () => {
       it('returns staff file when dob and nino are in data', async () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;

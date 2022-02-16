@@ -1,18 +1,18 @@
 const models = require('../models');
 
-exports.dateFormatter = (dateOfBirth) => {
+const dateFormatter = (dateOfBirth) => {
   const dobParts = dateOfBirth ? dateOfBirth.split('-') : null;
   return dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : '';
 };
 
-exports.createWorkerKey = (localEstablishmentId, workerId) =>
+const createWorkerKey = (localEstablishmentId, workerId) =>
   ((localEstablishmentId || '') + (workerId || '')).replace(/\s/g, '');
 
-exports.createEstablishmentKey = (establishmentId) => (establishmentId ? establishmentId.replace(/\s/g, '') : '');
+const createEstablishmentKey = (establishmentId) => (establishmentId ? establishmentId.replace(/\s/g, '') : '');
 
-exports.deleteRecord = (APIRecords, lineNumber) => delete APIRecords[lineNumber];
+const deleteRecord = (APIRecords, lineNumber) => delete APIRecords[lineNumber];
 
-exports.csvQuote = (toCsv) => {
+const csvQuote = (toCsv) => {
   if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
     return '"' + toCsv.replace(/"/g, '""') + '"';
   }
@@ -67,6 +67,11 @@ const staffData = async (data, downloadType) => {
 };
 
 module.exports = {
+  dateFormatter,
+  createWorkerKey,
+  createEstablishmentKey,
+  deleteRecord,
+  csvQuote,
   staffData,
   hideNinoAndDob,
   showNinoAndDob,

@@ -13,7 +13,7 @@ const {
   staffData,
 } = require('../../../utils/bulkUploadUtils');
 
-describe('bulkUploadUtils', () => {
+describe.only('bulkUploadUtils', () => {
   describe('dateFormatter', () => {
     it('should return the date correctly formatted when a date is passed', () => {
       expect(dateFormatter('1998-02-03')).to.equal('03/02/1998');
