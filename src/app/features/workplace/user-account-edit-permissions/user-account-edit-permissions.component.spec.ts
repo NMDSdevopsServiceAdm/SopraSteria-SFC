@@ -24,7 +24,7 @@ import { of } from 'rxjs';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions.component';
 
 describe('UserAccountEditPermissionsComponent', () => {
-  async function setup() {
+  async function setup(user = { uid: 'abc123', role: 'Edit', canManageWdfClaims: true, isPrimary: true }) {
     const { fixture, getByText } = await render(UserAccountEditPermissionsComponent, {
       imports: [
         SharedModule,
@@ -47,7 +47,7 @@ describe('UserAccountEditPermissionsComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                user: { uid: 'abc123' },
+                user,
               },
             },
             parent: {
@@ -158,6 +158,32 @@ describe('UserAccountEditPermissionsComponent', () => {
 
       expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('None');
       expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
+    });
+  });
+
+  describe('Prefilling form to current user permission type', () => {
+    it('should pre-fill edit with WDF radio button when user is edit role, canManageWdfClaims is true and isPrimary is true', async () => {
+      const { component } = await setup();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.permissionsType).toBe('ASC-WDS edit with manage WDF claims');
+    });
+
+    it('should pre-fill edit with WDF radio button when user is edit role, canManageWdfClaims is true and isPrimary is false', async () => {
+      const { component } = await setup({ uid: 'abc123', role: 'Edit', canManageWdfClaims: true, isPrimary: false });
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.permissionsType).toBe('ASC-WDS edit with manage WDF claims');
+    });
+
+    it('should pre-fill edit with Manage WDF claims only radio button when user is none role and canManageWdfClaims is true', async () => {
+      const { component } = await setup({ uid: 'abc123', role: 'None', canManageWdfClaims: true, isPrimary: false });
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.permissionsType).toBe('Manage WDF claims only');
     });
   });
 });

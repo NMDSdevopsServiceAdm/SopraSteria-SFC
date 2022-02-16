@@ -13,7 +13,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { getUserPermissionsTypes } from '@core/utils/users-util';
+import { getUserPermissionsTypes, getUserType } from '@core/utils/users-util';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
@@ -67,7 +67,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     });
 
     this.form = this.formBuilder.group({
-      permissionsType: [null, Validators.required],
+      permissionsType: [getUserType(this.user, true), Validators.required],
       isPrimary: this.user.isPrimary,
     });
   }
