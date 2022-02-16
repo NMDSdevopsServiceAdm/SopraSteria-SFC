@@ -55,7 +55,6 @@ describe('bulkUploadUtils', () => {
   describe('createEstablishmentKey', () => {
     it('should return empty string if null passed in', async () => {
       const establishmentKey = createEstablishmentKey(null);
-
       expect(establishmentKey).to.equal('');
     });
 
