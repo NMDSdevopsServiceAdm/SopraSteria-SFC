@@ -10,7 +10,7 @@ const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const S3 = require('./s3');
 const Bucket = S3.Bucket;
 const { buStates } = require('./states');
-const models = require('../../../models');
+const { staffData } = require('../../../utils/bulkUploadUtils');
 
 const uploadedGet = async (req, res) => {
   try {
@@ -332,49 +332,49 @@ const uploadedPut = async (req, res) => {
   }
 };
 
-const hideNinoAndDob = (dataArr, niNumberIndex, dobIndex) => {
-  dataArr[niNumberIndex] = dataArr[niNumberIndex] && 'Admin';
-  dataArr[dobIndex] = dataArr[dobIndex] && 'Admin';
+// const hideNinoAndDob = (dataArr, niNumberIndex, dobIndex) => {
+//   dataArr[niNumberIndex] = dataArr[niNumberIndex] && 'Admin';
+//   dataArr[dobIndex] = dataArr[dobIndex] && 'Admin';
 
-  return dataArr;
-};
+//   return dataArr;
+// };
 
-const showNinoAndDob = (dataArr, worker, niNumberIndex, dobIndex) => {
-  dataArr[niNumberIndex].toLowerCase() === 'admin'
-    ? (dataArr[niNumberIndex] = worker.NationalInsuranceNumberValue)
-    : dataArr[niNumberIndex];
-  dataArr[dobIndex].toLowerCase() === 'admin' ? (dataArr[dobIndex] = worker.DateOfBirthValue) : dataArr[dobIndex];
+// const showNinoAndDob = (dataArr, worker, niNumberIndex, dobIndex) => {
+//   dataArr[niNumberIndex].toLowerCase() === 'admin'
+//     ? (dataArr[niNumberIndex] = worker.NationalInsuranceNumberValue)
+//     : dataArr[niNumberIndex];
+//   dataArr[dobIndex].toLowerCase() === 'admin' ? (dataArr[dobIndex] = worker.DateOfBirthValue) : dataArr[dobIndex];
 
-  return dataArr;
-};
+//   return dataArr;
+// };
 
-const staffData = async (data, downloadType) => {
-  const dataRows = data.split('\r\n');
+// const staffData = async (data, downloadType) => {
+//   const dataRows = data.split('\r\n');
 
-  const niNumberIndex = dataRows[0].split(',').findIndex((element) => element === 'NINUMBER');
-  const dobIndex = dataRows[0].split(',').findIndex((element) => element === 'DOB');
-  const idIndex = dataRows[0].split(',').findIndex((element) => element === 'UNIQUEWORKERID');
+//   const niNumberIndex = dataRows[0].split(',').findIndex((element) => element === 'NINUMBER');
+//   const dobIndex = dataRows[0].split(',').findIndex((element) => element === 'DOB');
+//   const idIndex = dataRows[0].split(',').findIndex((element) => element === 'UNIQUEWORKERID');
 
-  const updatedData = await Promise.all(
-    dataRows.map(async (data, index) => {
-      if (index !== 0) {
-        const dataArr = data.split(',');
-        const workerIdentifier = dataArr[idIndex];
-        const worker = await models.worker.findOne({ where: { NameOrIdValue: workerIdentifier } });
+//   const updatedData = await Promise.all(
+//     dataRows.map(async (data, index) => {
+//       if (index !== 0) {
+//         const dataArr = data.split(',');
+//         const workerIdentifier = dataArr[idIndex];
+//         const worker = await models.worker.findOne({ where: { NameOrIdValue: workerIdentifier } });
 
-        const updatedDataArr =
-          downloadType === 'Staff'
-            ? showNinoAndDob(dataArr, worker, niNumberIndex, dobIndex)
-            : hideNinoAndDob(dataArr, niNumberIndex, dobIndex);
+//         const updatedDataArr =
+//           downloadType === 'Staff'
+//             ? showNinoAndDob(dataArr, worker, niNumberIndex, dobIndex)
+//             : hideNinoAndDob(dataArr, niNumberIndex, dobIndex);
 
-        return '\r\n' + updatedDataArr.join(',');
-      }
-      return data;
-    }),
-  );
+//         return '\r\n' + updatedDataArr.join(',');
+//       }
+//       return data;
+//     }),
+//   );
 
-  return updatedData.join('');
-};
+//   return updatedData.join('');
+// };
 
 const uploadedStarGet = async (req, res) => {
   const Key = req.params['0'];
@@ -383,7 +383,6 @@ const uploadedStarGet = async (req, res) => {
   try {
     const { downloadType } = req.query;
     const { data } = await S3.downloadContent(Key);
-
     let updatedData;
     switch (downloadType) {
       case 'Workplace':
@@ -426,6 +425,6 @@ router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOAD
 module.exports = router;
 
 module.exports.uploadedStarGet = uploadedStarGet;
-module.exports.staffData = staffData;
-module.exports.hideNinoAndDob = hideNinoAndDob;
-module.exports.showNinoAndDob = showNinoAndDob;
+// module.exports.staffData = staffData;
+// module.exports.hideNinoAndDob = hideNinoAndDob;
+// module.exports.showNinoAndDob = showNinoAndDob;

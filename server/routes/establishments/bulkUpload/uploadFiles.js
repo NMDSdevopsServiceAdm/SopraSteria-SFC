@@ -9,6 +9,7 @@ const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establ
 const { getFileType } = require('./whichFile');
 const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 const { validateTrainingHeaders } = require('../bulkUpload/validate/headers/training');
+const { staffData } = require('../../../utils/bulkUploadUtils');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -225,26 +226,29 @@ const uploadedStarGet = async (req, res) => {
   const elements = Key.split('/');
 
   try {
-    const objHeadData = await S3.s3
-      .headObject({
-        Bucket,
-        Key,
-      })
-      .promise();
+    const { downloadType } = req.query;
+    const { data } = await S3.downloadContent(Key);
 
-    await S3.saveResponse(req, res, 200, {
-      file: {
-        filename: elements[elements.length - 1],
-        uploaded: objHeadData.LastModified,
-        username: objHeadData.Metadata.username,
-        size: objHeadData.ContentLength,
-        key: Key,
-        signedUrl: S3.s3.getSignedUrl('getObject', {
-          Bucket,
-          Key,
-          Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-        }),
-      },
+    let updatedData;
+    switch (downloadType) {
+      case 'Workplace':
+      case 'Training': {
+        updatedData = data;
+        break;
+      }
+      case 'Staff': {
+        updatedData = await staffData(data, downloadType);
+        break;
+      }
+      case 'StaffSanitise': {
+        updatedData = await staffData(data, downloadType);
+        break;
+      }
+    }
+
+    await S3.saveResponse(req, res, 200, updatedData, {
+      'Content-Type': 'text/csv',
+      'Content-disposition': `attachment; filename=${elements[elements.length - 1]}`,
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
