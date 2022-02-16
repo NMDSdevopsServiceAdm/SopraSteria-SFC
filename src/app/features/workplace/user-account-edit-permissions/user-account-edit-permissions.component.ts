@@ -28,7 +28,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
-  public roleRadios: UserPermissionsType[];
+  public permissionsTypeRadios: UserPermissionsType[];
   public return: URLStructure;
   public submitted = false;
 
@@ -128,7 +128,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   }
 
   private setPermissionsTypeRadios(): void {
-    this.roleRadios = this.wdfUserFlag
+    this.permissionsTypeRadios = this.wdfUserFlag
       ? getUserPermissionsTypes(false)
       : [
           {
