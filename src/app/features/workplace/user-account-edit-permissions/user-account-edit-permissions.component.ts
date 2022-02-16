@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { CreateAccountRequest } from '@core/model/account.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -66,8 +67,8 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     });
 
     this.form = this.formBuilder.group({
-      role: [this.user.role, Validators.required],
-      primary: this.user.isPrimary,
+      permissionsType: [null, Validators.required],
+      isPrimary: this.user.isPrimary,
     });
   }
 
@@ -91,22 +92,19 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
     this.submitted = true;
 
-    const { role, primary } = this.form.value;
-    const updatedPrimary = role === Roles.Read ? false : primary;
+    // const { role, primary } = this.form.value;
+    // const updatedPrimary = role === Roles.Read ? false : primary;
 
-    if (this.user.isPrimary && !updatedPrimary) {
-      this.navigateToSelectPrimaryUserPage();
-      return;
-    }
+    // if (this.user.isPrimary && !updatedPrimary) {
+    //   this.navigateToSelectPrimaryUserPage();
+    //   return;
+    // }
 
-    this.save(role, updatedPrimary);
+    this.save();
   }
 
-  private save(role: Roles, primary: boolean, name: string = null): void {
-    const props = {
-      role,
-      isPrimary: primary,
-    };
+  private save(name: string = null): void {
+    const props = this.convertPermissions(this.form.value);
 
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplace.uid, this.user.uid, { ...this.user, ...props }).subscribe(
@@ -138,6 +136,27 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
             permissionsQuestionValue: Roles.Read,
           },
         ];
+  }
+
+  private convertPermissions(formValue): CreateAccountRequest {
+    if (!this.wdfUserFlag) {
+      formValue.role = formValue.permissionsType;
+      delete formValue.permissionsType;
+
+      return formValue;
+    }
+
+    const radio = this.permissionsTypeRadios.find(
+      (radio) => radio.permissionsQuestionValue === formValue.permissionsType,
+    );
+
+    delete formValue.permissionsType;
+
+    return {
+      ...formValue,
+      role: radio.role,
+      canManageWdfClaims: radio.canManageWdfClaims,
+    };
   }
 
   private navigateToSelectPrimaryUserPage(): void {

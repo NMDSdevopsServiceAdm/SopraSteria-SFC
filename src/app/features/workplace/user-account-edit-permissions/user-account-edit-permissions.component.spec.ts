@@ -18,7 +18,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { EditUser } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions.component';
@@ -86,12 +86,12 @@ describe('UserAccountEditPermissionsComponent', () => {
     fixture.detectChanges();
 
     const radioButton = getByText('ASC-WDS edit with manage WDF claims');
-    // fireEvent.click(radioButton);
+    fireEvent.click(radioButton);
 
-    // const continueButton = getByText('Continue');
-    // fireEvent.click(continueButton);
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
 
-    // expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Edit');
-    // expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
+    expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Edit');
+    expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
   });
 });
