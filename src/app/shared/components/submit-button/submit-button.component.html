@@ -11,9 +11,9 @@
     </div>
     <div *ngIf="this.canExit" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)"
-        >Exit</a
-      >
+      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)">{{
+        exitText
+      }}</a>
     </div>
   </ng-container>
   <ng-template #summary>
@@ -22,7 +22,7 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'return', false)">Exit</a>
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'return', false)">{{ exitText }}</a>
     </div>
   </ng-template>
 </div>
