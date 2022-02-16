@@ -23,9 +23,18 @@ export interface UserDetails {
   updated?: string;
   updatedBy?: string;
   username?: string;
+  canManageWdfClaims?: boolean;
 }
 
 export enum UserStatus {
   Pending = 'Pending',
   Active = 'Active',
+}
+
+export interface UserPermissionsType {
+  userTableValue?: string;
+  role?: Roles;
+  canManageWdfClaims?: boolean;
+  permissionsQuestionValue?: string;
+  isPrimary?: boolean;
 }

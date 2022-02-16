@@ -6,6 +6,7 @@ export interface CreateAccountRequest {
   jobTitle: string;
   phone: string;
   role: Roles;
+  canManageWdfClaims?: boolean;
 }
 
 export interface CreateAccountResponse {

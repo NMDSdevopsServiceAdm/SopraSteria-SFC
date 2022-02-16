@@ -76,21 +76,20 @@ describe('BenefitsBundleComponent', () => {
     expect(reveal).toBeTruthy();
     expect(revealContent).toBeTruthy();
   });
-
   describe('Accordions', () => {
     it('should display accordion headings', async () => {
       const { fixture, getByText } = await setup();
 
       fixture.detectChanges();
 
-      expect(getByText("Discounts from Skills for Care's endorsed training providers")).toBeTruthy();
+      expect(getByText(`Discounts from Skills for Care's endorsed training providers`)).toBeTruthy();
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
       expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
       expect(getByText('10% off registered manager membership')).toBeTruthy();
-      expect(getByText('10% off digital learning for managers modules')).toBeTruthy();
       expect(getByText('Funded essential training')).toBeTruthy();
       expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
+      expect(getByText(`10% off Skills for Care's eLearning modules`)).toBeTruthy();
     });
 
     it('should drop down when clicking on funded essential training heading and include content', async () => {
@@ -199,7 +198,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText('10% off values-based interviewing seminars'));
         fireEvent.click(getByText('10% off valuable conversations online seminars'));
         fireEvent.click(getByText('10% off registered manager membership'));
-        fireEvent.click(getByText('10% off digital learning for managers modules'));
+        fireEvent.click(getByText(`10% off Skills for Care's eLearning modules`));
         fireEvent.click(getByText('Funded essential training'));
         fireEvent.click(getByText('5 of our top FREE digital downloads'));
 

@@ -49,7 +49,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
     protected router: Router,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.form = this.fb.group({
       fullname: ['', { validators: [Validators.required, Validators.maxLength(120)], updateOn: 'submit' }],
       jobTitle: ['', { validators: [Validators.required, Validators.maxLength(120)], updateOn: 'submit' }],

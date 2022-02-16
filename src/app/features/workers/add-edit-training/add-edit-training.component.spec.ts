@@ -15,15 +15,19 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId, queryByText } = await render(AddEditTrainingComponent, {
+  async function setup(isMandatory = false, trainingRecordId = '1') {
+    if (isMandatory) {
+      window.history.pushState({ training: 'mandatory', missingRecord: { category: 'testCategory', id: 5 } }, '');
+    }
+
+    const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(AddEditTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
             snapshot: {
-              params: { trainingRecordId: '1' },
+              params: { trainingRecordId },
             },
             parent: {
               snapshot: {
@@ -56,8 +60,13 @@ describe('AddEditTrainingComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      queryByTestId,
     };
   }
+
+  afterEach(() => {
+    window.history.replaceState(undefined, '');
+  });
 
   it('should create', async () => {
     const { component } = await setup();
@@ -75,22 +84,42 @@ describe('AddEditTrainingComponent', () => {
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
   });
 
+  describe('Training category select/display', async () => {
+    it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
+      const { getByText } = await setup(true);
+
+      expect(getByText('Training category: testCategory')).toBeTruthy();
+    });
+
+    it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
+      const { queryByTestId } = await setup(true);
+
+      expect(queryByTestId('trainingSelect')).toBeFalsy();
+    });
+
+    it('should have dropdown of training categories when a manadatoryTraining object is not passed', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('trainingSelect')).toBeTruthy();
+    });
+  });
+
   describe('title', () => {
     it('should render the Enter training details title', async () => {
-      const { component, fixture, getByText } = await setup();
-      component.trainingRecordId = null;
-      component.setTitle();
-      fixture.detectChanges();
+      const trainingRecordId = null;
+      const { getByText } = await setup(false, trainingRecordId);
+
       expect(getByText('Enter training details')).toBeTruthy();
     });
 
     it('should render the Training details title, when there is a training record id', async () => {
       const { getByText } = await setup();
+
       expect(getByText('Training details')).toBeTruthy();
     });
 
     it('should render the Add mandatory training record title, when accessed from add mandatory training link', async () => {
-      const { component, fixture, getByText } = await setup();
+      const { component, fixture, getByText } = await setup(true);
 
       component.mandatoryTraining = true;
       component.trainingRecordId = null;
@@ -101,11 +130,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should render the Mandatory training record title, when accessed from mandatory training title', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.mandatoryTraining = true;
-      component.setTitle();
-      fixture.detectChanges();
+      const { getByText } = await setup(true);
 
       expect(getByText('Mandatory training record')).toBeTruthy();
     });
@@ -113,7 +138,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('delete button', () => {
     it('should render the delete button when editing training', async () => {
-      const { component, fixture, getByText } = await setup();
+      const { fixture, getByText } = await setup();
 
       fixture.detectChanges();
 

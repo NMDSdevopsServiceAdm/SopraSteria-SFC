@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -83,5 +84,91 @@ describe('UserAccountsSummaryComponent', () => {
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
 
     expect(queryByText(addUserText, { exact: false })).toBeFalsy();
+  });
+
+  describe('Permissions column', () => {
+    it('should have permission as Primary edit and WDF when user isPrimary and canManageWdfClaims are true and role is Edit', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Edit' as Roles;
+      component.users[0].isPrimary = true;
+      component.users[0].canManageWdfClaims = true;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Primary edit and WDF')).toBeTruthy();
+    });
+
+    it('should have permission as Primary edit when user isPrimary is true, canManageWdfClaims is false and role is Edit', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Edit' as Roles;
+      component.users[0].isPrimary = true;
+      component.users[0].canManageWdfClaims = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Primary edit')).toBeTruthy();
+    });
+
+    it('should have permission as Edit and WDF when user isPrimary is false, canManageWdfClaims is true and role is Edit', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Edit' as Roles;
+      component.users[0].isPrimary = false;
+      component.users[0].canManageWdfClaims = true;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Edit and WDF')).toBeTruthy();
+    });
+
+    it('should have permission as Edit when user isPrimary is false, canManageWdfClaims is false and role is Edit', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Edit' as Roles;
+      component.users[0].isPrimary = false;
+      component.users[0].canManageWdfClaims = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Edit')).toBeTruthy();
+    });
+
+    it('should have permission as Read only and WDF when user canManageWdfClaims is true and role is Read', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Read' as Roles;
+      component.users[0].canManageWdfClaims = true;
+      component.users[0].isPrimary = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Read only and WDF')).toBeTruthy();
+    });
+
+    it('should have permission as Read only when user canManageWdfClaims is false and role is Read', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Read' as Roles;
+      component.users[0].canManageWdfClaims = false;
+      component.users[0].isPrimary = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Read only')).toBeTruthy();
+    });
+
+    it('should have permission as WDF when user canManageWdfClaims is true and role is None', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'None' as Roles;
+      component.users[0].canManageWdfClaims = true;
+      component.users[0].isPrimary = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('WDF')).toBeTruthy();
+    });
   });
 });

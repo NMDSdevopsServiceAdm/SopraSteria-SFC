@@ -11,7 +11,7 @@
           draggable="false"
           role="button"
           [routerLink]="['../add-training']"
-          [state]="{ training: 'mandatory' }"
+          [state]="{ training: 'mandatory', missingRecord }"
           (click)="addButtonClicked()"
         >
           Add
