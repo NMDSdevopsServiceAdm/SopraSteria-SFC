@@ -7,7 +7,6 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -16,6 +15,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { EditUser } from '@core/test-utils/MockUserService';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -29,7 +29,7 @@ describe('UserAccountEditPermissionsComponent', () => {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([{ path: 'workplace/c1231233/user/abc123/', component: DashboardComponent }]),
         HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
@@ -38,7 +38,6 @@ describe('UserAccountEditPermissionsComponent', () => {
         ErrorSummaryService,
         BackService,
         FormBuilder,
-        CreateAccountService,
         AlertService,
         WindowRef,
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -48,10 +47,12 @@ describe('UserAccountEditPermissionsComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                user: {},
+                user: { uid: 'abc123' },
               },
             },
-            parent: { snapshot: { data: { establishment: {} }, params: { establishmentuid: 'c131232132ab' } } },
+            parent: {
+              snapshot: { data: { establishment: { uid: 'c1231233' } }, params: { establishmentuid: 'c131232132ab' } },
+            },
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -79,19 +80,84 @@ describe('UserAccountEditPermissionsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call updateUserDetails with role Edit and canManageWdfClaims true when ASC-WDS edit with manage WDF claims selected', async () => {
-    const { fixture, getByText, updateUserDetailsSpy } = await setup();
+  describe('Permissions types (role and WDF)', () => {
+    it('should call updateUserDetails with role Edit and canManageWdfClaims true when ASC-WDS edit with manage WDF claims selected', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup();
 
-    await fixture.whenStable();
-    fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
 
-    const radioButton = getByText('ASC-WDS edit with manage WDF claims');
-    fireEvent.click(radioButton);
+      const radioButton = getByText('ASC-WDS edit with manage WDF claims');
+      fireEvent.click(radioButton);
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
 
-    expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Edit');
-    expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Edit');
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
+    });
+
+    it('should call updateUserDetails with role Edit and canManageWdfClaims false when ASC-WDS edit selected', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const radioButton = getByText('ASC-WDS edit');
+      fireEvent.click(radioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Edit');
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(false);
+    });
+
+    it('should call updateUserDetails with role Read and canManageWdfClaims true when ASC-WDS read only with manage WDF claims selected', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const radioButton = getByText('ASC-WDS read only with manage WDF claims');
+      fireEvent.click(radioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Read');
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
+    });
+
+    it('should call updateUserDetails with role Read and canManageWdfClaims false when ASC-WDS read only selected', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const radioButton = getByText('ASC-WDS read only');
+      fireEvent.click(radioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('Read');
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(false);
+    });
+
+    it('should call updateUserDetails with role None and canManageWdfClaims true when Manage WDF claims only selected', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const radioButton = getByText('Manage WDF claims only');
+      fireEvent.click(radioButton);
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].role).toEqual('None');
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].canManageWdfClaims).toEqual(true);
+    });
   });
 });
