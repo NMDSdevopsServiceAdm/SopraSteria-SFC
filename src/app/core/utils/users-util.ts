@@ -38,12 +38,14 @@ export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsTy
   if (withPrimary) {
     const primaryRoles = [
       {
+        permissionsQuestionValue: 'ASC-WDS edit with manage WDF claims',
         userTableValue: 'Primary edit and WDF',
         role: Roles.Edit,
         canManageWdfClaims: true,
         isPrimary: true,
       },
       {
+        permissionsQuestionValue: 'ASC-WDS edit',
         userTableValue: 'Primary edit',
         role: Roles.Edit,
         canManageWdfClaims: false,

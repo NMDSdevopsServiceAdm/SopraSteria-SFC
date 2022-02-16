@@ -48,6 +48,7 @@ describe('users-util', () => {
       const returnedArray = getUserPermissionsTypes(true);
 
       const primaryEditAndWdfType = {
+        permissionsQuestionValue: 'ASC-WDS edit with manage WDF claims',
         userTableValue: 'Primary edit and WDF',
         role: Roles.Edit,
         canManageWdfClaims: true,
@@ -55,6 +56,7 @@ describe('users-util', () => {
       };
 
       const primaryEditType = {
+        permissionsQuestionValue: 'ASC-WDS edit',
         userTableValue: 'Primary edit',
         role: Roles.Edit,
         canManageWdfClaims: false,
@@ -173,7 +175,7 @@ describe('users-util', () => {
 
     describe('permissionsQuestionValue', () => {
       describe('Edit users', () => {
-        it('should return Edit and WDF when user role is Edit, canManageWdfClaims is true', () => {
+        it('should return Edit and WDF when user role is Edit, canManageWdfClaims is true and isPrimary is false', () => {
           user = {
             ...user,
             role: Roles.Edit,
@@ -186,12 +188,38 @@ describe('users-util', () => {
           expect(returnedValue).toEqual('ASC-WDS edit with manage WDF claims');
         });
 
-        it('should return ASC-WDS edit when user role is Edit, canManageWdfClaims is false', () => {
+        it('should return ASC-WDS edit when user role is Edit, canManageWdfClaims is false and isPrimary is false', () => {
           user = {
             ...user,
             role: Roles.Edit,
             canManageWdfClaims: false,
             isPrimary: false,
+          };
+
+          const returnedValue = getUserType(user, true);
+
+          expect(returnedValue).toEqual('ASC-WDS edit');
+        });
+
+        it('should return ASC-WDS edit with manage WDF claims when user role is Edit, canManageWdfClaims is true and isPrimary is true', () => {
+          user = {
+            ...user,
+            role: Roles.Edit,
+            canManageWdfClaims: true,
+            isPrimary: true,
+          };
+
+          const returnedValue = getUserType(user, true);
+
+          expect(returnedValue).toEqual('ASC-WDS edit with manage WDF claims');
+        });
+
+        it('should return ASC-WDS edit when user role is Edit, canManageWdfClaims is false and isPrimary is true', () => {
+          user = {
+            ...user,
+            role: Roles.Edit,
+            canManageWdfClaims: false,
+            isPrimary: true,
           };
 
           const returnedValue = getUserType(user, true);
