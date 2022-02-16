@@ -57,7 +57,7 @@ export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsTy
   return userPermissionTypes;
 };
 
-export const getUserType = (user: UserDetails): string => {
+export const getUserType = (user: UserDetails, fullName = false): string => {
   const userPermissionsTypes = getUserPermissionsTypes(true);
 
   const userType = userPermissionsTypes.find(
@@ -67,5 +67,5 @@ export const getUserType = (user: UserDetails): string => {
       !!user.isPrimary === !!type.isPrimary,
   );
 
-  return userType?.userTableValue;
+  return fullName ? userType?.permissionsQuestionValue : userType?.userTableValue;
 };
