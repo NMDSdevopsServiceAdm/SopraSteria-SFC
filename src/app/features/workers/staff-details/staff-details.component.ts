@@ -20,8 +20,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save staff record';
-  public canExit = false;
-  public canReturn = false;
+  public canExit = true;
+  public canReturn = true;
+  public exitText = 'Cancel';
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
 
@@ -84,8 +85,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       this.return = mandatoryDetailsURL;
     }
 
-    this.canExit = true;
-    this.canReturn = true;
     this.submitTitle = 'Save staff record';
   }
 
@@ -159,8 +158,12 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
-  protected navigate(action): void {
+  protected navigate(action: string): void {
     const currentUrl = this.router.url;
+
+    if (action === 'return' && !this.worker) {
+      return this.onCancel();
+    }
 
     if (!this.next) {
       this.next = this.getRoutePath('');
@@ -179,5 +182,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   onSuccess() {
     const path = this.editFlow ? '' : 'mandatory-details';
     this.next = this.getRoutePath(path);
+  }
+
+  private onCancel(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
   }
 }
