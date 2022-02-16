@@ -230,6 +230,7 @@ const uploadedStarGet = async (req, res) => {
     const { data } = await S3.downloadContent(Key);
 
     let updatedData;
+
     switch (downloadType) {
       case 'Workplace':
       case 'Training': {
