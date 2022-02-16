@@ -10,7 +10,7 @@ const { isWorkerFile, isTrainingFile } = require('./whichFile');
 const S3 = require('./s3');
 const Bucket = S3.Bucket;
 const { buStates } = require('./states');
-const { staffData } = require('../../../utils/bulkUploadUtils');
+const buUtils = require('../../../utils/bulkUploadUtils');
 
 const uploadedGet = async (req, res) => {
   try {
@@ -347,11 +347,11 @@ const uploadedStarGet = async (req, res) => {
         break;
       }
       case 'Staff': {
-        updatedData = await staffData(data, downloadType);
+        updatedData = await buUtils.staffData(data, downloadType);
         break;
       }
       case 'StaffSanitise': {
-        updatedData = await staffData(data, downloadType);
+        updatedData = await buUtils.staffData(data, downloadType);
         break;
       }
     }

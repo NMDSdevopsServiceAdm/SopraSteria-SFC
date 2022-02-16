@@ -9,7 +9,7 @@ const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establ
 const { getFileType } = require('./whichFile');
 const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 const { validateTrainingHeaders } = require('../bulkUpload/validate/headers/training');
-const { staffData } = require('../../../utils/bulkUploadUtils');
+const buUtils = require('../../../utils/bulkUploadUtils');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -238,11 +238,11 @@ const uploadedStarGet = async (req, res) => {
         break;
       }
       case 'Staff': {
-        updatedData = await staffData(data, downloadType);
+        updatedData = await buUtils.staffData(data, downloadType);
         break;
       }
       case 'StaffSanitise': {
-        updatedData = await staffData(data, downloadType);
+        updatedData = await buUtils.staffData(data, downloadType);
         break;
       }
     }

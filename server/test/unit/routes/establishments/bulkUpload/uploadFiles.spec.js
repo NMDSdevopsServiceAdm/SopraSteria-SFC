@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
-const models = require('../../../../../models');
+const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 
 describe('/server/routes/establishment/uploadFiles.js', () => {
@@ -316,10 +316,8 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
-        // sinon.stub(buUtils, 'staffData').returns(updatedData);
-        sinon
-          .stub(models.worker, 'findOne')
-          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
+        sinon.stub(buUtils, 'staffData').returns(updatedData);
+
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
@@ -354,10 +352,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
-        // sinon.stub(buUtils, 'staffData').returns(updatedData);
-        sinon
-          .stub(models.worker, 'findOne')
-          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
+        sinon.stub(buUtils, 'staffData').returns(updatedData);
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
@@ -393,10 +388,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
-        // sinon.stub(buUtils, 'staffData').returns(updatedData);
-        sinon
-          .stub(models.worker, 'findOne')
-          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
+        sinon.stub(buUtils, 'staffData').returns(updatedData);
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
@@ -434,16 +426,13 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
-        // sinon.stub(buUtils, 'staffData').returns(updatedData);
-        sinon
-          .stub(models.worker, 'findOne')
-          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
+        sinon.stub(buUtils, 'staffData').returns(updatedData);
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-staff.csv'],
             query: { downloadType: 'Staff' },
           },
           {},
@@ -451,7 +440,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-staff.csv'],
             query: { downloadType: 'Staff' },
           },
           {},
@@ -473,16 +462,13 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
-        // sinon.stub(buUtils, 'staffData').returns(updatedData);
-        sinon
-          .stub(models.worker, 'findOne')
-          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
+        sinon.stub(buUtils, 'staffData').returns(updatedData);
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-staff.csv'],
             query: { downloadType: 'Staff' },
           },
           {},
@@ -490,7 +476,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-staff.csv'],
             query: { downloadType: 'Staff' },
           },
           {},
@@ -512,16 +498,13 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
-        // sinon.stub(buUtils, 'staffData').returns(updatedData);
-        sinon
-          .stub(models.worker, 'findOne')
-          .returns({ NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' });
+        sinon.stub(buUtils, 'staffData').returns(updatedData);
 
         const saveResponse = sinon.stub(S3, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-staff.csv'],
             query: { downloadType: 'Staff' },
           },
           {},
@@ -529,7 +512,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-staff.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-staff.csv'],
             query: { downloadType: 'Staff' },
           },
           {},
@@ -554,7 +537,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         await uploadedFiles.uploadedStarGet(
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-workplace.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-workplace.csv'],
             query: { downloadType: 'Workplace' },
           },
           {},
@@ -564,7 +547,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-workplace.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-workplace.csv'],
             query: { downloadType: 'Workplace' },
           },
           {},
@@ -589,7 +572,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         await uploadedFiles.uploadedStarGet(
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-training.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-training.csv'],
             query: { downloadType: 'Training' },
           },
           {},
@@ -599,7 +582,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
           {
-            params: ['1/lastBulkUpload/2022-01-01-sfc-bu-training.csv'],
+            params: ['1/uploadedFiles/2022-01-01-sfc-bu-training.csv'],
             query: { downloadType: 'Training' },
           },
           {},
