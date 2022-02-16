@@ -3,7 +3,7 @@ import { render, fireEvent, screen } from '@testing-library/angular';
 
 import { SubmitButtonComponent } from './submit-button.component';
 
-fdescribe('SubmitButtonComponent', () => {
+describe('SubmitButtonComponent', () => {
   const setup = async () =>
     render(SubmitButtonComponent, {
       imports: [RouterTestingModule],
