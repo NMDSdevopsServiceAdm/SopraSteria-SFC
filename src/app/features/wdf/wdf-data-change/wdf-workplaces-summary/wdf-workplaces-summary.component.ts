@@ -1,6 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
@@ -37,7 +36,6 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
     private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
-    private route: ActivatedRoute,
     private permissionsService: PermissionsService,
   ) {}
 
