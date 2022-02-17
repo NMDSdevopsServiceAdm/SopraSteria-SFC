@@ -2,11 +2,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render, screen } from '@testing-library/angular';
 
 import { Router } from '@angular/router';
-import { EventEmitter } from '@angular/core';
-import { getTestBed } from '@angular/core/testing';
 import { SubmitButtonComponent } from './submit-button.component';
 
-fdescribe('SubmitButtonComponent', () => {
+describe('SubmitButtonComponent', () => {
   let url = '';
 
   beforeEach(() => {
