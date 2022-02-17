@@ -11,7 +11,7 @@
         >View {{ isStaffRecord ? 'this staff record' : 'record summary' }}</a
       >
     </div>
-    <div *ngIf="this.canExit" class="govuk-grid-column-one-third">
+    <div *ngIf="this.canExit && !isStaffRecord" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)">{{
         exitText
