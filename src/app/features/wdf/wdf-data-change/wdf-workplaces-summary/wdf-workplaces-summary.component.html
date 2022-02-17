@@ -14,7 +14,7 @@
   </div>
 </div>
 
-<ul class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
+<ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
   <li>
     <a
       href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
