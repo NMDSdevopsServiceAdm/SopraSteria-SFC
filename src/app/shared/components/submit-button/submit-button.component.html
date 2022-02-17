@@ -7,7 +7,9 @@
     </div>
     <div *ngIf="recordSummary" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)">View record summary</a>
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
+        >View {{ isStaffRecord ? 'this staff record' : 'record summary' }}</a
+      >
     </div>
     <div *ngIf="this.canExit" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
