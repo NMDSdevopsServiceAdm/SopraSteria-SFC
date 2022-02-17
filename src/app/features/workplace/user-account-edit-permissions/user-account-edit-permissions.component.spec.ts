@@ -25,7 +25,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 
 describe('UserAccountEditPermissionsComponent', () => {
   async function setup(user = { uid: 'abc123', role: 'Edit', canManageWdfClaims: true, isPrimary: true }) {
-    const { fixture, getByText } = await render(UserAccountEditPermissionsComponent, {
+    const { fixture, getByText, getAllByText, getByTestId } = await render(UserAccountEditPermissionsComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -70,7 +70,9 @@ describe('UserAccountEditPermissionsComponent', () => {
       fixture,
       component,
       getByText,
+      getAllByText,
       updateUserDetailsSpy,
+      getByTestId,
     };
   }
 
@@ -184,6 +186,36 @@ describe('UserAccountEditPermissionsComponent', () => {
       const form = component.form;
       expect(form.valid).toBeTruthy();
       expect(form.value.permissionsType).toBe('Manage WDF claims only');
+    });
+
+    it('should pre-fill Make primary user checkbox when user is primary', async () => {
+      const { component } = await setup();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.isPrimary).toBe(true);
+    });
+  });
+
+  describe('Make primary user checkbox', () => {
+    it('should display Make primary user checkbox for selected radio button when Edit role', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const makePrimaryCheckbox0 = getByTestId('primaryCheckbox-0');
+      expect(makePrimaryCheckbox0).not.toHaveClass('govuk-radios__conditional--hidden');
+    });
+
+    it('should not display Make primary user checkbox for Edit user radio button which is not selected', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const makePrimaryCheckbox0 = getByTestId('primaryCheckbox-1');
+      expect(makePrimaryCheckbox0).toHaveClass('govuk-radios__conditional--hidden');
     });
   });
 });

@@ -31,8 +31,11 @@
               <div
                 *ngIf="user?.displayStatus !== 'Pending' && item.role === 'Edit'"
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('permissionsType').value !== 'Edit'"
+                [class.govuk-radios__conditional--hidden]="
+                  form.get('permissionsType').value !== item.permissionsQuestionValue
+                "
                 id="permissionsType-conditional-{{ i }}"
+                [attr.data-testid]="'primaryCheckbox-' + i"
               >
                 <div class="govuk-checkboxes">
                   <div class="govuk-checkboxes__item">
