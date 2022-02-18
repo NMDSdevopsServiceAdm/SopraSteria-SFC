@@ -13,6 +13,21 @@
             <span class="govuk-caption-l">{{ user?.fullname }}</span>
             <h1 class="govuk-fieldset__heading">Permissions</h1>
           </legend>
+
+          <ng-container *ngIf="wdfUserFlag">
+            <p>
+              If this user needs to manage Workforce Development Fund (WDF) claims, make sure you select the WDF option
+              that matches their needs.
+            </p>
+            <app-details [title]="'What are WDF claims?'">
+              <p>
+                WDF claims are a way for you to recover money your organisation has spent on staff development. Costs
+                can be claimed for a wide range of adult social care qualifications, learning programmes and digital
+                learning modules.
+              </p>
+            </app-details>
+          </ng-container>
+
           <div class="govuk-radios">
             <ng-container *ngFor="let item of permissionsTypeRadios; let i = index">
               <div class="govuk-radios__item">
