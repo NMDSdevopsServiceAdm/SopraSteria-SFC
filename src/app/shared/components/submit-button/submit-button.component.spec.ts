@@ -48,8 +48,8 @@ describe('SubmitButtonComponent', () => {
     expect(screen.getByText('Exit')).toBeTruthy();
   });
 
-  it('should render the correctly based if "staff-record" route', async () => {
-    url = '/staff-record';
+  it('should render the correctly if an edit "staff-record" route', async () => {
+    url = '/staff-record/12345678-1234-1234-1234-123456789011/some-page';
     await setup();
 
     expect(screen.getByText('Save and continue')).toBeTruthy();

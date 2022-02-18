@@ -1,6 +1,6 @@
 <ng-container *ngIf="!return; else summary">
-  <div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-right-9">
-    <div class="govuk-grid-column-one-quarter">
+  <div class="govuk-grid-row govuk-!-margin-top-2">
+    <div class="govuk-grid-column-one-third">
       <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">
         {{ callToAction }}
       </button>
@@ -8,10 +8,10 @@
     <div *ngIf="recordSummary" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
-        >View {{ isStaffRecord ? 'this staff record' : 'record summary' }}</a
+        >View {{ isEditStaffRecord ? 'this staff record' : 'record summary' }}</a
       >
     </div>
-    <div *ngIf="this.canExit && !isStaffRecord" class="govuk-grid-column-one-third">
+    <div *ngIf="this.canExit && !isEditStaffRecord" class="govuk-grid-column-one-third">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)">{{
         exitText

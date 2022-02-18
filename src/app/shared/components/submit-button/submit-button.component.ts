@@ -14,12 +14,12 @@ export class SubmitButtonComponent implements OnInit {
   @Input() exitText = 'Exit';
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
-  isStaffRecord = false;
+  isEditStaffRecord = false;
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    if (this.router.url.includes('staff-record')) this.isStaffRecord = true;
+    if (this.router.url.match(/\/staff-record\/.{36}\//)) this.isEditStaffRecord = true;
   }
 
   onClick(event: Event, action: string, save: boolean): void {
