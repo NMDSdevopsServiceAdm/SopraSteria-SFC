@@ -217,5 +217,34 @@ describe('UserAccountEditPermissionsComponent', () => {
       const makePrimaryCheckbox0 = getByTestId('primaryCheckbox-1');
       expect(makePrimaryCheckbox0).toHaveClass('govuk-radios__conditional--hidden');
     });
+
+    it('should call updateUserDetails with isPrimary set to true when Make primary user prefilled and not changed', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].isPrimary).toBe(true);
+    });
+
+    it('should call updateUserDetails with isPrimary set to false when Make primary user is prefilled as false', async () => {
+      const { fixture, getByText, updateUserDetailsSpy } = await setup({
+        uid: 'abc123',
+        role: 'None',
+        canManageWdfClaims: true,
+        isPrimary: false,
+      });
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(updateUserDetailsSpy.calls.mostRecent().args[2].isPrimary).toBe(false);
+    });
   });
 });
