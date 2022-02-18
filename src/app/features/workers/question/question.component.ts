@@ -97,7 +97,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'summary':
-        this.router.navigate(this.getRoutePath('check-answers'));
+        this.router.navigate(this.getRoutePath(''));
         break;
 
       case 'exit':

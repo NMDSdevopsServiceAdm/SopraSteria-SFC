@@ -23,7 +23,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private qualificationService: QualificationService
+    private qualificationService: QualificationService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -32,15 +32,15 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     });
   }
 
-  init() {
+  init(): void {
     if (this.worker.otherQualification !== 'Yes') {
       this.router.navigate(this.getRoutePath('other-qualifications'), { replaceUrl: true });
     }
 
     this.subscriptions.add(
-      this.qualificationService.getQualifications().subscribe(qualifications => {
+      this.qualificationService.getQualifications().subscribe((qualifications) => {
         this.qualifications = qualifications;
-      })
+      }),
     );
 
     if (this.worker.highestQualification) {
@@ -49,7 +49,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
       });
     }
 
-    this.next = this.getRoutePath('check-answers');
+    this.next = this.getRoutePath('');
     this.previous = this.getRoutePath('other-qualifications');
   }
 
@@ -67,7 +67,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     ];
   }
 
-  generateUpdateProps() {
+  generateUpdateProps(): unknown {
     const { qualification } = this.form.value;
 
     return {

@@ -48,7 +48,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
       }
     } else {
       const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
-      const returnTo = { url: [...staffRecordPath, ...['check-answers']] };
+      const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);
     }
   }

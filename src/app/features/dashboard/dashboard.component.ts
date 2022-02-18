@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -30,6 +31,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workers: Worker[];
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
+  private showBanner = false;
 
   constructor(
     private authService: AuthService,
@@ -38,9 +40,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private workerService: WorkerService,
     private route: ActivatedRoute,
+    private alertService: AlertService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.showBanner = window.history.state?.showBanner;
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
@@ -64,6 +69,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.setShowSecondUserBanner();
     }
 
+    this.showBanner && this.showStaffRecordBanner();
     this.setUserServiceReturnUrl();
   }
 
@@ -117,6 +123,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.showCQCDetailsBanner = showBanner;
       }),
     );
+  }
+
+  private showStaffRecordBanner(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `You've confirmed the details of the staff record you added`,
+    });
   }
 
   ngOnDestroy(): void {

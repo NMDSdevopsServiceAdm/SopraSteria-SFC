@@ -26,7 +26,7 @@
     <div class="govuk-grid-column-one-third">
       <h1 class="govuk-heading-l">Staff record</h1>
       <a
-        *ngIf="canEditWorker"
+        *ngIf="canEditWorker && worker.completed"
         class="govuk-button govuk-button--link govuk-!-padding-left-0"
         role="button"
         draggable="false"
@@ -37,7 +37,7 @@
     </div>
 
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-grid-row govuk-!-margin-bottom-3 govuk-!-margin-top-0">
+      <div *ngIf="worker.completed" class="govuk-grid-row govuk-!-margin-bottom-3 govuk-!-margin-top-0">
         <div class="govuk-button-group govuk__align-items-center govuk-util__float-right govuk-!-margin-top-0">
           <a
             class="govuk-button govuk-button--link"
@@ -80,21 +80,22 @@
           >
         </div>
       </div>
-      <div class="govuk-grid-row govuk-util__float-right">
-        <a
-          *ngIf="canEditWorker && !worker.completed"
-          class="govuk-button"
-          role="button"
-          draggable="false"
-          [routerLink]="['../main-job-start-date']"
-        >
-          Complete Full Record
-        </a>
-      </div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-5">
-    <p class="govuk-!-margin-left-3">Check the information provided on this staff record is correct.</p>
+  <div class="govuk-grid-row govuk-!-margin-top-5 govuk__flex govuk__align-items-center">
+    <ng-container *ngIf="worker.completed; else button">
+      <div class="govuk-grid-column-two-thirds">
+        <p>Check the record details you've added are correct.</p>
+      </div>
+    </ng-container>
+    <ng-template #button>
+      <div class="govuk-grid-column-two-thirds">
+        <p>Check the record details you've added before you confirm them.</p>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <button type="button" class="govuk-button" (click)="saveAndComplete()">Complete record details</button>
+      </div>
+    </ng-template>
   </div>
   <app-basic-record [workplace]="workplace" [worker]="worker"></app-basic-record>
   <app-personal-details [workplace]="workplace" [worker]="worker"></app-personal-details>
