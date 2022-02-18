@@ -356,48 +356,6 @@ router
         AdminUser: true,
         CanManageWdfClaims: req.body[0].user.canManageWdfClaims || false,
       };
-      // Check if the user is allowed to be active based on wether they are CQC registered   - this does work but temporarily we don't want to auto approve anyone
-      // let CQCpostcode = false;
-      // let CQClocationID = false;
-      // Check if the Postcode is in the CQC database
-      // try {
-      //   console.log('AR - Checking if Postcode is CQC registered.');
-      //   let cleanPostcode= pCodeCheck.sanitisePostcode(Estblistmentdata.PostCode);
-
-      //   if (cleanPostcode != null) {
-      //     //Find matching postcode data
-      //     let results = await models.location.findAll({
-      //       where: {
-      //         postalcode: cleanPostcode
-      //       }
-      //     });
-      //     if (results.length) {
-      //       CQCpostcode = true;
-      //       console.log('AR - Found matching CQC Postcode');
-      //     }
-      //   }
-      // } catch(error) {
-      //   console.error(error)
-      // }
-      // // Check if the location ID is in the CQC database
-      // try {
-      //   console.log('AR - Checking if Location ID is CQC registered.');
-
-      //   if (Estblistmentdata.LocationID != null) {
-      //     //Find matching postcode data
-      //     let results = await models.location.findAll({
-      //       where: {
-      //         locationid: Estblistmentdata.LocationID
-      //       }
-      //     });
-      //     if (results.length) {
-      //       CQClocationID = true;
-      //       console.log('AR - Found matching CQC Location ID');
-      //     }
-      //   }
-      // } catch(error) {
-      //   console.error(error)
-      // }
 
       var Logindata = {
         RegistrationId: 0,
