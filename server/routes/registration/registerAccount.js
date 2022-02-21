@@ -4,7 +4,7 @@ const slack = require('../../utils/slack/slack-logger');
 
 const models = require('../../models');
 const concatenateAddress = require('../../utils/concatenateAddress').concatenateAddress;
-const passwordCheck = require('../../utils/security/passwordValidation').isPasswordValid;
+const isPasswordValid = require('../../utils/security/passwordValidation').isPasswordValid;
 const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
 const EstablishmentModel = require('../../models/classes/establishment').Establishment;
 const EstablishmentSaveException =
@@ -23,9 +23,8 @@ exports.registerAccount = async (req, res) => {
     });
   }
 
-  // Password validation check
   if (req.body[0] && req.body[0].user && req.body[0].user.password) {
-    if (!passwordCheck(req.body[0].user.password)) {
+    if (!isPasswordValid(req.body[0].user.password)) {
       return res.status(400).json({
         success: 0,
         message:
