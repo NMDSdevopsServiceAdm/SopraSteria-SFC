@@ -40,7 +40,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     protected workerService: WorkerService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
