@@ -17,13 +17,13 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
-describe('StaffRecordComponent', () => {
+fdescribe('StaffRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
@@ -75,6 +75,7 @@ describe('StaffRecordComponent', () => {
       component,
       fixture,
       routerSpy,
+      workerService,
       workerSpy,
       getByText,
       getAllByText,
@@ -94,6 +95,44 @@ describe('StaffRecordComponent', () => {
     const { component, getAllByText } = await setup();
 
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
+  });
+
+  fit('should render the Complete record button and correct text when worker.completed is false', async () => {
+    await setup();
+
+    const button = screen.getByText('Complete record details');
+    const text = screen.getByText(`Check the record details you've added before you confirm them.`);
+    const flagLongTermAbsenceLink = screen.queryByText('Flag long-term absence');
+    const deleteRecordLink = screen.queryByText('Delete staff record');
+    const trainingAndQualsLink = screen.queryByText('Training and qualifications');
+
+    expect(button).toBeTruthy();
+    expect(text).toBeTruthy();
+    expect(flagLongTermAbsenceLink).toBeFalsy();
+    expect(deleteRecordLink).toBeFalsy();
+    expect(trainingAndQualsLink).toBeFalsy();
+  });
+
+  fit('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
+    const { component, fixture } = await setup();
+
+    component.canEditWorker = true;
+    component.canDeleteWorker = true;
+    component.worker.completed = true;
+
+    fixture.detectChanges();
+
+    const button = screen.queryByText('Complete record details');
+    const text = screen.getByText(`Check the record details you've added are correct.`);
+    const flagLongTermAbsenceLink = screen.getByText('Flag long-term absence');
+    const deleteRecordLink = screen.getByText('Delete staff record');
+    const trainingAndQualsLink = screen.getByText('Training and qualifications');
+
+    expect(button).toBeFalsy();
+    expect(text).toBeTruthy();
+    expect(flagLongTermAbsenceLink).toBeTruthy();
+    expect(deleteRecordLink).toBeTruthy();
+    expect(trainingAndQualsLink).toBeTruthy();
   });
 
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
