@@ -21,7 +21,7 @@ import { WdfModule } from '../wdf.module';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
 describe('WdfWorkplacesSummaryComponent', () => {
-  const setup = async () => {
+  const setup = async (viewPermission?) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfWorkplacesSummaryComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
@@ -30,7 +30,9 @@ describe('WdfWorkplacesSummaryComponent', () => {
         { provide: ReportService, useClass: MockReportService },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canViewWorker']),
+          useFactory: viewPermission
+            ? MockPermissionsService.factory(['canViewEstablishment'])
+            : MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
       ],
@@ -43,6 +45,16 @@ describe('WdfWorkplacesSummaryComponent', () => {
   it('should render a WdfWorkplacesSummaryComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show the download a WDF report when the user has edit permissions', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Download your WDF report (Excel)', { exact: false })).toBeTruthy();
+  });
+
+  it('should not show the download a WDF report when the user has view permissions', async () => {
+    const { queryByText } = await setup(true);
+    expect(queryByText('Download your WDF report (Excel)', { exact: false })).toBeFalsy();
   });
 
   it('should download a WDF report when the download link is clicked', async () => {
@@ -61,7 +73,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
   describe('WdfParentStatusMessageComponent', async () => {
     it('should display the correct message and timeframe if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = "All your workplaces' data meets the WDF 2021 to 2022 requirements";
+      const timeframeSentence = `All your workplaces' data meets the WDF 2021 to 2022 requirements`;
 
       component.parentOverallEligibilityStatus = true;
       component.parentCurrentEligibilityStatus = true;
@@ -72,8 +84,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
     it('should display the correct message if workplaces have met WDF requirements this year but not meeting currently', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence =
-        "Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save you time next year.";
+      const timeframeSentence = `Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
 
       component.parentOverallEligibilityStatus = true;
       component.parentCurrentEligibilityStatus = false;
@@ -84,7 +95,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
     it('should display the correct message if workplaces have not met WDF requirements this year', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = "Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements";
+      const timeframeSentence = `Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements`;
 
       component.parentOverallEligibilityStatus = false;
       component.parentCurrentEligibilityStatus = false;

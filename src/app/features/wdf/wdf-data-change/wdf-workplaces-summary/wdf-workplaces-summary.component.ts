@@ -6,6 +6,7 @@ import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import dayjs from 'dayjs';
@@ -28,12 +29,14 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
   public parentOverallEligibilityDate: string;
   public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
+  public canDownloadReport: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
     private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +44,7 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
     this.returnUrl = { url: ['/wdf', 'workplaces'] };
 
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.canDownloadReport = this.permissionsService.can(this.workplaceUid, 'canEditEstablishment');
     this.getParentAndSubs();
     this.getWdfReport();
   }
