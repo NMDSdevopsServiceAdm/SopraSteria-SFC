@@ -1,28 +1,17 @@
 import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render, screen } from '@testing-library/angular';
 
-import { Router } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
 import { SubmitButtonComponent } from './submit-button.component';
 
 describe('SubmitButtonComponent', () => {
-  let url = '';
-
-  beforeEach(() => {
-    url = '';
-  });
-
   const setup = async () =>
     render(SubmitButtonComponent, {
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
         exitText: 'Exit',
       },
-      providers: [
-        {
-          provide: Router,
-          useValue: { url },
-        },
-      ],
     });
 
   it('should create', async () => {
@@ -48,9 +37,11 @@ describe('SubmitButtonComponent', () => {
     expect(screen.getByText('Exit')).toBeTruthy();
   });
 
-  it('should render the correctly if an edit "staff-record" route', async () => {
-    url = '/staff-record/12345678-1234-1234-1234-123456789011/some-page';
-    await setup();
+  it('should render the correctly if an isEditStaffRecord is true', async () => {
+    const { fixture } = await setup();
+
+    fixture.componentInstance.isEditStaffRecord = true;
+    fixture.detectChanges();
 
     expect(screen.getByText('Save and continue')).toBeTruthy();
     expect(screen.getByText('View this staff record')).toBeTruthy();

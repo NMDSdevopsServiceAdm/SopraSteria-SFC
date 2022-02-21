@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-submit-button',
@@ -14,12 +15,13 @@ export class SubmitButtonComponent implements OnInit {
   @Input() exitText = 'Exit';
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
-  isEditStaffRecord = false;
+  public isEditStaffRecord = false;
 
-  constructor(private router: Router) {}
+  constructor(private workerServive: WorkerService) {}
 
   ngOnInit(): void {
-    if (this.router.url.match(/\/staff-record\/.{36}\//)) this.isEditStaffRecord = true;
+    // if there is a worker, it will be a edit staff route
+    this.isEditStaffRecord = Boolean(this.workerServive.worker);
   }
 
   onClick(event: Event, action: string, save: boolean): void {
