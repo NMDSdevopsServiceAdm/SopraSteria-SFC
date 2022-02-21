@@ -24,53 +24,53 @@ exports.registerAccount = async (req, res) => {
   let defaultError = responseErrors.default;
   try {
     // location ID is only relevant for CQC sites - namely isRegulated is true
-    if (!req.body[0].isRegulated) {
-      delete req.body[0].locationId;
+    if (!req.body.isRegulated) {
+      delete req.body.locationId;
     }
 
     // extract establishment, user and login data from given input
-    const Estblistmentdata = {
-      Name: req.body[0].locationName,
+    const EstablishmentData = {
+      Name: req.body.locationName,
       Address: concatenateAddress(
-        req.body[0].addressLine1,
-        req.body[0].addressLine2,
-        req.body[0].addressLine3,
-        req.body[0].townCity,
-        req.body[0].county,
+        req.body.addressLine1,
+        req.body.addressLine2,
+        req.body.addressLine3,
+        req.body.townCity,
+        req.body.county,
       ),
-      Address1: req.body[0].addressLine1,
-      Address2: req.body[0].addressLine2,
-      Address3: req.body[0].addressLine3,
-      Town: req.body[0].townCity,
-      County: req.body[0].county,
-      LocationID: req.body[0].locationId,
-      PostCode: req.body[0].postalCode,
-      MainService: req.body[0].mainService,
+      Address1: req.body.addressLine1,
+      Address2: req.body.addressLine2,
+      Address3: req.body.addressLine3,
+      Town: req.body.townCity,
+      County: req.body.county,
+      LocationID: req.body.locationId,
+      PostCode: req.body.postalCode,
+      MainService: req.body.mainService,
       MainServiceId: null,
-      MainServiceOther: req.body[0].mainServiceOther,
-      NumberOfStaff: req.body[0].totalStaff,
-      IsRegulated: req.body[0].isRegulated,
+      MainServiceOther: req.body.mainServiceOther,
+      NumberOfStaff: req.body.totalStaff,
+      IsRegulated: req.body.isRegulated,
       Status: 'PENDING',
       ExpiresSoonAlertDate: '90',
       DataChangesLastUpdated: null,
     };
     const Userdata = {
-      FullName: req.body[0].user.fullname,
-      JobTitle: req.body[0].user.jobTitle,
-      Email: req.body[0].user.email,
-      Phone: req.body[0].user.phone,
-      SecurityQuestion: req.body[0].user.securityQuestion,
-      SecurityQuestionAnswer: req.body[0].user.securityQuestionAnswer,
+      FullName: req.body.user.fullname,
+      JobTitle: req.body.user.jobTitle,
+      Email: req.body.user.email,
+      Phone: req.body.user.phone,
+      SecurityQuestion: req.body.user.securityQuestion,
+      SecurityQuestionAnswer: req.body.user.securityQuestionAnswer,
       DateCreated: new Date(),
       EstablishmentID: 0,
       AdminUser: true,
-      CanManageWdfClaims: req.body[0].user.canManageWdfClaims || false,
+      CanManageWdfClaims: req.body.user.canManageWdfClaims || false,
     };
 
     var Logindata = {
       RegistrationId: 0,
-      UserName: req.body[0].user.username,
-      Password: req.body[0].user.password,
+      UserName: req.body.user.username,
+      Password: req.body.user.password,
       // Active: CQCpostcode && CQClocationID,
       Active: false,
       InvalidAttempt: 0,
@@ -87,11 +87,11 @@ exports.registerAccount = async (req, res) => {
       await models.sequelize.transaction(async (t) => {
         // first - validate given main service id, for which the main service id is dependent on whether the site is CQC regulated or not
         let serviceResults = null;
-        if (Estblistmentdata.IsRegulated) {
+        if (EstablishmentData.IsRegulated) {
           // if a regulated (CQC) site, then can use any of the services as long as they are a main service
           serviceResults = await models.services.findOne({
             where: {
-              name: Estblistmentdata.MainService,
+              name: EstablishmentData.MainService,
               isMain: true,
             },
           });
@@ -99,7 +99,7 @@ exports.registerAccount = async (req, res) => {
           // a non-CQC site can only use non-CQC services
           serviceResults = await models.services.findOne({
             where: {
-              name: Estblistmentdata.MainService,
+              name: EstablishmentData.MainService,
               iscqcregistered: {
                 [models.Sequelize.Op.or]: [false, null],
               },
@@ -108,11 +108,11 @@ exports.registerAccount = async (req, res) => {
           });
         }
 
-        if (serviceResults && serviceResults.id && Estblistmentdata.MainService === serviceResults.name) {
-          Estblistmentdata.MainServiceId = serviceResults.id;
+        if (serviceResults && serviceResults.id && EstablishmentData.MainService === serviceResults.name) {
+          EstablishmentData.MainServiceId = serviceResults.id;
         } else {
           throw new RegistrationException(
-            `Lookup on services for '${Estblistmentdata.MainService}' being cqc registered (${Estblistmentdata.IsRegulated}) resulted with zero records`,
+            `Lookup on services for '${EstablishmentData.MainService}' being cqc registered (${EstablishmentData.IsRegulated}) resulted with zero records`,
             responseErrors.unexpectedMainService.errCode,
             responseErrors.unexpectedMainService.errMessage,
           );
@@ -120,11 +120,11 @@ exports.registerAccount = async (req, res) => {
 
         if (
           serviceResults.other &&
-          Estblistmentdata.MainServiceOther &&
-          Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH
+          EstablishmentData.MainServiceOther &&
+          EstablishmentData.MainServiceOther.length > OTHER_MAX_LENGTH
         ) {
           throw new RegistrationException(
-            `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
+            `Other field value of '${EstablishmentData.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
             responseErrors.unexpectedMainService.errCode,
             responseErrors.unexpectedMainService.errMessage,
           );
@@ -134,31 +134,31 @@ exports.registerAccount = async (req, res) => {
         defaultError = responseErrors.establishment;
         const newEstablishment = new EstablishmentModel(Logindata.UserName);
         newEstablishment.initialise(
-          Estblistmentdata.Address1,
-          Estblistmentdata.Address2,
-          Estblistmentdata.Address3,
-          Estblistmentdata.Town,
-          Estblistmentdata.County,
-          Estblistmentdata.LocationID,
+          EstablishmentData.Address1,
+          EstablishmentData.Address2,
+          EstablishmentData.Address3,
+          EstablishmentData.Town,
+          EstablishmentData.County,
+          EstablishmentData.LocationID,
           null, // PROV ID is not captured yet on registration
-          Estblistmentdata.PostCode,
-          Estblistmentdata.IsRegulated,
+          EstablishmentData.PostCode,
+          EstablishmentData.IsRegulated,
         );
         await newEstablishment.load({
-          name: Estblistmentdata.Name,
+          name: EstablishmentData.Name,
           mainService: {
-            id: Estblistmentdata.MainServiceId,
-            other: Estblistmentdata.MainServiceOther,
+            id: EstablishmentData.MainServiceId,
+            other: EstablishmentData.MainServiceOther,
           },
-          ustatus: Estblistmentdata.Status,
-          expiresSoonAlertDate: Estblistmentdata.ExpiresSoonAlertDate,
-          numberOfStaff: Estblistmentdata.NumberOfStaff,
+          ustatus: EstablishmentData.Status,
+          expiresSoonAlertDate: EstablishmentData.ExpiresSoonAlertDate,
+          numberOfStaff: EstablishmentData.NumberOfStaff,
         }); // no Establishment properties on registration
         if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
           await newEstablishment.save(Logindata.UserName, false, t);
-          Estblistmentdata.id = newEstablishment.id;
-          Estblistmentdata.eUID = newEstablishment.uid;
-          Estblistmentdata.NmdsId = newEstablishment.nmdsId;
+          EstablishmentData.id = newEstablishment.id;
+          EstablishmentData.eUID = newEstablishment.uid;
+          EstablishmentData.NmdsId = newEstablishment.nmdsId;
         } else {
           // Establishment properties not valid
           throw new RegistrationException(
@@ -170,7 +170,7 @@ exports.registerAccount = async (req, res) => {
 
         // now create user
         defaultError = responseErrors.user;
-        const newUser = new UserModel(Estblistmentdata.id);
+        const newUser = new UserModel(EstablishmentData.id);
         await newUser.load({
           role: 'Edit',
           fullname: Userdata.FullName,
@@ -200,29 +200,29 @@ exports.registerAccount = async (req, res) => {
         }
 
         // post via Slack, but remove sensitive data
-        const slackMsg = req.body[0];
+        const slackMsg = req.body;
         delete slackMsg.user.password;
         delete slackMsg.user.securityQuestion;
         delete slackMsg.user.securityQuestionAnswer;
-        slackMsg.nmdsId = Estblistmentdata.NmdsId;
-        slackMsg.establishmentUid = Estblistmentdata.eUID;
+        slackMsg.nmdsId = EstablishmentData.NmdsId;
+        slackMsg.establishmentUid = EstablishmentData.eUID;
         slack.info('Registration', JSON.stringify(slackMsg, null, 2));
         // post through feedback topic - async method but don't wait for a responseThe
         sns.postToRegistrations(slackMsg);
         // gets here on success
         req.sqreen.signup_track({
           userId: newUser.uid,
-          establishmentId: Estblistmentdata.eUID,
+          establishmentId: EstablishmentData.eUID,
         });
 
         res.status(200);
         res.json({
           status: 1,
           message: 'Establishment and primary user successfully created',
-          establishmentId: Estblistmentdata.id,
-          establishmentUid: Estblistmentdata.eUID,
+          establishmentId: EstablishmentData.id,
+          establishmentUid: EstablishmentData.eUID,
           primaryUser: Logindata.UserName,
-          nmdsId: Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined',
+          nmdsId: EstablishmentData.NmdsId ? EstablishmentData.NmdsId : 'undefined',
           active: Logindata.Active,
           userstatus: Logindata.Status,
         });
@@ -276,7 +276,7 @@ exports.registerAccount = async (req, res) => {
 
 const validateRequest = (req) => {
   if (isEmpty(req.body)) return responseErrors.emptyRequest;
-  if (!req.body[0].user || isEmpty(req.body[0].user)) return responseErrors.invalidUser;
-  if (!isPasswordValid(req.body[0].user.password)) return responseErrors.invalidPassword;
-  if (!isUsernameValid(req.body[0].user.username)) return responseErrors.invalidUsername;
+  if (!req.body.user || isEmpty(req.body.user)) return responseErrors.invalidUser;
+  if (!isPasswordValid(req.body.user.password)) return responseErrors.invalidPassword;
+  if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
 };

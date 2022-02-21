@@ -30,7 +30,7 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid user message when no user in req body', async () => {
-      req.body = [{}];
+      req.body = { username: 'testuser' };
 
       await registerAccount(req, res);
 
@@ -42,7 +42,7 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid user message when user in req body is empty object', async () => {
-      req.body = [{ user: {} }];
+      req.body = { user: {} };
 
       await registerAccount(req, res);
 
@@ -54,13 +54,11 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid password message when password is not valid', async () => {
-      req.body = [
-        {
-          user: {
-            password: 'invalid',
-          },
+      req.body = {
+        user: {
+          password: 'invalid',
         },
-      ];
+      };
 
       await registerAccount(req, res);
 
@@ -74,14 +72,12 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid username message when username is not valid', async () => {
-      req.body = [
-        {
-          user: {
-            password: 'validPassword0',
-            username: 'userName0123456!?!?!*&^%',
-          },
+      req.body = {
+        user: {
+          password: 'validPassword0',
+          username: 'userName0123456!?!?!*&^%',
         },
-      ];
+      };
 
       await registerAccount(req, res);
 

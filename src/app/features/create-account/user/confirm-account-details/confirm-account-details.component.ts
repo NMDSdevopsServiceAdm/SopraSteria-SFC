@@ -117,7 +117,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
     payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
-    return [payload];
+    return payload;
   }
 
   protected save(): void {

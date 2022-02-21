@@ -131,7 +131,7 @@ export class ConfirmDetailsComponent implements OnInit {
     payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
     payload.totalStaff = this.totalStaff;
 
-    return [payload];
+    return payload;
   }
 
   public save(): void {
