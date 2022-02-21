@@ -1,3 +1,4 @@
+const isEmpty = require('lodash').isEmpty;
 const sns = require('../../aws/sns');
 const slack = require('../../utils/slack/slack-logger');
 
@@ -15,15 +16,12 @@ const { responseErrors, RegistrationException } = require('./responseErrors');
 const OTHER_MAX_LENGTH = 120;
 
 exports.registerAccount = async (req, res) => {
-  //basic validation
-  if (JSON.stringify(req.body) == '{}') {
+  if (isEmpty(req.body)) {
     return res.status(400).json({
       success: 0,
       message: 'Parameters missing',
     });
   }
-
-  // TODO: JSON Schema validation
 
   // Password validation check
   if (req.body[0] && req.body[0].user && req.body[0].user.password) {
