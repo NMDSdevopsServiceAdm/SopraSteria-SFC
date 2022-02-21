@@ -90,7 +90,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveAndComplete(): void {
+  public saveAndComplete(): void {
     const props = {
       completed: true,
     };

@@ -45,7 +45,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.showBanner = window.history.state?.showBanner;
+    this.showBanner = history.state?.showBanner;
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
