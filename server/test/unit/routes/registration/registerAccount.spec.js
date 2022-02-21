@@ -5,16 +5,20 @@ const httpMocks = require('node-mocks-http');
 const { registerAccount } = require('../../../../routes/registration/registerAccount');
 
 describe('registerAccount', async () => {
+  let req;
+  let res;
+
+  beforeEach(() => {
+    req = {
+      method: 'GET',
+      url: '/api/registration',
+    };
+    res = httpMocks.createResponse();
+  });
+
   describe('Request validation', () => {
     it('should return 400 and Parameters missing message when req body empty', async () => {
-      const request = {
-        method: 'GET',
-        url: '/api/registration',
-        body: {},
-      };
-
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
+      req.body = {};
 
       await registerAccount(req, res);
 
@@ -26,14 +30,7 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid user message when no user in req body', async () => {
-      const request = {
-        method: 'GET',
-        url: '/api/registration',
-        body: [{}],
-      };
-
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
+      req.body = [{}];
 
       await registerAccount(req, res);
 
@@ -45,14 +42,7 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid user message when user in req body is empty object', async () => {
-      const request = {
-        method: 'GET',
-        url: '/api/registration',
-        body: [{ user: {} }],
-      };
-
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
+      req.body = [{ user: {} }];
 
       await registerAccount(req, res);
 
@@ -64,20 +54,13 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid password message when password is not valid', async () => {
-      const request = {
-        method: 'GET',
-        url: '/api/registration',
-        body: [
-          {
-            user: {
-              password: 'invalid',
-            },
+      req.body = [
+        {
+          user: {
+            password: 'invalid',
           },
-        ],
-      };
-
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
+        },
+      ];
 
       await registerAccount(req, res);
 
@@ -91,21 +74,14 @@ describe('registerAccount', async () => {
     });
 
     it('should return 400 and invalid username message when username is not valid', async () => {
-      const request = {
-        method: 'GET',
-        url: '/api/registration',
-        body: [
-          {
-            user: {
-              password: 'validPassword0',
-              username: 'userName0123456!?!?!*&^%',
-            },
+      req.body = [
+        {
+          user: {
+            password: 'validPassword0',
+            username: 'userName0123456!?!?!*&^%',
           },
-        ],
-      };
-
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
+        },
+      ];
 
       await registerAccount(req, res);
 
