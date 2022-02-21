@@ -97,7 +97,7 @@ fdescribe('StaffRecordComponent', () => {
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
   });
 
-  fit('should render the Complete record button and correct text when worker.completed is false', async () => {
+  it('should render the Complete record button and correct text when worker.completed is false', async () => {
     await setup();
 
     const button = screen.getByText('Complete record details');
@@ -113,7 +113,7 @@ fdescribe('StaffRecordComponent', () => {
     expect(trainingAndQualsLink).toBeFalsy();
   });
 
-  fit('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
+  it('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
     const { component, fixture } = await setup();
 
     component.canEditWorker = true;
