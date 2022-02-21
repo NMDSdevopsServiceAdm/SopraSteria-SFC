@@ -5,7 +5,7 @@ const slack = require('../../utils/slack/slack-logger');
 const models = require('../../models');
 const concatenateAddress = require('../../utils/concatenateAddress').concatenateAddress;
 const isPasswordValid = require('../../utils/security/passwordValidation').isPasswordValid;
-const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
+const isUsernameValid = require('../../utils/security/usernameValidation').isUsernameValid;
 const EstablishmentModel = require('../../models/classes/establishment').Establishment;
 const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
@@ -33,9 +33,8 @@ exports.registerAccount = async (req, res) => {
     }
   }
 
-  // Username validation check
   if (req.body[0] && req.body[0].user && req.body[0].user.username) {
-    if (!usernameCheck(req.body[0].user.username)) {
+    if (!isUsernameValid(req.body[0].user.username)) {
       console.error(`Registration:  ${responseErrors.invalidUsername.message} - ${req.body[0].user.username}`);
       return res.status(400).json(responseErrors.invalidUsername);
     }

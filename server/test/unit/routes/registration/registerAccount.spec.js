@@ -24,7 +24,7 @@ describe('registerAccount', async () => {
       expect(response.message).to.equal('Parameters missing');
     });
 
-    it('should return 400 and invalid password message when password not valid', async () => {
+    it('should return 400 and invalid password message when password is not valid', async () => {
       const request = {
         method: 'GET',
         url: '/api/registration',
@@ -48,6 +48,30 @@ describe('registerAccount', async () => {
       expect(response.message).to.equal(
         'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
       );
+    });
+
+    it('should return 400 and invalid username message when username is not valid', async () => {
+      const request = {
+        method: 'GET',
+        url: '/api/registration',
+        body: [
+          {
+            user: {
+              username: 'userName0123456!?!?!*&^%',
+            },
+          },
+        ],
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.errMessage).to.equal('Invalid Username');
     });
   });
 });
