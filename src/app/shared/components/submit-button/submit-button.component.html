@@ -1,26 +1,22 @@
-<ng-container *ngIf="!return; else summary">
-  <div class="govuk-grid-row govuk-!-margin-top-2">
-    <div class="govuk-grid-column-one-third">
-      <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">
+<div class="govuk-button-group govuk__align-items-unset">
+  <ng-container *ngIf="!return; else summary">
+    <div>
+      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onClick($event, 'continue', true)">
         {{ callToAction }}
       </button>
     </div>
-    <div *ngIf="recordSummary" class="govuk-grid-column-one-third">
+    <div *ngIf="recordSummary" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
         >View {{ isEditStaffRecord ? 'this staff record' : 'record summary' }}</a
       >
     </div>
-    <div *ngIf="this.canExit && !isEditStaffRecord" class="govuk-grid-column-one-third">
+    <div *ngIf="this.canExit && !isEditStaffRecord" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)">{{
-        exitText
-      }}</a>
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'exit', false)">{{ exitText }}</a>
     </div>
-  </div>
-</ng-container>
-<ng-template #summary>
-  <div class="govuk-button-group">
+  </ng-container>
+  <ng-template #summary>
     <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onClick($event, 'return', true)">
       Save and return
     </button>
@@ -29,5 +25,5 @@
     <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onClick($event, 'return', false)">{{
       exitText
     }}</a>
-  </div>
-</ng-template>
+  </ng-template>
+</div>
