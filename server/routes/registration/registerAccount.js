@@ -16,28 +16,9 @@ const { responseErrors, RegistrationException } = require('./responseErrors');
 const OTHER_MAX_LENGTH = 120;
 
 exports.registerAccount = async (req, res) => {
-  if (isEmpty(req.body)) {
-    return res.status(400).json({
-      success: 0,
-      message: 'Parameters missing',
-    });
-  }
-
-  if (req.body[0] && req.body[0].user && req.body[0].user.password) {
-    if (!isPasswordValid(req.body[0].user.password)) {
-      return res.status(400).json({
-        success: 0,
-        message:
-          'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
-      });
-    }
-  }
-
-  if (req.body[0] && req.body[0].user && req.body[0].user.username) {
-    if (!isUsernameValid(req.body[0].user.username)) {
-      console.error(`Registration:  ${responseErrors.invalidUsername.message} - ${req.body[0].user.username}`);
-      return res.status(400).json(responseErrors.invalidUsername);
-    }
+  const invalidRequestResponse = validateRequest(req);
+  if (invalidRequestResponse) {
+    return res.status(400).json(invalidRequestResponse);
   }
 
   let defaultError = responseErrors.default;
@@ -290,5 +271,32 @@ exports.registerAccount = async (req, res) => {
       status: err.errCode,
       message: err.errMessage,
     });
+  }
+};
+
+const validateRequest = (req) => {
+  if (isEmpty(req.body)) {
+    return {
+      success: 0,
+      message: 'Parameters missing',
+    };
+  }
+
+  if (!req.body[0].user || isEmpty(req.body[0].user)) {
+    return {
+      success: 0,
+      message: 'User missing',
+    };
+  }
+
+  if (!isPasswordValid(req.body[0].user.password)) {
+    return {
+      success: 0,
+      message: 'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+    };
+  }
+
+  if (!isUsernameValid(req.body[0].user.username)) {
+    return responseErrors.invalidUsername;
   }
 };

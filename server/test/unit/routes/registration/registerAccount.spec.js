@@ -24,6 +24,42 @@ describe('registerAccount', async () => {
       expect(response.message).to.equal('Parameters missing');
     });
 
+    it('should return 400 and user missing message when no user in req body', async () => {
+      const request = {
+        method: 'GET',
+        url: '/api/registration',
+        body: [{}],
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('User missing');
+    });
+
+    it('should return 400 and user missing message when user in req body is empty object', async () => {
+      const request = {
+        method: 'GET',
+        url: '/api/registration',
+        body: [{ user: {} }],
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('User missing');
+    });
+
     it('should return 400 and invalid password message when password is not valid', async () => {
       const request = {
         method: 'GET',
@@ -57,6 +93,7 @@ describe('registerAccount', async () => {
         body: [
           {
             user: {
+              password: 'validPassword0',
               username: 'userName0123456!?!?!*&^%',
             },
           },

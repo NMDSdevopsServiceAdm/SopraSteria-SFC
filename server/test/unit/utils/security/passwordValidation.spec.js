@@ -28,6 +28,18 @@ describe('isPasswordValid', () => {
     expect(result).to.equal(false);
   });
 
+  it('should return false if password is empty string', () => {
+    const result = isPasswordValid('');
+
+    expect(result).to.equal(false);
+  });
+
+  it('should return false if password is undefined', () => {
+    const result = isPasswordValid(undefined);
+
+    expect(result).to.equal(false);
+  });
+
   it('should return true if password is valid', () => {
     const result = isPasswordValid('imValidPassword1');
 
