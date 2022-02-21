@@ -205,3 +205,25 @@ exports.textColours = {
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
 };
+
+exports.addHeadingBlack = (tab, startCell, endCell, content) => {
+  tab.mergeCells(`${startCell}:${endCell}`);
+  tab.getCell(startCell).value = content;
+  tab.getCell(startCell).font = {
+    family: 4,
+    size: 16,
+    bold: true,
+    color: { argb: '000000' },
+  };
+};
+
+exports.addSmallHeadingBlack = (tab, startCell, endCell, content) => {
+  tab.mergeCells(`${startCell}:${endCell}`);
+  tab.getCell(startCell).value = content;
+  tab.getCell(startCell).font = {
+    family: 4,
+    size: 12,
+    bold: true,
+    color: { argb: '000000' },
+  };
+};
