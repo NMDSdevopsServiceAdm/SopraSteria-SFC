@@ -275,28 +275,8 @@ exports.registerAccount = async (req, res) => {
 };
 
 const validateRequest = (req) => {
-  if (isEmpty(req.body)) {
-    return {
-      success: 0,
-      message: 'Parameters missing',
-    };
-  }
-
-  if (!req.body[0].user || isEmpty(req.body[0].user)) {
-    return {
-      success: 0,
-      message: 'User missing',
-    };
-  }
-
-  if (!isPasswordValid(req.body[0].user.password)) {
-    return {
-      success: 0,
-      message: 'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
-    };
-  }
-
-  if (!isUsernameValid(req.body[0].user.username)) {
-    return responseErrors.invalidUsername;
-  }
+  if (isEmpty(req.body)) return responseErrors.emptyRequest;
+  if (!req.body[0].user || isEmpty(req.body[0].user)) return responseErrors.invalidUser;
+  if (!isPasswordValid(req.body[0].user.password)) return responseErrors.invalidPassword;
+  if (!isUsernameValid(req.body[0].user.username)) return responseErrors.invalidUsername;
 };

@@ -63,6 +63,14 @@ const responseErrors = {
     errCode: -210,
     errMessage: 'Invalid Username',
   },
+  invalidPassword: {
+    errCode: -220,
+    errMessage: 'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+  },
+  emptyRequest: {
+    errCode: -230,
+    errMessage: 'Parameters missing',
+  },
 };
 
 class RegistrationException {
