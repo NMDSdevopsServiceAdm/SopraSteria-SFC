@@ -11,13 +11,13 @@ import { fireEvent, render, screen } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
-import { OtherQualificationsComponent } from './other-qualifications.component';
+import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
-describe('OtherQualificationsComponent', () => {
+describe('OtherQualificationsLevelComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
-    const { fixture } = await render(OtherQualificationsComponent, {
+    const { fixture } = await render(OtherQualificationsLevelComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
         BackService,
@@ -55,7 +55,7 @@ describe('OtherQualificationsComponent', () => {
     };
   }
 
-  it('should render a OtherQualificationsComponent', async () => {
+  it('should render a OtherQualificationsLevelComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -83,32 +83,6 @@ describe('OtherQualificationsComponent', () => {
 
     expect(button).toBeTruthy();
     expect(exitLink).toBeTruthy();
-  });
-
-  it('should run getRoutePath with a blank string', async () => {
-    const { component, fixture } = await setup();
-    const getRoutePathSpy = spyOn(component, 'getRoutePath');
-
-    component.worker.otherQualification = 'No';
-    fixture.detectChanges();
-
-    const button = screen.getByText('Save and return');
-    fireEvent.click(button);
-
-    expect(getRoutePathSpy).toHaveBeenCalledWith('');
-  });
-
-  it('should run getRoutePath with a other-qualifications-level string when otherQualification is yes', async () => {
-    const { component, fixture } = await setup();
-    const getRoutePathSpy = spyOn(component, 'getRoutePath');
-
-    component.worker.otherQualification = 'Yes';
-    fixture.detectChanges();
-
-    const button = screen.getByText('Save and return');
-    fireEvent.click(button);
-
-    expect(getRoutePathSpy).toHaveBeenCalledWith('other-qualifications-level');
   });
 
   it('should navigate back to staff-record when view record summary link is clicked', async () => {
