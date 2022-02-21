@@ -8,10 +8,10 @@
     <div *ngIf="recordSummary" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
-        >View {{ isEditStaffRecord ? 'this staff record' : 'record summary' }}</a
+        >View {{ isExistingStaffRecord ? 'this staff record' : 'record summary' }}</a
       >
     </div>
-    <div *ngIf="this.canExit && !isEditStaffRecord" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
+    <div *ngIf="this.canExit && !isExistingStaffRecord" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link" (click)="onClick($event, 'exit', false)">{{ exitText }}</a>
     </div>

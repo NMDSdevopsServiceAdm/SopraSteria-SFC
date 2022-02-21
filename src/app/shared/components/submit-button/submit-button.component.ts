@@ -15,13 +15,12 @@ export class SubmitButtonComponent implements OnInit {
   @Input() exitText = 'Exit';
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
-  public isEditStaffRecord = false;
+  public isExistingStaffRecord = false;
 
   constructor(private workerService: WorkerService) {}
 
   ngOnInit(): void {
-    // if there is a worker, it will be a edit staff route
-    this.isEditStaffRecord = Boolean(this.workerService.worker);
+    this.isExistingStaffRecord = Boolean(this.workerService.worker);
   }
 
   onClick(event: Event, action: string, save: boolean): void {
