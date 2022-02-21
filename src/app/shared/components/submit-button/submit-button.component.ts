@@ -17,11 +17,11 @@ export class SubmitButtonComponent implements OnInit {
 
   public isEditStaffRecord = false;
 
-  constructor(private workerServive: WorkerService) {}
+  constructor(private workerService: WorkerService) {}
 
   ngOnInit(): void {
     // if there is a worker, it will be a edit staff route
-    this.isEditStaffRecord = Boolean(this.workerServive.worker);
+    this.isEditStaffRecord = Boolean(this.workerService.worker);
   }
 
   onClick(event: Event, action: string, save: boolean): void {
