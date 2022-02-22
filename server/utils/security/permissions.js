@@ -90,6 +90,7 @@ const adminPermissions = (estabType = 'Standalone', establishmentAndUserInfo, is
     'canViewWdfSummaryReport',
     'canSearchUsers',
     'canSearchEstablishment',
+    'canViewLastBulkUpload',
   ]).filter((permission) => !adminCant.includes(permission));
 };
 
