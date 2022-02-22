@@ -60,19 +60,17 @@ describe('OtherQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the page with a save and return button and an exit link', async () => {
+  it('should render the page with a save and return button', async () => {
     const { component, fixture } = await setup();
 
     component.return = null;
     fixture.detectChanges();
 
     const button = screen.getByText('Save and continue');
-    const viewRecordLink = screen.getByText('View record summary');
-    const exitLink = screen.getByText('Exit');
+    const viewRecordLink = screen.getByText('View this staff record');
 
     expect(button).toBeTruthy();
     expect(viewRecordLink).toBeTruthy();
-    expect(exitLink).toBeTruthy();
   });
 
   it('should render the page with a save and return button and an exit link', async () => {
@@ -111,7 +109,7 @@ describe('OtherQualificationsComponent', () => {
     expect(getRoutePathSpy).toHaveBeenCalledWith('other-qualifications-level');
   });
 
-  it('should navigate back to staff-record when view record summary link is clicked', async () => {
+  it('should navigate back to staff-record when View this staff record link is clicked', async () => {
     const { component, fixture, routerSpy } = await setup();
 
     component.return = null;
@@ -119,7 +117,7 @@ describe('OtherQualificationsComponent', () => {
 
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
-    const viewRecordLink = screen.getByText('View record summary');
+    const viewRecordLink = screen.getByText('View this staff record');
     fireEvent.click(viewRecordLink);
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'staff-record', workerUid]);
