@@ -8,7 +8,7 @@ const isUsernameValid = require('../../utils/security/usernameValidation').isUse
 const EstablishmentModel = require('../../models/classes/establishment').Establishment;
 const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
-const UserModel = require('../../models/classes/user').User;
+const User = require('../../models/classes/user').User;
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
 
@@ -39,6 +39,11 @@ exports.registerAccount = async (req, res) => {
       canManageWdfClaims: req.body.user.canManageWdfClaims || false,
       isActive: false,
       status: 'PENDING',
+      role: 'Edit',
+      isPrimary: true,
+      registrationSurveyCompleted: false,
+      email: req.body.user.email.toLowerCase(),
+      username: req.body.user.username.toLowerCase(),
     };
 
     // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
@@ -134,24 +139,8 @@ exports.registerAccount = async (req, res) => {
 
         // now create user
         defaultError = responseErrors.user;
-        const newUser = new UserModel(establishmentData.id);
-        await newUser.load({
-          role: 'Edit',
-          isPrimary: true,
-          isActive: userData.isActive,
-          status: userData.status,
-          registrationSurveyCompleted: false,
-          canManageWdfClaims: userData.canManageWdfClaims,
-
-          fullname: userData.fullname,
-          jobTitle: userData.jobTitle,
-          email: userData.email.toLowerCase(),
-          phone: userData.phone,
-          securityQuestion: userData.securityQuestion,
-          securityQuestionAnswer: userData.securityQuestionAnswer,
-          username: userData.username.toLowerCase(),
-          password: userData.password,
-        });
+        const newUser = new User(establishmentData.id);
+        await newUser.load(userData);
         if (newUser.isValid) {
           await newUser.save(userData.username, 0, t);
           userData.registrationID = newUser.id;
