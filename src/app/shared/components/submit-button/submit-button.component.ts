@@ -11,6 +11,7 @@ export class SubmitButtonComponent {
   @Input() recordSummary = true;
   @Input() canExit = true;
   @Input() exitText = 'Exit';
+  @Input() isExistingStaffRecord = true;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onClick(event: Event, action: string, save: boolean): void {

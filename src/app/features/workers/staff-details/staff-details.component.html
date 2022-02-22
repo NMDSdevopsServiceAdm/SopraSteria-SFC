@@ -119,6 +119,7 @@
     [exitText]="exitText"
     [recordSummary]="false"
     [callToAction]="this.submitTitle"
+    [isExistingStaffRecord]="!!worker"
     (clicked)="onSubmit($event)"
   ></app-submit-button>
 </form>
