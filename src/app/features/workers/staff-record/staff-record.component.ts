@@ -40,7 +40,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
@@ -68,7 +68,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  deleteWorker(event): void {
+  deleteWorker(event: Event): void {
     event.preventDefault();
     this.dialogService.open(DeleteWorkerDialogComponent, {
       worker: this.worker,
@@ -79,7 +79,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  public moveWorker(event): void {
+  public moveWorker(event: Event): void {
     event.preventDefault();
     this.dialogService.open(MoveWorkerDialogComponent, {
       worker: this.worker,
@@ -88,6 +88,24 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         ? this.route.parent.snapshot.data.primaryWorkplace.uid
         : null,
     });
+  }
+
+  public saveAndComplete(): void {
+    const props = {
+      completed: true,
+    };
+
+    this.subscriptions.add(
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
+        (data) => {
+          this.workerService.setState({ ...this.worker, ...data });
+          this.router.navigate(['/dashboard'], { fragment: 'staff-records', state: { showBanner: true } });
+        },
+        (error) => {
+          console.log(error);
+        },
+      ),
+    );
   }
 
   public setReturnTo(): void {

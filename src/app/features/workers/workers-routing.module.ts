@@ -16,7 +16,6 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
-import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -34,9 +33,7 @@ import { MentalHealthProfessionalComponent } from './mental-health-professional/
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import {
-  NewTrainingAndQualificationsRecordComponent,
-} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -45,15 +42,12 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
-import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
 const routes: Routes = [
@@ -261,16 +255,6 @@ const routes: Routes = [
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
         data: { title: 'Highest Level of Other Qualifications' },
-      },
-      {
-        path: 'check-answers',
-        component: CheckStaffRecordComponent,
-        data: { title: 'Check Answers' },
-      },
-      {
-        path: 'save-success',
-        component: WorkerSaveSuccessComponent,
-        data: { title: 'Success' },
       },
       {
         path: 'add-qualification',

@@ -118,7 +118,7 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const dataSharing = within(document.body).queryByTestId('data-sharing');
-      expect(dataSharing.innerHTML).toContain('Add information');
+      expect(dataSharing.innerHTML).toContain('Add');
       expect(dataSharing.innerHTML).toContain('-');
     });
 
