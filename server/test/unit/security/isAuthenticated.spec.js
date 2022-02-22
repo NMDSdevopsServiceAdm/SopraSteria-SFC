@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 
 const { getTokenSecret, authorisedEstablishmentPermissionCheck } = require('../../../utils/security/isAuthenticated');
 
-describe.only('isAuthenticated', () => {
+describe('isAuthenticated', () => {
   describe('getTokenSecret', () => {
     it('returns the default secret in the config', () => {
       const secret = getTokenSecret();
@@ -163,6 +163,34 @@ describe.only('isAuthenticated', () => {
       const data = res._getData();
       expect(res.statusCode).to.equal(400);
       expect(data).to.equal('Unknown Establishment UID');
+    });
+
+    it('returns a 403 if role check is request, req method is not GET and claim role is read only', async () => {
+      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f52da';
+      jwtStub.returns({
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: 1,
+        EstablishmentUID: establishmentUid,
+        role: 'Read',
+      });
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        headers: {
+          authorization: 'arealjwt',
+        },
+        params: {
+          id: establishmentUid,
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await authorisedEstablishmentPermissionCheck(req, res, sinon.fake(), true);
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.deep.equal({ message: 'Not permitted' });
     });
   });
 });
