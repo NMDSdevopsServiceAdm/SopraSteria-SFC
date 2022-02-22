@@ -193,6 +193,7 @@ exports.backgroundColours = {
   blue: { argb: '0050AB' },
   red: { argb: 'FFC0C8' },
   green: { argb: 'BBEDC9' },
+  lightBlue: { argb: 'A3CBFA' },
 };
 
 exports.textColours = {
@@ -200,6 +201,7 @@ exports.textColours = {
   white: { argb: 'FFFFFF' },
   red: { argb: '960512' },
   green: { argb: '005713' },
+  black: { argb: '000000' },
 };
 
 exports.makeRowBold = (tab, rowNumber) => {

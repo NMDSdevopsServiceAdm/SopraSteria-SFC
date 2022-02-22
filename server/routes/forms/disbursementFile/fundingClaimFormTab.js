@@ -1,4 +1,13 @@
-const { addHeadingBlack, addSmallHeadingBlack, addLine } = require('../../../utils/excelUtils');
+const {
+  addHeadingBlack,
+  addSmallHeadingBlack,
+  addLine,
+  setTableHeadingsStyle,
+  backgroundColours,
+  textColours,
+  fitColumnsToSize,
+  alignColumnToLeft,
+} = require('../../../utils/excelUtils');
 const path = require('path');
 
 const generateFundingClaimFormTab = (workbook) => {
@@ -12,6 +21,46 @@ const addContentToFundingClaimFormTab = (workbook, fundingClaimFormTab) => {
   addSmallHeadingBlack(fundingClaimFormTab, 'A6', 'C6', 'Grant Number:');
   addLine(fundingClaimFormTab, 'A8', 'H8');
   addSFCLogo(workbook, fundingClaimFormTab);
+  fundingClaimFormTable(fundingClaimFormTab);
+  fitColumnsToSize(fundingClaimFormTab, 1, 5.5);
+  alignColumnToLeft(fundingClaimFormTab, 1);
+};
+
+const fundingClaimFormTable = (fundingClaimFormTab) => {
+  setTableHeadingsStyle(fundingClaimFormTab, 9, backgroundColours.lightBlue, textColours.black, [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+  ]);
+
+  const columns = [
+    { name: 'Organisation', filterButton: true },
+    { name: 'ASC-WDS', filterButton: true },
+    { name: 'Given Name', filterButton: true },
+    { name: 'Family Name', filterButton: true },
+    { name: 'Unique Learner Number (ULN)', filterButton: true },
+    { name: 'Awarding Body', filterButton: true },
+    { name: 'Candidate Registration Number', filterButton: true },
+    { name: 'Qualification code', filterButton: true },
+    { name: 'FOR DIPLOMAS ONLY Is this being claimed as part of an apprenticeship?', filterButton: true },
+    { name: 'Was qualification previously funded through up-front LM incentive?', filterButton: true },
+    { name: 'Value Claimed', filterButton: true },
+  ];
+
+  return fundingClaimFormTab.addTable({
+    name: 'fundingClaimFormTable',
+    ref: 'A9',
+    columns,
+    rows: [],
+  });
 };
 
 const addSFCLogo = (workbook, tab) => {
@@ -29,4 +78,6 @@ const addSFCLogo = (workbook, tab) => {
     },
   });
 };
+
 module.exports.generateFundingClaimFormTab = generateFundingClaimFormTab;
+module.exports.addContentToFundingClaimFormTab = addContentToFundingClaimFormTab;
