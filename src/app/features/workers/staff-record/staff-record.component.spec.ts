@@ -120,6 +120,7 @@ describe('StaffRecordComponent', () => {
 
     component.canEditWorker = true;
     component.canDeleteWorker = true;
+    component.worker.longTermAbsence = null;
     component.worker.completed = true;
 
     fixture.detectChanges();
@@ -196,7 +197,6 @@ describe('StaffRecordComponent', () => {
       component.worker.longTermAbsence = null;
       component.canEditWorker = true;
       component.worker.completed = true;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
@@ -208,7 +208,6 @@ describe('StaffRecordComponent', () => {
       component.worker.longTermAbsence = null;
       component.canEditWorker = true;
       component.worker.completed = true;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
