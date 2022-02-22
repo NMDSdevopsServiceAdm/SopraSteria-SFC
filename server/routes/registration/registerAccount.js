@@ -54,32 +54,7 @@ exports.registerAccount = async (req, res) => {
     try {
       // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
       await models.sequelize.transaction(async (t) => {
-        const mainService = models.services.getMainServiceByName(
-          establishmentData.mainService,
-          establishmentData.isRegulated,
-        );
-
-        if (!mainService) {
-          throw new RegistrationException(
-            `Lookup on services for '${establishmentData.mainService}' being cqc registered (${establishmentData.isRegulated}) resulted with zero records`,
-            responseErrors.unexpectedMainService.errCode,
-            responseErrors.unexpectedMainService.errMessage,
-          );
-        }
-
-        establishmentData.mainServiceId = mainService.id;
-
-        if (
-          mainService.other &&
-          establishmentData.mainServiceOther &&
-          establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH
-        ) {
-          throw new RegistrationException(
-            `Other field value of '${establishmentData.mainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
-            responseErrors.unexpectedMainService.errCode,
-            responseErrors.unexpectedMainService.errMessage,
-          );
-        }
+        establishmentData.mainServiceId = getMainServiceId(establishmentData);
 
         // now create establishment - using the extended property encapsulation
         defaultError = responseErrors.establishment;
@@ -216,3 +191,25 @@ const validateRequest = (req) => {
   if (!isPasswordValid(req.body.user.password)) return responseErrors.invalidPassword;
   if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
 };
+
+const getMainServiceId = (establishmentData) => {
+  const mainService = models.services.getMainServiceByName(
+    establishmentData.mainService,
+    establishmentData.isRegulated,
+  );
+
+  if (!mainService || mainServiceOtherNameIsTooLong(mainService, establishmentData)) {
+    throw new RegistrationException(
+      'Unexpected main service',
+      responseErrors.unexpectedMainService.errCode,
+      responseErrors.unexpectedMainService.errMessage,
+    );
+  }
+
+  return mainService.id;
+};
+
+const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
+  mainService.other &&
+  establishmentData.mainServiceOther &&
+  establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;

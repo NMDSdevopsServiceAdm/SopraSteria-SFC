@@ -29,7 +29,7 @@ describe('registerAccount', async () => {
     res = httpMocks.createResponse();
 
     sinon.stub(models.services, 'getMainServiceByName').callsFake(() => {
-      return { id: '1' };
+      return { id: '1', other: true };
     });
   });
 
@@ -111,14 +111,24 @@ describe('registerAccount', async () => {
   });
 
   describe('Main service errors', async () => {
-    beforeEach(() => {
+    it('should return 400 and unexpected main service message when main service cannot be found in database', async () => {
       models.services.getMainServiceByName.restore();
-    });
-
-    it('should return 400 and unexpected main service message when username is not valid', async () => {
       sinon.stub(models.services, 'getMainServiceByName').callsFake(() => {
         return null;
       });
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('Unexpected main service');
+      expect(response.status).to.equal(-300);
+    });
+
+    it('should return 400 and unexpected main service message mainServiceOther is greater than 120 chars', async () => {
+      req.body.establishment.mainServiceOther =
+        'This is a really really really really really really really really really really really really really really really really really really really long other service';
 
       await registerAccount(req, res);
 
