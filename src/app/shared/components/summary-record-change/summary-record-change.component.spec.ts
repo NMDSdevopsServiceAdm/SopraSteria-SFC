@@ -36,7 +36,7 @@ describe('SummaryRecordChangeComponent', () => {
 
   it('should render Add information when it doesnt has data', async () => {
     const { component } = await setup(' test', [], false);
-    expect(component.queryByText('Add information')).toBeTruthy();
+    expect(component.queryByText('Add')).toBeTruthy();
   });
 
   it('should render the screen reader text', async () => {

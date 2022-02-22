@@ -82,18 +82,18 @@
       </div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-5 govuk__flex govuk__align-items-center">
+  <div class="govuk-grid-row">
     <ng-container *ngIf="worker.completed; else button">
       <div class="govuk-grid-column-two-thirds">
         <p>Check the record details you've added are correct.</p>
       </div>
     </ng-container>
     <ng-template #button>
-      <div class="govuk-grid-column-two-thirds">
-        <p>Check the record details you've added before you confirm them.</p>
-      </div>
-      <div class="govuk-grid-column-one-third">
-        <button type="button" class="govuk-button" (click)="saveAndComplete()">Complete record details</button>
+      <div class="govuk-grid-column-full">
+        <div class="govuk-button-group govuk__flex govuk__justify-content-space-between govuk-!-padding-right-9">
+          <p>Check the record details you've added before you confirm them.</p>
+          <button type="button" class="govuk-button" (click)="saveAndComplete()">Complete record details</button>
+        </div>
       </div>
     </ng-template>
   </div>

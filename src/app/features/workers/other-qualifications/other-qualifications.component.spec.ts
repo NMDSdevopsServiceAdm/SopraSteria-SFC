@@ -75,7 +75,7 @@ describe('OtherQualificationsComponent', () => {
     expect(exitLink).toBeTruthy();
   });
 
-  it('should render the page with a save and continue button and an exit link', async () => {
+  it('should render the page with a save and return button and an exit link', async () => {
     await setup();
 
     const button = screen.getByText('Save and return');
