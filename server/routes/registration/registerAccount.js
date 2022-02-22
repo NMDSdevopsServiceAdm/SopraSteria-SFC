@@ -27,7 +27,6 @@ exports.registerAccount = async (req, res) => {
       delete req.body.locationId;
     }
 
-    // extract establishment, user and login data from given input
     const establishmentData = {
       ...req.body.establishment,
       ustatus: 'PENDING',
@@ -35,16 +34,11 @@ exports.registerAccount = async (req, res) => {
       mainServiceId: null,
     };
 
-    const userData = { ...req.body.user, canManageWdfClaims: req.body.user.canManageWdfClaims || false };
-
-    var Logindata = {
-      RegistrationId: 0,
-      UserName: req.body.user.username,
-      Password: req.body.user.password,
-      // Active: CQCpostcode && CQClocationID,
-      Active: false,
-      InvalidAttempt: 0,
-      Status: 'PENDING',
+    const userData = {
+      ...req.body.user,
+      canManageWdfClaims: req.body.user.canManageWdfClaims || false,
+      isActive: false,
+      status: 'PENDING',
     };
 
     // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
@@ -102,7 +96,7 @@ exports.registerAccount = async (req, res) => {
 
         // now create establishment - using the extended property encapsulation
         defaultError = responseErrors.establishment;
-        const newEstablishment = new EstablishmentModel(Logindata.UserName);
+        const newEstablishment = new EstablishmentModel(userData.username);
         newEstablishment.initialise(
           establishmentData.addressLine1,
           establishmentData.addressLine2,
@@ -125,7 +119,7 @@ exports.registerAccount = async (req, res) => {
           numberOfStaff: establishmentData.numberOfStaff,
         }); // no Establishment properties on registration
         if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
-          await newEstablishment.save(Logindata.UserName, false, t);
+          await newEstablishment.save(userData.username, false, t);
           establishmentData.id = newEstablishment.id;
           establishmentData.eUID = newEstablishment.uid;
           establishmentData.nmdsId = newEstablishment.nmdsId;
@@ -144,8 +138,8 @@ exports.registerAccount = async (req, res) => {
         await newUser.load({
           role: 'Edit',
           isPrimary: true,
-          isActive: Logindata.Active,
-          status: Logindata.Status,
+          isActive: userData.isActive,
+          status: userData.status,
           registrationSurveyCompleted: false,
           canManageWdfClaims: userData.canManageWdfClaims,
 
@@ -155,11 +149,11 @@ exports.registerAccount = async (req, res) => {
           phone: userData.phone,
           securityQuestion: userData.securityQuestion,
           securityQuestionAnswer: userData.securityQuestionAnswer,
-          username: Logindata.UserName.toLowerCase(),
-          password: Logindata.Password,
+          username: userData.username.toLowerCase(),
+          password: userData.password,
         });
         if (newUser.isValid) {
-          await newUser.save(Logindata.UserName, 0, t);
+          await newUser.save(userData.username, 0, t);
           userData.registrationID = newUser.id;
         } else {
           // Establishment properties not valid
@@ -192,10 +186,10 @@ exports.registerAccount = async (req, res) => {
           message: 'Establishment and primary user successfully created',
           establishmentId: establishmentData.id,
           establishmentUid: establishmentData.eUID,
-          primaryUser: Logindata.UserName,
+          primaryUser: userData.username,
           nmdsId: establishmentData.nmdsId ? establishmentData.nmdsId : 'undefined',
-          active: Logindata.Active,
-          userstatus: Logindata.Status,
+          active: userData.isActive,
+          userstatus: userData.status,
         });
       });
     } catch (err) {
