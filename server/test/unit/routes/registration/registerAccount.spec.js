@@ -1,8 +1,10 @@
 const chai = require('chai');
 const expect = chai.expect;
+const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
 const { registerAccount } = require('../../../../routes/registration/registerAccount');
+const models = require('../../../../models');
 
 describe('registerAccount', async () => {
   let req;
@@ -12,8 +14,27 @@ describe('registerAccount', async () => {
     req = {
       method: 'GET',
       url: '/api/registration',
+      body: {
+        establishment: {
+          mainService: 'Care',
+          isRegulated: false,
+        },
+        user: {
+          password: 'validPassword0',
+          username: 'username',
+          email: 'testuser@email.com',
+        },
+      },
     };
     res = httpMocks.createResponse();
+
+    sinon.stub(models.services, 'getMainServiceByName').callsFake(() => {
+      return { id: '1' };
+    });
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   describe('Request validation', () => {
@@ -86,6 +107,26 @@ describe('registerAccount', async () => {
       expect(res.statusCode).to.equal(400);
       expect(response.errMessage).to.equal('Invalid Username');
       expect(response.errCode).to.equal(-210);
+    });
+  });
+
+  describe('Main service errors', async () => {
+    beforeEach(() => {
+      models.services.getMainServiceByName.restore();
+    });
+
+    it('should return 400 and unexpected main service message when username is not valid', async () => {
+      sinon.stub(models.services, 'getMainServiceByName').callsFake(() => {
+        return null;
+      });
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('Unexpected main service');
+      expect(response.status).to.equal(-300);
     });
   });
 });

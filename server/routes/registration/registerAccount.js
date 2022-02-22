@@ -23,8 +23,8 @@ exports.registerAccount = async (req, res) => {
   let defaultError = responseErrors.default;
   try {
     // location ID is only relevant for CQC sites - namely isRegulated is true
-    if (!req.body.isRegulated) {
-      delete req.body.locationId;
+    if (!req.body.establishment.isRegulated) {
+      delete req.body.establishment.locationId;
     }
 
     const establishmentData = {
@@ -54,32 +54,12 @@ exports.registerAccount = async (req, res) => {
     try {
       // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
       await models.sequelize.transaction(async (t) => {
-        // first - validate given main service id, for which the main service id is dependent on whether the site is CQC regulated or not
-        let serviceResults = null;
-        if (establishmentData.isRegulated) {
-          // if a regulated (CQC) site, then can use any of the services as long as they are a main service
-          serviceResults = await models.services.findOne({
-            where: {
-              name: establishmentData.mainService,
-              isMain: true,
-            },
-          });
-        } else {
-          // a non-CQC site can only use non-CQC services
-          serviceResults = await models.services.findOne({
-            where: {
-              name: establishmentData.mainService,
-              iscqcregistered: {
-                [models.Sequelize.Op.or]: [false, null],
-              },
-              isMain: true,
-            },
-          });
-        }
+        const mainService = models.services.getMainServiceByName(
+          establishmentData.mainService,
+          establishmentData.isRegulated,
+        );
 
-        if (serviceResults && serviceResults.id && establishmentData.mainService === serviceResults.name) {
-          establishmentData.mainServiceId = serviceResults.id;
-        } else {
+        if (!mainService) {
           throw new RegistrationException(
             `Lookup on services for '${establishmentData.mainService}' being cqc registered (${establishmentData.isRegulated}) resulted with zero records`,
             responseErrors.unexpectedMainService.errCode,
@@ -87,8 +67,10 @@ exports.registerAccount = async (req, res) => {
           );
         }
 
+        establishmentData.mainServiceId = mainService.id;
+
         if (
-          serviceResults.other &&
+          mainService.other &&
           establishmentData.mainServiceOther &&
           establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH
         ) {
