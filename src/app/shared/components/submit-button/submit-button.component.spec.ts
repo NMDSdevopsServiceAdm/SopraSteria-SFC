@@ -11,6 +11,7 @@ describe('SubmitButtonComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
         exitText: 'Exit',
+        isExistingStaffRecord: false,
       },
     });
 
