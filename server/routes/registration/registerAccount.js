@@ -3,7 +3,6 @@ const sns = require('../../aws/sns');
 const slack = require('../../utils/slack/slack-logger');
 
 const models = require('../../models');
-const concatenateAddress = require('../../utils/concatenateAddress').concatenateAddress;
 const isPasswordValid = require('../../utils/security/passwordValidation').isPasswordValid;
 const isUsernameValid = require('../../utils/security/usernameValidation').isUsernameValid;
 const EstablishmentModel = require('../../models/classes/establishment').Establishment;
@@ -29,43 +28,14 @@ exports.registerAccount = async (req, res) => {
     }
 
     // extract establishment, user and login data from given input
-    const EstablishmentData = {
-      Name: req.body.locationName,
-      Address: concatenateAddress(
-        req.body.addressLine1,
-        req.body.addressLine2,
-        req.body.addressLine3,
-        req.body.townCity,
-        req.body.county,
-      ),
-      Address1: req.body.addressLine1,
-      Address2: req.body.addressLine2,
-      Address3: req.body.addressLine3,
-      Town: req.body.townCity,
-      County: req.body.county,
-      LocationID: req.body.locationId,
-      PostCode: req.body.postalCode,
-      MainService: req.body.mainService,
-      MainServiceId: null,
-      MainServiceOther: req.body.mainServiceOther,
-      NumberOfStaff: req.body.totalStaff,
-      IsRegulated: req.body.isRegulated,
-      Status: 'PENDING',
-      ExpiresSoonAlertDate: '90',
-      DataChangesLastUpdated: null,
+    const establishmentData = {
+      ...req.body.establishment,
+      ustatus: 'PENDING',
+      expiresSoonAlertDate: '90',
+      mainServiceId: null,
     };
-    const Userdata = {
-      FullName: req.body.user.fullname,
-      JobTitle: req.body.user.jobTitle,
-      Email: req.body.user.email,
-      Phone: req.body.user.phone,
-      SecurityQuestion: req.body.user.securityQuestion,
-      SecurityQuestionAnswer: req.body.user.securityQuestionAnswer,
-      DateCreated: new Date(),
-      EstablishmentID: 0,
-      AdminUser: true,
-      CanManageWdfClaims: req.body.user.canManageWdfClaims || false,
-    };
+
+    const userData = { ...req.body.user, canManageWdfClaims: req.body.user.canManageWdfClaims || false };
 
     var Logindata = {
       RegistrationId: 0,
@@ -87,11 +57,11 @@ exports.registerAccount = async (req, res) => {
       await models.sequelize.transaction(async (t) => {
         // first - validate given main service id, for which the main service id is dependent on whether the site is CQC regulated or not
         let serviceResults = null;
-        if (EstablishmentData.IsRegulated) {
+        if (establishmentData.isRegulated) {
           // if a regulated (CQC) site, then can use any of the services as long as they are a main service
           serviceResults = await models.services.findOne({
             where: {
-              name: EstablishmentData.MainService,
+              name: establishmentData.mainService,
               isMain: true,
             },
           });
@@ -99,7 +69,7 @@ exports.registerAccount = async (req, res) => {
           // a non-CQC site can only use non-CQC services
           serviceResults = await models.services.findOne({
             where: {
-              name: EstablishmentData.MainService,
+              name: establishmentData.mainService,
               iscqcregistered: {
                 [models.Sequelize.Op.or]: [false, null],
               },
@@ -108,11 +78,11 @@ exports.registerAccount = async (req, res) => {
           });
         }
 
-        if (serviceResults && serviceResults.id && EstablishmentData.MainService === serviceResults.name) {
-          EstablishmentData.MainServiceId = serviceResults.id;
+        if (serviceResults && serviceResults.id && establishmentData.mainService === serviceResults.name) {
+          establishmentData.mainServiceId = serviceResults.id;
         } else {
           throw new RegistrationException(
-            `Lookup on services for '${EstablishmentData.MainService}' being cqc registered (${EstablishmentData.IsRegulated}) resulted with zero records`,
+            `Lookup on services for '${establishmentData.mainService}' being cqc registered (${establishmentData.isRegulated}) resulted with zero records`,
             responseErrors.unexpectedMainService.errCode,
             responseErrors.unexpectedMainService.errMessage,
           );
@@ -120,11 +90,11 @@ exports.registerAccount = async (req, res) => {
 
         if (
           serviceResults.other &&
-          EstablishmentData.MainServiceOther &&
-          EstablishmentData.MainServiceOther.length > OTHER_MAX_LENGTH
+          establishmentData.mainServiceOther &&
+          establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH
         ) {
           throw new RegistrationException(
-            `Other field value of '${EstablishmentData.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
+            `Other field value of '${establishmentData.mainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
             responseErrors.unexpectedMainService.errCode,
             responseErrors.unexpectedMainService.errMessage,
           );
@@ -134,31 +104,31 @@ exports.registerAccount = async (req, res) => {
         defaultError = responseErrors.establishment;
         const newEstablishment = new EstablishmentModel(Logindata.UserName);
         newEstablishment.initialise(
-          EstablishmentData.Address1,
-          EstablishmentData.Address2,
-          EstablishmentData.Address3,
-          EstablishmentData.Town,
-          EstablishmentData.County,
-          EstablishmentData.LocationID,
+          establishmentData.addressLine1,
+          establishmentData.addressLine2,
+          establishmentData.addressLine3,
+          establishmentData.townCity,
+          establishmentData.county,
+          establishmentData.locationId,
           null, // PROV ID is not captured yet on registration
-          EstablishmentData.PostCode,
-          EstablishmentData.IsRegulated,
+          establishmentData.postalCode,
+          establishmentData.isRegulated,
         );
         await newEstablishment.load({
-          name: EstablishmentData.Name,
+          name: establishmentData.locationName,
           mainService: {
-            id: EstablishmentData.MainServiceId,
-            other: EstablishmentData.MainServiceOther,
+            id: establishmentData.mainServiceId,
+            other: establishmentData.mainServiceOther,
           },
-          ustatus: EstablishmentData.Status,
-          expiresSoonAlertDate: EstablishmentData.ExpiresSoonAlertDate,
-          numberOfStaff: EstablishmentData.NumberOfStaff,
+          ustatus: establishmentData.ustatus,
+          expiresSoonAlertDate: establishmentData.expiresSoonAlertDate,
+          numberOfStaff: establishmentData.numberOfStaff,
         }); // no Establishment properties on registration
         if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
           await newEstablishment.save(Logindata.UserName, false, t);
-          EstablishmentData.id = newEstablishment.id;
-          EstablishmentData.eUID = newEstablishment.uid;
-          EstablishmentData.NmdsId = newEstablishment.nmdsId;
+          establishmentData.id = newEstablishment.id;
+          establishmentData.eUID = newEstablishment.uid;
+          establishmentData.nmdsId = newEstablishment.nmdsId;
         } else {
           // Establishment properties not valid
           throw new RegistrationException(
@@ -170,26 +140,27 @@ exports.registerAccount = async (req, res) => {
 
         // now create user
         defaultError = responseErrors.user;
-        const newUser = new UserModel(EstablishmentData.id);
+        const newUser = new UserModel(establishmentData.id);
         await newUser.load({
           role: 'Edit',
-          fullname: Userdata.FullName,
-          jobTitle: Userdata.JobTitle,
-          email: Userdata.Email.toLowerCase(),
-          phone: Userdata.Phone,
-          securityQuestion: Userdata.SecurityQuestion,
-          securityQuestionAnswer: Userdata.SecurityQuestionAnswer,
-          username: Logindata.UserName.toLowerCase(),
-          password: Logindata.Password,
           isPrimary: true,
           isActive: Logindata.Active,
           status: Logindata.Status,
           registrationSurveyCompleted: false,
-          canManageWdfClaims: Userdata.CanManageWdfClaims,
+          canManageWdfClaims: userData.canManageWdfClaims,
+
+          fullname: userData.fullname,
+          jobTitle: userData.jobTitle,
+          email: userData.email.toLowerCase(),
+          phone: userData.phone,
+          securityQuestion: userData.securityQuestion,
+          securityQuestionAnswer: userData.securityQuestionAnswer,
+          username: Logindata.UserName.toLowerCase(),
+          password: Logindata.Password,
         });
         if (newUser.isValid) {
           await newUser.save(Logindata.UserName, 0, t);
-          Userdata.registrationID = newUser.id;
+          userData.registrationID = newUser.id;
         } else {
           // Establishment properties not valid
           throw new RegistrationException(
@@ -204,25 +175,25 @@ exports.registerAccount = async (req, res) => {
         delete slackMsg.user.password;
         delete slackMsg.user.securityQuestion;
         delete slackMsg.user.securityQuestionAnswer;
-        slackMsg.nmdsId = EstablishmentData.NmdsId;
-        slackMsg.establishmentUid = EstablishmentData.eUID;
+        slackMsg.nmdsId = establishmentData.nmdsId;
+        slackMsg.establishmentUid = establishmentData.eUID;
         slack.info('Registration', JSON.stringify(slackMsg, null, 2));
         // post through feedback topic - async method but don't wait for a responseThe
         sns.postToRegistrations(slackMsg);
         // gets here on success
         req.sqreen.signup_track({
           userId: newUser.uid,
-          establishmentId: EstablishmentData.eUID,
+          establishmentId: establishmentData.eUID,
         });
 
         res.status(200);
         res.json({
           status: 1,
           message: 'Establishment and primary user successfully created',
-          establishmentId: EstablishmentData.id,
-          establishmentUid: EstablishmentData.eUID,
+          establishmentId: establishmentData.id,
+          establishmentUid: establishmentData.eUID,
           primaryUser: Logindata.UserName,
-          nmdsId: EstablishmentData.NmdsId ? EstablishmentData.NmdsId : 'undefined',
+          nmdsId: establishmentData.nmdsId ? establishmentData.nmdsId : 'undefined',
           active: Logindata.Active,
           userstatus: Logindata.Status,
         });
