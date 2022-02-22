@@ -156,6 +156,7 @@ exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textC
 
   cellColumns.map((key) => {
     tab.getCell(key + currentLineNumber).font = { bold: true, color: textColour };
+    tab.getCell(key + currentLineNumber).alignment = { wrapText: true, vertical: 'middle', horizontal: 'center' };
     tab.getCell(key + currentLineNumber).fill = {
       type: 'pattern',
       pattern: 'solid',
