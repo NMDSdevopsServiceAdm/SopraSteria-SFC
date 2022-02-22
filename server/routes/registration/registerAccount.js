@@ -52,12 +52,11 @@ exports.registerAccount = async (req, res) => {
     // 3. Create User record (using Establishment ID) to get Registration ID
     // 4. Create Login record (using Registration ID)
     try {
-      // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
-      await models.sequelize.transaction(async (t) => {
-        establishmentData.mainServiceId = getMainServiceId(establishmentData);
+      establishmentData.mainServiceId = getMainServiceId(establishmentData);
 
-        // now create establishment - using the extended property encapsulation
-        defaultError = responseErrors.establishment;
+      // now create establishment - using the extended property encapsulation
+      defaultError = responseErrors.establishment;
+      await models.sequelize.transaction(async (t) => {
         const newEstablishment = new EstablishmentModel(userData.username);
         newEstablishment.initialise(
           establishmentData.addressLine1,
