@@ -9,6 +9,7 @@ const {
   addBlankRowIfTableEmpty,
   addBordersToAllFilledCells,
   addBox,
+  addThickLine,
 } = require('../../../utils/excelUtils');
 const path = require('path');
 
@@ -46,14 +47,17 @@ const addContentToFundingClaimFormTab = (workbook, fundingClaimFormTab) => {
 
   addBox(
     fundingClaimFormTab,
-    `A${rowCount + 2}`,
-    `K${rowCount + 3}`,
+    `A${rowCount + 3}`,
+    `K${rowCount + 4}`,
     'IMPORTANT: Please Keep This Document In Its Original Format. Format Not Accepted As PDF.',
     backgroundColours.lightBlue,
     11,
     'center',
-    'FFFFFF',
+    '000000',
   );
+
+  addSmallHeadingBlack(fundingClaimFormTab, 'J12', 'J12', 'Total amount being claimed');
+  addThickLine(fundingClaimFormTab, 'K12', 'K12');
 };
 
 const createFundingClaimFormTable = (fundingClaimFormTab) => {

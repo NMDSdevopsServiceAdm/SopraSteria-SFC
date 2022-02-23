@@ -245,3 +245,10 @@ exports.addBox = (tab, startCell, endCell, content, backgroundColour, textSize, 
   tab.getCell(startCell).fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
   tab.getCell(startCell).border = { ...fullBorder, color: { argb: '000000' } };
 };
+
+exports.addThickLine = (worksheet, startCell, endCell) => {
+  worksheet.mergeCells(`${startCell}:${endCell}`);
+  worksheet.getCell(startCell).border = {
+    bottom: { style: 'thick' },
+  };
+};
