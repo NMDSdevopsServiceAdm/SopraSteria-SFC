@@ -52,7 +52,7 @@ exports.registerAccount = async (req, res) => {
     // 3. Create User record (using Establishment ID) to get Registration ID
     // 4. Create Login record (using Registration ID)
     try {
-      establishmentData.mainServiceId = getMainServiceId(establishmentData);
+      establishmentData.mainServiceId = await getMainServiceId(establishmentData);
 
       // now create establishment - using the extended property encapsulation
       defaultError = responseErrors.establishment;
@@ -191,8 +191,8 @@ const validateRequest = (req) => {
   if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
 };
 
-const getMainServiceId = (establishmentData) => {
-  const mainService = models.services.getMainServiceByName(
+const getMainServiceId = async (establishmentData) => {
+  const mainService = await models.services.getMainServiceByName(
     establishmentData.mainService,
     establishmentData.isRegulated,
   );
