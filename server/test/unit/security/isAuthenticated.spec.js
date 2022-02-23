@@ -18,10 +18,12 @@ describe('isAuthenticated', () => {
   });
 
   describe('authorisedEstablishmentPermissionCheck', () => {
+    const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
     let jwtStub;
     let sentrySetUserStub;
     let sentrySetContextStub;
     let initialiseDbMock;
+    let claimReturn;
 
     beforeEach(() => {
       jwtStub = sinon.stub(jwt, 'verify');
@@ -45,6 +47,17 @@ describe('isAuthenticated', () => {
             dataOwner,
           };
         });
+      claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: 13,
+        EstablishmentUID: establishmentUid,
+        sub: 'anySub',
+        userUid: 'someUid',
+        parentId: 123,
+        isParent: false,
+        role: 'Read',
+      };
     });
 
     afterEach(() => {
@@ -217,18 +230,6 @@ describe('isAuthenticated', () => {
     });
 
     it('returns a 403 if param ID does not match the establishment ID and claim is not a parent', async () => {
-      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
-      const claimReturn = {
-        aud: config.get('jwt.aud.login'),
-        iss: config.get('jwt.iss'),
-        EstblishmentId: 13,
-        EstablishmentUID: establishmentUid,
-        sub: 'anySub',
-        userUid: 'someUid',
-        parentId: 123,
-        isParent: false,
-        role: 'Read',
-      };
       jwtStub.returns(claimReturn);
 
       const req = httpMocks.createRequest({
@@ -252,19 +253,7 @@ describe('isAuthenticated', () => {
       expect(data).to.equal(`Not permitted to access Establishment with id: ${req.params.id}`);
     });
 
-    it('follows happy path for authorised establishment when foundEstablishment is a subsidiary', async () => {
-      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
-      const claimReturn = {
-        aud: config.get('jwt.aud.login'),
-        iss: config.get('jwt.iss'),
-        EstblishmentId: 13,
-        EstablishmentUID: establishmentUid,
-        sub: 'anySub',
-        userUid: 'someUid',
-        parentId: 123,
-        isParent: false,
-        role: 'Read',
-      };
+    it('follows success path for authorised establishment when foundEstablishment is a subsidiary', async () => {
       jwtStub.returns(claimReturn);
       const sqreenIdentifyFake = sinon.fake();
 
@@ -346,20 +335,11 @@ describe('isAuthenticated', () => {
       expect(next.calledOnce).to.equal(true);
     });
 
-    it('follows happy path for authorised establishment when foundEstablishment is a parent', async () => {
-      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f52da';
-      const claimReturn = {
-        aud: config.get('jwt.aud.login'),
-        iss: config.get('jwt.iss'),
-        EstblishmentId: 1,
-        EstablishmentUID: establishmentUid,
-        sub: null,
-        userUid: 'someUid',
-        parentId: null,
-        isParent: false,
-        role: 'Read',
-      };
+    it('follows success path for authorised establishment when foundEstablishment is a parent', async () => {
+      claimReturn.sub = null;
+      claimReturn.parentId = null;
       jwtStub.returns(claimReturn);
+
       const sqreenIdentifyFake = sinon.fake();
 
       const req = httpMocks.createRequest({
@@ -438,6 +418,32 @@ describe('isAuthenticated', () => {
       });
 
       expect(next.calledOnce).to.equal(true);
+    });
+
+    it('returns a 403 if parent establishment only has "Read" access', async () => {
+      claimReturn.parentId = 123;
+      claimReturn.isParent = true;
+      jwtStub.returns(claimReturn);
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: 123,
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+      initialiseDbMock();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.eql({ message: 'Not permitted' });
     });
   });
 });
