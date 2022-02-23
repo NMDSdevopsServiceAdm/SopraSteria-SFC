@@ -381,6 +381,3 @@ router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOAD
 module.exports = router;
 
 module.exports.uploadedStarGet = uploadedStarGet;
-// module.exports.staffData = staffData;
-// module.exports.hideNinoAndDob = hideNinoAndDob;
-// module.exports.showNinoAndDob = showNinoAndDob;
