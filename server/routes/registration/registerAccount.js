@@ -57,20 +57,11 @@ exports.registerAccount = async (req, res) => {
       defaultError = responseErrors.establishment;
       await models.sequelize.transaction(async (t) => {
         const newEstablishment = await createEstablishment(userData.username, establishmentData);
+        await saveEstablishment(userData.username, newEstablishment, t);
 
-        if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
-          await newEstablishment.save(userData.username, false, t);
-          establishmentData.id = newEstablishment.id;
-          establishmentData.eUID = newEstablishment.uid;
-          establishmentData.nmdsId = newEstablishment.nmdsId;
-        } else {
-          // Establishment properties not valid
-          throw new RegistrationException(
-            'Inavlid establishment properties',
-            responseErrors.invalidEstablishment.errCode,
-            responseErrors.invalidEstablishment.errMessage,
-          );
-        }
+        establishmentData.id = newEstablishment.id;
+        establishmentData.eUID = newEstablishment.uid;
+        establishmentData.nmdsId = newEstablishment.nmdsId;
 
         // now create user
         defaultError = responseErrors.user;
@@ -171,7 +162,13 @@ const validateRequest = (req) => {
 };
 
 const createEstablishment = async (username, establishmentData) => {
-  const newEstablishment = new Establishment(username, establishmentData);
+  const newEstablishment = new Establishment(username);
+  initialiseEstablishment(newEstablishment, establishmentData);
+
+  return await loadEstablishmentData(newEstablishment, establishmentData);
+};
+
+const initialiseEstablishment = (newEstablishment, establishmentData) => {
   newEstablishment.initialise(
     establishmentData.addressLine1,
     establishmentData.addressLine2,
@@ -183,7 +180,9 @@ const createEstablishment = async (username, establishmentData) => {
     establishmentData.postalCode,
     establishmentData.isRegulated,
   );
+};
 
+const loadEstablishmentData = async (newEstablishment, establishmentData) => {
   await newEstablishment.load({
     name: establishmentData.locationName,
     mainService: {
@@ -196,6 +195,25 @@ const createEstablishment = async (username, establishmentData) => {
   });
 
   return newEstablishment;
+};
+
+const saveEstablishment = async (username, newEstablishment, t) => {
+  if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
+    await newEstablishment.save(username, false, t);
+
+    return {
+      id: newEstablishment.id,
+      uid: newEstablishment.uid,
+      nmdsId: newEstablishment.nmdsId,
+    };
+  } else {
+    // Establishment properties not valid
+    throw new RegistrationException(
+      'Inavlid establishment properties',
+      responseErrors.invalidEstablishment.errCode,
+      responseErrors.invalidEstablishment.errMessage,
+    );
+  }
 };
 
 const getMainServiceId = async (establishmentData) => {
@@ -219,3 +237,6 @@ const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
   mainService.other &&
   establishmentData.mainServiceOther &&
   establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;
+
+exports.loadEstablishmentData = loadEstablishmentData;
+exports.initialiseEstablishment = initialiseEstablishment;

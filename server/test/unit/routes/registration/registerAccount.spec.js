@@ -3,8 +3,9 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const { registerAccount } = require('../../../../routes/registration/registerAccount');
+const { registerAccount, initialiseEstablishment } = require('../../../../routes/registration/registerAccount');
 const models = require('../../../../models');
+const { Establishment } = require('../../../../models/classes/establishment');
 
 describe('registerAccount', async () => {
   let req;
@@ -138,5 +139,71 @@ describe('registerAccount', async () => {
       expect(response.message).to.equal('Unexpected main service');
       expect(response.status).to.equal(-300);
     });
+  });
+});
+
+describe('initialiseEstablishment', () => {
+  let newEstablishment;
+  let establishmentData;
+  beforeEach(() => {
+    newEstablishment = new Establishment('username');
+    establishmentData = {
+      addressLine1: '12 Somewhere Street',
+      addressLine2: 'Somewhere',
+      addressLine3: 'Somwhere but adressline 3',
+      townCity: 'Valhalla',
+      county: 'Berkshire',
+      locationId: 'locationIdExample',
+      postalCode: 'S125AA',
+      isRegulated: false,
+    };
+  });
+
+  it('should set address1 in newEstablishment as addressLine1 passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.address1).to.equal(establishmentData.addressLine1);
+  });
+
+  it('should set address2 in newEstablishment as addressLine2 passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.address2).to.equal(establishmentData.addressLine2);
+  });
+
+  it('should set address3 in newEstablishment as addressLine3 passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.address3).to.equal(establishmentData.addressLine3);
+  });
+
+  it('should set town in newEstablishment as townCity passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.town).to.equal(establishmentData.townCity);
+  });
+
+  it('should set county in newEstablishment as county passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.county).to.equal(establishmentData.county);
+  });
+
+  it('should set locationId in newEstablishment as townCity passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.locationId).to.equal(establishmentData.locationId);
+  });
+
+  it('should set postcode in newEstablishment as postalCode passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.postcode).to.equal(establishmentData.postalCode);
+  });
+
+  it('should set isRegulated in newEstablishment as isRegulated passed in', async () => {
+    await initialiseEstablishment(newEstablishment, establishmentData);
+
+    expect(newEstablishment.isRegulated).to.equal(establishmentData.isRegulated);
   });
 });
