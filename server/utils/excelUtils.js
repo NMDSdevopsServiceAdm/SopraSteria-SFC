@@ -232,16 +232,16 @@ exports.addSmallHeadingBlack = (tab, startCell, endCell, content) => {
   };
 };
 
-exports.addBox = (tab, startCell, endCell, content, backgroundColour) => {
+exports.addBox = (tab, startCell, endCell, content, backgroundColour, textSize, horizontal, textcolor) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = { text: content, hyperlink: "#'Sheet2'!A1" };
-  tab.getCell(startCell).alignment = { vertical: 'middle', horizontal: 'center' };
+  tab.getCell(startCell).alignment = { vertical: 'middle', horizontal: horizontal, wrapText: 'true' };
   tab.getCell(startCell).font = {
     name: 'Serif',
     family: 4,
-    size: 16,
-    color: { argb: 'FFFFFF' },
+    size: textSize,
+    color: { argb: textcolor },
   };
   tab.getCell(startCell).fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
-  tab.getCell(startCell).border = { fullBorder, color: { argb: '000000' } };
+  tab.getCell(startCell).border = { ...fullBorder, color: { argb: '000000' } };
 };

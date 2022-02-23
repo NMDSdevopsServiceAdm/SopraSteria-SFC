@@ -6,7 +6,6 @@ const {
   backgroundColours,
   textColours,
   fitColumnsToSize,
-
   addBlankRowIfTableEmpty,
   addBordersToAllFilledCells,
   addBox,
@@ -24,15 +23,37 @@ const addContentToFundingClaimFormTab = (workbook, fundingClaimFormTab) => {
   addSmallHeadingBlack(fundingClaimFormTab, 'A6', 'C6', 'Grant Number:');
   addLine(fundingClaimFormTab, 'A8', 'E8');
   addSFCLogo(workbook, fundingClaimFormTab);
-
+  addBox(fundingClaimFormTab, 'G6', 'H7', 'Go to list of codes', backgroundColours.darkBlue, 16, 'center', 'FFFFFF');
+  addBox(
+    fundingClaimFormTab,
+    'I6',
+    'K7',
+    'IMPORTANT: Please Keep This Document In Its Original Format. Format Not Accepted As PDF.',
+    backgroundColours.darkBlue,
+    11,
+    'left',
+    'FFFFFF',
+  );
   const fundingClaimFormTable = createFundingClaimFormTable(fundingClaimFormTab);
   addRows(fundingClaimFormTable);
 
   fitColumnsToSize(fundingClaimFormTab, 1, 1.5);
   setColumnWidths(fundingClaimFormTab);
 
-  addBordersToAllFilledCells(fundingClaimFormTab, 9);
-  addBox(fundingClaimFormTab, 'G6', 'H7', 'Go to list of codes', backgroundColours.darkBlue);
+  addBordersToAllFilledCells(fundingClaimFormTab, 8);
+
+  rowValue(fundingClaimFormTab, 9);
+
+  addBox(
+    fundingClaimFormTab,
+    `A${rowCount + 2}`,
+    `K${rowCount + 3}`,
+    'IMPORTANT: Please Keep This Document In Its Original Format. Format Not Accepted As PDF.',
+    backgroundColours.lightBlue,
+    11,
+    'center',
+    'FFFFFF',
+  );
 };
 
 const createFundingClaimFormTable = (fundingClaimFormTab) => {
@@ -63,7 +84,6 @@ const createFundingClaimFormTable = (fundingClaimFormTab) => {
     { name: 'Was qualification previously funded through up-front LM incentive?', filterButton: false },
     { name: 'Value Claimed', filterButton: false },
   ];
-
   return fundingClaimFormTab.addTable({
     name: 'fundingClaimFormTable',
     ref: 'A9',
@@ -99,6 +119,15 @@ const setColumnWidths = (tab) => {
 
   longColumn.width = 33;
   longColumnsecond.width = 29;
+};
+
+let rowCount = 0;
+const rowValue = (tab, startingRow) => {
+  tab.eachRow(function (row, rowNumber) {
+    if (rowNumber > startingRow) {
+      return (rowCount = rowNumber);
+    }
+  });
 };
 
 module.exports.generateFundingClaimFormTab = generateFundingClaimFormTab;
