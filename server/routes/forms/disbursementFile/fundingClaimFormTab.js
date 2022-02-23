@@ -9,6 +9,7 @@ const {
 
   addBlankRowIfTableEmpty,
   addBordersToAllFilledCells,
+  addBox,
 } = require('../../../utils/excelUtils');
 const path = require('path');
 
@@ -28,10 +29,10 @@ const addContentToFundingClaimFormTab = (workbook, fundingClaimFormTab) => {
   addRows(fundingClaimFormTable);
 
   fitColumnsToSize(fundingClaimFormTab, 1, 1.5);
-
   setColumnWidths(fundingClaimFormTab);
 
   addBordersToAllFilledCells(fundingClaimFormTab, 9);
+  addBox(fundingClaimFormTab, 'G6', 'H7', 'Go to list of codes', backgroundColours.darkBlue);
 };
 
 const createFundingClaimFormTable = (fundingClaimFormTab) => {

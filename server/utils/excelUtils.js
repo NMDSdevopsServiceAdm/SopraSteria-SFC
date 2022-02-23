@@ -195,6 +195,7 @@ exports.backgroundColours = {
   red: { argb: 'FFC0C8' },
   green: { argb: 'BBEDC9' },
   lightBlue: { argb: 'A3CBFA' },
+  darkBlue: { argb: '5981B8' },
 };
 
 exports.textColours = {
@@ -229,4 +230,18 @@ exports.addSmallHeadingBlack = (tab, startCell, endCell, content) => {
     bold: true,
     color: { argb: '000000' },
   };
+};
+
+exports.addBox = (tab, startCell, endCell, content, backgroundColour) => {
+  tab.mergeCells(`${startCell}:${endCell}`);
+  tab.getCell(startCell).value = { text: content, hyperlink: "#'Sheet2'!A1" };
+  tab.getCell(startCell).alignment = { vertical: 'middle', horizontal: 'center' };
+  tab.getCell(startCell).font = {
+    name: 'Serif',
+    family: 4,
+    size: 16,
+    color: { argb: 'FFFFFF' },
+  };
+  tab.getCell(startCell).fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+  tab.getCell(startCell).border = { fullBorder, color: { argb: '000000' } };
 };
