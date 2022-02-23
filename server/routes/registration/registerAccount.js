@@ -5,7 +5,7 @@ const slack = require('../../utils/slack/slack-logger');
 const models = require('../../models');
 const isPasswordValid = require('../../utils/security/passwordValidation').isPasswordValid;
 const isUsernameValid = require('../../utils/security/usernameValidation').isUsernameValid;
-const EstablishmentModel = require('../../models/classes/establishment').Establishment;
+const Establishment = require('../../models/classes/establishment').Establishment;
 const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 const User = require('../../models/classes/user').User;
@@ -54,31 +54,10 @@ exports.registerAccount = async (req, res) => {
     try {
       establishmentData.mainServiceId = await getMainServiceId(establishmentData);
 
-      // now create establishment - using the extended property encapsulation
       defaultError = responseErrors.establishment;
       await models.sequelize.transaction(async (t) => {
-        const newEstablishment = new EstablishmentModel(userData.username);
-        newEstablishment.initialise(
-          establishmentData.addressLine1,
-          establishmentData.addressLine2,
-          establishmentData.addressLine3,
-          establishmentData.townCity,
-          establishmentData.county,
-          establishmentData.locationId,
-          null, // PROV ID is not captured yet on registration
-          establishmentData.postalCode,
-          establishmentData.isRegulated,
-        );
-        await newEstablishment.load({
-          name: establishmentData.locationName,
-          mainService: {
-            id: establishmentData.mainServiceId,
-            other: establishmentData.mainServiceOther,
-          },
-          ustatus: establishmentData.ustatus,
-          expiresSoonAlertDate: establishmentData.expiresSoonAlertDate,
-          numberOfStaff: establishmentData.numberOfStaff,
-        }); // no Establishment properties on registration
+        const newEstablishment = await createEstablishment(userData.username, establishmentData);
+
         if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
           await newEstablishment.save(userData.username, false, t);
           establishmentData.id = newEstablishment.id;
@@ -189,6 +168,34 @@ const validateRequest = (req) => {
   if (!req.body.user || isEmpty(req.body.user)) return responseErrors.invalidUser;
   if (!isPasswordValid(req.body.user.password)) return responseErrors.invalidPassword;
   if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
+};
+
+const createEstablishment = async (username, establishmentData) => {
+  const newEstablishment = new Establishment(username, establishmentData);
+  newEstablishment.initialise(
+    establishmentData.addressLine1,
+    establishmentData.addressLine2,
+    establishmentData.addressLine3,
+    establishmentData.townCity,
+    establishmentData.county,
+    establishmentData.locationId,
+    null, // PROV ID is not captured yet on registration
+    establishmentData.postalCode,
+    establishmentData.isRegulated,
+  );
+
+  await newEstablishment.load({
+    name: establishmentData.locationName,
+    mainService: {
+      id: establishmentData.mainServiceId,
+      other: establishmentData.mainServiceOther,
+    },
+    ustatus: establishmentData.ustatus,
+    expiresSoonAlertDate: establishmentData.expiresSoonAlertDate,
+    numberOfStaff: establishmentData.numberOfStaff,
+  });
+
+  return newEstablishment;
 };
 
 const getMainServiceId = async (establishmentData) => {
