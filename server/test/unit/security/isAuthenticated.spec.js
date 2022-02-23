@@ -481,5 +481,35 @@ describe('isAuthenticated', () => {
       expect(res.statusCode).to.equal(403);
       expect(data).to.eql({ message: `Parent not permitted to access Establishment with id: ${req.params.id}` });
     });
+
+    it('returns a 403 if parent with "Read" only access tried to update an establishment', async () => {
+      claimReturn.parentId = 123;
+      claimReturn.isParent = true;
+      jwtStub.returns(claimReturn);
+
+      const req = httpMocks.createRequest({
+        method: 'PUT',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: 123,
+        },
+        path: '/not-the-path-i-wanted',
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      initialiseDbMock('my-parentId', false, 'Workplace', 'Workplace');
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.eql({
+        message: `Parent not permitted to update Establishment with id: ${req.params.id}`,
+      });
+    });
   });
 });
