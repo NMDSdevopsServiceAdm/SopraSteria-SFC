@@ -6,6 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 import { AdminSkipService } from '../admin-skip.service';
 
@@ -18,12 +19,14 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
   public sanitise: boolean;
   public isAdmin: boolean;
+  public canViewNinoDob: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
     private bulkUploadService: BulkUploadService,
     private breadcrumbService: BreadcrumbService,
     private adminSkipService: AdminSkipService,
+    private permissionsService: PermissionsService,
     private route: ActivatedRoute,
   ) {}
 
@@ -31,8 +34,10 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.BULK_UPLOAD);
     this.establishment = this.establishmentService.primaryWorkplace;
     this.bulkUploadService.setReturnTo(null);
+
+    this.canViewNinoDob = this.permissionsService.can(this.establishment.uid, 'canViewNinoDob');
     this.isAdmin = this.route.snapshot.data.loggedInUser.role === 'Admin';
-    this.sanitise = this.isAdmin ? true : false;
+    this.sanitise = !this.canViewNinoDob;
   }
 
   public toggleSanitise(sanitiseData: boolean): void {

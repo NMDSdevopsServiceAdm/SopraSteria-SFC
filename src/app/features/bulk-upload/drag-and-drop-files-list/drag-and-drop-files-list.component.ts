@@ -193,12 +193,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public downloadFile(event: Event, key: string): void {
     event.preventDefault();
 
-    // this.bulkUploadService
-    //   .getUploadedFileSignedURL(this.establishmentService.primaryWorkplace.uid, key)
-    //   .subscribe((signedURL) => {
-    //     window.open(signedURL);
-    //   });
-
     let type: BulkUploadFileType = null;
 
     if (key.includes('staff')) {
@@ -213,7 +207,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       .getUploadedFileFromS3(this.establishmentService.primaryWorkplace.uid, key, type)
       .pipe(take(1))
       .subscribe((response) => {
-        console.log(response);
         const filename = FileUtil.getFileName(response);
         const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
         saveAs(blob, filename);
@@ -248,7 +241,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         }
 
         this.uploadedFiles = uploadedFiles;
-        console.log(this.uploadedFiles);
         this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
 
         if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {

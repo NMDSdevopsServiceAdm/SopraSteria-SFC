@@ -86,8 +86,7 @@ describe('BulkUploadPageComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-
-    const router = injector.inject(Router) as Router;
+    const permissionsService = injector.inject(PermissionsService) as PermissionsService;
 
     const component = fixture.componentInstance;
     return {
@@ -96,7 +95,7 @@ describe('BulkUploadPageComponent', () => {
       getByTestId,
       queryByTestId,
       establishmentService,
-      router,
+      permissionsService,
     };
   }
   it('should render a BulkUploadPageComponent', async () => {
@@ -130,13 +129,23 @@ describe('BulkUploadPageComponent', () => {
     expect(queryByTestId('showDataCheckbox')).toBeFalsy();
   });
 
-  it('should set sanitise variable to true, when an admin loads the page', async () => {
-    const { component } = await setup();
+  it('should set sanitise variable to true, when someone without canViewNinoDob permissions loads the page', async () => {
+    const { component, fixture, permissionsService } = await setup();
+    spyOn(permissionsService, 'can').and.returnValue(false);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
     expect(component.sanitise).toBeTruthy();
   });
 
-  it('should set sanitise variable to false, when a non admin loads the page', async () => {
-    const { component } = await setup('Edit');
+  it('should set sanitise variable to false, when someone with canViewNinoDob permissions loads the page', async () => {
+    const { component, fixture, permissionsService } = await setup('Edit');
+    spyOn(permissionsService, 'can').and.returnValue(true);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
     expect(component.sanitise).toBeFalsy();
   });
 
@@ -150,7 +159,7 @@ describe('BulkUploadPageComponent', () => {
     expect(component.sanitise).toBeFalsy();
   });
 
-  it('should change the value of sanitise to false when checkbox is unchecked', async () => {
+  it('should change the value of sanitise to true when checkbox is unchecked', async () => {
     const { component, fixture, getByTestId } = await setup();
     const checkbox = getByTestId('showDataCheckbox');
 
