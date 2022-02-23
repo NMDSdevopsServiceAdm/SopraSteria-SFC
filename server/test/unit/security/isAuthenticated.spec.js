@@ -32,19 +32,19 @@ describe('isAuthenticated', () => {
       initialiseDbMock = (
         parentId = 'my-parentId',
         isParent = false,
-        id = 1,
-        dataPermissions = null,
-        nmdsId = 'nmdsId',
         dataOwner = 'Parent',
+        dataPermissions = null,
+        id = 1,
+        nmdsId = 'nmdsId',
       ) =>
         sinon.replace(models.establishment, 'findOne', () => {
           return {
             parentId,
             isParent,
-            id,
-            dataPermissions,
-            nmdsId,
             dataOwner,
+            dataPermissions,
+            id,
+            nmdsId,
           };
         });
       claimReturn = {
@@ -305,7 +305,7 @@ describe('isAuthenticated', () => {
             role: req.role,
           },
         ),
-      ).to.equal(true);
+      ).to.be.true;
 
       // Assert on sentry calls
       expect(
@@ -314,7 +314,7 @@ describe('isAuthenticated', () => {
           id: req.userUid,
           ip_address: req.headers['x-forwarded-for'],
         }),
-      ).to.equal(true);
+      ).to.be.true;
 
       expect(sentrySetContextStub.getCall(0).args[0]).to.equal('establishment');
       expect(sentrySetContextStub.getCall(0).args[1]).to.eql({
@@ -332,7 +332,7 @@ describe('isAuthenticated', () => {
         role: req.role,
       });
 
-      expect(next.calledOnce).to.equal(true);
+      expect(next.calledOnce).to.be.true;
     });
 
     it('follows success path for authorised establishment when foundEstablishment is a parent', async () => {
@@ -390,7 +390,7 @@ describe('isAuthenticated', () => {
             role: req.role,
           },
         ),
-      ).to.equal(true);
+      ).to.be.true;
 
       // Assert on sentry calls
       expect(
@@ -399,7 +399,7 @@ describe('isAuthenticated', () => {
           id: req.userUid,
           ip_address: req.headers['x-forwarded-for'],
         }),
-      ).to.equal(true);
+      ).to.be.true;
 
       expect(sentrySetContextStub.getCall(0).args[0]).to.equal('establishment');
       expect(sentrySetContextStub.getCall(0).args[1]).to.eql({
@@ -417,7 +417,7 @@ describe('isAuthenticated', () => {
         role: req.role,
       });
 
-      expect(next.calledOnce).to.equal(true);
+      expect(next.calledOnce).to.be.true;
     });
 
     it('returns a 403 if parent establishment only has "Read" access', async () => {
@@ -444,6 +444,42 @@ describe('isAuthenticated', () => {
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
       expect(data).to.eql({ message: 'Not permitted' });
+    });
+
+    it('returns a 403 if a non-admin with a workplace data owner has no data permissions', async () => {
+      claimReturn.parentId = 123;
+      claimReturn.isParent = true;
+      claimReturn.dataPermissions = null;
+      jwtStub.returns(claimReturn);
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: 123,
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      initialiseDbMock('my-parentId', false, 'Workplace');
+
+      const consoleSpy = sinon.spy(console, 'error');
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      expect(
+        consoleSpy.calledOnceWithExactly(
+          `Found subsidiary establishment (${req.params.id}) for this known parent (${claimReturn.EstblishmentId}/${claimReturn.EstablishmentUID}), but access has not been given`,
+        ),
+      ).to.be.true;
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.eql({ message: `Parent not permitted to access Establishment with id: ${req.params.id}` });
     });
   });
 });
