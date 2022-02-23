@@ -21,19 +21,30 @@ describe('isAuthenticated', () => {
     let jwtStub;
     let sentrySetUserStub;
     let sentrySetContextStub;
+    let initialiseDbMock;
 
     beforeEach(() => {
       jwtStub = sinon.stub(jwt, 'verify');
       sentrySetUserStub = sinon.stub(Sentry, 'setUser');
       sentrySetContextStub = sinon.stub(Sentry, 'setContext');
-      sinon.replace(models.establishment, 'findOne', () => {
-        return {
-          id: 1,
-          dataPermissions: null,
-          dataOwner: 'Parent',
-          nmdsId: 'nmdsId',
-        };
-      });
+      initialiseDbMock = (
+        parentId = 'my-parentId',
+        isParent = false,
+        id = 1,
+        dataPermissions = null,
+        nmdsId = 'nmdsId',
+        dataOwner = 'Parent',
+      ) =>
+        sinon.replace(models.establishment, 'findOne', () => {
+          return {
+            parentId,
+            isParent,
+            id,
+            dataPermissions,
+            nmdsId,
+            dataOwner,
+          };
+        });
     });
 
     afterEach(() => {
@@ -205,12 +216,48 @@ describe('isAuthenticated', () => {
       expect(data).to.deep.equal({ message: 'Not permitted' });
     });
 
-    it('follows happy path for authorised establishment when foundEstablishment is truthy and is a subsidiary', async () => {
-      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f52da';
+    it('returns a 403 if param ID does not match the establishment ID and claim is not a parent', async () => {
+      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
       const claimReturn = {
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 1,
+        EstblishmentId: 13,
+        EstablishmentUID: establishmentUid,
+        sub: 'anySub',
+        userUid: 'someUid',
+        parentId: 123,
+        isParent: false,
+        role: 'Read',
+      };
+      jwtStub.returns(claimReturn);
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: 123,
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+      initialiseDbMock();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal(`Not permitted to access Establishment with id: ${req.params.id}`);
+    });
+
+    it('follows happy path for authorised establishment when foundEstablishment is a subsidiary', async () => {
+      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
+      const claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: 13,
         EstablishmentUID: establishmentUid,
         sub: 'anySub',
         userUid: 'someUid',
@@ -236,6 +283,7 @@ describe('isAuthenticated', () => {
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
+      initialiseDbMock();
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
       // check req object is updated
@@ -255,7 +303,99 @@ describe('isAuthenticated', () => {
         parentIsOwner: true,
       });
 
-      // TODO: assert DB call?
+      // check squeen is called with correct payload
+      expect(
+        sqreenIdentifyFake.calledWith(
+          req,
+          {
+            userId: req.userUid,
+            establishmentId: req.establishment.uid,
+          },
+          {
+            isParent: req.establishment.isParent,
+            role: req.role,
+          },
+        ),
+      ).to.equal(true);
+
+      // Assert on sentry calls
+      expect(
+        sentrySetUserStub.calledOnceWith({
+          username: req.username,
+          id: req.userUid,
+          ip_address: req.headers['x-forwarded-for'],
+        }),
+      ).to.equal(true);
+
+      expect(sentrySetContextStub.getCall(0).args[0]).to.equal('establishment');
+      expect(sentrySetContextStub.getCall(0).args[1]).to.eql({
+        id: req.establishment.id,
+        uid: req.establishment.uid,
+        isParent: req.isParent,
+        nmdsID: 'nmdsId',
+      });
+
+      expect(sentrySetContextStub.getCall(1).args[0]).to.equal('user');
+      expect(sentrySetContextStub.getCall(1).args[1]).to.eql({
+        username: req.username,
+        id: req.userUid,
+        ip_address: req.headers['x-forwarded-for'],
+        role: req.role,
+      });
+
+      expect(next.calledOnce).to.equal(true);
+    });
+
+    it('follows happy path for authorised establishment when foundEstablishment is a parent', async () => {
+      const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f52da';
+      const claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: 1,
+        EstablishmentUID: establishmentUid,
+        sub: null,
+        userUid: 'someUid',
+        parentId: null,
+        isParent: false,
+        role: 'Read',
+      };
+      jwtStub.returns(claimReturn);
+      const sqreenIdentifyFake = sinon.fake();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: establishmentUid,
+        },
+        sqreen: {
+          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+      initialiseDbMock(null, true); // make db return as a parent
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+      // check req object is updated
+      expect(req).to.deep.include({
+        username: claimReturn.sub,
+        userUid: claimReturn.userUid,
+        user: { id: claimReturn.userUid },
+        isParent: claimReturn.isParent,
+        role: claimReturn.role,
+        establishment: {
+          id: claimReturn.EstblishmentId,
+          uid: claimReturn.EstablishmentUID,
+          isSubsidiary: Boolean(claimReturn.parentId),
+          isParent: true,
+        },
+        dataPermissions: null,
+        parentIsOwner: true,
+      });
 
       // check squeen is called with correct payload
       expect(
