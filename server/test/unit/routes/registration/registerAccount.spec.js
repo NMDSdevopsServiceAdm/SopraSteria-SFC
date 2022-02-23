@@ -7,6 +7,7 @@ const {
   registerAccount,
   initialiseEstablishment,
   loadEstablishmentData,
+  saveEstablishmentToDatabase,
 } = require('../../../../routes/registration/registerAccount');
 const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
@@ -257,6 +258,56 @@ describe('Saving establishment to database', () => {
       await loadEstablishmentData(newEstablishment, establishmentData);
 
       expect(newEstablishment.numberOfStaff).to.equal(establishmentData.numberOfStaff);
+    });
+  });
+
+  describe('saveEstablishmentToDatabase', async () => {
+    let saveSpy;
+
+    beforeEach(async () => {
+      establishmentData = {
+        ...establishmentData,
+        locationName: 'Test Location Name',
+        mainServiceId: 9,
+        mainServiceOther: undefined,
+        ustatus: 'PENDING',
+        expiresSoonAlertDate: 90,
+        numberOfStaff: 4,
+      };
+
+      saveSpy = sinon.spy(newEstablishment, 'save');
+    });
+
+    it('should call the save function on newEstablishment when valid establishment passed in', async () => {
+      await saveEstablishmentToDatabase('username', establishmentData, newEstablishment);
+
+      expect(saveSpy.called).to.equal(true);
+    });
+
+    it('should throw an Establishment data is invalid error when invalid establishment data passed in', async () => {
+      establishmentData.mainServiceId = 'Invalid main service ID';
+
+      let error = null;
+      try {
+        await saveEstablishmentToDatabase('username', establishmentData, newEstablishment);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error.errCode).to.equal(-700);
+      expect(error.errMessage).to.equal('Establishment data is invalid');
+    });
+
+    it('should not call save function on newEstablishment when invalid establishment data passed in', async () => {
+      establishmentData.mainServiceId = 'Invalid main service ID';
+
+      try {
+        await saveEstablishmentToDatabase('username', establishmentData, newEstablishment);
+      } catch (err) {
+        console.log(err);
+      }
+
+      expect(saveSpy.called).to.equal(false);
     });
   });
 });

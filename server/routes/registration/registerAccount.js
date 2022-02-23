@@ -56,16 +56,17 @@ exports.registerAccount = async (req, res) => {
 
       defaultError = responseErrors.establishment;
       await models.sequelize.transaction(async (t) => {
-        const newEstablishment = await createEstablishment(userData.username, establishmentData);
-        await saveEstablishment(userData.username, newEstablishment, t);
-
-        establishmentData.id = newEstablishment.id;
-        establishmentData.eUID = newEstablishment.uid;
-        establishmentData.nmdsId = newEstablishment.nmdsId;
+        const newEstablishment = new Establishment(userData.username);
+        const establishmentInfo = await saveEstablishmentToDatabase(
+          userData.username,
+          establishmentData,
+          newEstablishment,
+          t,
+        );
 
         // now create user
         defaultError = responseErrors.user;
-        const newUser = new User(establishmentData.id);
+        const newUser = new User(establishmentInfo.id);
         await newUser.load(userData);
         if (newUser.isValid) {
           await newUser.save(userData.username, 0, t);
@@ -84,25 +85,25 @@ exports.registerAccount = async (req, res) => {
         delete slackMsg.user.password;
         delete slackMsg.user.securityQuestion;
         delete slackMsg.user.securityQuestionAnswer;
-        slackMsg.nmdsId = establishmentData.nmdsId;
-        slackMsg.establishmentUid = establishmentData.eUID;
+        slackMsg.nmdsId = establishmentInfo.nmdsId;
+        slackMsg.establishmentUid = establishmentInfo.uid;
         slack.info('Registration', JSON.stringify(slackMsg, null, 2));
         // post through feedback topic - async method but don't wait for a responseThe
         sns.postToRegistrations(slackMsg);
         // gets here on success
         req.sqreen.signup_track({
           userId: newUser.uid,
-          establishmentId: establishmentData.eUID,
+          establishmentId: establishmentInfo.uid,
         });
 
         res.status(200);
         res.json({
           status: 1,
           message: 'Establishment and primary user successfully created',
-          establishmentId: establishmentData.id,
-          establishmentUid: establishmentData.eUID,
+          establishmentId: establishmentInfo.id,
+          establishmentUid: establishmentInfo.uid,
           primaryUser: userData.username,
-          nmdsId: establishmentData.nmdsId ? establishmentData.nmdsId : 'undefined',
+          nmdsId: establishmentInfo.nmdsId ? establishmentInfo.nmdsId : 'undefined',
           active: userData.isActive,
           userstatus: userData.status,
         });
@@ -161,11 +162,19 @@ const validateRequest = (req) => {
   if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
 };
 
-const createEstablishment = async (username, establishmentData) => {
-  const newEstablishment = new Establishment(username);
+const saveEstablishmentToDatabase = async (username, establishmentData, newEstablishment, transaction) => {
   initialiseEstablishment(newEstablishment, establishmentData);
+  await loadEstablishmentData(newEstablishment, establishmentData);
 
-  return await loadEstablishmentData(newEstablishment, establishmentData);
+  if (!newEstablishment.hasMandatoryProperties || !newEstablishment.isValid) {
+    throw new RegistrationException(
+      'Invalid establishment properties',
+      responseErrors.invalidEstablishment.errCode,
+      responseErrors.invalidEstablishment.errMessage,
+    );
+  }
+
+  return await saveEstablishment(username, newEstablishment, transaction);
 };
 
 const initialiseEstablishment = (newEstablishment, establishmentData) => {
@@ -198,22 +207,13 @@ const loadEstablishmentData = async (newEstablishment, establishmentData) => {
 };
 
 const saveEstablishment = async (username, newEstablishment, t) => {
-  if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
-    await newEstablishment.save(username, false, t);
+  await newEstablishment.save(username, false, t);
 
-    return {
-      id: newEstablishment.id,
-      uid: newEstablishment.uid,
-      nmdsId: newEstablishment.nmdsId,
-    };
-  } else {
-    // Establishment properties not valid
-    throw new RegistrationException(
-      'Inavlid establishment properties',
-      responseErrors.invalidEstablishment.errCode,
-      responseErrors.invalidEstablishment.errMessage,
-    );
-  }
+  return {
+    id: newEstablishment.id,
+    uid: newEstablishment.uid,
+    nmdsId: newEstablishment.nmdsId,
+  };
 };
 
 const getMainServiceId = async (establishmentData) => {
@@ -240,3 +240,5 @@ const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
 
 exports.loadEstablishmentData = loadEstablishmentData;
 exports.initialiseEstablishment = initialiseEstablishment;
+exports.saveEstablishment = saveEstablishment;
+exports.saveEstablishmentToDatabase = saveEstablishmentToDatabase;
