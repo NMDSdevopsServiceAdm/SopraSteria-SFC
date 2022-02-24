@@ -102,7 +102,7 @@ describe('StaffRecordComponent', () => {
 
     component.worker.completed = false;
     fixture.detectChanges();
-    const button = screen.getByText('Complete record details');
+    const button = screen.getByText('Confirm record details');
     const text = screen.getByText(`Check the record details you've added before you confirm them.`);
     const flagLongTermAbsenceLink = screen.queryByText('Flag long-term absence');
     const deleteRecordLink = screen.queryByText('Delete staff record');
@@ -125,7 +125,7 @@ describe('StaffRecordComponent', () => {
 
     fixture.detectChanges();
 
-    const button = screen.queryByText('Complete record details');
+    const button = screen.queryByText('Confirm record details');
     const text = screen.getByText(`Check the record details you've added are correct.`);
     const flagLongTermAbsenceLink = screen.getByText('Flag long-term absence');
     const deleteRecordLink = screen.getByText('Delete staff record');
@@ -228,7 +228,7 @@ describe('StaffRecordComponent', () => {
       const workplaceUid = component.workplace.uid;
       const workerUid = component.worker.uid;
 
-      const button = screen.getByText('Complete record details');
+      const button = screen.getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
@@ -240,7 +240,7 @@ describe('StaffRecordComponent', () => {
       component.worker.completed = false;
       fixture.detectChanges();
 
-      const button = screen.getByText('Complete record details');
+      const button = screen.getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {

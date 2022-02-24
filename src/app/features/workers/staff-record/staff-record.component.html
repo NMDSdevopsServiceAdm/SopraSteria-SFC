@@ -1,9 +1,9 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-full">
-      <div class="govuk-list--inline govuk-list govuk__flex">
-        <span class="govuk-caption-xl govuk-!-margin-right-3">{{ worker.nameOrId }}</span>
-        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1 asc-tag">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk-!-margin-bottom-3 govuk__align-items-center">
+        <span class="govuk-caption-xl govuk-!-margin-right-3 govuk-!-margin-bottom-0">{{ worker.nameOrId }}</span>
+        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-bottom-0 asc-tag">
           Long-term absent
           <a
             [routerLink]="[
@@ -90,9 +90,9 @@
     </ng-container>
     <ng-template #button>
       <div class="govuk-grid-column-full">
-        <div class="govuk-button-group govuk__flex govuk__justify-content-space-between govuk-!-padding-right-9">
+        <div class="govuk-button-group govuk__flex govuk__justify-content-space-between govuk-!-margin-top-0">
           <p>Check the record details you've added before you confirm them.</p>
-          <button type="button" class="govuk-button" (click)="saveAndComplete()">Complete record details</button>
+          <button type="button" class="govuk-button" (click)="saveAndComplete()">Confirm record details</button>
         </div>
       </div>
     </ng-template>
