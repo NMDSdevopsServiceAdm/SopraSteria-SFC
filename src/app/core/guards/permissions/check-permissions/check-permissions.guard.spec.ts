@@ -11,7 +11,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 
 import { CheckPermissionsGuard } from './check-permissions.guard';
 
-fdescribe('CheckPermissionsGuard', () => {
+describe('CheckPermissionsGuard', () => {
   function setup(admin = false) {
     TestBed.configureTestingModule({
       imports: [
@@ -46,7 +46,7 @@ fdescribe('CheckPermissionsGuard', () => {
       ],
     });
 
-    const guard = TestBed.inject(CheckPermissionsGuard);
+    const guard = TestBed.inject(CheckPermissionsGuard) as CheckPermissionsGuard;
     const route = TestBed.inject(ActivatedRouteSnapshot) as ActivatedRouteSnapshot;
     const permissionsService = TestBed.inject(PermissionsService) as PermissionsService;
 
@@ -57,33 +57,49 @@ fdescribe('CheckPermissionsGuard', () => {
     };
   }
 
-  it('should create', () => {
+  it('should create CheckPermissionsGuard', () => {
     const { guard } = setup();
     expect(guard).toBeTruthy();
   });
 
   it('should return true if the logged in user is an admin', () => {
-    const { guard, route } = setup(true);
+    const { guard, route, permissionsService } = setup(true);
+
+    const handlePermissionsCheckSpy = spyOn(permissionsService, 'handlePermissionsCheck');
 
     const res = guard.canActivate(route, null);
+
     expect(res).toBeTruthy();
+    expect(handlePermissionsCheckSpy).not.toHaveBeenCalled();
   });
 
-  it('should check that user has the correct permissions', () => {
+  it('should return true if user has the correct permissions', () => {
     const { guard, route, permissionsService } = setup();
 
     spyOn(permissionsService, 'permissions').and.returnValue(['canEditEstablishment', 'canViewEstablishment']);
+    const handlePermissionsCheckSpy = spyOn(permissionsService, 'handlePermissionsCheck').and.returnValue(true);
 
     const res = guard.canActivate(route, null);
+
     expect(res).toBeTruthy();
+    expect(handlePermissionsCheckSpy).toHaveBeenCalledWith(
+      ['canEditEstablishment'],
+      ['canEditEstablishment', 'canViewEstablishment'],
+    );
   });
 
   it('should return false if the user does not have the correct permissions', () => {
     const { guard, route, permissionsService } = setup();
 
     spyOn(permissionsService, 'permissions').and.returnValue(['canViewUser', 'canViewEstablishment']);
+    const handlePermissionsCheckSpy = spyOn(permissionsService, 'handlePermissionsCheck').and.returnValue(false);
 
     const res = guard.canActivate(route, null);
+
     expect(res).toBeFalsy();
+    expect(handlePermissionsCheckSpy).toHaveBeenCalledWith(
+      ['canEditEstablishment'],
+      ['canViewUser', 'canViewEstablishment'],
+    );
   });
 });
