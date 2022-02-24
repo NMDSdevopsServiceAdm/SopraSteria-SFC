@@ -1,4 +1,27 @@
 const { responseErrors, RegistrationException } = require('./responseErrors');
+const Establishment = require('../../models/classes/establishment').Establishment;
+const models = require('../../models');
+
+const OTHER_MAX_LENGTH = 120;
+
+const createEstablishment = async (reqEstablishment, username, transaction) => {
+  if (!reqEstablishment.isRegulated) {
+    delete reqEstablishment.locationId;
+  }
+
+  const establishmentData = {
+    ...reqEstablishment,
+    ustatus: 'PENDING',
+    expiresSoonAlertDate: '90',
+    mainServiceId: null,
+  };
+
+  establishmentData.mainServiceId = await getMainServiceId(establishmentData);
+
+  const newEstablishment = new Establishment(username);
+
+  return await saveEstablishmentToDatabase(username, establishmentData, newEstablishment, transaction);
+};
 
 const saveEstablishmentToDatabase = async (username, establishmentData, newEstablishment, transaction) => {
   initialiseEstablishment(newEstablishment, establishmentData);
@@ -54,9 +77,32 @@ const saveEstablishment = async (username, newEstablishment, t) => {
   };
 };
 
+const getMainServiceId = async (establishmentData) => {
+  const mainService = await models.services.getMainServiceByName(
+    establishmentData.mainService,
+    establishmentData.isRegulated,
+  );
+
+  if (!mainService || mainServiceOtherNameIsTooLong(mainService, establishmentData)) {
+    throw new RegistrationException(
+      'Unexpected main service',
+      responseErrors.unexpectedMainService.errCode,
+      responseErrors.unexpectedMainService.errMessage,
+    );
+  }
+
+  return mainService.id;
+};
+
+const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
+  mainService.other &&
+  establishmentData.mainServiceOther &&
+  establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;
+
 module.exports = {
   loadEstablishmentData,
   initialiseEstablishment,
   saveEstablishment,
   saveEstablishmentToDatabase,
+  createEstablishment,
 };

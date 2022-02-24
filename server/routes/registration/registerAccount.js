@@ -5,65 +5,43 @@ const slack = require('../../utils/slack/slack-logger');
 const models = require('../../models');
 const isPasswordValid = require('../../utils/security/passwordValidation').isPasswordValid;
 const isUsernameValid = require('../../utils/security/usernameValidation').isUsernameValid;
-const Establishment = require('../../models/classes/establishment').Establishment;
 const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 const User = require('../../models/classes/user').User;
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
-const { saveEstablishmentToDatabase } = require('./createEstablishment');
+const { createEstablishment } = require('./createEstablishment');
 const { saveUserToDatabase } = require('./createUser');
 
-const OTHER_MAX_LENGTH = 120;
-
 exports.registerAccount = async (req, res) => {
-  const invalidRequestResponse = validateRequest(req);
-  if (invalidRequestResponse) {
-    return res.status(400).json(invalidRequestResponse);
-  }
-
-  let defaultError = responseErrors.default;
   try {
-    // location ID is only relevant for CQC sites - namely isRegulated is true
-    if (!req.body.establishment.isRegulated) {
-      delete req.body.establishment.locationId;
+    let defaultError = responseErrors.default;
+
+    const invalidRequestResponse = validateRequest(req);
+    if (invalidRequestResponse) {
+      return res.status(400).json(invalidRequestResponse);
     }
 
-    const establishmentData = {
-      ...req.body.establishment,
-      ustatus: 'PENDING',
-      expiresSoonAlertDate: '90',
-      mainServiceId: null,
-    };
-
-    const userData = {
-      ...req.body.user,
-      canManageWdfClaims: req.body.user.canManageWdfClaims || false,
-      isActive: false,
-      status: 'PENDING',
-      role: 'Edit',
-      isPrimary: true,
-      registrationSurveyCompleted: false,
-      email: req.body.user.email.toLowerCase(),
-      username: req.body.user.username.toLowerCase(),
-    };
-
-    try {
-      establishmentData.mainServiceId = await getMainServiceId(establishmentData);
-
+    await models.sequelize.transaction(async (t) => {
       defaultError = responseErrors.establishment;
-      await models.sequelize.transaction(async (t) => {
-        const newEstablishment = new Establishment(userData.username);
-        const establishmentInfo = await saveEstablishmentToDatabase(
-          userData.username,
-          establishmentData,
-          newEstablishment,
-          t,
-        );
+      const establishmentInfo = await createEstablishment(req.body.establishment, req.body.user.username, t);
+
+      try {
+        const userData = {
+          ...req.body.user,
+          canManageWdfClaims: req.body.user.canManageWdfClaims || false,
+          isActive: false,
+          status: 'PENDING',
+          role: 'Edit',
+          isPrimary: true,
+          registrationSurveyCompleted: false,
+          email: req.body.user.email.toLowerCase(),
+          username: req.body.user.username.toLowerCase(),
+        };
 
         defaultError = responseErrors.user;
         const newUser = new User(establishmentInfo.id);
-        saveUserToDatabase(userData, newUser, t);
+        await saveUserToDatabase(userData, newUser, t);
 
         // post via Slack, but remove sensitive data
         const slackMsg = req.body;
@@ -92,33 +70,33 @@ exports.registerAccount = async (req, res) => {
           active: userData.isActive,
           userstatus: userData.status,
         });
-      });
-    } catch (err) {
-      //console.error('Caught exception in registration: ', err);
+      } catch (err) {
+        //console.error('Caught exception in registration: ', err);
 
-      // if we've already found a specific registration error, re-throw the error
-      if (err instanceof RegistrationException) throw err;
+        // if we've already found a specific registration error, re-throw the error
+        if (err instanceof RegistrationException) throw err;
 
-      if (!defaultError) defaultError = responseErrors.default;
+        if (!defaultError) defaultError = responseErrors.default;
 
-      if (err instanceof EstablishmentSaveException) {
-        if (err.message === 'Duplicate Establishment') {
-          defaultError = responseErrors.duplicateEstablishment;
-        } else if (err.message === 'Unknown Location') {
-          defaultError = responseErrors.unknownLocation;
-        } else if (err.message === 'Unknown NMDSID') {
-          defaultError = responseErrors.unknownNMDSLetter;
+        if (err instanceof EstablishmentSaveException) {
+          if (err.message === 'Duplicate Establishment') {
+            defaultError = responseErrors.duplicateEstablishment;
+          } else if (err.message === 'Unknown Location') {
+            defaultError = responseErrors.unknownLocation;
+          } else if (err.message === 'Unknown NMDSID') {
+            defaultError = responseErrors.unknownNMDSLetter;
+          }
         }
-      }
 
-      if (err instanceof UserSaveException) {
-        if (err.message === 'Duplicate Username') {
-          defaultError = responseErrors.duplicateUsername;
+        if (err instanceof UserSaveException) {
+          if (err.message === 'Duplicate Username') {
+            defaultError = responseErrors.duplicateUsername;
+          }
         }
-      }
 
-      throw new RegistrationException(err, defaultError.errCode, defaultError.errMessage);
-    }
+        throw new RegistrationException(err, defaultError.errCode, defaultError.errMessage);
+      }
+    });
   } catch (err) {
     // failed to fully register a new user/establishment - full rollback
     console.error('Registration: rolling back all changes because: ', err.errCode, err.errMessage);
@@ -146,25 +124,3 @@ const validateRequest = (req) => {
   if (!isPasswordValid(req.body.user.password)) return responseErrors.invalidPassword;
   if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
 };
-
-const getMainServiceId = async (establishmentData) => {
-  const mainService = await models.services.getMainServiceByName(
-    establishmentData.mainService,
-    establishmentData.isRegulated,
-  );
-
-  if (!mainService || mainServiceOtherNameIsTooLong(mainService, establishmentData)) {
-    throw new RegistrationException(
-      'Unexpected main service',
-      responseErrors.unexpectedMainService.errCode,
-      responseErrors.unexpectedMainService.errMessage,
-    );
-  }
-
-  return mainService.id;
-};
-
-const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
-  mainService.other &&
-  establishmentData.mainServiceOther &&
-  establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;
