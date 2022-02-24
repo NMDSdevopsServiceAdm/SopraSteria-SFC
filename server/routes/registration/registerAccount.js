@@ -7,11 +7,11 @@ const isPasswordValid = require('../../utils/security/passwordValidation').isPas
 const isUsernameValid = require('../../utils/security/usernameValidation').isUsernameValid;
 const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
-const User = require('../../models/classes/user').User;
+
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
 const { createEstablishment } = require('./createEstablishment');
-const { saveUserToDatabase } = require('./createUser');
+const { createUser } = require('./createUser');
 
 exports.registerAccount = async (req, res) => {
   try {
@@ -22,26 +22,17 @@ exports.registerAccount = async (req, res) => {
       return res.status(400).json(invalidRequestResponse);
     }
 
-    await models.sequelize.transaction(async (t) => {
-      defaultError = responseErrors.establishment;
-      const establishmentInfo = await createEstablishment(req.body.establishment, req.body.user.username, t);
-
+    await models.sequelize.transaction(async (transaction) => {
       try {
-        const userData = {
-          ...req.body.user,
-          canManageWdfClaims: req.body.user.canManageWdfClaims || false,
-          isActive: false,
-          status: 'PENDING',
-          role: 'Edit',
-          isPrimary: true,
-          registrationSurveyCompleted: false,
-          email: req.body.user.email.toLowerCase(),
-          username: req.body.user.username.toLowerCase(),
-        };
+        defaultError = responseErrors.establishment;
+        const establishmentInfo = await createEstablishment(
+          req.body.establishment,
+          req.body.user.username,
+          transaction,
+        );
 
         defaultError = responseErrors.user;
-        const newUser = new User(establishmentInfo.id);
-        await saveUserToDatabase(userData, newUser, t);
+        const userInfo = await createUser(req.body.user, establishmentInfo.id, transaction);
 
         // post via Slack, but remove sensitive data
         const slackMsg = req.body;
@@ -55,7 +46,7 @@ exports.registerAccount = async (req, res) => {
         sns.postToRegistrations(slackMsg);
         // gets here on success
         req.sqreen.signup_track({
-          userId: newUser.uid,
+          userId: userInfo.uid,
           establishmentId: establishmentInfo.uid,
         });
 
@@ -65,10 +56,10 @@ exports.registerAccount = async (req, res) => {
           message: 'Establishment and primary user successfully created',
           establishmentId: establishmentInfo.id,
           establishmentUid: establishmentInfo.uid,
-          primaryUser: userData.username,
+          primaryUser: userInfo.username,
           nmdsId: establishmentInfo.nmdsId ? establishmentInfo.nmdsId : 'undefined',
-          active: userData.isActive,
-          userstatus: userData.status,
+          active: userInfo.isActive,
+          userstatus: userInfo.status,
         });
       } catch (err) {
         //console.error('Caught exception in registration: ', err);
