@@ -20,7 +20,7 @@ const uploadFileToS3 = async (buffer) => {
       .promise();
   } catch (err) {
     console.error('uploadDataToS3: ', err);
-    throw new Error(`Failed to upload S3 object: ${key}`);
+    throw new Error('Failed to upload To S3 ');
   }
 };
 
