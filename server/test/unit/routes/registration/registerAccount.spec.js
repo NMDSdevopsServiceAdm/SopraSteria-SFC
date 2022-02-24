@@ -35,7 +35,7 @@ describe('registerAccount', async () => {
     res = httpMocks.createResponse();
 
     sinon.stub(models.services, 'getMainServiceByName').callsFake(() => {
-      return { id: '1', other: true };
+      return { id: 1, other: true };
     });
   });
 
@@ -162,6 +162,14 @@ describe('Saving establishment to database', () => {
       postalCode: 'S125AA',
       isRegulated: false,
     };
+
+    sinon.stub(models.services, 'findAll').callsFake(() => {
+      return [{ id: 1, other: true }];
+    });
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   describe('initialiseEstablishment', () => {
@@ -221,8 +229,8 @@ describe('Saving establishment to database', () => {
       establishmentData = {
         ...establishmentData,
         locationName: 'Test Location Name',
-        mainServiceId: 9,
-        mainServiceOther: undefined,
+        mainServiceId: 1,
+        mainServiceOther: 'Other name',
         ustatus: 'PENDING',
         expiresSoonAlertDate: 90,
         numberOfStaff: 4,
@@ -262,26 +270,32 @@ describe('Saving establishment to database', () => {
   });
 
   describe('saveEstablishmentToDatabase', async () => {
-    let saveSpy;
+    let saveStub;
 
     beforeEach(async () => {
       establishmentData = {
         ...establishmentData,
         locationName: 'Test Location Name',
-        mainServiceId: 9,
+        mainServiceId: 1,
         mainServiceOther: undefined,
         ustatus: 'PENDING',
         expiresSoonAlertDate: 90,
         numberOfStaff: 4,
       };
 
-      saveSpy = sinon.spy(newEstablishment, 'save');
+      saveStub = sinon.stub(newEstablishment, 'save').callsFake(() => {
+        return {
+          id: 1234567,
+          uid: 'c21321321312321321',
+          nmdsId: 'J31323812',
+        };
+      });
     });
 
     it('should call the save function on newEstablishment when valid establishment passed in', async () => {
       await saveEstablishmentToDatabase('username', establishmentData, newEstablishment);
 
-      expect(saveSpy.called).to.equal(true);
+      expect(saveStub.called).to.equal(true);
     });
 
     it('should throw an Establishment data is invalid error when invalid establishment data passed in', async () => {
@@ -307,7 +321,7 @@ describe('Saving establishment to database', () => {
         console.log(err);
       }
 
-      expect(saveSpy.called).to.equal(false);
+      expect(saveStub.called).to.equal(false);
     });
   });
 });
