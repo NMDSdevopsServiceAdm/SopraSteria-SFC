@@ -6,6 +6,7 @@ const {
   initialiseEstablishment,
   loadEstablishmentData,
   saveEstablishmentToDatabase,
+  getMainServiceId,
 } = require('../../../../routes/registration/createEstablishment');
 const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
@@ -185,6 +186,60 @@ describe('createEstablishment', () => {
       }
 
       expect(saveStub.called).to.equal(false);
+    });
+  });
+
+  describe('getMainServiceId', async () => {
+    let data;
+
+    beforeEach(() => {
+      data = {
+        mainService: 'Care',
+        isRegulated: false,
+        mainServiceOther: 'Other',
+      };
+    });
+
+    it('should throw unexpected main service error when main service cannot be found in database', async () => {
+      sinon.stub(models.services, 'getMainServiceByName').returns(null);
+
+      let error;
+      try {
+        await getMainServiceId(data);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error.errCode).to.equal(-300);
+      expect(error.errMessage).to.equal('Unexpected main service');
+    });
+
+    it('should throw unexpected main service error when mainServiceOther is greater than 120 chars', async () => {
+      data.mainServiceOther =
+        'This is a really really really really really really really really really really really really really really really really really really really long other service';
+
+      sinon.stub(models.services, 'getMainServiceByName').returns(null);
+
+      let error;
+      try {
+        await getMainServiceId(data);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error.errCode).to.equal(-300);
+      expect(error.errMessage).to.equal('Unexpected main service');
+    });
+
+    it('should return main service id when found in database and mainServiceOther is not greater than 120 chars', async () => {
+      sinon.stub(models.services, 'getMainServiceByName').returns({
+        id: 12,
+        other: false,
+      });
+
+      const returnedId = await getMainServiceId(data);
+
+      expect(returnedId).to.equal(12);
     });
   });
 });

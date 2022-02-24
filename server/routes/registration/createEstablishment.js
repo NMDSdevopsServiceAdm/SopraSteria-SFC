@@ -105,4 +105,5 @@ module.exports = {
   saveEstablishment,
   saveEstablishmentToDatabase,
   createEstablishment,
+  getMainServiceId,
 };
