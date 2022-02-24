@@ -12,6 +12,7 @@ const User = require('../../models/classes/user').User;
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
 const { saveEstablishmentToDatabase } = require('./createEstablishment');
+const { saveUserToDatabase } = require('./createUser');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -167,19 +168,3 @@ const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
   mainService.other &&
   establishmentData.mainServiceOther &&
   establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;
-
-const saveUserToDatabase = async (userData, newUser, transaction) => {
-  await newUser.load(userData);
-
-  if (!newUser.isValid()) {
-    throw new RegistrationException(
-      'Invalid user/login properties',
-      responseErrors.invalidUser.errCode,
-      responseErrors.invalidUser.errMessage,
-    );
-  }
-
-  await newUser.save(userData.username, 0, transaction);
-};
-
-exports.saveUserToDatabase = saveUserToDatabase;
