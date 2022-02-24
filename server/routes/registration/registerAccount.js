@@ -1,6 +1,4 @@
 const isEmpty = require('lodash').isEmpty;
-const sns = require('../../aws/sns');
-const slack = require('../../utils/slack/slack-logger');
 
 const models = require('../../models');
 const isPasswordValid = require('../../utils/security/passwordValidation').isPasswordValid;
@@ -12,6 +10,7 @@ const UserSaveException = require('../../models/classes/user/userExceptions').Us
 const { responseErrors, RegistrationException } = require('./responseErrors');
 const { createEstablishment } = require('./createEstablishment');
 const { createUser } = require('./createUser');
+const { postRegistrationToSlack } = require('./slack');
 
 exports.registerAccount = async (req, res) => {
   try {
@@ -34,16 +33,7 @@ exports.registerAccount = async (req, res) => {
         defaultError = responseErrors.user;
         const userInfo = await createUser(req.body.user, establishmentInfo.id, transaction);
 
-        // post via Slack, but remove sensitive data
-        const slackMsg = req.body;
-        delete slackMsg.user.password;
-        delete slackMsg.user.securityQuestion;
-        delete slackMsg.user.securityQuestionAnswer;
-        slackMsg.nmdsId = establishmentInfo.nmdsId;
-        slackMsg.establishmentUid = establishmentInfo.uid;
-        slack.info('Registration', JSON.stringify(slackMsg, null, 2));
-        // post through feedback topic - async method but don't wait for a responseThe
-        sns.postToRegistrations(slackMsg);
+        postRegistrationToSlack(req, establishmentInfo);
         // gets here on success
         req.sqreen.signup_track({
           userId: userInfo.uid,
