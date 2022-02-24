@@ -511,5 +511,93 @@ describe('isAuthenticated', () => {
         message: `Parent not permitted to update Establishment with id: ${req.params.id}`,
       });
     });
+
+    it('follows success if not authorised but claim is a parent (Subsidiary path)', async () => {
+      claimReturn.isParent = true;
+      jwtStub.returns(claimReturn);
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: 123,
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      initialiseDbMock('my-parentId', false);
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      // assert req object has been updated
+      expect(req).to.deep.include({
+        establishmentId: 1,
+        parentIsOwner: true,
+        dataPermissions: null,
+        username: claimReturn.sub,
+        userUid: claimReturn.userUid,
+        user: {
+          id: claimReturn.userUid,
+        },
+        isParent: claimReturn.isParent,
+        role: claimReturn.role,
+        establishment: {
+          id: claimReturn.EstblishmentId,
+          uid: claimReturn.EstablishmentUID,
+          isSubsidiary: true,
+          isParent: false,
+        },
+      });
+
+      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+    });
+
+    it('follows success if not authorised but claim is a parent (Subsidiary path)', async () => {
+      claimReturn.isParent = true;
+      jwtStub.returns(claimReturn);
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: 123,
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      initialiseDbMock(null, true);
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      // assert req object has been updated
+      expect(req).to.deep.include({
+        establishmentId: 1,
+        parentIsOwner: true,
+        dataPermissions: null,
+        username: claimReturn.sub,
+        userUid: claimReturn.userUid,
+        user: {
+          id: claimReturn.userUid,
+        },
+        isParent: claimReturn.isParent,
+        role: claimReturn.role,
+        establishment: {
+          id: claimReturn.EstblishmentId,
+          uid: claimReturn.EstablishmentUID,
+          isSubsidiary: false,
+          isParent: true,
+        },
+      });
+
+      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+    });
   });
 });
