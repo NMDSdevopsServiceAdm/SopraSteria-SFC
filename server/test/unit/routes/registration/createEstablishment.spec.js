@@ -181,7 +181,7 @@ describe('createEstablishment', () => {
       try {
         await saveEstablishmentToDatabase('username', establishmentData, newEstablishment);
       } catch (err) {
-        console.log(err);
+        return;
       }
 
       expect(saveStub.called).to.equal(false);

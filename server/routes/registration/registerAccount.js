@@ -47,11 +47,6 @@ exports.registerAccount = async (req, res) => {
       username: req.body.user.username.toLowerCase(),
     };
 
-    // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
-    // 1. looking the main service; to get ID
-    // 2. Create Establishment record, to get Establishment ID
-    // 3. Create User record (using Establishment ID) to get Registration ID
-    // 4. Create Login record (using Registration ID)
     try {
       establishmentData.mainServiceId = await getMainServiceId(establishmentData);
 
@@ -65,21 +60,9 @@ exports.registerAccount = async (req, res) => {
           t,
         );
 
-        // now create user
         defaultError = responseErrors.user;
         const newUser = new User(establishmentInfo.id);
-        await newUser.load(userData);
-        if (newUser.isValid) {
-          await newUser.save(userData.username, 0, t);
-          userData.registrationID = newUser.id;
-        } else {
-          // Establishment properties not valid
-          throw new RegistrationException(
-            'Inavlid user/login properties',
-            responseErrors.invalidUser.errCode,
-            responseErrors.invalidUser.errMessage,
-          );
-        }
+        saveUserToDatabase(userData, newUser, t);
 
         // post via Slack, but remove sensitive data
         const slackMsg = req.body;
@@ -184,3 +167,19 @@ const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
   mainService.other &&
   establishmentData.mainServiceOther &&
   establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;
+
+const saveUserToDatabase = async (userData, newUser, transaction) => {
+  await newUser.load(userData);
+
+  if (!newUser.isValid()) {
+    throw new RegistrationException(
+      'Invalid user/login properties',
+      responseErrors.invalidUser.errCode,
+      responseErrors.invalidUser.errMessage,
+    );
+  }
+
+  await newUser.save(userData.username, 0, transaction);
+};
+
+exports.saveUserToDatabase = saveUserToDatabase;
