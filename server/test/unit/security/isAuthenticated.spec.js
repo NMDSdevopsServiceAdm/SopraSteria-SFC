@@ -22,35 +22,18 @@ describe('isAuthenticated', () => {
     let jwtStub;
     let sentrySetUserStub;
     let sentrySetContextStub;
-    let initialiseDbMock;
+    let dbStub;
     let claimReturn;
 
     beforeEach(() => {
       jwtStub = sinon.stub(jwt, 'verify');
       sentrySetUserStub = sinon.stub(Sentry, 'setUser');
       sentrySetContextStub = sinon.stub(Sentry, 'setContext');
-      initialiseDbMock = (
-        parentId = 'my-parentId',
-        isParent = false,
-        dataOwner = 'Parent',
-        dataPermissions = null,
-        id = 1,
-        nmdsId = 'nmdsId',
-      ) =>
-        sinon.replace(models.establishment, 'findOne', () => {
-          return {
-            parentId,
-            isParent,
-            dataOwner,
-            dataPermissions,
-            id,
-            nmdsId,
-          };
-        });
+      dbStub = sinon.stub(models.establishment, 'findOne');
       claimReturn = {
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 13,
+        EstblishmentId: 123,
         EstablishmentUID: establishmentUid,
         sub: 'anySub',
         userUid: 'someUid',
@@ -230,7 +213,7 @@ describe('isAuthenticated', () => {
     });
 
     it('returns a 403 if param ID does not match the establishment ID and claim is not a parent', async () => {
-      jwtStub.returns(claimReturn);
+      jwtStub.returns({ ...claimReturn, EstblishmentId: 13 });
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -241,10 +224,10 @@ describe('isAuthenticated', () => {
         params: {
           id: 123,
         },
+        establishmentId: 123,
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-      initialiseDbMock();
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
@@ -255,6 +238,18 @@ describe('isAuthenticated', () => {
 
     it('follows success path for authorised establishment when foundEstablishment is a subsidiary', async () => {
       jwtStub.returns(claimReturn);
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId', 'isParent']);
+        expect(where).to.deep.equal({ id: 123 });
+        return {
+          id: 123,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: 456,
+          nmdsId: 'nmdsId',
+          isParent: false,
+        };
+      });
       const sqreenIdentifyFake = sinon.fake();
 
       const req = httpMocks.createRequest({
@@ -264,7 +259,7 @@ describe('isAuthenticated', () => {
           'x-forwarded-for': 'my-ip',
         },
         params: {
-          id: establishmentUid,
+          id: 123,
         },
         sqreen: {
           identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
@@ -272,7 +267,6 @@ describe('isAuthenticated', () => {
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-      initialiseDbMock();
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
       // check req object is updated
@@ -336,9 +330,19 @@ describe('isAuthenticated', () => {
     });
 
     it('follows success path for authorised establishment when foundEstablishment is a parent', async () => {
-      claimReturn.sub = null;
-      claimReturn.parentId = null;
-      jwtStub.returns(claimReturn);
+      jwtStub.returns({ ...claimReturn, parentId: null });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId', 'isParent']);
+        expect(where).to.deep.equal({ uid: establishmentUid });
+        return {
+          id: 123,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: null,
+          nmdsId: 'nmdsId',
+          isParent: true,
+        };
+      });
 
       const sqreenIdentifyFake = sinon.fake();
 
@@ -357,7 +361,6 @@ describe('isAuthenticated', () => {
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-      initialiseDbMock(null, true); // make db return as a parent
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
       // check req object is updated
@@ -370,7 +373,7 @@ describe('isAuthenticated', () => {
         establishment: {
           id: claimReturn.EstblishmentId,
           uid: claimReturn.EstablishmentUID,
-          isSubsidiary: Boolean(claimReturn.parentId),
+          isSubsidiary: false,
           isParent: true,
         },
         dataPermissions: null,
@@ -421,9 +424,7 @@ describe('isAuthenticated', () => {
     });
 
     it('returns a 403 if parent establishment only has "Read" access', async () => {
-      claimReturn.parentId = 123;
-      claimReturn.isParent = true;
-      jwtStub.returns(claimReturn);
+      jwtStub.returns({ ...claimReturn, parentId: 123, isParent: true });
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -437,7 +438,6 @@ describe('isAuthenticated', () => {
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-      initialiseDbMock();
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
@@ -446,11 +446,18 @@ describe('isAuthenticated', () => {
       expect(data).to.eql({ message: 'Not permitted' });
     });
 
-    it('returns a 403 if a non-admin with a workplace data owner has no data permissions', async () => {
-      claimReturn.parentId = 123;
-      claimReturn.isParent = true;
-      claimReturn.dataPermissions = null;
-      jwtStub.returns(claimReturn);
+    it('returns a 403 if a non-admin where the data owner is Workplace and parent has no data permissions', async () => {
+      jwtStub.returns({ ...claimReturn, parentId: null, isParent: true, role: 'Edit' });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(where).to.deep.equal({ id: 13, parentId: 123 });
+        return {
+          id: 13,
+          dataPermissions: null,
+          dataOwner: 'Workplace',
+          parentId: 123,
+        };
+      });
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -459,13 +466,11 @@ describe('isAuthenticated', () => {
           'x-forwarded-for': 'my-ip',
         },
         params: {
-          id: 123,
+          id: 13,
         },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-
-      initialiseDbMock('my-parentId', false, 'Workplace');
 
       const consoleSpy = sinon.spy(console, 'error');
 
@@ -483,9 +488,17 @@ describe('isAuthenticated', () => {
     });
 
     it('returns a 403 if parent with "Read" only access tried to update an establishment', async () => {
-      claimReturn.parentId = 123;
-      claimReturn.isParent = true;
-      jwtStub.returns(claimReturn);
+      jwtStub.returns({ ...claimReturn, parentId: null, isParent: true, role: 'Edit' });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(where).to.deep.equal({ id: 13, parentId: 123 });
+        return {
+          id: 13,
+          dataPermissions: 'Workplace',
+          dataOwner: 'Workplace',
+          parentId: 123,
+        };
+      });
 
       const req = httpMocks.createRequest({
         method: 'PUT',
@@ -494,14 +507,12 @@ describe('isAuthenticated', () => {
           'x-forwarded-for': 'my-ip',
         },
         params: {
-          id: 123,
+          id: 13,
         },
         path: '/not-the-path-i-wanted',
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-
-      initialiseDbMock('my-parentId', false, 'Workplace', 'Workplace');
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
@@ -512,9 +523,18 @@ describe('isAuthenticated', () => {
       });
     });
 
-    it('follows success if not authorised but claim is a parent (Subsidiary path)', async () => {
-      claimReturn.isParent = true;
-      jwtStub.returns(claimReturn);
+    it('follows success if establishment ID does not match passed ID but token is from a parent - (Subsidiary path)', async () => {
+      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(where).to.deep.equal({ id: 133, parentId: 123 });
+        return {
+          id: 133,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: 123,
+        };
+      });
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -523,19 +543,17 @@ describe('isAuthenticated', () => {
           'x-forwarded-for': 'my-ip',
         },
         params: {
-          id: 123,
+          id: 133,
         },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
 
-      initialiseDbMock('my-parentId', false);
-
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
       // assert req object has been updated
       expect(req).to.deep.include({
-        establishmentId: 1,
+        establishmentId: 133,
         parentIsOwner: true,
         dataPermissions: null,
         username: claimReturn.sub,
@@ -543,10 +561,10 @@ describe('isAuthenticated', () => {
         user: {
           id: claimReturn.userUid,
         },
-        isParent: claimReturn.isParent,
+        isParent: true,
         role: claimReturn.role,
         establishment: {
-          id: claimReturn.EstblishmentId,
+          id: 123,
           uid: claimReturn.EstablishmentUID,
           isSubsidiary: true,
           isParent: false,
@@ -554,11 +572,22 @@ describe('isAuthenticated', () => {
       });
 
       expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(next.calledOnce).to.be.true;
     });
 
-    it('follows success if not authorised but claim is a parent (Subsidiary path)', async () => {
-      claimReturn.isParent = true;
-      jwtStub.returns(claimReturn);
+    it('follows success if establishment ID does not match passed ID but token is from a parent - (Parent path)', async () => {
+      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(where).to.deep.equal({ id: 143, parentId: 123 });
+        return {
+          id: 143,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: null,
+          isParent: true,
+        };
+      });
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -567,19 +596,18 @@ describe('isAuthenticated', () => {
           'x-forwarded-for': 'my-ip',
         },
         params: {
-          id: 123,
+          id: 143,
         },
+        establishmentId: 143,
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
-
-      initialiseDbMock(null, true);
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
       // assert req object has been updated
       expect(req).to.deep.include({
-        establishmentId: 1,
+        establishmentId: 143,
         parentIsOwner: true,
         dataPermissions: null,
         username: claimReturn.sub,
@@ -587,7 +615,7 @@ describe('isAuthenticated', () => {
         user: {
           id: claimReturn.userUid,
         },
-        isParent: claimReturn.isParent,
+        isParent: true,
         role: claimReturn.role,
         establishment: {
           id: claimReturn.EstblishmentId,
@@ -598,6 +626,138 @@ describe('isAuthenticated', () => {
       });
 
       expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(next.calledOnce).to.be.true;
+    });
+
+    it('follows success if establishment ID does not match passed ID but token is from a parent - (has establishment UID)', async () => {
+      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
+        return {
+          id: 133,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: null,
+          isParent: true,
+        };
+      });
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: '000aedf4-8e1a-4450-905b-6039179f5fff',
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      // assert req object has been updated
+      expect(req).to.deep.include({
+        establishmentId: 133,
+        parentIsOwner: true,
+        dataPermissions: null,
+        username: claimReturn.sub,
+        userUid: claimReturn.userUid,
+        user: {
+          id: claimReturn.userUid,
+        },
+        isParent: true,
+        role: claimReturn.role,
+        establishment: {
+          id: claimReturn.EstblishmentId,
+          uid: claimReturn.EstablishmentUID,
+          isSubsidiary: false,
+          isParent: true,
+        },
+      });
+
+      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(next.calledOnce).to.be.true;
+    });
+
+    it('returns 403 if not GET and user has read-only permissions', async () => {
+      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      dbStub.callsFake(({ attributes, where }) => {
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
+        return {
+          id: 133,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: null,
+          isParent: true,
+        };
+      });
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: '000aedf4-8e1a-4450-905b-6039179f5fff',
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      expect(res.statusCode).to.equal(403);
+      expect(res._getData()).to.deep.equal({ message: 'Not permitted' });
+    });
+
+    it('returns 403 if the database call throws', async () => {
+      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      dbStub.throws();
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: '000aedf4-8e1a-4450-905b-6039179f5fff',
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      expect(res.statusCode).to.equal(403);
+      expect(res._getData()).to.equal(`Not permitted to access Establishment with id: ${req.params.id}`);
+    });
+
+    it('return a 403 when the token verify throws an expired token error', async () => {
+      jwtStub.throws({ name: 'TokenExpiredError' });
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: '000aedf4-8e1a-4450-905b-6039179f5fff',
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      expect(res.statusCode).to.equal(403);
+      expect(res._getData()).to.deep.equal({ sucess: false, message: 'token expired' });
     });
   });
 });
