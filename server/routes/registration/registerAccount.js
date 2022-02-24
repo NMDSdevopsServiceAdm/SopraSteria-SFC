@@ -11,6 +11,7 @@ const EstablishmentSaveException =
 const User = require('../../models/classes/user').User;
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
+const { saveEstablishmentToDatabase } = require('./createEstablishment');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -162,60 +163,6 @@ const validateRequest = (req) => {
   if (!isUsernameValid(req.body.user.username)) return responseErrors.invalidUsername;
 };
 
-const saveEstablishmentToDatabase = async (username, establishmentData, newEstablishment, transaction) => {
-  initialiseEstablishment(newEstablishment, establishmentData);
-  await loadEstablishmentData(newEstablishment, establishmentData);
-
-  if (!newEstablishment.hasMandatoryProperties || !newEstablishment.isValid) {
-    throw new RegistrationException(
-      'Invalid establishment properties',
-      responseErrors.invalidEstablishment.errCode,
-      responseErrors.invalidEstablishment.errMessage,
-    );
-  }
-
-  return await saveEstablishment(username, newEstablishment, transaction);
-};
-
-const initialiseEstablishment = (newEstablishment, establishmentData) => {
-  newEstablishment.initialise(
-    establishmentData.addressLine1,
-    establishmentData.addressLine2,
-    establishmentData.addressLine3,
-    establishmentData.townCity,
-    establishmentData.county,
-    establishmentData.locationId,
-    null, // PROV ID is not captured yet on registration
-    establishmentData.postalCode,
-    establishmentData.isRegulated,
-  );
-};
-
-const loadEstablishmentData = async (newEstablishment, establishmentData) => {
-  await newEstablishment.load({
-    name: establishmentData.locationName,
-    mainService: {
-      id: establishmentData.mainServiceId,
-      other: establishmentData.mainServiceOther,
-    },
-    ustatus: establishmentData.ustatus,
-    expiresSoonAlertDate: establishmentData.expiresSoonAlertDate,
-    numberOfStaff: establishmentData.numberOfStaff,
-  });
-
-  return newEstablishment;
-};
-
-const saveEstablishment = async (username, newEstablishment, t) => {
-  await newEstablishment.save(username, false, t);
-
-  return {
-    id: newEstablishment.id,
-    uid: newEstablishment.uid,
-    nmdsId: newEstablishment.nmdsId,
-  };
-};
-
 const getMainServiceId = async (establishmentData) => {
   const mainService = await models.services.getMainServiceByName(
     establishmentData.mainService,
@@ -237,8 +184,3 @@ const mainServiceOtherNameIsTooLong = (mainService, establishmentData) =>
   mainService.other &&
   establishmentData.mainServiceOther &&
   establishmentData.mainServiceOther.length > OTHER_MAX_LENGTH;
-
-exports.loadEstablishmentData = loadEstablishmentData;
-exports.initialiseEstablishment = initialiseEstablishment;
-exports.saveEstablishment = saveEstablishment;
-exports.saveEstablishmentToDatabase = saveEstablishmentToDatabase;
