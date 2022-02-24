@@ -17,8 +17,9 @@ describe('isAuthenticated', () => {
     });
   });
 
-  describe('authorisedEstablishmentPermissionCheck', () => {
+  describe.only('authorisedEstablishmentPermissionCheck', () => {
     const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
+    let sqreenIdentifyFake;
     let jwtStub;
     let sentrySetUserStub;
     let sentrySetContextStub;
@@ -41,6 +42,7 @@ describe('isAuthenticated', () => {
         isParent: false,
         role: 'Read',
       };
+      sqreenIdentifyFake = sinon.fake();
     });
 
     afterEach(() => {
@@ -66,7 +68,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.deep.equal({ sucess: false, message: 'token is invalid' });
+      expect(data).to.deep.equal({ success: false, message: 'token is invalid' });
     });
 
     it('returns a 403 with error message if claim audience does not match', async () => {
@@ -83,7 +85,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.deep.equal({ sucess: false, message: 'token is invalid' });
+      expect(data).to.deep.equal({ success: false, message: 'token is invalid' });
     });
 
     it('returns a 403 with error message if claim issue does not match', async () => {
@@ -100,7 +102,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.deep.equal({ sucess: false, message: 'token is invalid' });
+      expect(data).to.deep.equal({ success: false, message: 'token is invalid' });
     });
 
     it('returns a 400 status if EstblishmentId is missing from claim', async () => {
@@ -117,7 +119,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(400);
-      expect(data).to.equal('Unknown Establishment ID');
+      expect(data).to.equal('Unknown Establishment');
     });
 
     it('returns a 400 status if EstblishmentId is not a number', async () => {
@@ -138,7 +140,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(400);
-      expect(data).to.equal('Unknown Establishment ID');
+      expect(data).to.equal('Unknown Establishment');
     });
 
     it('returns a 400 status if EstablishmentUID is missing from claim', async () => {
@@ -159,7 +161,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(400);
-      expect(data).to.equal('Unknown Establishment UID');
+      expect(data).to.equal('Unknown Establishment');
     });
 
     it('returns a 400 status if EstablishmentUID is not a UID format', async () => {
@@ -181,7 +183,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(400);
-      expect(data).to.equal('Unknown Establishment UID');
+      expect(data).to.equal('Unknown Establishment');
     });
 
     it('returns a 403 if role check is request, req method is not GET and claim role is read only', async () => {
@@ -239,7 +241,7 @@ describe('isAuthenticated', () => {
     it('follows success path for authorised establishment when foundEstablishment is a subsidiary', async () => {
       jwtStub.returns(claimReturn);
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId', 'isParent']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ id: 123 });
         return {
           id: 123,
@@ -250,7 +252,6 @@ describe('isAuthenticated', () => {
           isParent: false,
         };
       });
-      const sqreenIdentifyFake = sinon.fake();
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -332,7 +333,7 @@ describe('isAuthenticated', () => {
     it('follows success path for authorised establishment when foundEstablishment is a parent', async () => {
       jwtStub.returns({ ...claimReturn, parentId: null });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'parentId', 'dataPermissions', 'dataOwner', 'nmdsId', 'isParent']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ uid: establishmentUid });
         return {
           id: 123,
@@ -343,8 +344,6 @@ describe('isAuthenticated', () => {
           isParent: true,
         };
       });
-
-      const sqreenIdentifyFake = sinon.fake();
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -449,7 +448,7 @@ describe('isAuthenticated', () => {
     it('returns a 403 if a non-admin where the data owner is Workplace and parent has no data permissions', async () => {
       jwtStub.returns({ ...claimReturn, parentId: null, isParent: true, role: 'Edit' });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ id: 13, parentId: 123 });
         return {
           id: 13,
@@ -490,7 +489,7 @@ describe('isAuthenticated', () => {
     it('returns a 403 if parent with "Read" only access tried to update an establishment', async () => {
       jwtStub.returns({ ...claimReturn, parentId: null, isParent: true, role: 'Edit' });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ id: 13, parentId: 123 });
         return {
           id: 13,
@@ -526,7 +525,7 @@ describe('isAuthenticated', () => {
     it('follows success if establishment ID does not match passed ID but token is from a parent - (Subsidiary path)', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ id: 133, parentId: 123 });
         return {
           id: 133,
@@ -544,6 +543,9 @@ describe('isAuthenticated', () => {
         },
         params: {
           id: 133,
+        },
+        sqreen: {
+          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
         },
       });
       const res = httpMocks.createResponse();
@@ -578,7 +580,7 @@ describe('isAuthenticated', () => {
     it('follows success if establishment ID does not match passed ID but token is from a parent - (Parent path)', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ id: 143, parentId: 123 });
         return {
           id: 143,
@@ -599,6 +601,9 @@ describe('isAuthenticated', () => {
           id: 143,
         },
         establishmentId: 143,
+        sqreen: {
+          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
+        },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
@@ -632,7 +637,7 @@ describe('isAuthenticated', () => {
     it('follows success if establishment ID does not match passed ID but token is from a parent - (has establishment UID)', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
         return {
           id: 133,
@@ -651,6 +656,9 @@ describe('isAuthenticated', () => {
         },
         params: {
           id: '000aedf4-8e1a-4450-905b-6039179f5fff',
+        },
+        sqreen: {
+          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
         },
       });
       const res = httpMocks.createResponse();
@@ -685,7 +693,7 @@ describe('isAuthenticated', () => {
     it('returns 403 if not GET and user has read-only permissions', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
       dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId']);
+        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
         expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
         return {
           id: 133,
@@ -720,7 +728,7 @@ describe('isAuthenticated', () => {
       dbStub.throws();
 
       const req = httpMocks.createRequest({
-        method: 'POST',
+        method: 'GET',
         headers: {
           authorization: 'arealjwt',
           'x-forwarded-for': 'my-ip',
@@ -757,7 +765,7 @@ describe('isAuthenticated', () => {
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
       expect(res.statusCode).to.equal(403);
-      expect(res._getData()).to.deep.equal({ sucess: false, message: 'token expired' });
+      expect(res._getData()).to.deep.equal({ success: false, message: 'token expired' });
     });
   });
 });
