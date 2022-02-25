@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BulkUploadMissingGuard } from '@core/guards/bulk-upload/bulk-upload-missing.guard';
 import { BulkUploadStartGuard } from '@core/guards/bulk-upload/bulk-upload-start.guard';
-import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
 import { BulkUploadErrorsResolver } from '@core/resolvers/bulk-upload-errors.resolver';
 import { BulkUploadGetLockStatusResolver } from '@core/resolvers/bulk-upload/bulk-upload-get-lock-status.resolver';
 import { BulkUploadTopTipResolver } from '@core/resolvers/bulk-upload/bulk-upload-top-tip.resolver';
@@ -106,8 +107,8 @@ const routes: Routes = [
   {
     path: 'last-bulk-upload',
     component: LastBulkUploadComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: { title: 'Last bulk upload', permissions: ['canViewLastBulkUpload'] },
+    data: { title: 'Last bulk upload', roles: [Roles.Admin] },
+    canActivate: [RoleGuard],
     resolve: {
       lastBulkUpload: LastBulkUploadResolver,
       bulkUploadLocked: BulkUploadGetLockStatusResolver,
