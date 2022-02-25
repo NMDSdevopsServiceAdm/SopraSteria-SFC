@@ -33,7 +33,7 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
     slack.postRegistrationToSlack(req, establishmentInfo);
     setUpSqreenMonitoring(req, userInfo.uid, establishmentInfo.uid);
 
-    sendSuccessResponse(res, userInfo.status);
+    return sendSuccessResponse(res, userInfo.status);
   } catch (err) {
     console.error('Registration: rolling back all changes - ', err.message);
 
