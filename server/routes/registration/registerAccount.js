@@ -33,12 +33,7 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
     postRegistrationToSlack(req, establishmentInfo);
     setUpSqreenMonitoring(req, userInfo.uid, establishmentInfo.uid);
 
-    res.status(200);
-    res.json({
-      status: 1,
-      message: 'Establishment and primary user successfully created',
-      userstatus: userInfo.status,
-    });
+    sendSuccessResponse(res, userInfo.status);
   } catch (err) {
     console.error('Registration: rolling back all changes - ', err.message);
 
@@ -51,6 +46,13 @@ const validateRequest = (req) => {
   if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(registrationErrors.invalidUser);
   if (!isPasswordValid(req.body.user.password)) throw new RegistrationException(registrationErrors.invalidPassword);
   if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(registrationErrors.invalidUsername);
+};
+
+const sendSuccessResponse = (res, userstatus) => {
+  return res.status(200).json({
+    message: 'Establishment and primary user successfully created',
+    userstatus,
+  });
 };
 
 const sendErrorResponse = (err, res) => {

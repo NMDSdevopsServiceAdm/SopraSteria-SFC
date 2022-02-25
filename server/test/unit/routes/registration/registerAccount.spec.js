@@ -167,20 +167,32 @@ describe('registerAccountWithTransaction', async () => {
   });
 
   describe('Registration completion', () => {
-    it('should call req.sqreen.signup_track with returned user and establishment uids', async () => {
+    beforeEach(() => {
       sinon.stub(establishment, 'createEstablishment').callsFake(() => {
         return { uid: 'a413' };
       });
 
       sinon.stub(user, 'createUser').callsFake(() => {
-        return { uid: 'c1234' };
+        return { uid: 'c1234', status: 'PENDING' };
       });
+    });
 
+    it('should call req.sqreen.signup_track with returned user and establishment uids', async () => {
       const signupTrackSpy = sinon.spy(req.sqreen, 'signup_track');
 
       await registerAccountWithTransaction(req, res);
 
       expect(signupTrackSpy.getCall(0).args[0]).to.deep.equal({ userId: 'c1234', establishmentId: 'a413' });
+    });
+
+    it('should respond with 200, returned userstatus and succesfully created message', async () => {
+      await registerAccountWithTransaction(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(200);
+      expect(response.userstatus).to.equal('PENDING');
+      expect(response.message).to.equal('Establishment and primary user successfully created');
     });
   });
 });
