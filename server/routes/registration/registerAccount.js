@@ -56,18 +56,16 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
     }
 
     return res.status(500).json({
-      message: 'Unexpected problem with registration',
+      message: responseErrors.unexpectedProblem,
     });
   }
 };
 
 const validateRequest = (req) => {
-  if (isEmpty(req.body)) throw new RegistrationException(responseErrors.emptyRequest.errMessage);
-  if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(responseErrors.invalidUser.errMessage);
-  if (!isPasswordValid(req.body.user.password))
-    throw new RegistrationException(responseErrors.invalidPassword.errMessage);
-  if (!isUsernameValid(req.body.user.username))
-    throw new RegistrationException(responseErrors.invalidUsername.errMessage);
+  if (isEmpty(req.body)) throw new RegistrationException(responseErrors.emptyRequest);
+  if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(responseErrors.invalidUser);
+  if (!isPasswordValid(req.body.user.password)) throw new RegistrationException(responseErrors.invalidPassword);
+  if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(responseErrors.invalidUsername);
 };
 
 module.exports = {
