@@ -52,8 +52,7 @@ describe('createUser', () => {
         error = err;
       }
 
-      expect(error.errCode).to.equal(-800);
-      expect(error.errMessage).to.equal('User data is invalid');
+      expect(error.message).to.equal('User data is invalid');
     });
 
     it('should not call save function on newUser when invalid userData data passed in', async () => {

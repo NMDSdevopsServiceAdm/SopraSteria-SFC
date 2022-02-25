@@ -172,8 +172,7 @@ describe('createEstablishment', () => {
         error = err;
       }
 
-      expect(error.errCode).to.equal(-700);
-      expect(error.errMessage).to.equal('Establishment data is invalid');
+      expect(error.message).to.equal('Establishment data is invalid');
     });
 
     it('should not call save function on newEstablishment when invalid establishment data passed in', async () => {
@@ -210,8 +209,7 @@ describe('createEstablishment', () => {
         error = err;
       }
 
-      expect(error.errCode).to.equal(-300);
-      expect(error.errMessage).to.equal('Unexpected main service');
+      expect(error.message).to.equal('Unexpected main service');
     });
 
     it('should throw unexpected main service error when mainServiceOther is greater than 120 chars', async () => {
@@ -227,8 +225,7 @@ describe('createEstablishment', () => {
         error = err;
       }
 
-      expect(error.errCode).to.equal(-300);
-      expect(error.errMessage).to.equal('Unexpected main service');
+      expect(error.message).to.equal('Unexpected main service');
     });
 
     it('should return main service id when found in database and mainServiceOther is not greater than 120 chars', async () => {

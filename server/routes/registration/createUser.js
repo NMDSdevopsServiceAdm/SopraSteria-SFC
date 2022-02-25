@@ -1,15 +1,11 @@
-const { responseErrors, RegistrationException } = require('./responseErrors');
+const { RegistrationException } = require('./responseErrors');
 const User = require('../../models/classes/user').User;
 
 const saveUserToDatabase = async (userData, newUser, transaction) => {
   await newUser.load(userData);
 
   if (!newUser.isValid()) {
-    throw new RegistrationException(
-      'Invalid user/login properties',
-      responseErrors.invalidUser.errCode,
-      responseErrors.invalidUser.errMessage,
-    );
+    throw new RegistrationException('User data is invalid');
   }
 
   await newUser.save(userData.username, 0, transaction);

@@ -47,17 +47,19 @@ exports.registerAccount = async (req, res) => {
           userstatus: userInfo.status,
         });
       } catch (err) {
-        if (err instanceof RegistrationException) throw err;
-
         if (!defaultError) defaultError = responseErrors.default;
 
-        if (err instanceof EstablishmentSaveException || err instanceof UserSaveException) {
+        if (
+          err instanceof EstablishmentSaveException ||
+          err instanceof UserSaveException ||
+          err instanceof RegistrationException
+        ) {
           return res.status(400).json({
             message: err.message,
           });
         }
 
-        throw new RegistrationException(err, defaultError.errCode, defaultError.errMessage);
+        throw new RegistrationException(defaultError.errMessage);
       }
     });
   } catch (err) {

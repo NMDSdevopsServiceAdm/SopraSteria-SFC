@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const establishment = require('../../../../routes/registration/createEstablishment');
 const user = require('../../../../routes/registration/createUser');
+const RegistrationException = require('../../../../routes/registration/responseErrors').RegistrationException;
 const { registerAccount } = require('../../../../routes/registration/registerAccount');
 const EstablishmentSaveException =
   require('../../../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
@@ -110,7 +111,7 @@ describe('registerAccount', async () => {
   });
 
   describe('Handling exceptions', () => {
-    it('Should return a 400 status with exception message if EstablishmentSaveException is thrown in createEstablishment', async () => {
+    it('should return a 400 status with exception message if EstablishmentSaveException is thrown in createEstablishment', async () => {
       sinon.stub(establishment, 'createEstablishment').callsFake(() => {
         throw new EstablishmentSaveException(123, 'c123', 'Bob', 'Invalid establishment properties');
       });
@@ -123,7 +124,20 @@ describe('registerAccount', async () => {
       expect(response.message).to.equal('Invalid establishment properties');
     });
 
-    it('Should return a 400 status with exception message if UserSaveException is thrown in createUser', async () => {
+    it('should return a 400 status with exception message if RegistrationException is thrown in createEstablishment', async () => {
+      sinon.stub(establishment, 'createEstablishment').callsFake(() => {
+        throw new RegistrationException('Unexpected main service');
+      });
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('Unexpected main service');
+    });
+
+    it('should return a 400 status with exception message if UserSaveException is thrown in createUser', async () => {
       sinon.stub(establishment, 'createEstablishment').callsFake(() => {
         return { id: 132 };
       });

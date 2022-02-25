@@ -74,14 +74,8 @@ const responseErrors = {
 };
 
 class RegistrationException {
-  constructor(originalError, errCode, errMessage) {
-    this.err = originalError;
-    this.errCode = errCode;
-    this.errMessage = errMessage;
-  }
-
-  toString() {
-    return `${this.errCode}: ${this.errMessage}`;
+  constructor(message) {
+    this.message = message;
   }
 }
 

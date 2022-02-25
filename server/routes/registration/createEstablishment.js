@@ -1,4 +1,4 @@
-const { responseErrors, RegistrationException } = require('./responseErrors');
+const { RegistrationException } = require('./responseErrors');
 const Establishment = require('../../models/classes/establishment').Establishment;
 const models = require('../../models');
 
@@ -28,11 +28,7 @@ const saveEstablishmentToDatabase = async (username, establishmentData, newEstab
   await loadEstablishmentData(newEstablishment, establishmentData);
 
   if (!newEstablishment.hasMandatoryProperties || !newEstablishment.isValid) {
-    throw new RegistrationException(
-      'Invalid establishment properties',
-      responseErrors.invalidEstablishment.errCode,
-      responseErrors.invalidEstablishment.errMessage,
-    );
+    throw new RegistrationException('Establishment data is invalid');
   }
 
   return await saveEstablishment(username, newEstablishment, transaction);
@@ -83,11 +79,7 @@ const getMainServiceId = async (establishmentData) => {
   );
 
   if (!mainService || mainServiceOtherNameIsTooLong(mainService, establishmentData)) {
-    throw new RegistrationException(
-      'Unexpected main service',
-      responseErrors.unexpectedMainService.errCode,
-      responseErrors.unexpectedMainService.errMessage,
-    );
+    throw new RegistrationException('Unexpected main service');
   }
 
   return mainService.id;
