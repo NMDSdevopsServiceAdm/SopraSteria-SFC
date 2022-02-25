@@ -82,15 +82,12 @@ const subsidaryEstablishmentClaimMismatch = (establishmentMatchesClaim, claim) =
 
 const reqMatchClaimEstablishment = (establishmentIdIsUID, req, claim) => {
   if (establishmentIdIsUID && claim.EstablishmentUID === req.params.id) {
-    req.establishmentId = claim.EstablishmentUID;
-    return true;
+    return (req.establishmentId = claim.EstablishmentUID);
   }
 
   if (claim.EstblishmentId === parseInt(req.params.id)) {
-    req.establishmentId = claim.EstblishmentId;
-    return true;
+    return (req.establishmentId = claim.EstblishmentId);
   }
-
   return false;
 };
 
@@ -131,30 +128,24 @@ const identifyUserOnSqreen = (req) =>
 
 const handleExceptions = (req, res, claim, establishmentMatchesClaim, roleCheck) => {
   if (audOrISSInvalid(claim, thisIss)) {
-    sendForbidden(req, res, { name: 'Invalid aud or ISS' });
-    return true;
+    return sendForbidden(req, res, { name: 'Invalid aud or ISS' });
   }
 
   if (establishmentIDorUIDIsInvalid(claim)) {
     console.error('hasAuthorisedEstablishment - missing establishment id or uid parameter');
-    res.status(400).send('Unknown Establishment');
-    return true;
+    return res.status(400).send('Unknown Establishment');
   }
 
   if (subsidaryEstablishmentClaimMismatch(establishmentMatchesClaim, claim)) {
     console.error(
       `hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId}/${claim.EstablishmentUID})`,
     );
-    res.status(403).send(`Not permitted to access Establishment with id: ${escape(req.params.id)}`);
-    return true;
+    return res.status(403).send(`Not permitted to access Establishment with id: ${escape(req.params.id)}`);
   }
 
   if (isReadOnlyTryingToNotGET(roleCheck, req, claim)) {
-    res.status(403).send({ message: 'Not permitted' });
-    return true;
+    return res.status(403).send({ message: 'Not permitted' });
   }
-
-  return false;
 };
 
 const parentNoWriteAccess = (req) => req.method !== 'GET' && req.path.split('/')[1] !== 'ownershipChange';
@@ -180,11 +171,10 @@ const handleParentPermissionsExceptions = (req, res, claim, referencedEstablishm
     console.error(
       `Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`,
     );
-    res.status(403).send({ message: `Parent not permitted to access/update Establishment with id: ${req.params.id}` });
-    return true;
+    return res
+      .status(403)
+      .send({ message: `Parent not permitted to access/update Establishment with id: ${req.params.id}` });
   }
-
-  return false;
 };
 
 const buildRequest = (req, claim, referencedEstablishment) => {
@@ -198,24 +188,16 @@ const buildRequest = (req, claim, referencedEstablishment) => {
   req.establishment = {
     id: claim.EstblishmentId,
     uid: claim.EstablishmentUID,
-    isSubsidiary: false,
-    isParent: false,
   };
 
-  if (referencedEstablishment && referencedEstablishment.id) {
-    // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
-    req.establishmentId = referencedEstablishment.id;
-    req.dataPermissions = referencedEstablishment.dataPermissions;
-    req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
+  if (!referencedEstablishment) return;
 
-    if (referencedEstablishment.parentId !== null) {
-      // Its a sub
-      req.establishment.isSubsidiary = true;
-    } else if (referencedEstablishment.parentId == null && referencedEstablishment.isParent) {
-      // It's a parent
-      req.establishment.isParent = true;
-    }
-  }
+  req.establishmentId = referencedEstablishment.id;
+  req.dataPermissions = referencedEstablishment.dataPermissions;
+  req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
+
+  req.establishment.isSubsidiary = referencedEstablishment.parentId !== null;
+  req.establishment.isParent = referencedEstablishment.parentId === null && referencedEstablishment.isParent;
 };
 
 const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret) => {
@@ -229,7 +211,6 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
   try {
     const where = {};
     if (claim.isParent) where.parentId = claim.EstblishmentId;
-
     establishmentIdIsUID ? (where.uid = req.params.id) : (where.id = req.params.id);
 
     const referencedEstablishment = await models.establishment.authenticateEstablishment(where);
@@ -241,11 +222,9 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
       referencedEstablishment,
       establishmentMatchesClaim,
     );
-
     if (parentPermissionExceptionReturned) return parentPermissionExceptionReturned;
 
     buildRequest(req, claim, referencedEstablishment);
-
     identifyUserOnSqreen(req);
     setSentryContexts(req, referencedEstablishment);
 
