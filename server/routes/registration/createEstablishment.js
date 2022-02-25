@@ -73,7 +73,6 @@ const saveEstablishment = async (username, newEstablishment, t) => {
   return {
     id: newEstablishment.id,
     uid: newEstablishment.uid,
-    nmdsId: newEstablishment.nmdsId,
   };
 };
 
