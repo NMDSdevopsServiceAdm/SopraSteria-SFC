@@ -22,17 +22,21 @@
 
     <div class="govuk-util__block">
       <h2 class="govuk-heading-m">Select your files</h2>
-
       <app-drag-and-drop-files-upload></app-drag-and-drop-files-upload>
     </div>
   </div>
   <div class="govuk-grid-column-one-third">
     <app-bulk-upload-related-content></app-bulk-upload-related-content>
-    <app-bulk-upload-download-current-data></app-bulk-upload-download-current-data>
+    <app-bulk-upload-download-current-data [sanitise]="sanitise"></app-bulk-upload-download-current-data>
+    <app-bulk-upload-sanitise-data-checkbox
+      *ngIf="isAdmin"
+      (checkboxToggled)="toggleSanitise($event)"
+      [sanitise]="sanitise"
+    ></app-bulk-upload-sanitise-data-checkbox>
     <app-codes-and-guidance></app-codes-and-guidance>
   </div>
 
   <div class="govuk-grid-column-full govuk-!-margin-top-0">
-    <app-drag-and-drop-files-list></app-drag-and-drop-files-list>
+    <app-drag-and-drop-files-list [sanitise]="sanitise"></app-drag-and-drop-files-list>
   </div>
 </div>

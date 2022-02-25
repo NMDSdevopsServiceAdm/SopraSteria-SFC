@@ -4,6 +4,12 @@
       <span class="govuk-caption-l govuk-!-margin-bottom-3">Bulk upload</span>
       Last bulk upload
     </h1>
+    <div class="govuk-util__float-right">
+      <app-bulk-upload-sanitise-data-checkbox
+        (checkboxToggled)="toggleSanitise($event)"
+        [sanitise]="sanitise"
+      ></app-bulk-upload-sanitise-data-checkbox>
+    </div>
     <table class="govuk-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -26,6 +32,7 @@
             <td class="govuk-table__cell asc-link-download">
               <div>
                 <a
+                  [attr.data-testid]="'link-' + file.data.filename"
                   href="/bulk-upload/download/{{ encodeUrl(file.data.filename) }}"
                   (click)="downloadFile($event, file.data.key)"
                 >

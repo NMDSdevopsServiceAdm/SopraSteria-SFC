@@ -74,10 +74,22 @@ describe('workerCSV', () => {
 
           expect(csvAsArray[5]).to.equal(worker.NationalInsuranceNumberValue);
         });
+        it('should return sanitised national insurance number if download-type is workers-sanitise', async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[5]).to.equal('Admin');
+        });
         it('should return blank if no national insurance number', async () => {
           worker.NationalInsuranceNumberValue = null;
 
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[5]).to.equal('');
+        });
+        it('should return blank if no national insurance number and if download-type is workers-sanitise', async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[5]).to.equal('');
@@ -95,10 +107,24 @@ describe('workerCSV', () => {
 
           expect(csvAsArray[7]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
         });
+        it('should return sanitised dob if download-type is workers-sanitise', async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[7]).to.equal('Admin');
+        });
         it('should return blank if no dob', async () => {
           worker.DateOfBirthValue = null;
 
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[7]).to.equal('');
+        });
+        it('return blank if no dob and if download-type is workers-sanitise', async () => {
+          worker.DateOfBirthValue = null;
+
+          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[7]).to.equal('');

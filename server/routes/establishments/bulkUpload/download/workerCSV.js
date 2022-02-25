@@ -1,6 +1,6 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const get = require('lodash/get');
-const { csvQuote } = require('../../../../utils/bulkUploadUtils');
+const { csvQuote, dateFormatter } = require('../../../../utils/bulkUploadUtils');
 
 const _maptoCSVregisteredNurse = (registeredNurse) => {
   switch (registeredNurse) {
@@ -19,7 +19,8 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
   return '';
 };
 
-const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS) => {
+// takes the given Worker entity and writes it out to CSV string (one line)
+const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","FLUVAC","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
   //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
@@ -55,14 +56,19 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS) => {
   columns.push(fluvac);
 
   // "NINUMBER"
-  columns.push(entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : ''); // remove whitespace
+  downloadType === 'workersSanitise' && entity.NationalInsuranceNumberValue
+    ? columns.push('Admin')
+    : columns.push(entity.NationalInsuranceNumberValue ? entity.NationalInsuranceNumberValue.replace(/\s+/g, '') : ''); // remove whitespace
 
   // "POSTCODE"
   columns.push(csvQuote(entity.PostcodeValue));
 
   // "DOB"
-  const dobParts = entity.DateOfBirthValue ? entity.DateOfBirthValue.split('-') : null;
-  columns.push(dobParts ? `${dobParts[2]}/${dobParts[1]}/${dobParts[0]}` : ''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+  if (downloadType === 'workersSanitise' && entity.DateOfBirthValue) {
+    columns.push('Admin');
+  } else {
+    columns.push(dateFormatter(entity.DateOfBirthValue));
+  }
 
   // "GENDER",
   let genderId = '';

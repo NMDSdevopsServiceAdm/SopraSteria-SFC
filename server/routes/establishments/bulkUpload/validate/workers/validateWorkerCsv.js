@@ -2,6 +2,7 @@
 const { Worker } = require('../../../../../models/classes/worker');
 const { Qualification } = require('../../../../../models/classes/qualification');
 const { validateWorkerLambda } = require('../../lambda');
+const { dateFormatter } = require('../../../../../utils/bulkUploadUtils');
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
   const csvWorkerSchemaErrors = [];
@@ -33,6 +34,9 @@ const validateWorkerCsvLine = async (
   myJSONWorkers,
 ) => {
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
+
+  thisLine.NINUMBER = restoreNINumber(thisLine.NINUMBER, existingWorker.nationalInsuranceNumber.currentValue);
+  thisLine.DOB = restoreDOB(thisLine.DOB, existingWorker.dateOfBirth.currentValue);
 
   const { thisWorkerAsAPI, thisWorkerQualificationsAsAPI, thisWorkerAsJSON, validationErrors } =
     await validateWorkerLambda(thisLine, currentLineNumber, existingWorker);
@@ -85,6 +89,16 @@ const loadWorkerQualifications = async (thisQual, thisApiWorker) => {
   thisApiWorker.associateQualification(thisApiQualification);
 };
 
+const restoreNINumber = (nINumber, existingWorkerNINumber) => {
+  return nINumber.toLowerCase() === 'admin' ? existingWorkerNINumber : nINumber;
+};
+
+const restoreDOB = (dob, existingWorkerDOB) => {
+  return dob.toLowerCase() === 'admin' ? dateFormatter(existingWorkerDOB) : dob;
+};
+
 module.exports = {
   validateWorkerCsv,
+  restoreNINumber,
+  restoreDOB,
 };

@@ -19,6 +19,7 @@ export enum BulkUploadFileType {
   Establishment = 'Workplace',
   Training = 'Training',
   Worker = 'Staff',
+  WorkerSanitise = 'StaffSanitise',
 }
 
 export interface PresignedUrlRequestItem {
