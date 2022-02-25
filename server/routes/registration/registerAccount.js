@@ -45,11 +45,7 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
   } catch (err) {
     console.error('Registration: rolling back all changes - ', err.message);
 
-    if (
-      err instanceof EstablishmentSaveException ||
-      err instanceof UserSaveException ||
-      err instanceof RegistrationException
-    ) {
+    if (isExpectedError(err)) {
       return res.status(400).json({
         message: err.message,
       });
@@ -67,6 +63,9 @@ const validateRequest = (req) => {
   if (!isPasswordValid(req.body.user.password)) throw new RegistrationException(registrationErrors.invalidPassword);
   if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(registrationErrors.invalidUsername);
 };
+
+const isExpectedError = (err) =>
+  err instanceof EstablishmentSaveException || err instanceof UserSaveException || err instanceof RegistrationException;
 
 module.exports = {
   registerAccount,
