@@ -10,6 +10,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, screen } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
+import { OtherQualificationsComponent } from '../other-qualifications/other-qualifications.component';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
@@ -18,7 +19,18 @@ describe('OtherQualificationsLevelComponent', () => {
 
   async function setup() {
     const { fixture } = await render(OtherQualificationsLevelComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule.withRoutes([
+          {
+            path: `workplace/${workplace.uid}/staff-record/3c61b461-54a0-4c2f-b530-c2b3b0bb2830/other-qualifications`,
+            component: OtherQualificationsComponent,
+          },
+        ]),
+        HttpClientTestingModule,
+        WorkersModule,
+      ],
       providers: [
         BackService,
         {
