@@ -161,42 +161,6 @@ const routes: Routes = [
         component: AdminComponent,
       },
       {
-        path: 'search-users',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Search Users',
-        },
-      },
-      {
-        path: 'search-establishments',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Search Establishments',
-        },
-      },
-      {
-        path: 'search-groups',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Search Groups',
-        },
-      },
-      {
-        path: 'registrations',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Registrations',
-        },
-      },
-      {
         path: 'wdf',
         loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
         data: { title: 'Workforce Development Fund Data' },
@@ -205,33 +169,6 @@ const routes: Routes = [
         path: 'wdf-claims',
         loadChildren: () => import('@features/wdf/wdf-claims/wdf-claims.module').then((m) => m.WdfClaimsModule),
         data: { title: 'Workforce Development Fund Claims' },
-      },
-      {
-        path: 'parent-requests',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Parent Requests',
-        },
-      },
-      {
-        path: 'cqc-status-changes',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'CQC Status Change',
-        },
-      },
-      {
-        path: 'emails',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Emails',
-        },
       },
       {
         path: 'notifications',

@@ -80,6 +80,7 @@ describe('permissions', () => {
           'canViewWdfSummaryReport',
           'canSearchUsers',
           'canSearchEstablishment',
+          'canViewLastBulkUpload',
         ]);
       });
 
