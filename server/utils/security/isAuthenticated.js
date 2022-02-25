@@ -64,16 +64,31 @@ const isAuthorised = (req, res, next) => {
   }
 };
 
+const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
+  try {
+    const token = getToken(req.headers[AUTH_HEADER]);
+    const Token_Secret = config.get('jwt.secret');
+
+    if (token) {
+      await checkAuthorisation(req, res, next, roleCheck, token, Token_Secret);
+    } else {
+      // not authenticated
+      res.status(401).send('Requires authorisation');
+    }
+  } catch (err) {
+    return sendForbidden(req, res, err);
+  }
+};
+
 const audOrISSInvalid = (claim, thisIss) => claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss;
 
-const checkEstablishmentIDIsNotNumber = (claim) => !claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId));
+const isEstablishmentIDNaN = (claim) => !claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId));
 
-const checkEstablishmentUIDIsInvalid = (claim) => !claim.EstablishmentUID || !uuidV4Regex.test(claim.EstablishmentUID);
+const isEstablishmentUIDInvalid = (claim) => !claim.EstablishmentUID || !uuidV4Regex.test(claim.EstablishmentUID);
 
-const establishmentIDorUIDIsInvalid = (claim) =>
-  checkEstablishmentIDIsNotNumber(claim) || checkEstablishmentUIDIsInvalid(claim);
+const establishmentIDorUIDIsInvalid = (claim) => isEstablishmentIDNaN(claim) || isEstablishmentUIDInvalid(claim);
 
-const checkEstablishmentIdIsUID = (req) => uuidV4Regex.test(req.params.id);
+const isEstablishmentIdUID = (req) => uuidV4Regex.test(req.params.id);
 
 const isReadOnlyTryingToNotGET = (roleCheck, req, claim) => roleCheck && req.method !== 'GET' && claim.role == 'Read';
 
@@ -82,11 +97,13 @@ const subsidaryEstablishmentClaimMismatch = (establishmentMatchesClaim, claim) =
 
 const reqMatchClaimEstablishment = (establishmentIdIsUID, req, claim) => {
   if (establishmentIdIsUID && claim.EstablishmentUID === req.params.id) {
-    return (req.establishmentId = claim.EstablishmentUID);
+    req.establishmentId = claim.EstablishmentUID;
+    return true;
   }
 
   if (claim.EstblishmentId === parseInt(req.params.id)) {
-    return (req.establishmentId = claim.EstblishmentId);
+    req.establishmentId = claim.EstblishmentId;
+    return true;
   }
   return false;
 };
@@ -202,7 +219,7 @@ const buildRequest = (req, claim, referencedEstablishment) => {
 
 const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret) => {
   const claim = jwt.verify(token, Token_Secret);
-  const establishmentIdIsUID = checkEstablishmentIdIsUID(req);
+  const establishmentIdIsUID = isEstablishmentIdUID(req);
   const establishmentMatchesClaim = reqMatchClaimEstablishment(establishmentIdIsUID, req, claim);
 
   const exceptionReturned = handleExceptions(req, res, claim, establishmentMatchesClaim, roleCheck);
@@ -235,22 +252,6 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
       `Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID})`,
     );
     return res.status(403).send(`Not permitted to access Establishment with id: ${escape(req.params.id)}`);
-  }
-};
-
-const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
-  try {
-    const token = getToken(req.headers[AUTH_HEADER]);
-    const Token_Secret = config.get('jwt.secret');
-
-    if (token) {
-      await checkAuthorisation(req, res, next, roleCheck, token, Token_Secret);
-    } else {
-      // not authenticated
-      res.status(401).send('Requires authorisation');
-    }
-  } catch (err) {
-    return sendForbidden(req, res, err);
   }
 };
 
