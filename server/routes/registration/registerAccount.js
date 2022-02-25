@@ -9,7 +9,7 @@ const EstablishmentSaveException =
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
 const establishment = require('./createEstablishment');
-const { createUser } = require('./createUser');
+const user = require('./createUser');
 const { postRegistrationToSlack } = require('./slack');
 
 exports.registerAccount = async (req, res) => {
@@ -31,7 +31,7 @@ exports.registerAccount = async (req, res) => {
         );
 
         defaultError = responseErrors.user;
-        const userInfo = await createUser(req.body.user, establishmentInfo.id, transaction);
+        const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
 
         postRegistrationToSlack(req, establishmentInfo);
 
@@ -51,16 +51,10 @@ exports.registerAccount = async (req, res) => {
 
         if (!defaultError) defaultError = responseErrors.default;
 
-        if (err instanceof EstablishmentSaveException) {
+        if (err instanceof EstablishmentSaveException || err instanceof UserSaveException) {
           return res.status(400).json({
             message: err.message,
           });
-        }
-
-        if (err instanceof UserSaveException) {
-          if (err.message === 'Duplicate Username') {
-            defaultError = responseErrors.duplicateUsername;
-          }
         }
 
         throw new RegistrationException(err, defaultError.errCode, defaultError.errMessage);

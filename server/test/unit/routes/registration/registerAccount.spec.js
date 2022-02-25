@@ -3,9 +3,11 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const establishment = require('../../../../routes/registration/createEstablishment');
+const user = require('../../../../routes/registration/createUser');
 const { registerAccount } = require('../../../../routes/registration/registerAccount');
 const EstablishmentSaveException =
   require('../../../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
+const UserSaveException = require('../../../../models/classes/user/userExceptions').UserSaveException;
 
 describe('registerAccount', async () => {
   let req;
@@ -108,7 +110,7 @@ describe('registerAccount', async () => {
   });
 
   describe('Handling exceptions', () => {
-    it('Should return a 400 status with exception message if EstablishmentSaveException is thrown', async () => {
+    it('Should return a 400 status with exception message if EstablishmentSaveException is thrown in createEstablishment', async () => {
       sinon.stub(establishment, 'createEstablishment').callsFake(() => {
         throw new EstablishmentSaveException(123, 'c123', 'Bob', 'Invalid establishment properties');
       });
@@ -119,6 +121,23 @@ describe('registerAccount', async () => {
 
       expect(res.statusCode).to.equal(400);
       expect(response.message).to.equal('Invalid establishment properties');
+    });
+
+    it('Should return a 400 status with exception message if UserSaveException is thrown in createUser', async () => {
+      sinon.stub(establishment, 'createEstablishment').callsFake(() => {
+        return { id: 132 };
+      });
+
+      sinon.stub(user, 'createUser').callsFake(() => {
+        throw new UserSaveException(123, 'c123', 'Bob', 'Duplicate Username');
+      });
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('Duplicate Username');
     });
   });
 });
