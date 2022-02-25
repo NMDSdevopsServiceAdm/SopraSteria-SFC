@@ -17,7 +17,7 @@ describe('isAuthenticated', () => {
     });
   });
 
-  describe.only('authorisedEstablishmentPermissionCheck', () => {
+  describe('authorisedEstablishmentPermissionCheck', () => {
     const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
     let sqreenIdentifyFake;
     let jwtStub;
@@ -30,7 +30,7 @@ describe('isAuthenticated', () => {
       jwtStub = sinon.stub(jwt, 'verify');
       sentrySetUserStub = sinon.stub(Sentry, 'setUser');
       sentrySetContextStub = sinon.stub(Sentry, 'setContext');
-      dbStub = sinon.stub(models.establishment, 'findOne');
+      dbStub = sinon.stub(models.establishment, 'authenticateEstablishment');
       claimReturn = {
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
@@ -240,8 +240,7 @@ describe('isAuthenticated', () => {
 
     it('follows success path for authorised establishment when foundEstablishment is a subsidiary', async () => {
       jwtStub.returns(claimReturn);
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 123 });
         return {
           id: 123,
@@ -332,8 +331,7 @@ describe('isAuthenticated', () => {
 
     it('follows success path for authorised establishment when foundEstablishment is a parent', async () => {
       jwtStub.returns({ ...claimReturn, parentId: null });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ uid: establishmentUid });
         return {
           id: 123,
@@ -447,8 +445,7 @@ describe('isAuthenticated', () => {
 
     it('returns a 403 if a non-admin where the data owner is Workplace and parent has no data permissions', async () => {
       jwtStub.returns({ ...claimReturn, parentId: null, isParent: true, role: 'Edit' });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 13, parentId: 123 });
         return {
           id: 13,
@@ -483,13 +480,12 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.eql({ message: `Parent not permitted to access Establishment with id: ${req.params.id}` });
+      expect(data).to.eql({ message: `Parent not permitted to access/update Establishment with id: ${req.params.id}` });
     });
 
     it('returns a 403 if parent with "Read" only access tried to update an establishment', async () => {
       jwtStub.returns({ ...claimReturn, parentId: null, isParent: true, role: 'Edit' });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 13, parentId: 123 });
         return {
           id: 13,
@@ -518,14 +514,13 @@ describe('isAuthenticated', () => {
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
       expect(data).to.eql({
-        message: `Parent not permitted to update Establishment with id: ${req.params.id}`,
+        message: `Parent not permitted to access/update Establishment with id: ${req.params.id}`,
       });
     });
 
     it('follows success if establishment ID does not match passed ID but token is from a parent - (Subsidiary path)', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 133, parentId: 123 });
         return {
           id: 133,
@@ -579,8 +574,7 @@ describe('isAuthenticated', () => {
 
     it('follows success if establishment ID does not match passed ID but token is from a parent - (Parent path)', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 143, parentId: 123 });
         return {
           id: 143,
@@ -636,8 +630,7 @@ describe('isAuthenticated', () => {
 
     it('follows success if establishment ID does not match passed ID but token is from a parent - (has establishment UID)', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
         return {
           id: 133,
@@ -692,8 +685,7 @@ describe('isAuthenticated', () => {
 
     it('returns 403 if not GET and user has read-only permissions', async () => {
       jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
-      dbStub.callsFake(({ attributes, where }) => {
-        expect(attributes).to.deep.equal(['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent']);
+      dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
         return {
           id: 133,
