@@ -8,7 +8,7 @@ const EstablishmentSaveException =
 
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
 const { responseErrors, RegistrationException } = require('./responseErrors');
-const { createEstablishment } = require('./createEstablishment');
+const establishment = require('./createEstablishment');
 const { createUser } = require('./createUser');
 const { postRegistrationToSlack } = require('./slack');
 
@@ -24,7 +24,7 @@ exports.registerAccount = async (req, res) => {
     await models.sequelize.transaction(async (transaction) => {
       try {
         defaultError = responseErrors.establishment;
-        const establishmentInfo = await createEstablishment(
+        const establishmentInfo = await establishment.createEstablishment(
           req.body.establishment,
           req.body.user.username,
           transaction,
@@ -52,13 +52,9 @@ exports.registerAccount = async (req, res) => {
         if (!defaultError) defaultError = responseErrors.default;
 
         if (err instanceof EstablishmentSaveException) {
-          if (err.message === 'Duplicate Establishment') {
-            defaultError = responseErrors.duplicateEstablishment;
-          } else if (err.message === 'Unknown Location') {
-            defaultError = responseErrors.unknownLocation;
-          } else if (err.message === 'Unknown NMDSID') {
-            defaultError = responseErrors.unknownNMDSLetter;
-          }
+          return res.status(400).json({
+            message: err.message,
+          });
         }
 
         if (err instanceof UserSaveException) {

@@ -2,8 +2,10 @@ const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
-
+const establishment = require('../../../../routes/registration/createEstablishment');
 const { registerAccount } = require('../../../../routes/registration/registerAccount');
+const EstablishmentSaveException =
+  require('../../../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 
 describe('registerAccount', async () => {
   let req;
@@ -102,6 +104,21 @@ describe('registerAccount', async () => {
       expect(res.statusCode).to.equal(400);
       expect(response.errMessage).to.equal('Invalid Username');
       expect(response.errCode).to.equal(-210);
+    });
+  });
+
+  describe('Handling exceptions', () => {
+    it('Should return a 400 status with exception message if EstablishmentSaveException is thrown', async () => {
+      sinon.stub(establishment, 'createEstablishment').callsFake(() => {
+        throw new EstablishmentSaveException(123, 'c123', 'Bob', 'Invalid establishment properties');
+      });
+
+      await registerAccount(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(400);
+      expect(response.message).to.equal('Invalid establishment properties');
     });
   });
 });
