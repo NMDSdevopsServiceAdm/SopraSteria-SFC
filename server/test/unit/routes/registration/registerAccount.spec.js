@@ -186,13 +186,13 @@ describe('registerAccountWithTransaction', async () => {
       expect(signupTrackSpy.getCall(0).args[0]).to.deep.equal({ userId: 'c1234', establishmentId: 'a413' });
     });
 
-    it('should respond with 200, returned userstatus and succesfully created message', async () => {
+    it('should respond with 200, returned userStatus and succesfully created message', async () => {
       await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
       expect(res.statusCode).to.equal(200);
-      expect(response.userstatus).to.equal('PENDING');
+      expect(response.userStatus).to.equal('PENDING');
       expect(response.message).to.equal('Establishment and primary user successfully created');
     });
 

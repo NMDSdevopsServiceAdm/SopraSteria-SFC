@@ -142,7 +142,7 @@ export class ConfirmDetailsComponent implements OnInit {
     this.subscriptions.add(
       this.registrationService.postRegistration(this.generatePayload()).subscribe(
         (registration) =>
-          registration.userstatus === 'PENDING'
+          registration.userStatus === 'PENDING'
             ? this.router.navigate(['/registration/thank-you'])
             : this.router.navigate(['/registration/complete']),
         (error: HttpErrorResponse) => this.onError(error),

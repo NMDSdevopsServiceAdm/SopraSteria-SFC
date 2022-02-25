@@ -49,7 +49,7 @@ describe('ConfirmDetailsComponent', () => {
     const registrationService = injector.inject(RegistrationService) as RegistrationService;
 
     const postRegistrationSpy = spyOn(registrationService, 'postRegistration');
-    postRegistrationSpy.and.returnValue(of({ userstatus: 'PENDING' }));
+    postRegistrationSpy.and.returnValue(of({ userStatus: 'PENDING' }));
 
     const component = fixture.componentInstance;
 

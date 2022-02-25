@@ -48,10 +48,10 @@ const validateRequest = (req) => {
   if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(registrationErrors.invalidUsername);
 };
 
-const sendSuccessResponse = (res, userstatus) => {
+const sendSuccessResponse = (res, userStatus) => {
   return res.status(200).json({
     message: 'Establishment and primary user successfully created',
-    userstatus,
+    userStatus,
   });
 };
 
