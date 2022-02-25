@@ -27,7 +27,7 @@ import { of } from 'rxjs';
 
 import { StaffDetailsComponent } from './staff-details.component';
 
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
+import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 
 describe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
@@ -39,7 +39,7 @@ describe('StaffDetailsComponent', () => {
   });
 
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const establishment = establishmentBuilder() as Establishment;
+    const establishment = establishmentBuilder();
     const component = await render(StaffDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -241,5 +241,18 @@ describe('StaffDetailsComponent', () => {
     component.fixture.detectChanges();
 
     expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'mandatory-details']);
+  });
+
+  it('should return to the dashboard if the user cancels adding of a new staff member', async () => {
+    const { component, spy } = await setup();
+
+    // reset worker mock
+    component.fixture.componentInstance.worker = null;
+
+    const cancelBtn = component.getByText('Cancel');
+    expect(cancelBtn).toBeTruthy();
+    fireEvent.click(cancelBtn);
+
+    expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
   });
 });

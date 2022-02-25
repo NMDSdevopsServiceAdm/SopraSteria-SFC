@@ -39,12 +39,8 @@
                 id="conditional-employerType-conditional-1"
               >
                 <div class="govuk-form-group">
-                  <label class="govuk-label" for="other">
-                    Other Employer Type
-                  </label>
-                  <span id="employerType-hint" class="govuk-hint">
-                    Optional
-                  </span>
+                  <label class="govuk-label" for="other"> Other Employer Type </label>
+                  <span id="employerType-hint" class="govuk-hint"> Optional </span>
                   <span *ngIf="submitted && form.get('other').invalid" id="other-error" class="govuk-error-message">
                     <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('other') }}
                   </span>
@@ -65,5 +61,9 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button
+    [return]="!!return"
+    [isExistingStaffRecord]="false"
+    (clicked)="onSubmit($event)"
+  ></app-submit-button>
 </form>
