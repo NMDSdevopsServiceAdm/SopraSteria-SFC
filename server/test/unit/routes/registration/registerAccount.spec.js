@@ -5,12 +5,12 @@ const httpMocks = require('node-mocks-http');
 const establishment = require('../../../../routes/registration/createEstablishment');
 const user = require('../../../../routes/registration/createUser');
 const RegistrationException = require('../../../../routes/registration/responseErrors').RegistrationException;
-const { registerAccount } = require('../../../../routes/registration/registerAccount');
+const { registerAccountWithTransaction } = require('../../../../routes/registration/registerAccount');
 const EstablishmentSaveException =
   require('../../../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 const UserSaveException = require('../../../../models/classes/user/userExceptions').UserSaveException;
 
-describe('registerAccount', async () => {
+describe('registerAccountWithTransaction', async () => {
   let req;
   let res;
 
@@ -41,7 +41,7 @@ describe('registerAccount', async () => {
     it('should return 400 and Parameters missing message when req body empty', async () => {
       req.body = {};
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -52,7 +52,7 @@ describe('registerAccount', async () => {
     it('should return 400 and invalid user message when no user in req body', async () => {
       req.body = { username: 'testuser' };
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -63,7 +63,7 @@ describe('registerAccount', async () => {
     it('should return 400 and invalid user message when user in req body is empty object', async () => {
       req.body = { user: {} };
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -78,7 +78,7 @@ describe('registerAccount', async () => {
         },
       };
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -96,7 +96,7 @@ describe('registerAccount', async () => {
         },
       };
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -111,7 +111,7 @@ describe('registerAccount', async () => {
         throw new EstablishmentSaveException(123, 'c123', 'Bob', 'Invalid establishment properties');
       });
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -124,7 +124,7 @@ describe('registerAccount', async () => {
         throw new RegistrationException('Unexpected main service');
       });
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 
@@ -141,7 +141,7 @@ describe('registerAccount', async () => {
         throw new UserSaveException(123, 'c123', 'Bob', 'Duplicate Username');
       });
 
-      await registerAccount(req, res);
+      await registerAccountWithTransaction(req, res);
 
       const response = res._getJSONData();
 

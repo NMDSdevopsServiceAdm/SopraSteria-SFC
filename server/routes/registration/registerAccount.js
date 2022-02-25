@@ -12,53 +12,58 @@ const establishment = require('./createEstablishment');
 const user = require('./createUser');
 const { postRegistrationToSlack } = require('./slack');
 
-exports.registerAccount = async (req, res) => {
+const registerAccount = async (req, res) => {
+  await models.sequelize.transaction(async (transaction) => {
+    return await registerAccountWithTransaction(req, res, transaction);
+  });
+};
+
+const registerAccountWithTransaction = async (req, res, transaction) => {
   try {
     let defaultError = responseErrors.default;
 
     validateRequest(req);
 
-    await models.sequelize.transaction(async (transaction) => {
-      try {
-        defaultError = responseErrors.establishment;
-        const establishmentInfo = await establishment.createEstablishment(
-          req.body.establishment,
-          req.body.user.username,
-          transaction,
-        );
+    try {
+      defaultError = responseErrors.establishment;
 
-        defaultError = responseErrors.user;
-        const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
+      const establishmentInfo = await establishment.createEstablishment(
+        req.body.establishment,
+        req.body.user.username,
+        transaction,
+      );
 
-        postRegistrationToSlack(req, establishmentInfo);
+      defaultError = responseErrors.user;
+      const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
 
-        req.sqreen.signup_track({
-          userId: userInfo.uid,
-          establishmentId: establishmentInfo.uid,
+      postRegistrationToSlack(req, establishmentInfo);
+
+      req.sqreen.signup_track({
+        userId: userInfo.uid,
+        establishmentId: establishmentInfo.uid,
+      });
+
+      res.status(200);
+      res.json({
+        status: 1,
+        message: 'Establishment and primary user successfully created',
+        userstatus: userInfo.status,
+      });
+    } catch (err) {
+      if (!defaultError) defaultError = responseErrors.default;
+
+      if (
+        err instanceof EstablishmentSaveException ||
+        err instanceof UserSaveException ||
+        err instanceof RegistrationException
+      ) {
+        return res.status(400).json({
+          message: err.message,
         });
-
-        res.status(200);
-        res.json({
-          status: 1,
-          message: 'Establishment and primary user successfully created',
-          userstatus: userInfo.status,
-        });
-      } catch (err) {
-        if (!defaultError) defaultError = responseErrors.default;
-
-        if (
-          err instanceof EstablishmentSaveException ||
-          err instanceof UserSaveException ||
-          err instanceof RegistrationException
-        ) {
-          return res.status(400).json({
-            message: err.message,
-          });
-        }
-
-        throw new RegistrationException(defaultError.errMessage);
       }
-    });
+
+      throw new RegistrationException(defaultError.errMessage);
+    }
   } catch (err) {
     // failed to fully register a new user/establishment - full rollback
     console.error('Registration: rolling back all changes because: ', err.errCode, err.errMessage);
@@ -94,4 +99,9 @@ const validateRequest = (req) => {
     throw new RegistrationException(responseErrors.invalidPassword.errMessage);
   if (!isUsernameValid(req.body.user.username))
     throw new RegistrationException(responseErrors.invalidUsername.errMessage);
+};
+
+module.exports = {
+  registerAccount,
+  registerAccountWithTransaction,
 };
