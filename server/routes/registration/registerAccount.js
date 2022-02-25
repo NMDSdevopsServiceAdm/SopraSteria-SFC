@@ -20,74 +20,43 @@ const registerAccount = async (req, res) => {
 
 const registerAccountWithTransaction = async (req, res, transaction) => {
   try {
-    let defaultError = responseErrors.default;
-
     validateRequest(req);
 
-    try {
-      defaultError = responseErrors.establishment;
+    const establishmentInfo = await establishment.createEstablishment(
+      req.body.establishment,
+      req.body.user.username,
+      transaction,
+    );
 
-      const establishmentInfo = await establishment.createEstablishment(
-        req.body.establishment,
-        req.body.user.username,
-        transaction,
-      );
+    const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
 
-      defaultError = responseErrors.user;
-      const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
+    postRegistrationToSlack(req, establishmentInfo);
+    req.sqreen.signup_track({
+      userId: userInfo.uid,
+      establishmentId: establishmentInfo.uid,
+    });
 
-      postRegistrationToSlack(req, establishmentInfo);
-
-      req.sqreen.signup_track({
-        userId: userInfo.uid,
-        establishmentId: establishmentInfo.uid,
-      });
-
-      res.status(200);
-      res.json({
-        status: 1,
-        message: 'Establishment and primary user successfully created',
-        userstatus: userInfo.status,
-      });
-    } catch (err) {
-      if (!defaultError) defaultError = responseErrors.default;
-
-      if (
-        err instanceof EstablishmentSaveException ||
-        err instanceof UserSaveException ||
-        err instanceof RegistrationException
-      ) {
-        return res.status(400).json({
-          message: err.message,
-        });
-      }
-
-      throw new RegistrationException(defaultError.errMessage);
-    }
+    res.status(200);
+    res.json({
+      status: 1,
+      message: 'Establishment and primary user successfully created',
+      userstatus: userInfo.status,
+    });
   } catch (err) {
-    // failed to fully register a new user/establishment - full rollback
-    console.error('Registration: rolling back all changes because: ', err.errCode, err.errMessage);
+    console.error('Registration: rolling back all changes - ', err.message);
 
-    if (err instanceof RegistrationException) {
+    if (
+      err instanceof EstablishmentSaveException ||
+      err instanceof UserSaveException ||
+      err instanceof RegistrationException
+    ) {
       return res.status(400).json({
         message: err.message,
       });
     }
 
-    if (err.errCode > -99) {
-      console.error('Registration: original error: ', err.err);
-    }
-
-    if (err.errCode > -99) {
-      // we have an unexpected error
-      res.status(500);
-    } else {
-      // we have an expected error owing to given client data
-      res.status(400);
-    }
-    res.json({
-      status: err.errCode,
-      message: err.errMessage,
+    return res.status(500).json({
+      message: 'Unexpected problem with registration',
     });
   }
 };

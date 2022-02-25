@@ -148,5 +148,18 @@ describe('registerAccountWithTransaction', async () => {
       expect(res.statusCode).to.equal(400);
       expect(response.message).to.equal('Duplicate Username');
     });
+
+    it('should return a 500 status with Unexpected problem with registration message if unexpected error is thrown', async () => {
+      sinon.stub(establishment, 'createEstablishment').callsFake(() => {
+        throw new Error('We have no idea what happened');
+      });
+
+      await registerAccountWithTransaction(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(500);
+      expect(response.message).to.equal('Unexpected problem with registration');
+    });
   });
 });
