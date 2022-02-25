@@ -16,8 +16,6 @@ const saveUserToDatabase = async (userData, newUser, transaction) => {
 
   return {
     uid: newUser.uid,
-    username: newUser.username,
-    isActive: newUser.isActive,
     status: newUser.status,
   };
 };

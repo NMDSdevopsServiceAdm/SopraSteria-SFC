@@ -34,7 +34,7 @@ exports.registerAccount = async (req, res) => {
         const userInfo = await createUser(req.body.user, establishmentInfo.id, transaction);
 
         postRegistrationToSlack(req, establishmentInfo);
-        // gets here on success
+
         req.sqreen.signup_track({
           userId: userInfo.uid,
           establishmentId: establishmentInfo.uid,
@@ -44,17 +44,9 @@ exports.registerAccount = async (req, res) => {
         res.json({
           status: 1,
           message: 'Establishment and primary user successfully created',
-          establishmentId: establishmentInfo.id,
-          establishmentUid: establishmentInfo.uid,
-          primaryUser: userInfo.username,
-          nmdsId: establishmentInfo.nmdsId ? establishmentInfo.nmdsId : 'undefined',
-          active: userInfo.isActive,
           userstatus: userInfo.status,
         });
       } catch (err) {
-        //console.error('Caught exception in registration: ', err);
-
-        // if we've already found a specific registration error, re-throw the error
         if (err instanceof RegistrationException) throw err;
 
         if (!defaultError) defaultError = responseErrors.default;
