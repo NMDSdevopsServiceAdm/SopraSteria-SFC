@@ -45,15 +45,7 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
   } catch (err) {
     console.error('Registration: rolling back all changes - ', err.message);
 
-    if (isExpectedError(err)) {
-      return res.status(400).json({
-        message: err.message,
-      });
-    }
-
-    return res.status(500).json({
-      message: registrationErrors.unexpectedProblem,
-    });
+    return sendErrorResponse(err, res);
   }
 };
 
@@ -62,6 +54,18 @@ const validateRequest = (req) => {
   if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(registrationErrors.invalidUser);
   if (!isPasswordValid(req.body.user.password)) throw new RegistrationException(registrationErrors.invalidPassword);
   if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(registrationErrors.invalidUsername);
+};
+
+const sendErrorResponse = (err, res) => {
+  if (isExpectedError(err)) {
+    return res.status(400).json({
+      message: err.message,
+    });
+  }
+
+  return res.status(500).json({
+    message: registrationErrors.unexpectedProblem,
+  });
 };
 
 const isExpectedError = (err) =>
