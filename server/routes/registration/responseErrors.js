@@ -1,4 +1,4 @@
-const responseErrors = {
+const registrationErrors = {
   unexpectedMainService: 'Unexpected main service',
   unexpectedProblem: 'Unexpected problem with registration',
   invalidEstablishment: 'Establishment data is invalid',
@@ -17,5 +17,5 @@ class RegistrationException {
 
 module.exports = {
   RegistrationException,
-  responseErrors,
+  registrationErrors,
 };

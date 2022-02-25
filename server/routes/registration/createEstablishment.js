@@ -1,4 +1,4 @@
-const { responseErrors, RegistrationException } = require('./responseErrors');
+const { registrationErrors, RegistrationException } = require('./responseErrors');
 const Establishment = require('../../models/classes/establishment').Establishment;
 const models = require('../../models');
 
@@ -28,7 +28,7 @@ const saveEstablishmentToDatabase = async (username, establishmentData, newEstab
   await loadEstablishmentData(newEstablishment, establishmentData);
 
   if (!newEstablishment.hasMandatoryProperties || !newEstablishment.isValid) {
-    throw new RegistrationException(responseErrors.invalidEstablishment);
+    throw new RegistrationException(registrationErrors.invalidEstablishment);
   }
 
   return await saveEstablishment(username, newEstablishment, transaction);
@@ -79,7 +79,7 @@ const getMainServiceId = async (establishmentData) => {
   );
 
   if (!mainService || mainServiceOtherNameIsTooLong(mainService, establishmentData)) {
-    throw new RegistrationException(responseErrors.unexpectedMainService);
+    throw new RegistrationException(registrationErrors.unexpectedMainService);
   }
 
   return mainService.id;

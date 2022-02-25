@@ -1,11 +1,11 @@
-const { responseErrors, RegistrationException } = require('./responseErrors');
+const { registrationErrors, RegistrationException } = require('./responseErrors');
 const User = require('../../models/classes/user').User;
 
 const saveUserToDatabase = async (userData, newUser, transaction) => {
   await newUser.load(userData);
 
   if (!newUser.isValid()) {
-    throw new RegistrationException(responseErrors.invalidUser);
+    throw new RegistrationException(registrationErrors.invalidUser);
   }
 
   await newUser.save(userData.username, 0, transaction);

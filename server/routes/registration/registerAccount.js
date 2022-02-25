@@ -7,7 +7,7 @@ const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
-const { responseErrors, RegistrationException } = require('./responseErrors');
+const { registrationErrors, RegistrationException } = require('./responseErrors');
 const establishment = require('./createEstablishment');
 const user = require('./createUser');
 const { postRegistrationToSlack } = require('./slack');
@@ -56,16 +56,16 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
     }
 
     return res.status(500).json({
-      message: responseErrors.unexpectedProblem,
+      message: registrationErrors.unexpectedProblem,
     });
   }
 };
 
 const validateRequest = (req) => {
-  if (isEmpty(req.body)) throw new RegistrationException(responseErrors.emptyRequest);
-  if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(responseErrors.invalidUser);
-  if (!isPasswordValid(req.body.user.password)) throw new RegistrationException(responseErrors.invalidPassword);
-  if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(responseErrors.invalidUsername);
+  if (isEmpty(req.body)) throw new RegistrationException(registrationErrors.emptyRequest);
+  if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(registrationErrors.invalidUser);
+  if (!isPasswordValid(req.body.user.password)) throw new RegistrationException(registrationErrors.invalidPassword);
+  if (!isUsernameValid(req.body.user.username)) throw new RegistrationException(registrationErrors.invalidUsername);
 };
 
 module.exports = {
