@@ -18,7 +18,7 @@ describe('HasPermissionsGuard', () => {
         {
           provide: ActivatedRouteSnapshot,
           useValue: {
-            paramMap: convertToParamMap({ establishmentuid: workplaceId ? 'someUid' : '' }),
+            paramMap: convertToParamMap({ establishmentuid: workplaceId ? 'someEstablishmentUid' : '' }),
           },
         },
         {
@@ -58,7 +58,7 @@ describe('HasPermissionsGuard', () => {
     const res = guard.canActivate(route, null);
 
     expect(res).toBeTrue;
-    expect(permissionsServiceSpy).toHaveBeenCalledWith('someUid');
+    expect(permissionsServiceSpy).toHaveBeenCalledWith('someEstablishmentUid');
   });
 
   it('should return false of the workplace does not have the correct permissions', () => {

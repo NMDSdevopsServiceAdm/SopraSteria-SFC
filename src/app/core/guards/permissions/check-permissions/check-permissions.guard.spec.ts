@@ -23,7 +23,7 @@ describe('CheckPermissionsGuard', () => {
         {
           provide: ActivatedRouteSnapshot,
           useValue: {
-            paramMap: convertToParamMap({ establishmentuid: 'someUid' }),
+            paramMap: convertToParamMap({ establishmentuid: 'someEstablishmentUid' }),
             data: { permissions: ['canEditEstablishment'] },
           },
         },
