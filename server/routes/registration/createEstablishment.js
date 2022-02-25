@@ -1,4 +1,4 @@
-const { registrationErrors, RegistrationException } = require('./responseErrors');
+const { registrationErrors, RegistrationException } = require('./registrationErrors');
 const Establishment = require('../../models/classes/establishment').Establishment;
 const models = require('../../models');
 

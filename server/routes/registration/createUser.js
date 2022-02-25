@@ -1,4 +1,4 @@
-const { registrationErrors, RegistrationException } = require('./responseErrors');
+const { registrationErrors, RegistrationException } = require('./registrationErrors');
 const User = require('../../models/classes/user').User;
 
 const saveUserToDatabase = async (userData, newUser, transaction) => {

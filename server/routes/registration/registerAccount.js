@@ -7,7 +7,7 @@ const EstablishmentSaveException =
   require('../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 
 const UserSaveException = require('../../models/classes/user/userExceptions').UserSaveException;
-const { registrationErrors, RegistrationException } = require('./responseErrors');
+const { registrationErrors, RegistrationException } = require('./registrationErrors');
 const establishment = require('./createEstablishment');
 const user = require('./createUser');
 const { postRegistrationToSlack } = require('./slack');

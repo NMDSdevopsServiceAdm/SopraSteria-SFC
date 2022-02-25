@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const establishment = require('../../../../routes/registration/createEstablishment');
 const user = require('../../../../routes/registration/createUser');
-const RegistrationException = require('../../../../routes/registration/responseErrors').RegistrationException;
+const RegistrationException = require('../../../../routes/registration/registrationErrors').RegistrationException;
 const { registerAccountWithTransaction } = require('../../../../routes/registration/registerAccount');
 const EstablishmentSaveException =
   require('../../../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
