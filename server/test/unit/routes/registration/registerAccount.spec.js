@@ -6,6 +6,7 @@ const establishment = require('../../../../routes/registration/createEstablishme
 const user = require('../../../../routes/registration/createUser');
 const RegistrationException = require('../../../../routes/registration/registrationErrors').RegistrationException;
 const { registerAccountWithTransaction } = require('../../../../routes/registration/registerAccount');
+const slack = require('../../../../routes/registration/slack');
 const EstablishmentSaveException =
   require('../../../../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
 const UserSaveException = require('../../../../models/classes/user/userExceptions').UserSaveException;
@@ -193,6 +194,15 @@ describe('registerAccountWithTransaction', async () => {
       expect(res.statusCode).to.equal(200);
       expect(response.userstatus).to.equal('PENDING');
       expect(response.message).to.equal('Establishment and primary user successfully created');
+    });
+
+    it('should call postRegistrationToSlack with request and establishmentInfo', async () => {
+      const postRegistrationToSlackStub = sinon.stub(slack, 'postRegistrationToSlack').returns(null);
+
+      await registerAccountWithTransaction(req, res);
+
+      expect(postRegistrationToSlackStub.getCall(0).args[0]).to.deep.equal(req);
+      expect(postRegistrationToSlackStub.getCall(0).args[1]).to.deep.equal({ uid: 'a413' });
     });
   });
 });

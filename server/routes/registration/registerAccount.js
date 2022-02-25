@@ -10,7 +10,7 @@ const UserSaveException = require('../../models/classes/user/userExceptions').Us
 const { registrationErrors, RegistrationException } = require('./registrationErrors');
 const establishment = require('./createEstablishment');
 const user = require('./createUser');
-const { postRegistrationToSlack } = require('./slack');
+const slack = require('./slack');
 
 const registerAccount = async (req, res) => {
   await models.sequelize.transaction(async (transaction) => {
@@ -30,7 +30,7 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
 
     const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
 
-    postRegistrationToSlack(req, establishmentInfo);
+    slack.postRegistrationToSlack(req, establishmentInfo);
     setUpSqreenMonitoring(req, userInfo.uid, establishmentInfo.uid);
 
     sendSuccessResponse(res, userInfo.status);
