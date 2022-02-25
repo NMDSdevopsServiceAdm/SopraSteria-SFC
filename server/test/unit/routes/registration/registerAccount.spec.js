@@ -29,6 +29,9 @@ describe('registerAccountWithTransaction', async () => {
           email: 'testuser@email.com',
         },
       },
+      sqreen: {
+        signup_track() {},
+      },
     };
     res = httpMocks.createResponse();
   });
@@ -134,7 +137,7 @@ describe('registerAccountWithTransaction', async () => {
 
     it('should return a 400 status with exception message if UserSaveException is thrown in createUser', async () => {
       sinon.stub(establishment, 'createEstablishment').callsFake(() => {
-        return { id: 132 };
+        return { uid: 132 };
       });
 
       sinon.stub(user, 'createUser').callsFake(() => {
@@ -160,6 +163,24 @@ describe('registerAccountWithTransaction', async () => {
 
       expect(res.statusCode).to.equal(500);
       expect(response.message).to.equal('Unexpected problem with registration');
+    });
+  });
+
+  describe('Registration completion', () => {
+    it('should call req.sqreen.signup_track with returned user and establishment uids', async () => {
+      sinon.stub(establishment, 'createEstablishment').callsFake(() => {
+        return { uid: 'a413' };
+      });
+
+      sinon.stub(user, 'createUser').callsFake(() => {
+        return { uid: 'c1234' };
+      });
+
+      const signupTrackSpy = sinon.spy(req.sqreen, 'signup_track');
+
+      await registerAccountWithTransaction(req, res);
+
+      expect(signupTrackSpy.getCall(0).args[0]).to.deep.equal({ userId: 'c1234', establishmentId: 'a413' });
     });
   });
 });

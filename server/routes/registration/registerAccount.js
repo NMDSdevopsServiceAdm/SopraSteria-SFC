@@ -31,10 +31,7 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
     const userInfo = await user.createUser(req.body.user, establishmentInfo.id, transaction);
 
     postRegistrationToSlack(req, establishmentInfo);
-    req.sqreen.signup_track({
-      userId: userInfo.uid,
-      establishmentId: establishmentInfo.uid,
-    });
+    setUpSqreenMonitoring(req, userInfo.uid, establishmentInfo.uid);
 
     res.status(200);
     res.json({
@@ -65,6 +62,13 @@ const sendErrorResponse = (err, res) => {
 
   return res.status(500).json({
     message: registrationErrors.unexpectedProblem,
+  });
+};
+
+const setUpSqreenMonitoring = (req, userId, establishmentId) => {
+  req.sqreen.signup_track({
+    userId,
+    establishmentId,
   });
 };
 
