@@ -4,6 +4,8 @@ import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edi
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -76,18 +78,18 @@ const routes: Routes = [
       {
         path: 'start',
         component: StartComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Start',
         },
       },
       {
         path: 'regulated-by-cqc',
         component: RegulatedByCqcComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Regulated by CQC',
         },
       },
@@ -95,27 +97,27 @@ const routes: Routes = [
       {
         path: 'select-workplace',
         component: SelectWorkplaceComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Select Workplace',
         },
       },
       {
         path: 'workplace-not-found',
         component: WorkplaceNotFoundComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Workplace Not Found',
         },
       },
       {
         path: 'update-workplace-details',
         component: WorkplaceNameAddressComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Update Workplace Details',
         },
       },
@@ -123,153 +125,153 @@ const routes: Routes = [
       {
         path: 'type-of-employer',
         component: TypeOfEmployerComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Type of Employer',
         },
       },
       {
         path: 'main-service',
         component: SelectMainServiceComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Main Service',
         },
       },
       {
         path: 'main-service-cqc',
         component: SelectMainServiceCqcComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Main Service',
         },
       },
       {
         path: 'main-service-cqc-confirm',
         component: SelectMainServiceCqcConfirmComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Main Service',
         },
       },
       {
         path: 'other-services',
         component: OtherServicesComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Other Services',
         },
       },
       {
         path: 'capacity-of-services',
         component: ServicesCapacityComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Capacity of Services',
         },
       },
       {
         path: 'service-users',
         component: ServiceUsersComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Service Users',
         },
       },
       {
         path: 'sharing-data',
         component: DataSharingComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Share Data',
         },
       },
       {
         path: 'total-staff',
         component: TotalStaffQuestionComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Total Staff',
         },
       },
       {
         path: 'vacancies',
         component: VacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Vacancies',
         },
       },
       {
         path: 'confirm-vacancies',
         component: ConfirmVacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Confirm Vacancies',
         },
       },
       {
         path: 'starters',
         component: StartersComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Starters',
         },
       },
       {
         path: 'confirm-starters',
         component: ConfirmStartersComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Confirm Starters',
         },
       },
       {
         path: 'leavers',
         component: LeaversComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Leavers',
         },
       },
       {
         path: 'confirm-leavers',
         component: ConfirmLeaversComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Confirm Leavers',
         },
       },
       {
         path: 'check-answers',
         component: CheckAnswersComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Check Answers',
         },
       },
       {
         path: 'success',
         component: SuccessComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [RoleGuard],
         data: {
-          permissions: ['canEditEstablishment'],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Success',
         },
       },
@@ -334,20 +336,20 @@ const routes: Routes = [
           {
             path: 'edit-details',
             component: UserAccountEditDetailsComponent,
-            canActivate: [CheckPermissionsGuard],
+            canActivate: [RoleGuard],
             resolve: { user: UserAccountResolver },
             data: {
-              permissions: ['canEditUser'],
+              roles: [Roles.Admin],
               title: 'Edit User Details',
             },
           },
           {
             path: 'delete-user',
             component: DeleteUserAccountComponent,
-            canActivate: [CheckPermissionsGuard],
+            canActivate: [RoleGuard],
             resolve: { user: UserAccountResolver },
             data: {
-              permissions: ['canDeleteUser'],
+              roles: [Roles.Edit, Roles.Admin],
               title: 'Delete User',
             },
           },
