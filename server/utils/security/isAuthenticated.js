@@ -227,7 +227,7 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
 
   try {
     const where = {};
-    if (claim.isParent) where.parentId = claim.EstblishmentId;
+    if (!establishmentMatchesClaim && claim.isParent) where.parentId = claim.EstblishmentId;
     establishmentIdIsUID ? (where.uid = req.params.id) : (where.id = req.params.id);
 
     const referencedEstablishment = await models.establishment.authenticateEstablishment(where);

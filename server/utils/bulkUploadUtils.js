@@ -37,8 +37,6 @@ const showNinoAndDob = (dataArr, worker, niNumberIndex, dobIndex) => {
 };
 
 const staffData = async (data, downloadType) => {
-  console.log('*********** staff data ***********');
-  // console.log(data);
   const dataRows = data.split('\r\n');
 
   const niNumberIndex = dataRows[0].split(',').findIndex((element) => element === 'NINUMBER');
