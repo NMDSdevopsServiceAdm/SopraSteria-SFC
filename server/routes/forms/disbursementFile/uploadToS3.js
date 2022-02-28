@@ -1,5 +1,6 @@
 'use strict';
 const config = require('../../../config/config');
+const moment = require('moment');
 
 const AWS = require('aws-sdk');
 
@@ -14,7 +15,7 @@ const uploadFileToS3 = async (buffer) => {
     await s3
       .putObject({
         Bucket,
-        Key: 'fundingClaimForm.xlsx',
+        Key: moment().format('DD-MM-YYYY') + '-fundingClaimForm.xlsx',
         Body: buffer,
       })
       .promise();

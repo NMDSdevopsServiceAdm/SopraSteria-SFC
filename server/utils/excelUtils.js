@@ -232,23 +232,10 @@ exports.addSmallHeadingBlack = (tab, startCell, endCell, content) => {
   };
 };
 
-exports.addBox = (tab, startCell, endCell, content, backgroundColour, textSize, horizontal, textcolor) => {
-  tab.mergeCells(`${startCell}:${endCell}`);
-  tab.getCell(startCell).value = { text: content, hyperlink: "#'Sheet2'!A1" };
-  tab.getCell(startCell).alignment = { vertical: 'middle', horizontal: horizontal, wrapText: 'true' };
-  tab.getCell(startCell).font = {
-    name: 'Serif',
-    family: 4,
-    size: textSize,
-    color: { argb: textcolor },
-  };
-  tab.getCell(startCell).fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
-  tab.getCell(startCell).border = { ...fullBorder, color: { argb: '000000' } };
-};
+exports.setColumnWidths = (tab) => {
+  const longColumn = tab.getColumn(9);
+  const longColumnsecond = tab.getColumn(10);
 
-exports.addThickLine = (worksheet, startCell, endCell) => {
-  worksheet.mergeCells(`${startCell}:${endCell}`);
-  worksheet.getCell(startCell).border = {
-    bottom: { style: 'thick' },
-  };
+  longColumn.width = 33;
+  longColumnsecond.width = 29;
 };

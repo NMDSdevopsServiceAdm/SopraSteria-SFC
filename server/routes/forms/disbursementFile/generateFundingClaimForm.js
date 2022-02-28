@@ -16,7 +16,7 @@ const generateFundingClaimForm = async (req, res) => {
 
     const buffer = await workbook.xlsx.writeBuffer();
     await uploadFileToS3(buffer);
-    await workbook.xlsx.writeFile('fundingForm.xls');
+
     return res.status(200).send();
   } catch (error) {
     console.error(error);
