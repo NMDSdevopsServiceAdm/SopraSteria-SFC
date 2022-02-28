@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const excelJS = require('exceljs');
 
-const { addContentToFundingClaimFormTab } = require('../../../../../routes/forms/disbursementFile/fundingClaimFormTab');
+const { addContentToFundingClaimFormTab } = require('../../../../../routes/wdf/disbursementFile/fundingClaimFormTab');
 
 describe('generateFundingClaimFormTab', () => {
   let mockFundingClaimFormTab;
