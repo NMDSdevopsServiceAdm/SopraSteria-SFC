@@ -31,7 +31,7 @@ const addContentToFundingClaimFormTab = (fundingClaimFormTab) => {
 };
 
 const createFundingClaimFormTable = (fundingClaimFormTab) => {
-  setTableHeadingsStyle(fundingClaimFormTab, 9, backgroundColours.lightBlue, textColours.black, tableHeader);
+  setTableHeadingsStyle(fundingClaimFormTab, 9, backgroundColours.lightBlue, textColours.black, tableHeaderRow);
 
   const columns = [
     { name: 'Organisation', filterButton: false },
@@ -59,7 +59,7 @@ const addRows = (fundingClaimFormTable) => {
   fundingClaimFormTable.commit();
 };
 
-const tableHeader = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+const tableHeaderRow = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
 
 module.exports.generateFundingClaimFormTab = generateFundingClaimFormTab;
 module.exports.addContentToFundingClaimFormTab = addContentToFundingClaimFormTab;
