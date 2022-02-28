@@ -3,9 +3,10 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, screen } from '@testing-library/angular';
 
@@ -16,6 +17,7 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level.
 
 describe('OtherQualificationsLevelComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
+  const worker = workerBuilder() as Worker;
 
   async function setup() {
     const { fixture } = await render(OtherQualificationsLevelComponent, {
@@ -24,7 +26,7 @@ describe('OtherQualificationsLevelComponent', () => {
         RouterModule,
         RouterTestingModule.withRoutes([
           {
-            path: `workplace/${workplace.uid}/staff-record/3c61b461-54a0-4c2f-b530-c2b3b0bb2830/other-qualifications`,
+            path: `workplace/${workplace.uid}/staff-record/${worker.uid}/other-qualifications`,
             component: OtherQualificationsComponent,
           },
         ]),
@@ -48,7 +50,7 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
+          useClass: MockWorkerService,
         },
       ],
     });
