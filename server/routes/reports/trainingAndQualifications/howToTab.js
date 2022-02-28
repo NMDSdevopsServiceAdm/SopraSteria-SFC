@@ -5,6 +5,7 @@ const {
   addBorder,
   standardFont,
   textBoxAlignment,
+  textColours,
 } = require('../../../utils/excelUtils');
 
 const generateHowToTab = (workbook, isParent = false) => {
@@ -18,13 +19,13 @@ const generateHowToTab = (workbook, isParent = false) => {
   addTitleToHowToTab(howToTab, isParent);
   addLine(howToTab, 'A7', 'L7');
 
-  addHeading(howToTab, 'B9', 'K9', 'How to sort and filter the table columns');
+  addHeading(howToTab, 'B9', 'K9', 'How to sort and filter the table columns', textColours.blue, 16);
   addTextBox(howToTab, 'B11', 'K16', textBoxes.filteringInstructions);
 
-  addHeading(howToTab, 'B18', 'K18', 'How to delete unwanted sheets');
+  addHeading(howToTab, 'B18', 'K18', 'How to delete unwanted sheets', textColours.blue, 16);
   addDeleteInstructionsTextBox(howToTab, 'B20', 'K25');
 
-  addHeading(howToTab, 'B27', 'K27', 'How to print the information in this file');
+  addHeading(howToTab, 'B27', 'K27', 'How to print the information in this file', textColours.blue, 16);
   addTextBox(howToTab, 'B29', 'K33', textBoxes.howToPrintInstructions);
 
   howToTab.mergeCells('A34:L34');
@@ -72,8 +73,8 @@ const textBoxes = {
 
 const addTitleToHowToTab = (howToTab, isParent) => {
   const title = isParent ? 'Parent training and qualifications report' : 'Training and qualifications report';
-  addHeading(howToTab, 'B5', 'K5', title);
-}
+  addHeading(howToTab, 'B5', 'K5', title, textColours.blue, 16);
+};
 
 module.exports.generateHowToTab = generateHowToTab;
 module.exports.addTitleToHowToTab = addTitleToHowToTab;

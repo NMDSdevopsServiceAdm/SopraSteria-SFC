@@ -1,6 +1,5 @@
 const {
-  addHeadingBlack,
-  addSmallHeadingBlack,
+  addHeading,
   addLine,
   setTableHeadingsStyle,
   backgroundColours,
@@ -18,10 +17,10 @@ const generateFundingClaimFormTab = (workbook) => {
 };
 
 const addContentToFundingClaimFormTab = (fundingClaimFormTab) => {
-  addHeadingBlack(fundingClaimFormTab, 'A1', 'C1', 'FUNDING CLAIM FORM');
-  addSmallHeadingBlack(fundingClaimFormTab, 'A3', 'C3', 'Grant Holder Name:');
+  addHeading(fundingClaimFormTab, 'A1', 'C1', 'FUNDING CLAIM FORM', textColours.black, 16);
+  addHeading(fundingClaimFormTab, 'A3', 'C3', 'Grant Holder Name:', textColours.black, 12);
   addLine(fundingClaimFormTab, 'A5', 'E5');
-  addSmallHeadingBlack(fundingClaimFormTab, 'A6', 'C6', 'Grant Number:');
+  addHeading(fundingClaimFormTab, 'A6', 'C6', 'Grant Number:', textColours.black, 12);
   addLine(fundingClaimFormTab, 'A8', 'E8');
   const fundingClaimFormTable = createFundingClaimFormTable(fundingClaimFormTab);
   addRows(fundingClaimFormTable);

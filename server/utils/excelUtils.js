@@ -127,14 +127,14 @@ exports.addTextBox = (tab, startCell, endCell, content) => {
   addBorder(tab, startCell);
 };
 
-exports.addHeading = (tab, startCell, endCell, content) => {
+exports.addHeading = (tab, startCell, endCell, content, textColour, size) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = content;
   tab.getCell(startCell).font = {
     family: 4,
-    size: 16,
+    size: size,
     bold: true,
-    color: { argb: '0050ab' },
+    color: textColour,
   };
 };
 
@@ -204,32 +204,11 @@ exports.textColours = {
   red: { argb: '960512' },
   green: { argb: '005713' },
   black: { argb: '000000' },
+  blue: { argb: '0050ab' },
 };
 
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
-};
-
-exports.addHeadingBlack = (tab, startCell, endCell, content) => {
-  tab.mergeCells(`${startCell}:${endCell}`);
-  tab.getCell(startCell).value = content;
-  tab.getCell(startCell).font = {
-    family: 4,
-    size: 16,
-    bold: true,
-    color: { argb: '000000' },
-  };
-};
-
-exports.addSmallHeadingBlack = (tab, startCell, endCell, content) => {
-  tab.mergeCells(`${startCell}:${endCell}`);
-  tab.getCell(startCell).value = content;
-  tab.getCell(startCell).font = {
-    family: 4,
-    size: 12,
-    bold: true,
-    color: { argb: '000000' },
-  };
 };
 
 exports.setColumnWidths = (tab) => {
