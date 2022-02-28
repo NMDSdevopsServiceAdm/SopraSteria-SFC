@@ -759,5 +759,40 @@ describe('isAuthenticated', () => {
       expect(res.statusCode).to.equal(403);
       expect(res._getData()).to.deep.equal({ success: false, message: 'token expired' });
     });
+
+    it('does not add the parent ID to the database WHERE clause if establishment matches claim - (UID)', async () => {
+      jwtStub.returns({ ...claimReturn, isParent: true, EstablishmentUID: establishmentUid });
+      dbStub.callsFake((where) => {
+        expect(where).to.deep.equal({ uid: establishmentUid });
+        return {
+          id: 143,
+          dataPermissions: null,
+          dataOwner: 'Parent',
+          parentId: null,
+          isParent: true,
+        };
+      });
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        headers: {
+          authorization: 'arealjwt',
+          'x-forwarded-for': 'my-ip',
+        },
+        params: {
+          id: establishmentUid,
+        },
+        sqreen: {
+          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
+        },
+      });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await authorisedEstablishmentPermissionCheck(req, res, next, true);
+
+      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(next.calledOnce).to.be.true;
+    });
   });
 });
