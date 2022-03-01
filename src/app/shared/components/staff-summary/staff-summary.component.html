@@ -46,6 +46,7 @@
             worker.uid,
             worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
           ]"
+          [state]="{ navigatedFrom: 'staff-records' }"
           >Provide more information <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
         >
       </td>

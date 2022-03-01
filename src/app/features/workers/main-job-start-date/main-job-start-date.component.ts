@@ -16,6 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MainJobStartDateComponent extends QuestionComponent {
   private dateMin = dayjs().subtract(100, 'years');
+  public returnThis?: { url: string[] } | null = this.return;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -51,6 +52,8 @@ export class MainJobStartDateComponent extends QuestionComponent {
 
     this.next = this.getRoutePath('other-job-roles');
     this.previous = this.getReturnPath();
+
+    if (history.state?.navigatedFrom) this.return = null;
   }
 
   public setupFormErrorsMap(): void {
