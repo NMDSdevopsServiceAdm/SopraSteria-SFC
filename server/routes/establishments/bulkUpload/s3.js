@@ -15,16 +15,12 @@ const params = (establishmentId) => {
 
 const disbursementBucket = String(config.get('disbursement.bucketname'));
 
-const uploadDisbursementFileToS3 = async (
-  buffer,
-  bucket = disbursementBucket,
-  fileName = moment().format('DD-MM-YYYY hh:mm:ss') + '-fundingClaimForm.xlsx',
-) => {
+const uploadDisbursementFileToS3 = async (buffer) => {
   try {
     await s3
       .putObject({
-        Bucket: bucket,
-        Key: fileName,
+        Bucket: disbursementBucket,
+        Key: moment().format('DD-MM-YYYY hh:mm:ss') + '-fundingClaimForm.xlsx',
         Body: buffer,
       })
       .promise();
