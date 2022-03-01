@@ -23,7 +23,7 @@ const generateTrainingTab = async (workbook, establishmentId, isParent = false) 
 };
 
 const addContentToTrainingTab = (trainingTab, establishments, isParent) => {
-  addHeading(trainingTab, 'B2', 'E2', 'Training', textColours.blue, 16);
+  addHeading(trainingTab, 'B2', 'E2', 'Training');
   addLine(trainingTab, 'A4', isParent ? 'L4' : 'K4');
   alignColumnToLeft(trainingTab, 2);
   if (isParent) alignColumnToLeft(trainingTab, 3);

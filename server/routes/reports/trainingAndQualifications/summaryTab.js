@@ -22,7 +22,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 };
 
 const addContentToSummaryTab = (summaryTab, workerTrainingBreakdowns, trainingRecordTotals) => {
-  addHeading(summaryTab, 'B2', 'E2', 'Training (summary)', textColours.blue, 16);
+  addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'E4');
   alignColumnToLeft(summaryTab, 2);
 

@@ -17,7 +17,7 @@ const generateFundingClaimFormTab = (workbook) => {
 };
 
 const addContentToFundingClaimFormTab = (fundingClaimFormTab) => {
-  addHeading(fundingClaimFormTab, 'A1', 'C1', 'FUNDING CLAIM FORM', textColours.black, 16);
+  addHeading(fundingClaimFormTab, 'A1', 'C1', 'FUNDING CLAIM FORM', textColours.black);
   addHeading(fundingClaimFormTab, 'A3', 'C3', 'Grant Holder Name:', textColours.black, 12);
   addLine(fundingClaimFormTab, 'A5', 'E5');
   addHeading(fundingClaimFormTab, 'A6', 'C6', 'Grant Number:', textColours.black, 12);

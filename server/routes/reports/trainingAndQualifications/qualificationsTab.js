@@ -22,7 +22,7 @@ const generateQualificationsTab = async (workbook, establishmentId, isParent = f
 };
 
 const addContentToQualificationsTab = (qualificationsTab, establishments, isParent) => {
-  addHeading(qualificationsTab, 'B2', 'E2', 'Qualifications', textColours.blue, 16);
+  addHeading(qualificationsTab, 'B2', 'E2', 'Qualifications');
   addLine(qualificationsTab, 'A4', isParent ? 'H4' : 'G4');
   alignColumnToLeft(qualificationsTab, 2);
   if (isParent) alignColumnToLeft(qualificationsTab, 3);

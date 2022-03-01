@@ -31,7 +31,7 @@ const generateSummaryTab = async (workbook, establishmentId) => {
 };
 
 const addContentToSummaryTab = (summaryTab, establishmentRecordTotals) => {
-  addHeading(summaryTab, 'B2', 'E2', 'Training (summary)', textColours.blue, 16);
+  addHeading(summaryTab, 'B2', 'E2', 'Training (summary)');
   addLine(summaryTab, 'A4', 'L4');
 
   addTrainingStatusHeadings(summaryTab);

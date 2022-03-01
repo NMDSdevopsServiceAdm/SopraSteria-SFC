@@ -127,7 +127,7 @@ exports.addTextBox = (tab, startCell, endCell, content) => {
   addBorder(tab, startCell);
 };
 
-exports.addHeading = (tab, startCell, endCell, content, textColour, size) => {
+exports.addHeading = (tab, startCell, endCell, content, textColour = this.textColours.blue, size = 16) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = content;
   tab.getCell(startCell).font = {

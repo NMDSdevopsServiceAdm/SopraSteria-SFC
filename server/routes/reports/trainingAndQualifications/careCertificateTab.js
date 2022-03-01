@@ -21,7 +21,7 @@ const generateCareCertificateTab = async (workbook, establishmentId, isParent = 
 };
 
 const addContentToCareCertificateTab = (careCertificateTab, establishments, isParent) => {
-  addHeading(careCertificateTab, 'B2', 'D2', 'Care Certificate', textColours.blue, 16);
+  addHeading(careCertificateTab, 'B2', 'D2', 'Care Certificate');
   addLine(careCertificateTab, 'A4', isParent ? 'E4' : 'D4');
   alignColumnToLeft(careCertificateTab, 2);
   if (isParent) alignColumnToLeft(careCertificateTab, 3);
