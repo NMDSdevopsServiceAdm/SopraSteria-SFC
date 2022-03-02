@@ -16,7 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MainJobStartDateComponent extends QuestionComponent {
   private dateMin = dayjs().subtract(100, 'years');
-  public returnThis?: { url: string[] } | null = this.return;
+  public return: { url: string[] } | null = this.return;
 
   constructor(
     protected formBuilder: FormBuilder,
