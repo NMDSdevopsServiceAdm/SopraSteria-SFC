@@ -67,11 +67,13 @@ describe('MainJobStartDateComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService);
 
     const submitSpy = spyOn(component.fixture.componentInstance, 'onSubmit').and.callThrough();
     const navigateSpy = spyOn(router, 'navigate');
+    const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
-    return { ...component, submitSpy, navigateSpy };
+    return { ...component, submitSpy, navigateSpy, workerServiceSpy };
   };
 
   afterEach(() => {
@@ -105,22 +107,14 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('allows the user to complete the fields and update the form data - (return flow)', async () => {
-    const { getByRole, getByLabelText, fixture, submitSpy } = await setup();
+    const { getByRole, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup();
 
     const formData = fixture.componentInstance.form.value;
     expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
 
-    const day = getByLabelText('Day');
-    const month = getByLabelText('Month');
-    const year = getByLabelText('Year');
-
-    expect(day).toBeTruthy();
-    expect(month).toBeTruthy();
-    expect(year).toBeTruthy();
-
-    userEvent.type(day, '11');
-    userEvent.type(month, '11');
-    userEvent.type(year, '1999');
+    userEvent.type(getByLabelText('Day'), '11');
+    userEvent.type(getByLabelText('Month'), '11');
+    userEvent.type(getByLabelText('Year'), '1999');
 
     userEvent.click(getByRole('button', { name: 'Save and return' }));
 
@@ -128,25 +122,22 @@ describe('MainJobStartDateComponent', () => {
     expect(updatedFormData).toEqual({ mainJobStartDate: { day: 11, month: 11, year: 1999 } });
 
     expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+    expect(workerServiceSpy).toHaveBeenCalledWith(
+      fixture.componentInstance.workplace.uid,
+      fixture.componentInstance.worker.uid,
+      { mainJobStartDate: '1999-11-11' },
+    );
   });
 
   it('allows the user to complete the fields and update the form data - (continue flow)', async () => {
-    const { getByRole, getByLabelText, fixture, submitSpy } = await setup('dashboard');
+    const { getByRole, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup('dashboard');
 
     const formData = fixture.componentInstance.form.value;
     expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
 
-    const day = getByLabelText('Day');
-    const month = getByLabelText('Month');
-    const year = getByLabelText('Year');
-
-    expect(day).toBeTruthy();
-    expect(month).toBeTruthy();
-    expect(year).toBeTruthy();
-
-    userEvent.type(day, '22');
-    userEvent.type(month, '12');
-    userEvent.type(year, '2000');
+    userEvent.type(getByLabelText('Day'), '22');
+    userEvent.type(getByLabelText('Month'), '12');
+    userEvent.type(getByLabelText('Year'), '2000');
 
     userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
@@ -154,22 +145,29 @@ describe('MainJobStartDateComponent', () => {
     expect(updatedFormData).toEqual({ mainJobStartDate: { day: 22, month: 12, year: 2000 } });
 
     expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+    expect(workerServiceSpy).toHaveBeenCalledWith(
+      fixture.componentInstance.workplace.uid,
+      fixture.componentInstance.worker.uid,
+      { mainJobStartDate: '2000-12-22' },
+    );
   });
 
   it('allows the user to the staff record summary', async () => {
-    const { fixture, getByText, submitSpy, navigateSpy } = await setup('dashboardd');
+    const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup('dashboardd');
 
     userEvent.click(getByText('View this staff record'));
     expect(submitSpy).toHaveBeenCalledWith({ action: 'summary', save: false });
     expect(navigateSpy).toHaveBeenCalledWith(['/workplace', 123, 'staff-record', fixture.componentInstance.worker.uid]);
+    expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 
   it('allows the user to exit the flow', async () => {
-    const { getByText, submitSpy, navigateSpy } = await setup();
+    const { getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup();
 
     userEvent.click(getByText('Exit'));
     expect(submitSpy).toHaveBeenCalledOnceWith({ action: 'return', save: false });
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 
   it('renders an error message component has invalid date', async () => {
