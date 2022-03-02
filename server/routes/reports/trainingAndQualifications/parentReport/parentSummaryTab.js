@@ -1,4 +1,8 @@
-const { convertWorkerTrainingBreakdowns, getTrainingTotals, getTotalsForAllWorkplaces } = require('../../../../utils/trainingAndQualificationsUtils');
+const {
+  convertWorkerTrainingBreakdowns,
+  getTrainingTotals,
+  getTotalsForAllWorkplaces,
+} = require('../../../../utils/trainingAndQualificationsUtils');
 const {
   addHeading,
   addLine,
@@ -12,11 +16,7 @@ const {
 const models = require('../../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
-  const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
-    establishmentId,
-    true,
-    true,
-  );
+  const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishmentId, true, true);
 
   const establishmentRecordTotals = rawEstablishmentTrainingBreakdowns.map((establishment) => {
     const trainingBreakdowns = convertWorkerTrainingBreakdowns(establishment.workers);
@@ -67,9 +67,10 @@ const addMandatoryBreakdownHeadings = (summaryTab) => {
     'Total',
     'Mandatory',
     'Non-mandatory',
-    'Total', 'Mandatory',
+    'Total',
+    'Mandatory',
     'Non-mandatory',
-    'Total'
+    'Total',
   ]);
 };
 
@@ -118,7 +119,7 @@ const setColumnWidths = (tab) => {
   firstColumn.width = 30;
   for (var i = startingColumn + 1; i < totalColumns; i++) {
     tab.getColumn(i).width = 15;
-  };
+  }
 };
 
 const setHeadingsStyling = (summaryTab) => {

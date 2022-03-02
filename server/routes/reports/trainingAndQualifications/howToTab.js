@@ -73,7 +73,7 @@ const textBoxes = {
 const addTitleToHowToTab = (howToTab, isParent) => {
   const title = isParent ? 'Parent training and qualifications report' : 'Training and qualifications report';
   addHeading(howToTab, 'B5', 'K5', title);
-}
+};
 
 module.exports.generateHowToTab = generateHowToTab;
 module.exports.addTitleToHowToTab = addTitleToHowToTab;
