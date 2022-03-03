@@ -242,7 +242,7 @@ describe('StaffRecordComponent', () => {
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
     });
 
-    it('should redirect back to the dashboard when worker is updated if workplace and establishment are the same', async () => {
+    it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
       const { component, fixture, routerSpy } = await setup();
 
       component.workplace.uid = 'mock-uid';
@@ -258,7 +258,7 @@ describe('StaffRecordComponent', () => {
       });
     });
 
-    it('should redirect back to the child workplace when worker is updated establishment is a parent', async () => {
+    it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
       const { component, fixture, routerSpy } = await setup();
 
       component.worker.completed = false;

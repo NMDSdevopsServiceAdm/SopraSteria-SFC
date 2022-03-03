@@ -99,17 +99,19 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
         (data) => {
           this.workerService.setState({ ...this.worker, ...data });
-          const url =
-            this.establishmentService.establishmentId === this.workplace.uid
-              ? ['/dashboard']
-              : ['/workplace', this.workplace.uid];
-          this.router.navigate(url, { fragment: 'staff-records', state: { showBanner: true } });
+          this.returnToHomeTab();
         },
         (error) => {
           console.log(error);
         },
       ),
     );
+  }
+
+  public returnToHomeTab() {
+    const isEstablishmentCurrentWorkplace = this.establishmentService.establishmentId === this.workplace.uid;
+    const url = isEstablishmentCurrentWorkplace ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+    this.router.navigate(url, { fragment: 'staff-records', state: { showBanner: true } });
   }
 
   public setReturnTo(): void {
