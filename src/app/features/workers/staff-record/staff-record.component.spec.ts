@@ -23,9 +23,8 @@ import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
 describe('StaffRecordComponent', () => {
-  const workplace = establishmentBuilder() as Establishment;
-
   async function setup() {
+    const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
