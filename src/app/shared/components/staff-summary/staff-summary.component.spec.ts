@@ -36,12 +36,28 @@ describe('StaffSummaryComponent', () => {
 
     return {
       component,
+      workers,
     };
   }
 
   it('should render a StaffSummaryComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the correct information for given workers', async () => {
+    const { component, workers } = await setup();
+
+    component.fixture.componentInstance.canEditWorker = true;
+    // update one of the fake workers
+    workers[0].nameOrId = 'joe mocked';
+    workers[0].jobRole = 'fake doctor';
+    workers[0].completed = false;
+    component.detectChanges();
+
+    expect(component.getByText('joe mocked')).toBeTruthy();
+    expect(component.getByText('fake doctor')).toBeTruthy();
+    expect(component.getAllByText('Add more details').length).toBe(3);
   });
 
   it('should put staff meeting WDF at top of table when sorting by WDF requirements (meeting)', async () => {
