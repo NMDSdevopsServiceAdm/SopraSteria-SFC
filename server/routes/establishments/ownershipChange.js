@@ -5,6 +5,7 @@ const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
 const models = require('../../models');
+const { isAdminRole } = require('../../utils/adminUtils');
 
 // POST request for ownership change request
 const ownershipChangeRequest = async (req, res) => {
@@ -80,7 +81,7 @@ const ownershipChangeRequest = async (req, res) => {
             return res.status(201).send(resp[0]);
           }
         } else {
-          if (req.role === 'Admin') {
+          if (isAdminRole(req.role)) {
             try {
               let workplace = await models.establishment.findbyId(params.subEstablishmentId);
               if (workplace) {
