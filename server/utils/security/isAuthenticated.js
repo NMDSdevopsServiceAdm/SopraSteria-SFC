@@ -4,6 +4,7 @@ const AUTH_HEADER = 'authorization';
 const thisIss = config.get('jwt.iss');
 const models = require('../../models');
 const Sentry = require('@sentry/node');
+const { isAdminRole } = require('../adminUtils');
 
 const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
 
@@ -173,7 +174,7 @@ const noEstablishmentMatchButParent = (establishmentMatchesClaim, claim) =>
   !establishmentMatchesClaim && claim.isParent;
 
 const isNotAdminButWorkplaceIsDataOwner = (claim, referencedEstablishment) =>
-  claim.role != 'Admin' && referencedEstablishment.dataOwner === 'Workplace';
+  !isAdminRole(claim.role) && referencedEstablishment.dataOwner === 'Workplace';
 
 const noDataPermissionsOrNoParentWriteAccess = (referencedEstablishment, req) =>
   noDataPermissions(referencedEstablishment) || parentNoWriteAccess(req);
@@ -366,7 +367,7 @@ const isAdmin = (req, res, next) => {
       if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
-        if (claim.role !== 'Admin') {
+        if (!isAdminRole(claim.role)) {
           return res.status(403).send("You're not admin");
         } else {
           req.username = claim.sub;
@@ -410,7 +411,7 @@ const isAdminOrOnDemandReporting = (req, res, next) => {
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
       const isAdmin = !err
-        ? claim.aud === config.get('jwt.aud.login') && claim.role === 'Admin'
+        ? claim.aud === config.get('jwt.aud.login') && isAdminRole(claim.role)
           ? true
           : false
         : false;
