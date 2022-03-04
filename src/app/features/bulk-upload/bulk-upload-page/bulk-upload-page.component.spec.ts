@@ -44,7 +44,7 @@ describe('BulkUploadPageComponent', () => {
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory([], true),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -119,9 +119,14 @@ describe('BulkUploadPageComponent', () => {
     expect(p.innerText).not.toContain('Last bulk upload');
   });
 
-  it('should show the sanitise data checkbox if the logged in user is an admin', async () => {
+  it('should show the sanitise data checkbox if the logged in user is an admin manager', async () => {
     const { getByTestId } = await setup();
     expect(getByTestId('showDataCheckbox')).toBeTruthy();
+  });
+
+  it('should not show the sanitise data checkbox if the logged in user is an admin', async () => {
+    const { queryByTestId } = await setup('Admin');
+    expect(queryByTestId('showDataCheckbox')).toBeFalsy();
   });
 
   it('should not show the sanitise data checkbox if the logged in user is not an admin', async () => {

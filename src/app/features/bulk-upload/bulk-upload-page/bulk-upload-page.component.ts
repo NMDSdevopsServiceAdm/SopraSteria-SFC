@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { Roles } from '@core/model/roles.enum';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,7 +19,7 @@ import { AdminSkipService } from '../admin-skip.service';
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
   public sanitise: boolean;
-  public isAdmin: boolean;
+  public isAdminManager: boolean;
   public canViewNinoDob: boolean;
 
   constructor(
@@ -36,7 +37,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.bulkUploadService.setReturnTo(null);
 
     this.canViewNinoDob = this.permissionsService.can(this.establishment.uid, 'canViewNinoDob');
-    this.isAdmin = this.route.snapshot.data.loggedInUser.role === 'Admin';
+    this.isAdminManager = this.route.snapshot.data.loggedInUser.role === Roles.AdminManager;
     this.sanitise = !this.canViewNinoDob;
   }
 
