@@ -1,1 +1,1 @@
-exports.isAdmin = (role) => role === 'Admin' || role === 'AdminManager';
+exports.isAdminRole = (role) => role === 'Admin' || role === 'AdminManager';
