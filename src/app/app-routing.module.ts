@@ -155,7 +155,7 @@ const routes: Routes = [
         loadChildren: () => import('@features/admin/admin.module').then((m) => m.AdminModule),
         canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Admin],
+          roles: [Roles.Admin, Roles.AdminManager],
           title: 'Admin',
         },
         component: AdminComponent,

@@ -124,7 +124,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
-          if (response.body.role === 'Admin') {
+          if (response.body.role === 'Admin' || response.body.role === 'AdminManager') {
             this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
             this.router.navigate(['/sfcadmin']);
           } else {

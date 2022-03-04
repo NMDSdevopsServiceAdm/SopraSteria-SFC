@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt-nodejs');
 const get = require('lodash/get');
 const moment = require('moment');
 const Sentry = require('@sentry/node');
+const { Op } = require('sequelize');
 
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
@@ -146,7 +147,7 @@ router.post('/', async (req, res) => {
               'tribalId',
             ],
             where: {
-              UserRoleValue: 'Admin',
+              UserRoleValue: { [Op.or]: ['Admin', 'AdminManager'] },
             },
           },
         ],
