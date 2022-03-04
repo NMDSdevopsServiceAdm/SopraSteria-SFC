@@ -143,7 +143,7 @@
     "@types/node": "^16.11.6",
     "@types/sinon": "^10.0.5",
     "@typescript-eslint/eslint-plugin": "4.0.0",
-    "@typescript-eslint/parser": "3.10.1",
+    "@typescript-eslint/parser": "5.13.0",
     "aws-sdk-mock": "^5.2.1",
     "chai": "^4.3.0",
     "codelyzer": "^6.0.2",
