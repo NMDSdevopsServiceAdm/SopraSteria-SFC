@@ -10,6 +10,8 @@ import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
+import { isAdminRole } from '../../../../server/utils/adminUtils';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -124,7 +126,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
-          if (response.body.role === 'Admin' || response.body.role === 'AdminManager') {
+          if (isAdminRole(response.body.role)) {
             this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
             this.router.navigate(['/sfcadmin']);
           } else {
