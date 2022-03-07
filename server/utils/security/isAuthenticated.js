@@ -371,6 +371,7 @@ const isAdmin = (req, res, next) => {
           return res.status(403).send("You're not admin");
         } else {
           req.username = claim.sub;
+          req.role = claim.role;
           req.userUid = claim.userUid;
           req.user = {
             id: claim.userUid,

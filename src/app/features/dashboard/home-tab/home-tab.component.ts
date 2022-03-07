@@ -40,6 +40,7 @@ import {
 } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { isAdminRole } from 'server/utils/adminUtils';
 
 declare global {
   interface Window {
@@ -127,7 +128,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     }
 
     this.window.dataLayer.push({
-      isAdmin: this.user.role === 'Admin',
+      isAdmin: isAdminRole(this.user.role),
     });
 
     if (!this?.workplace?.employerType) {
@@ -355,7 +356,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.isOwnershipRequested = true;
     }
 
-    if (this.user.role === 'Admin') {
+    if (isAdminRole(this.user.role)) {
       this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.workplace && this.workplace.parentUid !== null;
     } else {
