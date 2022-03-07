@@ -29,7 +29,7 @@
     <app-bulk-upload-related-content></app-bulk-upload-related-content>
     <app-bulk-upload-download-current-data [sanitise]="sanitise"></app-bulk-upload-download-current-data>
     <app-bulk-upload-sanitise-data-checkbox
-      *ngIf="isAdminManager"
+      *ngIf="isAdmin && canViewNinoDob"
       (checkboxToggled)="toggleSanitise($event)"
       [sanitise]="sanitise"
     ></app-bulk-upload-sanitise-data-checkbox>
