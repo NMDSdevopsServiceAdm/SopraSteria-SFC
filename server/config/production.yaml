@@ -42,8 +42,8 @@ bulkupload:
     stage: sfcprod
 
 disbursement:
-    region: eu-west-2
-    bucketname: wdf-disbursement-prod
+  region: eu-west-2
+  bucketname: wdf-disbursement-prod
 
 
 locks:
