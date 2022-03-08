@@ -1,1 +1,8 @@
-exports.isAdminRole = (role) => role === 'Admin' || role === 'AdminManager';
+const adminRoles = ['Admin', 'AdminManager'];
+
+const isAdminRole = (role) => adminRoles.includes(role);
+
+module.exports = {
+  adminRoles,
+  isAdminRole,
+};

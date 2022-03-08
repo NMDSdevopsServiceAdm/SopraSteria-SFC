@@ -16,6 +16,7 @@ const uuid = require('uuid');
 
 const config = require('..//config/config');
 const formatSuccessulLoginResponse = require('../utils/login/response');
+const { adminRoles } = require('../utils/adminUtils');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
@@ -147,7 +148,7 @@ router.post('/', async (req, res) => {
               'tribalId',
             ],
             where: {
-              UserRoleValue: { [Op.or]: ['Admin', 'AdminManager'] },
+              UserRoleValue: { [Op.or]: adminRoles },
             },
           },
         ],
