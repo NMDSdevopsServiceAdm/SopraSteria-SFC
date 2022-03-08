@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -10,12 +10,13 @@ import { take } from 'rxjs/operators';
   templateUrl: './bulk-upload-download-current-data.component.html',
 })
 export class BulkUploadDownloadCurrentDataComponent {
+  @Input() public sanitise: boolean;
   public BulkUploadFileType = BulkUploadFileType;
   public now: Date = new Date();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
-  public downloadFile(event: Event, type: BulkUploadFileType) {
+  public downloadFile(event: Event, type: BulkUploadFileType): void {
     event.preventDefault();
     this.bulkUploadService
       .getDataCSV(this.establishmentService.establishmentId, type)

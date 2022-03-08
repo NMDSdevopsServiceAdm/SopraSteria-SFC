@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -31,7 +32,9 @@ const MockWindow = {
 };
 
 describe('DashboardComponent', () => {
-  async function setup(oneUser = false, totalStaffRecords = 2) {
+  async function setup(oneUser = false, totalStaffRecords = 2, showBanner = false) {
+    showBanner ? history.pushState({ showBanner: true }, '') : history.pushState({ showBanner: false }, '');
+
     const component = await render(DashboardComponent, {
       imports: [
         SharedModule,
@@ -41,6 +44,7 @@ describe('DashboardComponent', () => {
       ],
       declarations: [HomeTabComponent],
       providers: [
+        AlertService,
         {
           provide: WindowRef,
           useClass: WindowRef,
@@ -85,10 +89,14 @@ describe('DashboardComponent', () => {
 
     const router = injector.inject(Router) as Router;
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       component,
       establishmentService,
       router,
+      alertSpy,
     };
   }
 
@@ -168,6 +176,29 @@ describe('DashboardComponent', () => {
         const { component } = await setup(false, totalStaffRecords);
 
         expect(component.queryByTestId('orange-flag')).toBeTruthy();
+      });
+    });
+
+    describe('showStaffRecordBanner', () => {
+      it('should not show a banner if the show banner flag is false', async () => {
+        const { component, alertSpy } = await setup();
+
+        component.fixture.componentInstance.ngOnInit();
+        component.fixture.detectChanges();
+
+        expect(alertSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show a banner when a staff record has been confirmed', async () => {
+        const { component, alertSpy } = await setup(false, 2, true);
+
+        component.fixture.componentInstance.ngOnInit();
+        component.fixture.detectChanges();
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: `You've confirmed the details of the staff record you added`,
+        });
       });
     });
   });

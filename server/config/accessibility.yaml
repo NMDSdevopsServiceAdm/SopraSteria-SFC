@@ -32,9 +32,15 @@ bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-demo
 
+
+disbursement:
+    region: eu-west-2
+    bucketname: wdf-disbursement-demo
+
 locks:
     region: eu-west-1
     bucketname: sfc-locks-demo
+
 
 public:
     download:

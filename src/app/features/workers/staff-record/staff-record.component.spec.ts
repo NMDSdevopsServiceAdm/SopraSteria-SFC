@@ -11,22 +11,20 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render, screen } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
 describe('StaffRecordComponent', () => {
-  const workplace = establishmentBuilder() as Establishment;
-
   async function setup() {
+    const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -50,7 +48,16 @@ describe('StaffRecordComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerServiceWithUpdateWorker,
         },
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        {
+          provide: EstablishmentService,
+          useValue: {
+            establishmentId: 'mock-uid',
+            isOwnWorkplace: () => true,
+            primaryWorkplace: {
+              isParent: true,
+            },
+          },
+        },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: PermissionsService, useClass: MockPermissionsService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -75,6 +82,7 @@ describe('StaffRecordComponent', () => {
       component,
       fixture,
       routerSpy,
+      workerService,
       workerSpy,
       getByText,
       getAllByText,
@@ -96,6 +104,47 @@ describe('StaffRecordComponent', () => {
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
   });
 
+  it('should render the Complete record button and correct text when worker.completed is false', async () => {
+    const { component, fixture } = await setup();
+
+    component.worker.completed = false;
+    fixture.detectChanges();
+    const button = screen.getByText('Confirm record details');
+    const text = screen.getByText(`Check the record details you've added before you confirm them.`);
+    const flagLongTermAbsenceLink = screen.queryByText('Flag long-term absence');
+    const deleteRecordLink = screen.queryByText('Delete staff record');
+    const trainingAndQualsLink = screen.queryByText('Training and qualifications');
+
+    expect(button).toBeTruthy();
+    expect(text).toBeTruthy();
+    expect(flagLongTermAbsenceLink).toBeFalsy();
+    expect(deleteRecordLink).toBeFalsy();
+    expect(trainingAndQualsLink).toBeFalsy();
+  });
+
+  it('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
+    const { component, fixture } = await setup();
+
+    component.canEditWorker = true;
+    component.canDeleteWorker = true;
+    component.worker.longTermAbsence = null;
+    component.worker.completed = true;
+
+    fixture.detectChanges();
+
+    const button = screen.queryByText('Confirm record details');
+    const text = screen.getByText(`Check the record details you've added are correct.`);
+    const flagLongTermAbsenceLink = screen.getByText('Flag long-term absence');
+    const deleteRecordLink = screen.getByText('Delete staff record');
+    const trainingAndQualsLink = screen.getByText('Training and qualifications');
+
+    expect(button).toBeFalsy();
+    expect(text).toBeTruthy();
+    expect(flagLongTermAbsenceLink).toBeTruthy();
+    expect(deleteRecordLink).toBeTruthy();
+    expect(trainingAndQualsLink).toBeTruthy();
+  });
+
   it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
     const { component, workerSpy, workplaceUid, workerUid } = await setup();
 
@@ -111,6 +160,7 @@ describe('StaffRecordComponent', () => {
     const { getByText, component, fixture } = await setup();
 
     component.canEditWorker = true;
+    component.worker.completed = true;
     fixture.detectChanges();
 
     const workplaceUid = component.workplace.uid;
@@ -125,6 +175,7 @@ describe('StaffRecordComponent', () => {
     it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
+      component.worker.completed = true;
       component.worker.longTermAbsence = 'Illness';
       fixture.detectChanges();
 
@@ -135,6 +186,7 @@ describe('StaffRecordComponent', () => {
     it('should navigate to `long-term-absence` when pressing the "view" button', async () => {
       const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
 
+      component.worker.completed = true;
       component.worker.longTermAbsence = 'Illness';
       fixture.detectChanges();
 
@@ -151,6 +203,7 @@ describe('StaffRecordComponent', () => {
 
       component.worker.longTermAbsence = null;
       component.canEditWorker = true;
+      component.worker.completed = true;
       fixture.detectChanges();
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
@@ -161,12 +214,62 @@ describe('StaffRecordComponent', () => {
 
       component.worker.longTermAbsence = null;
       component.canEditWorker = true;
+      component.worker.completed = true;
       fixture.detectChanges();
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
       expect(flagLongTermAbsenceLink.getAttribute('href')).toBe(
         `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
       );
+    });
+  });
+
+  describe('saveAndComplete', () => {
+    it('should call updateWorker on the worker service when button is clicked', async () => {
+      const { component, fixture, workerService } = await setup();
+
+      component.worker.completed = false;
+      fixture.detectChanges();
+
+      const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
+      const workplaceUid = component.workplace.uid;
+      const workerUid = component.worker.uid;
+
+      const button = screen.getByText('Confirm record details');
+      fireEvent.click(button);
+
+      expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
+    });
+
+    it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
+      const { component, fixture, routerSpy } = await setup();
+
+      component.workplace.uid = 'mock-uid';
+      component.worker.completed = false;
+      fixture.detectChanges();
+
+      const button = screen.getByText('Confirm record details');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+        fragment: 'staff-records',
+        state: { showBanner: true },
+      });
+    });
+
+    it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
+      const { component, fixture, routerSpy } = await setup();
+
+      component.worker.completed = false;
+      fixture.detectChanges();
+
+      const button = screen.getByText('Confirm record details');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
+        fragment: 'staff-records',
+        state: { showBanner: true },
+      });
     });
   });
 });

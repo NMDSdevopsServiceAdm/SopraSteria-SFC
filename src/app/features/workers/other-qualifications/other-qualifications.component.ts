@@ -20,7 +20,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -29,7 +29,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     });
   }
 
-  init() {
+  init(): void {
     if (this.worker.otherQualification) {
       this.form.patchValue({
         otherQualification: this.worker.otherQualification,
@@ -42,7 +42,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
         : this.getRoutePath('social-care-qualification');
   }
 
-  generateUpdateProps() {
+  generateUpdateProps(): unknown {
     const { otherQualification } = this.form.value;
 
     if (!otherQualification) {
@@ -54,10 +54,10 @@ export class OtherQualificationsComponent extends QuestionComponent {
     };
   }
 
-  onSuccess() {
+  onSuccess(): void {
     this.next =
       this.worker.otherQualification === 'Yes'
         ? this.getRoutePath('other-qualifications-level')
-        : this.getRoutePath('check-answers');
+        : this.getRoutePath('');
   }
 }

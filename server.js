@@ -76,6 +76,9 @@ var admin = require('./server/routes/admin');
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
 
+// wdf
+var WDFRoute = require('./server/routes/wdf/index');
+
 var errors = require('./server/routes/errors');
 
 // SNS
@@ -272,6 +275,7 @@ app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);
 app.use('/api/registrationSurvey', [cacheMiddleware.nocache, registrationSurvey]);
 app.use('/api/cqcStatusCheck', [cacheMiddleware.nocache], cqcStatusCheck);
+app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);

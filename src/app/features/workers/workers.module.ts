@@ -21,7 +21,6 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
-import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -43,18 +42,10 @@ import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dial
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import {
-  MissingMandatoryTrainingComponent,
-} from './new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
-import {
-  NewQualificationsComponent,
-} from './new-training-qualifications-record/new-qualifications/new-qualifications.component';
-import {
-  NewTrainingAndQualificationsRecordSummaryComponent,
-} from './new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
-import {
-  NewTrainingAndQualificationsRecordComponent,
-} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { MissingMandatoryTrainingComponent } from './new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
+import { NewQualificationsComponent } from './new-training-qualifications-record/new-qualifications/new-qualifications.component';
+import { NewTrainingAndQualificationsRecordSummaryComponent } from './new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NewTrainingComponent } from './new-training-qualifications-record/new-training/new-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
@@ -64,15 +55,12 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
-import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
@@ -87,7 +75,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     BasicRecordsSaveSuccessComponent,
     BritishCitizenshipComponent,
     CareCertificateComponent,
-    CheckStaffRecordComponent,
     ContractWithZeroHoursComponent,
     CountryOfBirthComponent,
     DateOfBirthComponent,
@@ -120,7 +107,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     StaffRecordComponent,
     TotalStaffChangeComponent,
     WeeklyContractedHoursComponent,
-    WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
     SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
