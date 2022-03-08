@@ -318,6 +318,18 @@ const config = convict({
       },
     },
   },
+  disbursement: {
+    region: {
+      doc: 'AWS region override for disbursement S3 only',
+      format: '*',
+      default: 'eu-west-2',
+    },
+    bucketname: {
+      doc: 'Bucket used to create disbursement',
+      format: '*',
+      default: 'wdf-disbursement',
+    },
+  },
   locks: {
     region: {
       doc: 'AWS region override for locks S3 only',

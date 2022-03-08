@@ -38,4 +38,5 @@ export type PermissionType =
   | 'canRemoveParentAssociation'
   | 'canDownloadWdfReport'
   | 'canViewBenchmarks'
-  | 'canViewNinoDob';
+  | 'canViewNinoDob'
+  | 'canViewLastBulkUpload';

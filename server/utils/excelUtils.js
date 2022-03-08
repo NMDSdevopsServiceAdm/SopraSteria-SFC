@@ -127,14 +127,14 @@ exports.addTextBox = (tab, startCell, endCell, content) => {
   addBorder(tab, startCell);
 };
 
-exports.addHeading = (tab, startCell, endCell, content) => {
+exports.addHeading = (tab, startCell, endCell, content, textColour = this.textColours.blue, size = 16) => {
   tab.mergeCells(`${startCell}:${endCell}`);
   tab.getCell(startCell).value = content;
   tab.getCell(startCell).font = {
     family: 4,
-    size: 16,
+    size: size,
     bold: true,
-    color: { argb: '0050ab' },
+    color: textColour,
   };
 };
 
@@ -156,6 +156,7 @@ exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textC
 
   cellColumns.map((key) => {
     tab.getCell(key + currentLineNumber).font = { bold: true, color: textColour };
+    tab.getCell(key + currentLineNumber).alignment = { wrapText: true, vertical: 'middle', horizontal: 'center' };
     tab.getCell(key + currentLineNumber).fill = {
       type: 'pattern',
       pattern: 'solid',
@@ -193,6 +194,8 @@ exports.backgroundColours = {
   blue: { argb: '0050AB' },
   red: { argb: 'FFC0C8' },
   green: { argb: 'BBEDC9' },
+  lightBlue: { argb: 'A3CBFA' },
+  darkBlue: { argb: '5981B8' },
 };
 
 exports.textColours = {
@@ -200,8 +203,18 @@ exports.textColours = {
   white: { argb: 'FFFFFF' },
   red: { argb: '960512' },
   green: { argb: '005713' },
+  black: { argb: '000000' },
+  blue: { argb: '0050ab' },
 };
 
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
+};
+
+exports.setColumnWidths = (tab) => {
+  const longColumn = tab.getColumn(9);
+  const longColumnsecond = tab.getColumn(10);
+
+  longColumn.width = 33;
+  longColumnsecond.width = 29;
 };

@@ -1919,5 +1919,12 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.authenticateEstablishment = async function (where) {
+    return await this.findOne({
+      attributes: ['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent'],
+      where,
+    });
+  };
+
   return Establishment;
 };

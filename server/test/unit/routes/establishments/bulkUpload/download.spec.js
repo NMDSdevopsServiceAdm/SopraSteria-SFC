@@ -78,6 +78,7 @@ describe('download', () => {
         workers: [worker],
       },
     ]);
+
     sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
       expect(statusCode).to.deep.equal(200);
       expect(body).to.contain(establishment.LocalIdentifierValue);
@@ -86,6 +87,58 @@ describe('download', () => {
       expect(body).to.contain(worker.NameOrIdValue);
       expect(body).to.contain(worker.PostcodeValue);
       expect(body).to.contain(worker.NationalInsuranceNumberValue);
+      const dobArr = worker.DateOfBirthValue.split('-');
+      expect(body).to.contain(`${dobArr[2]}/${dobArr[1]}/${dobArr[0]}`);
+      expect(body).to.contain(mockWorker.knownHeaders);
+    });
+    const req = httpMocks.createRequest({
+      method: 'GET',
+      url: `/api/establishment/${establishmentId}/bulkupload/download/${downloadType}`,
+      params: {
+        establishmentId,
+        downloadType,
+      },
+    });
+    req.establishment = {
+      id: establishmentId,
+    };
+
+    req.setTimeout = () => {};
+
+    req.establishmentId = establishmentId;
+    const res = httpMocks.createResponse();
+
+    await downloadGet(req, res);
+    sinon.assert.calledOnce(downloadWorkers);
+  });
+
+  it('should return sanitised workers file', async () => {
+    const establishment = {
+      id: 123,
+      LocalIdentifierValue: 'Test McTestface',
+    };
+
+    const worker = apiWorkerBuilder();
+
+    const downloadType = 'workersSanitise';
+    const downloadWorkers = sinon.stub(models.establishment, 'downloadWorkers').returns([
+      {
+        ...establishment,
+        workers: [{ ...worker, NationalInsuranceNumberValue: 'Admin', DateOfBirthValue: 'Admin' }],
+      },
+    ]);
+
+    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+      expect(statusCode).to.deep.equal(200);
+      expect(body).to.contain(establishment.LocalIdentifierValue);
+      expect(body).to.contain(worker.LocalIdentifierValue);
+      expect(body).to.contain('UNCHECKED');
+      expect(body).to.contain(worker.NameOrIdValue);
+      expect(body).to.contain(worker.PostcodeValue);
+      expect(body).not.to.contain(worker.NationalInsuranceNumberValue);
+      const dobArr = worker.DateOfBirthValue.split('-');
+      expect(body).not.to.contain(`${dobArr[2]}/${dobArr[1]}/${dobArr[0]}`);
+      expect(body).to.contain('Admin');
       expect(body).to.contain(mockWorker.knownHeaders);
     });
     const req = httpMocks.createRequest({

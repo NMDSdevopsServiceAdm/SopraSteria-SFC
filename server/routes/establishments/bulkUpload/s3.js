@@ -1,4 +1,5 @@
 'use strict';
+const moment = require('moment');
 const config = require('../../../config/config');
 const s3 = new (require('aws-sdk').S3)({
   region: String(config.get('bulkupload.region')),
@@ -10,6 +11,23 @@ const params = (establishmentId) => {
     Bucket,
     Prefix: `${establishmentId}/latest/`,
   };
+};
+
+const disbursementBucket = String(config.get('disbursement.bucketname'));
+
+const uploadDisbursementFileToS3 = async (buffer) => {
+  try {
+    await s3
+      .putObject({
+        Bucket: disbursementBucket,
+        Key: moment().format('DD-MM-YYYY hh:mm:ss') + '-fundingClaimForm.xlsx',
+        Body: buffer,
+      })
+      .promise();
+  } catch (err) {
+    console.error('uploadDataToS3: ', err);
+    throw new Error('Failed to upload To S3 ');
+  }
 };
 
 const uploadJSONDataToS3 = async (username, establishmentId, content, key) => {
@@ -300,4 +318,5 @@ module.exports = {
   findFilesS3,
   listMetaData,
   listObjectsInBucket,
+  uploadDisbursementFileToS3,
 };
