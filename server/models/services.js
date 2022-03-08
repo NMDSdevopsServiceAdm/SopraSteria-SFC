@@ -1,4 +1,4 @@
-/* jshint indent: 2 */
+const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const Services = sequelize.define(
@@ -45,14 +45,7 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false,
     },
   );
-  Services.findNameByID = function (id) {
-    return this.findOne({
-      where: {
-        id: id,
-      },
-      attributes: ['name'],
-    });
-  };
+
   Services.associate = (models) => {
     Services.belongsToMany(models.establishment, {
       through: 'establishmentServices',
@@ -69,6 +62,33 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'MainServiceFK',
       sourceKey: 'reportingID',
       as: 'benchmarksData',
+    });
+  };
+
+  Services.findNameByID = function (id) {
+    return this.findOne({
+      where: {
+        id: id,
+      },
+      attributes: ['name'],
+    });
+  };
+
+  Services.getMainServiceByName = function (name, isCqcRegistered) {
+    const where = {
+      name,
+      isMain: true,
+    };
+
+    if (!isCqcRegistered) {
+      where.iscqcregistered = {
+        [Op.or]: [false, null],
+      };
+    }
+
+    return this.findOne({
+      where,
+      attributes: ['id', 'other'],
     });
   };
 

@@ -106,7 +106,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     this.backService.setBackLink({ url: ['/registration/create-security-question'] });
   }
 
-  private generatePayload(): Array<RegistrationPayload> {
+  private generatePayload(): RegistrationPayload {
     const payload: any = this.locationAddress;
     payload.locationId = this.service.isCQC ? this.locationAddress.locationId : null;
     payload.mainService = this.service.name;
@@ -117,7 +117,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
     payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
-    return [payload];
+    return payload;
   }
 
   protected save(): void {

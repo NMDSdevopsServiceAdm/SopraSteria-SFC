@@ -20,7 +20,7 @@ export class RegistrationService extends WorkplaceInterfaceService {
     super();
   }
 
-  public postRegistration(registrationPayload: Array<RegistrationPayload>): Observable<any> {
+  public postRegistration(registrationPayload: RegistrationPayload): Observable<any> {
     return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
