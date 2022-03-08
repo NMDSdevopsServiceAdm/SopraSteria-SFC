@@ -581,8 +581,7 @@ workflows:
             - prod_deploy
           filters:
             branches:
-              only:
-                - live
+              ignore: /.*/
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
           endpoint: https://api.cloud.service.gov.uk
@@ -714,8 +713,7 @@ workflows:
             - blue_green_benchmarks
           filters:
             branches:
-              only:
-                - live
+              ignore: /.*/
             tags:
               only:
                 - /^v[0-9]+(\.[0-9]+)*$/
