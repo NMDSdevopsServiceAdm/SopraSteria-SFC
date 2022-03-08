@@ -11,7 +11,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
@@ -24,9 +23,8 @@ import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
 describe('StaffRecordComponent', () => {
-  const workplace = establishmentBuilder() as Establishment;
-
   async function setup() {
+    const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -50,7 +48,16 @@ describe('StaffRecordComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerServiceWithUpdateWorker,
         },
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        {
+          provide: EstablishmentService,
+          useValue: {
+            establishmentId: 'mock-uid',
+            isOwnWorkplace: () => true,
+            primaryWorkplace: {
+              isParent: true,
+            },
+          },
+        },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: PermissionsService, useClass: MockPermissionsService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -234,7 +241,23 @@ describe('StaffRecordComponent', () => {
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
     });
 
-    it('should redirect back to the dashboard when worker is updated', async () => {
+    it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
+      const { component, fixture, routerSpy } = await setup();
+
+      component.workplace.uid = 'mock-uid';
+      component.worker.completed = false;
+      fixture.detectChanges();
+
+      const button = screen.getByText('Confirm record details');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+        fragment: 'staff-records',
+        state: { showBanner: true },
+      });
+    });
+
+    it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
       const { component, fixture, routerSpy } = await setup();
 
       component.worker.completed = false;
@@ -243,7 +266,7 @@ describe('StaffRecordComponent', () => {
       const button = screen.getByText('Confirm record details');
       fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
         fragment: 'staff-records',
         state: { showBanner: true },
       });
