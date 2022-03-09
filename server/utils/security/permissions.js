@@ -9,6 +9,7 @@ const getPermissions = async (req) => {
   const estabType = getEstablishmentType(req.establishment);
 
   if (req.role === 'Admin') return adminPermissions(estabType, establishmentAndUserInfo, req.isParent);
+  if (req.role === 'AdminManager') return adminManagerPermissions(estabType, establishmentAndUserInfo, req.isParent);
 
   if (ownsData(estabType, req)) {
     return getDataOwnerPermissions(req, estabType, establishmentAndUserInfo);
@@ -81,6 +82,12 @@ const editPermissions = (estabType = 'Standalone', establishmentAndUserInfo, isL
 const adminPermissions = (estabType = 'Standalone', establishmentAndUserInfo, isLoggedInAsParent) => {
   const adminCant = ['canViewNinoDob'];
 
+  return adminManagerPermissions(estabType, establishmentAndUserInfo, isLoggedInAsParent).filter(
+    (permission) => !adminCant.includes(permission),
+  );
+};
+
+const adminManagerPermissions = (estabType = 'Standalone', establishmentAndUserInfo, isLoggedInAsParent) => {
   return uniq([
     ...editPermissions(estabType, establishmentAndUserInfo, isLoggedInAsParent),
     'canDeleteEstablishment',
@@ -91,7 +98,7 @@ const adminPermissions = (estabType = 'Standalone', establishmentAndUserInfo, is
     'canSearchUsers',
     'canSearchEstablishment',
     'canViewLastBulkUpload',
-  ]).filter((permission) => !adminCant.includes(permission));
+  ]);
 };
 
 const dataPermissionNone = (establishmentAndUserInfo) => [
