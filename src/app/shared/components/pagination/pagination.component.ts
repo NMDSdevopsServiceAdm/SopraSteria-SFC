@@ -10,7 +10,7 @@ export class PaginationComponent implements OnInit {
 
   @Input() noOfItemsOnPage: number;
   @Input() totalNoOfItems: number;
-  @Output() emitCurrentPage = new EventEmitter<number>(true);
+  @Output() emitCurrentPage = new EventEmitter<{ pageNo: number; noOfItemsOnPage: number }>(true);
 
   ngOnInit(): void {
     const noOfPages = Math.ceil(this.totalNoOfItems / this.noOfItemsOnPage);
@@ -25,6 +25,6 @@ export class PaginationComponent implements OnInit {
 
   private setPage(pageNo: number): void {
     this.currentPageNo = pageNo;
-    this.emitCurrentPage.emit(pageNo);
+    this.emitCurrentPage.emit({ pageNo, noOfItemsOnPage: this.noOfItemsOnPage });
   }
 }

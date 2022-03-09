@@ -76,7 +76,7 @@ describe('PaginationComponent', () => {
     });
   });
 
-  describe('Display changes when setting current page', () => {
+  describe('Display changes when clicking to page', () => {
     it('should display 1 as link and 2 as text when Next clicked from first page', async () => {
       const { fixture, queryByText, queryByTestId } = await setup();
 
@@ -108,6 +108,59 @@ describe('PaginationComponent', () => {
 
       expect(queryByTestId('pageNoText-1')).toBeFalsy();
       expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+    });
+
+    it('should display 1 as link and 3 as text when 3 clicked from first page', async () => {
+      const { fixture, queryByText, queryByTestId } = await setup();
+
+      const nextPageButton = queryByText('3');
+      nextPageButton.click();
+
+      fixture.detectChanges();
+
+      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      expect(queryByTestId('pageNoText-0')).toBeFalsy();
+
+      expect(queryByTestId('pageNoText-2')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeFalsy();
+    });
+  });
+
+  describe('Emitting event when clicking to page', () => {
+    it('should emit pageNo 1 and noOfItemsOnPage when Next button clicked from first page', async () => {
+      const { fixture, queryByText } = await setup();
+
+      const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
+
+      const nextPageButton = queryByText('Next');
+      nextPageButton.click();
+
+      expect(emitSpy).toHaveBeenCalledWith({ pageNo: 1, noOfItemsOnPage: 15 });
+    });
+
+    it('should emit pageNo 0 and noOfItemsOnPage when going to page 1 by clicking Previous button', async () => {
+      const { fixture, queryByText } = await setup();
+
+      const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
+
+      fixture.componentInstance.currentPageNo = 1;
+      fixture.detectChanges();
+
+      const previousPageButton = queryByText('Previous');
+      previousPageButton.click();
+
+      expect(emitSpy).toHaveBeenCalledWith({ pageNo: 0, noOfItemsOnPage: 15 });
+    });
+
+    it('should emit pageNo 2 and noOfItemsOnPage when 3 clicked', async () => {
+      const { fixture, queryByText } = await setup();
+
+      const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
+
+      const nextPageButton = queryByText('3');
+      nextPageButton.click();
+
+      expect(emitSpy).toHaveBeenCalledWith({ pageNo: 2, noOfItemsOnPage: 15 });
     });
   });
 });
