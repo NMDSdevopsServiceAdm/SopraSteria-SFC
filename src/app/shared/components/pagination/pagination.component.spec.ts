@@ -76,7 +76,7 @@ describe('PaginationComponent', () => {
     });
   });
 
-  describe('Display changes when clicking to page', () => {
+  describe('Displaying changes when clicking to page', () => {
     it('should display 1 as link and 2 as text when Next clicked from first page', async () => {
       const { fixture, queryByText, queryByTestId } = await setup();
 
@@ -162,5 +162,47 @@ describe('PaginationComponent', () => {
 
       expect(emitSpy).toHaveBeenCalledWith({ pageNo: 2, noOfItemsOnPage: 15 });
     });
+  });
+
+  describe('Displaying numbers when there are more than 10 pages', () => {
+    it('should display page numbers 1 to 3 and final page number when on first page', async () => {
+      const { queryByText } = await setup(15, 152);
+
+      expect(queryByText('1')).toBeTruthy();
+      expect(queryByText('2')).toBeTruthy();
+      expect(queryByText('3')).toBeTruthy();
+
+      expect(queryByText('4')).toBeFalsy();
+      expect(queryByText('5')).toBeFalsy();
+      expect(queryByText('6')).toBeFalsy();
+      expect(queryByText('7')).toBeFalsy();
+      expect(queryByText('8')).toBeFalsy();
+      expect(queryByText('9')).toBeFalsy();
+      expect(queryByText('10')).toBeFalsy();
+
+      expect(queryByText('11')).toBeTruthy();
+    });
+
+    // it('should display first page, current page number with page numbers 2 above and below and final page when on a page with an index of more than 2 from first page', async () => {
+    //   const { fixture, queryByText } = await setup(15, 148);
+
+    //   fixture.componentInstance.currentPageNo = 4;
+    //   fixture.detectChanges();
+
+    //   expect(queryByText('1')).toBeTruthy();
+
+    //   expect(queryByText('2')).toBeFalsy();
+
+    //   expect(queryByText('3')).toBeTruthy();
+    //   expect(queryByText('4')).toBeTruthy();
+    //   expect(queryByText('5')).toBeTruthy();
+    //   expect(queryByText('6')).toBeTruthy();
+    //   expect(queryByText('7')).toBeTruthy();
+
+    //   expect(queryByText('8')).toBeFalsy();
+    //   expect(queryByText('9')).toBeFalsy();
+
+    //   expect(queryByText('10')).toBeTruthy();
+    // });
   });
 });

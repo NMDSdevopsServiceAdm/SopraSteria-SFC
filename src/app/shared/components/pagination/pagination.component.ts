@@ -31,4 +31,8 @@ export class PaginationComponent implements OnInit {
     const noOfPages = Math.ceil(this.totalNoOfItems / this.noOfItemsOnPage);
     return Array.from(Array(noOfPages).keys());
   }
+
+  public withinTwoOfCurrentPage(index: number): boolean {
+    return Math.abs(index - this.currentPageNo) <= 2;
+  }
 }
