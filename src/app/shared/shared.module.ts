@@ -38,6 +38,7 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
+import { PaginationComponent } from './components/pagination/pagination.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
@@ -173,6 +174,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
+    PaginationComponent,
   ],
   exports: [
     AlertComponent,
@@ -253,6 +255,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
+    PaginationComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
