@@ -183,7 +183,7 @@ app.use(
     expectCt: {
       maxAge: 86400,
       enforce: true,
-      reportUri: 'https://o409195.ingest.sentry.io/api/5972061/security/?sentry_key=b5e1291ec8934cf7b6b426bc45f1dbbd',
+      reportUri: config.get('sentry.report_uri'),
     },
     dnsPrefetchControl: {
       allow: true,
