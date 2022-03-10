@@ -35,4 +35,8 @@ export class PaginationComponent implements OnInit {
   public withinTwoOfCurrentPage(index: number): boolean {
     return Math.abs(index - this.currentPageNo) <= 2;
   }
+
+  public showElipsis(index: number): boolean {
+    return index == this.currentPageNo + 3 || index == this.currentPageNo - 3;
+  }
 }

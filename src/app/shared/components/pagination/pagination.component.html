@@ -25,12 +25,17 @@
       <a class="govuk-link" href="#" (click)="goToPage($event, currentPageNo - 1)">Previous</a>
     </ng-container>
     <ng-container *ngFor="let page of pages; let i = index">
-      <ng-container *ngIf="i === 0 || i === pages.length - 1 || withinTwoOfCurrentPage(i)">
-        <ng-container *ngIf="currentPageNo == i; else showLink">
+      <ng-container *ngIf="i === 0 || i === pages.length - 1 || withinTwoOfCurrentPage(i) || showElipsis(i)">
+        <ng-container *ngIf="currentPageNo == i; else showLinkOrElipsis">
           <p class="govuk-!-margin-right-3" [attr.data-testid]="'pageNoText-' + i">
             <b>{{ i + 1 }}</b>
           </p>
         </ng-container>
+        <ng-template #showLinkOrElipsis>
+          <ng-container *ngIf="showElipsis(i); else showLink">
+            <p>...</p>
+          </ng-container>
+        </ng-template>
         <ng-template #showLink>
           <a class="govuk-link" [attr.data-testid]="'pageNoLink-' + i" href="#" (click)="goToPage($event, i)">{{
             i + 1
