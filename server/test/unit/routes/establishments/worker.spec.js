@@ -166,10 +166,13 @@ describe('worker route', () => {
     });
 
     const worker = workerBuilder();
+    let workersAndTrainingStub;
     beforeEach(() => {
-      sinon.stub(models.establishment, 'workersAndTraining').returns([{
-        workers: [worker],
-      }]);
+      workersAndTrainingStub = sinon.stub(models.establishment, 'workersAndTraining').returns([
+        {
+          workers: [worker],
+        },
+      ]);
     });
 
     afterEach(() => {
@@ -180,9 +183,6 @@ describe('worker route', () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/establishment/123/worker',
-        params: {
-          establishmentId: 123,
-        },
       });
 
       req.username = 'aylingw';
@@ -190,6 +190,7 @@ describe('worker route', () => {
       req.establishment = {
         id: 123,
       };
+      req.establishmentId = 123;
 
       const res = httpMocks.createResponse();
       await workerRoute.viewAllWorkers(req, res);
@@ -218,6 +219,32 @@ describe('worker route', () => {
       expect(typeof res._getData().workers[0].expiredTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].expiringTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].missingMandatoryTrainingCount).to.equal('number');
+
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, undefined, undefined]);
+    });
+
+    it('should call workersAndTraining with pagination parameters', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker',
+        query: {
+          pageNumber: 1,
+          itemsPerPage: 200,
+        },
+      });
+
+      req.username = 'aylingw';
+      req.userUid = '1234';
+      req.establishment = {
+        id: 123,
+      };
+      req.establishmentId = 123;
+
+      const res = httpMocks.createResponse();
+      await workerRoute.viewAllWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, 200, 1]);
     });
   });
 
