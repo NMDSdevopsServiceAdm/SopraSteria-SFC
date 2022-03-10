@@ -560,10 +560,12 @@ const config = convict({
       },
     },
   },
-  vcapServices: {
-    doc: 'All the info from VCAP Services env vars from CF',
-    env: 'VCAP_SERVICES',
-    default: '{}',
+  redis: {
+    uri: {
+      doc: 'Redis uri for rate limit',
+      env: 'REDIS_URI',
+      default: 'redis://localhost:6379',
+    },
   },
 });
 
@@ -605,6 +607,9 @@ if (config.get('aws.secrets.use')) {
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
+
+    // redis
+    config.set('redis.uri', AWSSecrets.redisUri());
 
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
